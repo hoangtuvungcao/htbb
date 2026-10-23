@@ -86,12 +86,53 @@ public class LoginHandler implements ICommandHandler {
         LoginHandler.versionCode = 0;
         LoginHandler.versionTile = 0;
         LoginHandler.stopLogin = false;
-        LoginHandler.PORTION_NAME = new String[]{"Xu", "HP nhỏ", "HP vừa", "HP to", "MP nhỏ", "MP vừa", "MP to", "Bình tăng tốc thường", "Bình tăng tốc vàng.\nGiảm 20% thời gian chín của trái vàng", "Berry Razz vàng", "Kẹo kinh nghiệm thường: cộng 100k exp", "Kẹo kinh nghiệm cao cấp: cộng 500k exp", "Kẹo kinh nghiệm đặc biệt: cộng 1t exp", "Bình tăng tốc bạc.\nGiảm 20% thời gian chín của trái bạc", "Khăn đỏ", "Khăn xanh", "Khăn vàng", "Khăn xanh lá", "Khăn tím", "Vé bay Pidgeot", "Vé tàu", "HP đ.biệt vừa", "HP đ.biệt to", "MP đ.biệt vừa", "MP đ.biệt to", "Thuốc khôi phục tiềm năng", "Thuốc khôi phục", "Vé bay Pidgeot", "Thẻ cấm chat", "Phiếu công ích", "Ponyta", "Huy hiệu lập đội", "Thẻ đấu trường", "Thẻ chiếm Gym", "Ponyta lửa", "Vé giờ vàng 100, x2 kinh nghiệm trong một giờ chơi. Tính theo thời gian chơi", "Tuần lộc", "Đầu đinh", "Lông búi", "Lông cột cao", "Lông chéo", "Lông xù", "Lông ngang vai", "Lông đinh so le", "Lông so le", "Lông gọn gàng", "Lông cài hoa", "Bờm Ponyta", "Lông Clefairy", "Lông dựng đứng", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Bí ma", "Hộp may mắn", "Machamp", "Arcanine", "Sói xám", "Pidgeot", "Rapidash", "Vé quay số", "Trứng Articuno", "Trứng Ponyta", "Trứng Piloswine", "Túi nhặt ngọc", "Trứng Spectrier", "Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo thời gian chơi", "Vé quay số đặc biệt", "Mảnh bản đồ 1", "Thẻ liên hoa", "Hộp thần kỳ", "Bình tăng lực 5%/n. Tăng 5% các chỉ số trong 3 ngày", "Vé giờ vàng tăng 150% kinh nghiệm.", "Thẻ giao hàng. Thêm một lượt giao hàng khi sử dụng", "Kẹo Poké. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.", "Thuốc cường hoá", "Thẻ triệu hồi", "Moltres", "Thẻ phong chức", "Nhẫn kết đôi đồng 2%pt", "Nhẫn kết đôi bạc 4%pt", "Nhẫn kết đôi vàng 7%pt", "Vé vào mỏ", "Thiệp mời kết đôi", "HP7k", "HP15k", "MP7k", "MP15k", "Thẻ đổi hàng", "Vảy trái tim kết đôi", "Pháo hoa", "loa", "Rương vàng", "Rương bạc", "Lá vàng", "Dây thừng. Dùng để bắt thú nuôi", "Mảnh bản đồ 2", "Nhánh hoa hồng vàng", "Hoa hồng đỏ", "", "Bó hoa vàng", "Bó hoa đỏ", "Sách kỹ năng pet", "Thức ăn tươi", "Thức ăn khô", "Thức ăn tổng hợp", "Trứng Suicune", "Thẻ đổi hàng cao cấp", "Mảnh bản đồ 3", "Vé Moltres.\nDùng quay số Moltres", "Cỏ hồi sinh\nHồi sinh bản thân.", "Thịt", "Trứng", "Đậu xanh", "Thuốc cường hóa siêu cấp", "Bánh dẻo", "Bánh nướng", "Hp chiến trường.\nHồi 10.000 hp", "Ether chiến trường.\nHồi 10.000 mp", "Thuốc cường hoá chiến trường", "Hỗn độn.\nTăng 20% giáp trong 90s", "X Tấn Công.\nTăng 20% sát thương.", "Thuốc săn trùm.\nTăng 50% sát thương boss.", "Bom lửa. Gây sát thương theo x10% năng lượng bản thân lên toàn bộ mục tiêu trong bán kính 5m.", "Hộp bánh thập cẩm", "Hộp bánh đặc biệt", "Hạt mầm", "Nến", "Kẹo", "Bí ngô", "Hộp quà", "Hộp quà halloween", "Hộp quà tặng halloween", "Bột mỳ", "Hộp quà bí mật", "Sao vàng", "Dưa Hấu", "Kem", "Túi quà may mắn", "Gạo nếp", "Thịt mỡ", "Lá dong", "Bánh chưng", "Bánh tét", "Giấy", "Thuốc pháo", "Pháo hoa tết", "Lửa thường", "Lửa vừa", "Lửa to", "Bao lì xì", "Quả bóng bạc", "Quả bóng vàng","Cuồng Nộ"};
+        LoginHandler.PORTION_NAME = new String[]{"Xu", "HP nhỏ", "HP vừa", "HP to", "MP nhỏ", "MP vừa", "MP to", "Bình tăng tốc thường", "Bình tăng tốc vàng.\nGiảm 20% thời gian chín của trái vàng", "Berry Razz vàng", "Kẹo kinh nghiệm thường: cộng 100k exp", "Kẹo kinh nghiệm cao cấp: cộng 500k exp", "Kẹo kinh nghiệm đặc biệt: cộng 1t exp", "Bình tăng tốc bạc.\nGiảm 20% thời gian chín của trái bạc", "Khăn đỏ", "Khăn xanh", "Khăn vàng", "Khăn xanh lá", "Khăn tím", "Vé bay Pidgeot", "Vé tàu", "HP đ.biệt vừa", "HP đ.biệt to", "MP đ.biệt vừa", "MP đ.biệt to", "Kẹo tiềm năng", "Kẹo kỹ năng", "Vé bay Pidgeot", "Thẻ cấm chat", "Phiếu công ích", "Ponyta", "Huy hiệu lập đội", "Thẻ đấu trường", "Thẻ chiếm Gym", "Ponyta lửa", "Vé giờ vàng 100, x2 kinh nghiệm trong một giờ chơi. Tính theo thời gian chơi", "Tuần lộc", "Đầu đinh", "Lông búi", "Lông cột cao", "Lông chéo", "Lông xù", "Lông ngang vai", "Lông đinh so le", "Lông so le", "Lông gọn gàng", "Lông cài hoa", "Bờm Ponyta", "Lông Clefairy", "Lông dựng đứng", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa mai", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa đào", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Hoa hồng", "Bí ma", "Hộp may mắn", "Machamp", "Arcanine", "Sói xám", "Pidgeot", "Rapidash", "Vé quay số", "Trứng Articuno", "Trứng Ponyta", "Trứng Piloswine", "Túi nhặt ngọc", "Trứng Spectrier", "Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo thời gian chơi", "Vé quay số đặc biệt", "Mảnh bản đồ 1", "Thẻ liên hoa", "Hộp thần kỳ", "Bình tăng lực 5%/n. Tăng 5% các chỉ số trong 3 ngày", "Vé giờ vàng tăng 150% kinh nghiệm.", "Thẻ giao hàng. Thêm một lượt giao hàng khi sử dụng", "Kẹo Poké. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.", "Thuốc cường hoá", "Thẻ triệu hồi", "Moltres", "Thẻ phong chức", "Nhẫn kết đôi đồng 2%pt", "Nhẫn kết đôi bạc 4%pt", "Nhẫn kết đôi vàng 7%pt", "Vé vào mỏ", "Thiệp mời kết đôi", "HP7k", "HP15k", "MP7k", "MP15k", "Thẻ đổi hàng", "Vảy trái tim kết đôi", "Pháo hoa", "loa", "Rương vàng", "Rương bạc", "Lá vàng", "Dây thừng. Dùng để bắt thú nuôi", "Mảnh bản đồ 2", "Nhánh hoa hồng vàng", "Hoa hồng đỏ", "", "Bó hoa vàng", "Bó hoa đỏ", "Sách kỹ năng pet", "Thức ăn tươi", "Thức ăn khô", "Thức ăn tổng hợp", "Trứng Suicune", "Thẻ đổi hàng cao cấp", "Mảnh bản đồ 3", "Vé Moltres.\nDùng quay số Moltres", "Cỏ hồi sinh\nHồi sinh bản thân.", "Thịt", "Trứng", "Đậu xanh", "Thuốc cường hóa siêu cấp", "Bánh dẻo", "Bánh nướng", "Hp chiến trường.\nHồi 10.000 hp", "Ether chiến trường.\nHồi 10.000 mp", "Thuốc cường hoá chiến trường", "Hỗn độn.\nTăng 20% giáp trong 90s", "X Tấn Công.\nTăng 20% sát thương.", "Thuốc săn trùm.\nTăng 50% sát thương boss.", "Bom lửa. Gây sát thương theo x10% năng lượng bản thân lên toàn bộ mục tiêu trong bán kính 5m.", "Hộp bánh thập cẩm", "Hộp bánh đặc biệt", "Hạt mầm", "Nến", "Kẹo", "Bí ngô", "Hộp quà", "Hộp quà halloween", "Hộp quà tặng halloween", "Bột mỳ", "Hộp quà bí mật", "Sao vàng", "Dưa Hấu", "Kem", "Túi quà may mắn", "Gạo nếp", "Thịt mỡ", "Lá dong", "Bánh chưng", "Bánh tét", "Giấy", "Thuốc pháo", "Pháo hoa tết", "Lửa thường", "Lửa vừa", "Lửa to", "Bao lì xì", "Quả bóng bạc", "Quả bóng vàng","Cuồng Nộ"};
         LoginHandler.KHAM_NAME = new String[]{"Tăng sức mạnh", "Tăng nhanh nhẹn", "Tăng tinh thần", "Tăng sức khoẻ", "Gây mù ", "Đóng băng ", "Trúng độc", "Gây choáng", "Hoá thạch", "Giảm tốc ", "Kháng giảm tốc", "Kháng trúng độc", "Kháng gây mù", "Kháng đóng băng", "Kháng gây choáng", "Kháng hoá thạch", "Tăng tỷ lệ x2 mỗi lần đánh", "Tăng tỷ lệ rớt bảo vật"};
        
         LoginHandler.passAdmin = "000000";
     }
 
+
+    /**
+     * 0.9.14: PORTION_NAME (ten thuoc trong thong bao "Ban nhan duoc 5 ...", hop qua, log) lay theo ten data_potion - ten
+     * nguoi choi thay trong Hanh trang. Truoc: bang cung trong ma lech ten tui ("Machamp" cho Sao goi Tauros, "HP nho" cho
+     * Thuoc hoi mau, "Dau dinh" cho Long dinh...). Ten gon = phan truoc dong moi / ". " (ten co kem mo ta cu).
+     */
+    public static void dongBoTenThuoc(final java.util.List<PotionTemplate2> ds) {
+        if (ds == null || PORTION_NAME == null) {
+            return;
+        }
+        final String[] moi = PORTION_NAME.clone();
+        for (int i = 1; i < moi.length && i < ds.size(); i++) {
+            final PotionTemplate2 t = ds.get(i);
+            final String g = tenGon(t == null ? null : t.name);
+            if (!g.isEmpty()) {
+                moi[i] = g;
+            }
+        }
+        PORTION_NAME = moi;
+    }
+
+    /** Ten thuoc bo phan mo ta kem theo (sau dong moi hoac ". "). */
+    public static String tenGon(final String ten) {
+        if (ten == null) {
+            return "";
+        }
+        String r = ten.replace('\r', ' ');
+        final int n = r.indexOf('\n');
+        if (n > 0) {
+            r = r.substring(0, n);
+        }
+        final int c = r.indexOf(". ");
+        if (c > 0) {
+            r = r.substring(0, c);
+        }
+        r = r.trim();
+        while (r.endsWith(".")) {
+            r = r.substring(0, r.length() - 1).trim();
+        }
+        return r;
+    }
 
     public static Message createMsgLogin(final int vsTile) {
         final Message msgLoginSuccess = new Message(1);

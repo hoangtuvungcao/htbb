@@ -86,12 +86,32 @@ public final class NgoaiHinhGame {
             return;
         }
         synchronized (h) {
-            h.oNhanh1 = a;
-            h.oNhanh2 = b;
-            h.oNhanh3 = soTrangChieuH(h) >= 3 ? c : 0L;
+            h.oNhanh1 = locThuoc(a);
+            h.oNhanh2 = locThuoc(b);
+            h.oNhanh3 = soTrangChieuH(h) >= 3 ? locThuoc(c) : 0L;
             h.trangChieu = Math.max(0, Math.min(soTrangChieuH(h) - 1, trang));
             h.ban = true;
         }
+    }
+
+    /** Kieu o "thuoc" trong ma 12 bit cua trang chieu: (QuickSlot.TYPE_POTION 2) + 1. */
+    static final int KIEU_O_THUOC = 3;
+
+    /**
+     * 0.9.14: bo o nhanh dang "thuoc" khong phai binh HP / PP (sao goi thu cuoi, ve, hop qua...) khoi trang chieu - chi
+     * binh HP / PP gan duoc vao o nhanh (com.htbb.pokemon.MoTaVatPham.ganONhanhDuoc). O bi bo thanh trong (0).
+     */
+    static long locThuoc(final long trang) {
+        long v = trang;
+        for (int i = 0; i < 5; i++) {
+            final int m = (int) ((v >> (12 * i)) & 0xFFF);
+            final int kieu = (m >> 9) & 7;
+            final int gt = (m >> 1) & 255;
+            if (kieu == KIEU_O_THUOC && !com.htbb.pokemon.MoTaVatPham.ganONhanhDuoc(gt)) {
+                v &= ~(0xFFFL << (12 * i));
+            }
+        }
+        return v;
     }
 
     static int soTrangChieuH(final HoSoLauDai h) {

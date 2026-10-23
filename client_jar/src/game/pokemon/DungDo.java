@@ -44,6 +44,10 @@ public final class DungDo {
         try {
             int loai = msg.reader().readByte();
             String s = msg.reader().readUTF();
+            if (loai == MoTaVatPham.KIEU) {
+                MoTaVatPham.nap(s);   // 0.9.14: bảng mô tả vật phẩm dạng thuốc (máy chủ chỉ gửi client >= 914)
+                return true;
+            }
             // 0.9.3: byte kiểu thao tác (TrangThaiNguoiChoi.MUA / BAN / DUNG / MAC...) - server 0.9.2 không gửi
             int k = -1;
             try {

@@ -76,6 +76,8 @@ public class Char extends LiveActor {
     public static final byte MAX_WEARING = 12;
     public short MAX_INVENTORY;
     public short idPotionUsed;
+    /** 0.9.14: da gui bang mo ta vat pham (real.MoTaVatPhamGame) trong phien nay. */
+    public boolean daGuiMoTaVatPham;
     public short idTongKim;
     public byte maxBag;
     /**

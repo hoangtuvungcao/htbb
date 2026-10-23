@@ -1978,6 +1978,7 @@ class MapXuLyLenh {
                 DanhHieuGame.khiVaoBanDo(player); // lan dau trong phien: nhan danh hieu, so moi, thuong mua PvP
                 KenhChatGame.khiVaoBanDo(player); // lan dau trong phien: kenh chat, ban be online
                 NgoaiHinhGame.guiONhanh(player);  // 0.9.8: trang chieu (o nhanh) cua nhan vat - may chu giu
+                MoTaVatPhamGame.gui(player);      // 0.9.14: loai / mo ta / dung duoc cua vat pham dang thuoc (client >= 914)
                 map.doJoinMapOk(player);
                 KhoaBanDoGame.sauKhiVaoMap(player); // vua bi chan o cong (nap lai map xong): hop cua ai
             } else if (player.mapID == Map.idMapChanNui) {

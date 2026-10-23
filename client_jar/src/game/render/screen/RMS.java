@@ -164,7 +164,11 @@ public class RMS {
                     byte map = dis.readByte();
                     qs.isBuff = dis.readBoolean();
                     if (qs.quickslotType == 2) {
-                        qs.setIsPotion(map);
+                        if (game.pokemon.MoTaVatPham.ganONhanh(map & 255)) {
+                            qs.setIsPotion(map);
+                        } else {
+                            qs.setIsNothing();   // 0.9.14: chỉ bình HP / PP ở ô nhanh
+                        }
                     } else if (qs.quickslotType == 1) {
                         qs.setIsSkill(map, Canvas.gameScr.mainChar.clazz, qs.isBuff);
                     } else {

@@ -253,7 +253,9 @@ public class ChupTrongGame {
             // 0.9.7: cửa sổ cũ (WindowInfoScr / ShopNew) -> màn NRO ở máy cảm ứng
             "xem_trang_bi", "xem_trang_bi_the", "xem_do_thu", "shop_su_kien", "shop_su_kien_the", "tui_do_lay_ra_the",
             "cua_hang_nguyen_lieu", "cua_hang_nguyen_lieu_the", "kho_do", "kho_do_the", "luyen_do", "luyen_do_dat", "kham",
-            "hop_thanh"};
+            "hop_thanh",
+            // 0.9.14: thẻ vật phẩm dạng thuốc theo bảng máy chủ (-104 kiểu 9) - Sáo gọi Tauros / nguyên liệu sự kiện
+            "tui_sao_goi", "tui_nguyen_lieu_su_kien"};
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
@@ -819,6 +821,29 @@ public class ChupTrongGame {
             game.pokemon.ManNhanVat.mo(0);
             dat(nv, "o", 7);   // găng: không... (có 1) -> dùng Ruy băng? chọn ô Huy hiệu 2 (trống)
             dat(nv, "o", 6);
+        } else if ("tui_sao_goi".equals(ten) || "tui_nguyen_lieu_su_kien".equals(ten)) {
+            // gói -104 kiểu 9 thật qua MessageHandler -> DungDo -> MoTaVatPham
+            try {
+                java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+                java.io.DataOutputStream o = new java.io.DataOutputStream(bo);
+                o.writeByte(game.pokemon.MoTaVatPham.KIEU);
+                o.writeUTF("64\tVật phẩm gọi thú cưỡi\tDùng để nhận thú cưỡi Tauros vĩnh viễn (vào Ô thú, cấp 1).\t1\t\n"
+                        + "103\tNguyên liệu sự kiện\tLá vàng: nguyên liệu sự kiện.\t0\tKhông dùng trực tiếp từ túi: đổi ở NPC sự kiện khi sự kiện mở.");
+                java.lang.reflect.Constructor<network.Message> k0 = network.Message.class.getDeclaredConstructor(byte.class, byte[].class);
+                k0.setAccessible(true);
+                game.pokemon.DungDo.nhan(k0.newInstance(Byte.valueOf((byte) -104), bo.toByteArray()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            game.model.MainChar mc0 = game.render.Canvas.gameScr.mainChar;
+            if (mc0.potions.length < 162) {
+                int[] moi = new int[162];
+                System.arraycopy(mc0.potions, 0, moi, 0, mc0.potions.length);
+                mc0.potions = moi;
+            }
+            mc0.potions[64] = 1;
+            mc0.potions[103] = 3;
+            game.pokemon.TheVatPham.mo(new Integer("tui_sao_goi".equals(ten) ? 64 : 103), game.pokemon.TheVatPham.TUI, false, null);
         } else if ("nv_chi_tiet".equals(ten)) {
             game.pokemon.ManNhanVat.mo(0);
             dat(nv, "o", 1);
@@ -1557,6 +1582,16 @@ public class ChupTrongGame {
         }
         if ("the_phan_thuong".equals(ten)) {
             kiem(game.pokemon.TheVatPham.dangMo() && coVung("dong") && !coVung("tvp-"), nhan + " cham o phan thuong = the vat pham chi xem (chi X)");
+        }
+        if ("tui_sao_goi".equals(ten)) {
+            kiem(game.pokemon.TheVatPham.dangMo() && coChu("Vật phẩm gọi thú cưỡi"), nhan + " sao goi: loai 'Vat pham goi thu cuoi'");
+            kiem(coChu("nhận thú cưỡi Tauros vĩnh viễn"), nhan + " sao goi: mo ta that");
+            kiem(!coChu("Bình thuốc") && !coChu("Hồi HP"), nhan + " sao goi: khong con 'Binh thuoc / Hoi HP'");
+            kiem(coVung("tvp-dung") && coChu("Sử dụng"), nhan + " sao goi: nut Su dung");
+        }
+        if ("tui_nguyen_lieu_su_kien".equals(ten)) {
+            kiem(game.pokemon.TheVatPham.dangMo() && coChu("Nguyên liệu sự kiện") && !coChu("Hồi HP"), nhan + " nguyen lieu: loai dung, khong chu HP");
+            kiem(coChu("Không dùng được") && coChu("đổi ở NPC sự kiện"), nhan + " nguyen lieu: nut xam + ly do");
         }
         kiemCuaSoCu(ten, nhan);
         if ("nv_chi_tiet".equals(ten)) {

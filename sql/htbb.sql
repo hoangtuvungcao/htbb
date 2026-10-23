@@ -30536,3 +30536,77 @@ INSERT IGNORE INTO `nap_cua_hang` (`ma`,`ten`,`nhom`,`trao`,`gia_luong`,`han_nga
 INSERT IGNORE INTO `cau_hinh` (`khoa`, `gia_tri`, `sua_boi`, `sua_luc`) VALUES
 ('dang_ky.toi_da_gio', '6', 'sql-opentest', NOW()),
 ('dang_ky.toi_da_ngay', '30', 'sql-opentest', NOW());
+-- >>> sua_mo_ta_vat_pham.sql
+-- ==================================================================================
+--  RA SOAT VAT PHAM 0.9.14 (them 23/10/2026). Chay lai bao nhieu lan cung duoc (chi UPDATE theo khoa chinh).
+--
+--  Loi chu nhan 0.9.13: mua "Sao goi Tauros" (data_shop 45 -> potions[64]) - Hanh trang hien "Binh thuoc / Hoi HP",
+--  bam Su dung khong duoc. Phan may chu (real.ThuCuoiTuTui, com.htbb.pokemon.MoTaVatPham, DungVatPham.dungThuoc)
+--  khong can SQL. Khoi nay chi sua DU LIEU hien thi / ban:
+--   1. Ten trung nhau: hoa mai / dao / hong (data_potion 50..61, data_shop 31..42) cung ten "Hoa mai"/"Hoa hong" du la
+--      bo 1-2 / 9 / 39 / 99 bong (MapNhapText nhoa[]) -> ten ghi so bong.
+--   2. Kieu long (data_shop 18..30 -> potions 37..49; 154..164 doi headStyle ngay khi mua): nhan vat ve bang Pokemon
+--      (game.model.Char.paint -> PokeBody) nen kieu long KHONG hien - ngung ban (sell = 0), ten 154..164 ghi so kieu.
+--      Nguoi da mua: binh kieu long van trong tui (the 0.9.14 noi ro), luong da tru cho 154..164 xem bao cao (SQL dem).
+--   3. Mo ta shop ghi ro thoi gian / hieu ung that (Ve gio vang 24 gio thuc, khong cong don...), ten shop khop ten
+--      trong tui (Keo tiem nang / Keo ky nang / The chiem Gym).
+--   Sao goi thu cuoi da mua (potions[64..68,86]) KHONG can chuyen: may chu 0.9.14 cho bam Su dung -> thu cuoi.
+-- ==================================================================================
+UPDATE `data_potion` SET `name`='Hoa mai (2 bông)' WHERE `id`=50;
+UPDATE `data_potion` SET `name`='Bó 9 hoa mai' WHERE `id`=51;
+UPDATE `data_potion` SET `name`='Bó 39 hoa mai' WHERE `id`=52;
+UPDATE `data_potion` SET `name`='Bó 99 hoa mai' WHERE `id`=53;
+UPDATE `data_potion` SET `name`='Hoa đào (1 bông)' WHERE `id`=54;
+UPDATE `data_potion` SET `name`='Bó 9 hoa đào' WHERE `id`=55;
+UPDATE `data_potion` SET `name`='Bó 39 hoa đào' WHERE `id`=56;
+UPDATE `data_potion` SET `name`='Bó 99 hoa đào' WHERE `id`=57;
+UPDATE `data_potion` SET `name`='Hoa hồng (1 bông)' WHERE `id`=58;
+UPDATE `data_potion` SET `name`='Bó 9 hoa hồng' WHERE `id`=59;
+UPDATE `data_potion` SET `name`='Bó 39 hoa hồng' WHERE `id`=60;
+UPDATE `data_potion` SET `name`='Bó 99 hoa hồng' WHERE `id`=61;
+UPDATE `data_potion` SET `name`='Kẹo tiềm năng' WHERE `id`=25;
+UPDATE `data_potion` SET `name`='Kẹo kỹ năng' WHERE `id`=26;
+UPDATE `data_shop` SET `name`='Hoa mai (2 bông)', `decript`='Tặng 2 bông hoa mai cho người chơi khác: vào Hành trang, bấm Sử dụng rồi nhập tên.' WHERE `id`=31;
+UPDATE `data_shop` SET `name`='Bó 9 hoa mai', `decript`='Tặng bó 9 hoa mai cho người chơi khác: vào Hành trang, bấm Sử dụng rồi nhập tên.' WHERE `id`=32;
+UPDATE `data_shop` SET `name`='Bó 39 hoa mai', `decript`='Tặng bó 39 hoa mai cho người chơi khác (cả máy chủ thấy lời chúc).' WHERE `id`=33;
+UPDATE `data_shop` SET `name`='Bó 99 hoa mai', `decript`='Tặng bó 99 hoa mai cho người chơi khác (cả máy chủ thấy lời chúc).' WHERE `id`=34;
+UPDATE `data_shop` SET `name`='Hoa đào (1 bông)', `decript`='Tặng 1 bông hoa đào cho người chơi khác: vào Hành trang, bấm Sử dụng rồi nhập tên.' WHERE `id`=35;
+UPDATE `data_shop` SET `name`='Bó 9 hoa đào', `decript`='Tặng bó 9 hoa đào cho người chơi khác: vào Hành trang, bấm Sử dụng rồi nhập tên.' WHERE `id`=36;
+UPDATE `data_shop` SET `name`='Bó 39 hoa đào', `decript`='Tặng bó 39 hoa đào cho người chơi khác (cả máy chủ thấy lời chúc).' WHERE `id`=37;
+UPDATE `data_shop` SET `name`='Bó 99 hoa đào', `decript`='Tặng bó 99 hoa đào cho người chơi khác (cả máy chủ thấy lời chúc).' WHERE `id`=38;
+UPDATE `data_shop` SET `name`='Hoa hồng (1 bông)', `decript`='Tặng 1 bông hoa hồng cho người chơi khác: vào Hành trang, bấm Sử dụng rồi nhập tên.' WHERE `id`=39;
+UPDATE `data_shop` SET `name`='Bó 9 hoa hồng', `decript`='Tặng bó 9 hoa hồng cho người chơi khác: vào Hành trang, bấm Sử dụng rồi nhập tên.' WHERE `id`=40;
+UPDATE `data_shop` SET `name`='Bó 39 hoa hồng', `decript`='Tặng bó 39 hoa hồng cho người chơi khác (cả máy chủ thấy lời chúc).' WHERE `id`=41;
+UPDATE `data_shop` SET `name`='Bó 99 hoa hồng', `decript`='Tặng bó 99 hoa hồng cho người chơi khác (cả máy chủ thấy lời chúc).' WHERE `id`=42;
+UPDATE `data_shop` SET `sell`=0 WHERE `id` BETWEEN 18 AND 30;
+UPDATE `data_shop` SET `sell`=0 WHERE `id` BETWEEN 154 AND 164;
+UPDATE `data_shop` SET `name`=CONCAT('Kiểu lông nữ số ', `value`, '\n - Đổi kiểu lông ngay khi mua (ngừng bán)') WHERE `id` BETWEEN 154 AND 160;
+UPDATE `data_shop` SET `name`=CONCAT('Kiểu lông nam số ', `value`, '\n - Đổi kiểu lông ngay khi mua (ngừng bán)') WHERE `id` BETWEEN 161 AND 164;
+UPDATE `data_shop` SET `decript`='Tăng 100% kinh nghiệm đánh Pokémon hoang dã trong 24 giờ thực tính từ lúc dùng (kể cả lúc offline), không áp dụng trong phó bản. Dùng vé giờ vàng khác sẽ thay vé đang chạy, không cộng dồn.' WHERE `id`=0;
+UPDATE `data_shop` SET `decript`='Tăng 50% kinh nghiệm đánh Pokémon hoang dã trong 24 giờ thực tính từ lúc dùng (kể cả lúc offline), không áp dụng trong phó bản. Dùng vé giờ vàng khác sẽ thay vé đang chạy, không cộng dồn.' WHERE `id`=1;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 1.500 HP.' WHERE `id`=2;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 3.000 HP.' WHERE `id`=3;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 2.500 PP.' WHERE `id`=4;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 3.500 PP.' WHERE `id`=5;
+UPDATE `data_shop` SET `decript`='Trả lại toàn bộ điểm tiềm năng đã cộng để cộng lại từ đầu.' WHERE `id`=6;
+UPDATE `data_shop` SET `decript`='Trả lại toàn bộ điểm kỹ năng đã cộng để cộng lại từ đầu.' WHERE `id`=7;
+UPDATE `data_shop` SET `decript`='Bay tức thời tới chỗ một Pokémon đang bị truy nã trong vùng của mình.' WHERE `id`=8;
+UPDATE `data_shop` SET `decript`='Cưỡi Ponyta ngay: chạy nhanh hơn, +700 HP và +700 PP tối đa khi đang cưỡi, đến lúc xuống thú.' WHERE `id`=11;
+UPDATE `data_shop` SET `name`='Thẻ chiếm Gym', `decript`='Thẻ xác nhận khi đăng ký chiếm Gym.' WHERE `id`=14;
+UPDATE `data_shop` SET `decript`='Cưỡi Ponyta lửa ngay: chạy nhanh hơn, +1.000 HP, +1.000 PP tối đa và +3 điểm mọi tiềm năng khi đang cưỡi, đến lúc xuống thú.' WHERE `id`=15;
+UPDATE `data_shop` SET `decript`='Dùng trong Hành trang để nhận thú cưỡi Tauros vĩnh viễn (vào Ô thú). Ô thú đầy thì chưa dùng được, không mất sáo.' WHERE `id`=45;
+UPDATE `data_shop` SET `decript`='Dùng trong Hành trang để nhận thú cưỡi Arcanine vĩnh viễn (vào Ô thú). Ô thú đầy thì chưa dùng được, không mất sáo.' WHERE `id`=46;
+UPDATE `data_shop` SET `decript`='Dùng trong Hành trang để nhận thú cưỡi Mightyena vĩnh viễn (vào Ô thú). Ô thú đầy thì chưa dùng được, không mất sáo.' WHERE `id`=47;
+UPDATE `data_shop` SET `decript`='Dùng trong Hành trang để nhận thú cưỡi Pidgeot vĩnh viễn (vào Ô thú). Ô thú đầy thì chưa dùng được, không mất sáo.' WHERE `id`=48;
+UPDATE `data_shop` SET `decript`='Dùng trong Hành trang để nhận thú cưỡi Rapidash vĩnh viễn (vào Ô thú). Ô thú đầy thì chưa dùng được, không mất sáo.' WHERE `id`=49;
+UPDATE `data_shop` SET `decript`='Nhân đôi tấn công, phòng thủ, chính xác, chí mạng, né trong 60 giây.' WHERE `id`=65;
+UPDATE `data_shop` SET `decript`='Vào khu mỏ đào nguyên liệu (cần cấp 20, dùng ở làng hoặc bản đồ luyện quái).' WHERE `id`=72;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 7.000 HP.' WHERE `id`=74;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 15.000 HP.' WHERE `id`=75;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 7.000 PP.' WHERE `id`=76;
+UPDATE `data_shop` SET `decript`='200 bình, mỗi bình hồi 15.000 PP.' WHERE `id`=77;
+UPDATE `data_shop` SET `decript`='10 loa: mỗi loa gửi một dòng thông báo (50 ký tự) tới cả máy chủ.' WHERE `id`=81;
+UPDATE `data_shop` SET `decript`='Tăng 150% tấn công, phòng thủ, chính xác, chí mạng, né trong 30 giây.' WHERE `id`=104;
+UPDATE `data_shop` SET `name`='Bình tăng tốc bạc', `decript`='Giảm 20% thời gian chín của trái bạc (dùng khi chăm cây ở vườn).' WHERE `id`=108;
+UPDATE `data_shop` SET `name`='Bình tăng tốc vàng', `decript`='Giảm 20% thời gian chín của trái vàng (dùng khi chăm cây ở vườn).' WHERE `id`=109;
+UPDATE `data_shop` SET `name`='Vé giờ vàng 100% (khoá)\n - Tăng 100% kinh nghiệm đánh Pokémon hoang dã trong 60 phút chơi (chỉ đếm lúc online). Dùng vé khác sẽ thay vé đang chạy.' WHERE `id`=126;

@@ -1315,6 +1315,7 @@ class MapChat {
                                             } else if (msgChat.startsWith("loadpotion")) {
                                                 if (player.isAdmin || TeamServer.isServerLocal()) {
                                                     Map.potionTemplates2 = Database.instance.loadPotionTemplate();
+                                                    real.cmd.LoginHandler.dongBoTenThuoc(Map.potionTemplates2);
                                                     player.sendMessage(MessageCreator.createServerAlertMessage("Đã load potion", ""));
                                                 }
                                             } else if (msgChat.startsWith("getchar")) {

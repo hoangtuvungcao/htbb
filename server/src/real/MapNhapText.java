@@ -1337,9 +1337,7 @@ class MapNhapText {
                         String[] chuc = new String[]{"giáng sinh anh lành", "giáng sinh vui vẻ", "merry xmas", "và gia đình giáng sinh thật hạnh phúc"};
                         String info = player.charname.toUpperCase()
                                 + " tặng "
-                                + nhoa[player.idPotionUsed - 50]
-                                + " "
-                                + LoginHandler.PORTION_NAME[player.idPotionUsed]
+                                + LoginHandler.PORTION_NAME[player.idPotionUsed] // 0.9.14: ten da ghi so bong ("Bó 9 hoa mai")
                                 + " cho "
                                 + p.charname.toUpperCase();
                         info = info + " Chúc " + p.charname.toUpperCase() + " năm mới " + chuc[Map.r.nextInt(4)].toLowerCase();

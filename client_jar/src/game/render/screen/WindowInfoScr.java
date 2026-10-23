@@ -4612,7 +4612,7 @@ public class WindowInfoScr extends Screen {
                 }
             }));
         }
-        if (potionType < 14 || potionType >= 21) {
+        if (game.pokemon.MoTaVatPham.ganONhanh(potionType)) {   // 0.9.14: chỉ bình HP / PP (trước: mọi thứ trừ khăn PK)
             menuItems.addElement(new Command("Cho vào phím tắt", new IAction() {
                 @Override
                 public void perform() {

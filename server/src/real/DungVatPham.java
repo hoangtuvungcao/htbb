@@ -759,6 +759,24 @@ public final class DungVatPham {
             loi(p, chan);
             return;
         }
+        // 0.9.14: sao goi / trung thu cuoi -> thu cuoi vinh vien (truoc: "Khong the su dung", chi NPC ap trung doi duoc)
+        if (ThuCuoiTuTui.la(t)) {
+            if (p.userTrade != null && p.userTrade.size() > 0) {
+                loi(p, "Đang giao dịch: xong giao dịch rồi hãy dùng " + ten + ".");
+                ThuCuoiTuTui.guiTui(p);
+                return;
+            }
+            ThuCuoiTuTui.tao(p, t, "tui");
+            return;
+        }
+        // 0.9.14: vat pham khong dung tu tui (nguyen lieu, ve dung o NPC, do giu trong tui...): bao ly do that, KHONG tru.
+        // Truoc: vai id roi vao nhanh default cua doUsePotion - bi tru mat ma khong co tac dung.
+        if (!com.htbb.pokemon.MoTaVatPham.dungDuoc(t)) {
+            final String ly = com.htbb.pokemon.MoTaVatPham.lyDo(t);
+            loi(p, ten + ": " + (ly.isEmpty() ? "không dùng trực tiếp từ túi." : ly));
+            ThuCuoiTuTui.guiTui(p); // client cu tru truoc 1 o tui cua no: gui lai so that
+            return;
+        }
         final Phien ph = chup(p);
         ph.thuoc = t;
         ph.ten = ten;

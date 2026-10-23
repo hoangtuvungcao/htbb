@@ -4567,147 +4567,28 @@ class MapDoMenu {
                             if (QuanLyThuGame.chanNhan(player, "npc ap trung thu cuoi")) {
                                 return; // o thu day: khong tru trung
                             }
-                            Animal anima = null;
-                            switch (idOptionMenu) {
-                                case 0:
-                                    if (player.potions[64] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[64]--;
-                                    anima.name = "Machamp";
-                                    anima.idImg = 2;
-                                    break;
-                                case 1:
-                                    if (player.potions[65] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[65]--;
-                                    anima.name = "Arcanine";
-                                    anima.idImg = 1;
-                                    break;
-                                case 2:
-                                    if (player.potions[66] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[66]--;
-                                    anima.name = "Sói xám";
-                                    anima.idImg = 3;
-                                    break;
-                                case 3:
-                                    if (player.potions[67] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[67]--;
-                                    anima.name = "Pidgeot";
-                                    anima.idImg = 4;
-                                    break;
-                                case 4:
-                                    if (player.potions[68] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[68]--;
-                                    anima.name = "Rapidash";
-                                    anima.idImg = 0;
-                                    break;
-                                case 5:
-                                    if (player.potions[86] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[86]--;
-                                    anima.name = "Moltres";
-                                    anima.idImg = 5;
-                                    break;
-                                case 6:
-                                    if (player.potions[70] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[70]--;
-                                    anima.name = "Articuno";
-                                    anima.idImg = 8;
-                                    break;
-                                case 7:
-                                    if (player.potions[74] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[74]--;
-                                    anima.name = "Spectrier";
-                                    anima.idImg = Animal.NGUA_XUONG;
-                                    break;
-                                case 8:
-                                    if (player.potions[72] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[72]--;
-                                    anima.name = "Piloswine";
-                                    anima.idImg = Animal.HEO;
-                                    break;
-                                case 9:
-                                    if (player.potions[115] <= 0) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    anima = new Animal();
-                                    player.potions[115]--;
-                                    anima.name = "Suicune";
-                                    anima.idImg = Animal.LAN;
-                                    break;
-                                case 10:
-                                    // Rong bang: trung la VAT PHAM 887 trong hanh trang, khong phai
-                                    // potion nhu 10 truong hop tren, nen tu ap roi return luon.
-                                    Item trungRongBang = getTrungRongBang(player);
-                                    if (trungRongBang == null) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
-                                        return;
-                                    }
-
-                                    map.doApTrungRongBang(player, trungRongBang);
+                            if (idOptionMenu == 10) {
+                                // Rong bang: trung la VAT PHAM 887 trong hanh trang, khong phai potion.
+                                Item trungRongBang = getTrungRongBang(player);
+                                if (trungRongBang == null) {
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
                                     return;
-                            }
+                                }
 
-                            if (anima != null) {
-                                anima.createAtt();
-                                anima.level = 1;
-                                anima.place = 0;
-                                anima.ownerId = player.charDBID;
-                                anima.id = player.getIDItem();
-                                player.animal.add(anima);
-                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
-                                Database.instance.saveAnimal(anima);
-                                Database.instance
-                                        .saveOrtherLog(
-                                                "tob_log_other_animal", player.charname, "Tao " + anima.name + " | " + anima.getAttribute() + "_" + player.getLuong(), "crt"
-                                        );
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã tạo được thú cưỡi " + anima.name, ""));
+                                map.doApTrungRongBang(player, trungRongBang);
+                                return;
                             }
+                            // 0.9.14: sao goi / trung dang potion -> cung duong voi bam Su dung trong tui (ThuCuoiTuTui):
+                            // kiem O thu, tru 1, thu cap 1 vinh vien, ten Pokemon (truoc: "Machamp" cho Sao goi Tauros).
+                            final int thuoc = ThuCuoiTuTui.thuocMenu(idOptionMenu);
+                            if (thuoc < 0) {
+                                return;
+                            }
+                            if (player.potions[thuoc] <= 0) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng thú cưỡi", ""));
+                                return;
+                            }
+                            ThuCuoiTuTui.tao(player, thuoc, "npc ap trung");
                         }
                     } else if (idOptionMenu != 0) {
                         switch (idOptionMenu) {
@@ -4820,7 +4701,7 @@ class MapDoMenu {
                         }
                     } else {
                         String[] menu = new String[]{
-                            "Machamp", "Arcanine", "Sói xám", "Pidgeot", "Rapidash",
+                            "Tauros", "Arcanine", "Mightyena", "Pidgeot", "Rapidash",
                             "Moltres", "Articuno", "Spectrier", "Piloswine", "Suicune",
                             "Dragonite"
                         };

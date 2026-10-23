@@ -2546,6 +2546,7 @@ public class Map implements Runnable {
         Map.allWedding = Database.instance.loadWedding();
         com.htbb.pokemon.KetDoi.nap(); // nhom trung cho Le ket doi (sql/sua_ket_doi.sql)
         Map.potionTemplates2 = Database.instance.loadPotionTemplate();
+        LoginHandler.dongBoTenThuoc(Map.potionTemplates2); // 0.9.14: ten trong thong bao nhan qua = ten trong tui
         kiemTraSoDongPotion();
        loadShop();
         Map.loadGemTemplate();

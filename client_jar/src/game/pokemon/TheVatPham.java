@@ -166,7 +166,8 @@ public final class TheVatPham extends Dialog {
             return (t == null ? "Vật phẩm" : t.name) + (it.plusTemplate > 0 ? " +" + it.plusTemplate : "");
         }
         if (o instanceof Integer) {
-            return ManCuaHang.tenThuoc(((Integer) o).intValue());
+            String t = MoTaVatPham.tenGon(ManCuaHang.tenThuoc(((Integer) o).intValue()));   // 0.9.14: bỏ mô tả cũ dính trong tên
+            return t == null || t.length() == 0 ? ManCuaHang.tenThuoc(((Integer) o).intValue()) : t;
         }
         if (o instanceof GemTemplate) {
             GemTemp t = gem(o);
@@ -195,7 +196,7 @@ public final class TheVatPham extends Dialog {
             return l == null ? "Vật phẩm" : l;
         }
         if (o instanceof Integer) {
-            return "Bình thuốc";
+            return MoTaVatPham.loai(((Integer) o).intValue());   // 0.9.14: trước "Bình thuốc" cho MỌI vật phẩm dạng thuốc
         }
         if (o instanceof GemTemplate) {
             return LuoiTui.laDacBiet(o) ? "Vật phẩm đặc biệt" : "Nguyên liệu";
@@ -245,9 +246,8 @@ public final class TheVatPham extends Dialog {
             return "Giao cho NPC nhiệm vụ khi đủ số lượng.";
         }
         if (o instanceof Integer) {
-            int l = ((Integer) o).intValue();
-            boolean pp = l >= 4 && l <= 6 || l == 23 || l == 24 || l == 95 || l == 96;
-            return pp ? "Hồi PP cho Pokémon. Gán vào nút thuốc PP ở HUD để dùng nhanh." : "Hồi HP cho Pokémon. Gán vào nút thuốc HP ở HUD để dùng nhanh.";
+            // 0.9.14: mô tả thật từ máy chủ; trước: chữ "Hồi HP..." cho mọi thứ không phải bình PP (Sáo gọi Tauros...)
+            return MoTaVatPham.moTa(((Integer) o).intValue());
         }
         return null;
     }
@@ -332,7 +332,7 @@ public final class TheVatPham extends Dialog {
     boolean dungDuoc() {
         Object o = this.mon;
         if (o instanceof Integer) {
-            return true;
+            return MoTaVatPham.dungDuoc(((Integer) o).intValue());
         }
         if (o instanceof GemTemplate) {
             if (LuoiTui.laDacBiet(o)) {
@@ -865,6 +865,13 @@ public final class TheVatPham extends Dialog {
                     }
                 };
                 ten[n++] = "tvp-dung";
+            } else if (this.mon instanceof Integer) {
+                // 0.9.14: vật phẩm dạng thuốc không dùng từ túi (nguyên liệu, vé dùng ở NPC...): nút xám + lý do thật
+                chu[n] = "Không dùng được";
+                kieu[n] = Bang.TAT;
+                viec[n] = null;
+                ten[n++] = "tvp-dung";
+                lyDo = MoTaVatPham.lyDo(((Integer) this.mon).intValue());
             }
             int kb = kieuBo();
             if (kb >= 0) {

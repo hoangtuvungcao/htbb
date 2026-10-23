@@ -480,6 +480,13 @@ public class doBuySpecialItem {
                         var10000[105] += item.value;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else if (item.id == 148) {
+                        // 0.9.14: ngoai su kien (Trung Thu 2016 / Halloween 2016 / He 2017 / Tet 2017 / World Cup 2017)
+                        // nhanh nay TRU LUONG ma khong giao gi - tu choi TRUOC khi tru.
+                        if (!(Char.isSuKienTrungThul2016() || Char.isSuKienHaloween2016() || Char.isSuKienHe2017()
+                                || Char.isSuKienTet2017() || Char.isSuKienWordcup2017())) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này chỉ bán trong sự kiện. Không bị trừ lượng.", ""));
+                            return;
+                        }
                         if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
@@ -506,6 +513,11 @@ public class doBuySpecialItem {
 
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else if (item.id == 149) {
+                        // 0.9.14: ngoai su kien He 2017 / World Cup 2017 nhanh nay tru xu ma khong giao gi.
+                        if (!(Char.isSuKienHe2017() || Char.isSuKienWordcup2017())) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này chỉ bán trong sự kiện. Không bị trừ xu.", ""));
+                            return;
+                        }
                         if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "shop cá nhân")) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;

@@ -59,8 +59,8 @@ public final class TrangChieu {
             int kieu = ((m >> 9) & 7) - 1;
             int gt = (m >> 1) & 255;
             boolean buff = (m & 1) != 0;
-            if (kieu == QuickSlot.TYPE_POTION) {
-                t[i].setIsPotion(gt);
+            if (kieu == QuickSlot.TYPE_POTION && MoTaVatPham.ganONhanh(gt)) {
+                t[i].setIsPotion(gt);   // 0.9.14: chỉ bình HP / PP (sáo gọi thú, vé... không gán ô nhanh)
             } else if (kieu == QuickSlot.TYPE_SKILL || kieu == 0) {
                 t[i].setIsSkill(gt, lop, buff);
             } else {

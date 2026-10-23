@@ -93,7 +93,7 @@ public final class ExpLauDai {
 
     /**
      * Buff EXP cong don (%), CHUA kep (CapDoLauDai kep +100%): pet, canh, mat na, cai trang,
-     * ruou, nguoi tuyet, vo chong, ve x2 (1 -> +50, 2.. -> +100), phao hoa, su pham (+20%
+     * ruou, nguoi tuyet, vo chong, ve x2 (1 -> +50, 2 -> +100, 3 = ve 150% -> +150), phao hoa, su pham (+20%
      * khi tro chung doi voi thay).
      */
     static int buffPhanTram(final Char c, final List<Char> doi) {
@@ -131,6 +131,8 @@ public final class ExpLauDai {
             final int x2 = c.getX2();
             if (x2 == 1) {
                 b += 50;
+            } else if (x2 == 3) {
+                b += 150; // 0.9.14: "Ve gio vang tang 150%" (potion 81, x25Exp) - truoc chi +100 nhu ve 100%
             } else if (x2 >= 2) {
                 b += 100;
             }
