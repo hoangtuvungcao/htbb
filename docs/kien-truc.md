@@ -74,7 +74,7 @@ ghi rõ khác. Server và bộ kiểm thử server chạy với thư mục làm 
 | `client_pc/` | PC Java SE (AWT/Java2D), cũng chép mã `client_jar` qua [port-j2me.py](../client_pc/port-j2me.py) |
 | `client_pc_ios/` | Client Unity (PC Windows, iOS). Mã C# ở `Assets/Scripts/Assembly-CSharp`, viết riêng (song song với bản jar) |
 | `web/` | Website + trang quản trị Nuxt 4 (Node 22). Đây là website duy nhất; web PHP cũ đã bỏ hẳn |
-| `sql/` | Seed, migration, file SQL sinh ra; `sql/htbb_day_du.sql` là CSDL đầy đủ ([sql/README.md](../sql/README.md)) |
+| `sql/` | Seed, migration, file SQL sinh ra; `sql/htbb.sql` là CSDL đầy đủ ([sql/README.md](../sql/README.md)) |
 | `du_lieu/` | Bảng dữ liệu thiết kế (CSV), ảnh xem trước bản đồ, báo cáo sinh ra |
 | `tools/` | Công cụ sinh dữ liệu/tài nguyên (`tools/pokemon/`), cấu hình trung tâm (`tools/cauhinh/`), phát hành client (`tools/phat-hanh/`) |
 | `vps/` | Unit systemd, nginx, MariaDB, script deploy/sao lưu/giám sát ([vps/README.md](../vps/README.md)) |
@@ -292,9 +292,9 @@ che mật khẩu khỏi stdout. Web đọc thông số CSDL từ `server.ini` v�
 
 | Nhóm | Ví dụ | Ai ghi | Ghi chú |
 |---|---|---|---|
-| `data_*` template gốc | `data_item`, `data_monster`, `data_potion`, `data_shop`, `data_quest`, `data_attribute` | Trang quản trị / SQL (`sql/htbb_day_du.sql`) | Server nạp **một lần lúc khởi động** (`Database.startSaveChar` → `Map.loadAllTemplate`). Sửa xong phải khởi động lại |
+| `data_*` template gốc | `data_item`, `data_monster`, `data_potion`, `data_shop`, `data_quest`, `data_attribute` | Trang quản trị / SQL (`sql/htbb.sql`) | Server nạp **một lần lúc khởi động** (`Database.startSaveChar` → `Map.loadAllTemplate`). Sửa xong phải khởi động lại |
 | `data_*` nội dung mới | `data_noi_dung_*`, `data_*_lau_dai`, `data_hst_*`, `data_nhiem_vu_*`, `data_su_kien_nam` | Trang quản trị / SQL | Bảng "staging" cho nội dung dài hạn, hệ sinh thái, nhiệm vụ. Một số là nguồn duy nhất máy chủ nạp lúc khởi động (mục 4.4) |
-| `data_loai*` loài đầy đủ | `data_loai` (1.025 loài), `data_loai_tien_hoa`, `data_chieu`, `data_loai_chieu`, `data_loai_vung`, `data_loai_sprite`, `data_loai_khu_vuc_map` (+ `data_nhom_trung*` của ket-doi, `data_bat_loai` / `data_bat_chi_so_loai` của bat-trade) | `sql/nang_cap.sql` (khối `them_loai_day_du.sql`) sinh bởi `tools/pokemon/loai/sinh_loai.py` (PokeAPI ghim commit) | Server nạp lúc cần và nạp lại mỗi 5 phút ([LoaiQuaiGame.java](../server/src/real/LoaiQuaiGame.java)); web `/pokedex` đọc thẳng. Mở đợt loài = bật `data_loai.bat` + thêm `data_loai_vung` |
+| `data_loai*` loài đầy đủ | `data_loai` (1.025 loài), `data_loai_tien_hoa`, `data_chieu`, `data_loai_chieu`, `data_loai_vung`, `data_loai_sprite`, `data_loai_khu_vuc_map` (+ `data_nhom_trung*` của ket-doi, `data_bat_loai` / `data_bat_chi_so_loai` của bat-trade) | `sql/htbb.sql` (khối `them_loai_day_du.sql`) sinh bởi `tools/pokemon/loai/sinh_loai.py` (PokeAPI ghim commit) | Server nạp lúc cần và nạp lại mỗi 5 phút ([LoaiQuaiGame.java](../server/src/real/LoaiQuaiGame.java)); web `/pokedex` đọc thẳng. Mở đợt loài = bật `data_loai.bat` + thêm `data_loai_vung` |
 | `tob_*` dữ liệu người chơi | `tob_char` (cột `pInfo`, `equip`/`inven`/`bag` dạng chuỗi, `dex`, `shiny`), `tob_clan`, `tob_animal`, `tob_pet`, `tob_market`, `tob_friendlist`, `tob_pokedex*`, `tob_char_lau_dai`, `tob_hst_*` | Game server | Ghi đè bằng bản trong RAM khi lưu, nên **web không được ghi thẳng** vào nhân vật đang chơi (mục 5.1) |
 | Bật/tắt sự kiện | `tob_su_kien` | Web `/admin/sukien` | Game đọc lúc khởi động (`real.SuKien`) và theo lịch (`real.LichSuKien`) |
 | Cấu hình | `cau_hinh`, `cau_hinh_*`, `nap_cau_hinh` | Web, game | Mục 6 |
@@ -313,21 +313,21 @@ chơi, vì câu lưu nhân vật ghi các cột mới.
 ### 4.3 Dựng CSDL
 
 CSDL là **nguồn duy nhất** của dữ liệu game: sửa trên trang quản trị (hoặc SQL tay), không có bộ sinh. Repo giữ bản chụp
-[`sql/htbb_day_du.sql`](../sql/README.md).
+[`sql/htbb.sql`](../sql/README.md).
 
-- Máy mới: `mysql < sql/htbb_day_du.sql` tạo cả `account` lẫn `htbb_db` (mọi bảng, dữ liệu thiết kế / cấu hình, tài
+- Máy mới: `mysql < sql/htbb.sql` tạo cả `account` lẫn `htbb_db` (mọi bảng, dữ liệu thiết kế / cấu hình, tài
   khoản `admin`; bảng người chơi rỗng).
-- CSDL đang chạy: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — sao lưu rồi nạp [`sql/nang_cap.sql`](../sql/nang_cap.sql)
+- CSDL đang chạy: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — sao lưu rồi nạp [`sql/htbb.sql`](../sql/htbb.sql)
   (viết tay, chạy lại được, không đụng dữ liệu người chơi) trước khi deploy jar mới (mục 4.4).
-- Đưa chỉnh sửa trên CSDL về repo: `sudo bash /opt/htbb/vps/xuat_csdl_day_du.sh /tmp/htbb_day_du.sql` (mysqldump schema
-  mọi bảng + dữ liệu bảng thiết kế), chép thành `sql/htbb_day_du.sql`. Thêm bảng / cột thì thêm lệnh tương ứng vào
-  `nang_cap.sql`.
+- Đưa chỉnh sửa trên CSDL về repo: `sudo bash /opt/htbb/vps/xuat_csdl_day_du.sh /tmp/htbb.sql` (mysqldump schema
+  mọi bảng + dữ liệu bảng thiết kế), chép thành `sql/htbb.sql`. Thêm bảng / cột thì thêm lệnh tương ứng vào
+  `htbb.sql`.
 - Bộ sinh và tệp SQL lẻ cũ đã dùng lần cuối rồi chuyển vào `tools/luu_tru_sinh_du_lieu/` (chỉ tra lịch sử).
 
 ### 4.4 Dữ liệu thiết kế đọc từ SQL (nguồn duy nhất)
 
 Từ P1 (19/10/2026) các bảng dưới đây là **nguồn duy nhất**: máy chủ nạp chúng lúc khởi động, không còn bản chép trong
-Java; dữ liệu của chúng nằm trong `sql/htbb_day_du.sql` và `sql/nang_cap.sql` (cùng từng dòng, `KiemDuLieuSql` kiểm).
+Java; dữ liệu của chúng nằm trong `sql/htbb.sql` và `sql/htbb.sql` (cùng từng dòng, `KiemDuLieuSql` kiểm).
 
 | Bảng | Nạp vào (Java) | Thay bản chép cũ | Quan trọng |
 |---|---|---|---|
@@ -346,14 +346,14 @@ Java; dữ liệu của chúng nằm trong `sql/htbb_day_du.sql` và `sql/nang_c
 - Thứ tự: danh mục cấu hình nạp trong `CauHinhTrungTam.khoiTao` (bước 5, mục 9.1), các bảng còn lại ngay sau
   `kiemTraCSDL` (bước 7), **trước** `SuKien.nap`, `ChuyenDoiLauDai` (đổi EXP nhân vật theo bảng cấp) và `startSaveChar`.
 - Hỏng: bảng **quan trọng** thiếu / rỗng / thiếu cột / sai hình dạng → in `THIEU DU LIEU SQL QUAN TRONG - DUNG SERVER`
-  kèm bảng, lý do và cách sửa (`mysql htbb_db < sql/nang_cap.sql`), thoát mã 1 (systemd báo `failed`). Chạy
+  kèm bảng, lý do và cách sửa (`mysql -u root < sql/htbb.sql`), thoát mã 1 (systemd báo `failed`). Chạy
   tiếp với bảng EXP = 0 sẽ đổi sai EXP nhân vật, tệ hơn không chạy. Bảng phụ thiếu chỉ in `[DU LIEU SQL] CANH BAO`
   (tắt gợi ý điểm câu, giftcode không phát được trang bị). Không bao giờ gán nửa vời: một bảng đọc và kiểm xong toàn bộ
   mới thay vào trường Java.
 - Nạp lại: danh mục cấu hình tự nạp lại mỗi 60 giây (chu kỳ đầy đủ của `CauHinhTrungTam`, lỗi thì giữ danh mục đang
   chạy). Bảng số liệu (`data_*`) vẫn như mọi template `data_*` khác: đổi xong khởi động lại máy chủ (`napSoLieu` thay
   nguyên khối nên gọi lại được nếu sau này cần lệnh nạp nóng).
-- Test và công cụ không có CSDL nạp cùng bảng từ `sql/htbb_day_du.sql` ([`DocDumpSql`](../server/src/com/htbb/dulieu/DocDumpSql.java):
+- Test và công cụ không có CSDL nạp cùng bảng từ `sql/htbb.sql` ([`DocDumpSql`](../server/src/com/htbb/dulieu/DocDumpSql.java):
   `Kiem.main` trước mọi nhóm, `tools/pokemon/MoPhongKinhTe.java`). [`KiemDuLieuSql`](../server/test/KiemDuLieuSql.java)
   ghim vân tay SHA-256 của bản chép Java cũ (tính ngay trước khi xoá), đòi tệp sinh, dump đầy đủ và migration cùng
   dòng, và kiểm các đường hỏng.
@@ -463,7 +463,7 @@ thiếu / trống → một dòng `[du-lieu-sql]` rồi dùng JSON đóng gói l
 trị, bảng cấp cẩm nang), `data_noi_dung_trang_bi` (trang bị giftcode), `data_kinh_te_lau_dai`, `data_nang_cap_lau_dai`,
 `data_su_kien_nam`, `data_noi_dung_*` (cẩm nang, qua `/api/cam-nang/du-lieu` + `useCamNang()`), `cau_hinh_danh_muc` +
 `cau_hinh_nhom` (danh mục cấu hình trung tâm). Biến đổi: `web/shared/utils/duLieuSqlThuan.ts`;
-`web/tests/du-lieu-sql.test.ts` đòi SQL (`sql/htbb_day_du.sql`) == JSON.
+`web/tests/du-lieu-sql.test.ts` đòi SQL (`sql/htbb.sql`) == JSON.
 
 ---
 
@@ -475,7 +475,7 @@ Danh sách khoá và ý nghĩa: [cau-hinh.md](cau-hinh.md). Mục này chỉ nó
 
 | Phần | Tệp |
 |---|---|
-| Danh mục khoá (nguồn duy nhất) | bảng `cau_hinh_danh_muc` + `cau_hinh_nhom` trong CSDL (`sql/htbb_day_du.sql`) |
+| Danh mục khoá (nguồn duy nhất) | bảng `cau_hinh_danh_muc` + `cau_hinh_nhom` trong CSDL (`sql/htbb.sql`) |
 | Nạp danh mục | máy chủ: [DanhMucSql.java](../server/src/com/htbb/cauhinh/DanhMucSql.java) (mục 4.4); web: `danhMucTuSqlTT` trong [cauHinhTrungTam.ts](../web/shared/utils/cauHinhTrungTam.ts), dự phòng tĩnh [cauHinhTrungTam.gen.ts](../web/shared/utils/cauHinhTrungTam.gen.ts) |
 | Dịch vụ máy chủ | [CauHinhTrungTam.java](../server/src/com/htbb/cauhinh/CauHinhTrungTam.java) (+ `TinhCauHinh`, `KiemGiaTri`, `ApDungMacDinh`, `CongTac`, `ThongBaoKhoiDong`) |
 | Lớp cũ còn dùng | [server/CauHinh.java](../server/src/server/CauHinh.java): bảng setting trong game, hằng `K_*`; nạp lại uỷ quyền cho dịch vụ trung tâm |
@@ -483,7 +483,7 @@ Danh sách khoá và ý nghĩa: [cau-hinh.md](cau-hinh.md). Mục này chỉ nó
 | Ví dụ kiểm dùng chung Java ↔ web | [tools/cauhinh/vi_du_kiem.tsv](../tools/cauhinh/vi_du_kiem.tsv) |
 
 Sửa danh mục: sửa dòng trong `cau_hinh_danh_muc` / `cau_hinh_nhom` (SQL), khởi động lại máy chủ, xuất lại
-`sql/htbb_day_du.sql` và chép các dòng mới vào khối tương ứng của `sql/nang_cap.sql`. Cột `lop` (`chinh` / `co_dinh` /
+`sql/htbb.sql` và chép các dòng mới vào khối tương ứng của `sql/htbb.sql`. Cột `lop` (`chinh` / `co_dinh` /
 `luon_bat`) quyết định khoá hiện trên trang hay bị ẩn; máy chủ từ chối lưu khoá ẩn. Mỗi khoá có kiểu (`co`, `so`, `chon`, `chuoi`, `ds_*`, `ngay`,
 `ngay_gio`, `nhip`), khoảng/lựa chọn, `apDung` (`ngay` hoặc `khoi_dong_lai`), bảng chứa (`cau_hinh`, `nap_cau_hinh`, `env`)
 và nơi dùng (`server`, `web`, `ca_hai`).
@@ -517,7 +517,7 @@ và nơi dùng (`server`, `web`, `ca_hai`).
 | `cau_hinh_ap_dung` | Máy chủ (mỗi lần áp dụng + nhịp 30 giây) | Phiên bản đã áp dụng, giờ, lỗi, khoá chờ khởi động lại |
 | `cau_hinh_hieu_luc` | Máy chủ | Giá trị đang chạy từng khoá và nguồn (`db`/`ini`/`mac_dinh`/`giu_cu`) |
 | `cau_hinh_khoi_dong_lai` | Web đặt `cho`/`huy`, máy chủ chuyển trạng thái | Khởi động lại an toàn |
-| `cau_hinh_danh_muc`, `cau_hinh_nhom` | SQL (`sql/htbb_day_du.sql`, `sql/nang_cap.sql`) | Danh mục khoá — máy chủ nạp lúc khởi động |
+| `cau_hinh_danh_muc`, `cau_hinh_nhom` | SQL (`sql/htbb.sql`, `sql/htbb.sql`) | Danh mục khoá — máy chủ nạp lúc khởi động |
 
 ### 6.4 Khởi động lại an toàn
 
@@ -533,10 +533,10 @@ lưu toàn bộ rồi thoát → systemd bật lại → lần khởi động m�
 ```
 trang quản trị web / SQL tay ──▶ MariaDB (account + htbb_db) ──▶ game server (nạp lúc khởi động, mục 4.4) + web (duLieuSql.ts)
                                     │  ▲
-     vps/xuat_csdl_day_du.sh ◀──────┘  └────── sql/htbb_day_du.sql (máy mới) / sql/nang_cap.sql (CSDL đang chạy)
+     vps/xuat_csdl_day_du.sh ◀──────┘  └────── sql/htbb.sql (máy mới) / sql/htbb.sql (CSDL đang chạy)
             │
             ▼
-     sql/htbb_day_du.sql (commit) ──▶ test server/test/Kiem* + web/tests đọc thẳng tệp này
+     sql/htbb.sql (commit) ──▶ test server/test/Kiem* + web/tests đọc thẳng tệp này
 
 du_lieu/*.csv (sprite, tile, bản đồ, NPC) ──▶ server/map/*, server/cMap/*, tài nguyên client ──▶ client_jar/res/* ──▶ APK, PC
 ```
@@ -553,7 +553,7 @@ du_lieu/*.csv (sprite, tile, bản đồ, NPC) ──▶ server/map/*, server/cM
 ### 7.2 Dữ liệu cho web
 
 `web/shared/data/*.json` và `web/shared/utils/*.gen.ts` là bản **dự phòng tĩnh** đóng gói lúc build (bộ sinh đã lưu
-trữ). Lúc chạy, các mục có bảng SQL lấy từ CSDL (mục 5.6); test web đối chiếu các tệp tĩnh với `sql/htbb_day_du.sql`.
+trữ). Lúc chạy, các mục có bảng SQL lấy từ CSDL (mục 5.6); test web đối chiếu các tệp tĩnh với `sql/htbb.sql`.
 `npm run sinh-anim-khoi-dau` (`scripts/sinh-anim-khoi-dau.mjs`) vẫn dựng `shared/data/sprite-anim.json` từ sprite client.
 
 ---
@@ -783,7 +783,7 @@ Kết quả: cỡ 170–190 luồng khi server rỗng, cộng 2 luồng cho mỗ
   định hành vi "đúng".
 - Không cần CSDL, không cần mạng. Chạy với thư mục làm việc `server/`, test đọc tệp trong repo qua `../docs`, `../sql`,
   `../vps`, `../tools`, `../web/shared/data`… Dữ liệu thiết kế máy chủ đọc từ SQL (mục 4.4) được `Kiem.main` nạp từ
-  `../sql/htbb_day_du.sql` trước mọi nhóm, nên test chạy trên đúng số liệu máy chủ nạp từ CSDL.
+  `../sql/htbb.sql` trước mọi nhóm, nên test chạy trên đúng số liệu máy chủ nạp từ CSDL.
 - Ngoài logic thuần, nhiều test kiểm **tính nhất quán của repo**: tệp sinh ra khớp bộ sinh (cấu hình trung tâm, quy tắc
   đăng ký, giftcode), bản đồ Pokémon đủ và đi được (`KiemMapPokemon`, `KiemVungHoenn`), mojibake trong mã nguồn
   (`KiemBangMaNguon`), mọi liên kết trong tài liệu `.md` trỏ tới tệp có thật (`KiemLienKetTaiLieu`), mẫu cấu hình VPS

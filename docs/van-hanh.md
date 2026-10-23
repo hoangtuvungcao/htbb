@@ -83,7 +83,7 @@ sống" nghĩa là cron chưa cài:
 * * * * * /opt/htbb/vps/dieu-khien-server.sh >>/opt/htbb/logs/dieu-khien-server.log 2>&1
 ```
 
-(Bảng có sẵn trong `sql/htbb_day_du.sql`; CSDL cũ tạo bằng `sql/nang_cap.sql`.) Nút "Khởi động lại ngay" trên trang này bật cờ
+(Bảng có sẵn trong `sql/htbb.sql`; CSDL cũ tạo bằng `sql/htbb.sql`.) Nút "Khởi động lại ngay" trên trang này bật cờ
 `5h_systems.restart` — server lưu dữ liệu và thoát trong ≤ 5 giây **không báo trước**; muốn báo người chơi thì
 dùng mục 4.4.
 
@@ -436,7 +436,7 @@ của các dịp lễ lấy từ lịch năm (`/api/su-kien`).
 ### 7.2 World Cup (bình chọn) — đã bỏ
 
 Sự kiện bình chọn Messi/Ronaldo của game kiếm hiệp cũ đã bỏ khỏi danh mục (19/10/2026, cùng Sinh nhật Ngudẻ, Đua top
-Hoa Lư): ba khoá `sv.worldCup*` không còn bật gì. `sql/nang_cap.sql` (mục 4) xoá các dòng cũ khỏi `tob_su_kien`.
+Hoa Lư): ba khoá `sv.worldCup*` không còn bật gì. `sql/htbb.sql` (mục 4) xoá các dòng cũ khỏi `tob_su_kien`.
 
 ### 7.3 Chiếm Gym
 
@@ -543,7 +543,7 @@ phần sau. Không phát lượng lớn qua bảng cũ: lượng là `int`, trà
 
 1. **Giấy phép** đã có bằng văn bản → mới làm tiếp. Luật sư rà `/dieu-khoan-thanh-toan`, `/chinh-sach-hoan-tien`, và
    sửa `/dieu-khoan` (đang ghi "không nạp tiền").
-2. **CSDL**: bảng nạp đã có chưa? Nếu chưa: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` (sao lưu rồi nạp `sql/nang_cap.sql`, chạy lại an toàn).
+2. **CSDL**: bảng nạp đã có chưa? Nếu chưa: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` (sao lưu rồi nạp `sql/htbb.sql`, chạy lại an toàn).
    Sao lưu trước.
 3. **SePay** (my.sepay.vn — tên menu có thể đổi theo phiên bản):
    - Đăng ký, liên kết **đúng** tài khoản ngân hàng nhận tiền (số tài khoản → `HTBB_NAP_ACCOUNT_NO`, tên chủ tài khoản
@@ -648,7 +648,7 @@ dùng vé / xu được nữa.
 
   Cả 9 bước (42 → 126 ô) tốn 1.493.000 xu. Bước đầu bằng khoảng 2 giờ thu nhập ở cấp 20, bước cuối khoảng 6 giờ ở cấp 70.
 
-Cài đặt: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` ([sql/nang_cap.sql](../sql/nang_cap.sql) phần 11, khối `them_ve_mo_rong.sql`, chạy lại được). Khối này thêm cột và món cửa
+Cài đặt: `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` ([sql/htbb.sql](../sql/htbb.sql) phần 11, khối `them_ve_mo_rong.sql`, chạy lại được). Khối này thêm cột và món cửa
 hàng. Cột cũng được máy chủ tự thêm lúc khởi động. Hằng số nằm ở `server/src/com/htbb/pokemon/MoRongHanhTrang.java`,
 giao thức (`-107`, phần nối thêm của `-105`) ở `server/src/real/MoRongTuiGame.java`. Tra cứu:
 `SELECT charname, o_mo_rong FROM tob_char WHERE o_mo_rong > 0;` và nhật ký `tob_other_log` loại `morong`.

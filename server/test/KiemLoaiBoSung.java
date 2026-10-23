@@ -19,7 +19,7 @@ import java.util.Random;
 /**
  * Bo sung 1.025 loai (loai-bo-sung): toan ven du lieu / tai nguyen va tuong thich goi.
  *
- *   1. Du lieu (sql/htbb_day_du.sql, khoi them_loai_bo_sung.sql): MOI 1.025 loai co mo ta tieng Viet (1-2 cau, <= 255,
+ *   1. Du lieu (sql/htbb.sql, khoi them_loai_bo_sung.sql): MOI 1.025 loai co mo ta tieng Viet (1-2 cau, <= 255,
  *      co dau, khong tu cam ChuPokemon.TU_CAM); moi loai DA MO co goi sprite (server/map/loai/NNNN.goi) co khoi neo phu
  *      kien (.dl doc duoc bang dinh dang jar, co 'N'); data_loai_sprite.shiny = 1 <=> co tep NNNNs.goi dung dau (dex,
  *      shiny = 1) + ghi cong shiny; data_loai_sprite.neo = 1 cho moi loai co goi; loai khong co sprite (trang_thai 0)
@@ -59,7 +59,7 @@ public final class KiemLoaiBoSung {
     static void duLieu() throws Exception {
         final BangSql l = DayDu.bang("data_loai");
         final BangSql s = DayDu.bang("data_loai_sprite");
-        Kiem.dung("htbb_day_du co data_loai + data_loai_sprite", l != null && s != null);
+        Kiem.dung("htbb.sql co data_loai + data_loai_sprite", l != null && s != null);
         if (l == null || s == null) {
             return;
         }

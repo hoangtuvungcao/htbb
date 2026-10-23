@@ -304,7 +304,7 @@ public final class KiemNgamTay {
         final String t = doc("src/real/TuDongGame.java");
         Kiem.dung("TuDongGame: bat tu dong hoi BanHuongGame truoc", t.contains("BanHuongGame.lyDoCamTuDong(p); // 0.9.8"));
         Kiem.dung("TuDongGame: dang chay ma vao PvP thi dung", t.contains("} else if (BanHuongGame.lyDoCamTuDong(p) != null) {"));
-        final String sql = DayDu.phanNangCap("them_ngam_tay_pvp.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("them_ngam_tay_pvp.sql"); // tep cu gop vao sql/htbb.sql phan 11
         Kiem.dung("sql/them_ngam_tay_pvp.sql: CREATE TABLE IF NOT EXISTS + INSERT IGNORE, khong DROP",
                 sql.contains("CREATE TABLE IF NOT EXISTS `data_chieu_ban`") && sql.contains("INSERT IGNORE") && !sql.toUpperCase().contains("DROP "));
         Kiem.bang("sql: 50 dong (5 lop x chieu 0..9)", Integer.valueOf(50), Integer.valueOf(sql.split("\n  \\(").length - 1));

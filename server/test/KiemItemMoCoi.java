@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Luat "cac item khong bi mo coi, deu su dung vao 1 viec nao do", kiem THANG tren CSDL day du sql/htbb_day_du.sql (nguon
+ * Luat "cac item khong bi mo coi, deu su dung vao 1 viec nao do", kiem THANG tren CSDL day du sql/htbb.sql (nguon
  * duy nhat; cong cu phan tich cu tools/luu_tru_sinh_du_lieu/pokemon/kiem_item_mo_coi.py + bao cao KIEM_ITEM.md da luu tru).
  * Cac bat bien: bang cua hang doc duoc bang dung bo doc cua server, khong ra tien te, moi id ton tai; moi tin vat co cho
  * doi; vat pham 1201..1259 co nguon; itemgift chuoi chinh du 6 gia tri; vat lieu sinh thai deu vao cong thuc; giftcode an
@@ -38,7 +38,7 @@ public final class KiemItemMoCoi {
     }
 
     public static void chay() {
-        Kiem.nhom("Item mo coi: moi vat pham co nguon + cong dung (kiem tren sql/htbb_day_du.sql)");
+        Kiem.nhom("Item mo coi: moi vat pham co nguon + cong dung (kiem tren sql/htbb.sql)");
         final Set<Integer> item = new HashSet<Integer>();
         for (final java.util.Map<String, String> r : DayDu.dong("data_item")) {
             item.add(Integer.valueOf(r.get("id")));

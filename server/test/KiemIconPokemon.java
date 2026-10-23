@@ -15,7 +15,7 @@ import com.htbb.pokemon.IconPokemon;
 /**
  * Kiem thu icon Pokemon (tools/pokemon/sinh_icon_pokemon.py -> map/icon_pokemon/, SQL, bang
  * IconPokemonBang). Moi icon nguoi choi nhin thay phai ra mot file PMD co that khi bat che do:
- *  - data_item.xstart cua CA 924 dong trong sql/htbb_day_du.sql (CSDL sau migration),
+ *  - data_item.xstart cua CA 924 dong trong sql/htbb.sql (CSDL sau migration),
  *  - o anh thuoc cua data_potion.idImage / data_shop.idImg (client cong 5500),
  *  - o anh ngoc cua moi GemTemplate (6500), icon thu cuoi/pet (7500), vat pham nhiem vu (8000),
  *    trai cay tob_fruit.id1/id2 + 13 (8200).
@@ -66,7 +66,7 @@ public final class KiemIconPokemon {
                     Integer.valueOf(Files.readAllLines(new File("../du_lieu/bang_icon.csv").toPath(), StandardCharsets.UTF_8).size() - 1));
 
             // CSDL day du sau migration.
-            final String db = doc("../sql/htbb_day_du.sql");
+            final String db = DayDu.sql();
             final List<List<String>> item = hang(db, "data_item");
             // Dai id 1001..1199 = noi dung moi (xem test/KiemNoiDung).
             int goc = 0;
@@ -76,7 +76,7 @@ public final class KiemIconPokemon {
                 if (id >= 1001 && id <= 1199) {
                     noiDung++;
                 } else if (id >= 1201 && id <= 1261 || id == com.htbb.pokemon.PhaKhoaLogic.ID_DA_PHA_KHOA) {
-                    // + Da pha khoa (khoi [khoa-khi-mac] cua sql/nang_cap.sql) va The dat ten Pokemon 1261 - vat pham moi
+                    // + Da pha khoa (khoi [khoa-khi-mac] cua sql/htbb.sql) va The dat ten Pokemon 1261 - vat pham moi
                     // Dai 1201..1260 = vat pham dung lau dai (tools/pokemon/sinh_vat_pham_lau_dai.py ->
                     // sql/pokemon_vat_pham_lau_dai.sql) + 1261 the dat ten Pokemon (sql/them_the_dat_ten_pet.sql),
                     // khong tinh vao bang goc.
@@ -87,7 +87,7 @@ public final class KiemIconPokemon {
                     goc++;
                 }
             }
-            Kiem.bang("htbb_day_du co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1261)", Integer.valueOf(924), Integer.valueOf(goc));
+            Kiem.bang("htbb.sql co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1261)", Integer.valueOf(924), Integer.valueOf(goc));
             Kiem.dung("dai noi dung 1001..1199 co trong CSDL (" + noiDung + " dong)", noiDung >= 60);
             final List<String> loiItem = new ArrayList<String>();
             for (final List<String> r : item) {

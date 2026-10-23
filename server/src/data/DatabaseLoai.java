@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Nap bang loai day du tu CSDL (sql/nang_cap.sql (khoi them_loai_day_du.sql)): data_loai (+ data_loai_sprite), data_loai_tien_hoa,
+ * Nap bang loai day du tu CSDL (sql/htbb.sql (khoi them_loai_day_du.sql)): data_loai (+ data_loai_sprite), data_loai_tien_hoa,
  * data_loai_vung, data_loai_khu_vuc_map. Thieu bang (CSDL chua chay tep SQL) -> tra null (noi goi giu bang cu / rong).
  */
 public final class DatabaseLoai {

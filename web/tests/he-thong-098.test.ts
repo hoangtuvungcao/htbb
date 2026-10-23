@@ -1,5 +1,5 @@
 /**
- * Số liệu trang cẩm nang 0.9.8 (shared/utils/heThong098.ts) == CSDL game (sql/htbb_day_du.sql): bảng data_* và giá trị
+ * Số liệu trang cẩm nang 0.9.8 (shared/utils/heThong098.ts) == CSDL game (sql/htbb.sql, phần A): bảng data_* và giá trị
  * mặc định của danh mục cấu hình. Đổi số trong game mà quên sửa trang -> test hỏng. Chạy: npm test.
  */
 import { test } from 'node:test'
@@ -7,6 +7,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { docBangSql } from '../shared/utils/sqlDump.ts'
+import { phanDayDu } from './htbbSql.ts'
 import {
   BAC_LOAI_BAT, BAT, BONG, CHAT, HOANG_DA, CHO_POKEMON, CHUYEN_DOI, DANH_HIEU, KET_DOI, NGAM_TAY, NGAY_CONG_DONG, PHO_BAN, TAN_THU,
   THOI_TIET, TRAO_DOI,
@@ -15,7 +16,7 @@ import { DS_CAM_NANG } from '../shared/utils/danhMucCamNang.ts'
 import { ANH_GAME, ANH_TAM } from '../shared/utils/anhGame.ts'
 
 const goc = (p: string) => fileURLToPath(new URL(p, import.meta.url))
-const SQL = readFileSync(goc('../../sql/htbb_day_du.sql'), 'utf8')
+const SQL = phanDayDu()
 const bang = (t: string) => docBangSql(SQL, t)
 const cauHinh = new Map(bang('cau_hinh_danh_muc').map(r => [String(r.khoa), String(r.mac_dinh)]))
 const ch = (k: string) => Number(cauHinh.get(k))

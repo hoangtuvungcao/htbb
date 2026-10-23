@@ -429,7 +429,7 @@ public final class DatabaseLauDai {
     }
 
     /**
-     * Chu huong dan tan thu (data_huong_dan_tan_thu, sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql)): ma -> {tieu_de, noi_dung}, theo
+     * Chu huong dan tan thu (data_huong_dan_tan_thu, sql/htbb.sql (khoi them_huong_dan_tan_thu.sql)): ma -> {tieu_de, noi_dung}, theo
      * thu_tu. Rong neu chua co bang (khi do HuongDanTanThuGame khong gui gi).
      */
     public static java.util.Map<String, String[]> napHuongDanTanThu() {

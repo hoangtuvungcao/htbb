@@ -760,7 +760,7 @@ public final class KenhChatGame {
         }
     }
 
-    /** tob_chat_chan (danh sach chan). Bang tu tao (sql/nang_cap.sql phan 11 cung vay). tob_chat_cho (hop thu offline) da bo. */
+    /** tob_chat_chan (danh sach chan). Bang tu tao (sql/htbb.sql phan 11 cung vay). tob_chat_cho (hop thu offline) da bo. */
     static final class KhoCsdl implements Kho {
         public void taoBang() {
             data.DatabaseLauDai.ghiCong("CREATE TABLE IF NOT EXISTS tob_chat_chan (id_char INT NOT NULL, ten_chan VARCHAR(45) NOT NULL,"

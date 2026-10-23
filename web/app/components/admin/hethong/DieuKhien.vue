@@ -152,7 +152,7 @@ function hoiRestart() {
       variant="subtle"
       icon="i-lucide-database"
       title="Bảng dieu_khien_server chưa có dòng id=1."
-      description="Chạy lại sql/nang_cap.sql để thêm dòng mặc định."
+      description="Chạy lại sql/htbb.sql để thêm dòng mặc định."
     />
 
     <template v-else-if="data && tt">

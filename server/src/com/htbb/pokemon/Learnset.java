@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * HOC CHIEU THEO LOAI (de xuat 1, spec thiet_ke_can_bang 4.1): moi loai Pokemon (so Pokedex) co bang chieu rieng
- * (data_learnset, NGUON DUY NHAT - sql/nang_cap.sql phan 11 / CSDL). Chieu = o chieu cua dong (so hieu client,
+ * (data_learnset, NGUON DUY NHAT - sql/htbb.sql phan 11 / CSDL). Chieu = o chieu cua dong (so hieu client,
  * icon, CharManager.SKILL_*). Hai nguon:
  * <ul>
  *   <li>{@link #NGUON_CAP}: tu hoc khi du cap (cap chieu 1, KHONG ton diem ky nang);</li>

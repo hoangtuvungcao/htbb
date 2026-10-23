@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  *   <li>Chuoi chinh (data_quest_moi mainsub 0): NPC cua buoc co tren ban do "Địa điểm" hoac o lang khoi dau hoac o noi ghi
  *       ro "NPC:|X (Y)|"; buoc noi chuyen / mang / giao "X ở Y" thi X co tren Y; tran Gym ghi "(đấu ở <Địa điểm>)".</li>
  * </ul>
- * Doc sql/htbb_day_du.sql (DayDu), server/cMap.
+ * Doc sql/htbb.sql (DayDu), server/cMap.
  */
 final class KiemDiaDiemNpc {
 

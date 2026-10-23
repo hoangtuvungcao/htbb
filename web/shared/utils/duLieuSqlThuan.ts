@@ -5,7 +5,7 @@
  * sinh_noi_dung.py). Lúc chạy, web đọc bảng qua server/utils/duLieuSql.ts (có cache) rồi gọi các hàm ở
  * đây; JSON trong shared/data/ chỉ còn là bản dự phòng lúc build (CSDL không có / bảng trống).
  *
- * tests/du-lieu-sql.test.ts chạy CHÍNH các hàm này trên dòng đọc từ sql/htbb_day_du.sql và so khớp
+ * tests/du-lieu-sql.test.ts chạy CHÍNH các hàm này trên dòng đọc từ sql/htbb.sql và so khớp
  * từng phần tử với JSON đóng gói — lệch một số là test hỏng.
  *
  * Quy ước: hàm nhận mảng dòng (thứ tự bất kỳ, tự sắp xếp) và trả null khi dữ liệu thiếu/lạ, để nơi gọi

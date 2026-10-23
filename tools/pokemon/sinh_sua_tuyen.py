@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sinh than khoi "-- >>> sua_tuyen_nhiem_vu.sql" cua sql/nang_cap.sql (nhanh sua-tuyen) tu CSDL dang chay + server/cMap + ma nguon bang cong.
+"""Sinh than khoi "-- >>> sua_tuyen_nhiem_vu.sql" cua sql/htbb.sql (nhanh sua-tuyen) tu CSDL dang chay + server/cMap + ma nguon bang cong.
 
 Chi DOC CSDL, in SQL ra stdout (idempotent). Hai khoi:
 
@@ -21,8 +21,8 @@ Chi DOC CSDL, in SQL ra stdout (idempotent). Hai khoi:
            gia tri luc sinh (CSDL khac thi khong ghi chu sai - server van sinh chu dung luc gui).
 
 Chay o goc repo:  MYSQL="mysql -h127.0.0.1 -P3401 -uroot" python3 -I tools/pokemon/sinh_sua_tuyen.py > /tmp/than.sql
-(CSDL = sql/htbb_day_du.sql + them_danh_hieu.sql + them_huong_dan_tan_thu.sql, CHUA chay sua_tuyen_nhiem_vu.sql)
-roi dan vao giua hai dong danh dau SINH TU DONG cua khoi sua_tuyen_nhiem_vu.sql trong sql/nang_cap.sql. Kiem: server/test/KiemSuaTuyen.
+(CSDL = sql/htbb.sql + them_danh_hieu.sql + them_huong_dan_tan_thu.sql, CHUA chay sua_tuyen_nhiem_vu.sql)
+roi dan vao giua hai dong danh dau SINH TU DONG cua khoi sua_tuyen_nhiem_vu.sql trong sql/htbb.sql. Kiem: server/test/KiemSuaTuyen.
 """
 import os
 import re

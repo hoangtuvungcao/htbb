@@ -38,7 +38,7 @@ public final class KiemNpcSprite {
     }
 
     private static void kiem() throws Exception {
-        final String sql = DayDu.phanNangCap("pokemon_npc_sprite.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("pokemon_npc_sprite.sql"); // tep cu gop vao sql/htbb.sql phan 11
         final Map<Integer, Integer> sqlType = new TreeMap<>();
         final Matcher mu = Pattern.compile("SET `dex`=(\\d+), `sprite`='pk:(\\d{4})' WHERE `type`=(\\d+);").matcher(sql);
         while (mu.find()) {

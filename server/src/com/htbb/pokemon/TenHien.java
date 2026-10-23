@@ -9,8 +9,8 @@ import java.util.Map;
 
 /**
  * TEN NGUOI CHOI THAY doc tu SQL (P6): ten NPC tinh (bang {@code data_npc}) va ten ban do (bang {@code data_map_ten}),
- * CSDL la NGUON (sua o web /admin/ten-hien); du lieu dau: phan 5 cua sql/nang_cap.sql = khoi cung ten trong
- * sql/htbb_day_du.sql (test/KiemTenHien kiem: co dau, khong tu cam, du moi NPC / ban do co trong game).
+ * CSDL la NGUON (sua o web /admin/ten-hien); du lieu dau: phan 5 cua sql/htbb.sql = khoi cung ten trong
+ * sql/htbb.sql (test/KiemTenHien kiem: co dau, khong tu cam, du moi NPC / ban do co trong game).
  * Khong con bang ten trong Java: thieu bang -> bao loi TO moi lan nap (server van chay, ten ban do giu ten goc cua
  * Map.namMap - chay vps/nang_cap_csdl.sh roi doi toi 30 giay).
  *
@@ -56,7 +56,7 @@ public final class TenHien {
         return tenNpc;
     }
 
-    /** Test / cong cu: dat bang tu ngoai (vd doc tu sql/htbb_day_du.sql). */
+    /** Test / cong cu: dat bang tu ngoai (vd doc tu sql/htbb.sql). */
     public static void datBang(final Map<Integer, String> map, final Map<Integer, String> npc) {
         tenMap = Collections.unmodifiableMap(new HashMap<Integer, String>(map));
         tenNpc = Collections.unmodifiableMap(new HashMap<Integer, String>(npc));
@@ -71,7 +71,7 @@ public final class TenHien {
             System.out.println("############################################################");
             System.out.println("[TEN HIEN] LOI: thieu / rong bang " + (m == null || m.isEmpty() ? BANG_MAP + " " : "")
                     + (n == null || n.isEmpty() ? BANG_NPC : "") + " -> ten ban do / NPC chua lay duoc tu SQL.");
-            System.out.println("[TEN HIEN] Chay: sudo bash /opt/htbb/vps/nang_cap_csdl.sh (nap sql/nang_cap.sql; server tu nap lai sau <= 30 giay).");
+            System.out.println("[TEN HIEN] Chay: sudo bash /opt/htbb/vps/nang_cap_csdl.sh (nap sql/htbb.sql; server tu nap lai sau <= 30 giay).");
             System.out.println("############################################################");
             daNapDuoc = false;
             return false;

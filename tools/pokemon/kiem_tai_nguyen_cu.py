@@ -17,7 +17,7 @@ P2 - kiem tai nguyen: khong con hinh cua may chu cu (KPAH / NQSH kiem hiep) va k
 2. THIEU. Moi id hinh duoc tham chieu phai co tep:
    - dex Pokemon trong du_lieu/bang_{quai,thu,npc,npc_su_kien,pet_cu}.csv + bang client (NPC, Npc_Server,
      AnimalMove) -> sprite Unity Resources/poke/<k>_dl.bytes va jar res/pk/<k>.dl;
-   - data_item.xstart (sql/htbb_day_du.sql, sau sql/pokemon_icon_vat_pham.sql) -> server/map/icon_pokemon/<n>.png
+   - data_item.xstart (sql/htbb.sql phan A, sau sql/pokemon_icon_vat_pham.sql) -> server/map/icon_pokemon/<n>.png
      (14000+) hoac server/map/icon/<id>.png;
    - mau pet (Map.petTemplate idImg) -> server/map/pet/<idImg>.png; id d_effect gui trong goi 26
      (MessageCreator.id_eff_pet_tool / id_eff_tool_ngu_long) -> server/map/d_effect/<id> + <id>.png;
@@ -242,7 +242,7 @@ def kiem_thieu(loi, ds):
             loi.append("thieu sprite %s (Unity poke/%s_dl.bytes + jar res/pk/%s.dl)" % (k, k, k))
     dem["dex"] = len(dex)
     # b) icon vat pham
-    sql = open(p("sql", "htbb_day_du.sql"), encoding="utf8").read()
+    sql = open(p("sql", "htbb.sql"), encoding="utf8").read().split("\n-- ######## B. NANG CAP")[0]  # phan A
     i = sql.find("INSERT INTO `data_item`")
     khoi = sql[i:sql.find(";\n", i)]
     xstart = {}

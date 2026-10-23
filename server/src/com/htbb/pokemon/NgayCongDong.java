@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 /**
  * NGAY CONG DONG hang thang (de xuat 8, chu game duyet 19/10/2026; kieu Pokemon GO Community Day). Lop THUAN -
- * test/KiemNgayCongDong. Ban noi game: NgayCongDongGame. Du lieu: data_ngay_cong_dong (sql/nang_cap.sql phan 11).
+ * test/KiemNgayCongDong. Ban noi game: NgayCongDongGame. Du lieu: data_ngay_cong_dong (sql/htbb.sql phan 11).
  *
  * <h3>Lich (tu dong theo lich nam, khong admin bat tay)</h3>
  * MOT ngay moi thang: Chu nhat cua "tuan cong dong" ISO (SuKienLauDai.LICH ma moi:congdong - tuan 3, 12, 19, 25, 31, 40,

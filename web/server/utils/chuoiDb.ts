@@ -2,7 +2,7 @@
  * Chữ người dùng gõ → cột utf8 (utf8mb3) của bảng game.
  *
  * Bảng gốc của game (tob_inbox, tob_giftcode, tob_char, team_user, nap_*, tv_*... trong
- * HTBB/sql/htbb_day_du.sql) là CHARSET=utf8 = utf8mb3: chỉ chứa ký tự tối đa 3 byte. Ký tự
+ * HTBB/sql/htbb.sql) là CHARSET=utf8 = utf8mb3: chỉ chứa ký tự tối đa 3 byte. Ký tự
  * 4 byte (emoji 😀, chữ Hán hiếm...) ghi vào đó thì MariaDB strict mode (mặc định từ 10.2.4)
  * báo lỗi 1366 "Incorrect string value" → API 500; MariaDB không strict thì tự thay bằng '?'.
  * NovaDB (SQLite) nhận hết nên máy dev không thấy lỗi. Hàm này làm đúng như chế độ không

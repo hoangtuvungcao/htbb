@@ -134,7 +134,7 @@ onMounted(taiTq)
       title="BẢN DEMO — không chuyển tiền. Số tài khoản chỉ để minh hoạ."
       :description="`HTBB_NAP_DEMO=1: /thanh-vien cho ${tq.demoChiAdmin ? 'tài khoản trong HTBB_ADMIN_ACCOUNTS' : 'mọi người'} bấm Mua và xem luồng thanh toán minh hoạ (hình QR giả). Không bán thật, không cấp Thành viên. Giả lập thanh toán: /admin/naptien › Đơn DEMO.`"
     />
-    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng thành viên" description="Chạy sql/nang_cap.sql trên htbb_db." />
+    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng thành viên" description="Chạy sql/htbb.sql trên htbb_db." />
     <UAlert v-if="tq?.cauHinh.banBat && !tq.ban.duoc" color="error" variant="solid" icon="i-lucide-shield-x" title="Đã bật bán nhưng CHƯA bán được (fail closed)" :description="tq.ban.lyDo.join(' · ')" />
     <UAlert v-if="tq && !tq.cauHinh.bat" color="info" variant="subtle" icon="i-lucide-flask-conical" title="Đang TẮT bắt buộc (giai đoạn thử nghiệm)" description="Không tính năng nào bị khoá. Bật khi mở game chính thức; server áp dụng sau ≤ 10 giây, không cần khởi động lại." />
 

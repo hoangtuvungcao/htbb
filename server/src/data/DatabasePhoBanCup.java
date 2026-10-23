@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * CSDL Pho ban Ham nguc + Cup PvP tuan (0.9.7). Bang du lieu (data_*) va bang ghi (tob_*) deu co trong
- * sql/nang_cap.sql phan 11 (them_pho_ban_cup.sql, idempotent); may chu tu tao bang tob_* neu thieu. Moi ham nuot loi (in ra): CSDL loi
+ * sql/htbb.sql phan 11 (them_pho_ban_cup.sql, idempotent); may chu tu tao bang tob_* neu thieu. Moi ham nuot loi (in ra): CSDL loi
  * thi pho ban / cup dung du lieu mac dinh trong PhoBanLogic / CupLogic, khong lam chet luong ban do.
  *
  * <ul>

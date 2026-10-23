@@ -1,6 +1,6 @@
 /**
  * Số liệu các hệ thống 0.9.8 cho trang cẩm nang (thu phục, trao đổi / chợ Pokémon, phó bản, cúp, ngắm tay, thời tiết,
- * ngày cộng đồng, danh hiệu, kênh chat, kết đôi, tân thủ). MỌI SỐ lấy từ CSDL game (sql/htbb_day_du.sql: bảng data_* và
+ * ngày cộng đồng, danh hiệu, kênh chat, kết đôi, tân thủ). MỌI SỐ lấy từ CSDL game (sql/htbb.sql: bảng data_* và
  * giá trị mặc định cau_hinh_danh_muc) hoặc hằng số máy chủ ghi trong ghi chú — tests/he-thong-098.test.ts đối chiếu với
  * tệp SQL, lệch là test hỏng (đổi số trong game thì sửa ở đây).
  */

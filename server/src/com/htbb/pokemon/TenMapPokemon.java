@@ -76,7 +76,7 @@ public final class TenMapPokemon {
     // ================================================================ ten khu (ban sao) cua ban do
 
     /*
-     * Ten ban do theo ID KHONG con o day: bang SQL data_map_ten (sql/htbb_day_du.sql, sua o web
+     * Ten ban do theo ID KHONG con o day: bang SQL data_map_ten (sql/htbb.sql, sua o web
      * /admin/ten-hien), doc boi com.htbb.pokemon.TenHien, ap vao Map boi real.TenBanDoMayChu.
      * Lop nay chi con quy tac dat ten khu (ban sao) va tu dien ten goc cho chu tu do (doi()).
      */

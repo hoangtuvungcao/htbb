@@ -2,7 +2,7 @@
 """BỘ SINH ĐỒ MỚI + TRANG PHỤC (0.9.8) - chạy lại được, không sửa tay các tệp ra.
 
 Nguồn: tools/do_trang_phuc/danh_muc.py (danh mục), hinh_trang_bi.py / hinh_trang_phuc.py (hình vẽ tay bằng lưới),
-tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_trang_bi.csv (món gốc mỗi ô x bậc), sql/htbb_day_du.sql (cột data_item của món gốc).
+tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_trang_bi.csv (món gốc mỗi ô x bậc), sql/htbb.sql phần A (cột data_item của món gốc).
 
 Ra:
   server/map/icon_do_moi/<n>.png          icon 16x16, máy chủ phục vụ ở id ảnh 15000+n (com.htbb.pokemon.IconDoMoi)
@@ -10,7 +10,7 @@ Ra:
   client_jar/res/pk/trang_phuc.bin        chỉ mục atlas + bộ mảnh của từng trang phục / skin / thẻ
   client_jar/res/pk/khung_hiem.png        khung độ hiếm 20x20 (6 bậc x 2 khung lấp lánh) cho ô vật phẩm
   du_lieu/do_moi_trang_bi.csv, du_lieu/do_moi_bo.csv, du_lieu/trang_phuc.csv
-  sql/nang_cap.sql khoi "-- >>> them_do_trang_phuc.sql"  idempotent (MariaDB 10.3, utf8)
+  sql/htbb.sql (phan B) khoi "-- >>> them_do_trang_phuc.sql"  idempotent (MariaDB 10.3, utf8)
   web/shared/data/danh-muc-do-trang-phuc.json + web/public/icon-do/<n>.png
   [--xem <thư mục>]                       ảnh xem trước (bộ sưu tập) phóng to
 
@@ -55,7 +55,8 @@ def chuyen(v):
 
 
 def doc_data_item():
-    s = open(os.path.join(GOC, "sql", "htbb_day_du.sql"), encoding="utf8").read()
+    s = open(os.path.join(GOC, "sql", "htbb.sql"), encoding="utf8").read()
+    s = s[:s.index("\n-- ######## B. NANG CAP")]  # phan A (CSDL day du)
     m = re.search(r"INSERT INTO `data_item` VALUES (.*?);\n", s, re.S)
     # chuỗi trong dump đã thoát nháy bằng \' ; tách theo bộ
     hang = tach_bo_dump(m.group(1))
@@ -389,7 +390,7 @@ def sinh_sql(ds_do, ds_tt, mon, icon_do_id, icon_tt_id):
       % len(ds_tt))
     w("--    (nap_cua_hang, chi HINH - cung ngan sach o voi mon mien phi), tob_trang_phuc (dong chi so / bo dem).\n")
     w("--    So huu dung chung nap_so_huu (Tu do trang tri), mon dang mac = dang_dung.\n")
-    w("-- Khoi nay nam trong sql/nang_cap.sql phan 11 (sinh.py ghi thang khoi). Chay lai duoc: chi ghi de cot cua chinh khoi nay.\n")
+    w("-- Khoi nay nam trong sql/htbb.sql phan B muc 11 (sinh.py ghi thang khoi). Chay lai duoc: chi ghi de cot cua chinh khoi nay.\n")
     w("-- ============================================================================================================\n")
     w("\n")
     # ---- bang ho
@@ -450,7 +451,7 @@ def sinh_sql(ds_do, ds_tt, mon, icon_do_id, icon_tt_id):
     w("\nON DUPLICATE KEY UPDATE `ma_ho`=VALUES(`ma_ho`),`type`=VALUES(`type`),`bac`=VALUES(`bac`),"
       "`id_goc`=VALUES(`id_goc`),`ten`=VALUES(`ten`),`icon`=VALUES(`icon`),`nguon`=VALUES(`nguon`);\n\n")
     # ---- data_item: ban sao mon goc
-    w("-- data_item: ban sao cot cua mon goc (htbb_day_du.sql) - doi id, name, namein, xstart (icon 15000+n).\n")
+    w("-- data_item: ban sao cot cua mon goc (phan A sql/htbb.sql) - doi id, name, namein, xstart (icon 15000+n).\n")
     rows = []
     for d in ds_do:
         g = list(mon[d["id_goc"]])
@@ -571,7 +572,7 @@ def main():
     xem = None
     if "--xem" in sys.argv:
         xem = sys.argv[sys.argv.index("--xem") + 1]
-    # dump day du da chua mon ho (sinh lan truoc, nang_cap.sql -> xuat lai): bo dai cua chinh tep nay
+    # dump day du da chua mon ho (sinh lan truoc, phan B -> xuat lai phan A): bo dai cua chinh tep nay
     mon = {k: v for k, v in doc_data_item().items() if not ID_ITEM_HE_DAU <= k <= ID_ITEM_HET}
     ds_do = danh_sach_do()
     for d in ds_do:
@@ -647,14 +648,14 @@ def main():
                         " ".join(str(m) for m in t["manh"]), t["nguon"], t["tham_so"], t["gia_luong"], t["mo_ta"]])
     # ---- SQL
     sql = sinh_sql(ds_do, ds_tt, mon, icon_do_id, icon_tt_id)
-    # mot tep SQL (sql/README.md): thay khoi "-- >>> them_do_trang_phuc.sql" cua nang_cap.sql toi khoi ke tiep / het tep
-    nc_p = os.path.join(GOC, "sql", "nang_cap.sql")
+    # mot tep SQL (sql/README.md): thay khoi "-- >>> them_do_trang_phuc.sql" cua sql/htbb.sql toi khoi ke tiep / het tep
+    nc_p = os.path.join(GOC, "sql", "htbb.sql")
     moc = "-- >>> them_do_trang_phuc.sql\n"
     with open(nc_p, encoding="utf8") as f:
         cu = f.read()
     a = cu.find("\n" + moc)
     if a < 0:
-        sys.exit("sql/nang_cap.sql thieu dong moc " + moc.strip())
+        sys.exit("sql/htbb.sql thieu dong moc " + moc.strip())
     b = cu.find("\n-- >>> ", a + 1)
     open(nc_p, "w", encoding="utf8", newline="\n").write(cu[:a + 1] + moc + sql + ("" if b < 0 else cu[b + 1:]))
     # ---- web JSON

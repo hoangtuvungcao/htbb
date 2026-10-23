@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * <li>cong: con dang theo, khoa 24 gio, nhip, tran ngay, cho trong hop, con doi giua chung, tu doi voi minh;</li>
  * <li>phi: bac hiem / sac mau / 3 sao / tran; tien hoa khi trao doi (Haunter -&gt; Gengar);</li>
  * <li>ca the: IV 0..31, sao, tinh cach, chi so theo cong thuc; chuyen doi: giu con IV cao, tran xu / luong, con nhan
- *     qua trao doi chi ra Keo; SQL nang_cap.sql (phan them_trade_pokemon.sql) + khoa cau hinh.</li>
+ *     qua trao doi chi ra Keo; SQL htbb.sql (phan them_trade_pokemon.sql) + khoa cau hinh.</li>
  * </ul>
  */
 public final class KiemTraoDoiPokemon {
@@ -377,13 +377,13 @@ public final class KiemTraoDoiPokemon {
     // ------------------------------------------------------------------ du lieu
 
     static void kiemDuLieu() {
-        final String sql = DayDu.phanNangCap("them_trade_pokemon.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
-        Kiem.dung("doc duoc phan them_trade_pokemon.sql cua sql/nang_cap.sql", !sql.isEmpty());
+        final String sql = DayDu.phanNangCap("them_trade_pokemon.sql"); // tep cu gop vao sql/htbb.sql phan 11
+        Kiem.dung("doc duoc phan them_trade_pokemon.sql cua sql/htbb.sql", !sql.isEmpty());
         Kiem.dung("idempotent: CREATE TABLE IF NOT EXISTS / ADD COLUMN IF NOT EXISTS", sql.contains("ADD COLUMN IF NOT EXISTS `tien_hoa_trao_doi`")
                 && sql.contains("CREATE TABLE IF NOT EXISTS `tob_log_trao_doi_pokemon`") && sql.contains("CREATE TABLE IF NOT EXISTS `data_bat_chi_so_loai`"));
         Kiem.dung("khong INSERT...SELECT...ON DUPLICATE KEY UPDATE col=col", !Pattern.compile("(?is)INSERT[^;]*SELECT[^;]*ON DUPLICATE KEY UPDATE")
                 .matcher(sql).find() && !Pattern.compile("`(\\w+)` = `\\1`").matcher(sql).find());
-        final String bat = DayDu.phanNangCap("them_bo_ngoc_che_tao_bat.sql"); // khoi cu trong sql/nang_cap.sql phan 11
+        final String bat = DayDu.phanNangCap("them_bo_ngoc_che_tao_bat.sql"); // khoi cu trong sql/htbb.sql phan 11
         final Matcher m = Pattern.compile("^\\((\\d+),'", Pattern.MULTILINE).matcher(bat);
         final java.util.Set<String> loai = new java.util.HashSet<String>();
         while (m.find()) {
@@ -423,7 +423,7 @@ public final class KiemTraoDoiPokemon {
                     dm.matches("(?s).*\"khoa\": \"" + k[0].replace(".", "\\.") + "\"[^}]*\"macDinh\": \"" + k[1] + "\".*"));
         }
         final String nc = DayDu.nangCap();
-        Kiem.dung("nang_cap.sql: khoi them_trade_pokemon SAU them_bo_ngoc_che_tao_bat (UPDATE bac hiem de len gia tri INSERT)",
+        Kiem.dung("htbb.sql: khoi them_trade_pokemon SAU them_bo_ngoc_che_tao_bat (UPDATE bac hiem de len gia tri INSERT)",
                 nc.indexOf("-- >>> them_bo_ngoc_che_tao_bat.sql") >= 0 && nc.indexOf("-- >>> them_trade_pokemon.sql") > nc.indexOf("-- >>> them_bo_ngoc_che_tao_bat.sql"));
     }
 }

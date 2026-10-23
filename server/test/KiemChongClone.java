@@ -274,9 +274,9 @@ public final class KiemChongClone {
         Kiem.bang("doc cau hinh trung tam = mac dinh logic (cung may)", CauHinh.macDinh().nvCungMayToiDa, c.nvCungMayToiDa);
         Kiem.sai("mac dinh: cam ban do khoa cho NPC", c.banNpcDoKhoa);
         final String sql = DayDu.nangCap();
-        Kiem.dung("htbb_day_du.sql co bang tob_log_chuyen_gia_tri (rong)", DayDu.coBang("tob_log_chuyen_gia_tri")
+        Kiem.dung("htbb.sql co bang tob_log_chuyen_gia_tri (rong)", DayDu.coBang("tob_log_chuyen_gia_tri")
                 && DayDu.soDong("tob_log_chuyen_gia_tri") <= 0);
-        Kiem.dung("sql/nang_cap.sql tao bang idempotent",
+        Kiem.dung("sql/htbb.sql tao bang idempotent",
                 sql.contains("CREATE TABLE IF NOT EXISTS tob_log_chuyen_gia_tri"));
         Kiem.dung("bang SQL khop ma Java (cot nghi, bi_chan)", sql.contains("bi_chan") && sql.contains("nghi TINYINT")
                 && data.DatabaseChongClone.SQL_TAO_BANG.contains("bi_chan"));

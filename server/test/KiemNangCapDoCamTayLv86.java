@@ -37,7 +37,7 @@ public final class KiemNangCapDoCamTayLv86 {
     private static final String F_MAP = "src/real/Map.java";
     private static final String F_CHETAO = "src/real/MapCheTao.java";
     private static final String F_REALCTRL = "src/real/RealController.java";
-    private static final String F_SQL = "../sql/htbb_day_du.sql";
+    private static final String F_SQL = "../sql/htbb.sql (phan A)";
 
     public static void chay() {
         Kiem.nhom("Nang cap vu khi lv81 -> lv86 (NPC Tho Ren Than Bi, npcType -8)");
@@ -45,7 +45,7 @@ public final class KiemNangCapDoCamTayLv86 {
         final String map = doc(F_MAP);
         final String cheTao = doc(F_CHETAO);
         final String realCtrl = doc(F_REALCTRL);
-        final String sql = doc(F_SQL);
+        final String sql = DayDu.sql();
         Kiem.dung("doc duoc " + F_MAP, !map.isEmpty());
         Kiem.dung("doc duoc " + F_CHETAO, !cheTao.isEmpty());
         Kiem.dung("doc duoc " + F_REALCTRL, !realCtrl.isEmpty());
@@ -163,7 +163,7 @@ public final class KiemNangCapDoCamTayLv86 {
                     thanChot.contains("bacTren != null"));
         }
 
-        // ---- 5. sql/htbb_day_du.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
+        // ---- 5. sql/htbb.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
         // idUpLevel tro DUNG toi id level-86 tuong ung, khong con -1 (mac dinh id+1 SAI). ----
         final String[][] chuoiNangCap = {{"412", "893"}, {"425", "894"}, {"438", "895"}, {"451", "896"}, {"464", "897"}};
         for (final String[] dong : chuoiNangCap) {

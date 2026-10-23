@@ -263,7 +263,7 @@ public final class KiemLenhWeb {
             Kiem.dung("web dung cung ten bang", php.contains("export const LENH_BANG = '" + bang + "'")
                     && php.contains("INSERT INTO " + bang + " ") && php.contains("FROM " + bang + " "));
         }
-        Kiem.dung("htbb_day_du.sql co cung ten bang", sql.contains("CREATE TABLE `" + bang + "`"));
+        Kiem.dung("htbb.sql co cung ten bang", sql.contains("CREATE TABLE `" + bang + "`"));
 
         final String[] cot = {"id", "loai", "char_id", "charname", "cap_do", "phan_nghin", "tham_so", "admin_user",
             "trang_thai", "ket_qua", "tao_luc", "xu_ly_luc"};
@@ -315,7 +315,7 @@ public final class KiemLenhWeb {
                     php.contains("CREATE TABLE IF NOT EXISTS \\`${LENH_BANG}\\`")
                     && php.contains("'`tham_so`    TEXT         NULL,'") && php.contains("'KEY `idx_trang_thai` (`trang_thai`)'"));
         }
-        Kiem.dung("sql/nang_cap.sql tao bang web_lenh_nhan_vat (CSDL dang chay)",
+        Kiem.dung("sql/htbb.sql tao bang web_lenh_nhan_vat (CSDL dang chay)",
                 DayDu.nangCap().contains("CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat`"));
     }
 

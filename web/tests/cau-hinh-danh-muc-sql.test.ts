@@ -1,6 +1,6 @@
 /**
  * Danh mục cấu hình trung tâm lúc chạy đọc từ CSDL (cau_hinh_danh_muc + cau_hinh_nhom — nguồn duy nhất, bản chụp
- * sql/htbb_day_du.sql) phải ra ĐÚNG bản tĩnh shared/utils/cauHinhTrungTam.gen.ts (dự phòng lúc build).
+ * sql/htbb.sql phần A) phải ra ĐÚNG bản tĩnh shared/utils/cauHinhTrungTam.gen.ts (dự phòng lúc build).
  * Không cần CSDL. Chạy: npm test.
  */
 import { test } from 'node:test'
@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url'
 import { docBangSql } from '../shared/utils/sqlDump.ts'
 import { DANH_MUC_TT, NHOM_TT } from '../shared/utils/cauHinhTrungTam.gen.ts'
 import { danhMucTT, danhMucTuSqlTT, datDanhMucTT, dsNhomTT, khoaTT, phienBanDanhMucTT } from '../shared/utils/cauHinhTrungTam.ts'
+import { phanDayDu } from './htbbSql.ts'
 
 const doc = (p: string) => readFileSync(fileURLToPath(new URL(p, import.meta.url)), 'utf8')
 
@@ -59,9 +60,9 @@ test('datDanhMucTT: thay danh mục đang dùng, null = về bản sinh', () => 
   assert.equal(dsNhomTT(), NHOM_TT)
 })
 
-const SQL_DAY_DU = doc('../../sql/htbb_day_du.sql')
+const SQL_DAY_DU = phanDayDu()
 
-test('sql/htbb_day_du.sql: cau_hinh_danh_muc + cau_hinh_nhom == cauHinhTrungTam.gen.ts', () => {
+test('sql/htbb.sql (phần A): cau_hinh_danh_muc + cau_hinh_nhom == cauHinhTrungTam.gen.ts', () => {
   assert.ok(/CREATE TABLE[^;]*`cau_hinh_nhom`/.test(SQL_DAY_DU), 'bản đầy đủ phải có bảng cau_hinh_nhom')
   const dm = danhMucTuSqlTT(docBangSql(SQL_DAY_DU, 'cau_hinh_danh_muc'), docBangSql(SQL_DAY_DU, 'cau_hinh_nhom'))
   assert.ok(dm, 'đọc được danh mục từ SQL')

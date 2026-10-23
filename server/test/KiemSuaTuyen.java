@@ -24,13 +24,13 @@ import real.KhuVucNhiemVuGame;
 import real.NewCharQuest;
 
 /**
- * SUA TUYEN (nhanh sua-tuyen, khoi sua_tuyen_nhiem_vu.sql cua sql/nang_cap.sql): ba loi kiem toan huong dan tan thu.
+ * SUA TUYEN (nhanh sua-tuyen, khoi sua_tuyen_nhiem_vu.sql cua sql/htbb.sql): ba loi kiem toan huong dan tan thu.
  *  1. Lang khoi dau theo vung: Kanto -> Pewter, Johto -> Blackthorn (truoc NGUOC), cong / diem xuat hien theo lang, nhan
  *     vat cu giu bang cu, NPC huong dan o ca ba lang.
  *  2. Buoc dia diem: chi xong khi dung trong vung dich (luat thuan + real.KhuVucNhiemVuGame voi nhan vat gia), moi vung
  *     dung ban do, o di duoc + toi duoc tu cong; ban do khong toi duoc thi tat (giu noi chuyen la xong) co ly do.
  *  3. Chu phan thuong: cot 1000, khong con dong bi cat, doan "Phần thưởng" = sinh tu dong thuong (ChuThuongNhiemVu).
- * Doc sql/htbb_day_du.sql + khoi them_huong_dan_tan_thu.sql / sua_tuyen_nhiem_vu.sql cua sql/nang_cap.sql, server/cMap, ma nguon. Bot dau-cuoi:
+ * Doc sql/htbb.sql + khoi them_huong_dan_tan_thu.sql / sua_tuyen_nhiem_vu.sql cua sql/htbb.sql, server/cMap, ma nguon. Bot dau-cuoi:
  * tools/pokemon/kiem_tai/KichBanSuaTuyen (st_*).
  */
 public final class KiemSuaTuyen {
@@ -44,8 +44,8 @@ public final class KiemSuaTuyen {
             lang();
             luatKhuVuc();
             gameKhuVuc();
-            final String du = doc("../sql/htbb_day_du.sql");
-            final String hd = DayDu.phanNangCap("them_huong_dan_tan_thu.sql"); // khoi cua sql/nang_cap.sql
+            final String du = DayDu.sql();
+            final String hd = DayDu.phanNangCap("them_huong_dan_tan_thu.sql"); // khoi cua sql/htbb.sql
             final String st = DayDu.phanNangCap("sua_tuyen_nhiem_vu.sql");
             duLieuKhuVuc(du, st);
             duLieuThuong(du, hd, st);
@@ -69,7 +69,7 @@ public final class KiemSuaTuyen {
         Kiem.bang("Hoenn (dong luc tao) -> Cianwood nhu cu", "[80, 1901]", Arrays.toString(dung[LangKhoiDauLuat.HOENN]));
         Kiem.bang("nhan vat cu giu bang goc (Kanto Blackthorn, Johto Pewter)", "[[70, 1701], [0, 301], [80, 1901]]", Arrays.deepToString(cu));
         // vung dia ly cua lang theo CSDL ten (data_map_ten)
-        final String tenDay = doc("../sql/htbb_day_du.sql"); // data_map_ten trong dump day du (mot tep SQL)
+        final String tenDay = DayDu.sql(); // data_map_ten trong dump day du (mot tep SQL)
         final String ten = tenDay.substring(tenDay.indexOf("INSERT INTO `data_map_ten`"));
         for (final int v : new int[]{LangKhoiDauLuat.KANTO, LangKhoiDauLuat.JOHTO}) {
             final int l = LangKhoiDauLuat.langCua(v, true);
@@ -145,7 +145,7 @@ public final class KiemSuaTuyen {
             Kiem.bang("NPC huong dan du o lang " + l, "", thieu.trim());
         }
         // chu huong dan khong gan voi mot lang cu the (dung o lang nao cung dung)
-        final String hd = DayDu.phanNangCap("them_huong_dan_tan_thu.sql"); // khoi cua sql/nang_cap.sql
+        final String hd = DayDu.phanNangCap("them_huong_dan_tan_thu.sql"); // khoi cua sql/htbb.sql
         final int a = hd.indexOf("INSERT INTO `data_quest_moi`");
         final String khoi = hd.substring(a, hd.indexOf("ON DUPLICATE KEY", a));
         Kiem.sai("10 buoc huong dan khong nhac ten lang Pewter / Blackthorn / Cianwood",

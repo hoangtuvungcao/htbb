@@ -14,6 +14,6 @@ public interface NguonDuLieu {
      */
     BangSql doc(String bang, String[] cot) throws Exception;
 
-    /** Mo ta ngan cho log ("CSDL htbb_db", "tep ../sql/htbb_day_du.sql"). */
+    /** Mo ta ngan cho log ("CSDL htbb_db", "tep ../sql/htbb.sql"). */
     String moTa();
 }

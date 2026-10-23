@@ -473,7 +473,7 @@ war
 wedding
 wph
 
-[khoa] sql/htbb_day_du.sql
+[khoa] sql/htbb.sql
 HTBB_NAP_BAT
 NAP_DA_CO_GIAY_PHEP
 bao_tri.bat
@@ -744,7 +744,7 @@ vong_quay.vip.luot_ngay_toi_da
 vong_quay.vip.phi_phan_tram
 vong_quay.vip.so_nguoi_toi_da
 
-[bang] sql/htbb_day_du.sql
+[bang] sql/htbb.sql
 5h_active
 5h_notify
 5h_systems

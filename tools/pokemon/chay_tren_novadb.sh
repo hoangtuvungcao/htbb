@@ -1,6 +1,6 @@
 #!/bin/sh
 # Chay TOAN BO server Huyen Thoai Bao Boi tren NovaDB (may dev / test):
-#   NovaDB (cong MySQL) -> nap ../sql/htbb_day_du.sql neu CSDL trong -> login server -> game server.
+#   NovaDB (cong MySQL) -> nap ../sql/htbb.sql neu CSDL trong -> login server -> game server.
 #
 # Chay o thu muc HTBB/:
 #   sh tools/pokemon/chay_tren_novadb.sh            # khoi dong
@@ -55,8 +55,8 @@ echo "NovaDB san sang (cong $NOVA_PORT, $(m -N -e 'select version()'))"
 
 # 2. Nap CSDL day du neu chua co htbb_db.
 if ! m -N -e "show databases" | grep -qx htbb_db; then
-    echo "Nap ../sql/htbb_day_du.sql ..."
-    m < ../sql/htbb_day_du.sql
+    echo "Nap ../sql/htbb.sql ..."
+    m < ../sql/htbb.sql
 fi
 
 # 3. Bien dich server (neu chua co build/classes moi hon src).

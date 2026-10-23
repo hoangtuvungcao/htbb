@@ -34,9 +34,9 @@ Trên VPS, `/opt/htbb` là bản checkout monorepo này (người dùng hệ th�
 | `don-log.sh` | cron 03:20 — dọn bảng nhật ký CSDL và tệp `.txt` lẻ |
 | `server.ini.linux.example`, `loginServer.server.ini.example` | mẫu tạo tay (máy không dùng pipeline) |
 | `doi_ten_nhan_vat.sql` | SQL đổi tên nhân vật |
-| `nang_cap_csdl.sh` | nâng cấp CSDL đang chạy lên bản hiện tại: sao lưu → nạp `sql/nang_cap.sql` → kiểm, chạy lại được (`sudo bash /opt/htbb/vps/nang_cap_csdl.sh`) |
-| `xuat_csdl_day_du.sh` | xuất CSDL đang chạy thành `htbb_day_du.sql` (schema mọi bảng + dữ liệu thiết kế, bảng người chơi rỗng) để chép về `sql/` (`sudo bash /opt/htbb/vps/xuat_csdl_day_du.sh /tmp/htbb_day_du.sql`) |
-| `van_hanh/` | SQL thao tác tay xoá dữ liệu người chơi (`wipe_*.sql`) — **tắt server và sao lưu trước**, không hoàn tác được |
+| `nang_cap_csdl.sh` | nâng cấp CSDL đang chạy lên bản hiện tại: sao lưu → nạp `sql/htbb.sql` → kiểm, chạy lại được (`sudo bash /opt/htbb/vps/nang_cap_csdl.sh`) |
+| `xuat_csdl_day_du.sh` | sinh lại phần A (schema mọi bảng + dữ liệu thiết kế, bảng người chơi rỗng) của `sql/htbb.sql` từ CSDL đang chạy, giữ nguyên phần B, để chép về `sql/` (`sudo bash /opt/htbb/vps/xuat_csdl_day_du.sh /tmp/htbb.sql`) |
+| `van_hanh/` | công cụ SQL thao tác tay (không thuộc `sql/htbb.sql`): xoá dữ liệu người chơi (`wipe_player_data.sql`, `wipe_sau_open_test.sql`), thu hồi quà (`thu_hoi_qua_tao_nv.sql`) — **tắt server và sao lưu trước**, không hoàn tác được |
 | `win/` | tệp `.bat` xem log, chạy SQL, tải CSDL từ Windows qua SSH — [win/README.md](win/README.md) |
 
 ## Quy trình triển khai

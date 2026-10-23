@@ -10,7 +10,7 @@ import java.util.Map;
  * Tep ../du_lieu/parity_097.txt (sinh tu main 1a705be6): moi muc o mot muc [loai] tep -
  *   case  : nhan "case N:" cua MapXuLyLenh / MapDoMenu (goi tin C->S, menu NPC)
  *   gm    : lenh GM trong MapChat ("ten")
- *   khoa  : khoa cau hinh trong sql/htbb_day_du.sql ('khoa')
+ *   khoa  : khoa cau hinh trong sql/htbb.sql ('khoa')
  *   bang  : bang CSDL (CREATE TABLE `bang`)
  *   hud   : ten vung cham HUD PC / J2ME ("hud-...")
  *   chuoi : chuoi giao dien (ten o Menu, ma phim PC) phai con trong tep

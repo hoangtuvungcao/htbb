@@ -1,7 +1,7 @@
 /**
  * Đồ họ mới + trang phục (0.9.8) — logic THUẦN dùng chung cho API /api/do-trang-phuc và trang Cẩm nang.
  *
- * Nguồn dữ liệu: bảng CSDL do sql/nang_cap.sql (khối them_do_trang_phuc.sql) tạo (sinh bởi tools/do_trang_phuc/sinh.py) hoặc, khi CSDL chưa
+ * Nguồn dữ liệu: bảng CSDL do sql/htbb.sql (khối them_do_trang_phuc.sql) tạo (sinh bởi tools/do_trang_phuc/sinh.py) hoặc, khi CSDL chưa
  * có bảng, shared/data/danh-muc-do-trang-phuc.json (cùng bộ sinh). Hai nguồn ra CÙNG một hình dạng (xem hangThanhDanhMuc).
  * File .mjs (JS thuần) để test chạy được bằng `node --test` không cần bỏ kiểu TypeScript.
  */

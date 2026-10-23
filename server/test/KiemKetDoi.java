@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
  *
  * VI SAO: chu game muon he "vo chong / dam cuoi" kieu kiem hiep thanh "ket doi" kieu Pokemon, va hai Pokemon chi
  * ket doi duoc khi LOAI HIEN TAI chung it nhat mot nhom trung (Pichu thuoc "Chưa khám phá": khong voi ai). Kiem
- *  - bang nhom trung trong sql/nang_cap.sql (khoi sua_ket_doi.sql) dung du lieu GOC (bang doi chieu viet tay o day), du moi loai nguoi
- *    choi (LoaiPokemon), khop khoi trong sql/htbb_day_du.sql;
+ *  - bang nhom trung trong sql/htbb.sql (khoi sua_ket_doi.sql) dung du lieu GOC (bang doi chieu viet tay o day), du moi loai nguoi
+ *    choi (LoaiPokemon), khop khoi trong sql/htbb.sql;
  *  - ma tran ket doi CHO MOI CAP 21 x 21 loai (doi chieu luat doc lap o day), doi xung, ma tran 5 dong;
  *  - cau giai thich (dung vi du cua chu game) va cac ly do tu choi;
  *  - cap da ket doi tu truoc GIU NGUYEN: chi NPC dang ky goi xet, tien hoa / dang nhap / nhan / Vay trai tim khong xet.
@@ -98,7 +98,7 @@ public final class KiemKetDoi {
     }
 
     private static void chayThat() throws Exception {
-        final String sql = DayDu.phanNangCap("sua_ket_doi.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("sua_ket_doi.sql"); // tep cu gop vao sql/htbb.sql phan 11
 
         // ---- chua nap: tu choi, khong nem loi
         KetDoi.datBang(new HashMap<Integer, KetDoi.Nhom>(), new HashMap<Integer, KetDoi.Loai>());
@@ -106,7 +106,7 @@ public final class KiemKetDoi {
         Kiem.dung("chua nap bang: bao ly do", KetDoi.xet(4, 7).loiNhan.contains("nhóm trứng"));
 
         napTuSql(sql);
-        Kiem.dung("nap duoc bang nhom trung tu khoi sua_ket_doi.sql cua sql/nang_cap.sql", KetDoi.daNap());
+        Kiem.dung("nap duoc bang nhom trung tu khoi sua_ket_doi.sql cua sql/htbb.sql", KetDoi.daNap());
         Kiem.bang("15 nhom trung", Integer.valueOf(15), Integer.valueOf(KetDoi.bangNhom().size()));
 
         // ---- du lieu: du moi loai nguoi choi, dung du lieu goc, ten khop LoaiPokemon
@@ -137,19 +137,19 @@ public final class KiemKetDoi {
         Kiem.sai("Chua kham pha (Undiscovered) khong ket doi duoc",
                 KetDoi.bangNhom().get(idTheoMa.get("undiscovered")).ketDoiDuoc);
 
-        // ---- htbb_day_du.sql chua dung du lieu nhu migration
-        final String du = doc("../sql/htbb_day_du.sql");
+        // ---- htbb.sql chua dung du lieu nhu migration
+        final String du = DayDu.sql();
         // ban-098: khoi them_loai_day_du.sql (loai-day-du, cung luoc do, INSERT IGNORE) them dong cho loai khac;
         // dump = hop hai khoi, dong ket-doi giu nguyen (khong bi ghi de)
         final Set<String> nhomDump = tapDong(dong(du, "data_nhom_trung"), 4);
         final Set<String> nhomKd = tapDong(dong(sql, "data_nhom_trung"), 4);
         final Set<String> hop = new HashSet<String>(nhomKd);
         hop.addAll(tapDong(dong(DayDu.phanNangCap("them_loai_day_du.sql"), "data_nhom_trung"), 4));
-        Kiem.dung("htbb_day_du.sql: data_nhom_trung chua moi dong ket-doi", nhomDump.containsAll(nhomKd));
-        Kiem.dung("htbb_day_du.sql: moi dong data_nhom_trung den tu ket-doi / loai-day-du", hop.containsAll(nhomDump));
-        Kiem.bang("htbb_day_du.sql: data_nhom_trung = ket-doi + loai-day-du (INSERT IGNORE, moi dex mot dong)",
+        Kiem.dung("htbb.sql: data_nhom_trung chua moi dong ket-doi", nhomDump.containsAll(nhomKd));
+        Kiem.dung("htbb.sql: moi dong data_nhom_trung den tu ket-doi / loai-day-du", hop.containsAll(nhomDump));
+        Kiem.bang("htbb.sql: data_nhom_trung = ket-doi + loai-day-du (INSERT IGNORE, moi dex mot dong)",
                 tapDong(dong(du, "data_nhom_trung"), 1).size(), nhomDump.size());
-        Kiem.bang("htbb_day_du.sql: data_nhom_trung_ten = migration", tapDong(dong(sql, "data_nhom_trung_ten"), 4),
+        Kiem.bang("htbb.sql: data_nhom_trung_ten = migration", tapDong(dong(sql, "data_nhom_trung_ten"), 4),
                 tapDong(dong(du, "data_nhom_trung_ten"), 4));
 
         // ---- ma tran: MOI cap loai, doi chieu luat doc lap (chung >= 1 nhom GOC, khong ai la undiscovered)

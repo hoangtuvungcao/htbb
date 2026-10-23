@@ -1,4 +1,4 @@
-"""Sinh bảng TÊN BẢN ĐỒ cho client (0.9.5) từ SQL - nguồn duy nhất là bảng data_map_ten (sql/nang_cap.sql phan 5,
+"""Sinh bảng TÊN BẢN ĐỒ cho client (0.9.5) từ SQL - nguồn duy nhất là bảng data_map_ten (sql/htbb.sql phan B muc 5,
 trang /admin/ten-hien). Client J2ME / PC / APK không đọc CSDL nên tên được đóng vào mã lúc build:
 
     python3 -I tools/pokemon/sinh_ten_ban_do_client.py         # ghi client_jar/src/game/pokemon/TenBanDoBang.java
@@ -11,12 +11,13 @@ import re
 import sys
 
 GOC = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-SQL = os.path.join(GOC, "sql", "nang_cap.sql")  # phan 5: data_map_ten
+SQL = os.path.join(GOC, "sql", "htbb.sql")  # phan B muc 5: data_map_ten
 RA = os.path.join(GOC, "client_jar", "src", "game", "pokemon", "TenBanDoBang.java")
 
 
 def doc():
     s = open(SQL, encoding="utf-8").read()
+    s = s[s.index("\n-- ######## B. NANG CAP"):]  # phan B (dong mac dinh), khong phai ban chup phan A
     i = s.index("INSERT INTO `data_map_ten`")
     j = s.index(";", s.index("VALUES", i))
     ds = []

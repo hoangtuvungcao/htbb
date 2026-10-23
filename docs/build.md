@@ -12,7 +12,7 @@ Cách build từng thành phần từ mã nguồn. Mọi lệnh viết **từ g�
 | PC Windows / Linux (gói phát hành) | JDK 17+, python3, wine (bộ cài) | `KIEU=phat-hanh sh client_pc/dong_goi_windows.sh` | `client_pc/out/goi/` (Setup .exe, .AppImage) |
 | PC Windows / iOS (Unity) | Unity 6000.5.9f1 | `Unity -batchmode … -executeMethod BuildCli.Win64` | thư mục `HTBB_OUT` |
 | Website | Node 22 | `cd web && npm ci && npm run build` | `web/.output/` |
-| Dữ liệu / SQL | MariaDB | `vps/xuat_csdl_day_du.sh` (xuất từ CSDL) | `sql/htbb_day_du.sql` |
+| Dữ liệu / SQL | MariaDB | `vps/xuat_csdl_day_du.sh` (xuất từ CSDL) | `sql/htbb.sql` (một tệp: CSDL mới + nâng cấp) |
 
 ## 1. Game server (`server/`)
 
@@ -173,13 +173,14 @@ HTBB_DIR=.. npm run sinh-anim-khoi-dau   # ảnh động màn khởi đầu từ
 ```
 
 `web/shared/data/*.json` và `web/shared/utils/*.gen.ts` là bản dự phòng tĩnh (web đọc CSDL trước; test đối chiếu với
-`sql/htbb_day_du.sql`). Trên CI, `.github/workflows/web-deploy.yml`
+`sql/htbb.sql`). Trên CI, `.github/workflows/web-deploy.yml`
 build rồi đẩy `.output` lên VPS. Chi tiết: [web/README.md](../web/README.md).
 
 ## 7. Dữ liệu, SQL và tệp sinh
 
-- **Dữ liệu game và cấu hình trung tâm** nằm trong CSDL (sửa trên trang quản trị). Không có bước sinh: repo giữ bản chụp
-  `sql/htbb_day_du.sql` (xuất bằng `vps/xuat_csdl_day_du.sh`) và `sql/nang_cap.sql` cho CSDL đang chạy — xem
+- **Dữ liệu game và cấu hình trung tâm** nằm trong CSDL (sửa trên trang quản trị). Không có bước sinh: repo giữ MỘT tệp
+  `sql/htbb.sql`: phần A = bản chụp đầy đủ (xuất bằng `vps/xuat_csdl_day_du.sh`, chỉ nạp vào CSDL mới), phần B = nâng cấp
+  CSDL đang chạy (viết tay + khối sinh) — cùng tệp cho máy mới lẫn production, chạy lại được, xem
   [sql/README.md](../sql/README.md). Bộ sinh cũ: `tools/luu_tru_sinh_du_lieu/` (lưu trữ).
 - `du_lieu/*.csv` chỉ còn bảng tài nguyên (sprite, tile, bản đồ) — [du_lieu/README.md](../du_lieu/README.md),
   [tools/README.md](../tools/README.md).
@@ -245,11 +246,15 @@ mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - l�
 
 Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), khác:
 
-1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — cuối log có `== XONG` và `danh muc cau hinh: 358 khoa`. `nang_cap.sql`
-   phần 11 tạo bảng / dữ liệu 0.9.8 (`sql/README.md`); chỉ thêm bảng / cột (`tob_pokedex.so_bat`, `bat_shiny`, `tob_char.o_mo_rong`), thêm dòng cửa hàng
+1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — nạp `sql/htbb.sql` (từ bản gộp `mot-sql`: MỘT tệp thay
+   `htbb_day_du.sql` + `nang_cap.sql`; phần A chỉ `CREATE TABLE IF NOT EXISTS`, dữ liệu đầy đủ chỉ chép vào CSDL mới — trên
+   production phần A không đổi dòng nào, phần B = `nang_cap.sql` cũ). Cuối log có `== XONG` và `danh muc cau hinh: 358 khoa`.
+   Phần B mục 11 tạo bảng / dữ liệu 0.9.8 (`sql/README.md`); chỉ thêm bảng / cột (`tob_pokedex.so_bat`, `bat_shiny`, `tob_char.o_mo_rong`), thêm dòng cửa hàng
    `nap_cua_hang` bằng `INSERT IGNORE` (vé mở rộng túi, thẻ đặt tên, 15 món tủ đồ), `data_item` 1400..2027 (đồ họ), không sửa
    dòng người chơi. Kiểm (22/10/2026): dump `main` 1e27bf2a + `nang_cap.sql` hai lần → không lỗi, bảng người chơi giữ số
-   dòng + CHECKSUM, xuất lại = `htbb_day_du.sql`.
+   dòng + CHECKSUM, xuất lại = `htbb_day_du.sql`. Kiểm bản gộp (23/10/2026): dump cũ + người chơi / sửa admin giả +
+   `htbb.sql` ba lần = luồng `nang_cap.sql` cũ, không lỗi, dòng người chơi / giá trị admin giữ nguyên; CSDL trống +
+   `htbb.sql` = dump cũ (sql/README.md).
 2. Log máy chủ sau khi lên: `[CAU HINH] danh muc tu CSDL htbb_db: 358 khoa, 21 nhom`, `[KHOA BAN DO] da nap 142 luat`,
    `[HOC CHIEU] learnset 175 dong`, `[BO NGOC] 33 dòng bộ ... 916 loài thu phục được; [DO MOI] 21 bộ, 628/628 món họ; [TRANG PHUC] 69 món trang trí`,
    `ICON DO MOI -> 697 anh`, `[KET DOI] da nap 15 nhom trung, 1025 loai`, `[NGAM TAY] 50 dong`, `PHONG RIENG -> pho ban 4381, san
@@ -266,7 +271,7 @@ Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), kh
    `vps/kiem-suc-khoe.sh` của main 2ed95e58 chỉ xem cổng LISTEN nên không rò thêm).
 6. Bước địa điểm: Arcanine gác cổng ở làng dẫn tới Bảo tàng Pewter / Đường Victory / Núi Silver (khoá 41 / 42 cấp 80,
    118 cấp 69 + CA-11.3); mọi dòng `data_nhiem_vu_khu_vuc` bật. Khối `sua_tuyen_nhiem_vu.sql` / `them_huong_dan_tan_thu.sql`
-   (production đã chạy) nằm trong `nang_cap.sql`, chạy lại vô hại. Gói -123 (mảnh gói J2ME, main) giữ nguyên.
+   (production đã chạy) nằm trong `sql/htbb.sql` (phần B), chạy lại vô hại. Gói -123 (mảnh gói J2ME, main) giữ nguyên.
 
 ### Danh sách kiểm triển khai bản có khoá bản đồ (một tệp SQL, khoá bản đồ, vòng quay, thách đấu cược, 0.9.7)
 
@@ -274,14 +279,14 @@ Jar mới **dừng ngay** nếu CSDL chưa nâng cấp (`THIEU DU LIEU SQL QUAN 
 để lần bảo trì tự động kế tiếp nạp jar mới — nó **không** chạy SQL. Thứ tự:
 
 1. **Trước khi gộp vào `main`** (hoặc ngay sau khi VPS kéo code, trước lần khởi động lại kế tiếp): trên VPS
-   `sudo bash /opt/htbb/vps/nang_cap_csdl.sh`. Script sao lưu (hỏng là dừng), nạp `sql/nang_cap.sql`, kiểm bảng. Chạy lại
+   `sudo bash /opt/htbb/vps/nang_cap_csdl.sh`. Script sao lưu (hỏng là dừng), nạp `sql/nang_cap.sql` (nay `sql/htbb.sql`), kiểm bảng. Chạy lại
    được; jar đang chạy vẫn chạy được sau bước này. Kiểm cuối log script có `== XONG` và `danh muc cau hinh: 270 khoa`.
 2. Gộp / đẩy `main` (jar đã build trong commit). Muốn lên ngay: chạy workflow với **deploy_now** hoặc "Bảo trì" trên web
    admin; không thì jar mới lên ở lần bảo trì hằng ngày.
 3. Sau khi lên: log máy chủ có `[DU LIEU SQL] da nap 6 bang`, `[CAU HINH] danh muc tu CSDL htbb_db: 270 khoa`,
    `[KHOA BAN DO] da nap 140 luat ban do`, `[LAU DAI] engine nhiem vu: ... mau`; không có `THIEU DU LIEU`.
 4. Một lần, tự động, không cần làm tay:
-   - mốc miễn trừ khoá bản đồ (`tob_ban_do_mo`): `nang_cap.sql` điền theo cấp / bản đồ đang lưu, server điền nốt khi
+   - mốc miễn trừ khoá bản đồ (`tob_ban_do_mo`): phần B của `sql/htbb.sql` điền theo cấp / bản đồ đang lưu, server điền nốt khi
      nhân vật đăng nhập đầu tiên — không ai bị dịch chuyển hay mất quyền vào bản đồ đang đứng;
    - cược đang chờ của xổ số cũ (`nin_xoso*`) được hoàn qua `tob_vong_quay_cho_nhan` lúc khởi động; ký quỹ thách đấu còn
      treo được hoàn lúc khởi động.

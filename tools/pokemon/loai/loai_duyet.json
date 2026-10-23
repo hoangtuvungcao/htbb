@@ -1,5 +1,5 @@
 {
-  "_ghiChu": "CHO DUY NHAT sua tay cua du lieu loai (he_thong_day_du.md 3.4). sinh_loai.py doc tep nay + du lieu PokeAPI ghim commit -> sql/nang_cap.sql (khoi them_loai_day_du.sql). Sua xong chay lai: python3 -I tools/pokemon/loai/sinh_loai.py",
+  "_ghiChu": "CHO DUY NHAT sua tay cua du lieu loai (he_thong_day_du.md 3.4). sinh_loai.py doc tep nay + du lieu PokeAPI ghim commit -> sql/htbb.sql (khoi them_loai_day_du.sql). Sua xong chay lai: python3 -I tools/pokemon/loai/sinh_loai.py",
   "nguon": {
     "pokeapi": {"repo": "PokeAPI/pokeapi", "commit": "2bf639e5572812a67d2b94903fdcb9d095f5aeb2", "giay_phep": "BSD-3-Clause"},
     "showdown": {"repo": "smogon/pokemon-showdown", "commit": "d601443456c795f77c6e4f2b5b459167f2b10a3c", "giay_phep": "MIT"},

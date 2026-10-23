@@ -87,7 +87,7 @@ public final class NapTienGame implements Runnable {
                     }
                 } else if (!daBaoThieuBang) {
                     daBaoThieuBang = true;
-                    System.out.println("NAP TIEN: CHUA CO BANG nap_* - chay sql/nang_cap.sql. Tam ngung cong luong.");
+                    System.out.println("NAP TIEN: CHUA CO BANG nap_* - chay sql/htbb.sql. Tam ngung cong luong.");
                 }
             } catch (final Throwable e) {
                 System.out.println("NAP TIEN: loi vong quet - " + e);

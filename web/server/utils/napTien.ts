@@ -66,7 +66,7 @@ export async function napCoBang(): Promise<boolean> {
 export function napThieuBang(nguoiChoi = false): never {
   // Người chơi không cần biết tên bảng / tệp SQL; trang admin vẫn nhận hướng dẫn đầy đủ.
   if (nguoiChoi) throw apiLoi(409, 'Tính năng nạp tiền chưa sẵn sàng. Vui lòng thử lại sau.', { code: 'thieu_bang' })
-  throw apiLoi(409, 'Chưa có bảng nạp tiền (nap_*) — chạy sql/nang_cap.sql trước.', { code: 'thieu_bang' })
+  throw apiLoi(409, 'Chưa có bảng nạp tiền (nap_*) — chạy sql/htbb.sql trước.', { code: 'thieu_bang' })
 }
 
 // ---------------------------------------------------------------- nhật ký

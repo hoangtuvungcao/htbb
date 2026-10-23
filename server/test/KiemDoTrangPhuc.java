@@ -130,11 +130,11 @@ public final class KiemDoTrangPhuc {
     }
 
     public static void chay() {
-        Kiem.nhom("Đồ họ mới + tủ đồ trang trí (khối them_do_trang_phuc.sql của sql/nang_cap.sql, DoMoiLogic, TrangPhucLogic)");
-        final String sql = DayDu.phanNangCap("them_do_trang_phuc.sql"); // mot tep SQL: khoi trong nang_cap.sql
-        Kiem.dung("có khối them_do_trang_phuc.sql trong nang_cap.sql", !sql.isEmpty());
+        Kiem.nhom("Đồ họ mới + tủ đồ trang trí (khối them_do_trang_phuc.sql của sql/htbb.sql, DoMoiLogic, TrangPhucLogic)");
+        final String sql = DayDu.phanNangCap("them_do_trang_phuc.sql"); // mot tep SQL: khoi trong htbb.sql
+        Kiem.dung("có khối them_do_trang_phuc.sql trong htbb.sql", !sql.isEmpty());
         Kiem.sai("sql không dùng INSERT ... SELECT ... ON DUPLICATE (MariaDB 10.3)", sql.contains("INSERT INTO") && sql.matches("(?s).*SELECT[^;]*ON DUPLICATE.*"));
-        Kiem.sai("khối không tự đặt SET NAMES (nang_cap.sql đặt một lần)", sql.contains("SET NAMES"));
+        Kiem.sai("khối không tự đặt SET NAMES (htbb.sql đặt một lần)", sql.contains("SET NAMES"));
 
         // ------------------------------------------------------------ data_item moi: icon + ban sao mon goc
         final List<List<Object>> item = bang(sql, "data_item");
@@ -142,14 +142,14 @@ public final class KiemDoTrangPhuc {
         Kiem.bang("628 món họ trong data_item", Integer.valueOf(628), Integer.valueOf(item.size()));
         Kiem.bang("628 dòng data_trang_bi_moi", Integer.valueOf(628), Integer.valueOf(moi.size()));
         final Map<Long, List<Object>> goc = new HashMap<Long, List<Object>>();
-        final String dump = doc("../sql/htbb_day_du.sql");
+        final String dump = DayDu.sql();
         final int di = dump.indexOf("INSERT INTO `data_item` VALUES ");
         if (di >= 0) {
             for (final List<Object> r : bo(dump.substring(di + 31, dump.indexOf(";\n", di)))) {
                 goc.put(Long.valueOf(so(r.get(0))), r);
             }
         }
-        Kiem.dung("đọc data_item gốc từ htbb_day_du.sql", goc.size() > 1000);
+        Kiem.dung("đọc data_item gốc từ htbb.sql", goc.size() > 1000);
         int thieuIcon = 0;
         int lechChiSo = 0;
         int ngoaiDai = 0;
@@ -161,7 +161,7 @@ public final class KiemDoTrangPhuc {
             if (id < 1400 || id > 2099) {
                 ngoaiDai++;
             }
-            // dump day du da chua chinh mon ho (nang_cap.sql -> xuat lai): trung = id co san mang TEN khac
+            // dump day du da chua chinh mon ho (htbb.sql -> xuat lai): trung = id co san mang TEN khac
             final List<Object> g0 = goc.get(Long.valueOf(id));
             if (g0 != null && !chu(g0.get(1)).equals(chu(r.get(1)))) {
                 trungGoc++;
@@ -563,7 +563,7 @@ public final class KiemDoTrangPhuc {
         Kiem.dung("-116 chỉ gửi client >= 908", doc("src/real/TrangPhucGame.java").contains("BoNgocGame.coClient(p)"));
         Kiem.dung("thưởng nhiệm vụ trang_tri:<mã> trao món", doc("src/real/NhiemVuEngine.java").contains("TrangPhucGame.trao(p, v, \"nhiem_vu\")"));
         Kiem.dung("mua lượng qua NapTienGame.mua (sổ cái)", doc("src/com/htbb/pokemon/NapTienGame.java").contains("public static String muaTheoMa("));
-        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (htbb_day_du.sql)
+        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (htbb.sql)
         Kiem.dung("khoá do_moi.bat + trang_phuc.bat trong danh mục cấu hình", dm.contains("\"do_moi.bat\"") && dm.contains("\"trang_phuc.bat\""));
     }
 

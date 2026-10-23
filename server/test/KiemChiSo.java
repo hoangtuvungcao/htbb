@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 /**
  * Chi so trang bi + chong lam phat (docs/thiet-ke-game.md): tran / giam dan, san sat thuong, PvP,
- * ngan sach mon, bang 198 dong chi so (data_attribute trong sql/htbb_day_du.sql). Mo phong TTK cu (MoPhongChiSo) da luu
+ * ngan sach mon, bang 198 dong chi so (data_attribute trong sql/htbb.sql). Mo phong TTK cu (MoPhongChiSo) da luu
  * tru cung bo sinh (tools/luu_tru_sinh_du_lieu/pokemon/).
  */
 public final class KiemChiSo {

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * DO HO MOI - phan GAME (logic thuan com.htbb.pokemon.DoMoiLogic). Nap data_trang_bi_ho / _thuong / data_trang_bi_moi
- * (sql/nang_cap.sql (khoi them_do_trang_phuc.sql)) cung luc BoNgocGame.nap (khoi dong, lenh admin 9, CHECKSUM doi).
+ * (sql/htbb.sql (khoi them_do_trang_phuc.sql)) cung luc BoNgocGame.nap (khoi dong, lenh admin 9, CHECKSUM doi).
  *
  * <p>Moc vao game:
  * <ul>
@@ -89,7 +89,7 @@ public final class DoMoiGame {
         for (final Object[] r : mon) {
             final int id = DatabaseBoNgoc.so(r[0]);
             if (mau(id) == null) {
-                continue; // template chua nap (chua chay khoi them_do_trang_phuc.sql cua nang_cap.sql): bo
+                continue; // template chua nap (chua chay khoi them_do_trang_phuc.sql cua htbb.sql): bo
             }
             coMau++;
             d.themMon(id, DatabaseBoNgoc.chu(r[1]), DatabaseBoNgoc.so(r[2]), DatabaseBoNgoc.so(r[3]), DatabaseBoNgoc.so(r[4]),

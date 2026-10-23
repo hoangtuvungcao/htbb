@@ -1,35 +1,37 @@
 #!/bin/bash
 # ============================================================
-#  NANG CAP CSDL DANG CHAY len schema + du lieu thiet ke cua ban hien tai.
+#  NANG CAP CSDL DANG CHAY len schema + du lieu thiet ke cua ban hien tai (nap sql/htbb.sql).
 #
 #      sudo bash /opt/htbb/vps/nang_cap_csdl.sh
 #
 #  Lam theo thu tu: (1) kiem may la MariaDB, (2) SAO LUU htbb_db + account bang vps/backup_db.sh
-#  (hong la DUNG, khong nap gi), (3) nap sql/nang_cap.sql vao htbb_db, (4) kiem 10 bang du lieu
+#  (hong la DUNG, khong nap gi), (3) nap sql/htbb.sql (account + htbb_db), (4) kiem 10 bang du lieu
 #  thiet ke + danh muc cau hinh co du dong.
 #
-#  CHAY LAI DUOC: moi lenh trong sql/nang_cap.sql la CREATE TABLE IF NOT EXISTS / ADD COLUMN IF NOT
-#  EXISTS / CREATE INDEX IF NOT EXISTS, hoac DROP+CREATE+INSERT cua bang thiet ke (data_*, cau_hinh_danh_muc,
-#  cau_hinh_nhom - bang sinh, khong co du lieu nguoi choi). Bang nguoi choi chi duoc them bang / them cot /
-#  noi cot. Gia tri cau hinh admin da dat (bang cau_hinh, cau_hinh_lich_su...) KHONG bi dong toi.
+#  CHAY LAI DUOC: sql/htbb.sql phan A chi CREATE TABLE IF NOT EXISTS (du lieu day du chi chep vao CSDL MOI,
+#  htbb_db.data_item rong - CSDL dang chay khong bi dong); phan B la CREATE TABLE IF NOT EXISTS / ADD COLUMN IF
+#  NOT EXISTS / CREATE INDEX IF NOT EXISTS / INSERT IGNORE, hoac DROP+CREATE+INSERT cua bang thiet ke (data_*,
+#  cau_hinh_danh_muc, cau_hinh_nhom - bang sinh, khong co du lieu nguoi choi). Bang nguoi choi chi duoc them
+#  bang / them cot / noi cot. Gia tri admin da dat (cau_hinh, web_*, giftcode, nap_*...) KHONG bi dong toi.
 #
 #  Khong tu khoi dong lai server: nap xong thi deploy jar moi / systemctl restart htbb-game.
 #  Jar cu van chay duoc tren CSDL da nang cap (bang/cot moi jar cu khong doc).
 #
 #  Bien moi truong (de thu tren may khac):
-#    HTBB_DB=htbb_db              ten CSDL game
 #    MYSQL="mysql ..."            lenh mysql (mac dinh: mysql, root qua unix_socket hoac /etc/htbb/htbb.env)
 #    BO_SAO_LUU=1                 bo buoc sao luu (CHI dung tren CSDL thu, khong bao gio tren production)
 # ============================================================
 set -euo pipefail
 
 DIR=$(cd "$(dirname "$0")/.." && pwd)
-SQL="$DIR/sql/nang_cap.sql"
-DB=${HTBB_DB:-htbb_db}
+SQL="$DIR/sql/htbb.sql"
+DB=htbb_db   # ten CSDL co dinh trong sql/htbb.sql (USE `htbb_db`)
+MOC='-- ######## B. NANG CAP'
 ENV_FILE=${HTBB_ENV_FILE:-/etc/htbb/htbb.env}
 
 loi() { echo "[LOI] $*" >&2; exit 1; }
 [ -r "$SQL" ] || loi "khong doc duoc $SQL"
+grep -q "^$MOC" "$SQL" || loi "$SQL thieu phan B (dong '$MOC') - tep hong / ban cu"
 
 TAM=$(mktemp -d)
 trap 'rm -rf "$TAM"' EXIT
@@ -62,7 +64,7 @@ case "$PB" in
     *) loi "can MariaDB (ADD COLUMN IF NOT EXISTS, CREATE INDEX IF NOT EXISTS); may nay: $PB" ;;
 esac
 my -N -e "SELECT 1 FROM information_schema.schemata WHERE schema_name='$DB'" | grep -q 1 \
-    || loi "khong co CSDL $DB (CSDL moi thi nap sql/htbb_day_du.sql, khong can script nay)"
+    || loi "khong co CSDL $DB (CSDL moi: mysql -u root < sql/htbb.sql, khong can script nay)"
 my -N -e "SELECT 1 FROM information_schema.tables WHERE table_schema='$DB' AND table_name='tob_char'" | grep -q 1 \
     || loi "$DB khong co bang tob_char - khong phai CSDL game HTBB"
 
@@ -73,7 +75,7 @@ else
     bash "$DIR/vps/backup_db.sh" || loi "sao luu that bai - KHONG nap gi"
 fi
 
-echo "== 3/4 Nap $(basename "$SQL") vao $DB"
+echo "== 3/4 Nap $(basename "$SQL") (account + $DB)"
 my "$DB" < "$SQL" || loi "nap that bai giua chung - xem loi tren; chay lai script (cac lenh chay lai duoc) hoac phuc hoi tu ban sao luu"
 
 echo "== 4/4 Kiem"
@@ -83,8 +85,8 @@ for B in data_cap_do_lau_dai data_nang_cap_lau_dai data_kinh_te_lau_dai data_su_
     N=$(my -N -e "SELECT COUNT(*) FROM \`$DB\`.\`$B\`" 2>/dev/null || echo 0)
     if [ "${N:-0}" -gt 0 ]; then echo "   ok  $B: $N dong"; else echo "   SAI $B: rong / thieu"; SAI=1; fi
 done
-# Moi khoa la mot dong INSERT trong tep -> so dong cau_hinh_danh_muc phai bang dung so do.
-CAN=$(grep -c "^INSERT INTO \`cau_hinh_danh_muc\`" "$SQL" || true)
+# Moi khoa la mot dong INSERT trong phan B -> so dong cau_hinh_danh_muc phai bang dung so do.
+CAN=$(sed -n "/^$MOC/,\$p" "$SQL" | grep -c "^INSERT INTO \`cau_hinh_danh_muc\`" || true)
 CO=$(my -N -e "SELECT COUNT(*) FROM \`$DB\`.cau_hinh_danh_muc")
 if [ "$CO" = "$CAN" ]; then echo "   ok  danh muc cau hinh: $CO khoa"; else echo "   SAI danh muc cau hinh: $CO khoa, tep co $CAN"; SAI=1; fi
 my -N -e "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='$DB' AND table_name='cau_hinh_danh_muc' AND column_name='thu_tu'" | grep -q 1 \

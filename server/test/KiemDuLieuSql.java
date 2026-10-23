@@ -24,12 +24,12 @@ import java.util.TreeMap;
 /**
  * P1: du lieu thiet ke doc tu SQL la NGUON DUY NHAT (com.htbb.dulieu.DuLieuSql, docs/kien-truc.md muc 4.4).
  *
- *   1. Ban nap tu sql/htbb_day_du.sql (Kiem.main nap truoc moi nhom, giong may chu nap tu CSDL) BANG DUNG ban chep
+ *   1. Ban nap tu phan A cua sql/htbb.sql (Kiem.main nap truoc moi nhom, giong may chu nap tu CSDL) BANG DUNG ban chep
  *      Java da xoa: van tay SHA-256 duoi day tinh tu ban chep Java NGAY TRUOC khi xoa (19/10/2026), cung cach noi chuoi.
- *      Lech = so lieu game da doi; neu co y doi (sua tren trang quan tri / CSDL roi xuat lai htbb_day_du.sql) thi
+ *      Lech = so lieu game da doi; neu co y doi (sua tren trang quan tri / CSDL roi xuat lai phan A) thi
  *      cap nhat van tay.
- *   2. sql/ chi co tep day du + tep nang cap; nang cap (sql/nang_cap.sql) tao MOI bang cua ban day du va chua CUNG dong
- *      voi htbb_day_du.sql cho cac bang may chu nap luc khoi dong; khong pha bang nguoi choi.
+ *   2. sql/ chi co MOT tep sql/htbb.sql: phan A (CSDL day du) chi tao bang IF NOT EXISTS va chep du lieu vao CSDL MOI;
+ *      phan B (nang cap) chua CUNG dong voi phan A cho cac bang may chu nap luc khoi dong; khong pha bang nguoi choi.
  *   3. Thieu bang / bang rong / sai hinh dang: loi ro rang, bang quan trong -> loi (server dung), KHONG gan nua voi.
  *   4. Ban chep Java da xoa that; TeamServer nap dung cho; bo doc dump + JSON dung.
  */
@@ -45,7 +45,7 @@ public final class KiemDuLieuSql {
      *  chuoi (KE CA lop) ngay truoc khi bo ban chep Java luc gop. Lich su: P1 185 khoa 382a04b3..., 0.9.2 5934a2e6...,
      *  0.9.4 (203 khoa, co lop) e6505ed5..., 213 khoa 9be03a6a.... khoa-map: +ban_do.khoa.bat (214 khoa); gop main 0cbf73ae: +nhom vong_quay 26 khoa (240 / 16); gop main bda0e901: +nhom cuoc_xu (256 / 17); gop main 1a705be6: 269 khoa main + ban_do.khoa.bat (luon_bat, an) = 270 / 17; ban-098 (0.9.8): +nhom hoc_chieu 5 khoa, +nhom trang_bi 21 khoa,
      *  +8 khoa pho_ban.* / cup.* (nhom pvp) = 305 / 19 (moi khoa moi deu an, 70 khoa web giu nguyen); +chong_clone.ban_npc_khoa_phan_tram = 306; bat-trade +10 (bat.*, trao_doi.*), kenh-chat +10 (sv.chat.*) = 326, pvp-keo +4 (pvp.ngam_tay*) = 330, bat-trade cho +10 (cho_pokemon.*) = 340, ten-pet +10 (dat_ten_pet.*, an) = 350 / 20, loai-day-du +8 (loai.*, nhom loai) = 358 / 21, do-trang-phuc +2 (do_moi.bat, trang_phuc.bat, luon_bat) = 360 / 21; dong bo 0.9.8: bo sv.chat.thuChoToiDa / thuChoNgay (chat chi trong phien) = 358 / 21; loai.doi_thuong_phan_tram 30 -> 5 (chi Pokemon hoang da bat duoc).
-     *  Lech = danh muc da doi (sua trong CSDL / nang_cap.sql phan 2, xuat lai), cap nhat. */
+     *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
     static final String VT_DANH_MUC = "2f5807b1bb6df02a0937ba750a651868ad6f747c83635241e934b5539f394b44";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
@@ -76,7 +76,7 @@ public final class KiemDuLieuSql {
     // ------------------------------------------------------------------ 1
 
     static void vanTay() throws Exception {
-        Kiem.dung("Kiem.main nap du lieu SQL tu sql/htbb_day_du.sql (khong loi, khong canh bao)",
+        Kiem.dung("Kiem.main nap du lieu SQL tu sql/htbb.sql (phan A) (khong loi, khong canh bao)",
                 napKiem != null && napKiem.dat() && napKiem.canhBao.isEmpty());
         Kiem.bang("so bang nap duoc (danh muc + 6 bang so lieu)", Integer.valueOf(7),
                 Integer.valueOf(napKiem == null ? 0 : napKiem.ok.size()));
@@ -102,32 +102,66 @@ public final class KiemDuLieuSql {
     // ------------------------------------------------------------------ 2
 
     static void dongBo() throws Exception {
-        final DocDumpSql dump = DocDumpSql.tuTep(DayDu.TEP);
-        final DocDumpSql mig = DocDumpSql.tuTep(DayDu.TEP_NANG_CAP);
+        final DocDumpSql dump = DayDu.dump();
+        final DocDumpSql mig = DocDumpSql.tuChuoi(DayDu.nangCap());
         for (final String[] b : BANG) {
             final String[] cot = dump.cotCua(b[0]);
-            Kiem.dung(b[0] + ": htbb_day_du.sql co bang", cot != null);
+            Kiem.dung(b[0] + ": phan A (CSDL day du) co bang", cot != null);
             if (cot == null) {
                 continue;
             }
             final List<String> dDump = dong(dump.doc(b[0], cot));
-            Kiem.dung(b[0] + ": dump day du co du lieu (" + dDump.size() + " dong, " + cot.length + " cot)", dDump.size() > 0);
-            Kiem.bang(b[0] + ": sql/nang_cap.sql == sql/htbb_day_du.sql (moi cot, moi dong)", dDump, dong(mig.doc(b[0], cot)));
+            Kiem.dung(b[0] + ": phan A co du lieu (" + dDump.size() + " dong, " + cot.length + " cot)", dDump.size() > 0);
+            Kiem.bang(b[0] + ": phan B (nang cap) == phan A (moi cot, moi dong)", dDump, dong(mig.doc(b[0], cot)));
         }
-        // Ban nang cap tao MOI bang cua ban day du (CSDL cu thieu bang nao cung du sau khi nap)
+        // MOT tep cho CSDL moi + CSDL dang chay: phan A khong pha gi khi chay tren CSDL co nguoi choi.
+        final String a = DocDumpSql.phanDayDu(DayDu.toanVan());
         final String mg = DayDu.nangCap();
-        final List<String> thieu = new ArrayList<String>();
-        final java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?m)^CREATE TABLE `(\\w+)`").matcher(
-                DayDu.sql().substring(DayDu.sql().indexOf("USE `htbb_db`;")));
+        Kiem.dung("sql/htbb.sql co phan A + phan B (dong " + DocDumpSql.MOC_NANG_CAP + ")", !a.isEmpty() && !mg.isEmpty()
+                && a.length() + mg.length() == DayDu.toanVan().length());
+        final java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?m)^CREATE TABLE IF NOT EXISTS `(\\w+)`").matcher(
+                a.substring(a.indexOf("USE `htbb_db`;")));
         int n = 0;
         while (m.find()) {
             n++;
-            if (!mg.contains("CREATE TABLE IF NOT EXISTS `" + m.group(1) + "`")) {
-                thieu.add(m.group(1));
+        }
+        Kiem.dung("phan A tao (IF NOT EXISTS) > 150 bang htbb_db (" + n + ")", n > 150);
+        Kiem.sai("phan A: khong CREATE TABLE thieu IF NOT EXISTS (bang da co giu nguyen)",
+                java.util.regex.Pattern.compile("(?m)^CREATE TABLE (?!IF NOT EXISTS )").matcher(a).find());
+        Kiem.sai("phan A: khong DROP TABLE / DELETE / UPDATE / TRUNCATE / REPLACE / DROP DATABASE",
+                java.util.regex.Pattern.compile("(?mi)^\\s*(DROP\\s+TABLE|DROP\\s+DATABASE|DELETE|UPDATE|TRUNCATE|REPLACE)\\b").matcher(a).find());
+        // Du lieu day du: INSERT khong ten CSDL chi vao bang TAM (USE `account`), chep sang htbb_db chi khi CSDL moi.
+        final java.util.regex.Matcher tam = java.util.regex.Pattern.compile("(?m)^CREATE TEMPORARY TABLE `(\\w+)`").matcher(a);
+        final List<String> bangTam = new ArrayList<String>();
+        while (tam.find()) {
+            bangTam.add(tam.group(1));
+        }
+        final List<String> saiChep = new ArrayList<String>();
+        for (final String t : bangTam) {
+            if (!a.contains("SET @l := IF(@htbb_csdl_moi = 1 AND NOT EXISTS (SELECT 1 FROM `htbb_db`.`" + t + "`), 'INSERT INTO `htbb_db`.`"
+                    + t + "` SELECT * FROM `account`.`" + t + "`', 'DO 0');")) {
+                saiChep.add(t);
             }
         }
-        Kiem.dung("htbb_day_du.sql co > 150 bang htbb_db (" + n + ")", n > 150);
-        Kiem.bang("sql/nang_cap.sql tao (IF NOT EXISTS) moi bang htbb_db cua ban day du", "[]", thieu.toString());
+        Kiem.dung("phan A: > 100 bang du lieu thiet ke qua bang tam (" + bangTam.size() + ")", bangTam.size() > 100);
+        Kiem.bang("phan A: moi bang tam chep co dieu kien (CSDL moi + bang dich rong)", "[]", saiChep.toString());
+        final java.util.regex.Matcher ins = java.util.regex.Pattern.compile("(?m)^INSERT INTO `(\\w+)` VALUES").matcher(a);
+        final java.util.Set<String> ngoaiTam = new java.util.TreeSet<String>();
+        while (ins.find()) {
+            if (!bangTam.contains(ins.group(1)) || ins.start() < a.indexOf("CREATE TEMPORARY TABLE `" + ins.group(1) + "`")) {
+                ngoaiTam.add(ins.group(1));
+            }
+        }
+        Kiem.bang("phan A: INSERT du lieu chi vao bang tam", "[]", ngoaiTam.toString());
+        final int iMoi = a.indexOf("SET @htbb_csdl_moi := (SELECT COUNT(*) = 0 FROM `htbb_db`.`data_item`);");
+        final int iUse = a.indexOf("USE `account`;", Math.max(iMoi, 0));
+        Kiem.dung("phan A: co CSDL moi = data_item rong, tinh TRUOC khi nap bang tam (USE `account`)", iMoi > 0 && iUse > iMoi
+                && iUse < a.indexOf("CREATE TEMPORARY TABLE"));
+        Kiem.dung("phan A: data_item chep CUOI (nap do giua chung -> chay lai van la CSDL moi)",
+                a.lastIndexOf("'INSERT INTO `htbb_db`.`") == a.indexOf("'INSERT INTO `htbb_db`.`data_item`"));
+        Kiem.dung("phan A: tai khoan admin chi tao o CSDL moi, chua co admin", a.contains("WHERE @htbb_csdl_moi = 1 AND NOT EXISTS (SELECT 1 FROM `account`.`team_user` WHERE `username` = 'admin');"));
+        Kiem.sai("phan B: khong con lenh CREATE DATABASE / USE CSDL khac", mg.contains("CREATE DATABASE")
+                || mg.replace("USE `htbb_db`;", "").matches("(?s).*\\nUSE .*"));
         final String readme = doc("../sql/README.md");
         Kiem.dung("sql/README.md noi vps/nang_cap_csdl.sh + vps/xuat_csdl_day_du.sh", readme.contains("vps/nang_cap_csdl.sh")
                 && readme.contains("vps/xuat_csdl_day_du.sh"));
@@ -135,11 +169,17 @@ public final class KiemDuLieuSql {
                 khongPhaNguoiChoi(mg));
         Kiem.dung("nang cap DROP + CREATE cau_hinh_danh_muc (cot thu_tu, lop)", mg.contains("DROP TABLE IF EXISTS `cau_hinh_danh_muc`")
                 && mg.contains("`thu_tu` INT") && mg.contains("`lop` VARCHAR(10)"));
-        // sql/ = MOT tep day du (+ nang cap + README); khong con tep le / bo sinh trong luong chinh
+        final String nc = doc("../vps/nang_cap_csdl.sh");
+        final String xu = doc("../vps/xuat_csdl_day_du.sh");
+        Kiem.dung("vps/nang_cap_csdl.sh nap sql/htbb.sql, dem danh muc trong phan B", nc.contains("SQL=\"$DIR/sql/htbb.sql\"")
+                && nc.contains("MOC='" + DocDumpSql.MOC_NANG_CAP + "'") && nc.contains("sed -n \"/^$MOC/,\\$p\" \"$SQL\""));
+        Kiem.dung("vps/xuat_csdl_day_du.sh ghi sql/htbb.sql, giu phan B", xu.contains("RA=${1:-$DIR/sql/htbb.sql}")
+                && xu.contains("MOC='" + DocDumpSql.MOC_NANG_CAP + "'") && xu.contains("CREATE TEMPORARY TABLE"));
+        // sql/ = MOT tep CSDL (+ README); khong con tep le / bo sinh trong luong chinh
         final String[] tep = new java.io.File("../sql").list();
         final java.util.Set<String> co = new java.util.TreeSet<String>(tep == null ? java.util.Collections.<String>emptyList()
                 : java.util.Arrays.asList(tep));
-        Kiem.bang("sql/ chi co htbb_day_du.sql + nang_cap.sql + README.md", "[README.md, htbb_day_du.sql, nang_cap.sql]", co.toString());
+        Kiem.bang("sql/ chi co htbb.sql + README.md", "[README.md, htbb.sql]", co.toString());
         Kiem.sai("du_lieu/sql_nguon da luu tru (khong con o du_lieu/)", new java.io.File("../du_lieu/sql_nguon").exists());
         for (final String g : new String[]{"../tools/pokemon/xuat_sql_day_du.sh", "../tools/cauhinh/sinh_cau_hinh.py",
             "../tools/pokemon/sinh_nang_cap_csdl.py", "../tools/pokemon/sinh_noi_dung.py", "../tools/pokemon/sinh_sql_lau_dai.py"}) {
@@ -148,7 +188,7 @@ public final class KiemDuLieuSql {
     }
 
     /**
-     * Moi lenh trong sql/nang_cap.sql nhac toi bang nguoi choi (tob_*, giftcode_log, 5h_*, account) phai la loai KHONG PHA:
+     * Moi lenh trong phan B cua sql/htbb.sql nhac toi bang nguoi choi (tob_*, giftcode_log, 5h_*, account) phai la loai KHONG PHA:
      * CREATE TABLE IF NOT EXISTS, ALTER TABLE ... ADD COLUMN IF NOT EXISTS / MODIFY (noi cot), CREATE INDEX IF NOT EXISTS,
      * INSERT IGNORE. Khong DROP / DELETE / UPDATE / TRUNCATE / REPLACE.
      */
@@ -236,7 +276,7 @@ public final class KiemDuLieuSql {
     }
 
     static void hong() throws Exception {
-        final DocDumpSql dump = DocDumpSql.tuTep("../sql/htbb_day_du.sql");
+        final DocDumpSql dump = DayDu.dump();
         final long[] expTruoc = ThongSoLauDai.EXP_LEN_CAP;
         final int thueTruoc = ThongSoLauDai.THUE_CHO_PHAN_TRAM;
 
@@ -310,7 +350,7 @@ public final class KiemDuLieuSql {
         final String db = doc("src/data/DatabaseDuLieuSql.java");
         Kiem.dung("DatabaseDuLieuSql: in 'DUNG SERVER' + System.exit(1) khi loi", db.contains("DUNG SERVER") && db.contains("System.exit(1)"));
         Kiem.dung("DatabaseDuLieuSql: gom loi danh muc cau hinh", db.contains("CauHinhTrungTam.loiDanhMuc()"));
-        Kiem.dung("DatabaseDuLieuSql: chi ra lenh nang cap", db.contains("vps/nang_cap_csdl.sh") && db.contains("sql/nang_cap.sql"));
+        Kiem.dung("DatabaseDuLieuSql: chi ra lenh nang cap", db.contains("vps/nang_cap_csdl.sh") && db.contains("sql/htbb.sql"));
     }
 
     // ------------------------------------------------------------------ 4

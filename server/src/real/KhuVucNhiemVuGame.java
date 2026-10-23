@@ -13,7 +13,7 @@ import java.util.List;
  * BUOC NHIEM VU DIA DIEM (nhanh sua-tuyen) - lop noi game cua com.htbb.pokemon.KhuVucNhiemVu.
  *
  * <pre>
- *  Du lieu: data_nhiem_vu_khu_vuc (sql/nang_cap.sql khoi sua_tuyen_nhiem_vu.sql, sinh boi tools/pokemon/sinh_sua_tuyen.py), theo ma nhiem vu
+ *  Du lieu: data_nhiem_vu_khu_vuc (sql/htbb.sql khoi sua_tuyen_nhiem_vu.sql, sinh boi tools/pokemon/sinh_sua_tuyen.py), theo ma nhiem vu
  *  (data_quest_lau_dai.ma = InfoQuestTemplate.ma). Chi buoc noi chuyen (type 3) cua chuoi chinh / phu (-64) co vung.
  *  Char.xuLyNhiemVu (tra -64)  -> {@link #chuaToi}: chua dung trong vung -> nhan buoc (dang lam), bao chi duong, KHONG tra.
  *  CharCapNhat.doPlayerMove    -> {@link #khiDiChuyen}: chi nhan vat co buoc chinh / phu DANG LAM kieu noi chuyen co vung

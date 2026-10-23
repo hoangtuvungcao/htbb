@@ -2,7 +2,7 @@
 
 Chạy **ở gốc repo** (đường dẫn trong công cụ viết từ gốc): Python `python3 -I tools/pokemon/<tên>.py`, Java
 `javac -d /tmp/htbb-tools tools/<...>.java && java -cp /tmp/htbb-tools <Lớp>`. Dữ liệu game **không** còn sinh bằng công
-cụ: nó nằm trong CSDL (sửa trên trang quản trị) và bản đầy đủ `sql/htbb_day_du.sql` — xem [sql/README.md](../sql/README.md).
+cụ: nó nằm trong CSDL (sửa trên trang quản trị) và bản đầy đủ `sql/htbb.sql` — xem [sql/README.md](../sql/README.md).
 Bộ sinh dữ liệu cũ (CSV → SQL, danh mục cấu hình, JSON tĩnh cho web) đã chạy lần cuối và nằm ở
 [`luu_tru_sinh_du_lieu/`](luu_tru_sinh_du_lieu/README.md), không thuộc build. Luồng dữ liệu tổng thể:
 [docs/kien-truc.md](../docs/kien-truc.md); lệnh build: [docs/build.md](../docs/build.md).
@@ -16,7 +16,7 @@ Bộ sinh dữ liệu cũ (CSV → SQL, danh mục cấu hình, JSON tĩnh cho w
 
 `danh_muc.py` là nguồn duy nhất (18 bộ hệ, 3 bộ huy chương vùng, thưởng bộ, ngân sách ô trang trí, 61 món trang trí và
 nguồn của chúng); `hinh_trang_bi.py` / `hinh_trang_phuc.py` là hình vẽ tay bằng lưới ký tự (CC0). `sinh.py` ra
-khối `-- >>> them_do_trang_phuc.sql` của `sql/nang_cap.sql`, icon `server/map/icon_do_moi/` + `web/public/icon-do/`, atlas lớp phủ
+khối `-- >>> them_do_trang_phuc.sql` của `sql/htbb.sql`, icon `server/map/icon_do_moi/` + `web/public/icon-do/`, atlas lớp phủ
 `client_jar/res/pk/trang_phuc.{png,bin}`, `khung_hiem.png`, `du_lieu/do_moi_*.csv`, `du_lieu/trang_phuc.csv`,
 `web/shared/data/danh-muc-do-trang-phuc.json` (`--xem <thư mục>` = bộ sưu tập ảnh phóng to). `kiem_ke.py` ra
 `du_lieu/KIEM_KE_TRANG_BI.md`.
@@ -26,12 +26,12 @@ khối `-- >>> them_do_trang_phuc.sql` của `sql/nang_cap.sql`, icon `server/ma
 | Nhóm | Công cụ | Làm gì |
 |---|---|---|
 | Chữ và thuật ngữ | `ap_thuat_ngu.py`, `ap_thuat_ngu_web.py` | đổi chữ người chơi thấy trong mã nguồn / web từ kiếm hiệp sang Pokémon |
-| Mô phỏng | `MoPhongKinhTe.java` | mô phỏng kinh tế / tiến trình, đọc bảng thiết kế trong `sql/htbb_day_du.sql` → `mo_phong_ra/` (không commit) |
+| Mô phỏng | `MoPhongKinhTe.java` | mô phỏng kinh tế / tiến trình, đọc bảng thiết kế trong `sql/htbb.sql` → `mo_phong_ra/` (không commit) |
 | Sprite và hiệu ứng | `tai_sprite_pmd.py`, `tai_hieu_ung_pmd.py`, `tai_vat_the.py`, `DongGoiSprite.java`, `TinhNeoPoke.java`, `SinhPhuKien.java` | tải tài nguyên PMDCollab (vào `pmd_raw*/`, không đưa vào git), đóng gói cho client, điểm neo phụ kiện |
-| Chuỗi chính | `sinh_sua_chuoi_chinh.py`, `ThemNpcLang.java` | in khối SQL sửa địa điểm / NPC giao của chuỗi chính (đọc CSDL + `server/cMap` + `server/map`) cho khối `them_huong_dan_tan_thu.sql` của `sql/nang_cap.sql` |
+| Chuỗi chính | `sinh_sua_chuoi_chinh.py`, `ThemNpcLang.java` | in khối SQL sửa địa điểm / NPC giao của chuỗi chính (đọc CSDL + `server/cMap` + `server/map`) cho khối `them_huong_dan_tan_thu.sql` của `sql/htbb.sql` |
 | Thay hình máy chủ cũ (P2) | `sinh_icon_thay_cu.py`, `ve_thu_pet_thay_cu.py`, `sinh_npc_sh.py`, `sinh_anh_quai_cu.py`, `ve_hieu_ung_thay_cu.py`, `ve_giao_dien_thay_cu.py`, `ve_vong_quay.py`, `xoa_hinh_nguoi_cu.py`, `p2_ban_do/*.py` | vẽ lại **tại chỗ** (giữ tên tệp, kích thước, bảng khung) mọi hình kiếm hiệp cũ còn có thể vẽ: icon dải cũ, ô dự phòng thú cưỡi / pet / skin, NPC, quái, hiệu ứng kiếm, danh hiệu, giao diện Unity, vòng quay; làm trong suốt bộ phận người / vũ khí paper-doll. Cần Pillow (chạy không kèm `-I`); chạy lại không đổi gì. Xem [docs/giay-phep.md](../docs/giay-phep.md) mục 7 |
 | Kiểm tài nguyên (P2) | `kiem_tai_nguyen_cu.py` | không còn hình của máy chủ cũ (dấu vân tay `du_lieu/tai_nguyen_cu.txt`, giữ có lý do `du_lieu/tai_nguyen_cu_giu.csv`) và không thiếu tệp cho mọi dex / icon / mẫu pet / `d_effect` / đường dẫn jar được tham chiếu; `--ds tệp` ghi danh sách đầy đủ, `--sinh` dựng lại danh sách cũ từ lịch sử git. Test server `KiemTaiNguyenCu` chạy cùng luật |
-| Sửa tuyến nhiệm vụ | `sinh_sua_tuyen.py` | in thân khối `-- >>> sua_tuyen_nhiem_vu.sql` của `sql/nang_cap.sql` từ CSDL đang chạy + `server/cMap` + bảng cổng `RealController` / `BanDoHoenn`: vùng đích bước địa điểm (ô đi được, liên thông với cổng, ba làng tương đương, bản đồ không tới được thì tắt) và chữ "Phần thưởng" sinh từ dòng thưởng (cột 1000) |
+| Sửa tuyến nhiệm vụ | `sinh_sua_tuyen.py` | in thân khối `-- >>> sua_tuyen_nhiem_vu.sql` của `sql/htbb.sql` từ CSDL đang chạy + `server/cMap` + bảng cổng `RealController` / `BanDoHoenn`: vùng đích bước địa điểm (ô đi được, liên thông với cổng, ba làng tương đương, bản đồ không tới được thì tắt) và chữ "Phần thưởng" sinh từ dòng thưởng (cột 1000) |
 | Bản đồ và tile | `DungBoTileMoi.java`, `VeMapMoi.java`, `GiaiMaMap.java`, `cai_map_j2me.sh` | dựng bộ tile mới, vẽ lại bản đồ `server/cMap`, giải mã bản đồ ra JSON/ảnh xem trước, cài bản đồ vào client J2ME. **Đừng chạy** `DoiTileMap.java` (công cụ cũ, ghi đè tile) |
 | Đường dẫn client | `duong_client.py` | tìm thư mục `Assets` của client Unity (đặt `HTBB_CLIENT_ASSETS=client_pc_ios/Assets` nếu cần) |
 | Chạy thử | `chay_tren_novadb.sh` | chạy toàn bộ server (NovaDB + login + game) trên máy dev; `dung` để tắt |
@@ -50,8 +50,8 @@ Bot nói giao thức thật của server (khoá `-40`, đăng nhập, tạo / ch
 | `KichBanNPC.java` | NPC: `npc_tat_ca` mở mọi NPC (bot server, hoa tiêu, NPC tĩnh) và chọn mọi mục (không im lặng, không Exception trong log `-Dlog=`, không chữ cũ / mục đã gỡ); `npc_dich_vu` dịch vụ NPC tĩnh ở thị trấn ngoài trời (Chansey, Kecleon, Machamp, Bronzong, Meowth, Persian, Kangaskhan, Lapras, Pidgeot); `npc_su_kien` NPC sự kiện đang hiện; `npc_do` chỉ in bảng NPC → mục → trả lời (kiểm toán). Tài khoản GM: `sv.adminAccounts` |
 | `KichBanDauTruong.java` | Đấu trường Bảo Bối 3v3 (gói `-109`, `-Dban=908`): `dt_tran` hai bot có Hộp PC (nạp qua SQL) mở NPC Đấu trường → lưu đội tấn công / phòng thủ → tìm đối thủ → thách đấu → chọn chiêu, bỏ trống một lượt (máy chọn sau 20 giây), Tự động → kết quả; kiểm `tob_dau_truong_*`, lượng khoá, báo bên phòng thủ, hết 5 lượt / ngày; cần `-Ddb`, `-Ddbport` |
 | `KichBanNhiemVu.java` | nhiệm vụ chính / phụ qua gói `-64` đúng như client thật: `nv_noi_chuyen` (nhiệm vụ nói chuyện client gửi thẳng "trả" → sang bước sau), `nv_nhan_kep` (chạm đúp, danh sách cũ), `nv_danh_quai` (nhận, trả sớm có lý do), `nv_huy` (nút Huỷ client 0.9.7 gói 52 và -64), `nv_phu` (phụ nói chuyện, không nhận lại, một phụ một lúc), `nv_dang_nhap_lai` |
-| `KichBanHuongDan.java` | hướng dẫn tân thủ (khối `them_huong_dan_tan_thu.sql` của `sql/nang_cap.sql`): `hd_toan_bo` (tài khoản mới tinh: sân 105 → làng → menu Làm / Bỏ qua → đi bộ tới từng NPC theo cMap, 10 bước nhận / trả `-64`, ra đồng Pallet qua cổng, hạ Caterpie, uống thuốc, cộng điểm kỹ năng, mặc Ruy băng, thả câu ở ao làng → bàn giao chương 1), `hd_bo_qua` (xác nhận `-32` id 96, đủ thưởng, không bỏ qua lần hai), `hd_so_tay`, `hd_tien_do_cu`; cần `-Ddb`, `-Dnoi` |
-| `KichBanSuaTuyen.java` | sửa tuyến (khối `sua_tuyen_nhiem_vu.sql` của `sql/nang_cap.sql`): `st_lang_vung` (tài khoản mới Kanto → Pewter, Johto → Blackthorn, NPC hướng dẫn đủ), `st_lang_cu` (nhân vật cũ giữ làng), `st_dia_diem` (GM thử cấp 20: C01.5 nghe Chansey = đang làm, chưa tới không trả được, đi bộ tới ô 53,19 ở Pallet = xong + thưởng); `hd_toan_bo_johto` = 10 bước hướng dẫn với nhân vật Johto; cần `-Ddb`, `-Ddbport`, `-Dnoi`, `sv.choPhepTaoTenGM=1` (máy thử) |
+| `KichBanHuongDan.java` | hướng dẫn tân thủ (khối `them_huong_dan_tan_thu.sql` của `sql/htbb.sql`): `hd_toan_bo` (tài khoản mới tinh: sân 105 → làng → menu Làm / Bỏ qua → đi bộ tới từng NPC theo cMap, 10 bước nhận / trả `-64`, ra đồng Pallet qua cổng, hạ Caterpie, uống thuốc, cộng điểm kỹ năng, mặc Ruy băng, thả câu ở ao làng → bàn giao chương 1), `hd_bo_qua` (xác nhận `-32` id 96, đủ thưởng, không bỏ qua lần hai), `hd_so_tay`, `hd_tien_do_cu`; cần `-Ddb`, `-Dnoi` |
+| `KichBanSuaTuyen.java` | sửa tuyến (khối `sua_tuyen_nhiem_vu.sql` của `sql/htbb.sql`): `st_lang_vung` (tài khoản mới Kanto → Pewter, Johto → Blackthorn, NPC hướng dẫn đủ), `st_lang_cu` (nhân vật cũ giữ làng), `st_dia_diem` (GM thử cấp 20: C01.5 nghe Chansey = đang làm, chưa tới không trả được, đi bộ tới ô 53,19 ở Pallet = xong + thưởng); `hd_toan_bo_johto` = 10 bước hướng dẫn với nhân vật Johto; cần `-Ddb`, `-Ddbport`, `-Dnoi`, `sv.choPhepTaoTenGM=1` (máy thử) |
 | `KichBanCoPk.java` | khăn PK (`real.CoPkGame`): `cp_bat_tat` (đeo / tháo ngay, không tên đỏ), `cp_danh_roi_tat` (đánh người → chờ 10 giây có số giây, người bị đánh không đổi), `cp_vao_lai` (vào lại = đã tháo), `cp_ten_do` (nghiệp 300 trong `pInfo` → không đeo, có báo); cần `-Ddb`, `-Ddbport` |
 | `BotXuyenSuot` | chơi xuyên suốt từ tài khoản mới theo nhiệm vụ; bot điều phối tua đồng hồ ảo (chỉ máy thử `sv.cho_phep_thu_nghiem=1`) |
 | `BotNguoiChoi` | bot theo kiểu người chơi (cày, cốt truyện, sưu tầm, buôn bán, PvP, xã hội…) |

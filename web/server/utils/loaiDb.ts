@@ -1,6 +1,6 @@
 /**
  * Pokédex 1.025 loài: nối logic thuần shared/utils/loaiDuLieu.ts vào CSDL game (bảng data_loai* của
- * sql/nang_cap.sql, khối them_loai_day_du.sql). Danh sách nhớ 5 phút trong RAM (dữ liệu tĩnh, đổi khi chạy lại tệp SQL).
+ * sql/htbb.sql, khối them_loai_day_du.sql). Danh sách nhớ 5 phút trong RAM (dữ liệu tĩnh, đổi khi chạy lại tệp SQL).
  */
 import type { LoaiTomTat } from '~~/shared/utils/loai'
 import { laThieuBang, taiDanhSachLoai, type Truy } from '~~/shared/utils/loaiDuLieu'

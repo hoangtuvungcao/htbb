@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  */
 public final class KiemBangThuocTinh {
 
-    private static final String NGUON = "../sql/htbb_day_du.sql";
+    private static final String NGUON = "../sql/htbb.sql (phan A)";
 
     /** Module Than Khi dung toi id 186, nen 0..186 phai co du. */
     private static final int ID_CAN_LIEN_TUC_DEN = 186;
@@ -40,7 +40,7 @@ public final class KiemBangThuocTinh {
     public static void chay() {
         Kiem.nhom("Bang data_attribute trong ban seed - id phai lien tuc 0..186");
 
-        final String sql = doc(NGUON);
+        final String sql = DayDu.sql();
         Kiem.dung("doc duoc " + NGUON, sql.length() > 500);
         if (sql.isEmpty()) {
             return;

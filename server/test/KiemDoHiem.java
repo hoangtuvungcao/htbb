@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 /**
  * Mau do hiem MOT nguon (de xuat 4): tools/cauhinh/do_hiem.json -> DoHiemSinh server / client, web doHiem.gen.ts,
- * sql/nang_cap.sql (khoi them_do_hiem.sql), SinhPhuKien. Kiem: ban sinh khop json, thu tu bac theo dac ta, anh xa colorName theo gia tri
+ * sql/htbb.sql (khoi them_do_hiem.sql), SinhPhuKien. Kiem: ban sinh khop json, thu tu bac theo dac ta, anh xa colorName theo gia tri
  * that, tuong phan doc duoc (nen sang trang / giay da NRO, nen toi), khong con bang mau do hiem rieng o noi khac.
  */
 public final class KiemDoHiem {
@@ -38,7 +38,7 @@ public final class KiemDoHiem {
         Kiem.bang("DoHiemSinh (server) khop json (chay python3 tools/cauhinh/sinh_do_hiem.py)", 0, lech);
         final String cl = doc("../client_jar/src/game/pokemon/DoHiemSinh.java");
         final String ts = doc("../web/shared/utils/doHiem.gen.ts");
-        final String sq = DayDu.phanNangCap("them_do_hiem.sql"); // khoi sinh trong sql/nang_cap.sql phan 11
+        final String sq = DayDu.phanNangCap("them_do_hiem.sql"); // khoi sinh trong sql/htbb.sql phan 11
         int lechCl = 0, lechTs = 0, lechSql = 0;
         for (final String[] b : bac) {
             lechCl += cl.contains("0x" + b[2].substring(1)) && cl.contains("0x" + b[3].substring(1)) && cl.contains("0x" + b[4].substring(1)) ? 0 : 1;
@@ -47,8 +47,8 @@ public final class KiemDoHiem {
         }
         Kiem.bang("client DoHiemSinh khop json", 0, lechCl);
         Kiem.bang("web doHiem.gen.ts khop json", 0, lechTs);
-        Kiem.bang("nang_cap.sql khoi them_do_hiem.sql khop json", 0, lechSql);
-        Kiem.dung("sinh_do_hiem.py ghi khoi them_do_hiem.sql cua nang_cap.sql (mot tep SQL, --kiem)", doc("../tools/cauhinh/sinh_do_hiem.py").contains("ghep_nang_cap(")
+        Kiem.bang("htbb.sql khoi them_do_hiem.sql khop json", 0, lechSql);
+        Kiem.dung("sinh_do_hiem.py ghi khoi them_do_hiem.sql cua htbb.sql (mot tep SQL, --kiem)", doc("../tools/cauhinh/sinh_do_hiem.py").contains("ghep_nang_cap(")
                 && !new java.io.File("../sql/them_do_hiem.sql").exists());
         Kiem.dung("SinhPhuKien.java co khoi sinh tu do_hiem.json", doc("../tools/pokemon/SinhPhuKien.java").contains("SINH TU tools/cauhinh/do_hiem.json: BAT DAU"));
         Kiem.sai("khoi them_do_hiem.sql khong DROP / utf8mb4", sq.contains("DROP TABLE") || sq.contains("utf8mb4"));

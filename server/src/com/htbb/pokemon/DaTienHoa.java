@@ -18,7 +18,7 @@ public final class DaTienHoa {
 
     public static final int[] DEX = {134, 135, 136, 196, 197, 470, 471, 700};
 
-    /** Ten hien thi (khop cot name cua cac dong data_item nay trong sql/htbb_day_du.sql). */
+    /** Ten hien thi (khop cot name cua cac dong data_item nay trong sql/htbb.sql). */
     public static final String[] TEN = {
         "Đá Nước", "Đá Sấm", "Đá Lửa", "Đá Mặt Trời",
         "Đá Mặt Trăng", "Đá Lá", "Đá Băng", "Ruy Băng Tiên"

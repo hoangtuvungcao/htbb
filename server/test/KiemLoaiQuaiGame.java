@@ -19,7 +19,7 @@ import real.MonsterTemplate;
 /**
  * NOI loai rieng tung con quai vao game (real.LoaiQuaiGame): hoi sinh doi loai theo vung + dai cap (mau giu nguyen),
  * goi -125 sau lenh 4 chi cho client >= 908, client cu thay loai cua mau (fallback), Pokedex ghi loai nguoi do thay,
- * Monster.update bao client them lai quai khi loai rieng doi. Dung bang loai that tu khoi them_loai_day_du.sql cua sql/nang_cap.sql.
+ * Monster.update bao client them lai quai khi loai rieng doi. Dung bang loai that tu khoi them_loai_day_du.sql cua sql/htbb.sql.
  */
 public final class KiemLoaiQuaiGame {
 

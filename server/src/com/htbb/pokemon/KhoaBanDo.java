@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * KHOA BAN DO (tien trinh kieu NRO / NSO): luat vao tung ban do goc doc tu bang {@code data_ban_do_mo_khoa} (CSDL la
- * nguon, sql/nang_cap.sql phan 7). Mot dong / ban do goc (Map.mapIDLoadMap):
+ * nguon, sql/htbb.sql phan 7). Mot dong / ban do goc (Map.mapIDLoadMap):
  * {@code cap_toi_thieu}, {@code ma_nhiem_vu} (+ {@code ten_nhiem_vu} de bao), {@code cho_phep_tu_dong} +
  * {@code ly_do_tu_dong}. Khong co dong = mo, cho tu dong.
  *
@@ -155,7 +155,7 @@ public final class KhoaBanDo {
         } catch (final Exception e) {
             System.out.println("############################################################");
             System.out.println("[KHOA BAN DO] LOI: khong doc duoc bang " + BANG + " (" + e + ") -> moi ban do MO.");
-            System.out.println("[KHOA BAN DO] Chay: sudo bash /opt/htbb/vps/nang_cap_csdl.sh (nap sql/nang_cap.sql).");
+            System.out.println("[KHOA BAN DO] Chay: sudo bash /opt/htbb/vps/nang_cap_csdl.sh (nap sql/htbb.sql).");
             System.out.println("############################################################");
             daNap = false;
             return false;
@@ -249,7 +249,7 @@ public final class KhoaBanDo {
         }
     }
 
-    /** Server tu tao bang mien tru (nang_cap.sql cung tao). */
+    /** Server tu tao bang mien tru (htbb.sql cung tao). */
     public static void taoBang() {
         Connection c = null;
         PreparedStatement p = null;

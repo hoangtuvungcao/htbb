@@ -67,7 +67,7 @@ const cotChiTiet = [
     </template>
     <UAlert v-if="data && !data.coBang" color="neutral" variant="subtle" icon="i-lucide-info"
       title="Chưa có bảng tob_log_chuyen_gia_tri"
-      description="Máy chủ game bản mới tự tạo bảng ở lần chuyển xu đầu tiên; hoặc chạy sql/nang_cap.sql." />
+      description="Máy chủ game bản mới tự tạo bảng ở lần chuyển xu đầu tiên; hoặc chạy sql/htbb.sql." />
     <div v-else class="space-y-6">
       <div>
         <h3 class="mb-2 text-sm font-semibold text-highlighted">Người nhận từ nhiều người gửi</h3>

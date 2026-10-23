@@ -1,6 +1,6 @@
 /**
  * ĐỐI CHIẾU SQL == JSON: các mục website nay đọc từ CSDL game lúc chạy (server/utils/duLieuSql.ts) phải ra
- * ĐÚNG y bản JSON đóng gói (dự phòng lúc build). Đọc dòng bảng từ sql/htbb_day_du.sql (tệp nạp CSDL production)
+ * ĐÚNG y bản JSON đóng gói (dự phòng lúc build). Đọc dòng bảng từ phần A của sql/htbb.sql (tệp nạp CSDL)
  * bằng shared/utils/sqlDump.ts rồi chạy chính các hàm biến đổi của shared/utils/duLieuSqlThuan.ts.
  * Không cần CSDL. Chạy: npm test.
  */
@@ -9,6 +9,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { docBangSql } from '../shared/utils/sqlDump.ts'
+import { phanDayDu } from './htbbSql.ts'
 import {
   BANG_CAM_NANG, bangCapDoTuSql, bangCapTuSql, camNangDeTuSql, cheTaoTuSql, cuaHangTuSql, ghepCamNang, gymTuSql,
   kinhTeTuSql, lichBossTuSql, nangCapTuSql, nangLuongTuSql, nhanhEeveeTuSql, suKienTuSql, suKienVatPhamTuSql,
@@ -16,7 +17,7 @@ import {
 } from '../shared/utils/duLieuSqlThuan.ts'
 
 const doc = (p: string) => readFileSync(fileURLToPath(new URL(p, import.meta.url)), 'utf8')
-const SQL = doc('../../sql/htbb_day_du.sql')
+const SQL = phanDayDu()
 const json = (p: string) => JSON.parse(doc(`../shared/data/${p}`))
 const CN = json('cam-nang.json')
 const ND = json('cam-nang-noi-dung.json')

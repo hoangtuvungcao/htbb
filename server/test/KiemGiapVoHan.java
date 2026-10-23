@@ -30,8 +30,7 @@ public final class KiemGiapVoHan {
     static final List<Message> GOI = new ArrayList<Message>();
     static short idKe = 27000;
 
-    static final String[] TEP_SQL = {"../sql/htbb_day_du.sql"};
-    static final String TEP_CSV = "../du_lieu/noi_dung_chieu.csv";
+        static final String TEP_CSV = "../du_lieu/noi_dung_chieu.csv";
     static final String TEP_SUA = "../sql/sua_096_1_logic.sql";
 
     public static void chay() {
@@ -39,7 +38,7 @@ public final class KiemGiapVoHan {
         final short[][][] cdCu = chep(CharManager.SKILL_COOLDOWN);
         final boolean lauDaiCu = com.htbb.pokemon.LauDai.bat();
         try {
-            final List<Map<String, String>> dump = bangChieu(doc(TEP_SQL[0]));
+            final List<Map<String, String>> dump = bangChieu(DayDu.sql());
             com.htbb.pokemon.LauDai.dat(true);
             napHoiChieu(dump); // nhu ChieuLauDai.apDung
             duongLenh51();
@@ -278,8 +277,8 @@ public final class KiemGiapVoHan {
 
     static void duLieu(final List<Map<String, String>> dump) throws Exception {
         final List<List<Map<String, String>>> nguon = new ArrayList<List<Map<String, String>>>();
-        nguon.add(dump); // mot tep SQL: CSDL (ban chup htbb_day_du.sql) la nguon duy nhat - khong con pokemon_noi_dung.sql / csv
-        final String[] ten = {"htbb_day_du.sql"};
+        nguon.add(dump); // mot tep SQL: CSDL (ban chup htbb.sql) la nguon duy nhat - khong con pokemon_noi_dung.sql / csv
+        final String[] ten = {"htbb.sql"};
         for (int n = 0; n < nguon.size(); n++) {
             final List<String> loi = new ArrayList<String>();
             int hoTro = 0;
@@ -319,7 +318,7 @@ public final class KiemGiapVoHan {
             Kiem.bang(ten[n] + ": moi dong chieu: hoi chieu ho tro > thoi luong + bien, >= 0,5 s, co PP", "[]", loi.toString());
         }
         // tep nang cap: moi chieu ho tro co san, san >= thoi luong + bien, khong ha gia tri seed
-        final String sua = DayDu.phanNangCap("sua_096_1_logic.sql"); // tep cu gop vao sql/nang_cap.sql phan 10
+        final String sua = DayDu.phanNangCap("sua_096_1_logic.sql"); // tep cu gop vao sql/htbb.sql phan 10
         Kiem.dung("sua_096_1_logic.sql co khoi [giap-vo-han]", sua.contains("[giap-vo-han]") && sua.contains("[/giap-vo-han]"));
         final Matcher m = Pattern.compile("GREATEST\\(`hoi_chieu_giay`, (\\d+(?:\\.\\d+)?)\\).*?WHERE `dong` = (\\d+) AND `so_hieu` = (\\d+);").matcher(sua);
         final Map<String, Double> san = new HashMap<String, Double>();

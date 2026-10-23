@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sinh khoi "SUA CHUOI CHINH" cua sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql) tu CSDL dang chay + server/cMap + server/map.
+"""Sinh khoi "SUA CHUOI CHINH" cua sql/htbb.sql (khoi them_huong_dan_tan_thu.sql) tu CSDL dang chay + server/cMap + server/map.
 
 Kiem toan chuoi chinh (data_quest_moi mainsub=0) sau huong dan tan thu va in ra lenh SQL idempotent (REPLACE / SET theo
 id) sua cac loi du lieu nguoi choi thay:
@@ -11,7 +11,7 @@ id) sua cac loi du lieu nguoi choi thay:
   3. Buoc noi chuyen ma loi dau la mot NPC lang KHAC nguoi giao (vd C21.5 Chansey noi nhung Xatu giao) -> giao = NPC noi.
 
 Chay o goc repo:  MYSQL="mysql -h127.0.0.1 -P3399 -uroot" python3 -I tools/pokemon/sinh_sua_chuoi_chinh.py > /tmp/khoi.sql
-roi dan khoi vao giua hai dong danh dau SUA CHUOI CHINH cua sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql). Chi doc, khong ghi CSDL.
+roi dan khoi vao giua hai dong danh dau SUA CHUOI CHINH cua sql/htbb.sql (khoi them_huong_dan_tan_thu.sql). Chi doc, khong ghi CSDL.
 Bo qua cac id da sua tay trong tep SQL (BO_QUA).
 """
 import os
@@ -24,7 +24,7 @@ GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))
 LANG = (0, 70, 80)
 NHAN_LANG = "Làng khởi đầu"
 NHAN_LANG_NGAN = "làng"
-# id da sua tay trong sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql) (huong dan + chuong 1-2)
+# id da sua tay trong sql/htbb.sql (khoi them_huong_dan_tan_thu.sql) (huong dan + chuong 1-2)
 BO_QUA = set(range(901, 911)) | {1001, 1005, 1010}
 TEN_NPC = {0: "Chansey", 1: "Kecleon", 2: "Machamp", 3: "Bronzong", 5: "Xatu", 6: "Persian", 7: "Pidgeot", 8: "Snorlax",
            9: "Kangaskhan", 10: "Lapras", 21: "Blaziken", 22: "Meowth", 23: "Torkoal", 25: "Heracross", 16: "Tauros"}

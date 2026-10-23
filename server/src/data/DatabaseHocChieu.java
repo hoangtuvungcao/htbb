@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * CSDL cua hoc chieu theo loai + Diem huan luyen (real.HocChieuGame). Bang + du lieu o sql/nang_cap.sql (phan 11, hoc_chieu_huan_luyen.sql)
+ * CSDL cua hoc chieu theo loai + Diem huan luyen (real.HocChieuGame). Bang + du lieu o sql/htbb.sql (phan 11, hoc_chieu_huan_luyen.sql)
  * (idempotent); may chu chi tu tao BANG neu thieu (khong co du lieu learnset -&gt; giu luat cu).
  * Moi ham nuot loi (in ra): khong duoc lam chet luong dang nhap / ban do.
  */

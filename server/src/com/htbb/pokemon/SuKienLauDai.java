@@ -14,7 +14,7 @@ import java.util.Map;
  * hen LAN KE TIEP (lan dang dien ra hoac sap toi gan nhat) - job dem goi lai de hen lan sau.
  *
  * LICH nap tu bang data_su_kien_nam (NGUON DUY NHAT, sinh boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py) qua
- * com.htbb.dulieu.DuLieuSql luc khoi dong; test nap tu sql/htbb_day_du.sql (test/KiemDuLieuSql ghim van tay
+ * com.htbb.dulieu.DuLieuSql luc khoi dong; test nap tu sql/htbb.sql (test/KiemDuLieuSql ghim van tay
  * cua ban chep Java cu).
  */
 public final class SuKienLauDai {

@@ -19,7 +19,7 @@ import com.htbb.pokemon.ThongSoLauDai;
  *
  * Truoc day may chu doc ban CHEP cung trong Java (ThongSoLauDai, SuKienLauDai.LICH, DanhMucSinh, diem cau ca tinh
  * lai tu ban do, danh sach trang bi giftcode) trong khi CSDL co dung bang do. Nay may chu nap bang SQL luc khoi
- * dong ({@code data.DatabaseDuLieuSql}, ngay sau kiemTraCSDL), test va cong cu nap tu tep {@code sql/htbb_day_du.sql}
+ * dong ({@code data.DatabaseDuLieuSql}, ngay sau kiemTraCSDL), test va cong cu nap tu phan A (CSDL day du) cua tep {@code sql/htbb.sql}
  * ({@link DocDumpSql}). Lop nay THUAN: chi doi {@link BangSql} -> cau truc Java va kiem hinh dang bang (so dong,
  * khoa lien tuc, gia tri dong nhat giua cac bac...). Sai hinh dang = loi ro rang, KHONG lang le dung so 0.
  *
@@ -446,23 +446,19 @@ public final class DuLieuSql {
         return kq;
     }
 
-    /** Duong dan mac dinh cua dump day du khi chay o server/ (test) hoac goc repo (cong cu). */
+    /** Duong dan mac dinh cua sql/htbb.sql khi chay o server/ (test) hoac goc repo (cong cu). */
     public static String duongDumpDayDu() {
-        for (final String p : new String[]{"../sql/htbb_day_du.sql", "sql/htbb_day_du.sql"}) {
-            if (new java.io.File(p).isFile()) {
-                return p;
-            }
-        }
-        return "../sql/htbb_day_du.sql";
+        return DocDumpSql.duongHtbb();
     }
 
     /**
-     * Test / cong cu mo phong: nap moi bang tu sql/htbb_day_du.sql. Hong = nem loi (khong chay tiep voi so 0).
+     * Test / cong cu mo phong: nap moi bang tu phan A (CSDL day du) cua sql/htbb.sql. Hong = nem loi (khong chay tiep
+     * voi so 0).
      */
     public static KetQua napTuDumpDayDu() {
         final KetQua kq;
         try {
-            kq = napTatCa(DocDumpSql.tuTep(duongDumpDayDu()));
+            kq = napTatCa(DocDumpSql.tuTepDayDu(duongDumpDayDu()));
         } catch (final java.io.IOException e) {
             throw new IllegalStateException("khong doc duoc " + duongDumpDayDu() + ": " + e);
         }

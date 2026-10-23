@@ -9,7 +9,7 @@ import real.Char;
 import real.Monster;
 
 /**
- * Noi NGAY CONG DONG ({@link NgayCongDong}) vao game. Du lieu data_ngay_cong_dong (sql/nang_cap.sql phan 11), nap
+ * Noi NGAY CONG DONG ({@link NgayCongDong}) vao game. Du lieu data_ngay_cong_dong (sql/htbb.sql phan 11), nap
  * luc khoi dong (SuKien.nap - truoc khi ghi lich nam, de tin web co ten dong cua thang) va moi 10 phut. Diem moc:
  *
  *   HeSinhThaiGame.khiHoiSinh   -> {@link #loaiNoiBat} (doi loai trong gio vang, tren ban do cua dong)

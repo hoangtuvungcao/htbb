@@ -19,7 +19,7 @@ import com.htbb.pokemon.LoaiPokemon;
 import com.htbb.pokemon.ThongSoLauDai;
 
 /**
- * HOC CHIEU THEO LOAI + DIEM HUAN LUYEN (de xuat 1). Doc phan hoc_chieu_huan_luyen.sql cua sql/nang_cap.sql (+ CSDL day du) va kiem:
+ * HOC CHIEU THEO LOAI + DIEM HUAN LUYEN (de xuat 1). Doc phan hoc_chieu_huan_luyen.sql cua sql/htbb.sql (+ CSDL day du) va kiem:
  * <ul>
  *   <li>learnset hop le cho MOI loai nguoi choi (21 loai): du o, cap hoc &gt;= cap loai xuat hien, tien hoa khong mat
  *       chieu, he chieu hop he loai (hoac Thuong / phu he co ly do), nhanh Eevee co STAB o 2/8/10, chieu NPC dung o
@@ -35,13 +35,12 @@ import com.htbb.pokemon.ThongSoLauDai;
  */
 public final class KiemHocChieu {
 
-    static final String TEP = "../sql/nang_cap.sql"; // phan "-- >>> hoc_chieu_huan_luyen.sql"
 
     private KiemHocChieu() {
     }
 
     public static void chay() {
-        Kiem.nhom("Hoc chieu theo loai + Diem huan luyen (sql/nang_cap.sql phan hoc_chieu_huan_luyen.sql)");
+        Kiem.nhom("Hoc chieu theo loai + Diem huan luyen (sql/htbb.sql phan hoc_chieu_huan_luyen.sql)");
         try {
             chayThat();
         } catch (final Exception e) {
@@ -210,7 +209,7 @@ public final class KiemHocChieu {
     }
 
     static void chayThat() throws Exception {
-        final String sql = DayDu.phanNangCap("hoc_chieu_huan_luyen.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("hoc_chieu_huan_luyen.sql"); // tep cu gop vao sql/htbb.sql phan 11
         Kiem.dung("SQL idempotent: CREATE TABLE IF NOT EXISTS", !sql.matches("(?s).*CREATE TABLE (?!IF NOT EXISTS).*"));
         Kiem.sai("SQL khong INSERT ... SELECT ... ON DUPLICATE (luat repo)", sql.matches("(?s).*INSERT INTO[^;]*SELECT[^;]*ON DUPLICATE.*"));
         Kiem.sai("SQL khong 'col=col' trong ON DUPLICATE", sql.matches("(?s).*\\b(\\w+)=\\1\\b.*"));
@@ -683,7 +682,7 @@ public final class KiemHocChieu {
         final String cs = doc("src/real/CharChiSo.java");
         Kiem.dung("CharChiSo ap Diem huan luyen HP / PP / Tan cong / Phong thu",
                 cs.contains("HuanLuyen.HP") && cs.contains("HuanLuyen.PP") && cs.contains("HuanLuyen.TAN_CONG") && cs.contains("HuanLuyen.PHONG_THU"));
-        final String danhMuc = DayDu.danhMucJson(); // danh muc trong CSDL (sql/htbb_day_du.sql)
+        final String danhMuc = DayDu.danhMucJson(); // danh muc trong CSDL (sql/htbb.sql)
         for (final String k : new String[]{real.HocChieuGame.K_CHIEU, real.HocChieuGame.K_HUAN_LUYEN, real.HocChieuGame.K_DIEM_MOI_CAP,
             real.HocChieuGame.K_TRAN_THUONG, real.HocChieuGame.K_GIA_TAY, real.HocChieuGame.K_HOI_TAY}) {
             Kiem.dung("khoa cau hinh " + k + " co trong danh_muc.json", danhMuc.contains("\"khoa\": \"" + k + "\""));

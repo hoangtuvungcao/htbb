@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Trao đổi & chợ Pokémon (0.9.8). Số liệu: shared/utils/heThong098.ts (trao_doi.*, cho_pokemon.*, khung giá
- * com.htbb.pokemon.ChoPokemon) — đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts.
+ * com.htbb.pokemon.ChoPokemon) — đối chiếu sql/htbb.sql ở tests/he-thong-098.test.ts.
  */
 import { BAC_LOAI_BAT, CHO_POKEMON, TRAO_DOI, phanTram098 } from '~~/shared/utils/heThong098'
 

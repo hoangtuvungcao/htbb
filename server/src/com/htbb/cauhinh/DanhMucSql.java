@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 /**
  * Danh muc khoa cau hinh trung tam doc tu SQL: {@code cau_hinh_danh_muc} (moi khoa) + {@code cau_hinh_nhom}
- * (nhom hien thi). Hai bang la NGUON DUY NHAT (sua trong CSDL; ban chup sql/htbb_day_du.sql, CSDL cu: sql/nang_cap.sql).
+ * (nhom hien thi). Hai bang la NGUON DUY NHAT (sua trong CSDL; ban chup sql/htbb.sql, CSDL cu: sql/htbb.sql).
  * Thay ban chep Java DanhMucSinh (da xoa, P1). Lop THUAN.
  *
  * {@code gioi_han} la JSON: min, max, buoc, soPhanTu, mau, doDai, luaChon (ma), luaChonTen (nhan, cho web), hoa.

@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * Noi dung day du 1-2 nam (docs/thiet-ke-game.md): trang bi 11 bac, vat pham,
  * chieu, quai/Gym/boss, bang roi, su kien, trang tri, cua hang, che tao.
  *
- * VI SAO: noi dung nam trong CSDL day du sql/htbb_day_du.sql (bang data_noi_dung_*, data_item 1001..1199,
+ * VI SAO: noi dung nam trong CSDL day du sql/htbb.sql (bang data_noi_dung_*, data_item 1001..1199,
  * data_monster nam 2 ...) - nguon duy nhat, sua tren trang quan tri. Chinh so pha ngan sach (bac moi manh hon
  * 1,1 x bac cu +15, gia ngoai tam thu nhap, do Hoan my roi tu quai thuong, chieu lech TTK...) hoac sai tham chieu
  * -> test do. Bang tai nguyen client (du_lieu/bang_*.csv, kiem_ke_sprite.csv) doi chieu them. Chi doc tep.
@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 public final class KiemNoiDung {
 
     private static final String D = "../du_lieu/";
-    private static final String F_DUMP = DayDu.TEP;
     private static final int ID_TU = 1001;
     private static final int ID_DEN = 1199;
     private static final int SO_THUOC = 162;
@@ -37,7 +36,7 @@ public final class KiemNoiDung {
     public static void chay() {
         Kiem.nhom("Noi dung day du: trang bi, vat pham, chieu, quai, roi, su kien, cua hang");
         try {
-            final String dump = doc(F_DUMP);
+            final String dump = DayDu.sql();
             // Dump co the da sinh lai CO dai noi dung (1001..1199) -> "cu" = ngoai dai do.
             final Set<Integer> itemCu = new HashSet<Integer>();
             for (final Integer i : idTrongDump(dump, "data_item")) {
@@ -83,7 +82,7 @@ public final class KiemNoiDung {
         Kiem.dung("item moi nam trong dai danh rieng " + ID_TU + ".." + ID_DEN, trongDai);
         Kiem.dung("item moi khong de len data_item co san", khongDe);
         Kiem.bang("data_potion giu nguyen " + SO_THUOC + " dong (Char.SO_O_THUOC)", Integer.valueOf(SO_THUOC),
-                Integer.valueOf(idTrongDump(docKhongLoi(F_DUMP), "data_potion").size()));
+                Integer.valueOf(idTrongDump(DayDu.sql(), "data_potion").size()));
         // Khoa chinh moi CSV noi bo khong trung
         final String[][] khoa = {{"trang_bi", "ma"}, {"bo", "bac,so_mon"}, {"nguyen_lieu", "ma"},
             {"vat_lieu_nang_cap", "bac,cong"}, {"ngoc_he", "he,cap"}, {"vat_pham", "ma"}, {"chieu", "dong,so_hieu"},
@@ -920,7 +919,7 @@ public final class KiemNoiDung {
     }
 
     /** CSV (RFC 4180, dau phay, nhay kep) -> list map theo header. */
-    /** Bang tai nguyen client con trong du_lieu/ doc tu tep; bang thiet ke cu (nay o CSDL) doc tu htbb_day_du.sql. */
+    /** Bang tai nguyen client con trong du_lieu/ doc tu tep; bang thiet ke cu (nay o CSDL) doc tu htbb.sql. */
     static List<Map<String, String>> csv(final String p) throws Exception {
         if (!new java.io.File(p).isFile()) {
             return DayDu.bangThietKe(p);

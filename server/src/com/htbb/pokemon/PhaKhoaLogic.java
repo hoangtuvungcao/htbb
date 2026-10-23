@@ -16,7 +16,7 @@ package com.htbb.pokemon;
  */
 public final class PhaKhoaLogic {
 
-    /** data_item id cua "Đá phá khoá" (type 28) - PHAI khop sql/sua_096_1_logic.sql + sql/htbb_day_du.sql. */
+    /** data_item id cua "Đá phá khoá" (type 28) - PHAI khop sql/sua_096_1_logic.sql + sql/htbb.sql. */
     public static final int ID_DA_PHA_KHOA = 1295;
 
     /** {colorName, gio_phan_tram (100 = 1 gio thu nhap), cong_moi_cap_phan_tram}. */

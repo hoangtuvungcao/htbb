@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 /**
  * Thoi tiet theo khung gio, anh huong co tran, phu mau mua, goi -118 (de xuat 8): com.htbb.pokemon.ThoiTietLich,
- * GoiThoiTiet, sql/nang_cap.sql (phan them_thoi_tiet_mua.sql).
+ * GoiThoiTiet, sql/htbb.sql (phan them_thoi_tiet_mua.sql).
  */
 public final class KiemThoiTiet {
 
@@ -254,8 +254,8 @@ public final class KiemThoiTiet {
     }
 
     static void sql() {
-        Kiem.nhom("sql/nang_cap.sql phan them_thoi_tiet_mua.sql (idempotent, khop mac dinh)");
-        final String s = DayDu.phanNangCap("them_thoi_tiet_mua.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        Kiem.nhom("sql/htbb.sql phan them_thoi_tiet_mua.sql (idempotent, khop mac dinh)");
+        final String s = DayDu.phanNangCap("them_thoi_tiet_mua.sql"); // tep cu gop vao sql/htbb.sql phan 11
         Kiem.dung("doc duoc tep", s.length() > 1000);
         Kiem.sai("khong DROP TABLE", s.contains("DROP TABLE"));
         Kiem.sai("khong INSERT ... SELECT ... ON DUPLICATE", Pattern.compile("INSERT[^;]*SELECT[^;]*ON DUPLICATE", Pattern.DOTALL).matcher(s).find());

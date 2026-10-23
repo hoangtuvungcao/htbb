@@ -9,7 +9,7 @@ import {
 
 export type Truy = (sql: string, thamSo?: unknown[]) => Promise<Record<string, any>[]>
 
-/** Lỗi "bảng chưa có" của MariaDB (chưa chạy sql/nang_cap.sql, khối them_loai_day_du.sql). */
+/** Lỗi "bảng chưa có" của MariaDB (chưa chạy sql/htbb.sql, khối them_loai_day_du.sql). */
 export function laThieuBang(e: any): boolean {
   return e?.code === 'ER_NO_SUCH_TABLE' || e?.errno === 1146 || /doesn't exist|no such table/i.test(String(e?.message ?? ''))
 }

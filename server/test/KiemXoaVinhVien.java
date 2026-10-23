@@ -29,7 +29,7 @@ public final class KiemXoaVinhVien {
     private static final String F_NHANVAT = "server/api/admin/nhanvat/[id]/xoa.post.ts";
     private static final String F_TAIKHOAN = "server/api/admin/taikhoan/[id].post.ts";
     private static final String F_TK_UTIL = "server/utils/taiKhoanAdmin.ts";
-    private static final String F_SQL = "../sql/htbb_day_du.sql";
+    private static final String F_SQL = "../sql/htbb.sql (phan A)";
 
     /** {ten bang, cot dung de khoa theo nhan vat} - dung THEO DUNG THU TU LenhWeb da xoa. */
     private static final String[][] BANG_CON_THEO_THU_TU = {
@@ -62,7 +62,7 @@ public final class KiemXoaVinhVien {
         Kiem.nhom("Xoa vinh vien tai khoan/nhan vat (LenhWeb + HTBB-Web nhanvat/taikhoan)");
 
         final String lenhWeb = doc(F_LENHWEB);
-        final String sql = doc(F_SQL);
+        final String sql = DayDu.sql();
         Kiem.dung("doc duoc " + F_LENHWEB, !lenhWeb.isEmpty());
         Kiem.dung("doc duoc " + F_SQL, !sql.isEmpty());
         if (lenhWeb.isEmpty() || sql.isEmpty()) {

@@ -184,7 +184,7 @@ public final class TangTocGame {
         try {
             final int id = TangToc.ID_KHOA[loai];
             if (Map.itemTemplates.get(5).get(Integer.valueOf(id)) == null) {
-                return; // chua chay sql/nang_cap.sql
+                return; // chua chay sql/htbb.sql
             }
             if (p.countSlotInventory() < so) {
                 VatPhamDungLauDai.bao(p, "Hành trang đầy: không nhận được " + TangToc.TEN[loai] + " (" + nguon + ").");

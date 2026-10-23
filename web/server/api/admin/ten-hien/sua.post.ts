@@ -13,7 +13,7 @@ export default defineAdminHandler(async (event, admin) => {
   const loi = kiemTenHien(ten)
   if (loi) throw apiLoi(400, loi)
   const pool = dbGame()
-  if (!(await coBang(pool, BANG_TEN_NPC)) || !(await coBang(pool, BANG_TEN_MAP))) throw apiLoi(409, 'CSDL game chưa có bảng data_npc / data_map_ten — chạy vps/nang_cap_csdl.sh (sql/nang_cap.sql) trước.')
+  if (!(await coBang(pool, BANG_TEN_NPC)) || !(await coBang(pool, BANG_TEN_MAP))) throw apiLoi(409, 'CSDL game chưa có bảng data_npc / data_map_ten — chạy vps/nang_cap_csdl.sh (sql/htbb.sql) trước.')
   if (loai === 'npc') {
     const chucVu = str(body?.chucVu).trim().slice(0, 64)
     const cu = await q1<{ ten: string, chuc_vu: string }>(pool, `SELECT ten, chuc_vu FROM ${BANG_TEN_NPC} WHERE type = ?`, [id])

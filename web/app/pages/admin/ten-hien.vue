@@ -85,7 +85,7 @@ async function themMap() {
     <UAlert v-if="error && !data" color="error" variant="subtle" icon="i-lucide-circle-x" title="Không tải được" :description="loiApi(error)"
       :actions="[{ label: 'Thử lại', color: 'error', variant: 'outline', onClick: () => refresh() }]" />
     <UAlert v-else-if="data && !data.coBang" color="warning" variant="subtle" icon="i-lucide-triangle-alert"
-      title="CSDL game chưa có bảng tên" description="Chạy sudo bash /opt/htbb/vps/nang_cap_csdl.sh trên máy chủ (nạp sql/nang_cap.sql, chạy lại được, giữ tên đã sửa)." />
+      title="CSDL game chưa có bảng tên" description="Chạy sudo bash /opt/htbb/vps/nang_cap_csdl.sh trên máy chủ (nạp sql/htbb.sql, chạy lại được, giữ tên đã sửa)." />
     <div v-else-if="!data && status === 'pending'" class="space-y-2">
       <USkeleton v-for="i in 6" :key="i" class="h-9 w-full" />
     </div>

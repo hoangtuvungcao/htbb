@@ -1,7 +1,7 @@
 /**
  * Pokédex đầy đủ 1.025 loài — phần THUẦN (không CSDL, không JSON) dùng chung cho API, trang và test.
  *
- * Dữ liệu nằm trong các bảng `data_loai*` do `sql/nang_cap.sql` (khối `them_loai_day_du.sql`) tạo (sinh bởi
+ * Dữ liệu nằm trong các bảng `data_loai*` do `sql/htbb.sql` (khối `them_loai_day_du.sql`) tạo (sinh bởi
  * `tools/pokemon/loai/sinh_loai.py` từ PokeAPI ghim commit). Mã hệ = `HePokemon` 0..17 của game.
  */
 

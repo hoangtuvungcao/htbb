@@ -32,7 +32,7 @@ java -Djava.awt.headless=true -cp $B DongGoiLoai --kiem     # kiểm mọi gói 
 | Đóng gói thường + shiny (cả hai có khối neo) | `java … DongGoiLoai 1 251` rồi `java … DongGoiLoai --shiny 1 251` (thêm `tools/pokemon/TinhNeoPoke.java` vào lệnh `javac`) | `server/map/loai/<NNNN>.goi`, `<NNNN>s.goi` (commit) |
 | Ghi công | `python3 -I tools/pokemon/loai/ghi_cong_loai.py` | `GHI_CONG.txt`: người vẽ bản thường, bản sắc màu, chân dung tĩnh |
 | Chân dung Pokédex tĩnh (loài chưa có gói) | `python3 -I tools/pokemon/loai/tai_chan_dung_loai.py` (`--kiem`) | `web/public/pokemon/loai/<dex>.png` (40×40 PMDCollab, không đổi điểm ảnh) |
-| Khối SQL | `python3 -I tools/pokemon/loai/sinh_bo_sung_loai.py` (`--kiem`) | `sql/nang_cap.sql` khối `them_loai_bo_sung.sql` (ngay sau `them_loai_day_du.sql`) |
+| Khối SQL | `python3 -I tools/pokemon/loai/sinh_bo_sung_loai.py` (`--kiem`) | `sql/htbb.sql` khối `them_loai_bo_sung.sql` (ngay sau `them_loai_day_du.sql`) |
 | Kiểm neo + bảng soát | `client_pc/test/KiemNeoLoai.java` (lệnh ở đầu tệp) | `du_lieu/loai/neo_loai.csv`, ảnh soát `neo_<a>_<b>.png` |
 | Kiểm thẻ Pokédex có mô tả | `client_pc/test/KiemPokedexMoTa.java` (lệnh ở đầu tệp) | ảnh thẻ 4 cỡ màn hình |
 | Kiểm kho sprite + shiny + ngân sách | `client_jar/tools/KiemKhoSprite.java` | thoát 1 = hỏng |
@@ -120,7 +120,7 @@ Tên tệp và nội dung giống hệt `client_jar/res/pk`, nên `PokeBody` đ�
 | Bước | Lệnh | Ra |
 |---|---|---|
 | Tải nguồn ghim commit (một lần) | `python3 -I tools/pokemon/loai/sinh_loai.py --tai` | `tools/pokemon/nguon_loai/<nguồn>-<commit>/` (không commit, trừ LICENSE) + `nguon.txt` (URL, SHA-256) |
-| Sinh | `python3 -I tools/pokemon/loai/sinh_loai.py` | `sql/nang_cap.sql` (khối `them_loai_day_du.sql`) (nguồn sự thật khi triển khai), `du_lieu/loai/*.csv` (bản xem), `du_lieu/loai/doi_chieu.txt` |
+| Sinh | `python3 -I tools/pokemon/loai/sinh_loai.py` | `sql/htbb.sql` (khối `them_loai_day_du.sql`) (nguồn sự thật khi triển khai), `du_lieu/loai/*.csv` (bản xem), `du_lieu/loai/doi_chieu.txt` |
 
 - Nguồn: PokeAPI `data/v2/csv` commit `2bf639e5572812a67d2b94903fdcb9d095f5aeb2` (BSD-3-Clause), đối chiếu chéo Pokémon
   Showdown `data/pokedex.ts` commit `d601443456c795f77c6e4f2b5b459167f2b10a3c` (MIT), trạng thái sprite từ `tracker.json`

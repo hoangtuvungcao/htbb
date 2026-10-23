@@ -12,15 +12,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Doc CSDL DAY DU sql/htbb_day_du.sql cho test - NGUON DUY NHAT cua du lieu game (khong con bo sinh / tep le,
- * xem sql/README.md). Test kiem thang du lieu trong tep nay (so dong, dau, tham chieu) thay vi chay lai bo sinh.
- * Tep nang cap sql/nang_cap.sql cung doc qua day. Thu muc lam viec: server/.
+ * Doc MOT tep CSDL sql/htbb.sql cho test - NGUON DUY NHAT cua du lieu game (khong con bo sinh / tep le, xem
+ * sql/README.md). {@link #sql()} = phan A "CSDL day du" (schema + du lieu thiet ke, giong ban dump day du cu): test kiem
+ * thang du lieu trong do (so dong, dau, tham chieu) thay vi chay lai bo sinh. {@link #nangCap()} = phan B "nang cap CSDL
+ * dang chay" (tung la sql/nang_cap.sql), khoi "-- >>> tep" qua {@link #phanNangCap}. Thu muc lam viec: server/.
  */
 final class DayDu {
 
-    static final String TEP = "../sql/htbb_day_du.sql";
-    static final String TEP_NANG_CAP = "../sql/nang_cap.sql";
+    static final String TEP = "../sql/htbb.sql";
 
+    private static String toanVan;
     private static String sql;
     private static DocDumpSql dump;
     private static final Map<String, BangSql> BANG = new LinkedHashMap<String, BangSql>();
@@ -28,17 +29,34 @@ final class DayDu {
     private DayDu() {
     }
 
-    /** Toan van htbb_day_du.sql ("" neu khong doc duoc). */
+    /** Toan van sql/htbb.sql ("" neu khong doc duoc). */
+    static synchronized String toanVan() {
+        if (toanVan == null) {
+            toanVan = doc(TEP);
+        }
+        return toanVan;
+    }
+
+    /**
+     * Phan A (CSDL day du) cua sql/htbb.sql duoi dang dump day du cu ("" neu khong doc duoc): moi bang mot
+     * {@code CREATE TABLE `t` (...)} (bo "IF NOT EXISTS"), bo DDL bang tam {@code CREATE TEMPORARY TABLE} (ban sao cung
+     * DDL) - dong {@code INSERT INTO `t`} vao bang tam cung ten = dong cua bang `t` khi nap vao CSDL trong.
+     * Van ban that cua tep: {@link #toanVan()} (KiemDuLieuSql kiem rieng).
+     */
     static synchronized String sql() {
         if (sql == null) {
-            sql = doc(TEP);
+            sql = dangDump(DocDumpSql.phanDayDu(toanVan()));
         }
         return sql;
     }
 
-    /** Toan van sql/nang_cap.sql. */
+    static String dangDump(final String phanA) {
+        return phanA.replaceAll("(?s)CREATE TEMPORARY TABLE `[^`]+` \\(.*?\\n\\)[^;\\n]*;\\n", "")
+                .replace("CREATE TABLE IF NOT EXISTS `", "CREATE TABLE `");
+    }
+
     /**
-     * Mot phan cua sql/nang_cap.sql gop tu tep SQL le cu (mot tep SQL): tu dong "-- >>> {@code tep}" toi dong "-- >>> "
+     * Mot khoi cua phan B sql/htbb.sql gop tu tep SQL le cu (mot tep SQL): tu dong "-- >>> {@code tep}" toi dong "-- >>> "
      * ke tiep (hoac het tep). "" neu khong co. Lenh danh muc cau hinh cua tep cu nam o phan 2 (khong o day).
      */
     static String phanNangCap(final String tep) {
@@ -51,8 +69,9 @@ final class DayDu {
         return b < 0 ? s.substring(a) : s.substring(a, b + 1);
     }
 
+    /** Phan B (nang cap CSDL dang chay, tung la sql/nang_cap.sql) cua sql/htbb.sql. */
     static String nangCap() {
-        return doc(TEP_NANG_CAP);
+        return DocDumpSql.phanNangCap(toanVan());
     }
 
     static synchronized DocDumpSql dump() {

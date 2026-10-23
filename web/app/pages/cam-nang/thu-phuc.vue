@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Thu phục & Hộp PC (0.9.8). Số liệu: shared/utils/heThong098.ts (đối chiếu sql/htbb_day_du.sql ở tests/he-thong-098.test.ts):
+ * Thu phục & Hộp PC (0.9.8). Số liệu: shared/utils/heThong098.ts (đối chiếu sql/htbb.sql ở tests/he-thong-098.test.ts):
  * data_bat_bong, data_bat_loai, data_bat_chuyen_doi, cấu hình bat.* và luật com.htbb.pokemon.BatPokemon.
  */
 import { BAC_LOAI_BAT, BAT, BONG, CHUYEN_DOI, HOANG_DA, phanTram098 } from '~~/shared/utils/heThong098'

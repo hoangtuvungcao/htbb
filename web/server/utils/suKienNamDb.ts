@@ -18,7 +18,7 @@ export async function docLanSuKien(tu: string, den: string): Promise<SuKienLan[]
   return rows.map(suKienLanTuDong)
 }
 
-/** tob_su_kien đã có cột tu_dong chưa (máy chủ game bản mới tự thêm; hoặc chạy sql/nang_cap.sql). */
+/** tob_su_kien đã có cột tu_dong chưa (máy chủ game bản mới tự thêm; hoặc chạy sql/htbb.sql). */
 export async function coCotTuDong(): Promise<boolean> {
   try {
     const n = await qv<number>(dbGame(),

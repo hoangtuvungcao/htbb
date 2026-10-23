@@ -43,8 +43,8 @@ HTBB_DIR=.. npm run sinh-anim-khoi-dau   # ảnh động màn khởi đầu từ
 ```
 
 `shared/data/*.json` và `shared/utils/*.gen.ts` là **bản dự phòng tĩnh** (bộ sinh cũ đã lưu trữ ở
-`tools/luu_tru_sinh_du_lieu/`): dữ liệu game nằm trong CSDL (`sql/htbb_day_du.sql`), web đọc CSDL trước; test đối chiếu
-các tệp tĩnh với `sql/htbb_day_du.sql`.
+`tools/luu_tru_sinh_du_lieu/`): dữ liệu game nằm trong CSDL (`sql/htbb.sql`), web đọc CSDL trước; test đối chiếu
+các tệp tĩnh với `sql/htbb.sql`.
 Kiểm mọi trang công khai bằng Chrome headless (lỗi console, cuộn ngang, ảnh hỏng, khung thả xuống đầu trang bị cắt chữ;
 390 / 1280 / 1440 / 1920 / 2560 px, sáng + tối): chạy server thật rồi
 `node scripts/kiem-trang-cong-khai.mjs --goc http://127.0.0.1:3000 --ra /tmp/kiem-trang [--anh] [--toi] [--menu-moi-trang] [--tk .. --mk ..]`.
@@ -66,7 +66,7 @@ tên bảng, cache 5 phút, bảng thiếu/trống thì một dòng `[du-lieu-sq
 | Danh mục cấu hình trung tâm (`cauHinhTrungTam.gen.ts`) | `cau_hinh_danh_muc`, `cau_hinh_nhom` | `server/utils/cauHinhDanhMucSql.ts`, API `/api/admin/cau-hinh-he-thong` |
 
 Biến đổi dòng SQL → hình dạng JSON nằm ở `shared/utils/duLieuSqlThuan.ts`; `tests/du-lieu-sql.test.ts` và
-`tests/cau-hinh-danh-muc-sql.test.ts` đọc `../sql/htbb_day_du.sql` (bằng `shared/utils/sqlDump.ts`) và đòi kết quả
+`tests/cau-hinh-danh-muc-sql.test.ts` đọc `../sql/htbb.sql` (bằng `shared/utils/sqlDump.ts`) và đòi kết quả
 khớp từng phần tử với JSON đóng gói. Trang dùng `const { camNang: CAM_NANG } = await useCamNang()` thay cho `CAM_NANG`
 tĩnh khi cần số liệu có bảng SQL. Vẫn chỉ là JSON (không có bảng SQL): `pokedex.json`, `sprite-anim.json`,
 `quy-tac-dang-ky.json` (nguồn viết tay), `danh-muc-thu/ngoc/danh-hieu.json` (sinh từ mảng Java), và các mục cẩm nang

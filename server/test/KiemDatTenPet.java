@@ -408,7 +408,7 @@ public final class KiemDatTenPet {
         Kiem.bang("mac dinh muc = DatTenPet", "10,15,20,30", join(DatTenPet.MUC_MAC_DINH));
         Kiem.bang("mac dinh trong so = DatTenPet", "55,30,12,3", join(DatTenPet.TRONG_SO_MAC_DINH));
         final String nc = DayDu.nangCap();
-        Kiem.dung("nang_cap.sql phan 2 co dat_ten_pet.* + trang_tri.tran_tong_phan_nghin", nc.contains("VALUES ('dat_ten_pet.trong_so_muc'")
+        Kiem.dung("htbb.sql phan 2 co dat_ten_pet.* + trang_tri.tran_tong_phan_nghin", nc.contains("VALUES ('dat_ten_pet.trong_so_muc'")
                 && nc.contains("VALUES ('trang_tri.tran_tong_phan_nghin'"));
     }
 
@@ -447,7 +447,7 @@ public final class KiemDatTenPet {
         Kiem.dung("migration: moi CREATE TABLE la IF NOT EXISTS", !Pattern.compile("CREATE TABLE (?!IF NOT EXISTS)").matcher(m).find());
         Kiem.dung("migration: khong DROP / DELETE", !m.contains("DROP ") && !m.contains("DELETE "));
         Kiem.dung("tu cam: cot tu utf8_bin (đụ / đù / đĩ / đỉ khac nhau, INSERT IGNORE khong nuot dong)", m.contains("COLLATE utf8_bin"));
-        final String d = doc("../sql/htbb_day_du.sql");
+        final String d = DayDu.sql();
         Kiem.dung("seed day du: data_item 1261 icon 14502", d.contains("(1261,'Thẻ đặt tên Pokémon',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14502,"));
         Kiem.dung("seed day du: cong dung + 2 nguon kiem duoc + mon cua hang luong", d.contains("(1261,'the_dat_ten_pet','Thẻ đặt tên Pokémon','tien_ich','dat_ten:1'")
                 && d.contains("(128,'Đổi Tem nghiên cứu','Thẻ đặt tên Pokémon','item:1054x8','ITEM:1261:1',10,0,-1,1)")
@@ -467,7 +467,7 @@ public final class KiemDatTenPet {
         }
         Kiem.dung("icon PNG that 16x16 map/icon_pokemon/502.png (= 14502)", png);
         Kiem.dung("bang_icon.csv co dong 502", doc("../du_lieu/bang_icon.csv").contains("\n502,14502,"));
-        Kiem.dung("README sql ghi khoi them_the_dat_ten_pet.sql (nang_cap.sql phan 11)", doc("../sql/README.md").contains("them_the_dat_ten_pet.sql"));
+        Kiem.dung("README sql ghi khoi them_the_dat_ten_pet.sql (htbb.sql phan 11)", doc("../sql/README.md").contains("them_the_dat_ten_pet.sql"));
     }
 
     // ------------------------------------------------------------------ cua hang luong

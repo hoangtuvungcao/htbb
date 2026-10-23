@@ -233,7 +233,7 @@ public final class KiemThanhVien {
     }
 
     static void sqlVaWeb() {
-        Kiem.nhom("Thanh vien - bang tv_* / cau_hinh / nap_goi trong sql/htbb_day_du.sql + web");
+        Kiem.nhom("Thanh vien - bang tv_* / cau_hinh / nap_goi trong sql/htbb.sql + web");
         Kiem.bang("mac dinh TAT (cau_hinh thanh_vien.bat / ban_bat)", "0|0", DayDu.giaTri("cau_hinh", "khoa", "thanh_vien.bat", "gia_tri")
                 + "|" + DayDu.giaTri("cau_hinh", "khoa", "thanh_vien.ban_bat", "gia_tri"));
         Kiem.bang("chuc_nang mac dinh trung Java", ThanhVienLogic.CHUC_NANG_MAC_DINH,

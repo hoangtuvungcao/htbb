@@ -315,7 +315,7 @@ public final class KiemChoPokemon {
         Kiem.bang("khong nghi: gia thuong, it lan", "", ChoPokemon.nghiVan(1, 5, 500, 1000));
         Kiem.dung("ma hoa / giai ma mot con giu moi thu", HopPc.giaiMaCon(HopPc.maHoaCon(k.con)).iv == k.con.iv
                 && HopPc.giaiMaCon(HopPc.maHoaCon(k.con)).doiLuc == BAY && HopPc.giaiMaCon("x.y") == null);
-        final String sql = DayDu.phanNangCap("them_trade_pokemon.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("them_trade_pokemon.sql"); // tep cu gop vao sql/htbb.sql phan 11
         Kiem.dung("SQL: tob_cho_pokemon, tob_log_cho_pokemon, data_cho_pokemon_gia (idempotent)", sql.contains("CREATE TABLE IF NOT EXISTS `tob_cho_pokemon`")
                 && sql.contains("CREATE TABLE IF NOT EXISTS `tob_log_cho_pokemon`") && sql.contains("(3, 'Rất hiếm', 3000, 30000)"));
         final String dm = DayDu.danhMucJson(); // danh muc trong CSDL

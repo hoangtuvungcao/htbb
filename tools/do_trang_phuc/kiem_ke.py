@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """KIỂM KÊ TRANG BỊ + ICON (trước / sau đồ họ mới) -> du_lieu/KIEM_KE_TRANG_BI.md. Chạy lại được, đừng sửa tay tệp ra.
 
-Đọc: sql/htbb_day_du.sql (data_item gốc), du_lieu/noi_dung_trang_bi.csv, du_lieu/bang_icon.csv, du_lieu/noi_dung_bo.csv,
+Đọc: sql/htbb.sql phần A (data_item gốc), du_lieu/noi_dung_trang_bi.csv, du_lieu/bang_icon.csv, du_lieu/noi_dung_bo.csv,
 du_lieu/do_moi_trang_bi.csv (đồ họ mới), server/map/icon_pokemon + server/map/icon_do_moi.
 Chạy: python3 -I tools/do_trang_phuc/kiem_ke.py
 """
@@ -43,7 +43,7 @@ def main():
     w("# Kiểm kê trang bị, bộ và icon (đồ họ mới + trang phục, 0.9.8)\n\n")
     w("> **Tệp sinh** bởi `tools/do_trang_phuc/kiem_ke.py` - đừng sửa tay. Danh mục đồ mới: `tools/do_trang_phuc/danh_muc.py`.\n\n")
     # ---------------------------------------------------------------- 1. trước
-    w("## 1. Hiện trạng trước khi thêm (data_item trong `sql/htbb_day_du.sql`)\n\n")
+    w("## 1. Hiện trạng trước khi thêm (data_item trong `sql/htbb.sql`, phần A)\n\n")
     w("- %d mẫu trang bị nhân vật (type 0..12, 19) trong `data_item`; %d dòng \"chuẩn\" ô × bậc ở `noi_dung_trang_bi.csv` "
       "(14 ô × 11 bậc, đồ cầm tay tách 5 dòng Pokémon). Độ hiếm là thuộc tính của **từng món** (`colorName`), không phải "
       "của mẫu: mọi ô × bậc đều ra được Thường / Hiếm / Quý / Sử thi (Huyền thoại = Sử thi + 3 lỗ từ chế tạo).\n"
@@ -96,7 +96,7 @@ def main():
     w("## 2. Sau khi thêm\n\n")
     so_he = sum(1 for r in moi if r["loai"] == "he")
     so_vung = len(moi) - so_he
-    w("- **%d món mới** (`data_item` %s..%s, `sql/nang_cap.sql` (khối `them_do_trang_phuc.sql`)): %d món 18 bộ hệ (6 ô × 5 bậc) + %d món 3 bộ "
+    w("- **%d món mới** (`data_item` %s..%s, `sql/htbb.sql` (khối `them_do_trang_phuc.sql`)): %d món 18 bộ hệ (6 ô × 5 bậc) + %d món 3 bộ "
       "huy chương vùng (8 ô × 11 bậc). Mỗi món là bản sao chỉ số của món gốc cùng ô + bậc (không sức mạnh dọc mới).\n"
       % (len(moi), moi[0]["id_item"], moi[-1]["id_item"], so_he, so_vung))
     w("- **%d icon mới** 16x16 vẽ tay (`server/map/icon_do_moi`, id ảnh 15000+n), không trùng nhau: " % len([f for f in os.listdir(os.path.join(GOC, "server", "map", "icon_do_moi")) if f.endswith(".png")]))

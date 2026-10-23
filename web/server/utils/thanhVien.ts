@@ -17,7 +17,7 @@ export async function tvCoBang(): Promise<boolean> {
 }
 
 export function tvThieuBang(): never {
-  throw apiLoi(409, 'Chưa có bảng thành viên — chạy sql/nang_cap.sql.', { code: 'thieu_bang' })
+  throw apiLoi(409, 'Chưa có bảng thành viên — chạy sql/htbb.sql.', { code: 'thieu_bang' })
 }
 
 // ---------------------------------------------------------------- cấu hình (cau_hinh, nhớ 5 giây)

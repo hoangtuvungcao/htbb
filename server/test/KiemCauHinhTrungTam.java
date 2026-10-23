@@ -177,11 +177,11 @@ public final class KiemCauHinhTrungTam {
         java.util.Collections.sort(khoaSql);
         final List<String> khoaJavaSap = new ArrayList<String>(khoaJava);
         java.util.Collections.sort(khoaJavaSap);
-        Kiem.bang("danh muc nap tu SQL = dong cau_hinh_danh_muc cua sql/htbb_day_du.sql", khoaSql, khoaJavaSap);
+        Kiem.bang("danh muc nap tu SQL = dong cau_hinh_danh_muc cua sql/htbb.sql", khoaSql, khoaJavaSap);
         for (final String b : new String[]{"cau_hinh_phien_ban", "cau_hinh_lich_su", "cau_hinh_ap_dung", "cau_hinh_hieu_luc",
             "cau_hinh_khoi_dong_lai", "cau_hinh_danh_muc", "cau_hinh_nhom"}) {
-            Kiem.dung("htbb_day_du.sql co bang " + b, DayDu.coBang(b));
-            Kiem.dung("sql/nang_cap.sql tao bang " + b, DayDu.nangCap().contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
+            Kiem.dung("htbb.sql co bang " + b, DayDu.coBang(b));
+            Kiem.dung("sql/htbb.sql tao bang " + b + " (IF NOT EXISTS)", DayDu.toanVan().contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
         }
 
         // ---- 12. Noi day ----

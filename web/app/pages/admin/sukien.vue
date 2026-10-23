@@ -549,7 +549,7 @@ const lichCot = [
             </dt>
             <dd class="mt-1 text-muted">
               Hai dòng <em>World Cup</em> ở đây đè lên cửa sổ <code>sv.worldCup*</code> trong <code>server.ini</code>. Lần đầu
-              chạy sự kiện này còn phải chạy <code>sql/nang_cap.sql</code> một lần.
+              chạy sự kiện này còn phải chạy <code>sql/htbb.sql</code> một lần.
             </dd>
           </div>
           <div>

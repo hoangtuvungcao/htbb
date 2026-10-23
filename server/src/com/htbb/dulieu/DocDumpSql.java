@@ -14,8 +14,9 @@ import java.util.Map;
  * (tools/pokemon/MoPhongKinhTe.java) va doi chieu "tep sinh == dump day du".
  *
  * Hieu dung hai dang tep cua repo:
- *   - mysqldump (sql/htbb_day_du.sql): {@code CREATE TABLE `t` (...)} roi
- *     {@code INSERT INTO `t` VALUES (..),(..);}, chuoi thoat bang dau gach nguoc;
+ *   - mysqldump (phan A "CSDL day du" cua sql/htbb.sql, {@link #phanDayDu}): {@code CREATE TABLE [IF NOT EXISTS] `t`
+ *     (...)} roi {@code INSERT INTO `t` VALUES (..),(..);} (vao bang tam cung ten - {@code CREATE TEMPORARY TABLE}
+ *     bi bo qua nen dong thuoc bang `t`), chuoi thoat bang dau gach nguoc;
  *   - tep sinh (tools/luu_tru_sinh_du_lieu/sql_nguon/pokemon_*.sql): co hoac khong co danh sach cot sau ten bang, chuoi thoat bang
  *     {@code ''} hoac gach nguoc.
  * Lenh khac (SET, LOCK, ALTER, UPDATE...) va chu thich ({@code --}, {@code #}, {@code /* *}{@code /}) bi bo
@@ -31,6 +32,40 @@ public final class DocDumpSql implements NguonDuLieu {
 
     private DocDumpSql(final String moTa) {
         this.moTa = moTa;
+    }
+
+    /** Tep CSDL duy nhat cua repo (tu goc repo). */
+    public static final String TEP_HTBB = "sql/htbb.sql";
+    /** Dong mo dau phan B (nang cap CSDL dang chay) cua sql/htbb.sql; truoc no la phan A (CSDL day du). */
+    public static final String MOC_NANG_CAP = "-- ######## B. NANG CAP";
+
+    /** Phan A cua sql/htbb.sql (schema + du lieu day du + admin): giong ban dump day du cu. */
+    public static String phanDayDu(final String toanVan) {
+        final int i = toanVan.indexOf("\n" + MOC_NANG_CAP);
+        return i < 0 ? toanVan : toanVan.substring(0, i + 1);
+    }
+
+    /** Phan B cua sql/htbb.sql (tu dong MOC_NANG_CAP toi het tep); "" neu khong co. */
+    public static String phanNangCap(final String toanVan) {
+        final int i = toanVan.indexOf("\n" + MOC_NANG_CAP);
+        return i < 0 ? "" : toanVan.substring(i + 1);
+    }
+
+    /** Duong toi sql/htbb.sql khi chay o server/ (test) hoac goc repo (cong cu). */
+    public static String duongHtbb() {
+        for (final String p : new String[]{"../" + TEP_HTBB, TEP_HTBB}) {
+            if (new File(p).isFile()) {
+                return p;
+            }
+        }
+        return "../" + TEP_HTBB;
+    }
+
+    /** Chi phan A (CSDL day du) cua tep sql/htbb.sql o {@code duong}. */
+    public static DocDumpSql tuTepDayDu(final String duong) throws java.io.IOException {
+        final DocDumpSql d = new DocDumpSql("phan A cua " + duong);
+        d.nap(phanDayDu(new String(Files.readAllBytes(new File(duong).toPath()), StandardCharsets.UTF_8)));
+        return d;
     }
 
     /** Doc mot (hoac nhieu, theo thu tu nap) tep .sql. */

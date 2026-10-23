@@ -103,13 +103,13 @@ public final class KiemPhanLoaiCauHinh {
         Kiem.bang("doc khoa luon bat khi khong co CSDL / ini", "1", CauHinhTrungTam.chuoi("sv.lau_dai"));
 
         // ---- CSDL day du + nang cap mang phan loai ----
-        Kiem.dung("htbb_day_du.sql: cau_hinh_danh_muc co cot lop + an", DayDu.cot("cau_hinh_danh_muc").contains("lop")
+        Kiem.dung("htbb.sql: cau_hinh_danh_muc co cot lop + an", DayDu.cot("cau_hinh_danh_muc").contains("lop")
                 && DayDu.cot("cau_hinh_danh_muc").contains("an"));
-        Kiem.dung("htbb_day_du.sql: co bang cau_hinh_nhom (cot an)", DayDu.cot("cau_hinh_nhom").contains("an"));
-        Kiem.bang("htbb_day_du.sql: sv.lau_dai lop luon_bat, an = 1", "luon_bat|1",
+        Kiem.dung("htbb.sql: co bang cau_hinh_nhom (cot an)", DayDu.cot("cau_hinh_nhom").contains("an"));
+        Kiem.bang("htbb.sql: sv.lau_dai lop luon_bat, an = 1", "luon_bat|1",
                 DayDu.giaTri("cau_hinh_danh_muc", "khoa", "sv.lau_dai", "lop") + "|" + DayDu.giaTri("cau_hinh_danh_muc", "khoa", "sv.lau_dai", "an"));
         final String nc = DayDu.nangCap();
-        Kiem.dung("sql/nang_cap.sql tao lai cau_hinh_danh_muc co lop + an", nc.contains("`lop` VARCHAR(10)") && nc.contains("`an` TINYINT"));
+        Kiem.dung("sql/htbb.sql tao lai cau_hinh_danh_muc co lop + an", nc.contains("`lop` VARCHAR(10)") && nc.contains("`an` TINYINT"));
         final String ts = doc("../web/shared/utils/cauHinhTrungTam.gen.ts");
         Kiem.dung("web gen.ts mang lop", ts.contains("lop: \"luon_bat\"") && ts.contains("lop: \"co_dinh\""));
         final String md = doc("../docs/cau-hinh.md");

@@ -125,7 +125,7 @@ public final class KiemThuPokemon {
             Kiem.dung("sendByteImg phuc vu dai icon Pokemon", dg.contains("IconPokemon.thuocDai(idImg)"));
             Kiem.dung("nIconItem van la 866 (khong dung dai cu)", dg.contains("nIconItem = 866;"));
         } catch (final Exception e) {
-            Kiem.dung("doc data_item tu sql/htbb_day_du.sql: " + e, false);
+            Kiem.dung("doc data_item tu sql/htbb.sql: " + e, false);
         }
 
         Kiem.nhom("com.htbb.pokemon.TenMapPokemon - doi ten dia danh");

@@ -628,8 +628,8 @@ public final class KiemKenhChat {
         Kiem.dung("KenhChatGame: cong thanh vien chat the gioi / gui thu", g.contains("chanVaBao(p, \"chat_the_gioi\")") && g.contains("chanVaBao(p, \"gui_thu\")"));
         Kiem.dung("KenhChatGame: tao tob_chat_chan, KHONG con hop thu tob_chat_cho", !g.contains("CREATE TABLE IF NOT EXISTS tob_chat_cho")
                 && !g.contains("INSERT INTO tob_chat_cho") && g.contains("CREATE TABLE IF NOT EXISTS tob_chat_chan"));
-        final String sql = DayDu.phanNangCap("them_kenh_chat.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
-        Kiem.dung("nang_cap.sql them_kenh_chat: tob_chat_chan + bo tob_chat_cho (DROP IF EXISTS, chay lai duoc)",
+        final String sql = DayDu.phanNangCap("them_kenh_chat.sql"); // tep cu gop vao sql/htbb.sql phan 11
+        Kiem.dung("htbb.sql them_kenh_chat: tob_chat_chan + bo tob_chat_cho (DROP IF EXISTS, chay lai duoc)",
                 sql.contains("DROP TABLE IF EXISTS `tob_chat_cho`;") && !sql.contains("CREATE TABLE IF NOT EXISTS `tob_chat_cho`")
                 && sql.contains("CREATE TABLE IF NOT EXISTS `tob_chat_chan`"));
         final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (thay DanhMucSinh.java da xoa)

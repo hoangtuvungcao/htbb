@@ -118,7 +118,7 @@ public final class KiemThuPetP2 {
     }
 
     private static void kiemSql() throws java.io.IOException {
-        final String sql = DayDu.phanNangCap("pokemon_thu_pokemon.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("pokemon_thu_pokemon.sql"); // tep cu gop vao sql/htbb.sql phan 11
         Kiem.dung("CREATE TABLE IF NOT EXISTS data_thu_pokemon", sql.contains("CREATE TABLE IF NOT EXISTS `data_thu_pokemon`"));
         Kiem.sai("khong INSERT ... SELECT", Pattern.compile("(?is)INSERT\\s+INTO[^;]*SELECT").matcher(sql).find());
         Kiem.sai("khong ON DUPLICATE", sql.toUpperCase().contains("ON DUPLICATE"));

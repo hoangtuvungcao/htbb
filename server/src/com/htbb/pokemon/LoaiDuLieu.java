@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Bang loai day du (~1.025 loai) nap tu CSDL (sql/nang_cap.sql (khoi them_loai_day_du.sql), sinh boi tools/pokemon/loai/sinh_loai.py):
+ * Bang loai day du (~1.025 loai) nap tu CSDL (sql/htbb.sql (khoi them_loai_day_du.sql), sinh boi tools/pokemon/loai/sinh_loai.py):
  * data_loai, data_loai_tien_hoa, data_loai_vung, data_loai_khu_vuc_map. he_thong_day_du.md muc 3.
  *
  * Lop THUAN, BAT BIEN sau khi dung (doi bang = thay ca doi tuong qua {@link #dat}); doc tu moi luong khong can khoa.

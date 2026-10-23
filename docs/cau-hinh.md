@@ -33,15 +33,15 @@ dịch vụ cấu hình trung tâm: [kien-truc.md](kien-truc.md). Biến môi tr
 
 | Phần | Tệp |
 |---|---|
-| Danh mục khoá (nguồn duy nhất) | bảng `cau_hinh_danh_muc` + `cau_hinh_nhom` trong CSDL (bản chụp `sql/htbb_day_du.sql`; CSDL cũ nạp `sql/nang_cap.sql`). Máy chủ nạp danh mục từ đây lúc khởi động và mỗi 60 giây, thiếu bảng là không khởi động |
-| Bản dự phòng của web | `web/shared/utils/cauHinhTrungTam.gen.ts` (tệp tĩnh, test đối chiếu với `sql/htbb_day_du.sql`) |
+| Danh mục khoá (nguồn duy nhất) | bảng `cau_hinh_danh_muc` + `cau_hinh_nhom` trong CSDL (tệp `sql/htbb.sql`: phần A cho CSDL mới, phần B nạp lại trên CSDL đang chạy). Máy chủ nạp danh mục từ đây lúc khởi động và mỗi 60 giây, thiếu bảng là không khởi động |
+| Bản dự phòng của web | `web/shared/utils/cauHinhTrungTam.gen.ts` (tệp tĩnh, test đối chiếu với phần A của `sql/htbb.sql`) |
 | Dịch vụ máy chủ | `server/src/com/htbb/cauhinh/CauHinhTrungTam.java` (+ `TinhCauHinh`, `KiemGiaTri`, `ApDungMacDinh`, `CongTac`) |
 | Trang web | `/admin/cau-hinh-he-thong` (trang cấu hình DUY NHẤT; trang cũ `/admin/cauhinh` đã gỡ), API `/api/admin/cau-hinh-he-thong/**` |
 | Bộ ví dụ kiểm chung Java ↔ web | [`tools/cauhinh/vi_du_kiem.tsv`](../tools/cauhinh/vi_du_kiem.tsv) |
 
 Thêm / sửa khoá: sửa dòng trong `cau_hinh_danh_muc` (SQL; khoá mới cần mã đọc nó), khởi động lại máy chủ, xuất lại
-`sql/htbb_day_du.sql` ([sql/README.md](../sql/README.md)) và chép các dòng mới vào khối `cau_hinh_danh_muc` của
-`sql/nang_cap.sql`; cập nhật bảng ở mục 4 và `cauHinhTrungTam.gen.ts` cho khớp (test báo lệch). Bộ sinh cũ
+phần A của `sql/htbb.sql` ([sql/README.md](../sql/README.md)) và chép các dòng mới vào khối `cau_hinh_danh_muc` ở phần B
+mục 2 của cùng tệp; cập nhật bảng ở mục 4 và `cauHinhTrungTam.gen.ts` cho khớp (test báo lệch). Bộ sinh cũ
 `sinh_cau_hinh.py` + `danh_muc.json` đã lưu trữ ở `tools/luu_tru_sinh_du_lieu/cauhinh/`.
 
 Luật áp dụng:

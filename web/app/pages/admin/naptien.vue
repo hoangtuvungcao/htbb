@@ -267,11 +267,11 @@ onMounted(() => {
       title="HTBB_NAP_BAT=true nhưng nạp BỊ TẮT (fail closed): cấu hình chưa an toàn"
       :description="tq.canhBao.lyDoTat.join(' · ')"
     />
-    <UAlert v-else-if="tq && !tq.canhBao.napBat && !tq.canhBao.demo" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (HTBB_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, bảng nap_* (sql/nang_cap.sql), sv.nap_tien=1 + sv.lau_dai=1 ở server game." />
+    <UAlert v-else-if="tq && !tq.canhBao.napBat && !tq.canhBao.demo" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (HTBB_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, bảng nap_* (sql/htbb.sql), sv.nap_tien=1 + sv.lau_dai=1 ở server game." />
     <UAlert v-if="tq?.canhBao.sandbox" color="warning" variant="subtle" icon="i-lucide-flask-conical" title="Chế độ thử (HTBB_NAP_SANDBOX=1)" description="Có nút Giả lập thanh toán và /api/nap/webhook-mock. KHÔNG bật trên máy thật." />
     <UAlert v-if="tq?.canhBao.napBat && !tq.canhBao.sepay && !tq.canhBao.casso" color="warning" variant="subtle" icon="i-lucide-triangle-alert" title="Chưa cấu hình webhook (SePay / Casso)" description="Đơn KHÔNG tự xác nhận. Đối chiếu sao kê rồi bấm Xác nhận (nhập mã giao dịch)." />
     <UAlert v-if="tq?.canhBao.napBat && tq.canhBao.taiKhoanMacDinh" color="error" variant="subtle" icon="i-lucide-landmark" title="Chưa đặt tài khoản nhận tiền" description="Đặt HTBB_TPBANK_ACCOUNT_NO / HTBB_TPBANK_ACCOUNT_NAME (và HTBB_NAP_BANK_BIN nếu không phải TPBank)." />
-    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng nap_*" description="Chạy sql/nang_cap.sql trên htbb_db." />
+    <UAlert v-if="tq && !tq.coBang" color="error" variant="subtle" icon="i-lucide-database" title="Chưa có bảng nap_*" description="Chạy sql/htbb.sql trên htbb_db." />
     <UAlert v-else-if="tq?.canhBao.napBat && serverCham" color="warning" variant="subtle" icon="i-lucide-server-off" title="Server game không báo nhịp nạp" :description="tq.serverGame ? `Lần cuối ${tq.serverGame.soGiay} giây trước.` : 'Chưa từng báo — kiểm tra sv.nap_tien=1 và sv.lau_dai=1 trong server.ini rồi khởi động lại.'" />
 
     <!-- Công tắc bán / hoàn tiền / trần: CÙNG khoá với trang Cấu hình hệ thống (nhóm Nạp tiền) — không có công tắc thứ hai. -->

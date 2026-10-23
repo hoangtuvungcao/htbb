@@ -1,5 +1,5 @@
 /**
- * Phân loại cấu hình (docs/cau-hinh.md, cột `lop` của bảng cau_hinh_danh_muc trong sql/htbb_day_du.sql):
+ * Phân loại cấu hình (docs/cau-hinh.md, cột `lop` của bảng cau_hinh_danh_muc trong sql/htbb.sql):
  *   chinh    — hiện trên /admin/cau-hinh-he-thong, sửa được
  *   co_dinh  — ẩn, máy thật luôn chạy giá trị cố định (macDinh), API lưu từ chối
  *   luon_bat — ẩn, luôn "1"
@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url'
 import { DANH_MUC_TT, NHOM_TT } from '../shared/utils/cauHinhTrungTam.gen.ts'
 import { docBangSql } from '../shared/utils/sqlDump.ts'
 import { anTT, demLopTT, hieuLucWebTT, khoaTT, nhomTT, soSanhTT, suaDuocTT } from '../shared/utils/cauHinhTrungTam.ts'
+import { phanDayDu, phanNangCap } from './htbbSql.ts'
 
 const HTBB = fileURLToPath(new URL('../../', import.meta.url))
 const k = (khoa: string) => {
@@ -102,12 +103,11 @@ test('giá trị hiệu lực phía web: khoá ẩn bỏ qua CSDL trên máy th�
 })
 
 test('CSDL mang phân loại (cột lop / an của cau_hinh_danh_muc / cau_hinh_nhom, tài liệu)', () => {
-  for (const f of ['sql/htbb_day_du.sql', 'sql/nang_cap.sql']) {
-    const sql = readFileSync(`${HTBB}${f}`, 'utf8')
+  for (const [f, sql] of [['sql/htbb.sql phần A', phanDayDu()], ['sql/htbb.sql phần B', phanNangCap()]] as const) {
     assert.ok(/`lop` varchar\(10\)/i.test(sql) && /`an` tinyint/i.test(sql), `${f}: cột lop / an`)
     assert.ok(/CREATE TABLE[^;]*`cau_hinh_nhom`/.test(sql), `${f}: bảng cau_hinh_nhom`)
   }
-  const dong = docBangSql(readFileSync(`${HTBB}sql/htbb_day_du.sql`, 'utf8'), 'cau_hinh_danh_muc')
+  const dong = docBangSql(phanDayDu(), 'cau_hinh_danh_muc')
   assert.equal(dong.length, DANH_MUC_TT.length)
   for (const x of dong) assert.equal(k(String(x.khoa)).lop ?? 'chinh', x.lop, String(x.khoa))
   const md = readFileSync(`${HTBB}docs/cau-hinh.md`, 'utf8')

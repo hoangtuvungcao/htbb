@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 import real.NpcTinhBanDo;
 
 /**
- * HUONG DAN TAN THU (nhanh huong-dan): luat thuan com.htbb.pokemon.HuongDanTanThu, du lieu khoi them_huong_dan_tan_thu.sql cua sql/nang_cap.sql
- * (10 buoc = 10 dong dau chuoi chinh 901..910) doi chieu CSDL day du sql/htbb_day_du.sql + server/cMap + server/map:
+ * HUONG DAN TAN THU (nhanh huong-dan): luat thuan com.htbb.pokemon.HuongDanTanThu, du lieu khoi them_huong_dan_tan_thu.sql cua sql/htbb.sql
+ * (10 buoc = 10 dong dau chuoi chinh 901..910) doi chieu CSDL day du sql/htbb.sql + server/cMap + server/map:
  * thu tu / cap chuoi chinh, NPC co o ca ba lang, moi buoc lam xong duoc (co diem moc that), ngan sach thuong, bo qua,
  * chuoi chinh sau huong dan (NPC tiep can duoc theo cap). Bot dau-cuoi: tools/pokemon/kiem_tai/KichBanHuongDan (hd_*).
  */
@@ -164,8 +164,8 @@ public final class KiemHuongDanTanThu {
     }
 
     static void duLieu() throws Exception {
-        final String sql = DayDu.phanNangCap("them_huong_dan_tan_thu.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
-        final String du = doc("../sql/htbb_day_du.sql");
+        final String sql = DayDu.phanNangCap("them_huong_dan_tan_thu.sql"); // tep cu gop vao sql/htbb.sql phan 11
+        final String du = DayDu.sql();
         final Map<Integer, String[]> hd = bo(sql, "data_quest_moi");
         final Map<Integer, String[]> goc = KiemTenHien.dongDump(du, "data_quest_moi", 25);
 
@@ -346,7 +346,7 @@ public final class KiemHuongDanTanThu {
             }
         }
         Kiem.bang("ba lang co du NPC huong dan + Chansey + Snorlax", "", thieuLang.trim());
-        final String ten = DayDu.nangCap(); // phan 5 cua sql/nang_cap.sql: data_npc + data_map_ten (tung la pokemon_ten_hien.sql)
+        final String ten = DayDu.nangCap(); // phan 5 cua sql/htbb.sql: data_npc + data_map_ten (tung la pokemon_ten_hien.sql)
         Kiem.dung("data_npc.ban_do Chansey / Snorlax co 0,70,80", ten.contains("'Chansey',113,0,'0,43,") && ten.contains(",70,80,100,281'")
                 && ten.contains("'Snorlax',143,8,'0,51,57,60,70,80,105,160'"));
         Kiem.dung("ban do 0 dong goi client = server", Arrays.equals(Files.readAllBytes(new File("cMap/0").toPath()),

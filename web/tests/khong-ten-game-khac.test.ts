@@ -1,7 +1,7 @@
 /**
  * Luật chủ game (0.9.8): chữ người chơi / khách thấy KHÔNG nhắc tên game khác ("NRO", "NSO", "HSO", "Làng Lá", "TeaMobi",
  * "phong cách NRO"...). Quét: trang web (web/app/pages + components, trừ /giay-phep và khu admin), dữ liệu web
- * (web/shared/data), bài tin / dữ liệu hiển thị trong sql/htbb_day_du.sql (data_*, web_tin_tuc - bỏ danh sách từ cấm chat /
+ * (web/shared/data), bài tin / dữ liệu hiển thị trong sql/htbb.sql (data_*, web_tin_tuc - bỏ danh sách từ cấm chat /
  * tên cấm đăng ký), chuỗi giao diện game (chuỗi "..." trong client_jar/src, server/src) và bảng ghi công trong game.
  * Chú thích mã / tài liệu nội bộ được giữ.
  */
@@ -10,6 +10,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { htbbSql } from './htbbSql.ts'
 
 const goc = (p: string) => fileURLToPath(new URL(p, import.meta.url))
 const CAM = /(^|[^A-Za-zÀ-ỹ])(NRO|NSO|HSO|TeaMobi|Teamobi)([^A-Za-zÀ-ỹ]|$)|Làng Lá|phong cách NRO|Ngọc Rồng Online|Ninja School/
@@ -53,7 +54,7 @@ test('dữ liệu web (shared/data) không nhắc tên game khác', () => {
 })
 
 test('bài tin + dữ liệu game hiển thị trong SQL không nhắc tên game khác', () => {
-  const sql = readFileSync(goc('../../sql/htbb_day_du.sql'), 'utf8').split('\n')
+  const sql = htbbSql().split('\n')
   const loi = sql.filter(d => d.startsWith('INSERT INTO') && !/`(data_tu_cam|tu_cam|bad_word|data_chat_cam)/.test(d)
     && !/'team0bi'|'teamobi'/.test(d) && CAM.test(d)).map(d => d.slice(0, 120))
   assert.deepEqual(loi, [], loi.join('\n'))

@@ -8,7 +8,7 @@ cung ra hinh Pokemon - khong con mot net ve kiem hiep nao toi tay nguoi choi.
 Ra (KHONG sua tay, chay lai tool):
   server/map/icon/<0..865>.png          icon vat pham goc: lay icon PMD cua chinh vat pham tung dung o do
                                         (xstart cu trong sql/gamedb7_clean.sql -> xstart moi trong
-                                        sql/htbb_day_du.sql); o khong vat pham nao dung -> Poke Ball ve tay
+                                        sql/htbb.sql phan A); o khong vat pham nao dung -> Poke Ball ve tay
   server/map/images_potion|images_gem|images_animal|iconquest|fruit/
                                         o anh 1 byte (5500/6500/7500/8000/8200+K): icon PMD theo cung bang
                                         IconPokemonBang (o chua doi -> Poke Ball / qua mong)
@@ -415,6 +415,7 @@ def ghi_goi(muc):
 
 def xstart_theo_id(duong):
     s = open(duong, encoding="utf8").read()
+    s = s.split("\n-- ######## B. NANG CAP")[0]  # phan A (CSDL day du)
     ra = {}
     for m in re.finditer(r"INSERT INTO `data_item`[^;]*?VALUES(.*?);\n", s, re.S):
         for r in re.finditer(r"\((\d+),'(?:[^'\\]|\\.)*',((?:-?\d+,){18})(-?\d+)", m.group(1)):
@@ -437,7 +438,7 @@ def main():
 
     # 1) map/icon/<id>.png
     cu = xstart_theo_id(os.path.join(GOC, "sql", "gamedb7_clean.sql"))
-    moi_ = xstart_theo_id(os.path.join(GOC, "sql", "htbb_day_du.sql"))
+    moi_ = xstart_theo_id(os.path.join(GOC, "sql", "htbb.sql"))
     theo_o = {}
     for ident, x in cu.items():
         nx = moi_.get(ident)

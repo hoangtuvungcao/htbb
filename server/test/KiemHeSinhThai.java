@@ -666,7 +666,7 @@ public final class KiemHeSinhThai {
     // ------------------------------------------------------------------ SQL sinh ra
 
     static void duLieuSql() {
-        Kiem.nhom("He sinh thai - bang data_hst_* / tob_hst_* trong sql/htbb_day_du.sql");
+        Kiem.nhom("He sinh thai - bang data_hst_* / tob_hst_* trong sql/htbb.sql");
         try {
             for (final String b : new String[]{"data_hst_vung", "data_hst_thay_quai", "data_hst_bung_phat", "data_hst_vung_loai", "data_hst_ho_cau",
                 "tob_hst_nhan_vat", "tob_hst_cho", "tob_hst_don", "tob_hst_hop_thu"}) {
@@ -675,7 +675,7 @@ public final class KiemHeSinhThai {
             for (final String b : new String[]{"tob_hst_nhan_vat", "tob_hst_cho", "tob_hst_don", "tob_hst_hop_thu"}) {
                 Kiem.dung("bang nguoi choi " + b + " rong trong ban day du", DayDu.soDong(b) <= 0);
             }
-            Kiem.sai("sql/nang_cap.sql khong DROP bang nguoi choi tob_hst", DayDu.nangCap().contains("DROP TABLE IF EXISTS `tob_hst"));
+            Kiem.sai("sql/htbb.sql khong DROP bang nguoi choi tob_hst", DayDu.nangCap().contains("DROP TABLE IF EXISTS `tob_hst"));
             // Quai: id -> cap, phan loai
             final Map<Integer, int[]> quai = new HashMap<Integer, int[]>();
             for (final String d : Files.readAllLines(new File("../du_lieu/bang_quai.csv").toPath(), StandardCharsets.UTF_8)) {
@@ -719,7 +719,7 @@ public final class KiemHeSinhThai {
             }
             Kiem.sai("bung phat khong o map 40 (MOBA) / 42", map4042);
         } catch (final Exception e) {
-            Kiem.dung("doc bang he sinh thai trong sql/htbb_day_du.sql: " + e, false);
+            Kiem.dung("doc bang he sinh thai trong sql/htbb.sql: " + e, false);
         }
     }
 

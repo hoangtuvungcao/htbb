@@ -9,7 +9,7 @@ package com.htbb.pokemon;
  *     mo phong...). Sinh tu bang trong tools/luu_tru_sinh_du_lieu/pokemon/sinh_sql_lau_dai.py.
  *   - NAP TU SQL (static volatile, RONG cho toi khi nap): so co bang data_cap_do_lau_dai /
  *     data_nang_cap_lau_dai / data_kinh_te_lau_dai - bang la NGUON DUY NHAT. com.htbb.dulieu.DuLieuSql nap
- *     luc khoi dong (data.DatabaseDuLieuSql, thieu bang = server tu choi chay) hoac tu sql/htbb_day_du.sql
+ *     luc khoi dong (data.DatabaseDuLieuSql, thieu bang = server tu choi chay) hoac tu sql/htbb.sql
  *     (test, cong cu mo phong). KHONG gan truong nay ngoai DuLieuSql.
  * KHONG nham voi real.LevelDetail (bang EXP game goc).
  */

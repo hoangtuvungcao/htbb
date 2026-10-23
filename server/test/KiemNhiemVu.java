@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Bang nhiem vu moi (data_quest_lau_dai + data_nhiem_vu_noi_dung trong sql/htbb_day_du.sql; thiet ke: du_lieu/NHIEM_VU_THIET_KE.md).
+ * Bang nhiem vu moi (data_quest_lau_dai + data_nhiem_vu_noi_dung trong sql/htbb.sql; thiet ke: du_lieu/NHIEM_VU_THIET_KE.md).
  *
  * VI SAO: nguoi choi phan nan "nhiem vu it, don dieu" -> bang mo rong ~1.860 dong, 45 kieu muc tieu.
  * Test giu: du so luong tung nhom, moi NPC/ban do/quai/vat pham tro toi deu ton tai, chuoi
@@ -214,7 +214,7 @@ public final class KiemNhiemVu {
     }
 
     static Set<String> idQuai() throws Exception {
-        final String s = new String(Files.readAllBytes(Paths.get("../sql/htbb_day_du.sql")), StandardCharsets.UTF_8);
+        final String s = DayDu.sql();
         final int i = s.indexOf("INSERT INTO `data_monster` VALUES");
         final int j = s.indexOf(";\n", i);
         final Set<String> ra = new HashSet<String>();

@@ -56,7 +56,7 @@ public final class DatabasePokedex {
         }
     }
 
-    /** Cot thu phuc (sql/nang_cap.sql phan 11 cung them). MariaDB 10.3: ADD COLUMN IF NOT EXISTS. */
+    /** Cot thu phuc (sql/htbb.sql phan 11 cung them). MariaDB 10.3: ADD COLUMN IF NOT EXISTS. */
     static volatile boolean coCotBat = true;
 
     static void themCotBat(final Connection conn) {

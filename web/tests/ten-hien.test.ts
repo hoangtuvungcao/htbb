@@ -1,15 +1,16 @@
 /**
  * Tên NPC / bản đồ (bảng SQL data_npc / data_map_ten): luật kiểm tên ở trang /admin/ten-hien
- * (shared/utils/kiemTenHien.ts) chấp nhận MỌI tên trong dữ liệu đầu sql/nang_cap.sql (phần 5) và chặn tên không dấu /
+ * (shared/utils/kiemTenHien.ts) chấp nhận MỌI tên trong dữ liệu đầu sql/htbb.sql (phần B mục 5) và chặn tên không dấu /
  * tên kiếm hiệp cũ. Trang + API + quyền có thật.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { kiemTenHien } from '../shared/utils/kiemTenHien.ts'
+import { phanNangCap } from './htbbSql.ts'
 
 const WEB = new URL('..', import.meta.url).pathname
-const sql = readFileSync(`${WEB}../sql/nang_cap.sql`, 'utf8')
+const sql = phanNangCap()
 
 function tenTrongBang(bang: string): string[] {
   const a = sql.indexOf('INSERT INTO `' + bang + '`')

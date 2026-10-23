@@ -1,5 +1,5 @@
 /**
- * Cấu hình trung tâm (web): bản tĩnh khớp bảng cau_hinh_danh_muc của sql/htbb_day_du.sql, luật kiểm khớp máy chủ game
+ * Cấu hình trung tâm (web): bản tĩnh khớp bảng cau_hinh_danh_muc của sql/htbb.sql (phần A), luật kiểm khớp máy chủ game
  * (bộ ví dụ dùng chung tools/cauhinh/vi_du_kiem.tsv — server/test/KiemCauHinhTrungTam.java chạy cùng bộ),
  * so sánh trước khi lưu, khoá env / thử nghiệm, tìm kiếm, phân quyền. Chạy: npm test.
  */
@@ -13,6 +13,7 @@ import {
   hienThiTT, khoaTT, kiemGiaTriTT, kiemYeuCauKhoiDongLai, nhomTT, soSanhTT, suaDuocTT, timTT,
 } from '../shared/utils/cauHinhTrungTam.ts'
 import { kiemQuyenAdmin, timQuyTacQuyen } from '../shared/utils/quyenAdmin.ts'
+import { phanDayDu } from './htbbSql.ts'
 
 /** Gốc monorepo (web/ nằm ngay dưới). */
 const HTBB = fileURLToPath(new URL('../../', import.meta.url))
@@ -42,8 +43,8 @@ test('danh mục: khoá duy nhất, nhóm hợp lệ, mặc định hợp lệ t
   assert.ok(k('sv.testCode').nhay)
 })
 
-test('bản tĩnh khớp cau_hinh_danh_muc / cau_hinh_nhom của sql/htbb_day_du.sql', () => {
-  const sql = readFileSync(`${HTBB}sql/htbb_day_du.sql`, 'utf8')
+test('bản tĩnh khớp cau_hinh_danh_muc / cau_hinh_nhom của sql/htbb.sql (phần A)', () => {
+  const sql = phanDayDu()
   const theoThuTu = (a: Record<string, unknown>, b: Record<string, unknown>) => Number(a.thu_tu) - Number(b.thu_tu)
   const khoa = docBangSql(sql, 'cau_hinh_danh_muc').sort(theoThuTu)
   const nhom = docBangSql(sql, 'cau_hinh_nhom').sort(theoThuTu)

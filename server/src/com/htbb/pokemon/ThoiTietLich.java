@@ -201,7 +201,7 @@ public final class ThoiTietLich {
         return he;
     }
 
-    /** Mac dinh (khop SinhThaiTheGioi + sql/nang_cap.sql phan 11). */
+    /** Mac dinh (khop SinhThaiTheGioi + sql/htbb.sql phan 11). */
     public static final AnhHuong[] MAC_DINH = {
         new AnhHuong(SinhThaiTheGioi.QUANG, h(), h(), h(), 0, "Trời đẹp, không ảnh hưởng chiêu."),
         new AnhHuong(SinhThaiTheGioi.NANG, h(HePokemon.LUA), h(HePokemon.NUOC), h(HePokemon.LUA, HePokemon.CO), 10,
@@ -355,7 +355,7 @@ public final class ThoiTietLich {
     /** Tran trong so them cua mot dong su kien (khong de su kien bien ca vung thanh mot thoi tiet). */
     public static final int TRAN_TRONG_SO_SU_KIEN = 60;
 
-    /** Mac dinh (khop sql/nang_cap.sql phan 11). */
+    /** Mac dinh (khop sql/htbb.sql phan 11). */
     public static final SuKienThoiTiet[] SU_KIEN_MAC_DINH = {
         new SuKienThoiTiet("halloween", -1, SinhThaiTheGioi.SUONG_MU, 30, MAU_HALLOWEEN, 50),
         new SuKienThoiTiet("noel", -1, SinhThaiTheGioi.TUYET, 25, MAU_NOEL, 50),

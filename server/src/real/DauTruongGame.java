@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * moi luot trong {@link DauTruongLogic#GIAY_LUOT} giay, het gio / roi game thi may chon. Logic thuan:
  * com.htbb.pokemon.DauTruongLogic / DauTruongTran / GoiDauTruong.
  *
- * <p>CSDL (CREATE TABLE IF NOT EXISTS o {@link #taoBang} + sql/nang_cap.sql khoi "them_dau_truong.sql"): tob_dau_truong_doi
+ * <p>CSDL (CREATE TABLE IF NOT EXISTS o {@link #taoBang} + sql/htbb.sql khoi "them_dau_truong.sql"): tob_dau_truong_doi
  * (doi hinh + danh tinh chong nick phu lan cuoi), tob_dau_truong_mua (diem mua), tob_dau_truong_tran (moi tran, luot tinh
  * luc bat dau, luong khoa, nhat ky hanh dong + hat de phat lai), tob_dau_truong_thuong (thuong mua, mot lan).
  */

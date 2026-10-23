@@ -10,7 +10,7 @@ Dau vao (chi doc, du lieu tai ve la KHONG tin cay -> chay bang python3 -I, chi p
   du_lieu/kiem_ke_sprite_loai.csv                     kiem ke sprite (tools/pokemon/loai/kiem_ke_sprite_loai.py)
 
 Ra (commit; KHONG sua tay - sua dau vao roi chay lai):
-  sql/nang_cap.sql, khoi "-- >>> them_loai_day_du.sql"   NGUON SU THAT trien khai (idempotent, MariaDB 10.3+, utf8)
+  sql/htbb.sql (phan B), khoi "-- >>> them_loai_day_du.sql"   NGUON SU THAT trien khai (idempotent, MariaDB 10.3+, utf8)
   du_lieu/loai/*.csv              ban xem (loai, tien hoa, chieu, chieu loai, vung)
   du_lieu/loai/doi_chieu.txt      bao cao doi chieu PokeAPI <-> Showdown
   tools/pokemon/nguon_loai/nguon.txt  URL + commit + SHA-256 tung tep nguon
@@ -33,8 +33,8 @@ from collections import defaultdict
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 DUYET = os.path.join(GOC, "tools", "pokemon", "loai", "loai_duyet.json")
 NGUON_DIR = os.path.join(GOC, "tools", "pokemon", "nguon_loai")
-RA_SQL = os.path.join(GOC, "sql", "nang_cap.sql")
-MOC_SQL = "-- >>> them_loai_day_du.sql\n"  # mot tep SQL (sql/README.md): khoi nay trong nang_cap.sql phan 11
+RA_SQL = os.path.join(GOC, "sql", "htbb.sql")
+MOC_SQL = "-- >>> them_loai_day_du.sql\n"  # mot tep SQL (sql/README.md): khoi nay trong phan B muc 11 cua htbb.sql
 RA_CSV = os.path.join(GOC, "du_lieu", "loai")
 KIEM_KE = os.path.join(GOC, "du_lieu", "kiem_ke_sprite_loai.csv")
 
@@ -858,7 +858,7 @@ def ghi_sql(L, TH, CHIEU, LC, VG, cfg, ten_trung):
 --   PMDCollab SpriteCollab %s (CC BY-NC 4.0: chi trang thai sprite + ghi cong),
 --   tools/pokemon/loai/loai_duyet.json (cho duy nhat sua tay: bac, vung, chieu, vat pham).
 -- Day la NGUON SU THAT khi trien khai (khong chay bo sinh khi deploy). Idempotent: chay lai bao nhieu lan cung duoc,
--- MariaDB 10.3+, utf8; nay la mot phan cua sql/nang_cap.sql phan 11 (sau khoi sua_ket_doi / them_trade_pokemon)
+-- MariaDB 10.3+, utf8; nay la mot phan cua sql/htbb.sql phan B muc 11 (sau khoi sua_ket_doi / them_trade_pokemon)
 --   data_loai            1.025 loai: ten (giu ten chinh thuc), he, 6 chi so nen, nhom, ho, giai doan, bac T1-T6, goc bat,
 --                        nhom trung, moi truong, dot mo; bat = 1 loai DA MO (Gen 1-2 dot A, Gen 3 dot B, Vung hoang da Gen 4-9)
 --   data_loai_tien_hoa   moi buoc tien hoa that + dieu kien, anh xa co che HTBB (cap / vat_pham / trao_doi / than_thiet / keo)
@@ -1178,7 +1178,7 @@ CREATE TABLE IF NOT EXISTS `data_bat_chi_so_loai` (
         cu = f.read()
     a = cu.find("\n" + MOC_SQL)
     if a < 0:
-        sys.exit("sql/nang_cap.sql thieu dong moc " + MOC_SQL.strip())
+        sys.exit("sql/htbb.sql thieu dong moc " + MOC_SQL.strip())
     a += 1
     b = cu.find("\n-- >>> ", a + 1)
     duoi = "" if b < 0 else cu[b + 1:]

@@ -23,7 +23,7 @@ const TOI_DA_MOI_NGAY = 20
 const TOI_DA_CHO_DUNG = 3
 
 export default defineAdminHandler(async (event, admin) => {
-  if (!(await coBang(dbGame(), 'tob_giftcode'))) throw apiLoi(409, 'Chưa có bảng tob_giftcode (chạy sql/nang_cap.sql).')
+  if (!(await coBang(dbGame(), 'tob_giftcode'))) throw apiLoi(409, 'Chưa có bảng tob_giftcode (chạy sql/htbb.sql).')
   const b = await bodyObj(event)
   const id = ncIdNhanVat(b.charId)
   const lyDo = chuoi(b.lyDo, 'Lý do', 200, 3)

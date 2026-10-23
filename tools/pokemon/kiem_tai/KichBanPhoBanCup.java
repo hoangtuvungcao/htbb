@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Kich ban bot PHO BAN HAM NGUC + CUP PVP TUAN (0.9.7: real.PhoBanGame / real.CupGame, goi -112).
- * Chay tren MAY CHU THU RIENG (sv.cho_phep_thu_nghiem=1 cho GM "tua") da nap sql/nang_cap.sql; tai khoan
+ * Chay tren MAY CHU THU RIENG (sv.cho_phep_thu_nghiem=1 cho GM "tua") da nap sql/htbb.sql; tai khoan
  * kt001.. co san (account.team_user + 5h_active), ten trong sv.adminAccounts (GM: slv / tua / khu):
  *   pb_vao      len cap 30, So tay -> Ham nguc -> Pho ban -> Vao: ban do 4381, goi -112 loai 1, thong bao tang 1, co quai,
  *               tob_pho_ban_luot = 1, danh quai: HP quai giam

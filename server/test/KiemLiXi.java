@@ -118,13 +118,13 @@ public final class KiemLiXi {
         Kiem.dung("ma: tai khoan / thiet bi / quy (LiXiLogic.giuMa) roi chot ma nguyen tu", m.contains("LiXiLogic.giuMa(")
                 && m.contains("DatabaseGioiHanQua.chotMaLiXi(") && m.indexOf("giuMa(") < m.indexOf("chotMaLiXi("));
         Kiem.dung("ma: tra LUONG KHOA (addLuongLock), khong tra luong mo", m.contains("player.addLuongLock(luong)") && !m.contains("player.addLuong(luong)"));
-        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb_day_du.sql)
+        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb.sql)
         Kiem.dung("danh muc li_xi.* (giai lon 100% gio, ma 5-15 luong khoa, quy 20.000)",
                 dm.matches("(?s).*\"li_xi.tui_giai_lon_phan_tram_gio\"[^}]*\"macDinh\": \"100\".*")
                         && dm.matches("(?s).*\"li_xi.ma_luong_khoa_max\"[^}]*\"macDinh\": \"15\".*")
                         && dm.matches("(?s).*\"li_xi.ma_tong_luong_khoa_dot\"[^}]*\"macDinh\": \"20000\".*"));
-        Kiem.dung("sql/nang_cap.sql (phan 9): bang tob_gioi_han_qua + khoa li_xi", doc("../sql/nang_cap.sql").contains("tob_gioi_han_qua")
-                && doc("../sql/nang_cap.sql").contains("'li_xi.tui_mo_ngay_toi_da'"));
+        Kiem.dung("sql/htbb.sql (phan 9): bang tob_gioi_han_qua + khoa li_xi", DayDu.nangCap().contains("tob_gioi_han_qua")
+                && DayDu.nangCap().contains("'li_xi.tui_mo_ngay_toi_da'"));
     }
 
     static String doc(final String tep) {

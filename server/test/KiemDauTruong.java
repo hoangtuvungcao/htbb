@@ -23,7 +23,7 @@ import java.util.Map;
  * DAU TRUONG BAO BOI 3v3 (D12): cong thuc sat thuong (ca tham chieu tinh tay), chi so cap 50 (IV / tinh cach), bang
  * khac he, tat dinh theo hat + phat lai, AI luon hop le (500 tran ngau nhien), trang thai, diem mua, luot ngay, chong nick
  * phu / chong cay, tran luong khoa, danh hieu mua, doi hinh, bo cuc goi -109, khoi SQL them_dau_truong.sql. Du lieu that:
- * khoi them_loai_day_du.sql cua sql/nang_cap.sql (1.025 loai, data_chieu, data_loai_chieu).
+ * khoi them_loai_day_du.sql cua sql/htbb.sql (1.025 loai, data_chieu, data_loai_chieu).
  */
 public final class KiemDauTruong {
 
@@ -808,7 +808,7 @@ public final class KiemDauTruong {
 
     static void kiemSql() throws Exception {
         final String s = DayDu.phanNangCap("them_dau_truong.sql");
-        Kiem.dung("sql/nang_cap.sql co khoi them_dau_truong.sql", s.length() > 1000);
+        Kiem.dung("sql/htbb.sql co khoi them_dau_truong.sql", s.length() > 1000);
         for (final String b : new String[]{"tob_dau_truong_doi", "tob_dau_truong_mua", "tob_dau_truong_tran", "tob_dau_truong_thuong"}) {
             Kiem.dung("khoi dau truong: CREATE TABLE IF NOT EXISTS `" + b + "`", s.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
         }

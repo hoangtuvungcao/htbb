@@ -1,14 +1,15 @@
 /**
- * Học chiêu theo loài trên Pokédex: hàm thuần shared/utils/learnset.ts với dữ liệu đầu thật (phần hoc_chieu_huan_luyen.sql của sql/nang_cap.sql)
+ * Học chiêu theo loài trên Pokédex: hàm thuần shared/utils/learnset.ts với dữ liệu đầu thật (phần hoc_chieu_huan_luyen.sql của sql/htbb.sql phần B)
  * (cùng nguồn với game server), API đọc data_learnset, trang Pokédex hiện bảng chiêu theo loài.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { chieuCuaLoai, docDong, type DongLearnset } from '../shared/utils/learnset.ts'
+import { phanNangCap } from './htbbSql.ts'
 
 const WEB = new URL('..', import.meta.url).pathname
-const sql = readFileSync(`${WEB}../sql/nang_cap.sql`, 'utf8').split('\n-- >>> hoc_chieu_huan_luyen.sql\n')[1].split('\n-- >>> ')[0]
+const sql = phanNangCap().split('\n-- >>> hoc_chieu_huan_luyen.sql\n')[1].split('\n-- >>> ')[0]
 
 function dongSql(): DongLearnset[] {
   const a = sql.indexOf('INSERT INTO data_learnset')

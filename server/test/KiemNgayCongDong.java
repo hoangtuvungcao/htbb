@@ -155,8 +155,8 @@ public final class KiemNgayCongDong {
     }
 
     static void duLieu() {
-        Kiem.nhom("data_ngay_cong_dong + danh hieu (sql/nang_cap.sql phan them_thoi_tiet_mua.sql)");
-        final String s = DayDu.phanNangCap("them_thoi_tiet_mua.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        Kiem.nhom("data_ngay_cong_dong + danh hieu (sql/htbb.sql phan them_thoi_tiet_mua.sql)");
+        final String s = DayDu.phanNangCap("them_thoi_tiet_mua.sql"); // tep cu gop vao sql/htbb.sql phan 11
         final Matcher m = Pattern.compile("^\\((\\d+),(\\d),(\\d+),'(\\w+)','([\\d,]+)','([\\d,]*)',(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),'([^']*)'\\)",
                 Pattern.MULTILINE).matcher(s);
         final Map<String, String> theoKhoa = new HashMap<String, String>();
@@ -178,7 +178,7 @@ public final class KiemNgayCongDong {
         Kiem.bang("khong dong nao vuot tran", 0, vuot);
         // id quai la quai thuong co ban do tu nhien (data_hst_bung_phat)
         final Set<Integer> coMap = new HashSet<Integer>();
-        for (final Map<String, String> r : DayDu.dong("data_hst_bung_phat")) { // CSDL day du (sql/htbb_day_du.sql)
+        for (final Map<String, String> r : DayDu.dong("data_hst_bung_phat")) { // CSDL day du (sql/htbb.sql)
             coMap.add(Integer.parseInt(r.get("id_quai")));
         }
         final Set<Integer> thieu = new HashSet<Integer>(idQuai);

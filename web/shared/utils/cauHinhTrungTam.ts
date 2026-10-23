@@ -2,7 +2,7 @@
  * CẤU HÌNH TRUNG TÂM — hàm THUẦN (không DB, không auto-import Nuxt): kiểm giá trị, nhóm, tìm kiếm, so sánh.
  *
  * Danh mục khoá: lúc chạy từ CSDL game (cau_hinh_danh_muc + cau_hinh_nhom — máy chủ game đọc chính hai bảng này);
- * dự phòng lúc build: shared/utils/cauHinhTrungTam.gen.ts (bản chụp tĩnh, test đối chiếu với sql/htbb_day_du.sql).
+ * dự phòng lúc build: shared/utils/cauHinhTrungTam.gen.ts (bản chụp tĩnh, test đối chiếu với sql/htbb.sql).
  * Luật kiểm khớp HTBB/src/com/htbb/cauhinh/KiemGiaTri.java; bộ ví dụ dùng chung HTBB/tools/cauhinh/vi_du_kiem.tsv
  * (cả tests/cau-hinh-trung-tam.test.ts lẫn HTBB/test/KiemCauHinhTrungTam.java chạy cùng bộ đó).
  *

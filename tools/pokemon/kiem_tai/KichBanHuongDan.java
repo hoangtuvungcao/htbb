@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.util.*;
 
 /**
- * Kich ban HUONG DAN TAN THU (nhanh huong-dan, sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql)) - goi tin that nhu client 0.9.7 (-Dban=907):
+ * Kich ban HUONG DAN TAN THU (nhanh huong-dan, sql/htbb.sql (khoi them_huong_dan_tan_thu.sql)) - goi tin that nhu client 0.9.7 (-Dban=907):
  *  hd_toan_bo     tai khoan MOI TINH: san 105 -> lang -> menu Lam / Bo qua -> 10 buoc (di bo toi tung NPC theo cMap, nhan /
  *                 tra -64, ra dong Pallet qua cong, danh Caterpie, uong thuoc, cong diem ky nang, mac Ruy bang, tha cau o
  *                 ao lang) -> ban giao chuong 1 (C01.1 o Xatu); kiem thuong (khong luong / luong khoa), log server sach.

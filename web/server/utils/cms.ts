@@ -21,7 +21,7 @@ export async function coBangCms(bang: typeof BANG_CMS[number] = 'web_cai_dat'): 
 
 export async function canBangCms(bang: typeof BANG_CMS[number]) {
   if (!(await coBangCms(bang))) {
-    throw apiLoi(409, `Chưa có bảng ${bang}. Chạy file sql/nang_cap.sql vào database game rồi tải lại trang.`, { code: 'chua_co_bang' })
+    throw apiLoi(409, `Chưa có bảng ${bang}. Chạy file sql/htbb.sql vào database game rồi tải lại trang.`, { code: 'chua_co_bang' })
   }
 }
 

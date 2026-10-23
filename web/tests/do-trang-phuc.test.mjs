@@ -69,7 +69,7 @@ test('ô nào cũng có món miễn phí; món cửa hàng có giá, món khác 
   assert.match(moTaNguon(dm.trangTri.find(t => t.ma === 'tp_valentine')), /Valentine/)
 })
 
-test('ánh xạ hàng CSDL -> danh mục khớp JSON (API dùng khi đã chạy sql/nang_cap.sql (khối them_do_trang_phuc.sql))', () => {
+test('ánh xạ hàng CSDL -> danh mục khớp JSON (API dùng khi đã chạy sql/htbb.sql (khối them_do_trang_phuc.sql))', () => {
   const ho = dm.bo.map((b, i) => ({
     ma: b.ma, ten: b.ten, loai: b.loai, he: b.loai === 'he' ? dm.he.indexOf(b.he) : -1,
     he_khac: b.loai === 'he' ? dm.he.indexOf(b.heKhac) : -1, vung: b.vung ?? '', bac_tu: b.bacTu ?? 2, bac_den: b.bacDen ?? 10,

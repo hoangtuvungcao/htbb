@@ -11,7 +11,7 @@ import java.nio.file.Paths;
  *
  * Server gui nguyen tep cMap cho client khi doi ban do (Map.idMapSend2Client, MessageCreator goi 12) nen client 0.9.7
  * cung thay NPC moi. Chay lai khong them trung (loai da co tren ban do thi bo qua). Sau khi chay: cap nhat
- * data_npc.ban_do (sql/pokemon_ten_hien.sql + sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql); test/KiemNpc doi chieu).
+ * data_npc.ban_do (sql/pokemon_ten_hien.sql + sql/htbb.sql (khoi them_huong_dan_tan_thu.sql); test/KiemNpc doi chieu).
  *
  * <pre>
  *   javac -cp server/build/classes -d /tmp/htbb-tools tools/pokemon/ThemNpcLang.java    (lop server da bien dich)

@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  *   - chuoi "..." trong src/**.java (bo chu thich, dong log, bang tu dien ChuPokemon/TenMapPokemon);
  *   - client: J2ME, Android (.java), PC/iOS Unity client_pc_ios/Assets (.cs);
  *   - web canh HTBB/ (../HTBB-Web: .vue/.ts/.js/.mjs/.sql) (web PHP cu web/ da bo - docs/kien-truc.md);
- *   - chuoi '...' trong sql/htbb_day_du.sql va sql/nang_cap.sql (du lieu game).
+ *   - chuoi '...' trong sql/htbb.sql va sql/htbb.sql (du lieu game).
  * Khong co thu muc client/web (vd may chu chi co repo game) thi bo qua phan do, in ra.
  * "bang" trong chu KHONG dau (bảng/băng/khoa 'bang') khong tinh - xem docs/thiet-ke-game.md.
  */
@@ -337,15 +337,14 @@ public final class KiemThuatNgu {
     private static void quetSql() {
         // Du lieu game nam trong MOT tep day du (va tep nang cap) - quet chu nguoi choi thay o hai tep do.
         int n = 0;
-        for (final File f : new File[]{new File("../sql/htbb_day_du.sql"), new File("../sql/nang_cap.sql")}) {
-            if (f.isFile()) {
-                n++;
-                // Dieu kien WHERE cua lenh doi ten (khoi sua_ket_doi.sql: "... WHERE `name` IN ('ten cu')") la ten CU can
-                // tim de doi, khong phai chu nguoi choi thay: thay bang chuoi rong (giu so dong cho bao loi).
-                chuoiSql(f.getPath(), boWhereDoiTen(doc(f)), false);
-            }
+        final File f = new File(DayDu.TEP);
+        if (f.isFile()) {
+            n++;
+            // Dieu kien WHERE cua lenh doi ten (khoi sua_ket_doi.sql: "... WHERE `name` IN ('ten cu')") la ten CU can
+            // tim de doi, khong phai chu nguoi choi thay: thay bang chuoi rong (giu so dong cho bao loi).
+            chuoiSql(f.getPath(), boWhereDoiTen(doc(f)), false);
         }
-        Kiem.bang("co sql/htbb_day_du.sql va sql/nang_cap.sql", 2, n);
+        Kiem.bang("co sql/htbb.sql", 1, n);
     }
 
     // ---------------- web (ban Java don gian cua tools/pokemon/ap_thuat_ngu_web.py) ----------------

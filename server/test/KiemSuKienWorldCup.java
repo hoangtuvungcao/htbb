@@ -163,8 +163,8 @@ public final class KiemSuKienWorldCup {
 
         // ================= 8. SQL =================
         Kiem.dung("thuoc 108 co ten (data_potion)", !String.valueOf(DayDu.giaTri("data_potion", "id", "108", "name")).trim().isEmpty());
-        Kiem.dung("htbb_day_du.sql co bang diem tob_top_event_world_cup", DayDu.coBang("tob_top_event_world_cup"));
-        Kiem.dung("htbb_day_du.sql co bang trang thai tob_event_world_cup_state", DayDu.coBang("tob_event_world_cup_state"));
+        Kiem.dung("htbb.sql co bang diem tob_top_event_world_cup", DayDu.coBang("tob_top_event_world_cup"));
+        Kiem.dung("htbb.sql co bang trang thai tob_event_world_cup_state", DayDu.coBang("tob_event_world_cup_state"));
         // Them dong moi vao data_potion la doi so o thuoc cua client -> cam.
         Kiem.bang("data_potion dung 162 dong (client cap phat theo so nay)", 162, DayDu.soDong("data_potion"));
     }

@@ -238,7 +238,7 @@ public final class KiemTaiDuLieu096 {
     private static void kiemSql() {
         Kiem.nhom("0.9.6.1 loi tai: id ban do / toa do trong SQL tro vao ban do co that");
         try {
-            final String sql = doc("../sql/htbb_day_du.sql");
+            final String sql = DayDu.sql();
             final List<String> loi = new ArrayList<String>();
             int dem = 0;
             for (final List<String> r : hang(sql, "data_npc")) {

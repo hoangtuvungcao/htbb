@@ -24,7 +24,7 @@ import com.htbb.pokemon.TenMapPokemon;
  * TEN NPC + TEN BAN DO nguoi choi thay (P6: du lieu hien thi o SQL data_npc / data_map_ten).
  *
  * VI SAO: chu game bao ten NPC khong dau ("Ba Ngoai") va ten ban do kiem hiep ("Bến bắc" o /admin/online). Kiem
- *  - migration sql/nang_cap.sql (phan 5) = khoi data_npc / data_map_ten trong CSDL day du sql/htbb_day_du.sql (SQL la
+ *  - migration sql/htbb.sql (phan 5) = khoi data_npc / data_map_ten trong CSDL day du sql/htbb.sql (SQL la
  *    NGUON, sua o web /admin/ten-hien; khong con bang ten trong Java, khong bo sinh);
  *  - moi type NPC co tren cMap co ten; NPCNAME client J2ME + Unity = data_npc (giao thuc chua gui ten NPC tinh);
  *  - ten ban do theo dung thiet ke du_lieu/thiet_ke_map.csv (bo dau so khop), Hoenn = BanDoHoenn;
@@ -72,12 +72,12 @@ public final class KiemTenHien {
     }
 
     private static void chayThat() throws Exception {
-        final String sql = doc("../sql/nang_cap.sql");
+        final String sql = DayDu.nangCap();
         final Map<Integer, String[]> npc = dong(sql, "data_npc");
         final Map<Integer, String[]> map = dong(sql, "data_map_ten");
-        final String du = doc("../sql/htbb_day_du.sql");
-        Kiem.bang("htbb_day_du.sql: data_npc = migration", chuoi(npc), chuoi(dongDump(du, "data_npc", 7)));
-        Kiem.bang("htbb_day_du.sql: data_map_ten = migration", chuoi(map), chuoi(dongDump(du, "data_map_ten", 5)));
+        final String du = DayDu.sql();
+        Kiem.bang("htbb.sql: data_npc = migration", chuoi(npc), chuoi(dongDump(du, "data_npc", 7)));
+        Kiem.bang("htbb.sql: data_map_ten = migration", chuoi(map), chuoi(dongDump(du, "data_map_ten", 5)));
         Kiem.bang("data_npc du type 0..31", 32, npc.size());
         for (int i = 0; i < 32; i++) {
             Kiem.dung("data_npc co type " + i, npc.containsKey(i));

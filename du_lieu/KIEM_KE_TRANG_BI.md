@@ -2,7 +2,7 @@
 
 > **Tệp sinh** bởi `tools/do_trang_phuc/kiem_ke.py` - đừng sửa tay. Danh mục đồ mới: `tools/do_trang_phuc/danh_muc.py`.
 
-## 1. Hiện trạng trước khi thêm (data_item trong `sql/htbb_day_du.sql`)
+## 1. Hiện trạng trước khi thêm (data_item trong `sql/htbb.sql`)
 
 - 729 mẫu trang bị nhân vật (type 0..12, 19) trong `data_item`; 154 dòng "chuẩn" ô × bậc ở `noi_dung_trang_bi.csv` (14 ô × 11 bậc, đồ cầm tay tách 5 dòng Pokémon). Độ hiếm là thuộc tính của **từng món** (`colorName`), không phải của mẫu: mọi ô × bậc đều ra được Thường / Hiếm / Quý / Sử thi (Huyền thoại = Sử thi + 3 lỗ từ chế tạo).
 - **Trùng tên**: 124 tên dùng cho nhiều mẫu (di sản kiếm hiệp chia mẫu theo giới tính / style / cấp 1-4-9), tổng 604 mẫu. Ví dụ: "Khăn quàng bạc" ×8, "Khăn quàng vàng" ×8, "Khăn quàng bạch kim" ×8, "Khăn quàng kim cương" ×8, "Đai bạc" ×8, "Đai vàng" ×8.
@@ -54,7 +54,7 @@ Mỗi ô × dải chỉ có 1-2 tên chung ("Khăn quàng bạc"), không có l�
 
 ## 2. Sau khi thêm
 
-- **628 món mới** (`data_item` 1400..2027, `sql/nang_cap.sql` (khối `them_do_trang_phuc.sql`)): 540 món 18 bộ hệ (6 ô × 5 bậc) + 88 món 3 bộ huy chương vùng (8 ô × 11 bậc). Mỗi món là bản sao chỉ số của món gốc cùng ô + bậc (không sức mạnh dọc mới).
+- **628 món mới** (`data_item` 1400..2027, `sql/htbb.sql` (khối `them_do_trang_phuc.sql`)): 540 món 18 bộ hệ (6 ô × 5 bậc) + 88 món 3 bộ huy chương vùng (8 ô × 11 bậc). Mỗi món là bản sao chỉ số của món gốc cùng ô + bậc (không sức mạnh dọc mới).
 - **689 icon mới** 16x16 vẽ tay (`server/map/icon_do_moi`, id ảnh 15000+n), không trùng nhau: 0 nhóm trùng nội dung.
 
 | Ô | cấp 1–19 | cấp 20–39 | cấp 40–59 | cấp 60–79 | cấp 80–98 |

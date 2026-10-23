@@ -141,10 +141,10 @@ lại khi thấy cây làm việc bẩn).
 ### 3.4 Nạp CSDL
 
 ```bash
-mysql -u root < /opt/htbb/sql/htbb_day_du.sql            # MỘT tệp: account + htbb_db, schema, dữ liệu Pokémon, chỉ mục
+mysql -u root < /opt/htbb/sql/htbb.sql                   # MỘT tệp: account + htbb_db, schema, dữ liệu Pokémon, chỉ mục
 ```
 
-`sql/htbb_day_du.sql` là tệp sinh (xem [sql/README.md](../sql/README.md)) — dựng sẵn tài khoản `admin` với mật khẩu
+`sql/htbb.sql` là tệp CSDL duy nhất (phần A sinh từ CSDL, xem [sql/README.md](../sql/README.md)) — dựng sẵn tài khoản `admin` với mật khẩu
 ngẫu nhiên không ai biết. Đặt mật khẩu admin ngay sau khi nạp:
 
 ```bash
@@ -244,12 +244,12 @@ Có `flock` chống hai lần deploy chồng nhau và `trap` SIGHUP để bật 
 Nhớ: VPS chạy **tệp jar đã commit**. Sửa `server/src` thì phải build lại `server/htbb-server.jar` ([build.md](build.md))
 và commit cả jar.
 
-**Nâng cấp CSDL đang chạy** (production dựng từ `htbb_day_du.sql` cũ, kể cả 0.9.2) — bắt buộc **trước** khi jar từ P1
+**Nâng cấp CSDL đang chạy** (production dựng từ `htbb.sql` cũ, kể cả 0.9.2; cùng tệp `sql/htbb.sql`) — bắt buộc **trước** khi jar từ P1
 trở đi khởi động (deploy-auto không tự chạy SQL), không thì máy chủ dừng ngay với dòng `THIEU DU LIEU SQL QUAN TRONG -
 DUNG SERVER` (systemd báo `failed`, bản cũ đã tắt):
 
 ```sh
-sudo bash /opt/htbb/vps/nang_cap_csdl.sh   # sao lưu → nạp sql/nang_cap.sql → kiểm; chạy lại được
+sudo bash /opt/htbb/vps/nang_cap_csdl.sh   # sao lưu → nạp sql/htbb.sql → kiểm; chạy lại được
 ```
 
 Script tự sao lưu (`vps/backup_db.sh`, hỏng là dừng), chỉ **thêm** bảng / cột / chỉ mục cho bảng người chơi, nạp lại

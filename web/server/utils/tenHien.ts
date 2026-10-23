@@ -1,6 +1,6 @@
 /**
  * Tên NGƯỜI CHƠI THẤY trong CSDL game (P6): `data_npc` (tên NPC tĩnh theo type) và `data_map_ten` (tên bản đồ theo id).
- * Bảng có trong sql/htbb_day_du.sql (CSDL cũ: phần 5 của sql/nang_cap.sql). Game server đọc lúc bật máy và TỰ NẠP
+ * Bảng có trong sql/htbb.sql (CSDL cũ: phần 5 của sql/htbb.sql). Game server đọc lúc bật máy và TỰ NẠP
  * LẠI trong ≤ 30 giây khi số dòng / `sua_luc` đổi (com.htbb.pokemon.TenHien) — không cần khởi động lại; người chơi
  * thấy tên bản đồ mới ở lần vào bản đồ kế tiếp. Tên NPC tĩnh còn một bản sao trong client (giao thức chưa gửi tên NPC
  * tĩnh): đổi tên NPC thì phải phát hành lại client mới hiện trong game.

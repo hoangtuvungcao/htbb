@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * DO HO MOI (0.9.8): 18 bo he (6 o vai x 5 bac) + 3 bo huy chuong vung (huy hieu / gang / phien da / do cam tay x 11
- * bac). Mon ho la BAN SAO chi so mon goc cung o + bac (sql/nang_cap.sql (khoi them_do_trang_phuc.sql), sinh boi tools/do_trang_phuc/sinh.py)
+ * bac). Mon ho la BAN SAO chi so mon goc cung o + bac (sql/htbb.sql (khoi them_do_trang_phuc.sql), sinh boi tools/do_trang_phuc/sinh.py)
  * nen KHONG them suc manh doc; thuong bo nam trong tran chung:
  * <ul>
  *   <li>bo he: 2 mon +2% ST he, 4 mon +3% khang he khac, 6 mon them +3% ST he - cong vao ST he (tran chung 20%,

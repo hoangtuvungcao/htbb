@@ -15,7 +15,7 @@ public class NPC extends Actor {
     private Image[] img;
     public String name;
     /**
-     * Tên NPC tĩnh theo type 0..31 = bảng SQL data_npc (sql/htbb_day_du.sql, sửa ở web /admin/ten-hien). Giao
+     * Tên NPC tĩnh theo type 0..31 = bảng SQL data_npc (sql/htbb.sql, sửa ở web /admin/ten-hien). Giao
      * thức chưa có gói gửi tên NPC tĩnh nên bản sao này vẫn nằm trong client: server test KiemTenHien bắt lệch với SQL
      * (sửa tên NPC tĩnh -> sửa ở đây + NPC.cs rồi phát hành client).
      */

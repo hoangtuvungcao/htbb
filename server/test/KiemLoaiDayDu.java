@@ -23,12 +23,12 @@ import java.util.TreeMap;
 
 /**
  * LOAI DAY DU (he_thong_day_du.md 3-5): du lieu 1.025 loai, chuoi tien hoa, chieu, noi song, sprite, chon loai khi hoi
- * sinh, goi -125 / -126 va fallback client cu. Doc khoi "-- >>> them_loai_day_du.sql" cua sql/nang_cap.sql (nguon su that khi trien khai, sinh
+ * sinh, goi -125 / -126 va fallback client cu. Doc khoi "-- >>> them_loai_day_du.sql" cua sql/htbb.sql (nguon su that khi trien khai, sinh
  * boi tools/pokemon/loai/sinh_loai.py) - khong can CSDL.
  */
 public final class KiemLoaiDayDu {
 
-    static final String SQL = "them_loai_day_du.sql"; // khoi "-- >>> them_loai_day_du.sql" cua sql/nang_cap.sql
+    static final String SQL = "them_loai_day_du.sql"; // khoi "-- >>> them_loai_day_du.sql" cua sql/htbb.sql
 
     // ------------------------------------------------------------------ doc INSERT trong tep SQL
 

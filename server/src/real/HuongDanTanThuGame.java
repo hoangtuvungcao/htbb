@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * HUONG DAN TAN THU - noi game (luat thuan o com.htbb.pokemon.HuongDanTanThu). Moi chu nguoi choi thay nam o bang
- * data_huong_dan_tan_thu (sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql)), nap lai moi 60 giay; 10 buoc la 10 dong dau chuoi chinh
+ * data_huong_dan_tan_thu (sql/htbb.sql (khoi them_huong_dan_tan_thu.sql)), nap lai moi 60 giay; 10 buoc la 10 dong dau chuoi chinh
  * (data_quest_moi 901..910) nen chay tren client 0.9.7 bang goi nhiem vu -64 san co (dau tren dau NPC, cham ban do nho,
  * nut "Di toi"), khong goi tin moi:
  *
@@ -240,7 +240,7 @@ public final class HuongDanTanThuGame {
         final String lam = nhan("moi.lam");
         final String bo = nhan("moi.bo_qua");
         if (lam.isEmpty() || bo.isEmpty()) {
-            return; // chua chay sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql)
+            return; // chua chay sql/htbb.sql (khoi them_huong_dan_tan_thu.sql)
         }
         DA_MOI.add(Integer.valueOf(p.charDBID));
         ThongBao.gui(p, ThongBao.TIN, chu("moi.chao"), chu("moi.chao_phu"), ThongBao.HINH_KHONG, 0);

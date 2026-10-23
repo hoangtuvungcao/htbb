@@ -1,6 +1,6 @@
 /**
  * Bản chụp TĨNH bảng cau_hinh_danh_muc / cau_hinh_nhom (bộ sinh cũ đã lưu trữ: tools/luu_tru_sinh_du_lieu/cauhinh/).
- * Đổi danh mục thì sửa CSDL rồi sửa tệp này cho khớp sql/htbb_day_du.sql (web/tests/cau-hinh-danh-muc-sql.test.ts kiểm).
+ * Đổi danh mục thì sửa CSDL rồi sửa tệp này cho khớp sql/htbb.sql (web/tests/cau-hinh-danh-muc-sql.test.ts kiểm).
  * Bản dự phòng của danh mục cấu hình trung tâm: web đọc bảng cau_hinh_danh_muc / cau_hinh_nhom trước
  * (server/utils/cauHinhDanhMucSql.ts), máy chủ game chỉ đọc bảng (com.htbb.cauhinh.DanhMucSql).
  * Hàm kiểm / so sánh thuần: shared/utils/cauHinhTrungTam.ts.
@@ -59,7 +59,7 @@ export const NHOM_TT: { ma: string, ten: string, moTa: string, an?: boolean }[] 
   { ma: "thong_bao", ten: "Thông báo (cố định)", moTa: "Gộp thông báo toàn máy chủ.", an: true },
   { ma: "quan_tri", ten: "Quản trị & thử nghiệm (cố định)", moTa: "Cờ GM cũ và khoá thử nghiệm (máy thật luôn mặc định).", an: true },
   { ma: "dat_ten_pet", ten: "Thẻ đặt tên Pokémon", moTa: "Giá bán (lượng), số lần mua / tuần và tỉ lệ các mức của dòng chỉ số ngẫu nhiên. Trần một dòng và trần tổng trang trí 5% là cố định. Bảng chỉ số trong data_dong_the_ten, từ cấm trong data_tu_cam_ten.", an: true },
-  { ma: "loai", ten: "Loài Pokémon hoang dã", moTa: "Loài riêng từng con quái khi hồi sinh (6 bậc T1–T6, tỉ lệ gặp theo bậc), tải hình theo nhu cầu. Dữ liệu loài ở bảng data_loai* (sql/nang_cap.sql, khối them_loai_day_du.sql).", an: true },
+  { ma: "loai", ten: "Loài Pokémon hoang dã", moTa: "Loài riêng từng con quái khi hồi sinh (6 bậc T1–T6, tỉ lệ gặp theo bậc), tải hình theo nhu cầu. Dữ liệu loài ở bảng data_loai* (sql/htbb.sql, khối them_loai_day_du.sql).", an: true },
 ]
 
 export const DANH_MUC_TT: KhoaTT[] = [

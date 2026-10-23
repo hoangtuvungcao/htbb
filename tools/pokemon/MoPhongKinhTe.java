@@ -25,7 +25,7 @@ import java.util.Map;
  * MO PHONG KINH TE + TIEN TRINH 730 NGAY (docs/thiet-ke-game.md).
  *
  * TAT DINH: cung hat giong -> cung ket qua tung so (RNG SplitMix64 rieng, khong dung
- * Math.random / thoi gian). Doc so tu CSDL day du sql/htbb_day_du.sql (nguon duy nhat): ThongSoLauDai (nap tu
+ * Math.random / thoi gian). Doc so tu CSDL day du (phan A cua sql/htbb.sql, nguon duy nhat): ThongSoLauDai (nap tu
  * data_*_lau_dai), nhiem vu data_quest_lau_dai, lich su kien data_su_kien_nam.
  *
  * Mo hinh (rut gon co chu dich - muc tieu la SO SANH tham so, khong phai du doan tuyet doi):
@@ -235,13 +235,13 @@ public final class MoPhongKinhTe {
         return s == null || s.isEmpty() ? 0L : Long.parseLong(s);
     }
 
-    /** Moi dong cua mot bang trong sql/htbb_day_du.sql (cot -> gia tri, NULL -> ""). */
+    /** Moi dong cua mot bang trong phan A cua sql/htbb.sql (cot -> gia tri, NULL -> ""). */
     private static final Map<String, com.htbb.dulieu.DocDumpSql> DUMP = new HashMap<String, com.htbb.dulieu.DocDumpSql>();
 
     static synchronized List<Map<String, String>> docBang(final File goc, final String ten) throws Exception {
-        final String p = new File(goc, "sql/htbb_day_du.sql").getPath();
+        final String p = new File(goc, "sql/htbb.sql").getPath();
         if (!DUMP.containsKey(p)) {
-            DUMP.put(p, com.htbb.dulieu.DocDumpSql.tuTep(p));
+            DUMP.put(p, com.htbb.dulieu.DocDumpSql.tuTepDayDu(p));
         }
         final com.htbb.dulieu.DocDumpSql d = DUMP.get(p);
         final com.htbb.dulieu.BangSql b = d.doc(ten, d.cotCua(ten));
@@ -1361,14 +1361,14 @@ public final class MoPhongKinhTe {
 
     /**
      * So lieu dai han (ThongSoLauDai, lich su kien, danh muc cau hinh...) nap tu SQL (P1: bang la nguon duy nhat).
-     * Chay rieng cong cu: doc {@code <goc>/sql/htbb_day_du.sql}; chay trong test: Kiem.main da nap, bo qua.
+     * Chay rieng cong cu: doc phan A cua {@code <goc>/sql/htbb.sql}; chay trong test: Kiem.main da nap, bo qua.
      */
     static void napDuLieuSql(final File goc) throws Exception {
         if (com.htbb.pokemon.ThongSoLauDai.EXP_LEN_CAP.length > 0) {
             return;
         }
         final com.htbb.dulieu.DuLieuSql.KetQua kq = com.htbb.dulieu.DuLieuSql.napTatCa(
-                com.htbb.dulieu.DocDumpSql.tuTep(new File(goc, "sql/htbb_day_du.sql").getPath()));
+                com.htbb.dulieu.DocDumpSql.tuTepDayDu(new File(goc, "sql/htbb.sql").getPath()));
         if (!kq.dat()) {
             throw new IllegalStateException("du lieu SQL hong: " + kq.loi);
         }

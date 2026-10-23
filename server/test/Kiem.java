@@ -65,7 +65,7 @@ public final class Kiem {
         System.out.println(" Map van nap duoc va cac ham thuan van chay dung.)");
 
         // P1: so lieu thiet ke (bang EXP, nang cap, kinh te, lich su kien, diem cau, trang bi giftcode, danh muc cau
-        // hinh) NAP TU sql/htbb_day_du.sql TRUOC moi nhom - giong may chu nap tu CSDL (data.DatabaseDuLieuSql).
+        // hinh) NAP TU sql/htbb.sql TRUOC moi nhom - giong may chu nap tu CSDL (data.DatabaseDuLieuSql).
         try {
             KiemDuLieuSql.napKiem = com.htbb.dulieu.DuLieuSql.napTuDumpDayDu();
         } catch (final RuntimeException e) {
@@ -182,7 +182,7 @@ public final class Kiem {
         KiemLauDaiGd2.chay();
         KiemNoiDung.chay();
         KiemHeSinhThai.chay();
-        KiemItemMoCoi.chay(); // luat khong item mo coi (kiem tren sql/htbb_day_du.sql)
+        KiemItemMoCoi.chay(); // luat khong item mo coi (kiem tren sql/htbb.sql)
         KiemNapTien.chay();
         KiemTangToc.chay();
         KiemTuDong.chay();

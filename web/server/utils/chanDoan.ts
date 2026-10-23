@@ -197,7 +197,7 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
   await thu('Giftcode an toàn', async () => {
     if (!(await coBang(game, 'tob_giftcode'))) {
       them('Giftcode an toàn', 'canhbao', 'Chưa có bảng tob_giftcode — trang Giftcode không tạo được mã.',
-        'mysql -u root htbb_db < sql/nang_cap.sql')
+        'mysql -u root < sql/htbb.sql')
       return
     }
     const gioiHan = await gcGioiHan()
@@ -315,7 +315,7 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
       return
     }
     them('Các bảng phụ', 'canhbao', `Thiếu ${thieu.length} bảng.`,
-      'sudo bash /opt/htbb/vps/nang_cap_csdl.sh   # = mysql -u root htbb_db < sql/nang_cap.sql (tạo mọi bảng còn thiếu)', thieu)
+      'sudo bash /opt/htbb/vps/nang_cap_csdl.sh   # = mysql -u root < sql/htbb.sql (tạo mọi bảng còn thiếu)', thieu)
   })
 
   // --- 12. Cờ nghi vấn gian lận ------------------------------------------------

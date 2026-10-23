@@ -1,7 +1,7 @@
 # Thiết kế game Huyền Thoại Bảo Bối
 
 Tài liệu thiết kế và cơ chế cho người phát triển / thiết kế mới vào dự án. Mô tả **luật đang chạy** trong máy chủ
-(`server/src`), số liệu lấy từ code (`com.htbb.pokemon.*`, `real.*`), bảng dữ liệu trong CSDL (`sql/htbb_day_du.sql`:
+(`server/src`), số liệu lấy từ code (`com.htbb.pokemon.*`, `real.*`), bảng dữ liệu trong CSDL (`sql/htbb.sql`:
 `data_*`, danh mục cấu hình `cau_hinh_danh_muc`) và bảng tài nguyên `du_lieu/*.csv`. Các liên kết tới
 `tools/luu_tru_sinh_du_lieu/du_lieu/*.csv` là bảng tính thiết kế **ban đầu** (đã thành bảng CSDL, chỉ để tra cứu). Khi
 tài liệu và code / CSDL lệch nhau, **code và CSDL thắng**: sửa tài liệu cho khớp.
@@ -237,7 +237,7 @@ Bảng khắc hệ đơn (hệ chiêu đánh vào một hệ; trong game "mạnh
   | Dạng 2 | 16 (Pichu 10) | ô 3 (chiêu nhiều đòn) và ô 4 |
   | Dạng 3 | 32 / 36 (Pichu 30, Eevee 25) | ô 6–8 (Eevee 6–10), có chiêu tối thượng |
 
-- **Học chiêu theo loài** (đề xuất 1, bảng `data_learnset` — nguồn duy nhất, `sql/nang_cap.sql` phần 11, sửa trong
+- **Học chiêu theo loài** (đề xuất 1, bảng `data_learnset` — nguồn duy nhất, `sql/htbb.sql` phần 11, sửa trong
   CSDL; game server `com.htbb.pokemon.Learnset` + `real.HocChieuGame`). Mỗi loài (số Pokédex, 21 loài người chơi) có
   danh sách ô chiêu nó học được và cấp học:
   - `nguon = cap`: **tự học** khi đủ cấp, ở cấp chiêu 1, **không tốn điểm**, hiện thẻ "Charmander đã học Than hồng!";
@@ -313,7 +313,7 @@ PvP: thời lượng ×0,5. Boss chỉ nhận 30% thời lượng, không ngủ 
 
 ### 2.6b Loài đầy đủ (1.025 loài, mở theo đợt)
 
-- **Một nguồn dữ liệu:** `sql/nang_cap.sql` (khối `them_loai_day_du.sql`) (sinh bởi `tools/pokemon/loai/sinh_loai.py` từ PokeAPI ghim commit,
+- **Một nguồn dữ liệu:** `sql/htbb.sql` (khối `them_loai_day_du.sql`) (sinh bởi `tools/pokemon/loai/sinh_loai.py` từ PokeAPI ghim commit,
   đối chiếu Showdown; chỉ sửa tay `tools/pokemon/loai/loai_duyet.json`). Bảng `data_loai`, `data_loai_tien_hoa`,
   `data_chieu`, `data_loai_chieu`, `data_loai_vung`, `data_loai_sprite`. Tên loài giữ tên chính thức.
 - **Đợt A (Gen 1–2, 251 loài) và đợt B (Gen 3, 135 loài) đã mở** (`data_loai.bat = 1`). Gen 3 sống ở khu vực nhà
@@ -771,7 +771,7 @@ trung bình +2,2% một chỉ số sau 26 tuần chỉ bằng bản kiếm đư�
 
 ### 4.8 Đồ họ mới & trang phục (0.9.8)
 
-Dữ liệu một nguồn: `tools/do_trang_phuc/sinh.py` (danh mục `danh_muc.py`, hình vẽ tay bằng lưới) → `sql/nang_cap.sql` (khối `them_do_trang_phuc.sql`),
+Dữ liệu một nguồn: `tools/do_trang_phuc/sinh.py` (danh mục `danh_muc.py`, hình vẽ tay bằng lưới) → `sql/htbb.sql` (khối `them_do_trang_phuc.sql`),
 icon `server/map/icon_do_moi/<n>.png` (id ảnh **15000+n**, `com.htbb.pokemon.IconDoMoi`), atlas trang phục của client,
 [du_lieu/do_moi_trang_bi.csv](../du_lieu/do_moi_trang_bi.csv), [du_lieu/trang_phuc.csv](../du_lieu/trang_phuc.csv).
 
@@ -861,7 +861,7 @@ Tính năng **Chiếm Gym** thay "chiếm thành" của game gốc: các **độ
 #### Cúp PvP tuần (0.9.7)
 
 Chế độ **riêng** với thang PvP mùa và PK thế giới (`com.htbb.pokemon.CupLogic` thuần + `real.CupGame`; dữ liệu
-`data_cup_loai`, `data_cup_lich`; SQL [sql/nang_cap.sql](../sql/nang_cap.sql) phần 11). Trận cúp diễn ra trong khu
+`data_cup_loai`, `data_cup_lich`; SQL [sql/htbb.sql](../sql/htbb.sql) phần 11). Trận cúp diễn ra trong khu
 riêng của **Sàn Cúp PvP** (bản đồ 4382, nền "Sàn đấu" 227): không tính Elo, không cờ PK, HP không về 0 (hết HP = bị
 loại), không mất EXP, không tự động đánh.
 
@@ -1072,7 +1072,7 @@ chính. Trang chủ có mục "Sự kiện" (đang diễn ra + 30 ngày tới, �
 | Cúp PvP tuần (`moi:cuptuan`) | mọi tuần | xoay Cúp Nhí / Cúp hệ / Cúp Đôi / Cúp Không trang bị, Chủ nhật 20:00 Thuỵ Sĩ (mục 5.3) |
 
 **Ngày cộng đồng hằng tháng** (0.9.7, đề xuất 8; `com.htbb.pokemon.NgayCongDong`, `NgayCongDongGame`,
-`sql/nang_cap.sql` phần 11): một Chủ nhật mỗi tháng, tự động theo lịch năm (Chủ nhật của tuần cộng đồng ISO nếu
+`sql/htbb.sql` phần 11): một Chủ nhật mỗi tháng, tự động theo lịch năm (Chủ nhật của tuần cộng đồng ISO nếu
 rơi vào tháng đó, còn lại Chủ nhật thứ ba), 04:00 → 04:00, web tự đăng tin "Sắp / Đang / Đã kết thúc" (nhóm
 "Ngày cộng đồng", báo trước 3 ngày; mô tả từng lần = dòng nổi bật của tháng). Trong **3 giờ vàng 14:00–17:00**
 (`data_ngay_cong_dong`): trên bản đồ tự nhiên của từng loài trong **dòng** nổi bật (`data_hst_bung_phat`, nên mọi dải cấp
@@ -1155,7 +1155,7 @@ sách chặn.
 
 ## 7. Hệ sinh thái
 
-Bật bằng `sv.he_sinh_thai=1` (cần chạy `sql/nang_cap.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
+Bật bằng `sv.he_sinh_thai=1` (cần chạy `sql/htbb.sql`, khởi động lại). Lối vào: mục "Hệ sinh thái" trong
 menu NPC đổi thưởng, hoặc gõ `hst`; phím tắt `cauca`, `dao`, `dua`. Đơn vị tiền là **‰H** = phần nghìn giờ thu nhập ở cấp
 người chơi. Mục tiêu: mỗi kiểu người chơi (chiến đấu, sưu tầm, xã hội, chế tác / thương nhân, chơi nhẹ) có việc dài hạn,
 và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính nó).
@@ -1253,7 +1253,7 @@ vào `tob_hst_hop_thu`.
 
 Người chơi **là** một Pokémon; quái là Pokémon hoang dã. Vòng thu phục nhẹ, không đổi mô hình đó và **không cộng chỉ số
 thô** (đề xuất 9 / S2 của rà soát lối chơi). Mã: lớp thuần `com.htbb.pokemon.BatPokemon` + `HopPc`, game `real.BatPokemonGame`,
-client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` ([sql/nang_cap.sql](../sql/nang_cap.sql) phần 11).
+client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` ([sql/htbb.sql](../sql/htbb.sql) phần 11).
 
 - **Ném bóng**: đánh một Pokémon hoang dã xuống ≤ 35% HP (`bat.nguong_hp_phan_tram`; trước 0.9.8 bản trao đổi: 25%) thì dưới khung mục tiêu hiện nút
   "Ném Poké Ball ×n" (chạm "Đổi" để đổi loại bóng). Bóng bay tới, Pokémon vào bóng, bóng lắc 0..3 lần rồi bắt được (sao
@@ -1261,7 +1261,7 @@ client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` (
 - **Tỉ lệ** (phần nghìn): `gốc loài × (3M − 2H)/3M × lệch cấp × (tinh anh ×25%) × hệ số bóng + thưởng trượt`, kẹp
   [1%, trần bóng]. Thưởng trượt **tương đối**: mỗi lần trượt trước trên cùng con + min(5%, 25% tỉ lệ hiện tại), nên loài
   hiếm không thành dễ. Lệch cấp (quái − người chơi): ≤ 0 ×100%, 1..5 ×80%, 6..10 ×50%, > 10 không ném được.
-- **Bậc hiếm loài** (`data_bat_loai.do_hiem`, [sql/nang_cap.sql](../sql/nang_cap.sql) phần 11): loài hiếm phải giữ
+- **Bậc hiếm loài** (`data_bat_loai.do_hiem`, [sql/htbb.sql](../sql/htbb.sql) phần 11): loài hiếm phải giữ
   giá trị nên tỉ lệ chia bậc rõ. Ví dụ ở ngưỡng 35% HP, cùng cấp:
 
   | Bậc | Gốc | Poké / Great / Ultra mỗi lần ném | Bắt được trước khi bỏ chạy (Poké, 4 lần) | Loài |
@@ -1398,7 +1398,7 @@ Thay hệ thống đám cưới của game gốc (NPC -27 ở Cao nguyên Indigo
 - **Chỉ xét lúc đăng ký**: tiến hoá đổi loài nhưng không xét lại; cặp đã kết đôi (kể cả cặp của hệ đám cưới cũ) giữ
   nguyên nhẫn, chỉ số nhẫn, Vảy trái tim kết đôi. Trong 5 dòng, tiến hoá không làm mất nhóm (chỉ Pichu thành Pikachu
   thì có thêm nhóm).
-- **Dữ liệu** (CSDL là nguồn; nâng cấp: `sql/nang_cap.sql` phần 11, khối `sua_ket_doi.sql`; có sẵn trong `htbb_day_du.sql`): `data_nhom_trung_ten` (15 nhóm,
+- **Dữ liệu** (CSDL là nguồn; nâng cấp: `sql/htbb.sql` phần 11, khối `sua_ket_doi.sql`; có sẵn trong `htbb.sql`): `data_nhom_trung_ten` (15 nhóm,
   `ket_doi_duoc` = 0 cho Chưa khám phá) và `data_nhom_trung` (21 loài người chơi):
 
 | Dòng | Loài | Nhóm trứng |
@@ -1751,7 +1751,7 @@ nguồn đã mang thuật ngữ mới; từ điển lúc chạy vẫn giữ đ�
 | chết (nhân vật) / về làng, hồi thành | **gục** / **về Trung tâm Pokémon** | quái thì "hạ" |
 | tiên đan / cỏ hồi sinh (khi gục); suy yếu sau khi chết | Thuốc hồi sinh, Thuốc hồi sinh tối đa; **Mệt mỏi** | |
 
-Tên NPC tĩnh và tên bản đồ nằm ở CSDL (`data_npc`, `data_map_ten` — [sql/htbb_day_du.sql](../sql/README.md), CSDL cũ: phần 5 của `sql/nang_cap.sql`, sửa ở
+Tên NPC tĩnh và tên bản đồ nằm ở CSDL (`data_npc`, `data_map_ten` — [sql/htbb.sql](../sql/README.md), CSDL cũ: phần 5 của `sql/htbb.sql`, sửa ở
 /admin/ten-hien). Tên pet, thú cưỡi, thời trang, danh hiệu, bộ sưu tập kiểu cũ đổi theo `ChuPokemon.DOI` và các bảng
 [bang_npc.csv](../du_lieu/bang_npc.csv), [bang_thu.csv](../du_lieu/bang_thu.csv), [bang_pet_cu.csv](../du_lieu/bang_pet_cu.csv).
 Đối chiếu từng ô CSDL đã đổi: [bang_chu.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/bang_chu.csv).
@@ -1856,7 +1856,7 @@ Client cũ: hiệu ứng thời tiết qua gói cũ `-39` (mục 7.1).
 ## Độ hiếm: một nguồn màu (0.9.7, đề xuất 4)
 
 `tools/cauhinh/do_hiem.json` là nguồn duy nhất; `python3 tools/cauhinh/sinh_do_hiem.py` (`--kiem`
-báo lệch) sinh `DoHiemSinh` server + client, `web/shared/utils/doHiem.gen.ts`, khối `-- >>> them_do_hiem.sql` của `sql/nang_cap.sql` và khối màu
+báo lệch) sinh `DoHiemSinh` server + client, `web/shared/utils/doHiem.gen.ts`, khối `-- >>> them_do_hiem.sql` của `sql/htbb.sql` và khối màu
 của `tools/pokemon/SinhPhuKien.java`. 6 bậc: **Thường** (xám đá trên nền sáng / trắng trên nền tối) · **Hiếm** xanh lá ·
 **Quý** xanh dương · **Sử thi** tím · **Huyền thoại** cam, viền động (lấp lánh) · **Trang trí** vàng. Mỗi bậc có `mau`
 (chữ / viền trên nền sáng, tương phản ≥ 4,5 trên trắng, ≥ 3 trên giấy da NRO), `nhat` (nền nhạt), `sang` (chữ trên nền tối),

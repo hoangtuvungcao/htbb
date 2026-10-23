@@ -1,7 +1,7 @@
 # du_lieu — bảng tài nguyên client / bản đồ
 
 Dữ liệu game (vật phẩm, quái, nhiệm vụ, sự kiện, cấu hình) nằm trong **CSDL** — bản đầy đủ là
-[`sql/htbb_day_du.sql`](../sql/README.md), sửa trên trang quản trị. Thư mục này chỉ còn các bảng (UTF-8, dòng đầu là tiêu
+[`sql/htbb.sql`](../sql/README.md), sửa trên trang quản trị. Thư mục này chỉ còn các bảng (UTF-8, dòng đầu là tiêu
 đề) mà mã máy chủ / client / công cụ đóng gói tài nguyên **đọc trực tiếp**: sprite, tile, bản đồ, NPC. Bảng thiết kế cũ đã
 thành bảng CSDL và bộ sinh của chúng đã chuyển vào [`tools/luu_tru_sinh_du_lieu/`](../tools/luu_tru_sinh_du_lieu/README.md).
 Luồng dữ liệu: [docs/kien-truc.md](../docs/kien-truc.md). Ý nghĩa các hệ thống: [docs/thiet-ke-game.md](../docs/thiet-ke-game.md).
@@ -23,7 +23,7 @@ Luồng dữ liệu: [docs/kien-truc.md](../docs/kien-truc.md). Ý nghĩa các h
 | `NHIEM_VU_THIET_KE.md` | thiết kế nhiệm vụ (test đọc mục "Yêu cầu engine") | tài liệu |
 | `map_moi/` | ảnh xem trước bản đồ đã vẽ lại | tài liệu |
 
-Mô phỏng kinh tế (`tools/pokemon/MoPhongKinhTe.java`) đọc thẳng `sql/htbb_day_du.sql`, ghi kết quả ra `mo_phong_ra/`
+Mô phỏng kinh tế (`tools/pokemon/MoPhongKinhTe.java`) đọc thẳng `sql/htbb.sql`, ghi kết quả ra `mo_phong_ra/`
 (không commit).
 
 Đồ họ mới và trang phục (0.9.8):
@@ -31,5 +31,5 @@ Mô phỏng kinh tế (`tools/pokemon/MoPhongKinhTe.java`) đọc thẳng `sql/h
 | Tệp | Sinh bởi |
 |---|---|
 | `neo_trang_phuc.csv` | `client_pc/tools/XuatNeoTrangPhuc.java` — neo trang phục từng khung (đỉnh sọ, giữa sọ, mắt, cổ, lưng, eo) của 16 loài người chơi, cùng hàm client tính từ điểm ảnh (`game.pokemon.NeoTrangPhuc`) |
-| `do_moi_trang_bi.csv`, `do_moi_bo.csv`, `trang_phuc.csv` | `tools/do_trang_phuc/sinh.py` — đồ họ mới (18 bộ hệ, 3 bộ vùng), thưởng bộ, trang trí (cùng `sql/nang_cap.sql` (khối `them_do_trang_phuc.sql`)) |
+| `do_moi_trang_bi.csv`, `do_moi_bo.csv`, `trang_phuc.csv` | `tools/do_trang_phuc/sinh.py` — đồ họ mới (18 bộ hệ, 3 bộ vùng), thưởng bộ, trang trí (cùng `sql/htbb.sql` (khối `them_do_trang_phuc.sql`)) |
 | `KIEM_KE_TRANG_BI.md` | `tools/do_trang_phuc/kiem_ke.py` — kiểm kê ô × dải cấp × họ, icon trùng / dùng chung, trước và sau đồ họ mới |

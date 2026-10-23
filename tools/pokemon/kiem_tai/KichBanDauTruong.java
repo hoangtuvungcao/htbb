@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Kich ban bot DAU TRUONG BAO BOI 3v3 (real.DauTruongGame, goi -109, client &gt;= 908). Chay tren MAY CHU THU RIENG (GM slv),
- * CSDL da nap sql/nang_cap.sql (khoi them_dau_truong.sql), bot gui so ban -Dban=908:
+ * CSDL da nap sql/htbb.sql (khoi them_dau_truong.sql), bot gui so ban -Dban=908:
  *   dt_tran   hai bot (Hop PC 3 con nap qua SQL) mo NPC Dau truong (-31) -> "Đấu trường Bảo Bối" (-109 kieu 0, kho 3 con)
  *             -> luu doi tan cong + phong thu -> bot A tim doi thu (thay B) -> thach dau -> 3 luot tu chon chieu -> 1 luot
  *             bo trong (het 20 giay may chon) -> bat Tu dong -> ket qua (-109 kieu 4); CSDL: tob_dau_truong_tran co hat +

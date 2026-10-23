@@ -1,6 +1,6 @@
 /**
  * Danh mục đồ họ mới + trang phục (Cẩm nang /cam-nang/do-moi, /cam-nang/trang-phuc).
- * Đọc 5 bảng CSDL do sql/nang_cap.sql (khối them_do_trang_phuc.sql) tạo (chỉ dòng bat = 1, không dữ liệu người chơi); CSDL chưa có bảng /
+ * Đọc 5 bảng CSDL do sql/htbb.sql (khối them_do_trang_phuc.sql) tạo (chỉ dòng bat = 1, không dữ liệu người chơi); CSDL chưa có bảng /
  * lỗi kết nối -> danh mục sinh sẵn shared/data/danh-muc-do-trang-phuc.json (cùng bộ sinh tools/do_trang_phuc/sinh.py).
  * Nhớ đệm 5 phút.
  */

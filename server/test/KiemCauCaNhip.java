@@ -115,7 +115,7 @@ public final class KiemCauCaNhip {
         Kiem.dung("the luc gioi han 50 lan/ngay", com.htbb.pokemon.HeSinhThai.THE_LUC_NGAY / com.htbb.pokemon.HeSinhThai.TL_CAU_CA == 50);
 
         // ---- so lieu mac dinh khop danh_muc.json (bang cau_hinh)
-        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb_day_du.sql)
+        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb.sql)
         final String[][] k = {{CauCaPhien.K_CHO_MIN, "6"}, {CauCaPhien.K_CHO_MAX, "15"}, {CauCaPhien.K_CHO_HO_LON, "3"},
             {CauCaPhien.K_CUA_SO, "1500"}, {CauCaPhien.K_TRE, "700"}, {CauCaPhien.K_TRONG, "30"}, {CauCaPhien.K_HOI, "3"},
             {CauCaPhien.K_GIAM_TU, "30"}, {CauCaPhien.K_GIAM_MOI, "2"}, {CauCaPhien.K_TRONG_TOI_DA, "75"}};
@@ -128,7 +128,7 @@ public final class KiemCauCaNhip {
         }
         final String sql = DayDu.phanNangCap("sua_096_1_logic.sql");
         Kiem.dung("sua_096_1_logic.sql co khoi [cau-ca-nhip]", sql.contains("[cau-ca-nhip]") && sql.contains("[/cau-ca-nhip]"));
-        Kiem.dung("nang_cap.sql (phan 2) dang ky 10 khoa cau_ca.*", demChuoi(DayDu.nangCap(), "('cau_ca.") >= 10);
+        Kiem.dung("htbb.sql (phan 2) dang ky 10 khoa cau_ca.*", demChuoi(DayDu.nangCap(), "('cau_ca.") >= 10);
 
         // ---- server chi cho cau sat ho (chong gian: khong tin client)
         final int w = 20, h = 20;

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 /**
- * Moi template quai / boss server co the gui (data_monster trong sql/htbb_day_du.sql, ca 2 loai:
+ * Moi template quai / boss server co the gui (data_monster trong sql/htbb.sql, ca 2 loai:
  * Pokemon dex > 0 qua lenh -91, va do vat dex = 0) phai ve duoc bang hinh Pokemon o CA client jar
  * va Unity, khong bao gio roi xuong duong ve kieu cu (anh -47 map/m, khung /boss/, Boss_Dragon):
  *  - dex > 0: sprite dong goi san client_jar/res/pk/<dex>[s].dl va Unity poke/<dex>[s]_dl.bytes
@@ -80,9 +80,9 @@ public final class KiemQuaiPokemon {
     }
 
     private static void kiemTemplate() throws java.io.IOException {
-        final String db = doc("../sql/htbb_day_du.sql");
+        final String db = DayDu.sql();
         final int a = db.indexOf("INSERT INTO `data_monster` VALUES");
-        Kiem.dung("htbb_day_du.sql co data_monster", a >= 0);
+        Kiem.dung("htbb.sql co data_monster", a >= 0);
         if (a < 0) {
             return;
         }

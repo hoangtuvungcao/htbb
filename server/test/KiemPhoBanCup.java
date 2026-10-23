@@ -591,7 +591,7 @@ public final class KiemPhoBanCup {
     }
 
     static void bangRoi() {
-        final String sql = DayDu.phanNangCap("them_pho_ban_cup.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("them_pho_ban_cup.sql"); // tep cu gop vao sql/htbb.sql phan 11
         final List<String[]> ds = dongRoi(sql);
         Kiem.dung("bang roi: co dong pho_ban cho ca 3 nhom cap", ds.size() >= 9);
         final String[] nhom = {PhoBanLogic.NHOM_THAP, PhoBanLogic.NHOM_TRUNG, PhoBanLogic.NHOM_CAO};
@@ -622,7 +622,7 @@ public final class KiemPhoBanCup {
         Kiem.dung("bang roi: ky vong / lan trong tran (da <= 4, nguyen lieu <= 1, trang bi <= 0,35): " + b, tran);
         Kiem.dung("bang roi: moi dong KHOA (khong giao dich duoc, khong ra cho)", khoa);
         // id tham chieu co that trong CSDL (khong dinh nghia vat pham moi)
-        final String day = doc("../sql/htbb_day_du.sql");
+        final String day = DayDu.sql();
         boolean coThat = true;
         final StringBuilder thieu = new StringBuilder();
         for (final String[] r : ds) {
@@ -639,7 +639,7 @@ public final class KiemPhoBanCup {
                 thieu.append(r[2]).append(' ');
             }
         }
-        Kiem.dung("bang roi: id item / ngoc co that trong htbb_day_du.sql (type 28 / Da nang cap 8) " + thieu, coThat);
+        Kiem.dung("bang roi: id item / ngoc co that trong htbb.sql (type 28 / Da nang cap 8) " + thieu, coThat);
         Kiem.sai("bang roi: khong cho xu / luong (chi vat pham khoa)", sql.contains("'xu:") || sql.contains("'luong:") || sql.contains("LUONGKHOA"));
         Kiem.dung("bang roi: Manh tinh hoa (Su thi+) hiem: <= 5% va chi nhom cao", Pattern.compile("'boss:cao','item:1038','[^']*',(50000|[1-4]\\d{4}|\\d{1,4}),").matcher(sql).find()
                 && !Pattern.compile("'boss:(thap|trung)','item:1038'").matcher(sql).find());
@@ -652,8 +652,8 @@ public final class KiemPhoBanCup {
     // ================================================================== C. SQL, cau hinh, danh hieu, goi, diem moc
 
     static void sqlVaMacDinh() {
-        final String sql = DayDu.phanNangCap("them_pho_ban_cup.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
-        Kiem.dung("SQL: phan them_pho_ban_cup.sql cua nang_cap.sql co", sql.length() > 1000);
+        final String sql = DayDu.phanNangCap("them_pho_ban_cup.sql"); // tep cu gop vao sql/htbb.sql phan 11
+        Kiem.dung("SQL: phan them_pho_ban_cup.sql cua htbb.sql co", sql.length() > 1000);
         int ins = 0;
         int dup = 0;
         for (final String cau : sql.split(";\n")) {
@@ -694,7 +694,7 @@ public final class KiemPhoBanCup {
             li &= sql.contains("(" + i + ",'" + lich.get(i) + "')");
         }
         Kiem.dung("SQL: data_cup_lich = CupLogic.lichMacDinh() (16 o)", li && lich.size() == 16);
-        Kiem.dung("SQL: ten ban do 4381 / 4382 (data_map_ten, nang_cap.sql phan 5)", DayDu.nangCap().contains("(4381,'Phó bản Hầm ngục'") && DayDu.nangCap().contains("(4382,'Sàn Cúp PvP'"));
+        Kiem.dung("SQL: ten ban do 4381 / 4382 (data_map_ten, htbb.sql phan 5)", DayDu.nangCap().contains("(4381,'Phó bản Hầm ngục'") && DayDu.nangCap().contains("(4382,'Sàn Cúp PvP'"));
         final String java = doc("src/data/DatabasePhoBanCup.java");
         for (final String bang : new String[]{"tob_pho_ban_luot", "tob_pho_ban_lich_su", "tob_cup_dang_ky", "tob_cup_tran", "tob_cup_thuong"}) {
             Kiem.dung("SQL + may chu cung tao bang " + bang, sql.contains("CREATE TABLE IF NOT EXISTS `" + bang + "`") && java.contains("CREATE TABLE IF NOT EXISTS " + bang + " ("));
@@ -706,7 +706,7 @@ public final class KiemPhoBanCup {
                 cup.contains("if (DatabasePhoBanCup.danhDauDaNhan(r[0], c.charDBID) != 1) {"));
         Kiem.dung("thuong idempotent: chot mot lan / tuan (daChot) + nguoi offline nhan khi dang nhap", cup.contains("if (t.daChot) {")
                 && doc("src/real/CharNapDuLieu.java").contains("CupGame.khiDangNhap(self);"));
-        Kiem.dung("README sql liet ke pho ban / cup (nang_cap.sql phan 11)", doc("../sql/README.md").contains("them_pho_ban_cup.sql"));
+        Kiem.dung("README sql liet ke pho ban / cup (htbb.sql phan 11)", doc("../sql/README.md").contains("them_pho_ban_cup.sql"));
     }
 
     static String giaTriMacDinh(final String json, final String khoa) {
@@ -724,12 +724,12 @@ public final class KiemPhoBanCup {
         Kiem.bang("cau hinh: cup.so_doi_toi_thieu", String.valueOf(CupLogic.SO_DOI_TOI_THIEU), giaTriMacDinh(j, "cup.so_doi_toi_thieu"));
         Kiem.bang("cau hinh: pho_ban.bat / cup.bat mac dinh bat", "1/1", giaTriMacDinh(j, "pho_ban.bat") + "/" + giaTriMacDinh(j, "cup.bat"));
         final String nc = DayDu.nangCap();
-        Kiem.dung("cau hinh: nang_cap.sql phan 2 co pho_ban.* / cup.*", nc.contains("VALUES ('pho_ban.luot_ngay'") && nc.contains("VALUES ('cup.so_doi_toi_thieu'")
+        Kiem.dung("cau hinh: htbb.sql phan 2 co pho_ban.* / cup.*", nc.contains("VALUES ('pho_ban.luot_ngay'") && nc.contains("VALUES ('cup.so_doi_toi_thieu'")
                 && nc.contains("VALUES ('cup.gio_vong_dau'"));
     }
 
     static void danhHieu() {
-        final String sql = DayDu.phanNangCap("them_pho_ban_cup.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("them_pho_ban_cup.sql"); // tep cu gop vao sql/htbb.sql phan 11
         final int[][] dh = {{CupLogic.DH_VO_DICH_NHI, CupLogic.PHUT_DH_VO_DICH}, {CupLogic.DH_VO_DICH_HE, CupLogic.PHUT_DH_VO_DICH},
             {CupLogic.DH_VO_DICH_DOI, CupLogic.PHUT_DH_VO_DICH}, {CupLogic.DH_VO_DICH_THUAN, CupLogic.PHUT_DH_VO_DICH},
             {CupLogic.DH_A_QUAN, CupLogic.PHUT_DH_A_QUAN}, {CupLogic.DH_DAU_SI_CUP, CupLogic.PHUT_DH_DAU_SI}};

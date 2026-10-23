@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  *
  * Phan 1-6: ham thuan com.htbb.pokemon.VongQuayLogic (muc cuoc, tran, khoa cuoi luot, dong ho, hoan khi 1 nguoi, phi,
  * bao toan hu, chon theo trong so, gioi han thiet bi / IP). Phan 7: cau hinh mac dinh khop danh muc trong CSDL
- * (sql/htbb_day_du.sql) va sql/nang_cap.sql. Phan 8: quet ma - nut Dong y cua client gui goi -32 (ok = 1) va server dinh tuyen goi do
+ * (sql/htbb.sql) va sql/htbb.sql. Phan 8: quet ma - nut Dong y cua client gui goi -32 (ok = 1) va server dinh tuyen goi do
  * sang real.VongQuay; he cu (doXoso, popup 100, VongQuayLuong) da bo; cong chong clone duoc goi.
  */
 public final class KiemVongQuay {
@@ -249,14 +249,14 @@ public final class KiemVongQuay {
     // ------------------------------------------------------------------ 7. cau hinh mac dinh = danh muc + sql
 
     static void cauHinhMacDinh() {
-        // danh muc cau hinh nam trong CSDL (ban chup sql/htbb_day_du.sql, CSDL cu nap sql/nang_cap.sql - mot tep SQL)
+        // danh muc cau hinh nam trong CSDL (ban chup sql/htbb.sql, CSDL cu nap sql/htbb.sql - mot tep SQL)
         final StringBuilder sb = new StringBuilder();
         for (final java.util.Map<String, String> d : DayDu.dong("cau_hinh_danh_muc")) {
             sb.append("\"khoa\": \"").append(d.get("khoa")).append("\" \"macDinh\": \"").append(d.get("mac_dinh")).append("\"}\n");
         }
         final String dm = sb.toString();
-        final String sql = doc("../sql/nang_cap.sql");
-        Kiem.dung("doc duoc danh muc cau hinh (htbb_day_du.sql) va sql/nang_cap.sql", !dm.isEmpty() && !sql.isEmpty());
+        final String sql = DayDu.nangCap();
+        Kiem.dung("doc duoc danh muc cau hinh (htbb.sql) va sql/htbb.sql", !dm.isEmpty() && !sql.isEmpty());
         final String[] ma = {"thuong", "vip", "luong"};
         for (int loai = 0; loai < 3; loai++) {
             final CauHinh c = VongQuayLogic.macDinh(loai);
@@ -268,7 +268,7 @@ public final class KiemVongQuay {
             Kiem.bang(k + "luot_ngay_toi_da", String.valueOf(c.luotNgayToiDa), macDinh(dm, k + "luot_ngay_toi_da"));
             Kiem.bang(k + "so_nguoi_toi_da", String.valueOf(c.soNguoiToiDa), macDinh(dm, k + "so_nguoi_toi_da"));
             Kiem.bang(k + "phi_phan_tram", String.valueOf(c.phiPhanTram), macDinh(dm, k + "phi_phan_tram"));
-            Kiem.dung("sql/nang_cap.sql co khoa " + k + "cuoc_toi_da", sql.contains("'" + k + "cuoc_toi_da'"));
+            Kiem.dung("sql/htbb.sql co khoa " + k + "cuoc_toi_da", sql.contains("'" + k + "cuoc_toi_da'"));
         }
         Kiem.bang("vong_quay.giay_moi_vong", "120", macDinh(dm, "vong_quay.giay_moi_vong"));
         Kiem.bang("vong_quay.giay_khoa", "10", macDinh(dm, "vong_quay.giay_khoa"));

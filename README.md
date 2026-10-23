@@ -17,7 +17,7 @@ Monorepo gồm máy chủ, bốn client, website và công cụ. Website: `https
 | `client_pc/` | bản PC Java SE chạy code jar (Windows / macOS / Linux) | [client_pc/README.md](client_pc/README.md) |
 | `client_pc_ios/` | client Unity 6000.5.9f1 (PC Windows, iOS) | [client_pc_ios/README.md](client_pc_ios/README.md) |
 | `web/` | website + khu quản trị Nuxt 4 (Node 22) | [web/README.md](web/README.md) |
-| `sql/` | MỘT tệp CSDL đầy đủ `htbb_day_du.sql` (bản chụp CSDL — dữ liệu game sửa trong CSDL) + `nang_cap.sql` cho CSDL đang chạy | [sql/README.md](sql/README.md) |
+| `sql/` | MỘT tệp CSDL `htbb.sql` (bản chụp CSDL — dữ liệu game sửa trong CSDL — cho CSDL mới, kèm phần nâng cấp CSDL đang chạy; chạy lại được) | [sql/README.md](sql/README.md) |
 | `du_lieu/` | bảng tài nguyên client / bản đồ (sprite, tile, NPC) mà mã đọc trực tiếp | [du_lieu/README.md](du_lieu/README.md) |
 | `tools/` | công cụ tài nguyên, bot kiểm thử, phát hành client; `luu_tru_sinh_du_lieu/`: bộ sinh dữ liệu cũ (lưu trữ) | [tools/README.md](tools/README.md) |
 | `vps/` | tệp triển khai VPS: systemd, nginx, MariaDB, deploy, sao lưu | [vps/README.md](vps/README.md) |
@@ -41,7 +41,7 @@ Cần: JDK 17+ (biên dịch `--release 8`), MariaDB 10.4+ (không dùng MySQL 8
 
 ```sh
 # 1. CSDL (đặt lower_case_table_names=1 và utf8 trước, xem vps/htbb-mariadb.cnf)
-mysql -u root < sql/htbb_day_du.sql
+mysql -u root < sql/htbb.sql
 
 # 2. Cấu hình server: chép mẫu rồi sửa db.* (máy nhà có thể đặt db.choPhepMatKhauTrong=1)
 cp vps/server.ini.linux.example server/server.ini

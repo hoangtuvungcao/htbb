@@ -114,14 +114,14 @@ public final class KiemLauDaiGd2 {
         for (final String b : new String[]{"tob_kinh_te_ngay", "tob_char_lau_dai", "tob_nhiem_vu_lau_dai", "tob_mua_tuan",
             "tob_boss_dong_gop", "tob_ham_nguc", "tob_pvp_mua", "tob_su_pham", "tob_char_xp_cu", "tob_pokedex_shiny",
             "tob_giftcode", "tob_giftcode_log", "tob_qua_online", "tob_chiem_thanh_tuan"}) {
-            Kiem.dung("htbb_day_du.sql co bang " + b + " (rong: du lieu nguoi choi)", DayDu.coBang(b) && DayDu.soDong(b) <= 0);
-            Kiem.dung("sql/nang_cap.sql tao " + b + " cho CSDL dang chay", DayDu.nangCap().contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
+            Kiem.dung("htbb.sql co bang " + b + " (rong: du lieu nguoi choi)", DayDu.coBang(b) && DayDu.soDong(b) <= 0);
+            Kiem.dung("sql/htbb.sql tao " + b + " cho CSDL dang chay", DayDu.nangCap().contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
             Kiem.dung("DatabaseLauDai cung tu tao " + b, doc("src/data/DatabaseLauDai.java").contains("CREATE TABLE IF NOT EXISTS " + b + " "));
         }
         final String nc = DayDu.nangCap().toUpperCase();
-        Kiem.sai("sql/nang_cap.sql khong dung CREATE TABLE ... LIKE", nc.matches("(?s).*CREATE TABLE[^;]*\\sLIKE\\s.*"));
-        Kiem.sai("sql/nang_cap.sql khong dung TIMESTAMPDIFF", nc.contains("TIMESTAMPDIFF"));
-        Kiem.dung("htbb_day_du.sql co du lieu lau dai (data_quest_lau_dai, data_shop_gia_lau_dai)",
+        Kiem.sai("sql/htbb.sql khong dung CREATE TABLE ... LIKE", nc.matches("(?s).*CREATE TABLE[^;]*\\sLIKE\\s.*"));
+        Kiem.sai("sql/htbb.sql khong dung TIMESTAMPDIFF", nc.contains("TIMESTAMPDIFF"));
+        Kiem.dung("htbb.sql co du lieu lau dai (data_quest_lau_dai, data_shop_gia_lau_dai)",
                 DayDu.soDong("data_quest_lau_dai") > 1000 && DayDu.soDong("data_shop_gia_lau_dai") > 0);
         Kiem.dung("BaoTriDaily goi job kinh te dem", doc("src/real/BaoTriDaily.java").contains("LauDaiJob"));
 

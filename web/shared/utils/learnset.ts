@@ -1,5 +1,5 @@
 /**
- * Học chiêu theo loài (đề xuất 1): bảng `data_learnset` của game (nguồn duy nhất: CSDL; dữ liệu đầu ở sql/nang_cap.sql phần 11,
+ * Học chiêu theo loài (đề xuất 1): bảng `data_learnset` của game (nguồn duy nhất: CSDL; dữ liệu đầu ở sql/htbb.sql phần 11,
  * game server com.htbb.pokemon.Learnset). Mỗi loài một dòng cho mỗi ô chiêu nó học được: `nguon` 'cap' = tự học khi đủ
  * cấp (không tốn điểm), 'npc' = học ở NPC Blaziken bằng xu. Hàm thuần — dùng chung cho API, trang Pokédex và test.
  */

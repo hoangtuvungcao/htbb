@@ -487,9 +487,9 @@ public final class KiemMoRongTui {
                 nv.split("Database.luuCotMoRong\\(", -1).length - 1 == 3);
         Kiem.dung("hai duong doc nhan vat doc o_mo_rong",
                 nv.contains("Database.docCotMoRong(rs, p)") && doc("src/data/Database.java").contains("Database.docCotMoRong(rs, p)"));
-        final String sql = DayDu.phanNangCap("them_ve_mo_rong.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
-        Kiem.dung("nang_cap.sql them_ve_mo_rong: cot o_mo_rong idempotent", sql.contains("ADD COLUMN IF NOT EXISTS `o_mo_rong`"));
-        Kiem.dung("nang_cap.sql them_ve_mo_rong: mon ve_mo_rong_tui", sql.contains("INSERT IGNORE INTO `nap_cua_hang`") && sql.contains("'ve_mo_rong_tui'"));
+        final String sql = DayDu.phanNangCap("them_ve_mo_rong.sql"); // tep cu gop vao sql/htbb.sql phan 11
+        Kiem.dung("htbb.sql them_ve_mo_rong: cot o_mo_rong idempotent", sql.contains("ADD COLUMN IF NOT EXISTS `o_mo_rong`"));
+        Kiem.dung("htbb.sql them_ve_mo_rong: mon ve_mo_rong_tui", sql.contains("INSERT IGNORE INTO `nap_cua_hang`") && sql.contains("'ve_mo_rong_tui'"));
     }
 
     static String doc(final String duong) throws Exception {

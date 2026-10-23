@@ -26,7 +26,7 @@ khi phát hành. Trang công khai tương ứng: `/giay-phep` trên website (`we
 | Eclipse Temurin JRE 21 | Java đi kèm bản PC Windows / Linux | GPL v2 + Classpath Exception | giữ tệp giấy phép của JRE |
 | Launch4j | `HTBB.exe` bọc jar | BSD-3 | chép `LICENSE.txt` |
 | Lucide Icons | biểu tượng website | ISC | — |
-| [PokéAPI](https://github.com/PokeAPI/pokeapi) `data/v2/csv`, commit ghim `2bf639e5572812a67d2b94903fdcb9d095f5aeb2` | dữ kiện 1.025 loài (hệ, chỉ số nền, tiến hoá, nhóm trứng, môi trường sống, learnset để chọn chiêu) → `sql/nang_cap.sql` (khối `them_loai_day_du.sql`) | **BSD-3-Clause** (xem 8.1) | **Có** — giữ văn bản bản quyền + giấy phép |
+| [PokéAPI](https://github.com/PokeAPI/pokeapi) `data/v2/csv`, commit ghim `2bf639e5572812a67d2b94903fdcb9d095f5aeb2` | dữ kiện 1.025 loài (hệ, chỉ số nền, tiến hoá, nhóm trứng, môi trường sống, learnset để chọn chiêu) → `sql/htbb.sql` (khối `them_loai_day_du.sql`) | **BSD-3-Clause** (xem 8.1) | **Có** — giữ văn bản bản quyền + giấy phép |
 | [Pokémon Showdown](https://github.com/smogon/pokemon-showdown) `data/pokedex.ts`, commit ghim `d601443456c795f77c6e4f2b5b459167f2b10a3c` | chỉ **đối chiếu chéo** hệ / chỉ số / tiến hoá / nhóm trứng (không chép vào game) | **MIT** (xem 8.2) | giữ văn bản giấy phép |
 
 Không dùng nhạc, tiếng hay tile của game Pokémon gốc. Bộ tile bản đồ hiện tại dựng bằng
@@ -182,7 +182,7 @@ giữ, khung giao diện chung, phông chữ, dải `d_effect` còn lại).
 **Lưu ý giấy phép cho chủ game:** sprite SpriteCollab ghi `CHUNSOFT` và toàn bộ PMDCollab RawAsset là hình trích từ game
 Pokémon Mystery Dungeon (© Nintendo / Chunsoft) — giống sprite chính thức, phải nằm trong giấy phép chủ game định xin.
 
-## 8. Dữ liệu loài (1.025 loài, `sql/nang_cap.sql` (khối `them_loai_day_du.sql`))
+## 8. Dữ liệu loài (1.025 loài, `sql/htbb.sql` (khối `them_loai_day_du.sql`))
 
 Bộ sinh `tools/pokemon/loai/sinh_loai.py` đọc dữ liệu tải về **đúng commit ghim** (thư mục
 `tools/pokemon/nguon_loai/<nguồn>-<commit>/`, tệp dữ liệu không commit, `nguon.txt` giữ URL + SHA-256 từng tệp) và sinh

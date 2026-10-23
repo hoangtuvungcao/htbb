@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * TU DO TRANG TRI - phan GAME (logic thuan com.htbb.pokemon.TrangPhucLogic). Danh muc data_trang_phuc_o / data_trang_phuc
- * (sql/nang_cap.sql (khoi them_do_trang_phuc.sql)) nap cung BoNgocGame.nap. So huu dung chung nap_so_huu (Tu do trang tri cua cua hang luong),
+ * (sql/htbb.sql (khoi them_do_trang_phuc.sql)) nap cung BoNgocGame.nap. So huu dung chung nap_so_huu (Tu do trang tri cua cua hang luong),
  * mon dang mac = dang_dung (moi o mot mon). Dong chi so chon + bo dem quai su kien: tob_trang_phuc.
  *
  * <p>Nguon: mien_phi (cap), su_kien (ha quai trong cua so LichNam), thanh_tuu (danh hieu dang co), cua_hang (luong, qua

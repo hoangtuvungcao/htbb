@@ -5,12 +5,12 @@ Ra (KHONG sua tay):
   1. server/src/com/htbb/pokemon/DoHiemSinh.java  - may chu (ten bac, colorName -> bac, danh hieu -> bac, ten / mau bac trang bi)
   2. client_jar/src/game/pokemon/DoHiemSinh.java  - client J2ME / APK / PC (token mau ChuDe.mauHiem / nenHiem / sangHiem, phu kien)
   3. web/shared/utils/doHiem.gen.ts               - web (chip danh hieu, tooltip do)
-  4. sql/nang_cap.sql, CHI khoi "-- >>> them_do_hiem.sql" - data_do_hiem, data_do_hiem_vat_pham, data_bac_trang_bi
+  4. sql/htbb.sql (phan B), CHI khoi "-- >>> them_do_hiem.sql" - data_do_hiem, data_do_hiem_vat_pham, data_bac_trang_bi
                                                     + mau data_danh_hieu_do_hiem (idempotent; mot tep SQL, sql/README.md)
   5. tools/pokemon/SinhPhuKien.java               - CHI khoi giua hai dong moc (bang mau phu kien + bac)
 
 Chay:  python3 tools/cauhinh/sinh_do_hiem.py [--kiem]   (--kiem: ma thoat 1 neu lech). Sau khi doi mau: ap khoi SQL vao
-CSDL (nang_cap.sql) roi xuat lai sql/htbb_day_du.sql (vps/xuat_csdl_day_du.sh).
+CSDL (sql/htbb.sql) roi xuat lai phan A cua sql/htbb.sql (vps/xuat_csdl_day_du.sh).
 """
 import json
 import os
@@ -22,7 +22,7 @@ NGUON = os.path.join(GOC, 'tools', 'cauhinh', 'do_hiem.json')
 RA_SERVER = os.path.join(GOC, 'server', 'src', 'com', 'htbb', 'pokemon', 'DoHiemSinh.java')
 RA_CLIENT = os.path.join(GOC, 'client_jar', 'src', 'game', 'pokemon', 'DoHiemSinh.java')
 RA_TS = os.path.join(GOC, 'web', 'shared', 'utils', 'doHiem.gen.ts')
-RA_SQL = os.path.join(GOC, 'sql', 'nang_cap.sql')
+RA_SQL = os.path.join(GOC, 'sql', 'htbb.sql')
 MOC_SQL = '-- >>> them_do_hiem.sql\n'
 RA_PHU_KIEN = os.path.join(GOC, 'tools', 'pokemon', 'SinhPhuKien.java')
 MOC_DAU = '    // SINH TU tools/cauhinh/do_hiem.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_do_hiem.py)\n'
@@ -229,7 +229,7 @@ def sinh_sql(d):
     o = ['-- DO HIEM CHUNG (de xuat 4, chu game duyet 19/10/2026) - SINH TU tools/cauhinh/do_hiem.json boi',
          '-- tools/cauhinh/sinh_do_hiem.py, KHONG SUA TAY. Idempotent (MariaDB 10.3, utf8): chay lai bao nhieu lan cung duoc.',
          '-- Mau trong game / web doc ban sinh trong ma nguon (cung nguon); bang nay de tra cuu, admin va cong cu ngoai.',
-         '--   (khoi nay nam trong sql/nang_cap.sql phan 11)', '',
+         '--   (khoi nay nam trong sql/htbb.sql phan B muc 11)', '',
          'CREATE TABLE IF NOT EXISTS `data_do_hiem` (',
          '  `id` TINYINT NOT NULL,',
          "  `ma` VARCHAR(16) NOT NULL DEFAULT '',",
@@ -309,7 +309,7 @@ def ghep_phu_kien(cu, d):
 
 
 def ghep_nang_cap(cu, sql):
-    """Thay khoi tu dong MOC_SQL toi dong "-- >>> " ke tiep (hoac het tep) cua nang_cap.sql bang SQL sinh."""
+    """Thay khoi tu dong MOC_SQL toi dong "-- >>> " ke tiep (hoac het tep) cua sql/htbb.sql bang SQL sinh."""
     a = cu.find('\n' + MOC_SQL)
     if a < 0:
         return None
@@ -326,7 +326,7 @@ def tep_ra():
     with open(RA_SQL, encoding='utf-8') as f:
         nc = ghep_nang_cap(f.read(), sinh_sql(d))
     if nc is None:
-        sys.exit('sql/nang_cap.sql thieu dong moc ' + MOC_SQL.strip())
+        sys.exit('sql/htbb.sql thieu dong moc ' + MOC_SQL.strip())
     ra.append((RA_SQL, nc))
     if os.path.isdir(os.path.dirname(RA_TS)):
         ra.append((RA_TS, sinh_ts(d)))

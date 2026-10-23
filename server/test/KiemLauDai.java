@@ -21,13 +21,12 @@ import java.util.regex.Pattern;
  * phong kinh te DAT muc tieu.
  *
  * VI SAO: bang nhiem vu (data_quest_lau_dai), lich su kien (data_su_kien_nam) va so lieu ThongSoLauDai (nap tu
- * data_*_lau_dai) nam trong CSDL day du sql/htbb_day_du.sql (nguon duy nhat, sua tren trang quan tri); mo phong
+ * data_*_lau_dai) nam trong CSDL day du sql/htbb.sql (nguon duy nhat, sua tren trang quan tri); mo phong
  * (tools/pokemon/MoPhongKinhTe.java) doc lai chung. Sua mot so lam vo can bang (lam phat, nguoi choi nhe xong cot
  * truyen qua som) hoac sai tham chieu -> test nay do. Chi doc tep, khong can CSDL.
  */
 public final class KiemLauDai {
 
-    private static final String F_DUMP = DayDu.TEP;
     private static final String F_MO_PHONG = "../tools/pokemon/MoPhongKinhTe.java";
 
     private KiemLauDai() {
@@ -217,7 +216,7 @@ public final class KiemLauDai {
     }
 
     private static Set<String> idQuai() throws Exception {
-        final String s = new String(Files.readAllBytes(Paths.get(F_DUMP)), StandardCharsets.UTF_8);
+        final String s = DayDu.sql();
         final int i = s.indexOf("INSERT INTO `data_monster` VALUES");
         final int j = s.indexOf(";\n", i);
         final Set<String> ra = new HashSet<String>();

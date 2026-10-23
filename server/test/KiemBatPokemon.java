@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * THU PHUC POKEMON (docs/thiet-ke-game.md 7.7): ti le bat (RNG co hat giong), dieu kien (boss / Gym / huyen thoai khong
  * bat duoc, HP, lech cap), tran bong, bo chay, Keo loai theo ho, Hop PC (o, mo rong, luu / nap), Pokedex "Da bat", du
- * lieu sql/nang_cap.sql (phan them_bo_ngoc_che_tao_bat.sql) doi chieu du_lieu/bang_quai.csv + kiem_ke_sprite.csv, khoa cau hinh bat.*.
+ * lieu sql/htbb.sql (phan them_bo_ngoc_che_tao_bat.sql) doi chieu du_lieu/bang_quai.csv + kiem_ke_sprite.csv, khoa cau hinh bat.*.
  */
 public final class KiemBatPokemon {
 
@@ -235,7 +235,7 @@ public final class KiemBatPokemon {
     }
 
     static void kiemDuLieu() {
-        final String sql = DayDu.phanNangCap("them_bo_ngoc_che_tao_bat.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
+        final String sql = DayDu.phanNangCap("them_bo_ngoc_che_tao_bat.sql"); // tep cu gop vao sql/htbb.sql phan 11
         final Pattern p = Pattern.compile("\\((\\d+),'((?:[^']|'')*)',(\\d),(\\d+),(\\d+),(\\d+),(\\d+),(\\d),(\\d)\\)");
         final Matcher m = p.matcher(sql);
         final Map<Integer, int[]> loai = new HashMap<Integer, int[]>();

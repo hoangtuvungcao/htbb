@@ -180,11 +180,11 @@ public final class KiemThachDauCuoc {
         Kiem.dung("MapNhapText / MapXaHoi: muc theo cap", nt.contains("ThachDauCuoc.kiemCuoc(moneyxxxx, player)")
                 && doc("src/real/MapXaHoi.java").contains("ThachDauCuoc.kiemCuoc(player.moneyThachdau, moiNguoi"));
         Kiem.dung("khoi dong: hoan ky quy con lai", doc("src/data/Database.java").contains("real.ThachDauCuoc.napLucKhoiDong()"));
-        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb_day_du.sql)
+        final String dm = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb.sql)
         Kiem.dung("danh muc: thach_dau.phi_phan_tram = 10, cuoc_toi_da = 100000", dm.contains("\"khoa\": \"thach_dau.phi_phan_tram\"")
                 && dm.matches("(?s).*\"thach_dau.cuoc_toi_da\"[^}]*\"macDinh\": \"100000\".*"));
-        Kiem.dung("sql/nang_cap.sql (phan 9): bang ky quy + danh muc", doc("../sql/nang_cap.sql").contains("tob_thach_dau_ky_quy")
-                && doc("../sql/nang_cap.sql").contains("'thach_dau.phi_phan_tram'"));
+        Kiem.dung("sql/htbb.sql (phan 9): bang ky quy + danh muc", DayDu.nangCap().contains("tob_thach_dau_ky_quy")
+                && DayDu.nangCap().contains("'thach_dau.phi_phan_tram'"));
     }
 
     static String doc(final String tep) {

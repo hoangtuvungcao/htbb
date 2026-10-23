@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CSDL cua bo trang bi / ngoc he / che tao / moc neo nang cap / thu phuc Pokemon (sql/nang_cap.sql phan 11).
+ * CSDL cua bo trang bi / ngoc he / che tao / moc neo nang cap / thu phuc Pokemon (sql/htbb.sql phan 11).
  * Bang du lieu (data_*) chi DOC (real.BoNgocGame nap vao bo nho luc khoi dong, nap lai bang lenh admin "9" hoac khi
  * chu ky bang doi); bang nguoi choi (tob_ho_so_bo_ngoc, tob_hop_pc) doc khi can, ghi cung luc luu nhan vat
  * (Database.saveChar). Moi SQL dung PreparedStatement.
@@ -22,11 +22,11 @@ public final class DatabaseBoNgoc {
     public static final String[] BANG_DU_LIEU = {
         "data_noi_dung_bo", "data_noi_dung_ngoc_he", "data_noi_dung_che_tao", "data_ngoc_he_lo", "data_ngoc_he_khac",
         "data_che_tao_bac", "data_nang_cap_moc", "data_bat_bong", "data_bat_loai", "data_bat_chi_so_loai", "data_bat_chuyen_doi",
-        // 0.9.8 do ho moi + trang phuc (sql/nang_cap.sql (khoi them_do_trang_phuc.sql), real.DoMoiGame / real.TrangPhucGame)
+        // 0.9.8 do ho moi + trang phuc (sql/htbb.sql (khoi them_do_trang_phuc.sql), real.DoMoiGame / real.TrangPhucGame)
         "data_trang_bi_ho", "data_trang_bi_ho_thuong", "data_trang_bi_moi", "data_trang_phuc_o", "data_trang_phuc",
     };
 
-    /** Bang may chu tu tao neu thieu (RONG: du lieu mau o sql/nang_cap.sql phan 11; thieu thi dung mac dinh). */
+    /** Bang may chu tu tao neu thieu (RONG: du lieu mau o sql/htbb.sql phan 11; thieu thi dung mac dinh). */
     static final String[] TAO_BANG = {
         "CREATE TABLE IF NOT EXISTS data_ngoc_he_lo (color_name TINYINT NOT NULL, ten_bac VARCHAR(32) NOT NULL DEFAULT '',"
             + " so_lo TINYINT NOT NULL DEFAULT 1, PRIMARY KEY (color_name)) DEFAULT CHARSET=utf8",
@@ -48,7 +48,7 @@ public final class DatabaseBoNgoc {
             + " PRIMARY KEY (id_char)) DEFAULT CHARSET=utf8",
         "CREATE TABLE IF NOT EXISTS tob_hop_pc (id_char INT NOT NULL, du_lieu MEDIUMTEXT NULL, sua_luc DATETIME NULL,"
             + " PRIMARY KEY (id_char)) DEFAULT CHARSET=utf8",
-        // 0.9.8 trao doi Pokemon (sql/nang_cap.sql phan 11)
+        // 0.9.8 trao doi Pokemon (sql/htbb.sql phan 11)
         "ALTER TABLE data_bat_loai ADD COLUMN IF NOT EXISTS tien_hoa_trao_doi TINYINT NOT NULL DEFAULT 0",
         "CREATE TABLE IF NOT EXISTS data_bat_chi_so_loai (dex SMALLINT NOT NULL, hp SMALLINT NOT NULL DEFAULT 60,"
             + " tan_cong SMALLINT NOT NULL DEFAULT 60, phong_thu SMALLINT NOT NULL DEFAULT 60, tan_cong_db SMALLINT NOT NULL DEFAULT 60,"
@@ -243,7 +243,7 @@ public final class DatabaseBoNgoc {
         }
     }
 
-    /** Nhat ky trao doi Pokemon (sql/nang_cap.sql phan 11). */
+    /** Nhat ky trao doi Pokemon (sql/htbb.sql phan 11). */
     public static final String BANG_LOG_TRAO_DOI = "tob_log_trao_doi_pokemon";
 
     /**

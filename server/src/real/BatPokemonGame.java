@@ -136,7 +136,7 @@ public final class BatPokemonGame {
                     m.put(Integer.valueOf(x.dex), x);
                 }
             }
-            // 0.9.8 trao doi (sql/nang_cap.sql phan 11): tien hoa khi trao doi + chi so goc loai. Bang / cot chua co: bo qua.
+            // 0.9.8 trao doi (sql/htbb.sql phan 11): tien hoa khi trao doi + chi so goc loai. Bang / cot chua co: bo qua.
             final java.util.Set<Integer> traoDoi = new java.util.HashSet<Integer>();
             final List<Object[]> td = DatabaseBoNgoc.docBang("SELECT dex, tien_hoa_trao_doi FROM data_bat_loai WHERE tien_hoa_trao_doi = 1", 2);
             if (td != null) {

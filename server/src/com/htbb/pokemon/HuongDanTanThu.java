@@ -3,7 +3,7 @@ package com.htbb.pokemon;
 /**
  * HUONG DAN TAN THU (nhanh huong-dan): luat thuan (khong I/O) cho 10 buoc dau chuoi chinh (data_quest_moi 901..910,
  * ma HD.01..HD.10). Lop noi game: real.HuongDanTanThuGame. Noi dung (ten, loi thoai, muc tieu, thuong) nam het trong
- * CSDL - sql/nang_cap.sql (khoi them_huong_dan_tan_thu.sql); o day chi co luat.
+ * CSDL - sql/htbb.sql (khoi them_huong_dan_tan_thu.sql); o day chi co luat.
  *
  * <pre>
  *  Buoc huong dan  = cac dong DAU chuoi chinh co ma "HD." (dem tu dau, dung o dong dau tien khong phai HD.) - them / bot

@@ -111,7 +111,7 @@ public class Database {
    
     
     /**
-     * Bang top_boss khong co trong sql/htbb_day_du.sql (CSDL moi / server that): moi lan ha boss deu
+     * Bang top_boss khong co trong sql/htbb.sql (CSDL moi / server that): moi lan ha boss deu
      * nem "no such table: top_boss" (BotXuyenSuot bat duoc 18/10/2026). Tao 1 lan khi can.
      */
     private static volatile boolean daTaoTopBoss = false;
@@ -1102,7 +1102,7 @@ public class Database {
                 final int trongBang = rs.getInt("status");
                 if (trongBang != TILE_NAP_CO_DINH) {
                     System.out.println("CANH BAO 5h_systems: tangnap = " + trongBang + " bi bo qua, he so nap co dinh = "
-                            + TILE_NAP_CO_DINH + " (sql/nang_cap.sql dat 5h_systems.tangnap = 1)");
+                            + TILE_NAP_CO_DINH + " (sql/htbb.sql dat 5h_systems.tangnap = 1)");
                 }
             }
             System.out.println("TANG NAP TOAN SERVER = " + TileNap + " (co dinh)");
@@ -12379,7 +12379,7 @@ public void addCharXaiNapLuong(Char p, int type) {
      * data_monster.dex/shiny/he2. Goi luc khoi dong,
      * PHAI TRUOC khi nap template quai (Map.loadAllTemplate) va nhan nguoi choi - cung
      * ly do voi themCotKhoXuLuong().
-     * Chay sql/nang_cap.sql bang tay truoc van la cach chinh; ham nay chi la
+     * Chay sql/htbb.sql bang tay truoc van la cach chinh; ham nay chi la
      * luoi an toan, co cot roi thi khong lam gi.
      */
     public void themCotPokemon() {

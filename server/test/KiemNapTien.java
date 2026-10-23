@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  *
  * Phan CSDL that (cong don song song, goi lap webhook, cho) chi chay khi dat bien moi truong
  * KIEM_NAP_DB = URL JDBC toi mot CSDL NHAP (vd jdbc:mysql://127.0.0.1:3318/htbb_db_nap?useSSL=false,
- * kem KIEM_NAP_DB_USER / KIEM_NAP_DB_PASS): test tao bang tu DDL cua sql/htbb_day_du.sql roi XOA sau.
+ * kem KIEM_NAP_DB_USER / KIEM_NAP_DB_PASS): test tao bang tu DDL cua sql/htbb.sql roi XOA sau.
  */
 public final class KiemNapTien {
 
@@ -422,9 +422,9 @@ public final class KiemNapTien {
     // ------------------------------------------------------------------ sql + web
 
     static void sqlVaWeb() {
-        Kiem.nhom("Nap tien - bang nap_* trong sql/htbb_day_du.sql + web khop NapTienLogic");
+        Kiem.nhom("Nap tien - bang nap_* trong sql/htbb.sql + web khop NapTienLogic");
         for (final String t : BANG) {
-            Kiem.dung("htbb_day_du.sql co bang " + t, DayDu.coBang(t));
+            Kiem.dung("htbb.sql co bang " + t, DayDu.coBang(t));
         }
         final List<java.util.Map<String, String>> goi = sapTheoThuTu(DayDu.dong("nap_goi"));
         final List<String> sqlGoi = new ArrayList<String>();

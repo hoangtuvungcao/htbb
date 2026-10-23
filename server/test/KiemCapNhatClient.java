@@ -242,7 +242,7 @@ public final class KiemCapNhatClient {
             final String ad = new String(Files.readAllBytes(Paths.get("src/com/htbb/cauhinh/ApDungMacDinh.java")), StandardCharsets.UTF_8);
             Kiem.dung("ap dung ngay sv.banMoiNhat", ad.contains("TeamServer.banMoiNhat = (int) so(m, \"sv.banMoiNhat\""));
             Kiem.dung("ap dung ngay sv.nhacCapNhat", ad.contains("TeamServer.nhacCapNhat = so(m, \"sv.nhacCapNhat\""));
-            final String dms = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb_day_du.sql), khong con DanhMucSinh.java
+            final String dms = DayDu.danhMucJson(); // danh muc trong CSDL (ban chup sql/htbb.sql), khong con DanhMucSinh.java
             final boolean co = dms.contains("\"sv.banMoiNhat\"") && dms.contains("\"sv.nhacCapNhat\"");
             Kiem.dung("danh muc cau hinh co sv.banMoiNhat", co);
         } catch (final Exception e) {

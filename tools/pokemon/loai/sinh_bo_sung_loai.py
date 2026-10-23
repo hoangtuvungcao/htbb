@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Sinh khoi "them_loai_bo_sung.sql" trong sql/nang_cap.sql (ngay sau khoi them_loai_day_du.sql): bo sung cho 1.025 loai
+Sinh khoi "them_loai_bo_sung.sql" trong sql/htbb.sql (phan B) (ngay sau khoi them_loai_day_du.sql): bo sung cho 1.025 loai
   - data_loai.mo_ta      mo ta Pokedex tieng Viet TU VIET (tools/pokemon/loai/mo_ta_loai.json, nguon duy nhat);
                          chi ghi o dong con trong (khong ghi de mo ta nguoi van hanh da sua tren web);
   - data_loai_sprite     cot moi: shiny (co goi <NNNN>s.goi ban sac mau PMDCollab), kich_thuoc_shiny, ghi_cong_shiny,
                          neo (goi co khoi neo phu kien PMD -> trang phuc / the ban dong hanh ve duoc), va kich_thuoc
                          cap nhat theo goi hien tai (goi them khoi neo).
 
-    python3 -I tools/pokemon/loai/sinh_bo_sung_loai.py           # ghi sql/nang_cap.sql
+    python3 -I tools/pokemon/loai/sinh_bo_sung_loai.py           # ghi sql/htbb.sql
     python3 -I tools/pokemon/loai/sinh_bo_sung_loai.py --kiem    # chi kiem khoi hien tai khop (thoat 1 neu lech)
 
 Idempotent, MariaDB 10.3, utf8: ALTER ... ADD COLUMN IF NOT EXISTS, bang tam + UPDATE JOIN (khong INSERT...SELECT...ON
 DUPLICATE KEY UPDATE). Chay sau khoi them_loai_day_du.sql (khoi do tao bang + dong). Sau khi chay tren CSDL may nha:
-vps/xuat_csdl_day_du.sh de cap nhat sql/htbb_day_du.sql.
+vps/xuat_csdl_day_du.sh de cap nhat phan A cua sql/htbb.sql.
 """
 import json
 import os
@@ -21,7 +21,7 @@ import sys
 import unicodedata
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-SQL = os.path.join(GOC, "sql", "nang_cap.sql")
+SQL = os.path.join(GOC, "sql", "htbb.sql")
 MO_TA = os.path.join(GOC, "tools", "pokemon", "loai", "mo_ta_loai.json")
 GOI = os.path.join(GOC, "server", "map", "loai")
 RAW = os.path.join(GOC, "tools", "pokemon", "pmd_raw")

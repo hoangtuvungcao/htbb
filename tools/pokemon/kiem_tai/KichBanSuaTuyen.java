@@ -1,5 +1,5 @@
 /**
- * Kich ban SUA TUYEN (nhanh sua-tuyen, sql/nang_cap.sql khoi sua_tuyen_nhiem_vu.sql) - goi tin that nhu client 0.9.7:
+ * Kich ban SUA TUYEN (nhanh sua-tuyen, sql/htbb.sql khoi sua_tuyen_nhiem_vu.sql) - goi tin that nhu client 0.9.7:
  *  st_lang_vung    tai khoan moi Kanto -> roi san 105 ra Pewter (0), Johto -> Blackthorn (70); dong tob_lang_khoi_dau.
  *  st_lang_cu      nhan vat "cu" (xoa dong tob_lang_khoi_dau, nhu nhan vat tao truoc ban sua) chon Kanto -> van ra
  *                  Blackthorn nhu truoc (khong ai bi doi cho).

@@ -146,7 +146,7 @@ public final class GhiClient {
         }
     }
 
-    /** Cung DDL voi bang tob_client_dang_nhap cua sql/htbb_day_du.sql / sql/nang_cap.sql. */
+    /** Cung DDL voi bang tob_client_dang_nhap cua sql/htbb.sql / sql/htbb.sql. */
     static final String DDL = "CREATE TABLE IF NOT EXISTS `" + TEN_BANG + "` ("
             + "`tai_khoan` VARCHAR(45) NOT NULL,"
             + "`loai` VARCHAR(10) NOT NULL DEFAULT 'jar',"

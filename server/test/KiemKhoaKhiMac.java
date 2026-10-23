@@ -329,8 +329,8 @@ public final class KiemKhoaKhiMac {
                 k.contains("(3,'Quý',200,10)") && k.contains("(4,'Sử thi',300,10)") && k.contains("(6,'Huyền thoại',500,10)"));
         Kiem.dung("SQL: nguon da = hop dot kich boss", k.contains("'mo_hop','item:1051','item:1295'") && k.contains("'mo_hop','item:1050','item:1295'"));
         Kiem.dung("SQL ghi migration lam o server luc nap", k.contains("setItemWearing") && k.contains("idempotent"));
-        final String dump = doc("../sql/htbb_day_du.sql");
-        Kiem.dung("htbb_day_du.sql: co item 1295 + 2 bang + dong roi",
+        final String dump = DayDu.sql();
+        Kiem.dung("htbb.sql: co item 1295 + 2 bang + dong roi",
                 dump.contains("(1295,'Đá phá khoá',28,") && dump.contains("CREATE TABLE `data_pha_khoa_bac`")
                         && dump.contains("CREATE TABLE `data_pha_khoa_lan`") && dump.contains("(9501,'mo_hop','item:1051','item:1295'"));
         final int ch = dump.indexOf("INSERT INTO `data_cua_hang_lau_dai` VALUES");

@@ -14,7 +14,7 @@ import real.Char;
 /**
  * Noi LICH THOI TIET THEO KHUNG GIO + PHU MAU MUA ({@link ThoiTietLich}) vao he sinh thai (de xuat 8). Du lieu:
  * data_thoi_tiet (anh huong, kep tran), data_thoi_tiet_map (ban do co dinh thoi tiet / tat phu mau),
- * data_thoi_tiet_su_kien (su kien dang bat them trong so + mau) - sql/nang_cap.sql phan 11; thieu bang = mac dinh
+ * data_thoi_tiet_su_kien (su kien dang bat them trong so + mau) - sql/htbb.sql phan 11; thieu bang = mac dinh
  * trong ThoiTietLich. Nap lan dau khi he sinh thai khoi dong, nap lai moi 10 phut.
  *
  * HeSinhThaiGame.thoiTietVung / thoiTietMap goi vao day (moi noi dung thoi tiet: sinh quai, nghien cuu, sat thuong,

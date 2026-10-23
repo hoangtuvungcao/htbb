@@ -212,9 +212,9 @@ public final class KiemLichNam {
         Kiem.dung("dong ghi de 'tat nam nay' (ghi_de = 1) khong bat", db.contains("l.ghi_de <> 1"));
         Kiem.dung("ghi lich giu gio admin da doi (ghi_de <> 0)", db.contains("IF(ghi_de = 0, VALUES(mo_luc), mo_luc)"));
         final String sql = DayDu.nangCap();
-        Kiem.dung("htbb_day_du.sql co tob_su_kien_lich + cot tob_su_kien.tu_dong", DayDu.coBang("tob_su_kien_lich")
+        Kiem.dung("htbb.sql co tob_su_kien_lich + cot tob_su_kien.tu_dong", DayDu.coBang("tob_su_kien_lich")
                 && DayDu.cot("tob_su_kien").contains("tu_dong"));
-        Kiem.dung("sql/nang_cap.sql: bang + cot tu_dong + xoa ma kiem hiep",
+        Kiem.dung("sql/htbb.sql: bang + cot tu_dong + xoa ma kiem hiep",
                 sql.contains("CREATE TABLE IF NOT EXISTS tob_su_kien_lich") && sql.contains("ADD COLUMN IF NOT EXISTS tu_dong")
                 && sql.contains("'worldcup'"));
         boolean du = true;

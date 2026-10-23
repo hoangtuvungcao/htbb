@@ -14,7 +14,7 @@ import java.util.Random;
 /**
  * BO TRANG BI / NGOC HE / CHE TAO / MOC NEO NANG CAP (nhanh bo-ngoc-bat, docs/thiet-ke-game.md 4.2-4.3): lop thuan
  * com.htbb.pokemon.BoTrangBi, NgocHe, CheTaoLogic, NangCapLauDai + du lieu (du_lieu/noi_dung_*.csv,
- * sql/nang_cap.sql phan them_bo_ngoc_che_tao_bat.sql) + khoa cau hinh trong CSDL (cau_hinh_danh_muc). RNG co hat giong.
+ * sql/htbb.sql phan them_bo_ngoc_che_tao_bat.sql) + khoa cau hinh trong CSDL (cau_hinh_danh_muc). RNG co hat giong.
  */
 public final class KiemBoNgocCheTao {
 
@@ -33,7 +33,7 @@ public final class KiemBoNgocCheTao {
     static List<String[]> csv(final String p) {
         final List<String[]> v = new ArrayList<String[]>();
         if (p.contains("/noi_dung_") && !new java.io.File(p).exists()) {
-            // bang thiet ke nay chi con trong CSDL (sql/htbb_day_du.sql): cot cung thu tu ban CSV cu
+            // bang thiet ke nay chi con trong CSDL (sql/htbb.sql): cot cung thu tu ban CSV cu
             for (final java.util.Map<String, String> m : DayDu.bangThietKe(p)) {
                 v.add(m.values().toArray(new String[0]));
             }
@@ -358,8 +358,8 @@ public final class KiemBoNgocCheTao {
     // ------------------------------------------------------------------ SQL + cau hinh
 
     static void kiemSqlCauHinh() {
-        final String sql = DayDu.phanNangCap("them_bo_ngoc_che_tao_bat.sql"); // tep cu gop vao sql/nang_cap.sql phan 11
-        Kiem.dung("doc duoc phan them_bo_ngoc_che_tao_bat.sql cua sql/nang_cap.sql", !sql.isEmpty());
+        final String sql = DayDu.phanNangCap("them_bo_ngoc_che_tao_bat.sql"); // tep cu gop vao sql/htbb.sql phan 11
+        Kiem.dung("doc duoc phan them_bo_ngoc_che_tao_bat.sql cua sql/htbb.sql", !sql.isEmpty());
         for (final String b : new String[]{"data_ngoc_he_lo", "data_ngoc_he_khac", "data_che_tao_bac", "data_nang_cap_moc",
             "data_bat_bong", "data_bat_loai", "tob_ho_so_bo_ngoc", "tob_hop_pc"}) {
             Kiem.dung("CREATE TABLE IF NOT EXISTS " + b, sql.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
