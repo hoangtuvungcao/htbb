@@ -52,7 +52,7 @@ public final class QuanLyThuGame {
     public static final int LENH = -119;
     public static final byte KIEU_TRANG_THAI = 0, KIEU_THA = 1, KIEU_KHOA = 2, KIEU_DUNG_VE = 3, KIEU_MUA_VE = 4;
     /** Ban client dau tien co man quan ly thu (doc phan noi them goi 16, gui -119). */
-    public static final int BAN_CLIENT = 911;
+    public static final int BAN_CLIENT = 912; // 0.9.12: ban 911 (0.9.11) phat hanh KHONG co bo doc phan noi them
     public static final byte PHIEN = 1;
     /** Id mau nguyen lieu (Map.gemTemplate) cua Ve mo o thu - noi sau ve mo rong hanh trang (270). */
     public static final short ID_VE = 271;

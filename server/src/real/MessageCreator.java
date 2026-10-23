@@ -1166,7 +1166,7 @@ public class MessageCreator {
             }
             m.dos.writeInt(p.lockLuong);
             if (type == 2 && QuanLyThuGame.coManMoi(p)) {
-                QuanLyThuGame.ghiNoiThem(m.dos, p, dsThu); // o thu / khoa / xu tha tung dong (client >= 911)
+                QuanLyThuGame.ghiNoiThem(m.dos, p, dsThu); // o thu / khoa / xu tha tung dong (client >= 912)
             }
         } catch (final Exception e) {
             e.printStackTrace();

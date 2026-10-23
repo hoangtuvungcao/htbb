@@ -23,7 +23,7 @@ import real.QuanLyThuGame;
 /**
  * Quan ly thu (23/10/2026): o thu chung thu cuoi + Pokemon di theo (co ban 20, +1 / ve, toi da 60), tha ve tu nhien lay
  * it xu, khoa thu, bao ve con dang dung / giao dich / cho tang, bam hai lan + tranh chap, nhan vat cu vuot o, ve mo o
- * thu (khong tru ve khi da toi da, cua hang khong ban ve thua), goi 16 noi them (client &gt;= 911), lenh -119. Khong CSDL.
+ * thu (khong tru ve khi da toi da, cua hang khong ban ve thua), goi 16 noi them (client &gt;= 912; 911 khong nhan), lenh -119. Khong CSDL.
  */
 public final class KiemQuanLyThu {
 
@@ -154,7 +154,7 @@ public final class KiemQuanLyThu {
     // ------------------------------------------------------------------ tha + xu
 
     static void thaVaXu() {
-        final Char p = nhanVat(911);
+        final Char p = nhanVat(912);
         final Pet a = pet(p, 1);
         final Pet b = pet(p, 10);
         final Animal c = thuCuoi(p, Animal.PHUONG_HOANG, 2);
@@ -180,7 +180,7 @@ public final class KiemQuanLyThu {
     // ------------------------------------------------------------------ bao ve
 
     static void baoVe() {
-        final Char p = nhanVat(911);
+        final Char p = nhanVat(912);
         final Animal cuoi = thuCuoi(p, 1, 1);
         cuoi.place = 1;
         p.animalRide = cuoi;
@@ -211,7 +211,7 @@ public final class KiemQuanLyThu {
         Kiem.dung("khoa luu: chuoi rong sau khi tha", QuanLyThuGame.ghiKhoa(p).isEmpty());
         QuanLyThuGame.doiKhoa(p, 1, tuDo.id, true);
         Kiem.bang("khoa luu dang a/p<id>", "p" + tuDo.idDB, QuanLyThuGame.ghiKhoa(p));
-        final Char q = nhanVat(911);
+        final Char q = nhanVat(912);
         q.pet.add(tuDo);
         QuanLyThuGame.docKhoa(q, "p" + tuDo.idDB + ",xx,a0,p12abc");
         Kiem.dung("doc khoa: bo gia tri la", q.thuKhoa.size() == 1 && QuanLyThuGame.daKhoa(q, tuDo));
@@ -224,7 +224,7 @@ public final class KiemQuanLyThu {
     // ------------------------------------------------------------------ bam hai lan / tranh chap
 
     static void bamHaiLan() {
-        final Char p = nhanVat(911);
+        final Char p = nhanVat(912);
         final Pet a = pet(p, 1);
         final long xu0 = p.getxu();
         Kiem.bang("bam lan 1: tha", 1, tha(p, a).soTha);
@@ -237,7 +237,7 @@ public final class KiemQuanLyThu {
     }
 
     static void tranhChap() throws Exception {
-        final Char p = nhanVat(911);
+        final Char p = nhanVat(912);
         final List<Object> ds = new ArrayList<Object>();
         for (int i = 0; i < 30; i++) {
             ds.add(pet(p, 1));
@@ -273,7 +273,7 @@ public final class KiemQuanLyThu {
     // ------------------------------------------------------------------ day o / vuot
 
     static void oDayVaVuot() {
-        final Char p = nhanVat(911);
+        final Char p = nhanVat(912);
         for (int i = 0; i < 19; i++) {
             pet(p, 1);
         }
@@ -308,7 +308,7 @@ public final class KiemQuanLyThu {
     // ------------------------------------------------------------------ ve
 
     static void ve() {
-        final Char p = nhanVat(911);
+        final Char p = nhanVat(912);
         Kiem.bang("ve: id 271", (int) QuanLyThuGame.ID_VE, (int) QuanLyThuGame.idVe());
         Kiem.bang("ve: kieu TU_BINH (nut Dung moi client)", (int) GemTemplate.TYPE_TU_BINH, (int) real.Map.gemTemplate[QuanLyThuGame.ID_VE].type);
         Kiem.bang("ve: anh 96", 96, (int) real.Map.gemTemplate[QuanLyThuGame.ID_VE].idImage);
@@ -350,12 +350,18 @@ public final class KiemQuanLyThu {
     }
 
     static void goiTin() throws Exception {
-        final Char moi = nhanVat(QuanLyThuGame.BAN_CLIENT);
+        Kiem.bang("cong ban client = 912 (0.9.11 / 911 phat hanh khong co bo doc)", 912, QuanLyThuGame.BAN_CLIENT);
+        final Char moi = nhanVat(912);
         final Char cu = nhanVat(910);
-        for (final Char p : new Char[]{moi, cu}) {
+        final Char ban911 = nhanVat(911);
+        for (final Char p : new Char[]{moi, cu, ban911}) {
             pet(p, 3);
             thuCuoi(p, 1, 2);
         }
+        Kiem.dung("client 911 KHONG co man moi", !QuanLyThuGame.coManMoi(ban911));
+        Kiem.bang("goi 16: client 911 KHONG nhan phan noi them (dai bang client 910)",
+                than(MessageCreator.createCharInventoryMessage(cu, 2)).length,
+                than(MessageCreator.createCharInventoryMessage(ban911, 2)).length);
         QuanLyThuGame.doiKhoa(moi, 0, moi.animal.get(0).id, true);
         final byte[] bMoi = than(MessageCreator.createCharInventoryMessage(moi, 2));
         final byte[] bCu = than(MessageCreator.createCharInventoryMessage(cu, 2));

@@ -12,7 +12,7 @@ import java.util.Vector;
  * QUẢN LÝ THÚ (thú cưỡi + Pokémon đi theo, chung một danh sách): ô thú có giới hạn, thả về tự nhiên lấy ít xu, khoá
  * con yêu thích, thả bản trùng, Vé mở ô thú. Máy chủ quyết định mọi thứ (real.QuanLyThuGame); client chỉ hiện và gửi.
  *
- * Gói 16 loại 2 (danh sách thú) có PHẦN NỐI THÊM sau "int luongKhoa" (máy chủ chỉ gửi cho client BAN >= 911):
+ * Gói 16 loại 2 (danh sách thú) có PHẦN NỐI THÊM sau "int luongKhoa" (máy chủ chỉ gửi cho client BAN >= 912):
  * byte phiên, short số thú, short sức chứa, short tối đa, short số vé, short id vé, int giá vé (lượng, -1 = không bán),
  * byte n + n dòng (cùng thứ tự danh sách): byte cờ (1 khoá, 2 không thả được), int loài, short cấp, int xu, UTF lý do.
  * Máy chủ cũ không gửi phần này -> {@link #co} = false: danh sách như cũ, không nút mới.
