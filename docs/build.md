@@ -244,6 +244,32 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.12 (`BAN=912`: quản lý thú - ô thú, thả về tự nhiên, khoá, Vé mở ô thú)
+
+Client + máy chủ + SQL: `PHIEN_BAN=0.9.12-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 12`; `MIDlet-Version` 0.9.12).
+Thứ tự: SQL trước, jar sau, client cuối.
+
+1. `sudo bash /opt/htbb/vps/nang_cap_csdl.sh` — `sql/htbb.sql` phần B khối `-- >>> them_quan_ly_thu.sql`: cột
+   `tob_char.o_thu_mo` + `tob_char.thu_khoa` (`ADD COLUMN IF NOT EXISTS`; máy chủ cũng tự thêm lúc khởi động), món cửa hàng
+   `tob_char.thu_xu_ngay` + `tob_char.thu_ngay` (đếm xu thả trong ngày), món cửa hàng lượng `ve_mo_o_thu` (`INSERT IGNORE`,
+   10 lượng, giới hạn 40) và 6 khoá cấu hình `thu.*` (nhóm Kinh tế, chỉnh trên web). Log máy chủ: `danh muc cau hinh: 364 khoa`.
+2. Thay `htbb-server.jar` rồi khởi động lại: `real.QuanLyThuGame` + `com.htbb.pokemon.OThu`. Thú cưỡi + Pokémon đi theo
+   dùng CHUNG một sức chứa "Ô thú" (`thu.o_co_ban` 20 + ô đã mở bằng vé, tối đa `thu.o_toi_da` 60). Đầy ô: mọi đường nhận
+   thú (mua, nở trứng, sự kiện, giftcode, được tặng / giao dịch) từ chối kèm thông báo (đường trả tiền kiểm TRƯỚC khi trừ);
+   nhân vật cũ đang vượt giữ nguyên, chỉ không nhận thêm. Thả về tự nhiên: `(20 + 2 x cấp) x bậc hiếm` xu, trần 300 / con,
+   thú có hạn 0 xu (`thu.tha_xu_*`), trần mỗi người chơi mỗi ngày `thu.tha_xu_ngay` = 2.000 xu (đếm lưu CSDL, đăng nhập lại
+   / khởi động lại không đặt lại; quá trần vẫn thả được nhưng 0 xu), log `THATHU`; không thả con đang cưỡi / đi theo / đã
+   khoá / đang giao dịch / chờ tặng. Pokémon đi theo có tên trả phí (thẻ đặt tên) tự khoá (mở khoá tay được rồi thả).
+   Đường cũ trả tiền (sự kiện, cửa hàng đặc biệt, NPC đổi, đốt đèn, hộp quà) kiểm ô TRƯỚC khi trừ tiền / vật phẩm (hộp đã
+   trừ thì hoàn); quà miễn phí (giftcode, quà top, rơi boss) khi đầy ô: bỏ phần thú, báo rõ + log `THUDAY`.
+   Vé mở ô thú = nguyên liệu 271 (+1 ô, đã tối đa thì không mất vé). Gói mới `-119` (C->S) + phần nối thêm gói 16 loại 2
+   chỉ cho client `BAN >= 912` (client 911 trở về trước không đổi).
+3. Client: tab Thú và Trang bị › Thú cưỡi có "Ô thú: n/max", nút Thả trùng (giữ con cấp cao nhất mỗi loài, hỏi kèm tổng
+   xu) và Thêm ô (dùng vé / mua ở Cửa hàng lượng); chạm thú = chọn -> Cưỡi / Gọi, Khoá / Mở khoá, Thả (+xu). Sân khấu
+   Trang bị › Thú cưỡi hiện thú đang chọn / đang cưỡi / gợi ý (trước trống). Kiểm: `server/test/KiemQuanLyThu`,
+   `ChupTrongGame` màn `nv_ds_thu`, `nv_ds_thu_quan_ly`, `nv_thu_quan_ly`, `nv_cuoi_ds_thu_quan_ly`.
+4. Tải gói 912 lên `/admin/tai-game` (Số bản = 912) cho từng nền tảng sau khi máy chủ chạy jar mới.
+
 ### Bản vá 0.9.11 (`BAN=911`: kéo núm thanh cuộn đúng chiều)
 
 Chỉ client (`client_jar/src` + `client_jar/shared/mod`, vào cả J2ME / APK / PC); SQL và `htbb-server.jar` KHÔNG đổi.

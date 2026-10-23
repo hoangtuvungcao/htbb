@@ -351,6 +351,12 @@ public final class SuKienWorldCup {
             hoanLaiHop(player, "Hành trang đầy.");
             return;
         }
+        if (QuanLyThuGame.day(player)) {
+            // hop co the ra pet (jackpot): o thu day -> hoan hop, khong mo (real.QuanLyThuGame)
+            QuanLyThuGame.chanNhan(player, "hop may man World Cup");
+            hoanLaiHop(player, QuanLyThuGame.cauDay(player));
+            return;
+        }
 
         try {
             final int quay = Map.r.nextInt(100);
@@ -437,7 +443,9 @@ public final class SuKienWorldCup {
             return;
         }
         final int[] idPet = {9, 10, 11, 13}; // Armadillo bang / set / doc, Chim canh cut
-        player.createPet(idPet[Map.r.nextInt(idPet.length)], 10080); // 7 ngay
+        if (!QuanLyThuGame.chanNhan(player, "SuKienWorldCup:440")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+            player.createPet(idPet[Map.r.nextInt(idPet.length)], 10080);
+        }
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
         player.sendMessage(MessageCreator.createServerAlertMessage(

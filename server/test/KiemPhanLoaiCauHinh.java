@@ -38,7 +38,7 @@ public final class KiemPhanLoaiCauHinh {
             }
         }
         // <= 72: 0.9.6 them 3 khoa chinh cua the dat ten Pokemon (gia + muc + trong so muc - chu game: gia / ti le chinh tren web)
-        // <= 77: quan ly thu them 5 khoa chinh (thu.o_co_ban / o_toi_da / tha_xu_* - chu game chinh o thu + xu tha tren web)
+        // <= 77: quan ly thu them 6 khoa chinh (thu.o_co_ban / o_toi_da / tha_xu_* gom tran / ngay - chu game chinh tren web)
         Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 77), con lai an", chinh <= 77 && chinh >= 40);
         Kiem.dung("phan loai: co khoa co dinh + luon bat", coDinh > 100 && luonBat >= 15);
         Kiem.dung("luon_bat: moi khoa la co, gia tri 1", luonBatDung);

@@ -1429,6 +1429,9 @@ public class RealController extends ServerController {
     }
 
     public void doDotDen(Char player, int idOptionMenu) {
+        if (QuanLyThuGame.chanNhan(player, "dot / tha den (co the ra thu)")) {
+            return; // o thu day: kiem TRUOC khi tru nen / banh / luong / xu
+        }
         if (!Char.isFinishAllSuKienTrungThul2016()) {
             if (idOptionMenu <= 2) {
                 // Sua 19/09/2026 (yeu cau nguoi dung): DOT den (idOptionMenu==0) tieu 1 Nen
@@ -1529,7 +1532,9 @@ public class RealController extends ServerController {
                             } else if (typegift[index] == -7) {
                                 // Trung Thu 2026: "Thu cuoi Lan Su Tu thoi han" - them moi theo spec.
                                 int[] minute = new int[]{1440, 4320, 7200, 10080};
-                                player.createLan((long) minute[r.nextInt(minute.length)], true, 95);
+                                if (!QuanLyThuGame.chanNhan(player, "RealController:1532")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                                    player.createLan((long) minute[r.nextInt(minute.length)], true, 95);
+                                }
                                 info = info + "Suicune";
                                 player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                             } else if (typegift[index] == -8) {
@@ -1569,7 +1574,9 @@ public class RealController extends ServerController {
                             } else if (typegift[index] == -6) {
                                 // dbt
                                 int time = r.nextInt(3) + 3;
-                                player.createPoro((long) time, false);
+                                if (!QuanLyThuGame.chanNhan(player, "RealController:1572")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                                    player.createPoro((long) time, false);
+                                }
                                 info = info + " Wooloo";
                             } else if (typegift[index] == -1) {
                                 player.addXu((long) soluongmax[index], "map 56");

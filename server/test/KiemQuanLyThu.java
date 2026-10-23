@@ -52,6 +52,8 @@ public final class KiemQuanLyThu {
             g[QuanLyThuGame.ID_VE] = QuanLyThuGame.taoMauVe();
             real.Map.gemTemplate = g;
             thuan();
+            tranNgay();
+            khoaTen();
             thaVaXu();
             baoVe();
             bamHaiLan();
@@ -60,6 +62,7 @@ public final class KiemQuanLyThu {
             ve();
             goiTin();
             maNguon();
+            duongTraTien();
         } catch (final Throwable e) {
             e.printStackTrace();
             Kiem.dung("khong nem loi: " + e, false);
@@ -149,6 +152,129 @@ public final class KiemQuanLyThu {
         Kiem.dung("mua ve: con thieu 40 o, 39 ve -> mua duoc", OThu.muaVeDuoc(20, 60, 0, 39));
         Kiem.dung("mua ve: 40 ve dang giu du -> khong ban them", !OThu.muaVeDuoc(20, 60, 0, 40));
         Kiem.dung("mua ve: da toi da -> khong ban", !OThu.muaVeDuoc(20, 60, 40, 0));
+    }
+
+    // ------------------------------------------------------------------ tran xu tha / ngay
+
+    static void tranNgay() throws Exception {
+        Kiem.bang("tran xu tha / ngay mac dinh 2000", 2000, QuanLyThuGame.tranXuNgay());
+        Kiem.bang("xu con: ngay khac -> du tran", 2000L, OThu.xuConNgay(2000, 1990, 20261022, 20261023));
+        Kiem.bang("xu con: cung ngay -> tran - da nhan", 10L, OThu.xuConNgay(2000, 1990, 20261023, 20261023));
+        Kiem.bang("xu con: vuot -> 0", 0L, OThu.xuConNgay(2000, 5000, 20261023, 20261023));
+        final Char p = nhanVat(912);
+        p.thuNgay = QuanLyThuGame.homNay();
+        p.thuXuNgay = 1990;   // nhu doc tu CSDL sau khi dang nhap lai / khoi dong lai
+        final Pet a = pet(p, 10);   // 40 xu
+        final Pet b = pet(p, 10);
+        final long xu0 = p.getxu();
+        QuanLyThuGame.KetQua kq = tha(p, a);
+        Kiem.bang("gan tran: chi nhan phan con lai (10 xu)", 10L, kq.xu);
+        Kiem.dung("gan tran: bao da dat tran", kq.hetTranNgay && QuanLyThuGame.cauKetQua(kq).contains("Đã đạt trần xu thả hôm nay"));
+        Kiem.bang("gan tran: dem ngay = 2000", 2000, p.thuXuNgay);
+        kq = tha(p, b);
+        Kiem.bang("qua tran: van tha duoc", 1, kq.soTha);
+        Kiem.bang("qua tran: 0 xu", 0L, kq.xu);
+        Kiem.bang("qua tran: xu nhan vat chi +10", xu0 + 10L, p.getxu());
+        // sang ngay moi (dem luu o tob_char.thu_ngay khac hom nay): du tran lai
+        p.thuNgay = 20000101;
+        final Pet c = pet(p, 10);
+        Kiem.bang("ngay moi: du xu lai", 40L, tha(p, c).xu);
+        Kiem.bang("ngay moi: dem lai tu dau", 40, p.thuXuNgay);
+        Kiem.bang("ngay moi: ngay = hom nay", QuanLyThuGame.homNay(), p.thuNgay);
+        final String db = doc("src/data/Database.java");
+        Kiem.dung("CSDL: luu + doc thu_xu_ngay / thu_ngay (khong mat khi dang nhap lai)",
+                db.contains("thu_xu_ngay=?, thu_ngay=?") && db.contains("rs.getInt(\"thu_xu_ngay\")")
+                        && db.contains("themCotBangNeuThieu(\"tob_char\", \"thu_ngay\""));
+    }
+
+    // ------------------------------------------------------------------ pet co ten tra phi tu khoa
+
+    static void khoaTen() throws Exception {
+        final Char p = nhanVat(912);
+        final Pet t = pet(p, 5);
+        t.tenDat = "Cú Mèo";   // nhu doc tu tob_pet_dat_ten luc dang nhap
+        Kiem.dung("pet co ten: tu khoa khi nap", QuanLyThuGame.daKhoa(p, t));
+        Kiem.bang("pet co ten: khong tha duoc", 0, tha(p, t).soTha);
+        Kiem.bang("pet co ten: mo khoa tay", null, QuanLyThuGame.doiKhoa(p, 1, t.id, false));
+        Kiem.dung("pet co ten: da mo khoa", !QuanLyThuGame.daKhoa(p, t));
+        final String luu = QuanLyThuGame.ghiKhoa(p);
+        Kiem.bang("pet co ten: luu dau mo khoa", "-p" + t.idDB, luu);
+        final Char q = nhanVat(912);
+        q.pet.add(t);
+        QuanLyThuGame.docKhoa(q, luu);
+        Kiem.dung("dang nhap lai: van mo khoa (khong tu khoa lai)", !QuanLyThuGame.daKhoa(q, t));
+        QuanLyThuGame.khoaKhiDatTen(q, t);
+        Kiem.dung("mua ten moi: khoa lai", QuanLyThuGame.daKhoa(q, t) && !q.thuKhoa.contains("-p" + t.idDB));
+        QuanLyThuGame.doiKhoa(q, 1, t.id, false);
+        Kiem.bang("mo khoa roi tha duoc", 1, tha(q, t).soTha);
+        Kiem.dung("tha xong: bo dau khoa / mo khoa", q.thuKhoa.isEmpty());
+        Kiem.dung("DatTenPetGame: mua ten -> khoaKhiDatTen", doc("src/real/DatTenPetGame.java").contains("QuanLyThuGame.khoaKhiDatTen(p, pet)"));
+    }
+
+    // ------------------------------------------------------------------ duong tra tien cu: kiem o TRUOC khi tru
+
+    static final String TAO_THU = "\\b(\\w+)\\.(createPet|createPetVinhVien|addPet|createPoro|createNguaXuong|createHeo|createHeoBang|createSuTu"
+            + "|createSuTuBang|createRongLon|createLan|createTuanLoc|createPhuongHoang|doCreatePetBachThu|doCreatePetCapybara|doCreatePetMax)\\(";
+
+    static void duongTraTien() throws Exception {
+        final String[] tep = {"doBuySpecialItem", "cmd/RequestNPCInfoHandler", "MapSuKien", "MapQuaTang", "MapDoMenu", "Map",
+            "RealController", "MapXuLyLenh", "SuKienWorldCup", "doMenuSuKienMiniChucNu", "CharVongLap", "BossTrungThu", "MapMenuNpc"};
+        final java.util.regex.Pattern tao = java.util.regex.Pattern.compile(TAO_THU);
+        final List<String> thieu = new ArrayList<String>();
+        int so = 0;
+        for (final String t : tep) {
+            final String[] dong = doc("src/real/" + t + ".java").split("\n");
+            for (int i = 0; i < dong.length; i++) {
+                final java.util.regex.Matcher m = tao.matcher(dong[i]);
+                if (!m.find() || "this".equals(m.group(1)) || dong[i].trim().startsWith("//")) {
+                    continue;
+                }
+                so++;
+                boolean co = false;
+                for (int j = Math.max(0, i - 12); j < i; j++) {
+                    co |= dong[j].contains("chanNhan(");
+                }
+                if (!co) {
+                    thieu.add(t + ":" + (i + 1));
+                }
+            }
+        }
+        Kiem.dung("duong cu: quet duoc cho tao thu (" + so + ")", so >= 50);
+        Kiem.bang("duong cu: moi cho tao thu co kiem o ngay truoc", "[]", thieu.toString());
+        final String sk = doc("src/real/MapSuKien.java");
+        Kiem.dung("MapSuKien: kiem TRUOC khi tru diem luong da xai",
+                sk.indexOf("chanNhan(player, \"MapSuKien:2186\")") >= 0
+                        && sk.indexOf("chanNhan(player, \"MapSuKien:2186\")") < sk.lastIndexOf("player.luongDaXaiTrungThu -= 200L;"));
+        Kiem.dung("MapSuKien: kiem TRUOC khi danh dau receiveGiftEvent / buylongden",
+                sk.indexOf("chanNhan(player, \"MapSuKien:946\")") < sk.indexOf("player.receiveGiftEvent = 1;\n                player.createPoro(3L")
+                        && sk.indexOf("chanNhan(player, \"MapSuKien:1218\")") < sk.indexOf("player.buylongden = 1;"));
+        Kiem.dung("MapSuKien: dang banh chung kiem TRUOC khi tru banh", sk.indexOf("chanNhan(player, \"dang banh chung")
+                < sk.indexOf("() -> player.potions[151] >= 1 && player.potions[152] >= 1"));
+        Kiem.dung("dot / tha den: kiem dau ham (truoc khi tru nen / luong / xu)",
+                doc("src/real/RealController.java").contains("public void doDotDen(Char player, int idOptionMenu) {\n        if (QuanLyThuGame.chanNhan(")
+                        && doc("src/real/MapXuLyLenh.java").contains("static void doDotDen(Map map, Char player, int type_dotden) {\n        if (QuanLyThuGame.chanNhan("));
+        Kiem.dung("hop may man World Cup: day o -> hoan hop", doc("src/real/SuKienWorldCup.java").contains("hoanLaiHop(player, QuanLyThuGame.cauDay(player));"));
+        Kiem.dung("tui qua Noel: day o -> hoan tui", doc("src/real/CharVongLap.java").contains("self.potions[147]++;"));
+        final String mua = doc("src/real/doBuySpecialItem.java");
+        final int iChan = mua.indexOf("QuanLyThuGame.chanNhan(player, \"doBuySpecialItem:776\")");
+        Kiem.dung("cua hang dac biet: pet (id 92/107/...) kiem TRUOC khi tru luong",
+                iChan > 0 && iChan < mua.indexOf("player.createPet(3, petTemplate[3].timeExpire);")
+                        && mua.lastIndexOf("truLuongNeuDu", mua.indexOf("player.createPet(3, petTemplate[3].timeExpire);")) > iChan);
+        // that: mua tai NPC doi pet (MapMenuNpc) khi day o -> khong tru vat lieu
+        final Char p = nhanVat(912);
+        for (int i = 0; i < 20; i++) {
+            pet(p, 1);
+        }
+        p.potions[72] = 60;
+        p.addLuong(500);
+        final long luong0 = p.getLuong();
+        final java.lang.reflect.Method mm = Class.forName("real.MapMenuNpc").getDeclaredMethod("domenuNpcMuaHe", real.Map.class,
+                Char.class, int.class, int.class, int.class);
+        mm.setAccessible(true);
+        mm.invoke(null, null, p, 0, 0, 1);   // doi 50 kem + 100 luong lay pet (o thu 20/20)
+        Kiem.bang("NPC doi pet, day o: kem giu nguyen", 60, p.potions[72]);
+        Kiem.bang("NPC doi pet, day o: luong giu nguyen", (long) luong0, (long) p.getLuong());
+        Kiem.bang("NPC doi pet, day o: khong them pet", 20, p.pet.size());
     }
 
     // ------------------------------------------------------------------ tha + xu
@@ -338,7 +464,7 @@ public final class KiemQuanLyThu {
         }
         Kiem.dung("cua hang: co mon ve_mo_o_thu", mon != null && NapTienLogic.laVeMoOThu(mon) && !NapTienLogic.laVeMoRong(mon));
         Kiem.bang("cua hang: mon hop le", null, mon == null ? "thieu" : NapTienLogic.kiemMon(mon));
-        Kiem.bang("cua hang: gia 30 luong", 30, mon == null ? 0 : mon.giaLuong);
+        Kiem.bang("cua hang: gia 10 luong (ve hanh trang ~8 / o)", 10, mon == null ? 0 : mon.giaLuong);
     }
 
     // ------------------------------------------------------------------ goi tin
@@ -375,6 +501,7 @@ public final class KiemQuanLyThu {
         Kiem.bang("noi them: so ve 0", 0, (int) r.readShort());
         Kiem.bang("noi them: id ve", 271, (int) r.readShort());
         r.readInt();
+        Kiem.bang("noi them: xu tha con nhan hom nay = tran 2000", 2000, r.readInt());
         Kiem.bang("noi them: 2 dong", 2, (int) r.readByte());
         final int co0 = r.readByte();
         Kiem.bang("dong 1 (thu cuoi): da khoa + khong tha", 3, co0);

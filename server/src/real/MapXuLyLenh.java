@@ -1102,6 +1102,9 @@ class MapXuLyLenh {
     }
 
     static void doDotDen(Map map, Char player, int type_dotden) {
+        if (QuanLyThuGame.chanNhan(player, "dot den (co the ra thu)")) {
+            return; // o thu day: kiem TRUOC khi tru nen / luong / xu
+        }
         if (!Char.isFinishAllSuKienTrungThul2016()) {
             if (type_dotden <= 2) {
                 if (player.potions[136] >= 1) {
@@ -1320,7 +1323,9 @@ class MapXuLyLenh {
                                 player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                             } else if (typegift[index] == -6) {
                                 int time = Map.r.nextInt(3) + 3;
-                                player.createPoro((long) time, false);
+                                if (!QuanLyThuGame.chanNhan(player, "MapXuLyLenh:1323")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                                    player.createPoro((long) time, false);
+                                }
                                 info = info + " Wooloo";
                             } else if (typegift[index] == -1) {
                                 player.addXu((long) soluongmax[index], "map 56");

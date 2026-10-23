@@ -1300,6 +1300,15 @@ class CharVongLap {
     }
 
     static void doOpenTuiQuaMayManNoel(Char self) {
+        if (QuanLyThuGame.chanNhan(self, "tui qua may man Noel")) {
+            // tui co the ra thu cuoi: o thu day -> hoan tui (doUsePotion da tru 1 truoc khi goi), khong mo
+            self.potions[147]++;
+            try {
+                self.sendMessage(MessageCreator.createCharInventoryMessage(self, 0));
+            } catch (final Exception ignored) {
+            }
+            return;
+        }
         if (self.isFullInventory()) {
             self.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy", ""));
             return;
@@ -1319,7 +1328,9 @@ class CharVongLap {
             indexReceive.put(index, index);
             if (typegift[index] == -3) {
                 final int time = Map.r.nextInt(2) + 1;
-                self.createHeo(time, false);
+                if (!QuanLyThuGame.chanNhan(self, "CharVongLap:1322")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                    self.createHeo(time, false);
+                }
                 info = String.valueOf(info) + " đường khang, ";
             } else if (typegift[index] == -5) {
                 int[] valuemn = {5, 5, 10, 30, 50};
@@ -1402,6 +1413,9 @@ class CharVongLap {
             self.sendMessage(MessageCreator.createServerAlertMessage("Hành trang phải còn tối thiếu 3 ô trống mới có thể đổi quà", ""));
             return;
         }
+        if (QuanLyThuGame.chanNhan(self, "CharVongLap:1432")) {
+            return; // o thu day: kiem TRUOC khi tru tien / vat pham
+        }
         for (int i = 0; i < GemTemplate.ID_NGOC_RONG.length; ++i) {
             self.delGem(GemTemplate.ID_NGOC_RONG[i], 1, true);
         }
@@ -1429,14 +1443,18 @@ class CharVongLap {
                 info = String.valueOf(info) + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
                 self.sendMessage(MessageCreator.createMsgChat(self.id, info));
             } else if (typegift[index] == -7) {
-                self.doCreatePetBachThu(14400, false);
+                if (!QuanLyThuGame.chanNhan(self, "CharVongLap:1435")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                    self.doCreatePetBachThu(14400, false);
+                }
                 info = String.valueOf(info) + " pet Sandshrew, ";
             } else if (typegift[index] == -6) {
                 final Item it = Map.doBuyModelClothe(self, self.isCharNam() ? 725 : 726, 10, 1);
                 info = String.valueOf(info) + " " + it.getName();
             } else if (typegift[index] == -5) {
                 final int time = 3;
-                self.createHeo(time, false);
+                if (!QuanLyThuGame.chanNhan(self, "CharVongLap:1442")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                    self.createHeo(time, false);
+                }
                 info = String.valueOf(info) + " Piloswine, ";
             } else if (typegift[index] == -4) {
                 int soluong = soluongmin[index];

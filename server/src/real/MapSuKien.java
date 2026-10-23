@@ -636,6 +636,9 @@ class MapSuKien {
                     c.nbanh = 0;
                     Database.instance.saveCooking(Char.nauBanhTet, 2);
                 } else if (idOptionMenu == 2) {
+                    if (QuanLyThuGame.chanNhan(player, "dang banh chung (co the ra thu)")) {
+                        return; // o thu day: kiem TRUOC khi tru banh
+                    }
                     if (!player.truNeuDu(
                             () -> player.potions[151] >= 1 && player.potions[152] >= 1,
                             () -> {
@@ -806,13 +809,19 @@ class MapSuKien {
                     p.sendMessage(MessageCreator.createMsgChat(p.id, info));
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 } else if (typegift[index] == -2) {
-                    p.createHeo((long) (r.nextInt(3) + 1), true);
+                    if (!QuanLyThuGame.chanNhan(p, "MapSuKien:809")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                        p.createHeo((long) (r.nextInt(3) + 1), true);
+                    }
                     info = info + " thú cưỡi Piloswine";
                 } else if (typegift[index] == -3) {
-                    p.createNguaXuong((long) (r.nextInt(3) + 1), true);
+                    if (!QuanLyThuGame.chanNhan(p, "MapSuKien:812")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                        p.createNguaXuong((long) (r.nextInt(3) + 1), true);
+                    }
                     info = info + " thú cưỡi Spectrier";
                 } else if (typegift[index] == -4) {
-                    p.doCreatePetBachThu((r.nextInt(2) + 2) * 24 * 60, true);
+                    if (!QuanLyThuGame.chanNhan(p, "MapSuKien:815")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                        p.doCreatePetBachThu((r.nextInt(2) + 2) * 24 * 60, true);
+                    }
                     info = info + " pet Sandshrew";
                 } else if (typegift[index] == -5) {
                     if (map.doCreateHoVeLenh(p, 4320) != null) {
@@ -874,6 +883,9 @@ class MapSuKien {
             if (idOptionMenu == 0) {
                 player.sendMessage(MessageCreator.createMsgInputText(-32016, 0, "Số kem", 1));
             } else if (idOptionMenu == 1) {
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:891")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
                 if (!player.truNeuDu(
                         () -> player.getLuong() >= 120 && player.potions[146] >= 50,
                         () -> {
@@ -888,6 +900,9 @@ class MapSuKien {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:894")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
+                }
                 player.createTuanLoc(30L);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -939,6 +954,9 @@ class MapSuKien {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:946")) {
+                    return; // o thu day: kiem TRUOC khi danh dau da nhan
+                }
                 player.receiveGiftEvent = 1;
                 player.createPoro(3L, true);
                 Database.instance.saveLogThongKeChiTieu("DAI BACH THU", 0, 1, 1L, "nhanqua");
@@ -1046,11 +1064,15 @@ class MapSuKien {
 
             if (idMenu >= 22) {
                 if (p.canReceiveGiftOffline == 1) {
-                    p.createPetVinhVien(28);
+                    if (!QuanLyThuGame.chanNhan(p, "MapSuKien:1052")) { // o thu day: bo qua long den (qua top mien phi), bao + log
+                        p.createPetVinhVien(28);
+                    }
                     info = info + " và 1 long den vinh vien";
                     infoAlert = infoAlert + " và 1 lồng đèn vĩnh viễn";
                 } else {
-                    p.createPet(28, 43200);
+                    if (!QuanLyThuGame.chanNhan(p, "MapSuKien:1056")) { // o thu day: bo qua long den (qua top mien phi), bao + log
+                        p.createPet(28, 43200);
+                    }
                     info = info + " và 1 long den 30 ngay";
                     infoAlert = infoAlert + " và 1 lồng đèn 30 ngày";
                 }
@@ -1202,12 +1224,18 @@ class MapSuKien {
                     player.sendMessage(MessageCreator.createMsgChat(player.id, "Hành trang đầy"));
                     return;
                 }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1212")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
 
                 if (!player.truLuongNeuDu(1000L)) {
                     player.sendMessage(MessageCreator.createMsgChat(player.id, "Không đủ lượng"));
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1218")) {
+                    return; // o thu day: kiem TRUOC khi danh dau da nhan
+                }
                 player.buylongden = 1;
                 player.createPetVinhVien(28);
             } else if (idOptionMenu == 4) {
@@ -1613,6 +1641,9 @@ class MapSuKien {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy.", ""));
                     return;
                 }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1635")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
 
                 if (!player.truNeuDu(
                         () -> player.potions[77] >= slx[idOptionMenu]
@@ -1632,6 +1663,9 @@ class MapSuKien {
                 String info = "Đổi";
                 if (idOptionMenu == 0) {
                     int[] time = new int[]{30};
+                    if (QuanLyThuGame.chanNhan(player, "MapSuKien:1644")) {
+                        return; // o thu day: khong nhan, khong tru tien sau do
+                    }
                     player.doCreatePetBachThu(time[r.nextInt(time.length)] * 24 * 60, false);
                     info = info + " pet Sandshrew 30 ngày";
                 } else if (idOptionMenu == 1) {
@@ -1745,12 +1779,18 @@ class MapSuKien {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy.", ""));
                     return;
                 }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1754")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
 
                 if (!player.truLuongNeuDu(100L)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1766")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
+                }
                 player.createPet(22, 10080);
             } else {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6"}, idNpc, 5));
@@ -1908,6 +1948,9 @@ class MapSuKien {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 70 lượng", ""));
                     return;
                 }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1922")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
 
                 if (!player.truNeuDu(
                         () -> player.potions[124] >= 20 && player.getLuong() >= 70,
@@ -1919,6 +1962,9 @@ class MapSuKien {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1937")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
+                }
                 player.doCreatePetBachThu(43200, true);
                 Database.instance.saveOrtherLog("", player.charname, "doi pet bach thu " + idOptionMenu, "petbachthu");
                 Database.instance.saveLogThongKeChiTieu("pet bach thu", 0, 1, 70L, "luong");
@@ -1956,6 +2002,9 @@ class MapSuKien {
                 }
                 player.sendMessage(MessageCreator.createMsgMenu(mmenu, idNpc, 11));
             } else if (idOptionMenu == 8) {
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1971")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
                 // Trung Thu 2026: Doi 20 banh deo + 100 luong = Long den rong (tang 100%
                 // bang/set/doc/lua lan + 10% exp, 7 ngay) - dung lai pet "Long den Rong xanh"
                 // (id 21) da co san trong doMenuTrungThu2015, KHONG the giao dich.
@@ -1967,6 +2016,9 @@ class MapSuKien {
                         })) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 20 bánh dẻo + 100 lượng", ""));
                     return;
+                }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:1989")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
                 }
                 player.createPet(21, 10080);
                 Database.instance.saveOrtherLog("", player.charname, "doi long den rong (Trung Thu 2026)", "longdenrong2026");
@@ -2001,6 +2053,9 @@ class MapSuKien {
                 Database.instance.saveOrtherLog("", player.charname, "doi Linh Nguyet Truong (Trung Thu 2026)", "linhnguyettruong2026");
                 Database.instance.saveLogThongKeChiTieu("linh nguyet truong", 0, 1, 150L, "luong");
             } else if (idOptionMenu == 10) {
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2015")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
                 // Trung Thu 2026: Doi 20 banh deo + 150 luong = 1 Lan Su Tu 7 ngay, KHONG the
                 // giao dich - dung player.createLan(minute, isAlert, khanghoatuyet) co san.
                 if (!player.truNeuDu(
@@ -2011,6 +2066,9 @@ class MapSuKien {
                         })) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 20 bánh dẻo + 150 lượng", ""));
                     return;
+                }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2036")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
                 }
                 player.createLan(10080L, true, 95);
                 Database.instance.saveOrtherLog("", player.charname, "doi Lan Su Tu (Trung Thu 2026)", "lansutu2026");
@@ -2092,6 +2150,9 @@ class MapSuKien {
                     );
                     return;
                 }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2147")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
 
                 if (!player.truNeuDu(
                         () -> player.getLuong() >= price[idMenu] && player.potions[124] >= slCaudoi1[idMenu],
@@ -2144,6 +2205,9 @@ class MapSuKien {
                 }
 
                 int[] id = new int[]{12, 19, 20};
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2171")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
+                }
                 player.createPet(id[idOptionMenu], 180);
                 player.receiveGiftEvent = 1;
                 Database.instance.saveOrtherLog("", player.charname, "doi long den " + idOptionMenu, "qualongden");
@@ -2158,6 +2222,9 @@ class MapSuKien {
                     return;
                 }
                 final int[] idLongDenDiem = new int[]{12, 19, 20};
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2186")) {
+                    return; // o thu day: kiem TRUOC khi tru diem luong da xai
+                }
                 player.luongDaXaiTrungThu -= 200L;
                 player.createPet(idLongDenDiem[idOptionMenu], 4320); // 3 ngay
                 // Long den vua tao la PHAN TU CUOI trong player.pet (createPet() them vao
@@ -2245,6 +2312,9 @@ class MapSuKien {
             } else if (idOptionMenu == 2) {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6"}, idNpc, 3));
             } else if (idOptionMenu == 3) {
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2262")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
                 if (!player.truNeuDu(
                         () -> player.potions[120] >= 50 && player.getLuong() >= 100,
                         () -> {
@@ -2259,6 +2329,9 @@ class MapSuKien {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2289")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
+                }
                 player.createPet(21, 10080);
                 Database.instance.saveOrtherLog("", player.charname, "doi long den rong xanh", "rongxanh");
             } else if (idOptionMenu == 4) {
@@ -2297,6 +2370,9 @@ class MapSuKien {
             int[] slCaudoi = new int[]{0, 0, 0, 0, 50, 50, 50, 50};
             int[] slCaudoi1 = new int[]{0, 0, 0, 0, 5, 10, 15, 20};
             int[] price = new int[]{0, 0, 0, 0, 70, 100, 140, 180};
+            if (QuanLyThuGame.chanNhan(player, "MapSuKien:2344")) {
+                return; // o thu day: kiem TRUOC khi tru tien / vat pham
+            }
             if (!player.truNeuDu(
                     () -> player.getLuong() >= price[idMenu]
                             && player.potions[120] >= slCaudoi[idMenu]
@@ -2341,6 +2417,9 @@ class MapSuKien {
             }
 
             int[] id = new int[]{12, 19, 20};
+            if (QuanLyThuGame.chanNhan(player, "MapSuKien:2374")) {
+                return; // o thu day: khong nhan, khong tru tien sau do
+            }
             player.createPet(id[idOptionMenu], 1440);
             player.receiveGiftEvent = 1;
             Database.instance.saveOrtherLog("", player.charname, "doi long den " + idOptionMenu, "qualongden");
@@ -2809,6 +2888,9 @@ class MapSuKien {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
                     return;
                 }
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2823")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
 
                 if (!player.truNeuDu(
                         () -> player.potions[120] >= 50 && player.getLuong() >= 100,
@@ -2820,6 +2902,9 @@ class MapSuKien {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "MapSuKien:2856")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
+                }
                 player.createPet(14, 43200);
             } else if (idOptionMenu == 4) {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Hộp mứt nhỏ", "Hộp mứt to"}, idNpc, 2));
@@ -2967,18 +3052,30 @@ class MapSuKien {
                 } else if (idOptionMenu == 3) {
                     player.sendMessage(MessageCreator.createMsgInputText(-32016, idMenu, "Nhập số túi đổi", 1));
                 } else if (idOptionMenu == 4) {
+                    if (QuanLyThuGame.chanNhan(player, "MapSuKien:2975")) {
+                        return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                    }
                     if (!player.truLuongNeuDu(300L)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
                         return;
                     }
 
+                    if (QuanLyThuGame.chanNhan(player, "MapSuKien:3011")) {
+                        return; // o thu day: khong nhan, khong tru tien sau do
+                    }
                     player.createTuanLoc(15L);
                 } else if (idOptionMenu == 5) {
+                    if (QuanLyThuGame.chanNhan(player, "MapSuKien:2982")) {
+                        return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                    }
                     if (!player.truLuongNeuDu(500L)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
                         return;
                     }
 
+                    if (QuanLyThuGame.chanNhan(player, "MapSuKien:3021")) {
+                        return; // o thu day: khong nhan, khong tru tien sau do
+                    }
                     player.createTuanLoc(30L);
                 } else if (idOptionMenu == 6) {
                     if (!player.gifMoonFestival) {

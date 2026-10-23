@@ -551,6 +551,9 @@ public class doBuySpecialItem {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
                                 return;
                             }
+                            if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:562")) {
+                                return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                            }
 
                             if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
@@ -559,6 +562,9 @@ public class doBuySpecialItem {
 
                             soluong = 1;
                             value = 10080; // thời gian
+                            if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:565")) {
+                                return; // o thu day: khong nhan, khong tru tien sau do
+                            }
                             player.createLan((long) value, true, 95);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             nameItem = item.name;
@@ -566,6 +572,9 @@ public class doBuySpecialItem {
                             if (player.isFullInventory()) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
                                 return;
+                            }
+                            if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:580")) {
+                                return; // o thu day: kiem TRUOC khi tru tien / vat pham
                             }
 
                             if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
@@ -577,6 +586,9 @@ public class doBuySpecialItem {
                             hour = 24 - UtilHTBB.getHour();
                             minute = UtilHTBB.getMinute();
                             value = hour * 60 - minute;
+                            if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:586")) {
+                                return; // o thu day: khong nhan, khong tru tien sau do
+                            }
                             player.createLan((long) value, true, 0);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             nameItem = item.name;
@@ -628,6 +640,9 @@ public class doBuySpecialItem {
 
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else if (item.id == 141) {
+                                if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:638")) {
+                                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                                }
                                 if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
@@ -635,6 +650,9 @@ public class doBuySpecialItem {
 
                                 soluong = 1;
                                 nameItem = item.name;
+                                if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:647")) {
+                                    return; // o thu day: khong nhan, khong tru tien sau do
+                                }
                                 player.createPet(21, petTemplate[21].timeExpire);
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else if (item.id == 132) {
@@ -764,6 +782,9 @@ public class doBuySpecialItem {
                                                 }
                                                 break label838;
                                             }
+                                            if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:776")) {
+                                                return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                                            }
 
                                             if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
@@ -773,18 +794,33 @@ public class doBuySpecialItem {
                                             soluong = 1;
                                             spItem = null;
                                             if (item.id == 92) {
+                                                if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:788")) {
+                                                    return; // o thu day: khong nhan, khong tru tien sau do
+                                                }
                                                 player.createPet(3, petTemplate[3].timeExpire);
                                                 nameItem = item.name;
                                             } else if (item.id == 107) {
+                                                if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:791")) {
+                                                    return; // o thu day: khong nhan, khong tru tien sau do
+                                                }
                                                 player.createPet(9, 10080);
                                                 nameItem = item.name;
                                             } else if (item.id == 110) {
+                                                if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:794")) {
+                                                    return; // o thu day: khong nhan, khong tru tien sau do
+                                                }
                                                 player.createPet(10, 10080);
                                                 nameItem = item.name;
                                             } else if (item.id == 111) {
+                                                if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:797")) {
+                                                    return; // o thu day: khong nhan, khong tru tien sau do
+                                                }
                                                 player.createPet(11, 10080);
                                                 nameItem = item.name;
                                             } else if (item.id == 133) {
+                                                if (QuanLyThuGame.chanNhan(player, "doBuySpecialItem:800")) {
+                                                    return; // o thu day: khong nhan, khong tru tien sau do
+                                                }
                                                 player.createPet(13, 10080);
                                                 nameItem = item.name;
                                             }

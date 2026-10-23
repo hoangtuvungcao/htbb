@@ -1436,7 +1436,8 @@ public final class ManNhanVat extends Screen {
             dong1 = t[0].length() > 0 ? t[0] : (a.typeAnimal == 0 ? "Thú cưỡi" : "Pokémon đi theo");
             int xu = QuanLyThu.xuTha(a);
             dong2 = (cap.length() > 0 ? "Cấp " + cap + " · " : "") + (a.typeAnimal == 0 ? "Thú cưỡi" : "Đi theo")
-                    + (QuanLyThu.daKhoa(a) ? " · Đã khoá" : (xu > 0 ? " · Thả: +" + TienTe.so(xu) + " xu" : ""));
+                    + (QuanLyThu.daKhoa(a) ? " · Đã khoá" : (xu > 0 ? " · Thả: +" + TienTe.so(xu) + " xu"
+                    : (QuanLyThu.hetTranNgay(a) ? " · " + QuanLyThu.HET_TRAN : "")));
         } else if (dangCuoi(m)) {
             veNguoiChoi(g, m, cx, yChan, z);
             String[] t = tachTen(m.infoAnimal);
@@ -1499,7 +1500,8 @@ public final class ManNhanVat extends Screen {
         int xu = QuanLyThu.xuTha(a);
         String c1 = a.typeAnimal == 0 ? (nCuoi > 0 ? "Đổi thú" : "Cưỡi") : "Gọi";
         String c2 = khoa ? "Mở khoá" : "Khoá";
-        String c3 = tha ? (xu > 0 ? "Thả +" + TienTe.so(xu) + " xu" : "Thả") : "Không thả được";
+        String c3 = tha ? (xu > 0 ? "Thả +" + TienTe.so(xu) + " xu" : (QuanLyThu.hetTranNgay(a) ? "Thả (hết xu hôm nay)" : "Thả"))
+                : "Không thả được";
         int w1 = (w - 2 * k) / 3;
         Bang.nut(g, x, y, w1, h, c1, Bang.XAC_NHAN, new IAction() {
             public void perform() {

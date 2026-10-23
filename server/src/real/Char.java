@@ -89,6 +89,9 @@ public class Char extends LiveActor {
     public final java.util.Set<String> thuKhoa = java.util.Collections.synchronizedSet(new java.util.LinkedHashSet<String>());
     /** Thu cuoi dang cho nhap ten nguoi nhan (menu "Tặng"): khong tha, va chan tang nham con khac khi danh sach doi. */
     public Animal thuChoTang;
+    /** Xu tha thu da nhan trong ngay {@link #thuNgay} (yyyymmdd) - tran thu.tha_xu_ngay; cot tob_char.thu_xu_ngay / thu_ngay. */
+    public int thuXuNgay;
+    public int thuNgay;
     public byte idTeamTongKim;
     public String dbSkill;
     public String dbPotion;

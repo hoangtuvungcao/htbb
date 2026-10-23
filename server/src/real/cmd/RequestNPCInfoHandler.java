@@ -435,6 +435,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         return;
                     }
                     final Char pKeoQua = p;
+                    if (real.QuanLyThuGame.chanNhan(p, "RequestNPCInfoHandler:451")) {
+                        return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                    }
                     if (!pKeoQua.truNeuDu(
                             () -> pKeoQua.potions[137] >= 10 && pKeoQua.getLuong() >= 50,
                             () -> { pKeoQua.subLuong(50); pKeoQua.potions[137] -= 10; })) {
@@ -448,6 +451,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     int Qua = Map.ranDom(0, 20);
                     if (Qua == 9) {
                         long day = Map.ranDom(3, 7);
+                        if (real.QuanLyThuGame.chanNhan(p, "RequestNPCInfoHandler:454")) {
+                            return; // o thu day: khong nhan, khong tru tien sau do
+                        }
                         p.createHeo(day, true);
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
@@ -467,6 +473,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     }
                     if (Qua == 7) {
                         long day = Map.ranDom(3, 7);
+                        if (real.QuanLyThuGame.chanNhan(p, "RequestNPCInfoHandler:473")) {
+                            return; // o thu day: khong nhan, khong tru tien sau do
+                        }
                         p.createTuanLoc(day);
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
@@ -477,6 +486,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     }
                     if (Qua == 6) {
                         long day = Map.ranDom(3, 7);
+                        if (real.QuanLyThuGame.chanNhan(p, "RequestNPCInfoHandler:483")) {
+                            return; // o thu day: khong nhan, khong tru tien sau do
+                        }
                         p.createPoro(day, true);
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
@@ -487,6 +499,9 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     }
                     if (Qua == 5) {
                         long day = Map.ranDom(3, 7);
+                        if (real.QuanLyThuGame.chanNhan(p, "RequestNPCInfoHandler:493")) {
+                            return; // o thu day: khong nhan, khong tru tien sau do
+                        }
                         p.createNguaXuong(day, true);
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));

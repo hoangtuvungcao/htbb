@@ -12504,6 +12504,8 @@ public void addCharXaiNapLuong(Char p, int type) {
     public void themCotQuanLyThu() {
         themCotBangNeuThieu("tob_char", "o_thu_mo", "INT", "0");
         themCotBangNeuThieu("tob_char", "thu_khoa", "VARCHAR(1024)", "''");
+        themCotBangNeuThieu("tob_char", "thu_xu_ngay", "INT", "0");
+        themCotBangNeuThieu("tob_char", "thu_ngay", "INT", "0");
     }
 
     /** Doc tob_char.o_thu_mo / thu_khoa (thieu cot -> 0 / rong). */
@@ -12517,6 +12519,13 @@ public void addCharXaiNapLuong(Char p, int type) {
             real.QuanLyThuGame.docKhoa(p, rs.getString("thu_khoa"));
         } catch (Exception thieuCot) {
             p.thuKhoa.clear();
+        }
+        try {
+            p.thuXuNgay = Math.max(0, rs.getInt("thu_xu_ngay"));
+            p.thuNgay = rs.getInt("thu_ngay");
+        } catch (Exception thieuCot) {
+            p.thuXuNgay = 0;
+            p.thuNgay = 0;
         }
     }
 
@@ -12534,10 +12543,12 @@ public void addCharXaiNapLuong(Char p, int type) {
                 }
                 c = instance.getConnection();
             }
-            pre = c.prepareStatement("UPDATE tob_char SET o_thu_mo=?, thu_khoa=? WHERE id=?");
+            pre = c.prepareStatement("UPDATE tob_char SET o_thu_mo=?, thu_khoa=?, thu_xu_ngay=?, thu_ngay=? WHERE id=?");
             pre.setInt(1, com.htbb.pokemon.OThu.kepOMo(p.oThuMo));
             pre.setString(2, real.QuanLyThuGame.ghiKhoa(p));
-            pre.setInt(3, p.charDBID);
+            pre.setInt(3, Math.max(0, p.thuXuNgay));
+            pre.setInt(4, p.thuNgay);
+            pre.setInt(5, p.charDBID);
             pre.execute();
         } catch (Exception e) {
             System.out.println("[QUAN_LY_THU] khong luu duoc o thu / khoa thu cho id " + p.charDBID + ": " + e);

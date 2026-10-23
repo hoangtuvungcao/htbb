@@ -11827,7 +11827,9 @@ public class Map implements Runnable {
                     int[][] iditem = new int[][]{{744}, {743}};
                     int[] idpt = new int[]{115, 72, 74};
                     p.potions[idpt[idOptionMenu]]++;
-                    p.doCreatePetBachThu((indexTop < 2 ? 60 : 30) * 24 * 60, false);
+                    if (!QuanLyThuGame.chanNhan(p, "Map:11830")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                        p.doCreatePetBachThu((indexTop < 2 ? 60 : 30) * 24 * 60, false);
+                    }
                     Item it = doBuyModelClothe(p, p.isCharNam() ? iditem[0][0] : iditem[1][0], 30, 1);
                     int[] minute = new int[]{0, 86400, 43200};
                     Item newItem = ItemLuckyDraw.createtemCoat(742, p, idMenu - 30, true, minute[indexTop]);
@@ -11845,7 +11847,9 @@ public class Map implements Runnable {
                     Item it = doBuyModelClothe(p, p.isCharNam() ? iditem[0][0] : iditem[1][0], 30, 1);
                     int[] id = new int[]{12, 19, 20};
                     info = info + "Nhan qua top " + indexTop + ": pp " + (idMenu - 40) + " pet " + id[idOptionMenu] + " " + it.getName() + "_" + it.getInfoSave();
-                    p.createPet(id[idOptionMenu], 0);
+                    if (!QuanLyThuGame.chanNhan(p, "Map:11848")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                        p.createPet(id[idOptionMenu], 0);
+                    }
                     p.receiveGiftEvent = 1;
                     Database.instance.saveOrtherLog("", p.charname, info, "quatop");
                 }
@@ -12861,7 +12865,9 @@ public class Map implements Runnable {
         if (typegift[index] == -3) {
             int[] time = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7};
             int idt = r.nextInt(time.length);
-            player.createPoro((long) time[idt], false);
+            if (!QuanLyThuGame.chanNhan(player, "Map:12864")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                player.createPoro((long) time[idt], false);
+            }
             info = info + " Wooloo " + time[idt] + " ngày, ";
         } else if (typegift[index] == -1) {
             int soluong = r.nextInt(11) * 1000 + 10000;

@@ -91,6 +91,9 @@ public class doMenuSuKienMiniChucNu {
                 ItemLuckyDraw.createtemCoat(742, player, 1, true, 43200);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được ruy băng lông công (vật lý)", ""));
             } else if (idOptionMenu == 4) { // bạch thử 7 ngày
+                if (QuanLyThuGame.chanNhan(player, "doMenuSuKienMiniChucNu:107")) {
+                    return; // o thu day: kiem TRUOC khi tru tien / vat pham
+                }
                 if (!player.truNeuDu(
                         () -> player.getLuong() >= 2500 && player.potions[105] >= 5,
                         () -> {
@@ -103,6 +106,9 @@ public class doMenuSuKienMiniChucNu {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 5 sao mới có thể đổi được 1 nguyên liệu", ""));
                     }
                     return;
+                }
+                if (QuanLyThuGame.chanNhan(player, "doMenuSuKienMiniChucNu:110")) {
+                    return; // o thu day: khong nhan, khong tru tien sau do
                 }
                 player.doCreatePetBachThu(10080, false);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được Sandshrew (7 ngày)", ""));
@@ -196,7 +202,9 @@ public class doMenuSuKienMiniChucNu {
         if (typegift[index] == -3) {
             minute = new int[]{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7};
             int idt = r.nextInt(minute.length);
-            player.createPoro((long) minute[idt], false);
+            if (!QuanLyThuGame.chanNhan(player, "doMenuSuKienMiniChucNu:202")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                player.createPoro((long) minute[idt], false);
+            }
             info = info + " Wooloo " + minute[idt] + " ngày, ";
         } else {
             int soluong;

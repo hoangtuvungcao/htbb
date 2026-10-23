@@ -435,10 +435,11 @@ public final class NapTienLogic {
 
     /**
      * Ve mo o thu +1 o (real.QuanLyThuGame): cung cach trao mo_rong_tui nhu ve mo rong hanh trang (danh sach trang
-     * khong doi, web khong can sua), server phan biet theo ma. 30 luong / o; gioi_han 40 = o toi da 60 - co ban 20.
+     * khong doi, web khong can sua), server phan biet theo ma. 10 luong / o (ve hanh trang ~8 luong / o); gioi_han 40 =
+     * o toi da 60 - co ban 20.
      */
     public static final String MA_VE_MO_O_THU = "ve_mo_o_thu";
-    public static final int GIA_VE_MO_O_THU = 30;
+    public static final int GIA_VE_MO_O_THU = 10;
 
     public static boolean laVeMoOThu(final Mon m) {
         return m != null && TRAO_MO_RONG_TUI.equals(m.trao) && MA_VE_MO_O_THU.equals(m.ma);

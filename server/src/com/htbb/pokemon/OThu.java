@@ -22,6 +22,9 @@ public final class OThu {
     public static final String K_THA_XU_CO_BAN = "thu.tha_xu_co_ban";
     public static final String K_THA_XU_MOI_CAP = "thu.tha_xu_moi_cap";
     public static final String K_THA_XU_TOI_DA = "thu.tha_xu_toi_da";
+    /** Tran xu tha / nhan vat / ngay lich (qua tran: van tha duoc, 0 xu). */
+    public static final String K_THA_XU_NGAY = "thu.tha_xu_ngay";
+    public static final int THA_XU_NGAY = 2000;
 
     public static final int O_CO_BAN = 20;
     public static final int O_TOI_DA = 60;
@@ -116,6 +119,11 @@ public final class OThu {
             }
         }
         return ra;
+    }
+
+    /** Xu con nhan duoc hom nay: tran - da nhan (ngay khac = 0 da nhan). */
+    public static long xuConNgay(final int tranNgay, final int daNhan, final int ngayDaNhan, final int homNay) {
+        return Math.max(0L, (long) Math.max(0, tranNgay) - (ngayDaNhan == homNay ? Math.max(0, daNhan) : 0));
     }
 
     /** Ve mua them con dung duoc khong: o da mo + ve dang giu &lt; so o con thieu toi toi da. */

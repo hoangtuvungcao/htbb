@@ -517,6 +517,7 @@ public final class DatTenPetGame {
         pet.dongMa = moi.ma;
         pet.dongPhanNghin = moi.phanNghin;
         pet.datTenSoLan = moi.soLan;
+        QuanLyThuGame.khoaKhiDatTen(p, pet); // pet co ten tra phi: tu khoa (khong tha nham), mo khoa tay duoc
         ghiNhatKy(p, pet, cu, moi, ph.idMau, "ok");
         try {
             Database.instance.saveCharAuto(p);

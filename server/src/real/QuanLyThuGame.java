@@ -36,6 +36,7 @@ import java.util.List;
  *          short soVe       ve dang giu (thuong + khoa)
  *          short idVe       id nguyen lieu cua ve (-1 = may chu chua co)
  *          int   giaVe      gia luong 1 ve o Cua hang luong (-1 = khong ban / cua hang tat)
+ *          int   xuConNgay  xu tha con nhan duoc hom nay (tran thu.tha_xu_ngay; 0 = da dat tran, tha van duoc nhung 0 xu)
  *          byte  n          = so dong danh sach o tren (thu cuoi place != 1, roi pet tru con dang di theo), CUNG thu tu:
  *            byte  co       bit0 da khoa, bit1 khong tha duoc (dang dung / dang giao dich / cho tang)
  *            int   loai     khoa loai (pet: so Pokedex; thu cuoi: 100000 + idImg) - nhom "ban trung"
@@ -133,9 +134,30 @@ public final class QuanLyThuGame {
         return null;
     }
 
+    /**
+     * Da khoa: khoa tay ("a/p&lt;id&gt;"), hoac pet co ten tra phi (DatTenPetGame) chua bi mo khoa tay ("-p&lt;id&gt;" =
+     * nguoi choi da mo khoa con co ten).
+     */
     public static boolean daKhoa(final Char p, final Object o) {
         final String k = khoaCua(o);
-        return k != null && p.thuKhoa.contains(k);
+        if (k == null) {
+            return false;
+        }
+        if (p.thuKhoa.contains(k)) {
+            return true;
+        }
+        return o instanceof Pet && DatTenPetGame.daDatTen((Pet) o) && !p.thuKhoa.contains("-" + k);
+    }
+
+    /** Vua mua ten cho pet: khoa (bo dau mo khoa cu), luu ngay. */
+    public static void khoaKhiDatTen(final Char p, final Pet pet) {
+        final String k = khoaCua(pet);
+        if (p == null || k == null) {
+            return;
+        }
+        p.thuKhoa.remove("-" + k);
+        p.thuKhoa.add(k);
+        Database.luuCotQuanLyThu(null, p);
     }
 
     public static void docKhoa(final Char p, final String s) {
@@ -145,7 +167,7 @@ public final class QuanLyThuGame {
         }
         for (final String t : s.split(",")) {
             final String k = t.trim();
-            if (k.matches("[ap][1-9][0-9]{0,9}")) {
+            if (k.matches("-?[ap][1-9][0-9]{0,9}")) {
                 p.thuKhoa.add(k);
             }
         }
@@ -156,7 +178,7 @@ public final class QuanLyThuGame {
         final StringBuilder b = new StringBuilder();
         synchronized (p.thuKhoa) {
             for (final String k : p.thuKhoa) {
-                if (!conSoHuu(p, k)) {
+                if (!conSoHuu(p, k.startsWith("-") ? k.substring(1) : k)) {
                     continue;
                 }
                 if (b.length() + k.length() + 1 > 1024) {
@@ -238,6 +260,21 @@ public final class QuanLyThuGame {
                 so(OThu.K_THA_XU_MOI_CAP, OThu.THA_XU_MOI_CAP, 0, 100), so(OThu.K_THA_XU_TOI_DA, OThu.THA_XU_TOI_DA, 0, 5000));
     }
 
+    public static int tranXuNgay() {
+        return so(OThu.K_THA_XU_NGAY, OThu.THA_XU_NGAY, 0, 1000000);
+    }
+
+    /** Ngay lich (gio may chu) dang yyyymmdd. */
+    public static int homNay() {
+        final java.util.Calendar c = java.util.Calendar.getInstance();
+        return c.get(java.util.Calendar.YEAR) * 10000 + (c.get(java.util.Calendar.MONTH) + 1) * 100 + c.get(java.util.Calendar.DAY_OF_MONTH);
+    }
+
+    /** Xu tha con nhan duoc hom nay (tran thu.tha_xu_ngay; qua tran van tha duoc nhung 0 xu). */
+    public static long xuConNgay(final Char p) {
+        return OThu.xuConNgay(tranXuNgay(), p.thuXuNgay, p.thuNgay, homNay());
+    }
+
     /** Ly do KHONG tha duoc (khong tinh khoa), null = tha duoc. */
     public static String lyDoDangDung(final Char p, final Object o) {
         if (o instanceof Animal) {
@@ -305,6 +342,8 @@ public final class QuanLyThuGame {
         public int soTha;
         public int boQua;
         public long xu;
+        /** co con le ra co xu nhung bi tran xu tha / ngay cat */
+        public boolean hetTranNgay;
         public String loi;
         public final List<String> ten = new ArrayList<String>();
     }
@@ -331,12 +370,23 @@ public final class QuanLyThuGame {
                     kq.boQua++;
                     continue;
                 }
-                final long xu = xuTha(o);
+                final long xuGoc = xuTha(o);
+                final long xu = Math.min(xuGoc, xuConNgay(p));
+                if (xu < xuGoc) {
+                    kq.hetTranNgay = true;
+                }
                 final String k = khoaCua(o);
                 if (k != null) {
                     p.thuKhoa.remove(k);
+                    p.thuKhoa.remove("-" + k);
                 }
                 if (xu > 0) {
+                    final int ngay = homNay();
+                    if (p.thuNgay != ngay) {
+                        p.thuNgay = ngay;
+                        p.thuXuNgay = 0;
+                    }
+                    p.thuXuNgay = (int) Math.min(Integer.MAX_VALUE, (long) p.thuXuNgay + xu);
                     p.addXu(xu, "tha thu", Char.XU_DEM);
                 }
                 kq.soTha++;
@@ -381,6 +431,7 @@ public final class QuanLyThuGame {
         }
         final String ai = kq.soTha == 1 ? kq.ten.get(0) : kq.soTha + " thú";
         return "Đã thả " + ai + " về tự nhiên" + (kq.xu > 0 ? ", nhận " + HanhDongVatPham.xu(kq.xu) + " xu" : "") + "."
+                + (kq.hetTranNgay ? " Đã đạt trần xu thả hôm nay (" + HanhDongVatPham.xu(tranXuNgay()) + " xu): thả tiếp không nhận xu." : "")
                 + (kq.boQua > 0 ? " Bỏ qua " + kq.boQua + " con đang dùng / đã khoá." : "");
     }
 
@@ -398,9 +449,13 @@ public final class QuanLyThuGame {
                 return "Thú này chưa lưu xong, thử lại sau giây lát.";
             }
             if (khoa) {
+                p.thuKhoa.remove("-" + k);
                 p.thuKhoa.add(k);
             } else {
                 p.thuKhoa.remove(k);
+                if (o instanceof Pet && DatTenPetGame.daDatTen((Pet) o)) {
+                    p.thuKhoa.add("-" + k); // pet co ten: nho la nguoi choi da mo khoa (khong tu khoa lai khi dang nhap)
+                }
             }
             Database.luuCotQuanLyThu(null, p);
             return null;
@@ -529,6 +584,7 @@ public final class QuanLyThuGame {
         dos.writeShort(idVe());
         dos.writeInt(p.charDBID > 0 && Database.instance != null
                 ? com.htbb.pokemon.NapTienGame.giaLuongTheoMa(com.htbb.pokemon.NapTienLogic.MA_VE_MO_O_THU) : -1);
+        dos.writeInt((int) Math.min(Integer.MAX_VALUE, xuConNgay(p)));
         dos.writeByte(ds.size());
         for (final Object o : ds) {
             final String ly = lyDoDangDung(p, o);

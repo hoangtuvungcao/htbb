@@ -1780,7 +1780,8 @@ public class ChupTrongGame {
             o.writeShort(60);
             o.writeShort(0);
             o.writeShort(271);
-            o.writeInt(30);
+            o.writeInt(10);
+            o.writeInt(2000);
             o.writeByte(a.size());
             int[][] dong = {{3, 100002, 3, 0}, {0, 100013, 1, 26}, {0, 163, 1001, 22}, {0, 147, 1001, 0}, {0, 163, 1001, 22}, {0, 163, 1001, 22}};
             for (int i = 0; i < a.size(); i++) {

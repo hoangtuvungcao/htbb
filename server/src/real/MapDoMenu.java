@@ -3150,6 +3150,9 @@ class MapDoMenu {
                                                                                                 return;
                                                                                             }
 
+                                                                                            if (QuanLyThuGame.chanNhan(player, "MapDoMenu:3153")) {
+                                                                                                return; // o thu day: khong nhan, khong tru tien sau do
+                                                                                            }
                                                                                             player.createPetVinhVien(28);
                                                                                             Database.instance.updateHangDauGia2(player.charname, 0);
                                                                                             player.subLuong((long) (money - money / 2));
@@ -3281,6 +3284,9 @@ class MapDoMenu {
                                                                                                     return;
                                                                                                 }
 
+                                                                                                if (QuanLyThuGame.chanNhan(player, "MapDoMenu:3284")) {
+                                                                                                    return; // o thu day: khong nhan, khong tru tien sau do
+                                                                                                }
                                                                                                 player.doCreatePetBachThu(timex, true);
                                                                                                 Database.instance
                                                                                                         .saveLogThongKeChiTieu("pet bach thu blackfriday", 0, 1, (long) moneyx, "luong");

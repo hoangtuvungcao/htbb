@@ -843,7 +843,9 @@ class MapQuaTang {
             GiftCode.AddItem(player, 685, 0, 0, -1); // Trứng Rồng
             doCreateHuyetLinhThao(player, 0);
             doCreateHuyetLinhThao(player, 0);
-            player.createPhuongHoang(0, phoenixChoice == 1 ? Animal.PHUONG_HOANG_BANG : Animal.PHUONG_HOANG, true);
+            if (!QuanLyThuGame.chanNhan(player, "MapQuaTang:846")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                player.createPhuongHoang(0, phoenixChoice == 1 ? Animal.PHUONG_HOANG_BANG : Animal.PHUONG_HOANG, true);
+            }
             Char.createVuKhiThoiTrang(player, 0, 10080, null, true, true, 1, false);
         }
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -1005,10 +1007,14 @@ class MapQuaTang {
                 }
 
                 if (r.nextInt(100) < 50) {
-                    p.createNguaXuong(7L, false);
+                    if (!QuanLyThuGame.chanNhan(p, "MapQuaTang:1008")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                        p.createNguaXuong(7L, false);
+                    }
                     infoAlert = infoAlert + " và 1 thú cưỡi Spectrier";
                 } else {
-                    p.createHeo(7L, false);
+                    if (!QuanLyThuGame.chanNhan(p, "MapQuaTang:1011")) { // o thu day: bo qua phan thuong thu (bao + log), phan con lai giu nguyen
+                        p.createHeo(7L, false);
+                    }
                     infoAlert = infoAlert + " và 1 thú cưỡi Piloswine";
                 }
 

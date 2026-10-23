@@ -158,10 +158,12 @@ public class BossTrungThu extends Boss {
         // ha guc (dang deo mat na, da qua dieu kien o tren). Xem chu thich dau file ve ly
         // do dung Lan Su Tu thay vi mot loai thu hoan toan moi.
         if (Map.r.nextInt(100) < 8) {
-            p.createLan(10080L, false, 95);
-            p.sendMessage(MessageCreator.createServerAlertMessage(
-                    "Chúc mừng! Bạn đã bắt được Boss Trung Thu về làm Suicune hỗ trợ (7 ngày).", ""));
-            Database.instance.saveOrtherLog("", p.charname, "bat boss trung thu ve lam ho ve", "bosstrungthu");
+            if (!QuanLyThuGame.chanNhan(p, "BossTrungThu:161")) { // o thu day: bo phan thuong thu (mien phi), bao + log
+                p.createLan(10080L, false, 95);
+                p.sendMessage(MessageCreator.createServerAlertMessage(
+                        "Chúc mừng! Bạn đã bắt được Boss Trung Thu về làm Suicune hỗ trợ (7 ngày).", ""));
+                Database.instance.saveOrtherLog("", p.charname, "bat boss trung thu ve lam ho ve", "bosstrungthu");
+            }
         }
         // "Top dame" (them 19/09/2026) - phan thuong RIENG, ngau nhien nhu nguoi ha guc,
         // cho nguoi gay nhieu sat thuong nhat NEU dang online VA cung dang deo mat na Ong
