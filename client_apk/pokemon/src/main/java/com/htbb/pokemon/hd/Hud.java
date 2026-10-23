@@ -207,8 +207,8 @@ public final class Hud implements NenAndroid.LopPhu {
     // ------------------------------------------------------------------ nút
     static final int N_DANH = 0, N_C0 = 1, N_C1 = 2, N_C3 = 3, N_C4 = 4, N_DOI_BO = 5, N_MUC_TIEU = 6,
             N_HP = 7, N_PP = 8, N_MENU = 9, N_TU_DONG = 10, N_CHAT = 11, N_THEM = 12, N_CHINH = 13,
-            N_CHAT_BONG = 14, N_BONG = 15, N_MINIMAP = 16, SO_NUT = 17;
-    static final int SO_NUT_TREN = 5;
+            N_CHAT_BONG = 14, N_BONG = 15, N_CAI_DAT = 16, N_TD_CAI = 17, N_MINIMAP = 18, SO_NUT = 19;
+    static final int SO_NUT_TREN = 7;
     static final float R_NUT_TREN = 12.5f;
     /** 0.9.7: cỡ thẻ = thẻ chung kiểu NRO game.pokemon.TheNguoiChoi */
     static final int RONG_THE = game.pokemon.TheNguoiChoi.RONG, CAO_THE = game.pokemon.TheNguoiChoi.CAO;
@@ -719,7 +719,7 @@ public final class Hud implements NenAndroid.LopPhu {
      */
     static void veNutTren(Graphics g, Canvas c) {
         long now = System.currentTimeMillis();
-        int[] tren = {N_MENU, N_TU_DONG, N_CHAT, N_THEM, N_CHINH};
+        int[] tren = {N_MENU, N_TU_DONG, N_TD_CAI, N_CAI_DAT, N_CHAT, N_THEM, N_CHINH};   // 0.9.9: + 2 bánh răng
         boolean tuDong = HdCau.tuDongDang();
         for (int k = 0; k < SO_NUT_TREN; k++) {
             int n = tren[k];
@@ -781,7 +781,8 @@ public final class Hud implements NenAndroid.LopPhu {
         int bt = n == N_TU_DONG ? game.pokemon.BieuTuong.TU_DONG : n == N_MUC_TIEU ? game.pokemon.BieuTuong.TRAN
                 : n == N_DOI_BO ? game.pokemon.BieuTuong.DOI_BO : n == N_CHAT || n == N_CHAT_BONG ? game.pokemon.BieuTuong.CHAT
                 : n == N_THEM ? game.pokemon.BieuTuong.TUI : n == N_CHINH ? game.pokemon.BieuTuong.NHIEM_VU
-                : n == N_MENU ? game.pokemon.BieuTuong.POKEBALL : -1;
+                : n == N_MENU ? game.pokemon.BieuTuong.POKEBALL
+                : n == N_CAI_DAT || n == N_TD_CAI ? game.pokemon.BieuTuong.CAI_DAT : -1;
         if (bt >= 0 && gVe != null) {
             int s = Math.max(16, Math.round(r * 1.3f) / 16 * 16);
             Graphics g = gVe;
@@ -1827,6 +1828,16 @@ public final class Hud implements NenAndroid.LopPhu {
                 break;
             case N_CHAT:
                 HdCau.moChat();
+                break;
+            case N_TD_CAI:
+                // 0.9.9: bánh răng cạnh nút Tự động = bảng cài đặt Tự động đánh (không cần nhấn giữ)
+                if (!HdCau.moTuDong()) {
+                    NenAndroid.phimNgay(0, 35);
+                    NenAndroid.phimNgay(2, 35);
+                }
+                break;
+            case N_CAI_DAT:
+                moCaiDat();   // 0.9.9: Cài đặt ngay trên HUD (trước chỉ ở Menu)
                 break;
             case N_THEM:
                 game.pokemon.ManNhanVat.moHanhTrang();

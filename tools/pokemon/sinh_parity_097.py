@@ -19,20 +19,23 @@ m=re.search(r'static final String\[\] TEN = \{(.*?)\};', show('client_jar/src/ga
 sec('chuoi', 'client_jar/src/game/pokemon/ManMenu.java', re.findall(r'"([^"]+)"', m.group(1)))
 m=re.search(r'String\[\] MA = \{(.*?)\};', show('client_pc/src/htbb/pc/BanPhim.java'), re.S)
 sec('chuoi', 'client_pc/src/htbb/pc/BanPhim.java', re.findall(r'"([^"]+)"', m.group(1)))
-# 0.9.9: LOI VAO bang Tu dong danh (0.9.8 mat o Menu tren HUD man rong - chu game bao "menu AUTO bi mat"): doan ma
+# 0.9.9: LOI VAO bang Tu dong danh + nut Cai dat tren HUD (PC / J2ME HudRong, APK Hud) + giftcode CHI o Menu -> Thu/Qua (0.9.8 mat o Menu tren HUD man rong - chu game bao "menu AUTO bi mat"): doan ma
 # phai con nguyen trong tep (KiemParity loai "ma" = chua dung chuoi). Khong sinh tu git: giu tay o day.
 LOI_VAO_TU_DONG = [
-    ('client_jar/src/game/render/screen/HudRong.java', ['"hud-tu-dong"', '"hud-tu-dong-cai-dat"', 'BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt', 'case 31:']),
+    ('client_jar/src/game/render/screen/HudRong.java', ['"hud-tu-dong"', '"hud-tu-dong-cai-dat"', 'BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt', 'case 31:',
+        '"hud-cai-dat"', 'moCaiDat();   // 0.9.9: nút Cài đặt hàng trên']),
     ('client_jar/src/game/pokemon/ManMenu.java', ['static final int[] PHU = {I_TU_DONG,', 'return PHU;', 'game.render.screen.CauGiaoDien.moTuDong();']),
     ('client_jar/src/game/render/screen/CauGiaoDien.java', ['public static void moTuDong()', 'BangTuDong.mo();']),
     ('client_jar/src/game/render/screen/MenuNhanh.java', ['case TU_DONG:', 'BangTuDong.ve(g);', 'BangTuDong.tick();']),
     ('client_jar/src/game/render/screen/GameScr.java', ['new Command("Tự động đánh"']),
     ('client_jar/shared/mod/game/render/screen/PauseMenu.java', ['Nen.moBangTuDong();']),
     ('client_jar/shared/mod/game/render/screen/AutoGuard.java', ['Nen.menuNhanhVe(graphics)', 'Nen.menuNhanhTick()']),
-    ('client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/Hud.java', ['case N_TU_DONG:', 'HdCau.moTuDong()']),
+    ('client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/Hud.java', ['case N_TU_DONG:', 'HdCau.moTuDong()', 'case N_TD_CAI:', 'case N_CAI_DAT:']),
+    ('client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/HudBoTri.java', ['int[] tren = {N_TU_DONG, N_TD_CAI, N_CAI_DAT,']),
     ('client_apk/pokemon/src/main/java/game/render/screen/HdCau.java', ['Class.forName("game.render.screen.BangTuDong")']),
     ('client_jar/src/game/render/screen/BangTuDong.java', ['"td-bat"', '"td-chieu-', '"td-thuoc-hp"', '"td-thuoc-pp"', '"td-vung"', '"td-hoi"', '"td-hoi-sinh"', '"td-nhat"', '"td-trang"', '"Trang chiêu dùng"']),
 ]
+LOI_VAO_TU_DONG.append(('client_jar/src/game/pokemon/ManMenu.java', ['HanhDong.moGiftcode();']))
 for tep, ds in LOI_VAO_TU_DONG:
     sec('ma', tep, ds)
 print('\n'.join(out))

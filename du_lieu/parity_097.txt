@@ -984,10 +984,12 @@ trai
 xuong
 
 [ma] client_jar/src/game/render/screen/HudRong.java
+"hud-cai-dat"
 "hud-tu-dong"
 "hud-tu-dong-cai-dat"
 BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt
 case 31:
+moCaiDat();   // 0.9.9: nút Cài đặt hàng trên
 
 [ma] client_jar/src/game/pokemon/ManMenu.java
 game.render.screen.CauGiaoDien.moTuDong();
@@ -1015,7 +1017,12 @@ Nen.menuNhanhVe(graphics)
 
 [ma] client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/Hud.java
 HdCau.moTuDong()
+case N_CAI_DAT:
+case N_TD_CAI:
 case N_TU_DONG:
+
+[ma] client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/HudBoTri.java
+int[] tren = {N_TU_DONG, N_TD_CAI, N_CAI_DAT,
 
 [ma] client_apk/pokemon/src/main/java/game/render/screen/HdCau.java
 Class.forName("game.render.screen.BangTuDong")
@@ -1031,4 +1038,7 @@ Class.forName("game.render.screen.BangTuDong")
 "td-thuoc-pp"
 "td-trang"
 "td-vung"
+
+[ma] client_jar/src/game/pokemon/ManMenu.java
+HanhDong.moGiftcode();
 

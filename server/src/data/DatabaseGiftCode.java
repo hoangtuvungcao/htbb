@@ -156,6 +156,9 @@ public class DatabaseGiftCode {
         // Im lang bo qua, khong tra loi gi: tra loi cung la mot goi tin, va con
         // cho biet minh dang bi chan.
         if (System.currentTimeMillis() - player.timeNhapGiftCode < Char.GIFTCODE_COOLDOWN_MS) {
+            // 0.9.9 (chu game: "nhap ma khong duoc" - bam lai nhanh khong thay gi): bao ngan gon thay vi im lang. Van chan
+            // do ma: khong truy van CSDL, va GiftcodeAnToan khoa 10 phut sau 5 lan sai.
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn vừa nhập mã, đợi 2 giây rồi thử lại.", ""));
             return;
         }
         player.timeNhapGiftCode = System.currentTimeMillis();

@@ -71,7 +71,8 @@ final class MenuNhanh {
         }
     }
 
-    private static final int[] DS = {TU_DONG, AN, NGAM_TAY, BONG, NHAC, HIEU_UNG, AM_LUONG, THOI_TIET, MAU_MUA, XEM_THOI_TIET, GIFTCODE};
+    // 0.9.9: bỏ "Nhập giftcode" khỏi Cài đặt (một lối vào: Menu -> Thư/Quà, NPC quà tặng)
+    private static final int[] DS = {TU_DONG, AN, NGAM_TAY, BONG, NHAC, HIEU_UNG, AM_LUONG, THOI_TIET, MAU_MUA, XEM_THOI_TIET};
 
     private static int[] dsMuc() {
         return DS;
@@ -141,10 +142,7 @@ final class MenuNhanh {
                 game.pokemon.NgamTay.datThuCong(!game.pokemon.NgamTay.thuCong());
                 game.pokemon.AmThanh.phat(game.pokemon.AmThanh.CLICK);
                 break;
-            case GIFTCODE:
-                mo = false;
-                game.pokemon.HanhDong.moGiftcode();
-                break;
+            // 0.9.9: GIFTCODE bỏ khỏi Cài đặt
             case AN:
                 anKhiDanh = !anKhiDanh;
                 try {

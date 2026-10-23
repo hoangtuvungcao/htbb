@@ -292,7 +292,7 @@ public class KiemChamHud {
         kiem(v != null && v.length > 0, "co nut HUD");
         if (v == null) return;
         String[] can = {"hud-chieu0", "hud-chieu1", "hud-chieu2", "hud-chieu3", "hud-danh", "hud-doi-bo", "hud-ngu-canh",
-            "hud-thuoc-hp", "hud-thuoc-pp", "hud-tu-dong", "hud-chat", "hud-tren-3"};
+            "hud-thuoc-hp", "hud-thuoc-pp", "hud-tu-dong", "hud-chat", "hud-tren-3", "hud-tu-dong-cai-dat", "hud-cai-dat"};
         for (String c : can) {
             boolean co1 = false;
             for (Object[] n : v) if (c.equals(n[0])) co1 = true;
@@ -461,6 +461,7 @@ public class KiemChamHud {
         ngu(250);
         kiem(cho(() -> game.render.screen.GameScr.indexTabSlot == 0), "phim J2ME 0 -> bo 1");
         kiemMoTuDong();
+        kiemCaiDatHud();
     }
 
     static boolean bangTuDongMo() {
@@ -484,6 +485,19 @@ public class KiemChamHud {
         game.pokemon.KhoaMap.dat(map, game.pokemon.KhoaMap.CO_KHONG_TU_DONG, null, "Bản đồ này không cho Tự động đánh");
         kiemMoTuDong(" (map khoa Tu dong)");
         game.pokemon.KhoaMap.xoa();
+    }
+
+    /** 0.9.9: nút Cài đặt (bánh răng) trên HUD mở bảng Cài đặt PC (LopPhu) - không chỉ ở Menu. */
+    static void kiemCaiDatHud() throws Exception {
+        dungCanh(false);
+        Field f = htbb.pc.LopPhu.class.getDeclaredField("caiDatMo");
+        f.setAccessible(true);
+        f.setBoolean(null, false);
+        kiem(chamVung("hud-cai-dat"), co + ": co nut Cai dat tren HUD (hud-cai-dat)");
+        ngu(300);
+        kiem(f.getBoolean(null), co + ": cham nut Cai dat HUD -> mo bang Cai dat");
+        f.setBoolean(null, false);
+        ve();
     }
 
     static void kiemMoTuDong(String bt) throws Exception {

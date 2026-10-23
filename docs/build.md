@@ -242,16 +242,25 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
-### Bản vá 0.9.9 (`BAN=909`, chỉ client - máy chủ / SQL không đổi, `htbb-server.jar` giữ nguyên)
+### Bản vá 0.9.9 (`BAN=909`: menu AUTO, trang chiêu tự động, lỗi J2ME đổi bản đồ, giftcode, nút Cài đặt HUD)
 
-1. Menu AUTO: viên "Tự động đánh" luôn có ở Menu (0.9.8 bỏ khi HUD màn rộng có bánh răng - PC / J2ME màn rộng không còn lối
-   vào nhìn thấy ở Menu); mọi lối vào (nhấn giữ viên AUTO, bánh răng, Menu, phím #, menu chữ, APK nhấn giữ) nằm trong
-   `du_lieu/parity_097.txt` mục `[ma]` (KiemParity) + `client_pc/test/KiemChamHud` (mở thật bằng chạm, cả bản đồ khoá Tự
-   động). Bảng có thêm "Trang chiêu dùng" (mặc định trang đang dùng; Tự chọn ở Thứ tự chiêu = chiêu đánh của trang đó).
-2. Lỗi J2ME "nhip man: ArrayIndexOutOfBoundsException(17 >= 0)": đổi bản đồ do máy chủ (dịch chuyển / hồi sinh / về hồi
+SQL không đổi (không chạy `nang_cap_csdl.sh`); `htbb-server.jar` ĐỔI (chỉ câu trả lời giftcode) - thay jar rồi khởi động lại.
+
+1. Menu AUTO: viên "Tự động đánh" luôn có ở Menu (0.9.8 bỏ khi HUD màn rộng có bánh răng - PC / J2ME màn rộng mất lối
+   vào ở Menu). Lối vào: nhấn giữ viên AUTO, bánh răng cạnh AUTO, Menu, phím #, menu chữ, APK nhấn giữ + bánh răng mới -
+   tất cả trong `du_lieu/parity_097.txt` mục `[ma]` (KiemParity) + `client_pc/test/KiemChamHud` (mở thật bằng chạm, cả bản
+   đồ khoá Tự động). Bảng có thêm "Trang chiêu dùng" (mặc định trang đang dùng; Tự chọn ở Thứ tự chiêu = chiêu đánh của
+   trang đó).
+2. Nút Cài đặt (bánh răng PNG) ở hàng nút phải trên của HUD (PC / J2ME màn rộng: `hud-cai-dat`; APK: Cài đặt + bánh
+   răng Tự động ở hàng trên).
+3. Giftcode: MỘT lối vào Menu -> Thư/Quà -> "Nhập giftcode" (+ NPC quà tặng); bỏ khỏi Cài đặt PC / Menu nhanh. Thành
+   công = "Đổi giftcode thành công: +5 lượng khoá, ..." (thẻ phần thưởng); bấm lại < 2 giây được báo (trước im lặng).
+   Tài khoản CHƯA kích hoạt nhận "Tính năng Giftcode cần tài khoản đã kích hoạt" khi `kich_hoat.chuc_nang` có `giftcode`
+   (cấu hình web). Kiểm: `client_pc/test/KiemGiftcode`, bot `tools/pokemon/kiem_tai/KichBanGiftcode` (tob_giftcode thật).
+4. Lỗi J2ME "nhip man: ArrayIndexOutOfBoundsException(17 >= 0)": đổi bản đồ do máy chủ (dịch chuyển / hồi sinh / về hồi
    phục) xoá danh sách cổng (`Tilemap.reset`) trong lúc `Tilemap.type` còn mã cổng map cũ -> `toOtherMapAt` kiểm cỡ, ô cổng
    ghi sau khi cổng vào danh sách (KiemPc `kiemCongDoiMap`).
-3. Tải gói 909 lên `/admin/tai-game` (Số bản = 909) cho từng nền tảng; không cần bảo trì máy chủ.
+5. Tải gói 909 lên `/admin/tai-game` (Số bản = 909) cho từng nền tảng sau khi máy chủ chạy jar mới.
 
 ### Danh sách kiểm triển khai 0.9.8 (`BAN=908`: học chiêu, bộ / ngọc / chế tạo / thu phục, phó bản + cúp, thời tiết, giao diện NRO, kênh chat, trao đổi + chợ Pokémon, ngắm tay PvP, Lễ kết đôi, thẻ đặt tên, đồ khoá, 1.025 loài, đồ họ mới + tủ đồ trang trí)
 

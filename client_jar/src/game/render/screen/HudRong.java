@@ -74,7 +74,15 @@ public final class HudRong {
      * ở xNutTren(0) - R_TREN - 7) - đĩa thời tiết đặt ở đây, đổi bố cục hàng nút thì đĩa theo.
      */
     public static int xTruocHangTren() {
-        return xNutTren(0) - BUOC_TREN - 6;
+        return xCaiDat() - BUOC_TREN - 6;
+    }
+
+    /**
+     * 0.9.9 (chủ game: "bánh răng Cài đặt chỉ có trong Menu"): nút Cài đặt khối gỗ + icon bánh răng PNG ngay trái Hành
+     * trang ở hàng nút phải trên (cạnh bản đồ nhỏ) - PC: bảng Cài đặt cửa sổ; J2ME: Menu nhanh. Mã 33, vùng "hud-cai-dat".
+     */
+    static int xCaiDat() {
+        return xNutTren(0) - BUOC_TREN;
     }
 
     public static int yHangTren() {
@@ -375,6 +383,7 @@ public final class HudRong {
                 }
                 b.tron(i, TEN_VUNG_TREN[i], xNutTren(i), yNut(i), rNut(i), rNut(i) + 2);
             }
+            b.tron(33, "hud-cai-dat", xCaiDat(), Y_TREN, R_TREN, R_TREN + 2);
             b.hop(10, "hud-the", 0, 0, rongThe(), caoThe(), 0);
             // 0.9.5: bản đồ nhỏ không còn là nút (trùng nút Bản đồ)
         }
@@ -467,6 +476,14 @@ public final class HudRong {
             int s = r0 * 2 - 4;
             game.pokemon.BieuTuong.ve(g, HINH_TREN[i], x - s / 2, y - s / 2 + (an ? 1 : 0), s, MAU_TREN[i], 0xFFFFFF);
         }
+        // 0.9.9: nút Cài đặt (bánh răng PNG) trái Hành trang
+        {
+            int x = xCaiDat(), r0 = R_TREN;
+            boolean an = tro(x, Y_TREN, r0 + 2);
+            game.pokemon.Bang.nutVuong(g, x, Y_TREN, r0, game.pokemon.KhungNroBang.NUT_GO, false, an);
+            int s = r0 * 2 - 4;
+            game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.CAI_DAT, x - s / 2, Y_TREN - s / 2 + (an ? 1 : 0), s, game.pokemon.ChuDe.CHU_PHU, 0xFFFFFF);
+        }
         // chấm đỏ: Menu (mục mới trong lưới), Nhiệm vụ (nhiệm vụ mới / đủ để trả)
         if (game.pokemon.ManMenu.coChamDo() && gs != null && hienDuoi(gs)) {
             game.pokemon.ChuDe.cham(g, xNutTren(N_MENU) + R_MENU - 4, yNut(N_MENU) - R_MENU + 4);
@@ -477,7 +494,7 @@ public final class HudRong {
         if (tuDong) {
             // đèn nhỏ cạnh hàng nút khi Tự động đang chạy
             g.setColor(game.pokemon.ChuDe.CHINH);
-            g.fillArc(xNutTren(0) - R_TREN - 7, Y_TREN - 3, 6, 6, 0, 360);
+            g.fillArc(xCaiDat() - R_TREN - 7, Y_TREN - 3, 6, 6, 0, 360);
         }
     }
 
@@ -1340,6 +1357,9 @@ public final class HudRong {
                 break;
             case 31:
                 BangTuDong.mo();
+                break;
+            case 33:
+                moCaiDat();   // 0.9.9: nút Cài đặt hàng trên
                 break;
             case 30:
                 game.pokemon.ManChat.mo();   // 0.9.8: bảng chat nhiều kênh, mở lại tab dùng lần cuối

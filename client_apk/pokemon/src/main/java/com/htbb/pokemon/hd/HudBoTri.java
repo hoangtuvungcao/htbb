@@ -12,10 +12,11 @@ package com.htbb.pokemon.hd;
 public final class HudBoTri {
     public static final int N_DANH = 0, N_C0 = 1, N_C1 = 2, N_C3 = 3, N_C4 = 4, N_DOI_BO = 5, N_MUC_TIEU = 6,
             N_HP = 7, N_PP = 8, N_MENU = 9, N_TU_DONG = 10, N_CHAT = 11, N_THEM = 12, N_CHINH = 13,
-            N_CHAT_BONG = 14, N_BONG = 15, N_MINIMAP = 16, SO_NUT = 17;
-    public static final int SO_NUT_TREN = 5;
+            N_CHAT_BONG = 14, N_BONG = 15, N_CAI_DAT = 16, N_TD_CAI = 17, N_MINIMAP = 18, SO_NUT = 19;
+    /** 0.9.9: hàng trên (phải -> trái) Tự động, bánh răng cài đặt Tự động, Cài đặt, Chat, Hành trang, Nhiệm vụ (+ chỗ Menu dự phòng). */
+    public static final int SO_NUT_TREN = 7;
     public static final String[] TEN = {"danh", "chieu0", "chieu1", "chieu3", "chieu4", "doi_bo", "muc_tieu", "hp", "pp",
-        "menu", "tu_dong", "chat", "them", "chinh", "chat_bong", "bong", "minimap"};
+        "menu", "tu_dong", "chat", "them", "chinh", "chat_bong", "bong", "cai_dat", "tu_dong_cai_dat", "minimap"};
 
     /**
      * 0.9.8 nút NÉM BÓNG (chỉ hiện khi mục tiêu hoang dã đã yếu - chỗ luôn dành sẵn): hình bóng, nhãn "Ultra Ball ×3"
@@ -155,7 +156,7 @@ public final class HudBoTri {
         float yHp = cy + 20 * s1 + gy[2];
         dat(N_HP, xHp, yHp, rHp);
         dat(N_PP, xHp - Math.max(33 * s2, 2 * rHp + k), yHp, rHp);
-        int[] tren = {N_TU_DONG, N_CHAT, N_THEM, N_CHINH};
+        int[] tren = {N_TU_DONG, N_TD_CAI, N_CAI_DAT, N_CHAT, N_THEM, N_CHINH};
         for (int i = 0; i < tren.length; i++) dat(tren[i], xNutTren(i), yNutTren(), rTren());
         float rMn = rMenu();
         dat(N_MENU, (L + R) / 2f, B - rMn - dp(4), rMn);
@@ -226,7 +227,7 @@ public final class HudBoTri {
             float xM = Math.max(trai + rM, Math.min(phai - rM, (L + R) / 2f));
             dat(N_MENU, xM, B - rM - dp(4), rM);
         } else {
-            dat(N_MENU, xNutTren(4), yNutTren(), rTren());   // cụm đáy phóng quá to (người chơi chỉnh): về hàng trên
+            dat(N_MENU, xNutTren(SO_NUT_TREN - 1), yNutTren(), rTren());   // cụm đáy phóng quá to (người chơi chỉnh): về hàng trên
         }
     }
 

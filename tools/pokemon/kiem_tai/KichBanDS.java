@@ -25,6 +25,7 @@ class KichBanDS {
         BotChucNang.dk("mat_ket_noi", true, KichBanDS::matKetNoi);
         KichBanDS2.dangKy();
         KichBanDatTenPet.dangKy(); // 0.9.6 the dat ten Pokemon
+        KichBanGiftcode.dangKy(); // 0.9.9 nhap giftcode an toan (tob_giftcode) dau-cuoi
     }
 
     // ------------------------------------------------------------------ tien ich chung

@@ -131,6 +131,41 @@ public final class GiftcodeAnToan {
             System.out.println("[GIFTCODE] loi phat " + ma + " cho " + p.charname + ": " + e);
         }
         Database.instance.saveOrtherLog("", p.charname, "giftcode an toan " + ma + ": " + thuong, "putGiftCode");
-        bao(p, "Chúc mừng bạn đã nhận được phần quà từ: " + ma + ".");
+        // 0.9.9: cau "Đổi giftcode thành công: ..." -> client hien THE phan thuong (HopThongBao / PhanThuong tach tung muc)
+        bao(p, "Đổi giftcode thành công: " + moTa(thuong) + ".");
+    }
+
+    /** "+5 lượng khoá, +2 Poké Ball" tu chuoi phan thuong da chuan hoa (LUONGKHOA / GEM / ITEM). */
+    static String moTa(final String thuong) {
+        final StringBuilder b = new StringBuilder();
+        for (final String phan : thuong.split(",")) {
+            final String[] t = phan.trim().split(":");
+            String muc = null;
+            try {
+                final String k = t[0].trim().toUpperCase();
+                if (k.equals("LUONGKHOA")) {
+                    muc = "+" + Integer.parseInt(t[1].trim()) + " lượng khoá";
+                } else if (k.equals("GEM") || k.equals("ITEM")) {
+                    final int id = Integer.parseInt(t[1].trim());
+                    final int n = Integer.parseInt(t[2].trim());
+                    String ten = null;
+                    if (k.equals("GEM")) {
+                        if (Map.gemTemplate != null && id >= 0 && id < Map.gemTemplate.length && Map.gemTemplate[id] != null) {
+                            ten = Map.gemTemplate[id].name;
+                        }
+                    } else if (Map.itemTemplates != null && Map.itemTemplates.size() > 5) {
+                        final ItemTemplates it = Map.itemTemplates.get(5).get(Integer.valueOf(id));
+                        ten = it == null ? null : it.name;
+                    }
+                    muc = "+" + n + " " + (ten == null || ten.trim().isEmpty() ? "vật phẩm" : ten.trim());
+                }
+            } catch (final Exception ignored) {
+                muc = null;
+            }
+            if (muc != null) {
+                b.append(b.length() == 0 ? "" : ", ").append(muc);
+            }
+        }
+        return b.length() == 0 ? "quà tặng" : b.toString();
     }
 }

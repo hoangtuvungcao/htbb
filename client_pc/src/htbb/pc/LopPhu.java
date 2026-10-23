@@ -915,37 +915,16 @@ public final class LopPhu {
     }
 
     /**
-     * 0.9.6 Tài khoản: tên nhân vật / tài khoản + "Nhập giftcode" (mở hộp nhập kiểu A của game - gói -31 mục 7, cùng
-     * đường với NPC quà tặng) + gợi ý nơi nhập trong game (Menu -> Thư/Quà).
+     * Tài khoản: tên nhân vật / cấp. 0.9.9 (chủ game): giftcode KHÔNG ở Cài đặt - một lối vào trong game là Menu -> Thư/Quà
+     * -> "Nhập giftcode" (cộng NPC quà tặng).
      */
     private static void veTaiKhoan(Graphics2D g, float x, float y, float w, float hMax, float u) {
         game.model.MainChar mc = game.render.Canvas.gameScr == null ? null : game.render.Canvas.gameScr.mainChar;
         float hh = 58 * u;
         y = tieuDeNhom(g, "Tài khoản", x, y, u);
-        the(g, x, y, w, 2 * hh, u);
+        the(g, x, y, w, hh, u);
         nhanHang(g, mc == null || mc.name == null ? "Chưa vào game" : mc.name,
                 mc == null ? "Đăng nhập rồi chọn Pokémon để xem tài khoản" : "Pokémon cấp " + mc.level, x, y, hh, u);
-        ke(g, x, y + hh, w, u);
-        nhanHang(g, "Nhập giftcode", "Mã quà tặng từ sự kiện, fanpage, Zalo · cũng có ở Menu → Thư/Quà", x, y + hh, hh, u);
-        Font fb = f(true, 13 * u);
-        g.setFont(fb);
-        float bh = 34 * u, bw = g.getFontMetrics().stringWidth("Nhập mã") + 44 * u;
-        float bx = x + w - 16 * u - bw, by = y + hh + (hh - bh) / 2;
-        boolean coGame = mc != null;
-        Kinh.nut(g, bx, by, bw, bh, "Nhập mã", fb, coGame, coGame && tro(bx, by, bw, bh), false);
-        if (coGame) {
-            them(bx, by, bw, bh, new Runnable() {
-                public void run() {
-                    caiDatMo = false;
-                    CaiDat.luu();
-                    NenPc.luong().them(new Runnable() {
-                        public void run() {
-                            game.pokemon.HanhDong.moGiftcode();
-                        }
-                    });
-                }
-            });
-        }
     }
 
     private static void moThuMuc() {
