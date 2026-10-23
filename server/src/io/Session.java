@@ -604,6 +604,13 @@ public class Session extends Thread {
     public static final int TRAN_HANG_DOI_GUI = Integer.getInteger("htbb.tranHangDoiGui", 8192);
     /** So ket noi bi dong vi tran hang doi gui (chi so cho trang thai/kiem tai). */
     public static final java.util.concurrent.atomic.AtomicLong CAT_TRAN_GUI = new java.util.concurrent.atomic.AtomicLong();
+    /**
+     * Khoang toi thieu giua hai lan ghi socket cua MOT ket noi (ms) - gom goi luc dong (xem Sender.run).
+     * -Dhtbb.gomGuiMs=N (mac dinh 10; 0 = ghi ngay tung dot nhu cu). Chi them tre khi ket noi dang dong.
+     */
+    public static final int GOM_GUI_MS = Math.max(0, Math.min(100, Integer.getInteger("htbb.gomGuiMs", 10)));
+    /** "Dang dong" = it nhat bay nhieu lan ghi trong 100 ms (mac dinh 8 = 80 lan ghi / s). -Dhtbb.gomGuiNguong=N. */
+    public static final int GOM_GUI_NGUONG = Math.max(1, Integer.getInteger("htbb.gomGuiNguong", 8));
 
     private class Sender implements Runnable {
         private LinkedBlockingQueue<byte[]> sendDatas = new LinkedBlockingQueue(TRAN_HANG_DOI_GUI);
@@ -756,12 +763,37 @@ public class Session extends Thread {
                 // ~6.000 goi/s o 300 nguoi). Thu tu goi va khoa ma hoa (curW) giu nguyen; goi -40
                 // (gui khoa) van khong ma hoa.
                 byte[] buf = new byte[8192];
+                long lanGhiCuoi = 0L;
+                long mocDemGhi = 0L;
+                int soGhiCuaSo = 0;
 
                 while(Session.this.connected) {
                     byte[] bytes = null;
                     try {
                         bytes = (byte[])this.sendDatas.poll(1000L, TimeUnit.MILLISECONDS);
                     } catch (InterruptedException ignored) {
+                    }
+
+                    // Kiem lag 10/2026: o ban do dong (100 nguoi dung chung, moi nguoi di 4 buoc/s) moi ket noi
+                    // nhan ~250 goi vi tri / s, moi goi mot lan danh thuc luong SEND + mot write + flush:
+                    // 100 bot = 115% CPU, trong do 75% la system (syscall + chuyen ngu canh). Nay: khi ket noi
+                    // DANG DONG (>= GOM_GUI_NGUONG lan ghi trong 100 ms vua qua) va lan ghi truoc moi cach
+                    // < GOM_GUI_MS thi cho toi moc do roi gom ca hang doi vao MOT lan ghi. Ket noi thua goi
+                    // (1 nguoi choi, vai goi / s) KHONG bao gio cho - tre phan hoi giu nguyen (do: 1 ms).
+                    // Luc dong toi da them GOM_GUI_MS. Thu tu / noi dung goi giu nguyen.
+                    if (bytes != null && GOM_GUI_MS > 0) {
+                        final long now = System.currentTimeMillis();
+                        if (now - mocDemGhi >= 100L) {
+                            mocDemGhi = now;
+                            soGhiCuaSo = 0;
+                        }
+                        final long cho = lanGhiCuoi + GOM_GUI_MS - now;
+                        if (soGhiCuaSo >= GOM_GUI_NGUONG && cho > 0 && cho <= GOM_GUI_MS) {
+                            try {
+                                Thread.sleep(cho);
+                            } catch (InterruptedException ignored) {
+                            }
+                        }
                     }
 
                     if (bytes != null && os != null) {
@@ -796,6 +828,8 @@ public class Session extends Thread {
                                 os.write(buf, 0, n);
                             }
                             os.flush();
+                            lanGhiCuoi = System.currentTimeMillis();
+                            soGhiCuaSo++;
                             Session.this.byteDaGui.addAndGet(tongGhi);
                         } catch (Exception e) {
                             // Socket da dong (client ngat): luong READ se disconnect. Chi bao mot lan

@@ -20,7 +20,10 @@ public class InfoClientConnect {
     public long timeConnect = System.currentTimeMillis();
     public long timeLogin = System.currentTimeMillis();
     public long timetaoChar = System.currentTimeMillis();
-    public long timeSelectChar = System.currentTimeMillis();
+    // Kiem lag 10/2026: truoc day = luc TAO muc IP (lan ket noi dau) -> lan chon nhan vat DAU TIEN trong 5 s
+    // sau khi IP do ket noi (dang nhap binh thuong: ~0.1-3 s) bi SelectCharHandler cho 2 giay. Luat
+    // "chon 2 lan trong 5 s thi cho 2 s" giu nguyen; chi lan dau khong con bi phat.
+    public long timeSelectChar = 0L;
     public long timeWriteLog = System.currentTimeMillis();
     public Vector<String> charname = new Vector<>();
     public Hashtable<String, String> hcharname = new Hashtable<>();
