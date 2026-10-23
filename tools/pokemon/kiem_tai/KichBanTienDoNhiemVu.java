@@ -256,7 +256,7 @@ class KichBanTienDoNhiemVu {
             List<Dong> xong = ds(b, m5, 1);
             Dong phuXong = tim(xong, 1);
             ket("tdnv_weedle." + tt + ".tien_do_gui_lai", goi2 >= Math.min(haW, 19), "ha " + haW + ", goi -64/2: " + goi2);
-            ket("tdnv_weedle." + tt + ".xong", haW >= 20 && phuXong != null && phuXong.id == p && b.chuTu(m5).contains("Xong nhiệm vụ Chứng tỏ sức mạnh"),
+            ket("tdnv_weedle." + tt + ".xong", haW >= 20 && phuXong != null && phuXong.id == p && tim(ds(b, m5, 2), 1) == null,
                     "ha " + haW + " xong " + xong + " | " + b.chuTu(m5).replaceAll("(?s).{0,0}", "").substring(0, Math.min(300, b.chuTu(m5).length())));
             b.den(0, 30, 30);
             long xu0 = b.xu;
