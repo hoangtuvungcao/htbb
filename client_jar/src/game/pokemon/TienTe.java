@@ -195,7 +195,7 @@ public final class TienTe {
         if (a != null) {
             int d = (co - CO[j]) / 2;
             g.drawImage(a, x + d, y + d, Graphics.TOP | Graphics.LEFT);
-            GhiChu.bieu(g, "tien-" + ANH[loai], x + d, y + d, CO[j], CO[j]);
+            if (GhiChu.bat) GhiChu.bieu(g, "tien-" + ANH[loai], x + d, y + d, CO[j], CO[j]);
             return;
         }
         veVector(g, loai, x, y, co);

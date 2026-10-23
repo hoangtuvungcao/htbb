@@ -71,8 +71,17 @@ public class MainChar extends Char {
         game.pokemon.TrangChieu.apDung();   // trang chiêu máy chủ giữ (gói -103 có thể tới trước bộ ô)
     }
 
+    /** Kiem lag 10/2026: HUD goi moi khung - nho chuoi theo lvpercent (doi khi len EXP) thay vi tao lai. */
+    private int phanTramDaTao = Integer.MIN_VALUE;
+    private String chuPhanTram;
+
     public String getPercent() {
-        return new StringBuffer(String.valueOf(this.lvpercent / 10)).append(".").append(this.lvpercent % 10).append("%").toString();
+        int p = this.lvpercent;
+        if (p != this.phanTramDaTao || this.chuPhanTram == null) {
+            this.chuPhanTram = new StringBuffer(String.valueOf(p / 10)).append(".").append(p % 10).append("%").toString();
+            this.phanTramDaTao = p;
+        }
+        return this.chuPhanTram;
     }
 
     public void add2Party(PartyInfo info) {

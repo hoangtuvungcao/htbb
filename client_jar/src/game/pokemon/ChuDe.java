@@ -197,9 +197,12 @@ public final class ChuDe {
         if (s == null || rong(s, vai) <= w) {
             return s;
         }
-        String k = CAT_KHOA[vai];
-        if (s.equals(k) && CAT_W[vai] == w) {
-            return CAT_KQ[vai];
+        // Kiem lag 10/2026: truoc day nho MOT ket qua / vai - HUD cat ten 4-6 o chieu moi khung (cung vai) nen
+        // lan nao cung truot va chay lai vong do chu (substring + noi chuoi moi buoc). Nay nho CAT_SO ket qua.
+        for (int i = 0; i < CAT_SO; i++) {
+            if (CAT_V[i] == vai && CAT_W[i] == w && s.equals(CAT_KHOA[i])) {
+                return CAT_KQ[i];
+            }
         }
         String ba = ChuUI.bo != null ? "\u2026" : "..";
         String r;
@@ -223,9 +226,12 @@ public final class ChuDe {
             }
             r = s.substring(0, n).trim() + ba;
         }
-        CAT_KHOA[vai] = s;
-        CAT_W[vai] = w;
-        CAT_KQ[vai] = r;
+        int o = catKe;
+        catKe = (o + 1) % CAT_SO;
+        CAT_KHOA[o] = s;
+        CAT_V[o] = vai;
+        CAT_W[o] = w;
+        CAT_KQ[o] = r;
         return r;
     }
 
@@ -287,9 +293,12 @@ public final class ChuDe {
         return " C" + s.substring(j, e) + s.substring(e);
     }
 
-    private static final String[] CAT_KHOA = new String[8];
-    private static final String[] CAT_KQ = new String[8];
-    private static final int[] CAT_W = new int[8];
+    private static final int CAT_SO = 24;
+    private static final String[] CAT_KHOA = new String[CAT_SO];
+    private static final String[] CAT_KQ = new String[CAT_SO];
+    private static final int[] CAT_W = new int[CAT_SO];
+    private static final int[] CAT_V = new int[CAT_SO];
+    private static int catKe;
 
     /** Ngắt dòng theo bề ngang w (tối đa toiDa dòng; dòng cuối thừa thì cắt "…"). */
     public static String[] ngat(String s, int vai, int w, int toiDa) {

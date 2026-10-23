@@ -467,7 +467,7 @@ public final class Bang {
             // vùng chạm chừa khe cach() giữa hai tab (không bấm nhầm tab bên cạnh)
             int kh = cach();
             int l = i == 0 ? xt : xt + (kh + 1) / 2, r = i == n - 1 ? xt + ww : xt + ww - kh / 2;
-            VungCham.them(g, l, y, r - l, h, viec == null ? null : viec[i], tienTo + i);
+            VungCham.them(g, l, y, r - l, h, viec == null ? null : viec[i], tenTab(tienTo, i));
         }
     }
 
@@ -765,6 +765,30 @@ public final class Bang {
             GiaoDien.khoi(g, x + 2, y + 2, s - 4, s - 4, 2, 0x2E1E14);
         }
         dangKy(g, x, y, s, s, viec, ten);
+    }
+
+    // Kiem lag 10/2026: ten vung cham tab (tienTo + i) ghep chuoi moi khung moi tab - nho TEN_SO ket qua gan nhat.
+    private static final int TEN_SO = 32;
+    private static final String[] TEN_DAU = new String[TEN_SO], TEN_KQ = new String[TEN_SO];
+    private static final int[] TEN_I = new int[TEN_SO];
+    private static int tenKe;
+
+    static String tenTab(String tienTo, int i) {
+        if (tienTo == null) {
+            return tienTo + i;
+        }
+        for (int k = 0; k < TEN_SO; k++) {
+            if (TEN_I[k] == i && tienTo.equals(TEN_DAU[k])) {
+                return TEN_KQ[k];
+            }
+        }
+        String t = tienTo + i;
+        int o = tenKe;
+        tenKe = (o + 1) % TEN_SO;
+        TEN_DAU[o] = tienTo;
+        TEN_I[o] = i;
+        TEN_KQ[o] = t;
+        return t;
     }
 
     /** Ô KHOÁ cuối lưới hành trang (0.9.7): đá xám + ổ khoá pixel. */

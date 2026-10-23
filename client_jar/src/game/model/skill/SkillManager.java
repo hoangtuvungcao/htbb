@@ -108,6 +108,23 @@ public class SkillManager extends Hashtable {
         return 0;
     }
 
+    /**
+     * Kiem lag 10/2026: nhu getSkillMP nhung chieu / cap ngoai bang (hoac bang chua nap) tra 0 thay vi nem loi.
+     * Cac cho VE MOI KHUNG (HUD, o nhanh, ngam tay) truoc day bat Throwable roi lay 0 - ket qua y het, chi khong
+     * con tao ngoai le (fillInStackTrace) moi khung moi o.
+     */
+    public static int ppAnToan(int skillType, int skillLevel, int clazz) {
+        if (skillLevel <= -1) {
+            return 0;
+        }
+        short[][][] b = SKILL_MP;
+        if (b == null || b.length == 0 || b[0] == null || skillType < 0 || skillType >= b[0].length || b[0][skillType] == null
+                || skillLevel >= b[0][skillType].length) {
+            return 0;
+        }
+        return b[0][skillType][skillLevel];
+    }
+
     public static long getSkillCooldown(byte skillType, byte clazz, int level) {
         return level > -1 ? SKILL_COOLDOWN[0][skillType][level] : 0;
     }

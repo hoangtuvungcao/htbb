@@ -23,6 +23,21 @@ import javax.microedition.lcdui.Graphics;
  * MainChar.gemItemKhoa) hoặc vật phẩm đặc biệt (thuộc MainChar.shopItem), int[]{id} = vật phẩm nhiệm vụ.
  */
 public final class LuoiTui {
+    // Kiem lag 10/2026: ten vung cham moi o duoc ghep chuoi MOI khung (vai chuc o) - nho lai theo so o.
+    private static final String[] TEN_TUI = new String[160], TEN_KHOA = new String[160];
+
+    static String tenO(String dau, String[] bang, int j) {
+        if (j < 0 || j >= bang.length) {
+            return dau + j;
+        }
+        String t = bang[j];
+        if (t == null) {
+            t = dau + j;
+            bang[j] = t;
+        }
+        return t;
+    }
+
     private LuoiTui() {
     }
 
@@ -256,7 +271,7 @@ public final class LuoiTui {
                             public void perform() {
                                 bamO(o, bam);
                             }
-                        }, "tui-" + j);
+                        }, tenO("tui-", TEN_TUI, j));
                         if (soO < SO_O) {
                             OX[soO] = xo + g.getTranslateX();
                             OY[soO] = yr + g.getTranslateY();
@@ -271,7 +286,7 @@ public final class LuoiTui {
                             public void perform() {
                                 hoiMoRong();
                             }
-                        }, "tui-khoa-" + j);
+                        }, tenO("tui-khoa-", TEN_KHOA, j));
                     }
                 }
             }

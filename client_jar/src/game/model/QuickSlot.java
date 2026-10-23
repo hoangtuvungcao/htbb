@@ -50,7 +50,7 @@ public class QuickSlot {
                     int cap = Char.skillLevelLearnt != null && sk < Char.skillLevelLearnt.length ? Char.skillLevelLearnt[sk] : 0;
                     int mpCan = 0;
                     try {
-                        mpCan = game.model.skill.SkillManager.getSkillMP(sk, cap, lop);
+                        mpCan = game.model.skill.SkillManager.ppAnToan(sk, cap, lop);
                     } catch (Throwable e) {
                     }
                     if (mpCan > 0 && mc.mp < mpCan) {

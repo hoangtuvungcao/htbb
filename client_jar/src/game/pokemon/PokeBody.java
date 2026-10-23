@@ -245,13 +245,28 @@ public class PokeBody {
         return pb;
     }
 
+    /** Kiem lag 10/2026: lay() chay moi khung cho moi Pokemon tren man - dung lai khoa Integer thay vi tao moi. */
+    private static final Integer[] KHOA_DEX = new Integer[2 * 1100];
+
+    private static Integer khoaDex(int v) {
+        if (v < 0 || v >= KHOA_DEX.length) {
+            return new Integer(v);
+        }
+        Integer k = KHOA_DEX[v];
+        if (k == null) {
+            k = new Integer(v);
+            KHOA_DEX[v] = k;
+        }
+        return k;
+    }
+
     /** Than Pokemon (du lieu khung). Shiny thieu tep thi dung ban thuong. null neu khong co sprite. */
     public static PokeBody lay(int dex, boolean shiny) {
         if (dex <= 0) {
             return null;
         }
         xuLyBoLoai();
-        Integer k = new Integer(dex * 2 + (shiny ? 1 : 0));
+        Integer k = khoaDex(dex * 2 + (shiny ? 1 : 0));
         Object o = cacheDl.get(k);
         if (o == KHONG_CO) {
             return null;
@@ -394,10 +409,57 @@ public class PokeBody {
         return lay(dex, shiny) != null;
     }
 
+    // Kiem lag 10/2026: ten tep anh dong tac duoc ghep chuoi MOI LAN ve (moi Pokemon tren man, moi khung).
+    // Nho ten theo so anh (khoa co dinh cho moi PokeBody); tra cuu bo dem LRU van y nhu cu.
+    private String[] tenSo;
+    private String[] tenSoTiLe;
+    private int[] tiLeSo;
+
+    private String tenAnh(int so) {
+        if (so < 0 || so > 255) {
+            return THU_MUC + khoa + "_" + so + ".png";
+        }
+        if (tenSo == null || so >= tenSo.length) {
+            String[] m = new String[so + 4];
+            if (tenSo != null) {
+                System.arraycopy(tenSo, 0, m, 0, tenSo.length);
+            }
+            tenSo = m;
+        }
+        String t = tenSo[so];
+        if (t == null) {
+            t = THU_MUC + khoa + "_" + so + ".png";
+            tenSo[so] = t;
+        }
+        return t;
+    }
+
+    private String tenAnhTiLe(int so, String ten, int tiLe) {
+        if (so < 0 || so > 255) {
+            return ten + "@" + tiLe;
+        }
+        if (tenSoTiLe == null || so >= tenSoTiLe.length) {
+            int n = Math.max(so + 4, tenSo != null ? tenSo.length : 0);
+            String[] m = new String[n];
+            int[] q = new int[n];
+            if (tenSoTiLe != null) {
+                System.arraycopy(tenSoTiLe, 0, m, 0, tenSoTiLe.length);
+                System.arraycopy(tiLeSo, 0, q, 0, tiLeSo.length);
+            }
+            tenSoTiLe = m;
+            tiLeSo = q;
+        }
+        if (tenSoTiLe[so] == null || tiLeSo[so] != tiLe) {
+            tenSoTiLe[so] = ten + "@" + tiLe;
+            tiLeSo[so] = tiLe;
+        }
+        return tenSoTiLe[so];
+    }
+
     /** Anh cua dong tac (da phong to theo tiLe neu can). */
     private Image anhDongTac(int dongTac, PokeDongTac d, int tiLe) {
         int so = dl.anhCua(dongTac);
-        String ten = THU_MUC + khoa + "_" + so + ".png";
+        String ten = tenAnh(so);
         Image goc = napAnh(ten);
         if (goc == null && so != 0) {
             return null;
@@ -405,7 +467,7 @@ public class PokeBody {
         if (goc == null || tiLe == 100) {
             return goc;
         }
-        String tenTiLe = ten + "@" + tiLe;
+        String tenTiLe = tenAnhTiLe(so, ten, tiLe);
         Object o = layDem(tenTiLe);
         if (o instanceof Image) {
             return (Image) o;

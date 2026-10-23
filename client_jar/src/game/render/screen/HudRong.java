@@ -691,7 +691,7 @@ public final class HudRong {
             int cap = game.model.Char.skillLevelLearnt != null && sk < game.model.Char.skillLevelLearnt.length ? game.model.Char.skillLevelLearnt[sk] : 0;
             int pp = 0;
             try {
-                pp = game.model.skill.SkillManager.getSkillMP(sk, cap, lop);
+                pp = game.model.skill.SkillManager.ppAnToan(sk, cap, lop);
             } catch (Throwable e) {
                 pp = 0;
             }
@@ -792,7 +792,7 @@ public final class HudRong {
         int cap = game.model.Char.skillLevelLearnt != null && sk < game.model.Char.skillLevelLearnt.length ? game.model.Char.skillLevelLearnt[sk] : 0;
         int pp = 0;
         try {
-            pp = game.model.skill.SkillManager.getSkillMP(sk, cap, lop);
+            pp = game.model.skill.SkillManager.ppAnToan(sk, cap, lop);
         } catch (Throwable e) {
             pp = 0;
         }

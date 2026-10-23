@@ -204,7 +204,7 @@ public final class KhungNro {
         int c = 16 * k;
         g.drawImage(a, x + (s - c) / 2, y + (s - c) / 2, Graphics.TOP | Graphics.LEFT);
         if (bong < 0) {
-            GhiChu.bieu(g, "icon-" + id, x + (s - c) / 2, y + (s - c) / 2, c, c);
+            if (GhiChu.bat) GhiChu.bieu(g, "icon-" + id, x + (s - c) / 2, y + (s - c) / 2, c, c);
         }
         return true;
     }

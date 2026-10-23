@@ -140,6 +140,12 @@ public class Font {
             game.pokemon.GhiChu.chu(g, st, x, y, getWidth(st), getHeight(), align == CENTER ? 2 : align == RIGHT ? 1 : 0);
         }
         Image anh = this.imgFont;
+        // Kiem lag 10/2026: bo ghep phai co TRUOC khi giu lai - truoc day boGhep con null thi ghep() trong veChuoi
+        // tao bang moi roi khoi finally dat lai null: MOI lan ve chuoi co chu hoa co dau (Â, Ấ, Ữ...) lai ghep anh
+        // tu dau (doc pixel + createRGBImage) - do duoc ~6 KB cap phat / khung o man Hanh trang (duong J2ME / APK).
+        if (this.boGhep == null) {
+            this.boGhep = new java.util.Hashtable();
+        }
         java.util.Hashtable boCu = this.boGhep;
         if (nenSang && laSang()) {
             // chữ sáng trên bảng sáng: dùng bản tô đậm của chính font (cùng nét, cùng bề rộng)

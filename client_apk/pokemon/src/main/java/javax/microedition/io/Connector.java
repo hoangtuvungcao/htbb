@@ -110,12 +110,23 @@ public class Connector {
             return s.getPort();
         }
 
+        // Kiem lag 10/2026: Session_ME doc dau goi tung byte (readByte) - tren luong socket tho moi byte la mot lan
+        // goi he thong (Android: kem BlockGuard). Dem 8 KB: cung byte, it lan doc hon (~4 -> ~1 lan / goi luc dong).
+        private InputStream vao;
+
+        private synchronized InputStream vao() throws IOException {
+            if (vao == null) {
+                vao = new java.io.BufferedInputStream(s.getInputStream(), 8192);
+            }
+            return vao;
+        }
+
         public InputStream openInputStream() throws IOException {
-            return s.getInputStream();
+            return vao();
         }
 
         public DataInputStream openDataInputStream() throws IOException {
-            return new DataInputStream(s.getInputStream());
+            return new DataInputStream(vao());
         }
 
         public OutputStream openOutputStream() throws IOException {

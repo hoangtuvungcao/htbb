@@ -191,33 +191,29 @@ public class Session_ME implements ISession {
         this.lucGuiCuoi = System.currentTimeMillis();
         byte[] data = m.getData();
         try {
-            if (this.getKeyComplete) {
-                byte b = writeKey(m.command);
-                this.dos.writeByte(b);
-            } else {
-                this.dos.writeByte(m.command);
-            }
+            // Kiem lag 10/2026: dong MOT khung roi ghi MOT lan. Truoc day writeByte lenh / 2 byte do dai / du lieu
+            // rieng tung lan tren socket NODELAY = 4 lan ghi (4 goi TCP) cho moi goi tin. Byte gui di y het.
+            int size = data != null ? data.length : 0;
+            byte[] khung = new byte[3 + size];
+            khung[0] = this.getKeyComplete ? writeKey(m.command) : m.command;
             if (data != null) {
-                int size = data.length;
                 if (this.getKeyComplete) {
-                    int byte1 = writeKey((byte) (size >> 8));
-                    this.dos.writeByte(byte1);
-                    int byte2 = writeKey((byte) (size & 255));
-                    this.dos.writeByte(byte2);
-                } else {
-                    this.dos.writeShort(size);
-                }
-                if (this.getKeyComplete) {
+                    khung[1] = writeKey((byte) (size >> 8));
+                    khung[2] = writeKey((byte) (size & 255));
                     for (int i = 0; i < data.length; i++) {
                         data[i] = writeKey(data[i]);
                     }
+                } else {
+                    khung[1] = (byte) (size >> 8);
+                    khung[2] = (byte) size;
                 }
-                this.dos.write(data);
+                System.arraycopy(data, 0, khung, 3, size);
                 this.sendByteCount += 5 + data.length;
             } else {
-                this.dos.writeShort(0);
+                // nhu cu: writeShort(0) khong qua ma hoa
                 this.sendByteCount += 5;
             }
+            this.dos.write(khung);
             this.dos.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -254,6 +250,11 @@ public class Session_ME implements ISession {
 
         public void AddMessage(Message message) {
             this.sendingMessage.addElement(message);
+            // Kiem lag 10/2026: danh thuc luong gui ngay (truoc day ngu 10 ms giua hai lan xem hang doi -> moi thao tac
+            // tre them toi 10 ms truoc khi gui di)
+            synchronized (this) {
+                this.notify();
+            }
         }
 
         @Override
@@ -275,7 +276,11 @@ public class Session_ME implements ISession {
                         }
                     }
                     try {
-                        Thread.sleep(10L);
+                        synchronized (this) {
+                            if (this.sendingMessage.size() == 0) {
+                                this.wait(10L);
+                            }
+                        }
                     } catch (InterruptedException e) {
                     }
                 } catch (IOException e2) {

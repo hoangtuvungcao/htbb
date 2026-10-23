@@ -375,7 +375,7 @@ public final class ChonChieuNhanh extends Dialog {
                     int cap = Char.skillLevelLearnt != null && sk < Char.skillLevelLearnt.length ? Char.skillLevelLearnt[sk] : 0;
                     int pp = 0;
                     try {
-                        pp = SkillManager.getSkillMP(sk, cap, this.lop);
+                        pp = SkillManager.ppAnToan(sk, cap, this.lop);
                     } catch (Throwable e) {
                         pp = 0;
                     }

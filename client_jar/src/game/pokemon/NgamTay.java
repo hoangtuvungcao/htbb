@@ -583,7 +583,7 @@ public final class NgamTay {
         }
         int pp = 0;
         try {
-            pp = SkillManager.getSkillMP(skillType, cap, mc.clazz);
+            pp = SkillManager.ppAnToan(skillType, cap, mc.clazz);
         } catch (Throwable e) {
             pp = 0;
         }

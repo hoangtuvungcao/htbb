@@ -320,7 +320,7 @@ public final class BatPokemon {
         if (!KhungNro.iconGiua(g, id, x, y, k, het ? KhungNro.XAM : -1)) {
             BieuTuong.ve(g, BieuTuong.POKEBALL, x - r, y - r, 2 * r, het ? 0x8A8A92 : 0xE03C30, 0xFFFFFF);
         }
-        GhiChu.bieu(g, "nut-bong-" + id + (het ? "-xam" : ""), x - r, y - r, 2 * r, 2 * r);
+        if (GhiChu.bat) GhiChu.bieu(g, "nut-bong-" + id + (het ? "-xam" : ""), x - r, y - r, 2 * r, 2 * r);
         String nhan = nhanNutHud();
         int h = ChuDe.cao(ChuDe.NHAN_NHO);
         ChuDe.chuVienGiua(g, nhan, x, yNhan, h, ChuDe.NHAN_NHO, het ? 0xC4C4CA : 0xFFFFFF, ChuDe.VIEN, 2);   // chữ viền: đọc được trên nền bản đồ
