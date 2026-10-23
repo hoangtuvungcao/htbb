@@ -486,6 +486,117 @@ public final class NhiemVuEngine {
         return false;
     }
 
+    // ------------------------------------------------------------------ cua ai (khoa ban do)
+
+    /** Buoc ke tiep cua mot cua ai: mau, thu tu 1..tong, tien do (null = chua nhan), ly do chua nhan duoc (null = duoc). */
+    public static final class BuocCuaAi {
+        public final NhiemVuMau m;
+        public final int so;
+        public final int tong;
+        public final long[] v;
+        public final String loiNhan;
+
+        BuocCuaAi(final NhiemVuMau m, final int so, final int tong, final long[] v, final String loiNhan) {
+            this.m = m;
+            this.so = so;
+            this.tong = tong;
+            this.v = v;
+            this.loiNhan = loiNhan;
+        }
+
+        public int trangThai() {
+            return v == null ? com.htbb.pokemon.KhoaBanDo.CHUA_NHAN : v[1] >= 1 ? com.htbb.pokemon.KhoaBanDo.CHO_THUONG
+                    : com.htbb.pokemon.KhoaBanDo.DANG_LAM;
+        }
+    }
+
+    static int soBuoc(final String ma) {
+        try {
+            return Integer.parseInt(ma.substring(ma.lastIndexOf('.') + 1));
+        } catch (final RuntimeException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Buoc cua ai can lam tiep de xong {@code maCuoi} (ma_nhiem_vu cua data_ban_do_mo_khoa, vd CA-01.2 -> cac buoc
+     * CA-01.1, CA-01.2): buoc dau tien chua nhan thuong. null = khong co mau / da xong / chua nap tien do.
+     */
+    public static BuocCuaAi buocCuaAi(final Char p, final String maCuoi) {
+        if (p == null || maCuoi == null || maCuoi.isEmpty()) {
+            return null;
+        }
+        final ConcurrentHashMap<String, long[]> t = td(p);
+        if (t == null) {
+            return null;
+        }
+        final int cham = maCuoi.lastIndexOf('.');
+        final String tienTo = cham > 0 ? maCuoi.substring(0, cham + 1) : maCuoi;
+        final int cuoi = cham > 0 ? soBuoc(maCuoi) : 0;
+        final List<NhiemVuMau> buoc = new ArrayList<NhiemVuMau>();
+        for (final NhiemVuMau m : MAU.values()) {
+            if (m.laCuaAi() && (cham > 0 ? m.ma.startsWith(tienTo) && soBuoc(m.ma) <= cuoi : m.ma.equals(maCuoi))) {
+                buoc.add(m);
+            }
+        }
+        java.util.Collections.sort(buoc, new java.util.Comparator<NhiemVuMau>() {
+            @Override
+            public int compare(final NhiemVuMau a, final NhiemVuMau b) {
+                return soBuoc(a.ma) - soBuoc(b.ma);
+            }
+        });
+        for (int i = 0; i < buoc.size(); i++) {
+            final NhiemVuMau m = buoc.get(i);
+            final long[] v = t.get(m.ma);
+            if (v != null && v[1] >= 2) {
+                continue;
+            }
+            String loi = null;
+            if (v == null) {
+                final int gio = com.htbb.pokemon.DongHo.lich().get(java.util.Calendar.HOUR_OF_DAY);
+                loi = m.kiemNhan(p.lvDetail.lv, LauDai.ngayMoNoiDung(), daXong(p, t), NhiemVuMau.moAn(m.dieuKienMo, gio, null));
+            }
+            return new BuocCuaAi(m, i + 1, buoc.size(), v, loi);
+        }
+        return null;
+    }
+
+    /**
+     * Hop "Bản đồ khoá" (KhoaBanDoGame.POPUP_CUA_AI) bam Đồng ý: buoc chua nhan -> nhan (DUNG duong So tay -> Thử thách
+     * cửa ải: nhan() kiem cap / buoc truoc / da nhan); da nhan -> nhu chon o "Đang làm" (xem tien do / nhan thuong).
+     */
+    public static void khiDongYCuaAi(final Char p, final String maCuoi) {
+        if (!LauDai.bat() || p == null) {
+            return;
+        }
+        final BuocCuaAi b = buocCuaAi(p, maCuoi);
+        if (b == null) {
+            SoTayLauDai.bao(p, "Cửa ải này đã xong.");
+            return;
+        }
+        if (b.v == null) {
+            SoTayLauDai.bao(p, nhan(p, b.m.ma));
+        } else {
+            chonDangLam(p, b.m.ma);
+        }
+    }
+
+    /** Dua hang cua ai vua can (ban do vua bi chan, KhoaBanDoGame.buocVuaChan) len dau, danh dau "»". */
+    static void toDam(final Char p, final List<String> ma, final List<String> nhan) {
+        final String can = KhoaBanDoGame.buocVuaChan(p);
+        if (can == null) {
+            return;
+        }
+        final int i = ma.indexOf(can);
+        if (i < 0) {
+            return;
+        }
+        final String n = "» " + nhan.remove(i) + KhoaBanDoGame.duoiVuaChan(p);
+        ma.remove(i);
+        ma.add(0, can);
+        nhan.add(0, n);
+    }
+
     // ------------------------------------------------------------------ menu
 
     static void moMenu(final Char p) {
@@ -556,6 +667,7 @@ public final class NhiemVuEngine {
                 nhan.add(m.ten + " " + v[0] + "/" + m.soLuong + (v[1] == 1 ? " (nhận thưởng)" : ""));
             }
         }
+        toDam(p, ma, nhan);
         hien(p, ma, nhan, M_DANG, "Chưa có nhiệm vụ nào đang làm.");
     }
 
@@ -609,6 +721,9 @@ public final class NhiemVuEngine {
             }
             ma.add(m.ma);
             nhan.add(m.ten + (m.tenNpc.isEmpty() ? "" : " (" + m.tenNpc + ")"));
+        }
+        if (nhom == 7) {
+            toDam(p, ma, nhan);
         }
         hien(p, ma, nhan, M_NHAN, nhom == 7 ? "Chưa có cửa ải nào nhận được lúc này (xem cấp và cửa ải trước)."
                 : "Chưa có nhiệm vụ phù hợp lúc này.");

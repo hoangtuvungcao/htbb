@@ -364,6 +364,7 @@ public class MapLienDau extends Map {
             int toMapID = message.dis.readShort();
             if (toMapID == -500) {
                 player.isDoChangeMap = false;
+                KhoaBanDoGame.sauKhiVaoMap(player); // vua bi chan o cong (nap lai map xong): hop cua ai
             } else if (this.isMapOffline && player.mapID_the_mua_ban > -1) {
                 this.playerExit(player);
                 player.region = player.region_the_mua_ban;
@@ -418,7 +419,7 @@ public class MapLienDau extends Map {
                     CharManager.instance.kickPlayer(player, "mapliendau 2");
                     Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 201 ", "hcm");
                 }
-                if (toMapID != player.mapID && KhoaBanDoGame.chan(player, toMapID)) {
+                if (toMapID != player.mapID && KhoaBanDoGame.chanDiBo(player, toMapID)) {
                     toMapID = player.mapID; // khoa ban do: nap lai cho dang dung
                     toTX = player.x / 16;
                     toTY = player.y / 16;

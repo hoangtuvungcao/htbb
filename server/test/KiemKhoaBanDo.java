@@ -74,6 +74,7 @@ public final class KiemKhoaBanDo {
         try {
             luatThuan();
             duongVao();
+            hopCuaAi();
             tuDong();
             duLieu();
             docMa();
@@ -90,7 +91,7 @@ public final class KiemKhoaBanDo {
         Kiem.dung("khong luat = mo", KhoaBanDo.mo(null, 1, false, 0));
         Kiem.dung("thieu ca cap lan cua ai = khoa", !KhoaBanDo.mo(l, 20, false, 1));
         Kiem.bang("bao du hai dieu kien",
-                "Cần hoàn thành nhiệm vụ «Cửa ải: Đường sang Johto» và đạt cấp 27 để vào New Bark. Mở Sổ tay huấn luyện → Thử thách cửa ải.",
+                "Cần hoàn thành nhiệm vụ «Cửa ải: Đường sang Johto» và đạt cấp 27 để vào New Bark. Nhận ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.",
                 KhoaBanDo.lyDo(l, 20, false, 1, "New Bark"));
         Kiem.bang("chi thieu cap", "Cần đạt cấp 27 để vào New Bark.", KhoaBanDo.lyDo(l, 20, true, 1, "New Bark"));
         Kiem.dung("du cap, chua xong cua ai = khoa", !KhoaBanDo.mo(l, 30, false, 1));
@@ -254,6 +255,274 @@ public final class KiemKhoaBanDo {
         }
     }
 
+    // ------------------------------------------------------------------ hop cua ai (bi chan vi chua xong cua ai)
+
+    static NhiemVuMau mauCa(final String ma, final int cap, final String truoc, final String ten, final String mucTieu, final int so) {
+        final NhiemVuMau m = new NhiemVuMau();
+        m.ma = ma;
+        m.loai = "cua_ai";
+        m.kieu = "giet";
+        m.cap = cap;
+        m.truoc = truoc;
+        m.ten = ten;
+        m.mucTieuText = mucTieu;
+        m.soLuong = so;
+        m.hoiThoaiBatDau = "Bắt đầu " + ma + ".";
+        return m;
+    }
+
+    @SuppressWarnings("unchecked")
+    static ConcurrentHashMap<String, long[]> tienDo(final Char p) throws Exception {
+        final java.lang.reflect.Field f = real.NhiemVuEngine.class.getDeclaredField("TD");
+        f.setAccessible(true);
+        final ConcurrentHashMap<Integer, ConcurrentHashMap<String, long[]>> td = (ConcurrentHashMap<Integer, ConcurrentHashMap<String, long[]>>) f.get(null);
+        ConcurrentHashMap<String, long[]> t = td.get(Integer.valueOf(p.charDBID));
+        if (t == null) {
+            t = new ConcurrentHashMap<String, long[]>();
+            td.put(Integer.valueOf(p.charDBID), t);
+        }
+        return t;
+    }
+
+    /** Doc goi -32 / 37 / -30: chu cuoi cung cua lenh {@code lenh} tu chi so {@code tu}; null neu khong co. */
+    static String chuGoi(final NguoiChoi p, final int lenh, final int tu) throws Exception {
+        String kq = null;
+        for (int i = tu; i < p.goi.size(); i++) {
+            final Message m = p.goi.get(i);
+            if (m.command != lenh) {
+                continue;
+            }
+            final DataInputStream in = new DataInputStream(new ByteArrayInputStream(m.toByteArray()));
+            in.readByte();
+            in.readShort();
+            if (lenh == -32) {
+                in.readShort();
+                final int id = in.readByte();
+                kq = id + "|" + in.readUTF();
+            } else if (lenh == -30) {
+                in.readShort();
+                in.readByte();
+                final int n = in.readByte();
+                final StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < n; j++) {
+                    sb.append(j > 0 ? "\u0001" : "").append(in.readUTF());
+                }
+                kq = sb.toString();
+            } else {
+                kq = in.readUTF();
+            }
+        }
+        return kq;
+    }
+
+    static int dem(final NguoiChoi p, final int lenh) {
+        int n = 0;
+        for (final Message m : p.goi) {
+            if (m.command == lenh) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    @SuppressWarnings("unchecked")
+    static void hopCuaAi() throws Exception {
+        // ---- chu thuan
+        final KhoaBanDo.Luat ca = new KhoaBanDo.Luat(4, 3, "CA-01.2", "Cửa ải: Rời đồng cỏ Pallet", true, "");
+        Kiem.bang("ten cua ai bo tien to", "Rời đồng cỏ Pallet", KhoaBanDo.tenCuaAi(ca));
+        Kiem.bang("mo ta buoc tu muc tieu", "hạ 20 Torchic ở Pallet", KhoaBanDo.moTaBuoc("Hạ 20 Torchic ở Pallet.", "Cửa ải: 20 Torchic ở Pallet"));
+        Kiem.bang("mo ta buoc khi thieu muc tieu: theo ten", "hạ Gym Pewter", KhoaBanDo.moTaBuoc("", "Cửa ải: hạ Gym Pewter"));
+        Kiem.bang("chua nhan: ba dong",
+                "Để vào Tây Cerulean cần xong cửa ải «Rời đồng cỏ Pallet».|Bước 1/2 (chưa nhận): hạ 20 Torchic ở Pallet.|"
+                        + "Nhận ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.",
+                String.join("|", KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 1, 2, "hạ 20 Torchic ở Pallet", KhoaBanDo.CHUA_NHAN, 0, 20, null)));
+        Kiem.bang("dang lam: tien do + duong Dang lam",
+                "Để vào Tây Cerulean cần xong cửa ải «Rời đồng cỏ Pallet».|Bước 1/2: hạ 20 Torchic ở Pallet (7/20).|"
+                        + "Xem ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Đang làm.",
+                String.join("|", KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 1, 2, "hạ 20 Torchic ở Pallet", KhoaBanDo.DANG_LAM, 7, 20, null)));
+        Kiem.bang("buoc 2 dang lam", "Bước 2/2: hạ 20 Ekans ở Viridian (3/20).",
+                KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 2, 2, "hạ 20 Ekans ở Viridian", KhoaBanDo.DANG_LAM, 3, 20, null)[1]);
+        Kiem.bang("buoc ha Gym (1 tran): khong ghi 0/1", "Bước 2/2: hạ Trưởng Gym Pewter: Golem (Sổ tay huấn luyện → Gym).",
+                KhoaBanDo.baoCuaAi(ca, 5, "X", 2, 2, KhoaBanDo.moTaBuoc("Hạ Trưởng Gym Pewter: Golem (Sổ tay huấn luyện → Gym).", ""),
+                        KhoaBanDo.DANG_LAM, 0, 1, null)[1]);
+        Kiem.bang("xong cho nhan thuong", "Bước 1/2 đã xong: nhận thưởng để mở bước tiếp.",
+                KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 1, 2, "x", KhoaBanDo.CHO_THUONG, 20, 20, null)[1]);
+        Kiem.bang("buoc cuoi xong cho nhan thuong", "Bước 2/2 đã xong: nhận thưởng để mở bản đồ.",
+                KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 2, 2, "x", KhoaBanDo.CHO_THUONG, 20, 20, null)[1]);
+        Kiem.bang("thieu ca cap", "Để vào Tây Cerulean cần xong cửa ải «Rời đồng cỏ Pallet» và đạt cấp 3.",
+                KhoaBanDo.baoCuaAi(ca, 1, "Tây Cerulean", 1, 2, "x", KhoaBanDo.CHUA_NHAN, 0, 20, null)[0]);
+        Kiem.bang("chua nhan duoc: ly do", "Bước 1/2 (chưa nhận): hạ 30 Quagsire ở Lavender. Cần đạt cấp 30 để nhận.",
+                KhoaBanDo.baoCuaAi(ca, 5, "X", 1, 2, "hạ 30 Quagsire ở Lavender", KhoaBanDo.CHUA_NHAN, 0, 30, "Cần đạt cấp 30")[1]);
+        Kiem.bang("cau hoi theo trang thai", "Nhận cửa ải ngay?|Xem tiến độ?|Nhận thưởng ngay?|null",
+                KhoaBanDo.hoiCuaAi(KhoaBanDo.CHUA_NHAN, null) + "|" + KhoaBanDo.hoiCuaAi(KhoaBanDo.DANG_LAM, null) + "|"
+                        + KhoaBanDo.hoiCuaAi(KhoaBanDo.CHO_THUONG, null) + "|" + KhoaBanDo.hoiCuaAi(KhoaBanDo.CHUA_NHAN, "Cần đạt cấp 30"));
+        final String[] dai = KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 1, 2, "hạ 20 Torchic ở Pallet", KhoaBanDo.DANG_LAM, 7, 20, null);
+        Kiem.dung("hop gon: moi dong <= 90 ky tu", dai[0].length() <= 90 && dai[1].length() <= 90 && dai[2].length() <= 90);
+
+        // ---- trong game
+        final java.lang.reflect.Field fMau = real.NhiemVuEngine.class.getDeclaredField("MAU");
+        fMau.setAccessible(true);
+        final Object mauCu = fMau.get(null);
+        final LinkedHashMap<String, NhiemVuMau> mau = new LinkedHashMap<String, NhiemVuMau>();
+        mau.put("CA-01.2", mauCa("CA-01.2", 1, "CA-01.1", "Cửa ải: 20 Ekans ở Viridian", "Hạ 20 Ekans ở Viridian.", 20));
+        mau.put("CA-01.1", mauCa("CA-01.1", 1, "", "Cửa ải: 20 Torchic ở Pallet", "Hạ 20 Torchic ở Pallet.", 20));
+        mau.put("CA-03.1", mauCa("CA-03.1", 30, "", "Cửa ải: 30 Quagsire ở Lavender", "Hạ 30 Quagsire ở Lavender.", 30));
+        mau.put("CA-03.2", mauCa("CA-03.2", 30, "CA-03.1", "Cửa ải: hạ Gym Pewter", "", 1));
+        final Map<Integer, KhoaBanDo.Luat> luat = new HashMap<Integer, KhoaBanDo.Luat>();
+        luat.put(9101, new KhoaBanDo.Luat(9101, 3, "CA-01.2", "Cửa ải: Rời đồng cỏ Pallet", true, ""));
+        luat.put(9102, new KhoaBanDo.Luat(9102, 3, "CA-03.2", "Cửa ải: Thử thách Pewter", true, ""));
+        final Map<Integer, KhoaBanDo.Luat> cu = new HashMap<Integer, KhoaBanDo.Luat>(KhoaBanDo.bang());
+        final boolean lauDaiCu = com.htbb.pokemon.LauDai.bat();
+        final NguoiChoi p = new NguoiChoi(990101, 5);
+        final NguoiChoi q = new NguoiChoi(990102, 5);
+        fMau.set(null, mau);
+        KhoaBanDo.datBang(luat);
+        com.htbb.pokemon.LauDai.dat(true);
+        try {
+            final real.Map nha = banDo(9100, 9100);
+            banDo(9101, 9101);
+            banDo(9102, 9102);
+            for (final NguoiChoi x : new NguoiChoi[]{p, q}) {
+                x.map = nha;
+                x.mapID = 9100;
+                x.x = 160;
+                x.y = 160;
+                KhoaBanDoGame.datMien(x.charDBID, 1);
+                KhoaBanDoGame.xoaHoi(x.charDBID);
+            }
+            final ConcurrentHashMap<String, long[]> t = tienDo(p);
+            t.clear();
+            tienDo(q).clear();
+
+            // di bo vao cong: chan, hop cho toi khi client nap xong map
+            Kiem.dung("di bo: chua nhan cua ai -> chan", KhoaBanDoGame.chanDiBo(p, 9101));
+            Kiem.bang("di bo: chua gui hop truoc khi nap lai map (onMap dong hop)", 0, dem(p, -32));
+            KhoaBanDoGame.sauKhiVaoMap(p);
+            String hop = chuGoi(p, -32, 0);
+            Kiem.dung("nap xong (-500): hop -32 id 95", hop != null && hop.startsWith(KhoaBanDoGame.POPUP_CUA_AI + "|"));
+            Kiem.dung("hop: chua nhan + buoc 1/2 + duong + hoi nhan",
+                    hop != null && hop.contains("cần xong cửa ải «Rời đồng cỏ Pallet»")
+                            && hop.contains("\nBước 1/2 (chưa nhận): hạ 20 Torchic ở Pallet.\n")
+                            && hop.contains("Nhận ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.")
+                            && hop.endsWith("\nNhận cửa ải ngay?"));
+            KhoaBanDoGame.sauKhiVaoMap(p);
+            Kiem.bang("-500 lan nua khong gui lai", 1, dem(p, -32));
+
+            // cho: dam bien lien tuc khong mo lai hop, chi the nhanh
+            final int soBao = p.bao.size();
+            Kiem.dung("dam lai trong 10 giay: van chan", KhoaBanDoGame.chanDiBo(p, 9101));
+            KhoaBanDoGame.sauKhiVaoMap(p);
+            Kiem.bang("trong 10 giay: khong hop moi", 1, dem(p, -32));
+            Kiem.dung("trong 10 giay: chi the nhanh (dieu kien + buoc)", p.bao.size() == soBao + 1
+                    && p.cuoi().startsWith("Để vào") && p.cuoi().contains("Bước 1/2 (chưa nhận)"));
+            Kiem.dung("duong ngay (menu NPC) trong 10 giay: cung khong hop", KhoaBanDoGame.chan(p, 9101) && dem(p, -32) == 1);
+            Kiem.bang("bam Huy: khong nhan", "false", String.valueOf(t.containsKey("CA-01.1")));
+
+            // So tay "Thu thach cua ai": hang cua ai vua can len dau, danh dau
+            final java.lang.reflect.Method ds = real.NhiemVuEngine.class.getDeclaredMethod("dsCoTheNhan", Char.class, int.class);
+            ds.setAccessible(true);
+            int truoc = p.goi.size();
+            ds.invoke(null, p, 7);
+            final String menu = chuGoi(p, -30, truoc);
+            Kiem.dung("So tay cua ai: hang CA-01.1 to dam o dau", menu != null && menu.startsWith("» Cửa ải: 20 Torchic ở Pallet"));
+
+            // nhan tu hop = nhan o So tay
+            KhoaBanDoGame.luiHoi(p.charDBID, KhoaBanDoGame.CHO_HOI_MS + 1);
+            Kiem.dung("het 10 giay: duong ngay (NPC) hoi luon", KhoaBanDoGame.chan(p, 9101) && dem(p, -32) == 2);
+            truoc = p.goi.size();
+            KhoaBanDoGame.khiTraLoi(p, true);
+            final long[] v = t.get("CA-01.1");
+            Kiem.dung("Dong y: nhan buoc 1 (dang lam 0/20)", v != null && v[0] == 0 && v[1] == 0);
+            Kiem.dung("Dong y: khong nhan buoc 2 truoc khi xong buoc 1", !t.containsKey("CA-01.2"));
+            final java.lang.reflect.Method nhan = real.NhiemVuEngine.class.getDeclaredMethod("nhan", Char.class, String.class);
+            nhan.setAccessible(true);
+            final String chuNhan = (String) nhan.invoke(null, q, "CA-01.1");
+            Kiem.bang("Dong y: cung cau tra loi nhu nhan o So tay", chuNhan, chuGoi(p, 37, truoc));
+            Kiem.bang("Dong y: cung dong tien do nhu nhan o So tay", tienDo(q).get("CA-01.1")[0] + "/" + tienDo(q).get("CA-01.1")[1]
+                    + "/" + tienDo(q).get("CA-01.1")[2], v[0] + "/" + v[1] + "/" + v[2]);
+            truoc = p.goi.size();
+            KhoaBanDoGame.khiTraLoi(p, true);
+            Kiem.bang("bam Dong y lan hai: khong lam gi", truoc, p.goi.size());
+            Kiem.bang("nhan lai o So tay: tu choi", "Đã nhận nhiệm vụ này.", (String) nhan.invoke(null, p, "CA-01.1"));
+
+            // dang lam: tien do, Dong y = xem tien do (khong nhan lai)
+            v[0] = 7;
+            KhoaBanDoGame.luiHoi(p.charDBID, KhoaBanDoGame.CHO_HOI_MS + 1);
+            KhoaBanDoGame.chanDiBo(p, 9101);
+            KhoaBanDoGame.sauKhiVaoMap(p);
+            hop = chuGoi(p, -32, 0);
+            Kiem.dung("dang lam: hop co tien do 7/20 + duong Dang lam + Xem tien do",
+                    hop.contains("Bước 1/2: hạ 20 Torchic ở Pallet (7/20).") && hop.contains("→ Đang làm.") && hop.endsWith("Xem tiến độ?"));
+            truoc = p.goi.size();
+            KhoaBanDoGame.khiTraLoi(p, true);
+            final String xem = chuGoi(p, 37, truoc);
+            Kiem.dung("Dong y khi dang lam: hien tien do (7/20), khong nhan lai", xem != null && xem.contains("(7/20)") && t.get("CA-01.1") == v && v[0] == 7);
+
+            // xong buoc 1 cho nhan thuong
+            v[0] = 20;
+            v[1] = 1;
+            KhoaBanDoGame.luiHoi(p.charDBID, KhoaBanDoGame.CHO_HOI_MS + 1);
+            KhoaBanDoGame.chan(p, 9101);
+            Kiem.dung("buoc 1 xong: hop nhan thuong", chuGoi(p, -32, 0).contains("Bước 1/2 đã xong: nhận thưởng để mở bước tiếp.")
+                    && chuGoi(p, -32, 0).endsWith("Nhận thưởng ngay?"));
+            KhoaBanDoGame.xoaHoi(p.charDBID);
+
+            // buoc 2
+            v[1] = 2;
+            KhoaBanDoGame.chanDiBo(p, 9101);
+            KhoaBanDoGame.sauKhiVaoMap(p);
+            Kiem.dung("buoc 2 chua nhan", chuGoi(p, -32, 0).contains("\nBước 2/2 (chưa nhận): hạ 20 Ekans ở Viridian.\n"));
+            KhoaBanDoGame.khiTraLoi(p, true);
+            Kiem.dung("Dong y: nhan buoc 2 (buoc 1 da xong)", t.containsKey("CA-01.2") && t.get("CA-01.2")[1] == 0);
+            t.get("CA-01.2")[1] = 2;
+            Kiem.dung("xong ca hai buoc: vao duoc", !KhoaBanDoGame.chanDiBo(p, 9101));
+
+            // buoc chua nhan duoc (cap): chi the nhanh, khong hop, Dong y gia khong nhan
+            final int soHop = dem(p, -32);
+            KhoaBanDoGame.xoaHoi(p.charDBID);
+            Kiem.dung("cua ai can cap 30: van chan", KhoaBanDoGame.chan(p, 9102));
+            Kiem.bang("cua ai chua nhan duoc: khong hop", soHop, dem(p, -32));
+            Kiem.dung("cua ai chua nhan duoc: the nhanh co ly do", p.cuoi().contains("Cần đạt cấp 30 để nhận."));
+            KhoaBanDoGame.khiTraLoi(p, true);
+            Kiem.dung("Dong y khong co hop: khong nhan", !t.containsKey("CA-03.1"));
+
+            // het han cho -500
+            KhoaBanDoGame.xoaHoi(q.charDBID);
+            tienDo(q).clear();
+            KhoaBanDoGame.chanDiBo(q, 9101);
+            final java.lang.reflect.Field fCho = KhoaBanDoGame.class.getDeclaredField("CHO");
+            fCho.setAccessible(true);
+            final Object h = ((ConcurrentHashMap<Integer, Object>) fCho.get(null)).get(Integer.valueOf(q.charDBID));
+            final java.lang.reflect.Field fLuc = h.getClass().getDeclaredField("luc");
+            fLuc.setAccessible(true);
+            final int soQ = dem(q, -32);
+            // gia lap qua han: thay bang hop cung noi dung nhung tao 20 giay truoc
+            final java.lang.reflect.Constructor<?> c = h.getClass().getDeclaredConstructors()[0];
+            c.setAccessible(true);
+            ((ConcurrentHashMap<Integer, Object>) fCho.get(null)).put(Integer.valueOf(q.charDBID),
+                    c.newInstance(9101, "CA-01.2", "a", "b", "c", fLuc.getLong(h) - 20000L));
+            KhoaBanDoGame.sauKhiVaoMap(q);
+            Kiem.bang("hop cho qua 15 giay: bo", soQ, dem(q, -32));
+
+            // So tay tat: chi the nhanh nhu cu
+            com.htbb.pokemon.LauDai.dat(false);
+            KhoaBanDoGame.xoaHoi(q.charDBID);
+            KhoaBanDoGame.chan(q, 9101);
+            Kiem.dung("So tay tat: khong hop, the nhanh cu", dem(q, -32) == soQ && q.cuoi().startsWith("Cần hoàn thành nhiệm vụ «Cửa ải: Rời đồng cỏ Pallet»"));
+        } finally {
+            com.htbb.pokemon.LauDai.dat(lauDaiCu);
+            fMau.set(null, mauCu);
+            KhoaBanDo.datBang(cu);
+            for (final int id : new int[]{9100, 9101, 9102}) {
+                RealController.mapList.remove(Integer.valueOf(id));
+            }
+            for (final NguoiChoi x : new NguoiChoi[]{p, q}) {
+                KhoaBanDoGame.xoaHoi(x.charDBID);
+                real.NhiemVuEngine.khiThoat(x);
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ tu dong (TuDong.kiemBat)
 
     static void tuDong() {
@@ -411,10 +680,19 @@ public final class KiemKhoaBanDo {
     }
 
     static void docMa() throws Exception {
-        Kiem.dung("di bo qua cong (goi 12): MapXuLyLenh.doChangeMap chan", doc("src/real/MapXuLyLenh.java").contains("KhoaBanDoGame.chan(player, toMapID)"));
-        Kiem.dung("san Lien minh: MapLienDau.doChangeMap chan", doc("src/real/MapLienDau.java").contains("KhoaBanDoGame.chan(player, toMapID)"));
+        Kiem.dung("di bo qua cong (goi 12): MapXuLyLenh.doChangeMap chan", doc("src/real/MapXuLyLenh.java").contains("KhoaBanDoGame.chanDiBo(player, toMapID)"));
+        Kiem.dung("san Lien minh: MapLienDau.doChangeMap chan", doc("src/real/MapLienDau.java").contains("KhoaBanDoGame.chanDiBo(player, toMapID)"));
         final String map = doc("src/real/Map.java");
-        Kiem.dung("chot cuoi Map.move2Map", map.contains("if (mapID != player.mapID && KhoaBanDoGame.chan(player, mapID))"));
+        Kiem.dung("chot cuoi Map.move2Map", map.contains("if (mapID != player.mapID && KhoaBanDoGame.chanDiBo(player, mapID))"));
+        Kiem.dung("xa phu: chan kieu di bo (hop sau khi nap lai map)", map.contains("if (KhoaBanDoGame.chanDiBo(player, mapID)) {\n                        KhoaBanDoGame.giuTaiCho(player);"));
+        Kiem.dung("hop cua ai tra loi o Map.doPopup", map.contains("idpopup == KhoaBanDoGame.POPUP_CUA_AI && idActor == player.id")
+                && map.contains("KhoaBanDoGame.khiTraLoi(player, ok == 1)"));
+        Kiem.dung("hop cua ai gui khi client nap xong map (-500, ca san Lien minh)",
+                doc("src/real/MapXuLyLenh.java").contains("KhoaBanDoGame.sauKhiVaoMap(player)")
+                && doc("src/real/MapLienDau.java").contains("KhoaBanDoGame.sauKhiVaoMap(player)"));
+        final String kh = doc("../client_jar/src/game/networklogic/MessageHandler.java");
+        Kiem.dung("client: goi -32 = hop Co/Khong tra doCustomPopup (khong can client moi)",
+                kh.contains("case -32:") && kh.contains("Canvas.startYesNoDlg(text5") && kh.contains("doCustomPopup(idB, idPopup, text5, 1)"));
         Kiem.dung("xa phu cu (goi 79) chan truoc khi tru xu + nap lai map", map.contains("KhoaBanDoGame.giuTaiCho(player); // chua tru xu"));
         final String npc = doc("src/real/NpcDichVu.java");
         Kiem.dung("Pidgeot bay + Lapras do chan truoc khi tru phi", npc.contains("return; // chua tru xu") && npc.contains("return; // chua tru ve"));

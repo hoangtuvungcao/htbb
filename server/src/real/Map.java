@@ -9054,6 +9054,10 @@ public class Map implements Runnable {
             } catch (Exception var17) {
             }
 
+            if (idpopup == KhoaBanDoGame.POPUP_CUA_AI && idActor == player.id) {
+                KhoaBanDoGame.khiTraLoi(player, ok == 1); // hop "ban do khoa": nhan / xem cua ai ngay
+                return;
+            }
             if (idpopup == com.htbb.pokemon.HuongDanTanThu.POPUP_BO_QUA && idActor == player.id) {
                 HuongDanTanThuGame.khiXacNhan(player, ok == 1); // bo qua huong dan tan thu (co xac nhan)
                 return;
@@ -16784,7 +16788,7 @@ public class Map implements Runnable {
     public void move2Map(Char player, int x, int y, int mapID, int country) {
         this.checkTrade(player);
         // Khoa ban do (chot cuoi cho moi duong dich chuyen): chua du dieu kien -> o lai cho dang dung, nap lai map.
-        if (mapID != player.mapID && KhoaBanDoGame.chan(player, mapID)) {
+        if (mapID != player.mapID && KhoaBanDoGame.chanDiBo(player, mapID)) {
             x = player.x / 16;
             y = player.y / 16;
             mapID = player.mapID;
@@ -16915,7 +16919,7 @@ public class Map implements Runnable {
                     if (!isok) {
                         return;
                     }
-                    if (KhoaBanDoGame.chan(player, mapID)) {
+                    if (KhoaBanDoGame.chanDiBo(player, mapID)) {
                         KhoaBanDoGame.giuTaiCho(player); // chua tru xu; client dang o man cho -> nap lai map hien tai
                         return;
                     }

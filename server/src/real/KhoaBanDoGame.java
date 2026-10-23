@@ -100,13 +100,29 @@ public final class KhoaBanDoGame {
         return KhoaBanDo.lyDo(l, capCua(p), daXong(p, l), mien(p), tenMap(toMapId));
     }
 
-    /** Chan + bao (thong bao -26). true = bi chan (nguoi goi giu nguoi choi o cho cu, KHONG tru phi). */
+    /**
+     * Chan + bao NGAY (duong khong nap lai map: menu NPC bay / do / Arcanine, bai luyen, vat pham). true = bi chan (nguoi
+     * goi giu nguoi choi o cho cu, KHONG tru phi). Thieu cua ai -> hop xac nhan {@link #POPUP_CUA_AI} (xem {@link #baoChan}).
+     */
     public static boolean chan(final Char p, final int toMapId) {
+        return chan(p, toMapId, false);
+    }
+
+    /**
+     * Nhu {@link #chan} cho duong ma client NAP LAI map hien tai sau khi bi chan (di bo qua cong goi 12, move2Map, xa phu):
+     * GameScr.onMap dong moi hop dang mo, nen hop cua ai cho toi khi client bao nap xong (goi 12 toMapID -500,
+     * {@link #sauKhiVaoMap}).
+     */
+    public static boolean chanDiBo(final Char p, final int toMapId) {
+        return chan(p, toMapId, true);
+    }
+
+    static boolean chan(final Char p, final int toMapId, final boolean sauNapMap) {
         final String ly = lyDoChan(p, toMapId);
         if (ly == null) {
             return false;
         }
-        baoChan(p, ly);
+        baoChan(p, toMapId, ly, sauNapMap);
         try {
             com.htbb.log.Nhat.thongTin("KHOA_MAP", "chan " + p.charname + " cap " + capCua(p) + " -> map " + toMapId);
         } catch (final Throwable ignored) {
@@ -128,12 +144,198 @@ public final class KhoaBanDoGame {
         }
     }
 
+    // ------------------------------------------------------------------ hop cua ai (bi chan vi chua xong cua ai)
+
     /**
-     * Bao bi chan: client >= 902 = the nhanh ThongBao.LOI (dong 1 dieu kien, dong 2 goi y So tay); client cu = chu
-     * -26 (bieu ngu tu tat) - KHONG hop thoai chan.
+     * Popup -32 (MessageCreator.createMsgPopUp, client 0.9.7+ deu co: hop Có / Không, 0.9.3+ "Huỷ" / "Đồng ý"); tra loi o
+     * Map.doPopup -> {@link #khiTraLoi}. 96 = bo qua huong dan, 97-99 vong quay.
+     */
+    public static final int POPUP_CUA_AI = 95;
+    /** Mot hop / nhan vat / ban do moi chung nay; trong luc do dam vao bien chi hien the nhanh (khong hop). */
+    public static final long CHO_HOI_MS = 10000L;
+    /** Hop cho -500 qua han nay thi bo (client khong bao nap xong). */
+    static final long HAN_CHO_MS = 15000L;
+    /** So tay to dam cua ai cua ban do bi chan trong chung nay. */
+    static final long TO_DAM_MS = 300000L;
+
+    /** Mot lan hoi: ban do goc, buoc cuoi cua ai, chu hai dong (the nhanh), chu hop (null = chi bao). */
+    static final class Hoi {
+        final int goc;
+        final String maCuoi;
+        final String chinh;
+        final String phu;
+        final String hop;
+        final long luc;
+
+        Hoi(final int goc, final String maCuoi, final String chinh, final String phu, final String hop, final long luc) {
+            this.goc = goc;
+            this.maCuoi = maCuoi;
+            this.chinh = chinh;
+            this.phu = phu;
+            this.hop = hop;
+            this.luc = luc;
+        }
+    }
+
+    /** charDBID -> {ban do goc, luc} lan hien hop gan nhat (chong hien lai khi dam bien lien tuc). */
+    private static final ConcurrentHashMap<Integer, long[]> DA_HOI = new ConcurrentHashMap<Integer, long[]>();
+    /** charDBID -> hop cho gui sau khi client nap lai map (-500). */
+    private static final ConcurrentHashMap<Integer, Hoi> CHO = new ConcurrentHashMap<Integer, Hoi>();
+    /** charDBID -> hop dang hien (bam Đồng ý dung mot lan). */
+    private static final ConcurrentHashMap<Integer, Hoi> DANG_HOI = new ConcurrentHashMap<Integer, Hoi>();
+    /** charDBID -> {ban do goc, luc, id ban do} lan bi chan gan nhat (So tay to dam cua ai can). */
+    private static final ConcurrentHashMap<Integer, long[]> VUA_CHAN = new ConcurrentHashMap<Integer, long[]>();
+
+    static long bayGio() {
+        return System.currentTimeMillis();
+    }
+
+    /** Hoi cho lan chan nay; null = khong phai thieu cua ai (chi thieu cap) / So tay tat / khong tim duoc buoc. */
+    static Hoi taoHoi(final Char p, final int toMapId, final long luc) {
+        final KhoaBanDo.Luat l = luatCua(toMapId);
+        if (l == null || l.ma.isEmpty() || !l.ma.startsWith("CA-") || daXong(p, l) || !com.htbb.pokemon.LauDai.bat()) {
+            return null;
+        }
+        final NhiemVuEngine.BuocCuaAi b = NhiemVuEngine.buocCuaAi(p, l.ma);
+        if (b == null) {
+            return null;
+        }
+        final int tt = b.trangThai();
+        final String[] d = KhoaBanDo.baoCuaAi(l, capCua(p), tenMap(toMapId), b.so, b.tong,
+                KhoaBanDo.moTaBuoc(b.m.mucTieuText, b.m.ten), tt, b.v == null ? 0L : b.v[0], b.m.soLuong, b.loiNhan);
+        final String hoi = KhoaBanDo.hoiCuaAi(tt, b.loiNhan);
+        return new Hoi(l.mapId, l.ma, d[0] + " " + d[1], d[2], hoi == null ? null : d[0] + "\n" + d[1] + "\n" + d[2] + "\n" + hoi, luc);
+    }
+
+    static boolean trongChoHoi(final Char p, final int goc, final long luc) {
+        final long[] a = DA_HOI.get(Integer.valueOf(p.charDBID));
+        return a != null && a[0] == goc && luc - a[1] < CHO_HOI_MS;
+    }
+
+    /**
+     * Bao bi chan. Thieu cua ai: hop xac nhan (dieu kien + buoc + tien do + duong So tay, Đồng ý = nhan / xem / nhan
+     * thuong) - toi da mot hop / {@link #CHO_HOI_MS} / ban do, giua cac lan chi the nhanh. Con lai (chi thieu cap):
+     * the nhanh nhu cu.
+     */
+    static void baoChan(final Char p, final int toMapId, final String ly, final boolean sauNapMap) {
+        final long luc = bayGio();
+        final Integer k = Integer.valueOf(p.charDBID);
+        Hoi h = null;
+        try {
+            h = taoHoi(p, toMapId, luc);
+        } catch (final Exception e) {
+            System.out.println("KhoaBanDoGame.taoHoi: " + e);
+        }
+        if (h == null) {
+            baoChan(p, ly);
+            return;
+        }
+        VUA_CHAN.put(k, new long[]{h.goc, luc, toMapId});
+        if (h.hop == null || trongChoHoi(p, h.goc, luc)) {
+            the(p, h.chinh, h.phu);
+            return;
+        }
+        if (sauNapMap) {
+            CHO.put(k, h);
+        } else {
+            hoi(p, h, luc);
+        }
+    }
+
+    static void hoi(final Char p, final Hoi h, final long luc) {
+        final Integer k = Integer.valueOf(p.charDBID);
+        DA_HOI.put(k, new long[]{h.goc, luc});
+        DANG_HOI.put(k, h);
+        p.sendMessage(MessageCreator.createMsgPopUp(p.id, POPUP_CUA_AI, h.hop));
+    }
+
+    /** Goi 12 toMapID -500 (client nap map xong, MapXuLyLenh / MapLienDau): gui hop cua ai dang cho. */
+    public static void sauKhiVaoMap(final Char p) {
+        if (p == null) {
+            return;
+        }
+        final Hoi h = CHO.remove(Integer.valueOf(p.charDBID));
+        if (h == null) {
+            return;
+        }
+        final long luc = bayGio();
+        if (luc - h.luc > HAN_CHO_MS || trongChoHoi(p, h.goc, luc)) {
+            return;
+        }
+        hoi(p, h, luc);
+    }
+
+    /** Map.doPopup id {@link #POPUP_CUA_AI}. Moi hop chi dung mot lan (bam hai lan khong nhan hai lan). */
+    public static void khiTraLoi(final Char p, final boolean dongY) {
+        if (p == null) {
+            return;
+        }
+        final Hoi h = DANG_HOI.remove(Integer.valueOf(p.charDBID));
+        if (h == null || !dongY) {
+            return;
+        }
+        synchronized (p.khoaNhiemVu()) {
+            NhiemVuEngine.khiDongYCuaAi(p, h.maCuoi);
+        }
+    }
+
+    /** Ma buoc cua ai can lam tiep cho ban do vua bi chan (So tay to dam); null = khong co. */
+    public static String buocVuaChan(final Char p) {
+        try {
+            final long[] a = p == null ? null : VUA_CHAN.get(Integer.valueOf(p.charDBID));
+            if (a == null || bayGio() - a[1] > TO_DAM_MS) {
+                return null;
+            }
+            final KhoaBanDo.Luat l = KhoaBanDo.luat((int) a[0]);
+            if (l == null || l.ma.isEmpty() || daXong(p, l)) {
+                return null;
+            }
+            final NhiemVuEngine.BuocCuaAi b = NhiemVuEngine.buocCuaAi(p, l.ma);
+            return b == null ? null : b.m.ma;
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    /** Duoi nhan hang to dam: " (mở <ten ban do>)". */
+    public static String duoiVuaChan(final Char p) {
+        final long[] a = p == null ? null : VUA_CHAN.get(Integer.valueOf(p.charDBID));
+        final String t = a == null ? "" : tenMap((int) a[2]);
+        return t.isEmpty() ? "" : " (mở " + t + ")";
+    }
+
+    /** Test: xoa trang thai hop / to dam cua nhan vat. */
+    public static void xoaHoi(final int idChar) {
+        final Integer k = Integer.valueOf(idChar);
+        DA_HOI.remove(k);
+        CHO.remove(k);
+        DANG_HOI.remove(k);
+        VUA_CHAN.remove(k);
+    }
+
+    /** Test: lui moc hop gan nhat (gia lap het chung cho). */
+    public static void luiHoi(final int idChar, final long ms) {
+        final long[] a = DA_HOI.get(Integer.valueOf(idChar));
+        if (a != null) {
+            a[1] -= ms;
+        }
+    }
+
+    /** The nhanh LOI hai dong (client cu: chu -26 mot cau). */
+    static void the(final Char p, final String chinh, final String phu) {
+        if (com.htbb.thongbao.ThongBao.coToast(p)) {
+            com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.LOI, chinh, phu, com.htbb.thongbao.ThongBao.HINH_KHONG, 0);
+        } else {
+            bao(p, com.htbb.thongbao.ThongBao.motCau(chinh, phu));
+        }
+    }
+
+    /**
+     * Bao bi chan (khong co hop): client >= 902 = the nhanh ThongBao.LOI (dong 1 dieu kien, dong 2 duong So tay); client
+     * cu = chu -26 (bieu ngu tu tat) - KHONG hop thoai chan.
      */
     static void baoChan(final Char p, final String s) {
-        final int i = s.indexOf(" Mở Sổ tay");
+        final int i = s.indexOf(" " + KhoaBanDo.DUONG_NHAN);
         final String chinh = i > 0 ? s.substring(0, i) : s;
         final String phu = i > 0 ? s.substring(i + 1) : "";
         if (com.htbb.thongbao.ThongBao.coToast(p)) {

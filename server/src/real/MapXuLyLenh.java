@@ -1979,6 +1979,7 @@ class MapXuLyLenh {
                 KenhChatGame.khiVaoBanDo(player); // lan dau trong phien: kenh chat, ban be online
                 NgoaiHinhGame.guiONhanh(player);  // 0.9.8: trang chieu (o nhanh) cua nhan vat - may chu giu
                 map.doJoinMapOk(player);
+                KhoaBanDoGame.sauKhiVaoMap(player); // vua bi chan o cong (nap lai map xong): hop cua ai
             } else if (player.mapID == Map.idMapChanNui) {
                 map.doReturnVillage(player);
             } else if (map.isMapOffline && player.mapID_the_mua_ban > -1) {
@@ -2044,7 +2045,7 @@ class MapXuLyLenh {
                 }
 
                 // Vung Hoenn: cong vao chi mo khi tran cap mua >= 91 (sv.lau_dai) va du cap - xem real.VungHoenn.
-                if (VungHoenn.chanVao(player, map, toMapID) || KhoaBanDoGame.chan(player, toMapID)) {
+                if (VungHoenn.chanVao(player, map, toMapID) || KhoaBanDoGame.chanDiBo(player, toMapID)) {
                     toMapID = player.mapID;
                     toTX = player.x / 16;
                     toTY = player.y / 16;

@@ -114,9 +114,83 @@ public final class KhoaBanDo {
         }
         sb.append(" để vào ").append(ten).append('.');
         if (thieuNv && l.ma.startsWith("CA-")) {
-            sb.append(" Mở Sổ tay huấn luyện → Thử thách cửa ải.");
+            sb.append(' ').append(DUONG_NHAN);
         }
         return sb.toString();
+    }
+
+    // ------------------------------------------------------------------ cau bao cua ai chi tiet (bi chan)
+
+    /** Duong that toi danh sach cua ai (NPC -90 -> So tay -527 -> "Nhiệm vụ của tôi" -> muc 7). */
+    public static final String DUONG = "NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → ";
+    public static final String DUONG_NHAN = "Nhận ở: " + DUONG + "Thử thách cửa ải.";
+    public static final String DUONG_XEM = "Xem ở: " + DUONG + "Đang làm.";
+    /** Trang thai buoc cua ai ke tiep. */
+    public static final int CHUA_NHAN = 0, DANG_LAM = 1, CHO_THUONG = 2;
+
+    /** "Cửa ải: Rời đồng cỏ Pallet" -> "Rời đồng cỏ Pallet" (ma neu khong co ten). */
+    public static String tenCuaAi(final Luat l) {
+        String t = l.tenNhiemVu.isEmpty() ? l.ma : l.tenNhiemVu;
+        for (final String tien : new String[]{"Cửa ải:", "Cửa ải"}) {
+            if (t.startsWith(tien) && t.length() > tien.length()) {
+                t = t.substring(tien.length()).trim();
+                break;
+            }
+        }
+        return t;
+    }
+
+    /** Muc tieu buoc "Hạ 20 Torchic ở Pallet." -> "hạ 20 Torchic ở Pallet" (bo dau cham cuoi, chu dau thuong). */
+    public static String moTaBuoc(final String mucTieu, final String ten) {
+        String s = mucTieu == null ? "" : mucTieu.trim();
+        if (s.isEmpty()) {
+            s = ten == null ? "" : ten.trim();
+            if (s.startsWith("Cửa ải:")) {
+                s = s.substring("Cửa ải:".length()).trim();
+            }
+        }
+        final int xd = s.indexOf('\n');
+        if (xd >= 0) {
+            s = s.substring(0, xd).trim();
+        }
+        while (s.endsWith(".")) {
+            s = s.substring(0, s.length() - 1).trim();
+        }
+        if (s.length() > 1 && Character.isUpperCase(s.charAt(0)) && !Character.isUpperCase(s.charAt(1))) {
+            s = Character.toLowerCase(s.charAt(0)) + s.substring(1);
+        }
+        return s;
+    }
+
+    /**
+     * Bi chan vi chua xong cua ai: ba dong {dieu kien, buoc hien tai + tien do, duong di trong So tay}. Vd
+     * {"Để vào Tây Cerulean cần xong cửa ải «Rời đồng cỏ Pallet».", "Bước 1/2: hạ 20 Torchic ở Pallet (7/20).",
+     * "Xem ở: NPC Đổi thưởng → … → Đang làm."}. {@code loiNhan}: ly do buoc chua nhan duoc (vd "Cần đạt cấp 8"), null =
+     * nhan duoc.
+     */
+    public static String[] baoCuaAi(final Luat l, final int cap, final String tenMap, final int so, final int tong,
+            final String moTa, final int trangThai, final long tienDo, final int can, final String loiNhan) {
+        final String ten = tenMap == null || tenMap.isEmpty() ? "bản đồ này" : tenMap;
+        final String chinh = "Để vào " + ten + " cần xong cửa ải «" + tenCuaAi(l) + "»"
+                + (cap < l.cap ? " và đạt cấp " + l.cap : "") + ".";
+        final String b = "Bước " + so + "/" + tong;
+        final String buoc;
+        if (trangThai == CHUA_NHAN) {
+            buoc = b + " (chưa nhận): " + moTa + "." + (loiNhan == null || loiNhan.isEmpty() ? "" : " " + loiNhan + " để nhận.");
+        } else if (trangThai == DANG_LAM) {
+            buoc = b + ": " + moTa + (can > 1 ? " (" + Math.min(tienDo, can) + "/" + can + ")" : "") + "."; // ha Gym: 1 tran, khong 0/1
+        } else {
+            buoc = b + " đã xong: nhận thưởng để " + (so < tong ? "mở bước tiếp." : "mở bản đồ.");
+        }
+        return new String[]{chinh, buoc, trangThai == CHUA_NHAN ? DUONG_NHAN : DUONG_XEM};
+    }
+
+    /** Cau hoi cuoi hop xac nhan (nut Đồng ý / Có); null = khong co viec gi lam ngay (chi bao). */
+    public static String hoiCuaAi(final int trangThai, final String loiNhan) {
+        if (trangThai == CHUA_NHAN) {
+            return loiNhan == null || loiNhan.isEmpty() ? "Nhận cửa ải ngay?" : null;
+        }
+        return trangThai == DANG_LAM ? "Xem tiến độ?" : "Nhận thưởng ngay?";
     }
 
     /** Cau bao khi ban do khong cho tu dong. */
