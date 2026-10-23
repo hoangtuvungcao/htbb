@@ -154,6 +154,33 @@ public final class HopChiTiet {
     public static final int[][] CHU = new int[80][4], NUT = new int[4][4];
     public static int soChu, soNut, demVe;
 
+    /** 0.9.11: thanh cuộn thân vẽ lần cuối (toạ độ màn): cột thX, rãnh thY..thY+thH, núm thN, giới hạn cuộn thLim */
+    static int thX, thY, thH, thN, thLim;
+    /** lượt kéo đang nắm núm thanh cuộn (không phải kéo chữ) */
+    public static boolean keoNum;
+    static int numDau, pyNumDau;
+
+    /**
+     * 0.9.11: gọi khi bắt đầu một lượt kéo trong thẻ (cuon = độ cuộn hiện tại). Nhấn (Canvas.pxLast / pyLast) lên thanh
+     * cuộn thân = kéo NÚM (cùng chiều con trỏ, theo tỉ lệ), lên rãnh = nhảy tới chỗ nhấn. Trả keoNum.
+     */
+    public static boolean batDauKeo(int cuon) {
+        keoNum = thH > 0 && thLim > 0 && ThanhCuon.trung(Canvas.pxLast, Canvas.pyLast, thX, 3, thY, thH);
+        if (keoNum) {
+            numDau = Math.max(0, Math.min(thLim, cuon));
+            if (!ThanhCuon.trenNum(Canvas.pyLast, thY, thH, thN, numDau, thLim)) {
+                numDau = ThanhCuon.toi(Canvas.pyLast, thY, thH, thN, thLim);
+            }
+            pyNumDau = Canvas.pyLast;
+        }
+        return keoNum;
+    }
+
+    /** Độ cuộn khi đang kéo núm (con trỏ ở Canvas.py). */
+    public static int cuonKeoNum() {
+        return ThanhCuon.keo(numDau, pyNumDau, Canvas.py, thH, thN, thLim);
+    }
+
     private static void ghiChu(int x, int y, int w, int h) {
         if (soChu < CHU.length) {
             CHU[soChu][0] = x;
@@ -325,11 +352,17 @@ public final class HopChiTiet {
             }
         }
         Canvas.resetTrans(g);
+        thH = 0;
         if (lim > 0) {
             // thanh cuộn mảnh bên phải thân
             int th = Math.max(10, hThanHien * hThanHien / Math.max(1, hThan));
             int ty = yThan + (hThanHien - th) * cuon / Math.max(1, lim);
             GiaoDien.khoi(g, x + w - 5, ty, 3, th, 1, ChuDe.CHU_NHAT);
+            thX = x + w - 5;
+            thY = yThan;
+            thH = hThanHien;
+            thN = Math.min(th, hThanHien);
+            thLim = lim;
         }
         // hàng chân: nút trong thẻ, dưới mọi chữ
         if (n > 0) {

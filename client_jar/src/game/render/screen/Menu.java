@@ -32,6 +32,9 @@ public class Menu extends Main {
     boolean transX = false;
     int cyBag = 0;
     int cylim = 0;
+    /** 0.9.11: đang kéo núm thanh cuộn */
+    boolean keoNum;
+    int cuonNumDau, pyNumDau;
 
     public Menu() {
         this.left = new Command("Chọn", new IAction() {
@@ -157,6 +160,10 @@ public class Menu extends Main {
         } else if (Canvas.isKeyPressed(8)) {
             setKey(1);
         }
+        if (keoThanh()) {
+            super.updateKey();
+            return;
+        }
         if (Canvas.isPointerDown && Canvas.isPointer(this.menuX, this.menuY, this.menuW, this.menuH)) {
             if (!this.trans) {
                 this.pa = this.cyBag;
@@ -207,6 +214,51 @@ public class Menu extends Main {
     }
 
     private boolean coHinh;
+
+    /** Thanh cuộn (như paintMenu): {x, rộng, y rãnh, cao rãnh, cao núm}; null = không có. */
+    int[] thanh() {
+        if (this.cylim <= 0 || this.menuItems == null || this.menuItems.size() == 0) {
+            return null;
+        }
+        int hThanh = this.menuH - 6;
+        int hNut = hThanh * 4 / this.menuItems.size();
+        if (hNut < 8) {
+            hNut = 8;
+        }
+        return new int[]{this.menuX + this.menuW - 4, 3, this.menuY + 3, hThanh, Math.min(hNut, hThanh)};
+    }
+
+    /**
+     * 0.9.11: kéo NÚM thanh cuộn - núm theo con trỏ, danh sách theo tỉ lệ cùng chiều (trước: kéo trên thanh = vuốt nội
+     * dung, ngược chiều); chạm rãnh = nhảy tới chỗ chạm. Trả true khi cú nhấn / thả thuộc về thanh.
+     */
+    boolean keoThanh() {
+        int[] t = thanh();
+        if (this.keoNum) {
+            if (t != null && (Canvas.dangGiu || Canvas.isPointerDown)) {
+                this.ctoyBag = this.cyBag = game.pokemon.ThanhCuon.keo(this.cuonNumDau, this.pyNumDau, Canvas.py, t[3], t[4], this.cylim);
+                return true;
+            }
+            this.keoNum = false;
+            this.trans = false;
+            Canvas.isPointerClick = false;   // cú thả của lượt kéo núm: không chọn mục
+            return true;
+        }
+        if (t != null && (Canvas.dangGiu || Canvas.isPointerDown)
+                && game.pokemon.ThanhCuon.trung(Canvas.pxLast, Canvas.pyLast, t[0], t[1], t[2], t[3])) {
+            int c = this.ctoyBag;
+            if (!game.pokemon.ThanhCuon.trenNum(Canvas.pyLast, t[2], t[3], t[4], c, this.cylim)) {
+                c = game.pokemon.ThanhCuon.toi(Canvas.pyLast, t[2], t[3], t[4], this.cylim);
+            }
+            this.keoNum = true;
+            this.cuonNumDau = c;
+            this.pyNumDau = Canvas.pyLast;
+            this.selected = -1;
+            this.ctoyBag = this.cyBag = game.pokemon.ThanhCuon.keo(c, this.pyNumDau, Canvas.py, t[3], t[4], this.cylim);
+            return true;
+        }
+        return false;
+    }
 
     public void paintMenu(Graphics g) {
         Canvas.resetTrans(g);

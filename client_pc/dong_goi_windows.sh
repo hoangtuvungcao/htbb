@@ -11,30 +11,35 @@
 #     --compress) thay thư mục jre/ Temurin đầy đủ. jlink luôn sinh runtime/lib/jrt-fs.jar (tệp của JDK, không phải game).
 #
 # Ra (client_pc/out/goi/):
-#   HTBB-PC-Setup-<PHIEN_BAN>.exe        bộ cài (Inno Setup qua wine; CAI_DAT=0 để bỏ): HTBB.exe (Launch4j, jar game
-#                                        NHÚNG trong exe) + runtime/ + am/ + GHI_CONG.txt + DOC_TRUOC.txt + giay_phep/
+#   HTBB-PC-Setup-<PHIEN_BAN>.exe        bộ cài (Inno Setup qua wine; CAI_DAT=0 để bỏ): HTBB.exe (trình mở Unicode
+#                                        client_pc/khoi_chay, 0.9.11) + HTBB-PC.jar (đã làm rối) + runtime/ + am/ +
+#                                        GHI_CONG.txt + DOC_TRUOC.txt + giay_phep/
 #   HTBB-PC-Windows-<PHIEN_BAN>.zip      cùng bố cục, bản chạy ngay (portable)
 #   HTBB-PC-Linux-<PHIEN_BAN>.AppImage   MỘT tệp (appimagetool): AppRun + runtime/ (jlink Linux) + jar trong squashfs
 #   HTBB-PC-Linux-<PHIEN_BAN>.tar.gz     HTBB/HTBB (trình chạy) + runtime/ (jar game giấu trong runtime/lib/htbb/)
 #   HTBB-PC-<PHIEN_BAN>.jar              jar PC (đã làm rối) - tệp riêng, chủ server quyết có phát hành không
 #
 # Công cụ (tải một lần vào client_pc/out/cong_cu/, KIỂM TRA mã băm, không đưa lên git):
-#   - Launch4j 3.50 (BSD-3, sourceforge.net/projects/launch4j) bản Linux: tạo HTBB.exe (bọc HTBB-PC.jar + biểu tượng
-#     client_jar/shared/brand/htbb.ico + thông tin phiên bản, jar game NHÚNG trong exe), JVM = runtime\ jlink đi kèm.
+#   - 0.9.11: HTBB.exe = trình mở nhỏ client_pc/khoi_chay/htbb_khoi_chay.c biên dịch bằng mingw-w64
+#     (x86_64-w64-mingw32-gcc + windres: biểu tượng, phiên bản, manifest bảng mã ANSI UTF-8): nạp runtime\bin\server\
+#     jvm.dll NGAY TRONG tiến trình HTBB.exe (JNI_CreateJavaVM, như java.exe) rồi chạy htbb.pc.Chay từ HTBB-PC.jar (jar
+#     đã làm rối nằm cạnh exe) - chạy được từ thư mục có dấu. Launch4j 3.50 (đầu ANSI) báo "This application requires a Java
+#     Runtime Environment" khi thư mục game có dấu (C:\Users\Nguyễn ...) nên KHÔNG dùng nữa; thiếu mingw-w64 là DỪNG
+#     (apt install gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64).
 #   - Eclipse Temurin 21 JDK x64 Windows + Linux (adoptium.net, GPLv2 + Classpath Exception) - lấy jmods để jlink;
 #     mã băm SHA-256 từ API Adoptium, lệch là DỪNG. Ghim phiên bản bằng JRE_BAN (mặc định 21.0.12.1+1).
 #   - appimagetool 1.9.1 + type2-runtime 20251108 (GitHub AppImage, MIT; SHA-256 ghim bên dưới).
 #   - Inno Setup 6.7.3 (miễn phí, jrsoftware.org, SHA-256 kiểm theo GitHub release) cài vào WINEPREFIX riêng out/cong_cu/wine nếu có wine.
-# Dùng tệp có sẵn: LAUNCH4J_DIR=..., WINEPREFIX=... + ISCC=... (đường dẫn ISCC.exe trong wine).
+# Dùng tệp có sẵn: WINEPREFIX=... + ISCC=... (đường dẫn ISCC.exe trong wine).
 #
-# Trên Windows (không có Linux): xem README.md mục "Windows" (jpackage --type exe/msi + WiX, hoặc Launch4j Windows).
+# Trên Windows (không có Linux): xem README.md mục "Windows" (jpackage --type exe/msi + WiX).
 set -e
 cd "$(dirname "$0")"
 GOC=$(pwd)
 doc_conf() { [ -f "../tools/phat-hanh/$1" ] && sed -n "s/^$2=//p" "../tools/phat-hanh/$1" | tail -1 | tr -d '\r" ' || true; }
 PHIEN_BAN=${PHIEN_BAN:-$(doc_conf phien_ban.conf PHIEN_BAN)}
 PHIEN_BAN=${PHIEN_BAN:-0.9.0}
-# phần số của phiên bản, tối đa 4 nhóm (bản vá 0.9.6.1 -> tên tệp 0.9.6.1); Launch4j cần đúng 4 nhóm (SO_PB4)
+# phần số của phiên bản, tối đa 4 nhóm (bản vá 0.9.6.1 -> tên tệp 0.9.6.1); VERSIONINFO cần đúng 4 nhóm (SO_PB4)
 SO_PB=$(printf '%s' "$PHIEN_BAN" | sed -n 's/^\([0-9]*\(\.[0-9]*\)\{1,3\}\).*/\1/p')
 SO_PB=${SO_PB:-0.9.0}
 SO_PB4=$(printf '%s.0.0.0' "$SO_PB" | cut -d. -f1-4)
@@ -59,17 +64,11 @@ kiem_sha() { # kiem_sha <tệp> <sha256>
     echo "SHA-256 OK $1"
 }
 
-# ---- 2. Launch4j ----
-if [ -z "$LAUNCH4J_DIR" ]; then
-    LAUNCH4J_DIR=$CC/launch4j
-    if [ ! -x "$LAUNCH4J_DIR/launch4j" ]; then
-        tai "https://sourceforge.net/projects/launch4j/files/launch4j-3/3.50/launch4j-3.50-linux-x64.tgz/download" "$CC/launch4j-3.50-linux-x64.tgz"
-        # md5 công bố trên SourceForge (RSS launch4j-3/3.50) + SHA-256 ghi lại lúc kiểm (2026-10-18)
-        echo "aad881ea23e7466b21bb0dd6a36b37a9  $CC/launch4j-3.50-linux-x64.tgz" | md5sum -c -
-        kiem_sha "$CC/launch4j-3.50-linux-x64.tgz" a6ad95c2fb6300410543288308b4eeae72ecd1df033928dfc524ba539bbc4d36
-        tar xzf "$CC/launch4j-3.50-linux-x64.tgz" -C "$CC"
-    fi
-fi
+# ---- 2. trình mở HTBB.exe: mingw-w64 (Unicode) ----
+MINGW=${MINGW:-x86_64-w64-mingw32}
+for c in gcc windres; do
+    command -v "$MINGW-$c" >/dev/null 2>&1 || { echo "LOI: thieu $MINGW-$c (apt install gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64)"; exit 1; }
+done
 
 # ---- 3. JDK Temurin (jmods) -> runtime jlink tối giản ----
 jdk() { # jdk <os> <đuôi> -> tệp JDK (tải nếu chưa có, kiểm SHA-256 với API Adoptium)
@@ -123,60 +122,51 @@ PG=../client_jar/tools/proguard.jar
 cp "$GOI/HTBB-PC-roi.jar" "$GOI/HTBB-PC-$TEN_PB.jar"
 echo "OK ProGuard $GOI/HTBB-PC-$TEN_PB.jar ($(wc -c < "$GOI/HTBB-PC-roi.jar") byte; ban do ten giu rieng: $GOI/mapping-pc.txt)"
 
-# ---- 4. HTBB.exe (Launch4j) ----
+# ---- 4. HTBB.exe (trình mở Unicode) ----
 W=$GOI/windows/HTBB
 rm -rf "$GOI/windows" && mkdir -p "$W"
-cat > "$GOI/launch4j.xml" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
-  <headerType>gui</headerType>
-  <jar>$GOC/$GOI/HTBB-PC-roi.jar</jar>
-  <outfile>$GOC/$W/HTBB.exe</outfile>
-  <errTitle>Huyen Thoai Bao Boi</errTitle>
-  <cmdLine></cmdLine>
-  <chdir>.</chdir>
-  <priority>normal</priority>
-  <downloadUrl>https://adoptium.net/</downloadUrl>
-  <supportUrl></supportUrl>
-  <stayAlive>false</stayAlive>
-  <restartOnCrash>false</restartOnCrash>
-  <manifest></manifest>
-  <icon>$GOC/../client_jar/shared/brand/htbb.ico</icon>
-  <jre>
-    <path>%EXEDIR%\\runtime</path>
-    <requiresJdk>false</requiresJdk>
-    <requires64Bit>true</requires64Bit>
-    <minVersion></minVersion>
-    <maxVersion></maxVersion>
-    <initialHeapSize>64</initialHeapSize>
-    <maxHeapSize>512</maxHeapSize>
-    <opt>-Dfile.encoding=UTF-8</opt>
-    <opt>-Dsun.java2d.uiScale=1</opt>
-    <opt>-Dsun.java2d.d3d=true</opt>
-    <opt>-Dsun.java2d.noddraw=false</opt>
-  </jre>
-  <versionInfo>
-    <fileVersion>$SO_PB4</fileVersion>
-    <txtFileVersion>$PHIEN_BAN</txtFileVersion>
-    <fileDescription>Huyen Thoai Bao Boi</fileDescription>
-    <copyright>HTBB</copyright>
-    <productVersion>$SO_PB4</productVersion>
-    <txtProductVersion>$PHIEN_BAN</txtProductVersion>
-    <productName>Huyen Thoai Bao Boi $TEN_PB</productName>
-    <companyName>HTBB</companyName>
-    <internalName>HTBB</internalName>
-    <originalFilename>HTBB.exe</originalFilename>
-    <trademarks></trademarks>
-    <language>ENGLISH_US</language>
-  </versionInfo>
-</launch4jConfig>
+# tuỳ chọn JVM (như launch4j.xml 0.9.10) nằm trong khoi_chay/htbb_khoi_chay.c; manifest: khoi_chay/htbb.manifest
+cp "$GOI/HTBB-PC-roi.jar" "$W/HTBB-PC.jar"
+KC=$GOI/khoi_chay
+mkdir -p "$KC"
+cp ../client_jar/shared/brand/htbb.ico "$KC/htbb.ico"
+cp khoi_chay/htbb.manifest "$KC/htbb.manifest"
+SO_RC=$(printf '%s' "$SO_PB4" | tr '.' ',')
+cat > "$KC/htbb.rc" <<EOF
+#include <winver.h>
+1 ICON "htbb.ico"
+1 24 "htbb.manifest"
+1 VERSIONINFO
+FILEVERSION $SO_RC
+PRODUCTVERSION $SO_RC
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "CompanyName", "HTBB"
+      VALUE "FileDescription", "Huyen Thoai Bao Boi"
+      VALUE "FileVersion", "$PHIEN_BAN"
+      VALUE "InternalName", "HTBB"
+      VALUE "LegalCopyright", "HTBB"
+      VALUE "OriginalFilename", "HTBB.exe"
+      VALUE "ProductName", "Huyen Thoai Bao Boi $TEN_PB"
+      VALUE "ProductVersion", "$PHIEN_BAN"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END
 EOF
-JB=java
-[ -n "$JAVA_HOME" ] && JB="$JAVA_HOME/bin/java"
-"$JB" -jar "$LAUNCH4J_DIR/launch4j.jar" "$GOC/$GOI/launch4j.xml" > "$GOI/launch4j.log" 2>&1 || { cat "$GOI/launch4j.log"; exit 1; }
-[ -f "$W/HTBB.exe" ] || { echo "LOI: Launch4j khong tao duoc HTBB.exe"; cat "$GOI/launch4j.log"; exit 1; }
-echo "OK $W/HTBB.exe ($(wc -c < "$W/HTBB.exe") byte)"
+(cd "$KC" && "$MINGW-windres" htbb.rc -O coff -o htbb.res.o)
+"$MINGW-gcc" -O2 -Wall -municode -mwindows -s -I"$CC/jdk_win/include" -I"$CC/jdk_win/include/win32" -o "$W/HTBB.exe" \
+    khoi_chay/htbb_khoi_chay.c "$KC/htbb.res.o" > "$KC/gcc.log" 2>&1 || { cat "$KC/gcc.log"; exit 1; }
+[ -f "$W/HTBB.exe" ] || { echo "LOI: khong tao duoc HTBB.exe"; exit 1; }
+echo "OK $W/HTBB.exe (trinh mo Unicode mingw-w64, $(wc -c < "$W/HTBB.exe") byte)"
 
 # ---- 5. thư mục chơi Windows: runtime\ (jlink) + dữ liệu + giấy phép ----
 cp -r "$GOI/runtime_win" "$W/runtime"
@@ -184,12 +174,11 @@ cp -r out/am "$W/am"
 cp out/GHI_CONG.txt "$W/GHI_CONG.txt"
 mkdir -p "$W/giay_phep"
 cp res/phong/OFL-NotoSans.txt res/phong/OFL-Baloo2.txt res/phong/GIAY_PHEP.txt "$W/giay_phep/"
-cp "$LAUNCH4J_DIR/LICENSE.txt" "$W/giay_phep/Launch4j-LICENSE.txt"
 cp ../client_jar/res/LICENSE-audio.txt "$W/giay_phep/LICENSE-audio.txt" 2>/dev/null || true
 cat > "$W/DOC_TRUOC.txt" <<EOF
 Huyền Thoại Bảo Bối - bản PC $PHIEN_BAN
 
-CHƠI: bấm đúp HTBB.exe (không cần cài Java - Java tối giản đi kèm trong thư mục runtime\\).
+CHƠI: bấm đúp HTBB.exe (không cần cài Java - Java tối giản đi kèm trong thư mục runtime\\, game: HTBB-PC.jar).
 Giải nén cả thư mục HTBB ra chỗ bất kỳ (vd C:\\Games\\HTBB), không chạy thẳng trong tệp zip.
 
 Phím: WASD / mũi tên đi · Space đánh · 1-5 chiêu · Q/E bình HP/MP · Tab mục tiêu · Enter chat
@@ -236,7 +225,11 @@ OutputBaseFilename=HTBB-PC-Setup-$TEN_PB
 SetupIconFile=$(winepath -w "$GOC/../client_jar/shared/brand/htbb.ico" 2>/dev/null)
 Compression=lzma2/ultra
 SolidCompression=yes
+; 0.9.11: mặc định cài cho mọi người dùng (Program Files); hộp chọn vẫn cho cài riêng người dùng (thư mục có thể
+; có dấu - HTBB.exe là trình mở Unicode nên vẫn chạy)
+PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
+UsePreviousPrivileges=yes
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 WizardStyle=modern
@@ -246,6 +239,10 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 
 [Files]
 Source: "windows\\HTBB\\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+
+[InstallDelete]
+; 0.9.10 trở về trước: HTBB.exe Launch4j + giấy phép Launch4j (không còn dùng)
+Type: files; Name: "{app}\\giay_phep\\Launch4j-LICENSE.txt"
 
 [Icons]
 Name: "{group}\\Huyền Thoại Bảo Bối"; Filename: "{app}\\HTBB.exe"

@@ -36,6 +36,9 @@ public final class ChonChieuNhanh extends Dialog {
     private int chon;
     private int cuon;
     private int[] bc;
+    /** 0.9.11: đang kéo núm thanh cuộn (hàng đầu lúc nhấn, py lúc nhấn) */
+    private boolean keoNum;
+    private int cuonNumDau, pyNumDau;
     private int lop;
 
     private ChonChieuNhanh() {
@@ -249,6 +252,10 @@ public final class ChonChieuNhanh extends Dialog {
                 this.cuon = r - hang + 1;
             }
         }
+        if (keoThanh(n, hang)) {
+            super.update();
+            return;
+        }
         if (Canvas.isPointerClick && Math.abs(Canvas.pyLast - Canvas.py) <= 10 && Math.abs(Canvas.pxLast - Canvas.px) <= 10) {
             int px = Canvas.px, py = Canvas.py;
             String[] nut = nutChan();
@@ -279,6 +286,46 @@ public final class ChonChieuNhanh extends Dialog {
             Canvas.isPointerClick = false;
         }
         super.update();
+    }
+
+    /** Thanh cuộn của lưới (như paint): {x, rộng, y rãnh, cao rãnh, cao núm}; null = không có thanh. */
+    int[] thanh(int n, int hang) {
+        int cmax = OChieuNhanh.cuonToiDa(this.bc, n);
+        if (cmax <= 0) {
+            return null;
+        }
+        int hThanh = hang * this.bc[6];
+        return new int[]{this.bc[0] + this.bc[2] - 6, 3, this.bc[7], hThanh, Math.max(8, hThanh * hang / (hang + cmax))};
+    }
+
+    /**
+     * 0.9.11: kéo NÚM thanh cuộn - núm theo con trỏ, hàng theo tỉ lệ cùng chiều (trước: cú kéo trên thanh bị coi như
+     * vuốt nội dung = ngược chiều); chạm rãnh = nhảy tới chỗ chạm. Trả true khi cú nhấn / thả thuộc về thanh.
+     */
+    boolean keoThanh(int n, int hang) {
+        int[] t = thanh(n, hang);
+        int cmax = OChieuNhanh.cuonToiDa(this.bc, n);
+        if (this.keoNum) {
+            if (t != null && (Canvas.dangGiu || Canvas.isPointerDown)) {
+                this.cuon = ThanhCuon.keo(this.cuonNumDau, this.pyNumDau, Canvas.py, t[3], t[4], cmax);
+                return true;
+            }
+            this.keoNum = false;
+            Canvas.isPointerClick = false;   // cú thả của lượt kéo núm: không chọn hàng / không vuốt
+            return true;
+        }
+        if (t != null && (Canvas.dangGiu || Canvas.isPointerDown) && ThanhCuon.trung(Canvas.pxLast, Canvas.pyLast, t[0], t[1], t[2], t[3])) {
+            int c = this.cuon;
+            if (!ThanhCuon.trenNum(Canvas.pyLast, t[2], t[3], t[4], c, cmax)) {
+                c = ThanhCuon.toi(Canvas.pyLast, t[2], t[3], t[4], cmax);
+            }
+            this.keoNum = true;
+            this.cuonNumDau = c;
+            this.pyNumDau = Canvas.pyLast;
+            this.cuon = ThanhCuon.keo(c, this.pyNumDau, Canvas.py, t[3], t[4], cmax);
+            return true;
+        }
+        return false;
     }
 
     public void paint(Graphics g) {

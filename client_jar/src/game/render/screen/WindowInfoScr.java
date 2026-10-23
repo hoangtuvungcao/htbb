@@ -336,6 +336,7 @@ public class WindowInfoScr extends Screen {
         g.translate(0, cmy);
         game.pokemon.GiaoDien.moClip(g);
         game.pokemon.KieuO.thanhCuon(g, wr + 2, 0, 5 * s, Math.max(5, n) * s, cmy, 5 * s);
+        nhoThanhLuoi(g, wr + 2, 5 * s, Math.max(5, n) * s);
     }
 
     public void setSize(int wBig, int hBig, int numW, int numH, int wSmall, int hSmall) {
@@ -394,8 +395,9 @@ public class WindowInfoScr extends Screen {
                 if (!this.trans) {
                     this.pa = cmyText;
                     this.trans = true;
+                    game.pokemon.HopChiTiet.batDauKeo(cmyText);   // 0.9.11: nhấn lên thanh cuộn = kéo núm
                 }
-                cmtoYText = this.pa + (Canvas.pyLast - Canvas.py);
+                cmtoYText = game.pokemon.HopChiTiet.keoNum ? game.pokemon.HopChiTiet.cuonKeoNum() : this.pa + (Canvas.pyLast - Canvas.py);
                 if (cmtoYText < 0) {
                     cmtoYText = 0;
                 }
@@ -2200,7 +2202,55 @@ public class WindowInfoScr extends Screen {
         }
     }
 
+    /** 0.9.11: thanh cuộn lưới / danh sách vẽ ở khung trước (toạ độ màn): cột thLuoiX, rãnh thLuoiY..+thLuoiH, núm thLuoiN */
+    private int thLuoiX, thLuoiY, thLuoiH, thLuoiN;
+    private boolean keoNumLuoi;
+    private int numDauLuoi, pyNumLuoi;
+
+    /** Nhớ chỗ thanh cuộn vừa vẽ bằng KieuO.thanhCuon(g, x, 0, h, tong, cmy, h) (để kéo núm). */
+    private void nhoThanhLuoi(Graphics g, int x, int h, int tong) {
+        if (tong <= h || h < 8 || cmyLim <= 0) {
+            return;
+        }
+        this.thLuoiX = x + g.getTranslateX();
+        this.thLuoiY = g.getTranslateY();
+        this.thLuoiH = h;
+        this.thLuoiN = Math.min(h, Math.max(6, h * h / tong));
+    }
+
+    /**
+     * 0.9.11: kéo NÚM thanh cuộn lưới - núm theo con trỏ, nội dung theo tỉ lệ cùng chiều; chạm rãnh = nhảy tới chỗ
+     * chạm. Trả true khi cú nhấn / thả thuộc về thanh.
+     */
+    private boolean keoThanhLuoi() {
+        if (this.keoNumLuoi) {
+            if (Canvas.dangGiu || Canvas.isPointerDown) {
+                cmtoY = cmy = game.pokemon.ThanhCuon.keo(this.numDauLuoi, this.pyNumLuoi, Canvas.py, this.thLuoiH, this.thLuoiN, cmyLim);
+                return true;
+            }
+            this.keoNumLuoi = false;
+            Canvas.isPointerClick = false;   // cú thả của lượt kéo núm: không chọn ô
+            return true;
+        }
+        if (this.thLuoiH > 0 && cmyLim > 0 && (Canvas.dangGiu || Canvas.isPointerDown)
+                && game.pokemon.ThanhCuon.trung(Canvas.pxLast, Canvas.pyLast, this.thLuoiX, 3, this.thLuoiY, this.thLuoiH)) {
+            int c = Math.max(0, Math.min(cmyLim, cmy));
+            if (!game.pokemon.ThanhCuon.trenNum(Canvas.pyLast, this.thLuoiY, this.thLuoiH, this.thLuoiN, c, cmyLim)) {
+                c = game.pokemon.ThanhCuon.toi(Canvas.pyLast, this.thLuoiY, this.thLuoiH, this.thLuoiN, cmyLim);
+            }
+            this.keoNumLuoi = true;
+            this.numDauLuoi = c;
+            this.pyNumLuoi = Canvas.pyLast;
+            cmtoY = cmy = game.pokemon.ThanhCuon.keo(c, this.pyNumLuoi, Canvas.py, this.thLuoiH, this.thLuoiN, cmyLim);
+            return true;
+        }
+        return false;
+    }
+
     private void updateKeyMain() {
+        if (!this.isShowText && keoThanhLuoi()) {
+            return;
+        }
         boolean changeFocus = false;
         if (Canvas.isPointer(this.x + this.x0, this.y + this.y0, this.w, this.h)) {
             if (index[focusTab] == 26) {
@@ -2784,6 +2834,7 @@ public class WindowInfoScr extends Screen {
 
     @Override
     public void paint(Graphics g) {
+        this.thLuoiH = 0;
         Canvas.gameScr.paint(g);
         g.translate(this.x, this.y);
         // pokemon: khung theo bề ngang / cao của tab (rk x hk), mọi vị trí tính từ khung
@@ -2905,6 +2956,7 @@ public class WindowInfoScr extends Screen {
                 g.translate(0, cmy);
                 g.setClip(-10, -40, this.rk + 20, this.hk + 40);
                 game.pokemon.KieuO.thanhCuon(g, (this.numW * this.wSmall) + 2, 0, 5 * this.hSmall, soHang * this.hSmall, cmy, 5 * this.hSmall);
+                nhoThanhLuoi(g, (this.numW * this.wSmall) + 2, 5 * this.hSmall, soHang * this.hSmall);
                 break;
             case 21:
             case 25:
