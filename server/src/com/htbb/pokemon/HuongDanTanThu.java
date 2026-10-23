@@ -13,8 +13,8 @@ package com.htbb.pokemon;
  *                    0.9.7 hien tien do x/y nhu nhiem vu nhat do, khong can goi tin moi.
  *  Bo qua          = mot lan, co xac nhan; nhay toi buoc dau tien sau huong dan va NHAN DU thuong cac buoc con lai (thuoc,
  *                    trang bi, xu, EXP) - khong mat gi can ve sau.
- *  Moi             = nhan vat dang o buoc 1 chua nhan, vua vao lang (ban do nap 0 / 70 / 80): menu Lam / Bo qua (mot lan
- *                    moi phien). Nhan vat cu da qua huong dan: khong ep, chi Pokemon cap thap ({@link #CAP_XEM_LAI}) thay
+ *  Moi             = nhan vat dang o buoc 1 chua nhan, vua vao lang (ban do nap 0 / 70 / 80): menu Lam / Bo qua MOT LAN
+ *                    MOI NHAN VAT (dau HoSoLauDai.hdMoi ghi CSDL ngay - dang nhap lai / khoi dong lai khong moi nua). Nhan vat cu da qua huong dan: khong ep, chi Pokemon cap thap ({@link #CAP_XEM_LAI}) thay
  *                    muc "Huong dan tan thu" (xem lai cong dung NPC) trong So tay.
  * </pre>
  * Kiem thu: test/KiemHuongDanTanThu.
@@ -106,11 +106,16 @@ public final class HuongDanTanThu {
     }
 
     /**
-     * Moi Lam / Bo qua khi vao lang: nhan vat moi tinh (buoc 1, chua nhan), o lang, chua moi trong phien nay.
+     * Moi Lam / Bo qua khi vao lang: nhan vat moi tinh (buoc 1, chua nhan, Pokemon cap thap), o lang, CHUA TUNG duoc moi
+     * (dau luu theo nhan vat - HoSoLauDai.hdMoi - khong chi trong phien: da chon Lam / Bo qua, dang nhap lai hay may chu
+     * khoi dong lai deu khong moi nua).
      * @param trangThai NewCharQuest.state_quest (0 = chua nhan)
+     * @param daMoi da moi nhan vat nay (bat ky phien nao)
+     * @param cap cap Pokemon hien tai
      */
-    public static boolean nenMoi(final int idChinh, final int trangThai, final int banDoNap, final int soBuoc, final boolean daMoi) {
-        return !daMoi && soBuoc > 0 && idChinh == 0 && trangThai == 0 && laLang(banDoNap);
+    public static boolean nenMoi(final int idChinh, final int trangThai, final int banDoNap, final int soBuoc, final boolean daMoi,
+            final int cap) {
+        return !daMoi && soBuoc > 0 && idChinh == 0 && trangThai == 0 && cap <= CAP_XEM_LAI && laLang(banDoNap);
     }
 
     /** Muc "Huong dan tan thu" (xem lai cong dung NPC) trong So tay: dang huong dan, hoac Pokemon cap thap da qua. */

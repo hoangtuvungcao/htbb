@@ -89,6 +89,10 @@ public final class LauDaiNhanVat {
             }
             final int hom = LauDai.ngayHienTai();
             synchronized (h) {
+                if (h.ngayDauTien != 0 && h.hdMoi == 0) {
+                    // da vao game o lan dang nhap truoc (ban cu moi Lam / Bo qua moi phien): khong moi lai nua
+                    h.hdMoi = 1;
+                }
                 if (h.ngayDauTien == 0) {
                     h.ngayDauTien = Math.max(1, hom + 1); // +1: ngay 0 van khac "chua dat"
                 }
@@ -101,8 +105,26 @@ public final class LauDaiNhanVat {
             NhiemVuLauDaiGame.khiNap(p, h);
             HuongDanTanThuGame.khiNap(p); // buoc huong dan luu theo du lieu buoc cu -> nhan lai buoc do
             TangTocGame.khiNap(p, h);
+            // ghi ngay (khong doi lan luu nhan vat): dau "da chuyen nhiem vu chinh" (nc) va "da moi huong dan" (hm) mat
+            // khi may chu tat dot ngot thi lan sau chuyen lai nhiem vu chinh theo cap (ve buoc 1 huong dan) va moi lai.
+            luuNgay(p, h);
         } catch (final Exception e) {
             System.out.println("LauDaiNhanVat.khiNap: " + e);
+        }
+    }
+
+    /** Ghi ho so ngay (khong ghi moc thoat nhu {@link #luu}). Loi CSDL: giu co ban de lan luu sau ghi lai. */
+    static void luuNgay(final Char p, final HoSoLauDai h) {
+        if (p == null || h == null || p.charDBID <= 0) {
+            return;
+        }
+        final String s;
+        synchronized (h) {
+            s = h.maHoa();
+            h.ban = false;
+        }
+        if (!DatabaseLauDai.luuHoSo(p.charDBID, s)) {
+            h.ban = true;
         }
     }
 

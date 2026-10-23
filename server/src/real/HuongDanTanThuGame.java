@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <pre>
  *  suKien (NhiemVuEngine.suKien, MOT diem goi)  buoc hanh dong (kieu 2): dung_thuoc / hoc_chieu / nang_cap / tha_cau...
  *                                                 khop kieu_muc_tieu cua buoc dang lam -> +1 dau tap -> Char.checkFinishQuest
- *                                               "den_ban_do" o lang, buoc 1 chua nhan -> menu Lam / Bo qua (mot lan / phien)
+ *                                               "den_ban_do" o lang, buoc 1 chua nhan -> menu Lam / Bo qua (mot lan / nhan vat)
  *  khiNhan (Char nhan nhiem vu chinh)           dieu kien da dat san (dang mac Ruy bang, he sinh thai tat) -> xong ngay
  *  khiNap (LauDaiNhanVat.khiNap)                buoc huong dan dang lam luu theo du lieu cu (mang tien do lech mau) -> lam lai buoc
  *  So tay (-527): muc Bo qua huong dan / Huong dan tan thu (cong dung tung NPC, Pokemon cap thap)
@@ -35,7 +35,7 @@ public final class HuongDanTanThuGame {
     /** ma HD.xx -> {kieu_muc_tieu, muc_tieu_id} (data_quest_lau_dai; engine nhiem vu khong nap dong huong_dan). */
     private static volatile java.util.Map<String, String[]> KIEU = Collections.emptyMap();
     private static volatile long napLuc;
-    /** charDBID da duoc moi Lam / Bo qua trong phien may chu nay. */
+    /** charDBID da duoc moi Lam / Bo qua (bo nho dem trong phien; dau that su: HoSoLauDai.hdMoi luu CSDL). */
     private static final Set<Integer> DA_MOI = Collections.newSetFromMap(new ConcurrentHashMap<Integer, Boolean>());
 
     private HuongDanTanThuGame() {
@@ -229,20 +229,43 @@ public final class HuongDanTanThuGame {
 
     // ------------------------------------------------------------------ moi khi vao lang
 
+    /**
+     * Moi Lam / Bo qua MOT LAN MOI NHAN VAT. Truoc day chi nho trong phien (DA_MOI): nhan vat da chon "Lam" (chua kip nhan
+     * buoc 1) hay da tat menu, dang nhap lai / may chu khoi dong lai la bi moi lai. Nay dau nam o ho so dai han
+     * (HoSoLauDai.hdMoi, ghi CSDL ngay luc moi); khong doc duoc ho so (loi CSDL) thi khong moi.
+     */
     static void moiNeuCan(final Char p) {
-        if (p.mainQuest == null) {
+        if (p.mainQuest == null || DA_MOI.contains(Integer.valueOf(p.charDBID))) {
             return;
         }
-        final boolean da = DA_MOI.contains(Integer.valueOf(p.charDBID));
-        if (!HuongDanTanThu.nenMoi(p.idMainQuest, p.mainQuest.state_quest, NpcTinhBanDo.banDoNap(p), soBuoc(), da)) {
+        final int cap = p.lvDetail == null ? 999 : p.lvDetail.lv;
+        if (!HuongDanTanThu.nenMoi(p.idMainQuest, p.mainQuest.state_quest, NpcTinhBanDo.banDoNap(p), soBuoc(), false, cap)) {
             return;
+        }
+        final com.htbb.pokemon.HoSoLauDai h = LauDaiNhanVat.lay(p);
+        if (h == null) {
+            return;
+        }
+        synchronized (h) {
+            if (h.hdMoi != 0) {
+                DA_MOI.add(Integer.valueOf(p.charDBID));
+                return;
+            }
         }
         final String lam = nhan("moi.lam");
         final String bo = nhan("moi.bo_qua");
         if (lam.isEmpty() || bo.isEmpty()) {
             return; // chua chay sql/htbb.sql (khoi them_huong_dan_tan_thu.sql)
         }
+        synchronized (h) {
+            if (h.hdMoi != 0) {
+                return;
+            }
+            h.hdMoi = 1;
+            h.ban = true;
+        }
         DA_MOI.add(Integer.valueOf(p.charDBID));
+        LauDaiNhanVat.luuNgay(p, h);
         ThongBao.gui(p, ThongBao.TIN, chu("moi.chao"), chu("moi.chao_phu"), ThongBao.HINH_KHONG, 0);
         p.sendMessage(MessageCreator.createMsgMenu(new String[]{lam, bo}, SoTayLauDai.NPC_ID, HuongDanTanThu.MENU_MOI));
     }

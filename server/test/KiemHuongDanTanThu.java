@@ -41,6 +41,7 @@ public final class KiemHuongDanTanThu {
         Kiem.nhom("Huong dan tan thu: 10 buoc dau chuoi chinh, bo qua, NPC lang, chuoi chinh sau huong dan");
         try {
             luat();
+            moiMotLan();
             duLieu();
         } catch (final Exception e) {
             e.printStackTrace();
@@ -66,11 +67,13 @@ public final class KiemHuongDanTanThu {
         Kiem.dung("dang huong dan: 0..9 / 10 buoc", HuongDanTanThu.dangHuongDan(0, 10) && HuongDanTanThu.dangHuongDan(9, 10));
         Kiem.sai("dang huong dan: 10 / 10 (chuong 1)", HuongDanTanThu.dangHuongDan(10, 10));
         Kiem.sai("dang huong dan: khong co buoc", HuongDanTanThu.dangHuongDan(0, 0));
-        Kiem.dung("moi: buoc 1 chua nhan o Blackthorn", HuongDanTanThu.nenMoi(0, 0, 70, 10, false));
-        Kiem.sai("moi: da moi trong phien", HuongDanTanThu.nenMoi(0, 0, 70, 10, true));
-        Kiem.sai("moi: ngoai lang (san 105)", HuongDanTanThu.nenMoi(0, 0, 105, 10, false));
-        Kiem.sai("moi: da qua buoc 1 (nhan vat cu khong bi ep)", HuongDanTanThu.nenMoi(3, 0, 0, 10, false));
-        Kiem.sai("moi: nhan vat cu da xong huong dan", HuongDanTanThu.nenMoi(57, 0, 80, 10, false));
+        Kiem.dung("moi: buoc 1 chua nhan o Blackthorn", HuongDanTanThu.nenMoi(0, 0, 70, 10, false, 1));
+        Kiem.sai("moi: da moi (dau luu theo nhan vat)", HuongDanTanThu.nenMoi(0, 0, 70, 10, true, 1));
+        Kiem.sai("moi: ngoai lang (san 105)", HuongDanTanThu.nenMoi(0, 0, 105, 10, false, 1));
+        Kiem.sai("moi: da qua buoc 1 (nhan vat cu khong bi ep)", HuongDanTanThu.nenMoi(3, 0, 0, 10, false, 1));
+        Kiem.sai("moi: nhan vat cu da xong huong dan", HuongDanTanThu.nenMoi(57, 0, 80, 10, false, 1));
+        Kiem.sai("moi: buoc 1 da nhan (dang lam)", HuongDanTanThu.nenMoi(0, 2, 0, 10, false, 1));
+        Kiem.sai("moi: Pokemon cap cao khong phai nguoi moi", HuongDanTanThu.nenMoi(0, 0, 0, 10, false, HuongDanTanThu.CAP_XEM_LAI + 1));
         Kiem.dung("xem lai: dang huong dan", HuongDanTanThu.coMucXemLai(40, 2, 10));
         Kiem.dung("xem lai: nhan vat cu cap thap", HuongDanTanThu.coMucXemLai(HuongDanTanThu.CAP_XEM_LAI, 30, 10));
         Kiem.sai("xem lai: nhan vat cu cap cao", HuongDanTanThu.coMucXemLai(HuongDanTanThu.CAP_XEM_LAI + 1, 30, 10));
@@ -161,6 +164,152 @@ public final class KiemHuongDanTanThu {
             }
         }
         return kq;
+    }
+
+    // ------------------------------------------------------------------ moi Lam / Bo qua: mot lan moi nhan vat (game)
+
+    static final List<Object> GOI = new ArrayList<Object>();
+
+    static real.Char nhanVat(final int id, final int idChinh, final int trangThai, final int cap, final real.Map lang) {
+        final real.Char p = new real.Char(null);
+        p.setSession(new io.Session(null, null, true) {
+            @Override
+            public void sendMessage(final io.Message m) {
+                GOI.add(m);
+            }
+        });
+        p.charname = "kiemhd" + id;
+        p.charDBID = id;
+        p.isBot = -1;
+        p.lvDetail.lv = cap;
+        p.map = lang;
+        p.idMainQuest = (short) idChinh;
+        p.mainQuest = new real.NewCharQuest((short) idChinh, (byte) 0);
+        p.mainQuest.state_quest = (short) trangThai;
+        return p;
+    }
+
+    /** So goi gui khi vao ban do (0 = khong moi). */
+    static int vaoLang(final real.Char p) {
+        GOI.clear();
+        real.HuongDanTanThuGame.suKien(p, "den_ban_do", "0", 1);
+        return GOI.size();
+    }
+
+    @SuppressWarnings("unchecked")
+    static void moiMotLan() throws Exception {
+        final boolean coCu = com.htbb.pokemon.LauDai.bat();
+        final java.util.Hashtable<Short, data.InfoQuestTemplate> nvCu = real.Map.allMainQuest;
+        final java.lang.reflect.Field fChu = real.HuongDanTanThuGame.class.getDeclaredField("CHU");
+        final java.lang.reflect.Field fNap = real.HuongDanTanThuGame.class.getDeclaredField("napLuc");
+        final java.lang.reflect.Field fDa = real.HuongDanTanThuGame.class.getDeclaredField("DA_MOI");
+        final java.lang.reflect.Field fCache = real.LauDaiNhanVat.class.getDeclaredField("CACHE");
+        fChu.setAccessible(true);
+        fNap.setAccessible(true);
+        fDa.setAccessible(true);
+        fCache.setAccessible(true);
+        final Object chuCu = fChu.get(null);
+        final long napCu = fNap.getLong(null);
+        final Set<Integer> daMoi = (Set<Integer>) fDa.get(null);
+        final Map<Integer, com.htbb.pokemon.HoSoLauDai> cache = (Map<Integer, com.htbb.pokemon.HoSoLauDai>) fCache.get(null);
+        final real.GemTemplate[] gemCu = real.Map.gemTemplate;
+        try {
+            if (real.Map.gemTemplate == null) {
+                real.Map.gemTemplate = new real.GemTemplate[0]; // new Char(null) can (khong CSDL)
+            }
+            com.htbb.pokemon.LauDai.dat(true);
+            final java.util.Hashtable<Short, data.InfoQuestTemplate> nv = new java.util.Hashtable<Short, data.InfoQuestTemplate>();
+            for (int i = 0; i < 12; i++) {
+                final data.InfoQuestTemplate t = new data.InfoQuestTemplate();
+                t.id = (short) i;
+                t.ma = i < 10 ? String.format("HD.%02d", i + 1) : "C01." + (i - 9);
+                t.totalitemget.add((short) 0);
+                t.itemget.add((short) 32000);
+                t.totalMonsKilled.add((short) 0);
+                t.monsterKill.add((short) 32000);
+                nv.put((short) i, t);
+            }
+            real.Map.allMainQuest = nv;
+            final Map<String, String[]> chu = new LinkedHashMap<String, String[]>();
+            chu.put("moi.chao", new String[]{"", "Chao"});
+            chu.put("moi.chao_phu", new String[]{"", "Phu"});
+            chu.put("moi.lam", new String[]{"Lam", "Lam"});
+            chu.put("moi.bo_qua", new String[]{"Bo qua", "Bo qua"});
+            fChu.set(null, chu);
+            fNap.setLong(null, Long.MAX_VALUE / 4); // khong nap lai tu CSDL trong luc kiem
+            final real.Map lang = new real.Map();
+            lang.mapIDLoadMap = 0;
+            final real.Map san = new real.Map();
+            san.mapIDLoadMap = 105;
+
+            // nhan vat moi tinh: moi dung mot lan, dau ghi vao ho so
+            final real.Char moi = nhanVat(990001, 0, 0, 1, lang);
+            cache.put(990001, new com.htbb.pokemon.HoSoLauDai());
+            Kiem.dung("nhan vat moi vao lang: duoc moi Lam / Bo qua", vaoLang(moi) >= 2);
+            Kiem.bang("moi xong: dau hdMoi = 1 trong ho so", 1, cache.get(990001).hdMoi);
+            Kiem.dung("dau hdMoi ghi vao chuoi ho so (CSDL)", cache.get(990001).maHoa().contains("hm=1"));
+            Kiem.bang("doi ban do trong phien: khong moi lai", 0, vaoLang(moi));
+
+            // dang nhap lai sau khi may chu khoi dong lai (DA_MOI rong, ho so nap tu chuoi da luu) - loi bao cao
+            final String daLuu = cache.get(990001).maHoa();
+            daMoi.clear();
+            cache.clear();
+            cache.put(990001, com.htbb.pokemon.HoSoLauDai.giaiMa(daLuu));
+            final real.Char lai = nhanVat(990001, 0, 0, 1, lang); // da chon "Lam" nhung chua kip nhan buoc 1
+            Kiem.bang("khoi dong lai + dang nhap lai (da chon Lam, chua nhan buoc 1): KHONG moi lai", 0, vaoLang(lai));
+
+            // da bo qua (chi so chuoi chinh = buoc dau sau huong dan) / da nhan nhiem vu chinh: khong moi
+            daMoi.clear();
+            cache.put(990002, new com.htbb.pokemon.HoSoLauDai());
+            Kiem.bang("da bo qua huong dan, chua nhan nhiem vu chinh: khong moi", 0, vaoLang(nhanVat(990002, 10, 0, 3, lang)));
+            Kiem.bang("da bo qua + da nhan nhiem vu chinh: khong moi", 0, vaoLang(nhanVat(990002, 10, 2, 3, lang)));
+            Kiem.bang("buoc 1 dang lam (da nhan): khong moi", 0, vaoLang(nhanVat(990002, 0, 2, 1, lang)));
+            Kiem.bang("ngoai lang: khong moi", 0, vaoLang(nhanVat(990002, 0, 0, 1, san)));
+            Kiem.bang("Pokemon cap cao o buoc 1: khong moi", 0, vaoLang(nhanVat(990002, 0, 0, 30, lang)));
+            Kiem.bang("cac lan khong moi tren khong dat dau", 0, cache.get(990002).hdMoi);
+
+            // khong doc duoc ho so (loi CSDL / chua co trong bo dem, khong CSDL) -> khong moi (khong ep nguoi choi)
+            Kiem.bang("khong co ho so: khong moi", 0, vaoLang(nhanVat(990003, 0, 0, 1, lang)));
+
+            // nhan vat cu (ho so da co ngay dau tien = da vao game truoc ban sua, ban cu moi moi phien): dang nhap -> dau
+            final com.htbb.pokemon.HoSoLauDai cu = new com.htbb.pokemon.HoSoLauDai();
+            cu.ngayDauTien = 5;
+            cu.nvChuyen = 1;
+            cache.put(990004, cu);
+            final real.Char nvCuChar = nhanVat(990004, 0, 0, 1, lang);
+            real.LauDaiNhanVat.khiNap(nvCuChar);
+            Kiem.bang("nhan vat cu dang nhap: dat dau da moi", 1, cu.hdMoi);
+            Kiem.bang("nhan vat cu buoc 1 chua nhan vao lang: khong moi lai", 0, vaoLang(nvCuChar));
+            final com.htbb.pokemon.HoSoLauDai moiTao = new com.htbb.pokemon.HoSoLauDai();
+            moiTao.nvChuyen = 1;
+            cache.put(990005, moiTao);
+            final real.Char nvMoi = nhanVat(990005, 0, 0, 1, lang);
+            real.LauDaiNhanVat.khiNap(nvMoi);
+            Kiem.bang("lan dang nhap dau cua nhan vat moi: chua dat dau", 0, moiTao.hdMoi);
+            Kiem.dung("lan dang nhap dau cua nhan vat moi: van duoc moi", vaoLang(nvMoi) >= 2);
+        } finally {
+            real.Map.gemTemplate = gemCu;
+            com.htbb.pokemon.LauDai.dat(coCu);
+            real.Map.allMainQuest = nvCu;
+            fChu.set(null, chuCu);
+            fNap.setLong(null, napCu);
+            daMoi.clear();
+            for (final int id : new int[]{990001, 990002, 990003, 990004, 990005}) {
+                cache.remove(id);
+            }
+        }
+
+        // nguon: bo qua / nhan nhiem vu chinh / chuyen nhiem vu chinh / dau moi deu ghi CSDL NGAY (khong doi luu dinh ky)
+        final String g = doc("src/real/HuongDanTanThuGame.java");
+        final String boQua = g.substring(g.indexOf("static boolean boQua("));
+        Kiem.dung("bo qua: ghi nhiem vu chinh ngay", boQua.contains("Database.instance.saveCharQuest(p.charDBID, p.getInfoQuestSave());"));
+        Kiem.dung("moi: ghi dau hdMoi ngay", g.contains("LauDaiNhanVat.luuNgay(p, h);"));
+        final String ch = doc("src/real/Char.java");
+        final int nhan = ch.indexOf("HuongDanTanThuGame.khiNhan(this, info);");
+        Kiem.dung("nhan nhiem vu chinh: ghi ngay", nhan > 0
+                && ch.indexOf("Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());", nhan) - nhan < 200);
+        Kiem.dung("vao game: ho so dai han (nc, hm) ghi ngay", doc("src/real/LauDaiNhanVat.java").contains("luuNgay(p, h);"));
+        Kiem.bang("HoSoLauDai: hm khu hoi", 1, com.htbb.pokemon.HoSoLauDai.giaiMa("hm=1").hdMoi);
     }
 
     static void duLieu() throws Exception {

@@ -95,6 +95,11 @@ public final class HoSoLauDai {
 
     /** Vi tri nhiem vu chinh CU (chuoi data_quest) + 1 truoc khi chuyen; 0 = khong co. */
     public int nvCu;
+    /**
+     * Huong dan tan thu: 1 = da hien menu moi Lam / Bo qua (hoac nhan vat cu da vao game truoc ban sua) - khong bao gio
+     * moi lai, ke ca sau khi dang nhap lai / khoi dong lai may chu (real.HuongDanTanThuGame.moiNeuCan).
+     */
+    public int hdMoi;
 
     // ---- tang toc (TangToc, THIET_KE 1.8): tran diem ngay/tuan chung ban cao cap + ban khoa ----
     public int tgNgay;
@@ -151,6 +156,7 @@ public final class HoSoLauDai {
         dat(b, "sp", moSuPham);
         dat(b, "nc", nvChuyen);
         dat(b, "nq", nvCu);
+        dat(b, "hm", hdMoi);
         dat(b, "kt", khTuan);
         dat(b, "ks", khSo);
         dat(b, "dg", doGiu);
@@ -283,6 +289,8 @@ public final class HoSoLauDai {
                 h.nvChuyen = iv;
             } else if (k.equals("nq")) {
                 h.nvCu = iv;
+            } else if (k.equals("hm")) {
+                h.hdMoi = iv;
             } else if (k.equals("kt")) {
                 h.khTuan = iv;
             } else if (k.equals("ks")) {
