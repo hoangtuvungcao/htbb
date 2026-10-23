@@ -677,7 +677,8 @@ public final class KiemHocChieu {
                 && g.indexOf("saveCharAuto(p);") > 0);
         Kiem.dung("goi -122 chi gui client >= 908", g.contains("BAN = 908") && g.contains("banClient >= BAN"));
         final String xl = doc("src/real/MapXuLyLenh.java");
-        Kiem.bang("hai khoi len cap dung HocChieuGame.congLenCap", 2, dem(xl, "HocChieuGame.congLenCap(p, newlevel)"));
+        Kiem.bang("hai duong cong EXP dung MOT khoi len cap chung (khiLenCap)", 2, dem(xl, "khiLenCap(p, currentLevel, currentXP, dxp, pos);"));
+        Kiem.bang("khoi len cap chung cong diem qua HocChieuGame.congLenCap (mot cho)", 1, dem(xl, "HocChieuGame.congLenCap(p, p.lvDetail.lv)"));
         Kiem.sai("MapXuLyLenh khong con tu cong 5 diem tiem nang", xl.contains("p.basepoint + 5 * (newlevel - p.lastLV)"));
         final String cs = doc("src/real/CharChiSo.java");
         Kiem.dung("CharChiSo ap Diem huan luyen HP / PP / Tan cong / Phong thu",

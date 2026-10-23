@@ -880,9 +880,11 @@ class MapChat {
                                             long exp = LevelDetail.getXpFromLevel(Integer.parseInt(info[1]));
                                             long xeppc = LevelDetail.getPCExp(Integer.parseInt(info[2]), Integer.parseInt(info[1]));
                                             p.lvDetail.setExpNew(exp + xeppc);
-                                            p.lastLV = (short) p.lvDetail.lv;
                                             // Pokemon: GM dat cap thi tien hoa theo cap moi luon.
                                             TienHoaPokemon.kiemTienHoaTheoCap(p);
+                                            // Truoc day: p.lastLV = lv (nang cap KHONG cong diem; ha cap roi len lai thi cong
+                                            // lan hai). Nay: nang cap -> thuong du tung cap qua ham chung; ha cap giu lastLV.
+                                            Map.thuongLenCap(p, "gm slv " + player.charname);
                                             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                                             p.sendToNearPlayer(MessageCreator.createCharInfo(p));
                                             Database.instance

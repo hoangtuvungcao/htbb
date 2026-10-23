@@ -4693,6 +4693,14 @@ public class Map implements Runnable {
         MapXuLyLenh.addXPForChar(p,dxp,isNhansam,pos);
     }
 
+    /**
+     * Phan thuong len cap (diem tiem nang / Diem huan luyen / ky nang cho MOI cap tu lastLV+1 toi cap hien tai, mot lan)
+     * + goi 32 + the "Lên cấp N!". Moi duong doi cap phai qua day (MapXuLyLenh.thuongLenCap). Tra so cap vua thuong.
+     */
+    public static int thuongLenCap(Char p, String nguon) {
+        return MapXuLyLenh.thuongLenCap(p, nguon);
+    }
+
     public static int randomMillion() {
         return r.nextInt(1000000);
     }

@@ -67,97 +67,8 @@ class MapXuLyLenh {
                 }
                 p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpcharevent map");
                 p.expRace = p.expRace + dxp + (long) (1 + Map.r.nextInt(5));
-                int newlevel = p.lvDetail.lv;
-                byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
-                if (newlevel >= currentLevel + 1) {
-                    // An mung len cap tu 60 tro len bang mua hoa toan server, giong tinh
-                    // luyen than binh thanh cong (yeu cau nguoi dung 18/09/2026). Kich hoat
-                    // MOI LAN len cap ma ket qua >=60, khong chi lan dau dat moc.
-                    if (newlevel >= 60) {
-                        Map.muaHoaAnMungToanServer();
-                    }
-
-                    if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
-                        p.nBinhTra = 1;
-                        p.potions[125]++;
-                        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
-                        Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
-                    }
-
-                    Database.instance
-                            .saveOrtherLog(
-                                    "",
-                                    p.charname,
-                                    currentLevel
-                                    + "_"
-                                    + newlevel
-                                    + " len lv:  xp cu: "
-                                    + currentXP
-                                    + " >> xpmoi: "
-                                    + currentXP
-                                    + " >> expadd: "
-                                    + dxp
-                                    + " > vi tri set: "
-                                    + pos,
-                                    "lenlevel"
-                            );
-                    if (p.getSession().bigProvider.equals("1") && !p.getSession().username.equals("") && p.getSession().privateProvider.equals("1")) {
-                        TeamServer.addQueue(p.getSession().username + "/LEVELUP/" + newlevel + "/" + p.charname);
-                    }
-
-                    Message m = new Message(33);
-                    m.dos.writeShort(p.id);
-                    m.dos.writeByte(newlevel);
-                    m.dos.writeInt(p.maxhp);
-                    m.dos.writeInt(p.maxmp);
-                    p.hp = p.maxhp;
-                    p.mp = p.maxmp;
-                    p.sendMessage(m);
-                    p.sendToNearPlayer(m);
-                    m.cleanup();
-                    // Pokemon (viec S5): tien hoa neu cap moi du moc. Dat TRUOC goi 3
-                    // ben duoi de goi 3 kem -90 da mang loai moi.
-                    TienHoaPokemon.kiemTienHoaTheoCap(p);
-                    SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
-                    KhoaBanDoGame.capNhat(p); // len cap: ban do vua du cap -> bao + gui lai goi -108
-                    if (newlevel > p.lastLV) {
-                        // diem tiem nang / chi so / diem ky nang + tu hoc chieu (HocChieuGame: luat cu khi tat)
-                        HocChieuGame.congLenCap(p, newlevel);
-                        m = new Message(32);
-                        m.dos.writeShort(p.id);
-                        m.dos.writeByte(2);
-                        m.dos.writeUTF("bp");
-                        m.dos.writeInt(p.basepoint);
-                        m.dos.writeUTF("sp");
-                        m.dos.writeInt(p.skillpoint);
-                        m.dos.writeByte(p.lvDetail.lv);
-                        m.dos.writeShort(p.lvDetail.percent);
-                        p.sendMessage(m);
-                        m.cleanup();
-                        p.calculateAttrib();
-                        p.hp = p.maxhp;
-                        p.mp = p.maxmp;
-                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                    } else {
-                        m = new Message(32);
-                        m.dos.writeShort(p.id);
-                        m.dos.writeByte(2);
-                        m.dos.writeUTF("bp");
-                        m.dos.writeInt(p.basepoint);
-                        m.dos.writeUTF("sp");
-                        m.dos.writeInt(p.skillpoint);
-                        m.dos.writeByte(p.lvDetail.lv);
-                        m.dos.writeShort(p.lvDetail.percent);
-                        p.sendMessage(m);
-                        m.cleanup();
-                        p.calculateAttrib();
-                        p.hp = p.maxhp;
-                        p.mp = p.maxmp;
-                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                    }
-                }
-
+                // Len cap: MOT ham chung cho moi duong cong EXP (xem khiLenCap) - thuong cho MOI cap, dung mot lan.
+                khiLenCap(p, currentLevel, currentXP, dxp, pos);
                 Message m = MessageCreator.createXPMessage(p, dxp);
                 p.sendMessage(m);
                 m.cleanup();
@@ -205,92 +116,175 @@ class MapXuLyLenh {
             }
             p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpforchar map");
             p.expRace = p.expRace + dxp + (long) (1 + Map.r.nextInt(5));
-            int newlevel = p.lvDetail.lv;
-            byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
-            if (newlevel >= currentLevel + 1) {
-                // An mung len cap tu 60 tro len bang mua hoa toan server, giong tinh luyen
-                // than binh thanh cong (yeu cau nguoi dung 18/09/2026). Kich hoat MOI LAN
-                // len cap ma ket qua >=60, khong chi lan dau dat moc. Ham nay va
-                // addXpCharEvent la HAI cho DUY NHAT xu ly len cap (xem chu thich dau file
-                // ve viec them tinh nang phai vao ca hai).
-                if (newlevel >= 60) {
-                    Map.muaHoaAnMungToanServer();
-                }
-
-                if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
-                    p.nBinhTra = 1;
-                    p.potions[125]++;
-                    p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                    p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
-                    Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
-                }
-
-                Database.instance
-                        .saveOrtherLog(
-                                "",
-                                p.charname,
-                                currentLevel + "_" + newlevel + " len lv:  xp cu: " + currentXP + " >> xpmoi: " + currentXP + " >> expadd: " + dxp + " > vi tri: " + pos,
-                                "lenlevel"
-                        );
-                if (p.getSession().bigProvider.equals("1") && !p.getSession().username.equals("") && p.getSession().privateProvider.equals("1")) {
-                    TeamServer.addQueue(p.getSession().username + "/LEVELUP/" + newlevel + "/" + p.charname);
-                }
-
-                Message m = new Message(33);
-                m.dos.writeShort(p.id);
-                m.dos.writeByte(newlevel);
-                m.dos.writeInt(p.maxhp);
-                m.dos.writeInt(p.maxmp);
-                p.hp = p.maxhp;
-                p.mp = p.maxmp;
-                p.sendMessage(m);
-                p.sendToNearPlayer(m);
-                m.cleanup();
-                // Pokemon (viec S5): ban sao thu hai cua khoi len cap - xem tren.
-                TienHoaPokemon.kiemTienHoaTheoCap(p);
-                    SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
-                    KhoaBanDoGame.capNhat(p); // len cap: ban do vua du cap -> bao + gui lai goi -108
-                if (newlevel > p.lastLV) {
-                    // diem tiem nang / chi so / diem ky nang + tu hoc chieu (HocChieuGame: luat cu khi tat)
-                    HocChieuGame.congLenCap(p, newlevel);
-                    m = new Message(32);
-                    m.dos.writeShort(p.id);
-                    m.dos.writeByte(2);
-                    m.dos.writeUTF("bp");
-                    m.dos.writeInt(p.basepoint);
-                    m.dos.writeUTF("sp");
-                    m.dos.writeInt(p.skillpoint);
-                    m.dos.writeByte(p.lvDetail.lv);
-                    m.dos.writeShort(p.lvDetail.percent);
-                    p.sendMessage(m);
-                    m.cleanup();
-                    p.calculateAttrib();
-                    p.hp = p.maxhp;
-                    p.mp = p.maxmp;
-                    p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                } else {
-                    m = new Message(32);
-                    m.dos.writeShort(p.id);
-                    m.dos.writeByte(2);
-                    m.dos.writeUTF("bp");
-                    m.dos.writeInt(p.basepoint);
-                    m.dos.writeUTF("sp");
-                    m.dos.writeInt(p.skillpoint);
-                    m.dos.writeByte(p.lvDetail.lv);
-                    m.dos.writeShort(p.lvDetail.percent);
-                    p.sendMessage(m);
-                    m.cleanup();
-                    p.calculateAttrib();
-                    p.hp = p.maxhp;
-                    p.mp = p.maxmp;
-                    p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                }
-            }
-
+            // Len cap: MOT ham chung cho moi duong cong EXP (xem khiLenCap) - thuong cho MOI cap, dung mot lan.
+            khiLenCap(p, currentLevel, currentXP, dxp, pos);
             Message m = MessageCreator.createXPMessage(p, dxp);
             p.sendMessage(m);
             m.cleanup();
         }
+    }
+
+    /**
+     * KHOI LEN CAP CHUNG (sua bao loi 23/10/2026 "lam nhiem vu / nhan goi qua len cap khong co diem tiem nang"). Truoc
+     * day addXpCharEvent va addXPForChar moi ham mot ban sao ~90 dong, buoc cong diem (HocChieuGame.congLenCap) nam
+     * SAU sau lenh phu (mua hoa, qua trung thu, log, TeamServer, goi 33, tien hoa, so tay, khoa ban do) khong boc
+     * try: mot lenh phu nem loi la bo luon phan thuong - addXpCharEvent (nhiem vu chinh / huong dan tan thu / hop qua /
+     * su kien) nuot loi im lang, cac noi goi addXPForChar o nhiem vu (NhiemVuEngine.traThuong), Keo hiem... cung nuot.
+     * Nay: moi lenh phu boc rieng, phan thuong (thuongLenCap) chay chac chan mot lan cho moi cap da len.
+     * Goi ca khi EXP nay khong len cap nhung lvDetail.lv &gt; lastLV (con no tu lan truoc) - tu bu.
+     */
+    static void khiLenCap(final Char p, final int currentLevel, final long currentXP, final long dxp, final String pos) {
+        final int newlevel = p.lvDetail.lv;
+        if (newlevel < currentLevel + 1) {
+            if (newlevel > p.lastLV) {
+                thuongLenCap(p, pos); // cap da len o lan truoc ma chua duoc thuong (khong le xay ra nua): bu ngay
+            }
+            return;
+        }
+        if (newlevel >= 60) {
+            // An mung len cap tu 60 tro len bang mua hoa toan server (yeu cau nguoi dung 18/09/2026), MOI lan len cap.
+            try {
+                Map.muaHoaAnMungToanServer();
+            } catch (final Exception e) {
+                loiPhu(p, "mua hoa", e);
+            }
+        }
+        try {
+            if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
+                p.nBinhTra = 1;
+                p.potions[125]++;
+                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+                p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
+                Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
+            }
+        } catch (final Exception e) {
+            loiPhu(p, "qua trung thu", e);
+        }
+        try {
+            Database.instance.saveOrtherLog("", p.charname, currentLevel + "_" + newlevel + " len lv:  xp cu: " + currentXP
+                    + " >> xpmoi: " + currentXP + " >> expadd: " + dxp + " > vi tri: " + pos, "lenlevel");
+            if (p.getSession() != null && p.getSession().bigProvider.equals("1") && !p.getSession().username.equals("")
+                    && p.getSession().privateProvider.equals("1")) {
+                TeamServer.addQueue(p.getSession().username + "/LEVELUP/" + newlevel + "/" + p.charname);
+            }
+        } catch (final Exception e) {
+            loiPhu(p, "log len cap", e);
+        }
+        try {
+            final Message m = new Message(33);
+            m.dos.writeShort(p.id);
+            m.dos.writeByte(newlevel);
+            m.dos.writeInt(p.maxhp);
+            m.dos.writeInt(p.maxmp);
+            p.hp = p.maxhp;
+            p.mp = p.maxmp;
+            p.sendMessage(m);
+            p.sendToNearPlayer(m);
+            m.cleanup();
+        } catch (final Exception e) {
+            loiPhu(p, "goi 33", e);
+        }
+        try {
+            // Pokemon (viec S5): tien hoa neu cap moi du moc. Dat TRUOC thuong (goi 3 kem -90 da mang loai moi, chuan hoa
+            // chieu trong congLenCap theo loai moi).
+            TienHoaPokemon.kiemTienHoaTheoCap(p);
+        } catch (final Exception e) {
+            loiPhu(p, "tien hoa", e);
+        }
+        // diem tiem nang / chi so / diem ky nang + tu hoc chieu (HocChieuGame: luat cu khi tat) + goi 32 + thong bao
+        thuongLenCap(p, pos);
+        try {
+            SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
+        } catch (final Exception e) {
+            loiPhu(p, "so tay", e);
+        }
+        KhoaBanDoGame.capNhat(p); // len cap: ban do vua du cap -> bao + gui lai goi -108 (tu boc try)
+    }
+
+    static void loiPhu(final Char p, final String viec, final Exception e) {
+        System.out.println("[LEN CAP] loi " + viec + " cua " + (p == null ? "?" : p.charname) + " (bo qua, van cong diem): " + e);
+    }
+
+    /**
+     * PHAN THUONG LEN CAP - noi DUY NHAT cong diem khi len cap (moi duong: danh quai, nhiem vu, huong dan tan thu, hop
+     * qua, Keo hiem, giftcode/su kien qua EXP, web / AdminPanel, lenh GM "slv"). Cong cho MOI cap tu lastLV+1 toi cap
+     * hien tai (nhay nhieu cap mot lan = du diem tung cap), dung MOT lan: lastLV la moc cao nhat da thuong, goi lai /
+     * dang nhap lai / xu ly lai khong cong lan hai. Luon gui goi 32 (bp/sp/cap/%) + thong tin nhan vat + hoi day HP/PP,
+     * va the "Lên cấp N! +X điểm ..." khi co cong.
+     *
+     * @return so cap vua duoc thuong (0 = khong co cap moi)
+     */
+    static int thuongLenCap(final Char p, final String nguon) {
+        int[] kq = null;
+        synchronized (p.lvDetail) {
+            final int cuLv = p.lastLV;
+            if (p.lvDetail.lv > p.lastLV) {
+                try {
+                    kq = HocChieuGame.congLenCap(p, p.lvDetail.lv);
+                } catch (final Exception e) {
+                    loiPhu(p, "cong diem", e);
+                    if (p.lastLV < p.lvDetail.lv) {
+                        // congLenCap hong giua chung: van dam bao diem luat cu (khong cong lan hai vi lastLV da nang)
+                        final int d = p.lvDetail.lv - p.lastLV;
+                        if (!HocChieuGame.dangHuanLuyen(p)) {
+                            p.basepoint = (short) (p.basepoint + 5 * d);
+                            p.strength = (short) (p.strength + d);
+                            p.agitity = (short) (p.agitity + d);
+                            p.spirit = (short) (p.spirit + d);
+                            p.health = (short) (p.health + d);
+                            p.luck = (short) (p.luck + d);
+                        }
+                        p.skillpoint = (short) (p.skillpoint + d);
+                        p.lastLV = (short) p.lvDetail.lv;
+                        kq = new int[]{d, HocChieuGame.dangHuanLuyen(p) ? 1 : 0, 5 * d, d, 0};
+                    }
+                }
+                if (kq != null) {
+                    try {
+                        Database.instance.saveOrtherLog("", p.charname, "thuong len cap " + cuLv + " -> " + p.lastLV + " (" + kq[0]
+                                + " cap) +" + kq[2] + (kq[1] == 1 ? " diem huan luyen" : " diem tiem nang") + " +" + kq[3]
+                                + " diem ky nang, nguon: " + nguon, "thuonglencap");
+                    } catch (final Exception ignored) {
+                    }
+                }
+            }
+        }
+        try {
+            final Message m = new Message(32);
+            m.dos.writeShort(p.id);
+            m.dos.writeByte(2);
+            m.dos.writeUTF("bp");
+            m.dos.writeInt(p.basepoint);
+            m.dos.writeUTF("sp");
+            m.dos.writeInt(p.skillpoint);
+            m.dos.writeByte(p.lvDetail.lv);
+            m.dos.writeShort(p.lvDetail.percent);
+            p.sendMessage(m);
+            m.cleanup();
+            p.calculateAttrib();
+            p.hp = p.maxhp;
+            p.mp = p.maxmp;
+            p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+        } catch (final Exception e) {
+            loiPhu(p, "goi 32", e);
+        }
+        if (kq == null) {
+            return 0;
+        }
+        com.htbb.thongbao.ThongBao.gui(p, com.htbb.thongbao.ThongBao.TIN, baoLenCap(p.lvDetail.lv, kq),
+                kq[1] == 1 ? "Còn " + kq[4] + " điểm · Pokémon → Chỉ số → Huấn luyện" : "Pokémon → Chỉ số → Tiềm năng / Kỹ năng",
+                com.htbb.thongbao.ThongBao.HINH_POKEMON, p.pokeDex);
+        return kq[0];
+    }
+
+    /** "Lên cấp 12! +10 điểm tiềm năng, +2 điểm kỹ năng" / "Lên cấp 12! +4 Điểm huấn luyện". */
+    static String baoLenCap(final int cap, final int[] kq) {
+        final StringBuilder b = new StringBuilder("Lên cấp ").append(cap).append("! +").append(kq[2])
+                .append(kq[1] == 1 ? " Điểm huấn luyện" : " điểm tiềm năng");
+        if (kq[3] > 0) {
+            b.append(", +").append(kq[3]).append(" điểm kỹ năng");
+        }
+        return b.toString();
     }
 
     /**

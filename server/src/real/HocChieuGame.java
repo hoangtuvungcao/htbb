@@ -433,15 +433,20 @@ public final class HocChieuGame {
     // ================================================================== len cap / tien hoa
 
     /**
-     * Thay khoi cong chi so khi len cap moi (MapXuLyLenh, hai ban sao). Luat cu: +5 diem tiem nang, +1 moi chi so,
+     * Thay khoi cong chi so khi len cap moi (MapXuLyLenh.thuongLenCap - mot cho cho moi duong). Luat cu: +5 diem tiem nang, +1 moi chi so,
      * +1 diem ky nang. Luat moi: chi so goc tinh lai theo cap + tang truong dong, +Diem huan luyen (suy tu cap),
      * tu hoc chieu moi.
+     * <p>
+     * Tra ve null khi khong co cap moi (capMoi &lt;= lastLV: da thuong roi - lastLV la moc cao nhat da thuong, nen goi
+     * lai / dang nhap lai khong cong lan hai), khong thi {so cap, 1 = Diem huan luyen / 0 = diem tiem nang,
+     * diem tiem nang hoac Diem huan luyen vua cong, diem ky nang vua cong, Diem huan luyen con chua dung}.
      */
-    public static void congLenCap(final Char p, final int capMoi) {
+    public static int[] congLenCap(final Char p, final int capMoi) {
         final int d = capMoi - p.lastLV;
         if (d <= 0) {
-            return;
+            return null;
         }
+        final int knTruoc = p.skillpoint;
         final boolean moi = dangHuanLuyen(p);
         if (!moi) {
             p.basepoint = (short) (p.basepoint + 5 * d);
@@ -453,12 +458,11 @@ public final class HocChieuGame {
         }
         p.skillpoint = (short) (p.skillpoint + d);
         p.lastLV = (short) capMoi;
+        int con = 0;
         if (moi) {
             apChiSoGoc(p);
             final TrangThai t = TT.get(p.charDBID);
-            final int con = tongDiem(p) - (t == null ? 0 : HuanLuyen.daDung(t.phanBo));
-            ThongBao.gui(p, ThongBao.TIN, "+" + (diemMoiCap() * d) + " Điểm huấn luyện",
-                    "Còn " + con + " điểm · Pokémon → Chỉ số → Huấn luyện", ThongBao.HINH_POKEMON, p.pokeDex);
+            con = tongDiem(p) - (t == null ? 0 : HuanLuyen.daDung(t.phanBo));
         }
         if (batChieu()) {
             final Learnset.KetQua kq = chuanHoa(p, false);
@@ -467,6 +471,8 @@ public final class HocChieuGame {
         if (coGoiMoi(p)) {
             guiTatCa(p);
         }
+        // Thong bao "Len cap N! +X ..." do MapXuLyLenh.thuongLenCap gui (mot cho cho moi duong len cap).
+        return new int[]{d, moi ? 1 : 0, moi ? diemMoiCap() * d : 5 * d, Math.max(0, p.skillpoint - knTruoc), Math.max(0, con)};
     }
 
     /** TienHoaPokemon.tienHoa: loai moi -&gt; chieu moi cua loai. */

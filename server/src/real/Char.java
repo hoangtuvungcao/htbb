@@ -203,6 +203,11 @@ public class Char extends LiveActor {
     public short basic;
     public short luck;
     public short lastLV;
+    /**
+     * Chi dung luc nap (CharNapDuLieu): so cap lvDetail.lv vuot lastLV da luu = cap da len ma CHUA duoc thuong (vd loi giua
+     * khoi len cap). initInfoFromDB cong bu theo luat cu roi dat lai 0 (ThuongLenCapNap.khiNap).
+     */
+    public int capChuaThuongKhiNap;
     public boolean exit;
     public boolean die_pk;
     public boolean gotWages;

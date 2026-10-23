@@ -64,7 +64,11 @@ class CharNapDuLieu {
                     self.lvDetail.setExpNew(xp);
                 }
                 self.lastLV = Short.parseShort(data[5]);
+                self.capChuaThuongKhiNap = 0;
                 if (self.lastLV < self.lvDetail.lv) {
+                    // Truoc day nang lastLV IM LANG = mat vinh vien diem cua cac cap do (luat cu). Nay ghi lai so cap
+                    // thieu de initInfoFromDB cong bu sau khi doc chi so (ThuongLenCapNap.khiNap).
+                    self.capChuaThuongKhiNap = self.lvDetail.lv - Math.max(1, (int) self.lastLV);
                     self.lastLV = (short) self.lvDetail.lv;
                 }
                 // Pokemon (viec S2/S3): suy loai tu class + cap neu tob_char.dex
@@ -1224,6 +1228,8 @@ class CharNapDuLieu {
                 self.basepoint = (short) Map.abs(Short.parseShort(data3[5]));
                 self.skillpoint = (short) Map.abs(Short.parseShort(data3[6]));
             }
+            // Len cap ma chua duoc thuong + bu diem thieu (sua bao loi 23/10/2026): TRUOC chot chong sua chi so, chi CONG.
+            ThuongLenCapNap.khiNap(self);
             // Kiem tra diem tiem nang (chong sua chi so): ap dung cho moi nhan vat.
             final int allBasicPoint = self.lvDetail.getBasicPoint(self.lastLV) + (self.lastLV - 1) * 5;
             final int tempSt = self.strength - Database.basicPoint[self.charClass][0];
