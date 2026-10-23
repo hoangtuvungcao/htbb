@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Sự kiện năm — lễ hội theo NGÀY THẬT (máy chủ game ghi tob_su_kien_lich, có âm lịch; /api/su-kien) + bảng chủ đề
- * 52 tuần Pokémon (data_su_kien_nam / cam-nang.json). Tuần tính như máy chủ: tuần ISO, đổi lúc 04:00 thứ Hai.
+ * 52 tuần Pokémon (data_su_kien_nam / cam-nang.json). Tuần tính như máy chủ: tuần ISO, đổi lúc 05:00 thứ Hai.
  */
 const lich = useLichSuKien()
 const SK = computed(() => lich.value)
@@ -50,7 +50,7 @@ const moTaLoai: Record<string, string> = {
 
     <WikiSection v-if="skNam.coDuLieu.value" id="lich-that" title="Lịch lễ hội 12 tháng tới">
       <p class="van">
-        Mỗi dịp lễ tự mở và đóng đúng ngày (giờ Việt Nam, đổi trạng thái lúc 04:00 — áp dụng ở lần bảo trì sáng sớm).
+        Mỗi dịp lễ tự mở và đóng đúng ngày (giờ Việt Nam, đổi trạng thái lúc 04:00; tuần Pokémon và Cúp PvP tuần đổi lúc 05:00 thứ Hai — áp dụng ở lần bảo trì sáng sớm).
         Tết Nguyên Đán, Giỗ Tổ Hùng Vương, Vu Lan và Trung Thu tính theo âm lịch. Website đăng tin trước 3 ngày, lúc mở và lúc kết thúc.
       </p>
       <ClientOnly>
@@ -126,7 +126,7 @@ const moTaLoai: Record<string, string> = {
         </template>
       </ClientOnly>
       <p class="mt-2 text-xs text-dimmed">
-        Tuần Pokémon tính theo tuần ISO, đổi tuần lúc 04:00 thứ Hai (giờ Việt Nam) — trùng với máy chủ. Ô "lễ Việt Nam" trong bảng
+        Tuần Pokémon tính theo tuần ISO, đổi tuần lúc 05:00 thứ Hai (giờ Việt Nam) — trùng với máy chủ và cùng mốc với nhiệm vụ tuần, Gym, Cúp PvP. Ô "lễ Việt Nam" trong bảng
         chỉ là vị trí gần đúng; ngày giờ thật của các dịp lễ xem mục Lịch lễ hội ở trên.
       </p>
     </WikiSection>

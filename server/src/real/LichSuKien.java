@@ -177,7 +177,7 @@ public final class LichSuKien implements Runnable {
     }
 
     /**
-     * Thay doi do LICH NAM (moc 04:00) cho bao tri hang ngay neu bao tri con <= {@link #HOAN_TOI_BAO_TRI_PHUT} phut:
+     * Thay doi do LICH NAM (moc le 04:00 / moc tuan thu Hai 05:00, ca hai truoc bao tri 05:01-05:30) cho bao tri hang ngay neu bao tri con <= {@link #HOAN_TOI_BAO_TRI_PHUT} phut:
      * khong khoi dong lai rieng. Thay doi cua admin (hoac lich khi bao tri con xa / da tat) van khoi dong lai
      * nhu cu (gom + bao truoc trong game).
      */

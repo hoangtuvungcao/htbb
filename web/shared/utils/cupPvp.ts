@@ -1,13 +1,13 @@
 /**
  * Cúp PvP tuần (0.9.7) — phần THUẦN dùng chung cho web (/cup, /api/cup). Khớp server com.htbb.pokemon.CupLogic:
- * tuần cúp = thứ Hai 04:00 giờ Việt Nam → thứ Hai tuần sau 04:00 (cùng mốc LichNam.thuHaiTuanIso / "tuần này" của web),
- * chỉ số tuần liên tục `tuanCup` (tuần 0 = thứ Hai 05/01/1970 04:00). Bảng điểm: tob_cup_dang_ky (máy chủ game ghi).
+ * tuần cúp = thứ Hai 05:00 giờ Việt Nam → thứ Hai tuần sau 05:00 (mốc tuần chung LichNam.GIO_DOI_TUAN — cùng nhiệm vụ tuần,
+ * Gym, tuần Pokémon; trước 0.9.14 là 04:00), chỉ số tuần liên tục `tuanCup` (tuần 0 = thứ Hai 05/01/1970 05:00). Bảng điểm: tob_cup_dang_ky (máy chủ game ghi).
  * Test: tests/cup-pvp.test.ts.
  */
 
 const NGAY = 86_400_000
 const LECH_VN = 7 * 3_600_000
-const GIO_DOI_TUAN = 4
+const GIO_DOI_TUAN = 5
 
 /** Chỉ số tuần cúp liên tục của thời điểm `ms`. */
 export function tuanCup(ms: number): number {
@@ -15,7 +15,7 @@ export function tuanCup(ms: number): number {
   return Math.floor((ngay - 4) / 7)
 }
 
-/** Mốc mở (ms) của tuần cúp `t`: thứ Hai 04:00 giờ Việt Nam. */
+/** Mốc mở (ms) của tuần cúp `t`: thứ Hai 05:00 giờ Việt Nam. */
 export function moTuanCup(t: number): number {
   return (t * 7 + 4) * NGAY + GIO_DOI_TUAN * 3_600_000 - LECH_VN
 }

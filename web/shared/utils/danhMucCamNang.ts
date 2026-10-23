@@ -246,12 +246,12 @@ export const LOAI_SU_KIEN: Record<string, { ten: string, mau: string, icon: stri
 
 /**
  * "Tuần Pokémon" (1..52) đang chạy lúc `d` — CÙNG cách tính với máy chủ game (com.htbb.pokemon.LichNam):
- * tuần ISO (bắt đầu thứ Hai, tuần 1 chứa ngày thứ Năm đầu năm), đổi tuần lúc 04:00 giờ Việt Nam.
+ * tuần ISO (bắt đầu thứ Hai, tuần 1 chứa ngày thứ Năm đầu năm), đổi tuần lúc 05:00 giờ Việt Nam (LichNam.GIO_DOI_TUAN).
  * Tuần ISO 53 (một số năm) dùng chung dòng tuần 52 của lịch.
  */
 export function tuanTrongNam(d: Date): number {
-  // giờ Việt Nam (UTC+7), lùi 4 giờ: 00:00–03:59 thứ Hai vẫn thuộc tuần trước
-  const t = new Date(d.getTime() + 7 * 3600_000 - 4 * 3600_000)
+  // giờ Việt Nam (UTC+7), lùi 5 giờ: 00:00–04:59 thứ Hai vẫn thuộc tuần trước
+  const t = new Date(d.getTime() + 7 * 3600_000 - 5 * 3600_000)
   const ngay = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate())
   const thu = (t.getUTCDay() + 6) % 7 // 0 = thứ Hai
   const thuNam = ngay + (3 - thu) * 86400000 // thứ Năm cùng tuần

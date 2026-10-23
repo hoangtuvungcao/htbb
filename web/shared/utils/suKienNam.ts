@@ -4,7 +4,8 @@
  * htbb_db.tob_su_kien_lich; web chỉ đọc (API /api/su-kien) và tính trạng thái / thông báo ở đây.
  *
  * Mọi giờ là giờ Việt Nam (Asia/Ho_Chi_Minh, UTC+7, không có giờ mùa hè), dạng 'YYYY-MM-DD HH:mm:ss' như CSDL trả.
- * Mốc mở / đóng mặc định 04:00 (trước bảo trì hằng ngày 04:30–05:30) — sự kiện có hiệu lực sau lần khởi động lại.
+ * Mốc mở / đóng mặc định: lễ / ngày cộng đồng 04:00, tuần Pokémon và Cúp PvP tuần thứ Hai 05:00 (mốc tuần chung) —
+ * cả hai trước bảo trì hằng ngày 05:01–05:30; sự kiện có hiệu lực sau lần khởi động lại đó.
  *
  * Test: tests/su-kien-nam.test.ts.
  */
@@ -103,7 +104,7 @@ export function khoangThoiGian(l: Pick<SuKienLan, 'mo' | 'dong'>): string {
   return `từ ${gioDep(msTuChuoi(l.mo))} đến ${gioDep(msTuChuoi(l.dong))}`
 }
 
-/** Số ngày làm tròn (cửa sổ luôn tròn ngày ở 04:00). */
+/** Số ngày làm tròn (cửa sổ luôn tròn ngày: 04:00 → 04:00 hoặc 05:00 → 05:00). */
 export function soNgaySuKien(l: Pick<SuKienLan, 'mo' | 'dong'>): number {
   return Math.max(1, Math.round((msTuChuoi(l.dong) - msTuChuoi(l.mo)) / NGAY))
 }
@@ -196,7 +197,7 @@ export function vietTin(l: SuKienLan, kieu: KieuTin, kem: SuKienLan[] = []): Tin
       doan.push(`## Đi kèm\n\n${phu.map(k => `- **${k.ten}**: ${khoangThoiGian(k)}. ${k.moTa}`).join('\n')}`)
     }
     doan.push(`## Thời gian\n\n- Mở: ${gioDep(mo)}\n- Đóng: ${gioDep(dong)}${l.ngayLe ? `\n- Dịp: ${l.ngayLe}` : ''}\n\n`
-      + 'Sự kiện bật / tắt tự động theo lịch, áp dụng ở lần bảo trì hằng ngày (khoảng 04:30–05:30).')
+      + 'Sự kiện bật / tắt tự động theo lịch, áp dụng ở lần bảo trì hằng ngày (khoảng 05:01–05:30).')
   }
   else {
     doan.push('Phần thưởng sự kiện chưa dùng vẫn ở trong hành trang; vật phẩm có hạn sẽ hết hạn theo mô tả của từng món. '

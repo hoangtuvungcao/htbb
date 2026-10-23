@@ -13,7 +13,7 @@
 #      20 3 * * * /opt/htbb/vps/don-log.sh >/dev/null 2>&1
 #
 #  Chay luc 03:20 la co y: BaoTriDaily trong server tu tat va khoi dong lai o
-#  mot moc NGAU NHIEN giua 04:30-05:30 (xem src/real/BaoTriDaily.java). Don
+#  mot moc NGAU NHIEN giua 05:01-05:30 (xem src/real/BaoTriDaily.java). Don
 #  truoc do thi khong dam vao luc server dang luu du lieu.
 #
 #  File .txt va game.out KHONG do script nay don - logrotate lo, xem

@@ -21,7 +21,7 @@ import java.util.List;
  *     cung tai khoan / thiet bi / IP (XepHangPvp.Cum); da gap {@link #TRAN_LAP_TOI_DA} lan trong 24 gio thi khong ghep.</li>
  * <li><b>Chong cay:</b> he so diem + thuong voi cung doi thu trong 24 gio x1, x1/2, x1/4, roi x0 (XepHangPvp.heSoLap).</li>
  * <li><b>Thuong:</b> thang = {@link #LUONG_THANG} luong khoa x he so lap, tran {@link #TRAN_LUONG_TUAN} / tuan (tuan cup,
- *     thu Hai 04:00); KHONG xu. Cuoi mua (&gt;= {@link #TRAN_TOI_THIEU_MUA} tran tan cong): danh hieu mua co han
+ *     thu Hai 05:00); KHONG xu. Cuoi mua (&gt;= {@link #TRAN_TOI_THIEU_MUA} tran tan cong): danh hieu mua co han
  *     ({@link #danhHieuMua}), khong luong.</li>
  * </ul>
  */

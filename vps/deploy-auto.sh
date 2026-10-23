@@ -18,7 +18,7 @@
 #  ==================== GIO RESTART (12/09/2026) ====================
 #  Truoc day: co file doi hoi restart la BAO 60s -> systemctl stop -> pull -> bat
 #  lai NGAY LAP TUC, bat ke gio nao trong ngay. Van de: server con tu bao tri rieng
-#  moi ngay vao mot gio ngau nhien 4:30-5:59 (src/real/BaoTriDaily.java, tu random
+#  moi ngay vao mot gio ngau nhien 05:01-05:30 (src/real/BaoTriDaily.java, tu random
 #  lai gio moi lan JVM khoi dong). Vua push code vua trung ngay la nguoi choi bi
 #  gian doan HAI LAN/ngay (mot luc deploy, mot luc 4-6h sang).
 #

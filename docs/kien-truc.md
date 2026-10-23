@@ -746,7 +746,7 @@ Kết quả: cỡ 170–190 luồng khi server rỗng, cộng 2 luồng cho mỗ
 
 [BaoTriDaily.java](../server/src/real/BaoTriDaily.java):
 
-- Giờ bảo trì: `sv.gioBaoTri=HH:MM` cố định, `tat` thì không tự tắt, trống/sai thì ngẫu nhiên 4:30–5:30.
+- Giờ bảo trì: `sv.gioBaoTri=HH:MM` cố định, `tat` thì không tự tắt, trống/sai thì ngẫu nhiên 05:01–05:30 (sau mốc lễ 04:00 và mốc tuần thứ Hai 05:00).
 - Báo trước 60 giây bằng **một** dòng thông báo (gói 38). Gửi nhiều mốc thì client giữ tin trong hàng đợi và hiện lại
   sau khi đăng nhập lại.
 - Tới giờ, hoặc cờ `5h_systems.restart` bật: lưu bang, nhân vật (`saveAllChar`), chợ, xe tiêu, sự kiện, nhật ký, top rồi

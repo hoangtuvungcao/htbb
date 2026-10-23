@@ -16,7 +16,7 @@ import java.util.Set;
  * ve 0 (khong guc, khong mat EXP, khong tinh diem do sat / Elo).
  *
  * <ul>
- *   <li><b>Tuan cup</b> = tuan ISO cua may chu, thu Hai 04:00 gio Viet Nam -&gt; thu Hai tuan sau 04:00 (cung moc
+ *   <li><b>Tuan cup</b> = tuan ISO cua may chu, thu Hai 05:00 gio Viet Nam -&gt; thu Hai tuan sau 05:00 (cung moc
  *       {@link LichNam#thuHaiTuanIso} ma website dung cho "tuan nay"). {@link #tuan} = chi so tuan lien tuc (khong
  *       nhay o tuan 53).</li>
  *   <li><b>Xoay vong</b>: lich 16 o (data_cup_lich) lap lai: Cup Nhi (cap &lt;= 30), Cup he (mot he xoay Lua / Nuoc /
@@ -41,7 +41,8 @@ public final class CupLogic {
 
     // ================================================================== hang so (mac dinh cau hinh cup.*)
 
-    public static final int GIO_DOI_TUAN = LichNam.GIO_CHUYEN; // 04:00 gio Viet Nam
+    /** Moc doi tuan cup = moc tuan chung LichNam.GIO_DOI_TUAN (05:00 gio Viet Nam; truoc 0.9.14 la 04:00). */
+    public static final int GIO_DOI_TUAN = LichNam.GIO_DOI_TUAN;
     public static final int GIO_VONG_DAU = 20;
     public static final int PHUT_MOI_VONG = 10;
     public static final int SO_VONG = 5;
@@ -70,13 +71,13 @@ public final class CupLogic {
     private static final long NGAY_MS = 86400000L;
     private static final long LECH_VN_MS = 7L * 3600000L; // Asia/Ho_Chi_Minh: UTC+7, khong gio mua he
 
-    /** Chi so tuan lien tuc: tuan 0 bat dau thu Hai 05/01/1970 04:00 gio Viet Nam. */
+    /** Chi so tuan lien tuc: tuan 0 bat dau thu Hai 05/01/1970 05:00 gio Viet Nam. */
     public static int tuan(final long ms) {
         final long ngay = Math.floorDiv(ms + LECH_VN_MS - GIO_DOI_TUAN * 3600000L, NGAY_MS); // 0 = thu Nam 01/01/1970
         return (int) Math.floorDiv(ngay - 4L, 7L);
     }
 
-    /** Moc mo (thu Hai 04:00 gio Viet Nam) cua tuan {@code t}. */
+    /** Moc mo (thu Hai GIO_DOI_TUAN:00 gio Viet Nam) cua tuan {@code t}. */
     public static long moTuan(final int t) {
         return ((long) t * 7L + 4L) * NGAY_MS + GIO_DOI_TUAN * 3600000L - LECH_VN_MS;
     }
@@ -221,6 +222,23 @@ public final class CupLogic {
 
     public static long dongDangKy(final int t, final int gioVongDau) {
         return batDauVong(t, 0, gioVongDau, PHUT_MOI_VONG) - PHUT_DONG_DANG_KY * 60000L;
+    }
+
+    /**
+     * Cup tuan co THAT SU dien ra khong: it nhat mot doi da dau mot tran (thang / hoa / thua - mien dau khong tinh).
+     * CupGame chi chot hang + phat thuong khi true; false = tuan hoan (chua du doi / khong ai dau). Co
+     * {@code huy} cua tuan chi nam trong bo nho, nen sau khi khoi dong lai o PHA_XONG (vd bao tri, hoac gio
+     * [thu Hai 04:00, 05:00) luc doi moc tuan tu 04:00 sang 05:00) day la chot chan "chot lai / chot tuan da hoan".
+     */
+    public static boolean daDienRa(final java.util.Collection<Doi> ds) {
+        if (ds != null) {
+            for (final Doi d : ds) {
+                if (d != null && d.soTran() > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** {pha, vong} luc {@code ms}: vong = chi so vong dang dien ra (PHA_VONG) / sap toi (PHA_CHO_VONG). */
@@ -547,7 +565,7 @@ public final class CupLogic {
     }
 
     public static String lichChu(final int gioVongDau, final int soVong, final int phutMoiVong) {
-        return "Đăng ký từ thứ Hai 04:00 tới Chủ nhật " + (gioVongDau - 1) + ":" + (60 - PHUT_DONG_DANG_KY) + "; Chủ nhật "
+        return "Đăng ký từ thứ Hai " + (GIO_DOI_TUAN < 10 ? "0" : "") + GIO_DOI_TUAN + ":00 tới Chủ nhật " + (gioVongDau - 1) + ":" + (60 - PHUT_DONG_DANG_KY) + "; Chủ nhật "
                 + gioVongDau + ":00 bắt đầu " + soVong + " vòng Thuỵ Sĩ, mỗi " + phutMoiVong + " phút một vòng, trận tối đa "
                 + (GIAY_TRAN / 60) + " phút. Hệ thống tự ghép đối thủ cùng điểm.";
     }

@@ -121,14 +121,22 @@ public final class KiemLichNam {
         Kiem.dung("Black Friday 2027 = 26/11", trong("blackfriday", 2027, 11, 26, 12));
         Kiem.sai("Black Friday 2026: khong bat 20/11", trong("blackfriday", 2026, 11, 20, 12));
 
-        // Moi moc mo / dong luc 04:00 gio Viet Nam (truoc bao tri 04:30-05:30).
+        // Moc mo / dong: le / ngay cong dong 04:00, moi lan TUAN (tuan Pokemon, Cup PvP) thu Hai 05:00 (moc tuan chung) -
+        // ca hai truoc bao tri 05:01-05:30.
         boolean dung04 = true;
         String sai = "";
+        int soTuan = 0;
         for (final LichNam.CuaSo c : LichNam.tatCa(2026, 2030)) {
+            final boolean tuan = c.muc.laTuanPokemon() || com.htbb.pokemon.CupLogic.MA_LICH.equals(c.muc.ma);
+            if (tuan) {
+                soTuan++;
+            }
             for (final long t : new long[]{c.mo, c.dong}) {
                 final Calendar k = Calendar.getInstance(LichNam.MUI_GIO);
                 k.setTimeInMillis(t);
-                if (k.get(Calendar.HOUR_OF_DAY) != LichNam.GIO_CHUYEN || k.get(Calendar.MINUTE) != 0) {
+                final int gio = tuan ? LichNam.GIO_DOI_TUAN : LichNam.GIO_CHUYEN;
+                if (k.get(Calendar.HOUR_OF_DAY) != gio || k.get(Calendar.MINUTE) != 0
+                        || tuan && k.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
                     dung04 = false;
                     sai = c.muc.ma + " " + c.nam;
                 }
@@ -138,8 +146,16 @@ public final class KiemLichNam {
                 sai = c.muc.ma + " " + c.nam + " dong <= mo";
             }
         }
-        Kiem.dung("moi moc mo / dong 2026-2030 luc 04:00 gio Viet Nam, dong sau mo " + sai, dung04);
-        Kiem.bang("tuan ISO 43/2026: thu Hai 19/10 04:00", ms(2026, 10, 19, 4), LichNam.thuHaiTuanIso(2026, 43));
+        Kiem.dung("moc mo / dong 2026-2030: le 04:00, tuan (Pokemon / cup) thu Hai 05:00 gio Viet Nam, dong sau mo " + sai, dung04);
+        Kiem.dung("co lan tuan trong lich 2026-2030 (tuan Pokemon + cup)", soTuan > 250);
+        Kiem.bang("moc tuan chung = 05:00 (= NhiemVuLauDai.GIO_DOI_TUAN)", Integer.valueOf(com.htbb.pokemon.NhiemVuLauDai.GIO_DOI_TUAN),
+                Integer.valueOf(LichNam.GIO_DOI_TUAN));
+        Kiem.bang("moc le van 04:00", Integer.valueOf(4), Integer.valueOf(LichNam.GIO_CHUYEN));
+        Kiem.bang("tuan ISO 43/2026: thu Hai 19/10 05:00", ms(2026, 10, 19, 5), LichNam.thuHaiTuanIso(2026, 43));
+        // tuan he 2026 (tuan ISO 42): het dung thu Hai 19/10 05:00 - 04:59 van bat, 05:00 tat
+        Kiem.dung("tuan he 42/2026: thu Hai 19/10 04:59 van dang dien ra (moc tuan 05:00)",
+                LichNam.dangDienRa("moi:tuanhe", ms(2026, 10, 19, 4) + 59L * 60000L));
+        Kiem.sai("tuan he 42/2026: thu Hai 19/10 05:00 da het", LichNam.dangDienRa("moi:tuanhe", ms(2026, 10, 19, 5)));
 
         // Hom nay (19/10/2026, 15h): Halloween + 20/10 bat, dem Halloween chua, Noel chua.
         final long homNay = ms(2026, 10, 19, 15);
@@ -147,7 +163,7 @@ public final class KiemLichNam {
         Kiem.dung("19/10/2026: 20/10 dang dien ra", LichNam.dangDienRa("moi:2010", homNay));
         Kiem.sai("19/10/2026: dem Halloween chua bat", LichNam.dangDienRa("demhalloween", homNay));
         Kiem.sai("19/10/2026: Noel chua bat", LichNam.dangDienRa("noel", homNay));
-        Kiem.sai("19/10/2026: tuan he 42 vua het luc 04:00", LichNam.dangDienRa("moi:tuanhe", homNay));
+        Kiem.sai("19/10/2026: tuan he 42 vua het luc 05:00", LichNam.dangDienRa("moi:tuanhe", homNay));
     }
 
     static void danhMuc() {

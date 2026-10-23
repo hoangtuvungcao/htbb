@@ -865,8 +865,8 @@ Chế độ **riêng** với thang PvP mùa và PK thế giới (`com.htbb.pokem
 riêng của **Sàn Cúp PvP** (bản đồ 4382, nền "Sàn đấu" 227): không tính Elo, không cờ PK, HP không về 0 (hết HP = bị
 loại), không mất EXP, không tự động đánh.
 
-- **Tuần cúp** = tuần ISO thứ Hai 04:00 → thứ Hai sau 04:00 giờ Việt Nam (cùng mốc `LichNam.thuHaiTuanIso` và "tuần này"
-  của web). Lịch xoay 16 tuần: Cúp Nhí (cấp 20–30) → Cúp hệ (Lửa / Nước / Cỏ / Điện, Pokémon mang hệ đó ở hệ 1 hoặc 2)
+- **Tuần cúp** = tuần ISO thứ Hai 05:00 → thứ Hai sau 05:00 giờ Việt Nam (mốc tuần chung `LichNam.GIO_DOI_TUAN`, cùng
+  nhiệm vụ tuần / Gym / tuần Pokémon và "tuần này" của web; trước 0.9.14 là 04:00). Lịch xoay 16 tuần: Cúp Nhí (cấp 20–30) → Cúp hệ (Lửa / Nước / Cỏ / Điện, Pokémon mang hệ đó ở hệ 1 hoặc 2)
   → Cúp Đôi 2v2 (đội trưởng tổ đội 2 người đăng ký) → Cúp Không trang bị → lặp.
 - **Lịch trong tuần** (khoá `cup.*`): đăng ký trong Sổ tay huấn luyện → "Cúp PvP tuần" tới Chủ nhật 19:55; Chủ nhật 20:00
   vòng 1, mỗi 10 phút một vòng, 5 vòng Thuỵ Sĩ, trận tối đa 3 phút (+5 giây chuẩn bị). Hết giờ: bên còn nhiều % HP hơn
@@ -1020,7 +1020,8 @@ Giỗ Tổ / Vu Lan / Trung Thu 2026–2035). Máy chủ ghi mọi lần diễn 
 mỗi 15 giây (`real.LichSuKien.dongBoLichNam`) đặt `tob_su_kien.bat` theo lịch cho mọi mã `tu_dong = 1`. Admin ghi đè
 **một năm** ở `/admin/sukien` (tắt năm nay / đổi giờ / mở ngay / về theo lịch) hoặc chuyển cả sự kiện sang thủ công.
 
-**Mốc mở / đóng luôn 04:00**: bật / tắt sự kiện cần khởi động lại, và đổi do lịch khi bảo trì hằng ngày (04:30–05:30)
+**Mốc mở / đóng: lễ / ngày cộng đồng 04:00, tuần Pokémon / Cúp PvP thứ Hai 05:00** (mốc tuần chung của mọi reset tuần):
+bật / tắt sự kiện cần khởi động lại, và đổi do lịch khi bảo trì hằng ngày (05:01–05:30, sau cả hai mốc)
 còn ≤ 3 giờ thì `LichSuKien` **không** khởi động lại riêng mà chờ bảo trì — cả năm không thêm lần khởi động lại nào.
 Thay đổi tay của admin (hay lịch lúc bảo trì còn xa / đã tắt) vẫn khởi động lại như cũ (gom + báo trong game).
 
@@ -1050,7 +1051,7 @@ Thay đổi tay của admin (hay lịch lúc bảo trì còn xa / đã tắt) v�
 | `moi:congdong` | Ngày cộng đồng (mỗi tháng) | Chủ nhật 04:00 → thứ Hai 04:00 (bên dưới) | 18/01, 15/02, 22/03, 19/04, 10/05, 21/06, 19/07, 02/08, 20/09, 04/10, 15/11, 13/12 | 24/01, 21/02, 28/03, 18/04, 16/05, 27/06, 18/07, 08/08, 19/09, 10/10, 21/11, 19/12 |
 
 Tuần Pokémon (bảng dưới) vẫn theo tuần ISO (`SuKienLauDai.LICH`, [su_kien_nam.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/su_kien_nam.csv)), thứ Hai
-04:00 → thứ Hai tuần sau 04:00, vì hệ của tuần hệ và huyền thoại đột kích gắn với số tuần. Bật tay (không có lịch):
+05:00 → thứ Hai tuần sau 05:00, vì hệ của tuần hệ và huyền thoại đột kích gắn với số tuần. Bật tay (không có lịch):
 `noel2023`, `halloween2015`, `he2015` (bản cũ), `mini*`, `anxuluongtop`. **Đã bỏ** (sự kiện riêng của game kiếm hiệp cũ):
 World Cup bình chọn Messi/Ronaldo (`worldcup*`), Sinh nhật Ngudẻ, Đua top Hoa Lư.
 
@@ -1443,7 +1444,7 @@ ngoài thế giới không đổi. Vào ở NPC Đấu trường (-31) → "Đ�
   mới, tối đa 400), sức mạnh đội (tổng chỉ số cấp 50) ±15 % (+10 %, tối đa 50 %). Chống nick phụ: không cùng tài khoản /
   thiết bị / IP (`XepHangPvp.Cum`, danh tính lưu ở `tob_dau_truong_doi` để lọc cả đối thủ offline). Chống cày: cùng đối
   thủ trong 24 giờ hệ số ×1 → ×1/2 → ×1/4 → 0 (lần 4 không ghép).
-- **Thưởng:** thắng +3 lượng khoá × hệ số, trần 25 / tuần (tuần cúp, thứ Hai 04:00), thua 0, không xu. Cuối mùa (≥ 10 trận
+- **Thưởng:** thắng +3 lượng khoá × hệ số, trần 25 / tuần (tuần cúp, thứ Hai 05:00), thua 0, không xu. Cuối mùa (≥ 10 trận
   tấn công, nhận khi đăng nhập mùa sau, `tob_dau_truong_thuong` một lần): danh hiệu giữ một mùa — Quán quân (hạng 1, id
   9870), Tinh anh (2–10, 9871), Đấu thủ (11–100 hoặc ≥ 1300 điểm, 9872), chỉ số trong ngân sách ô danh hiệu.
 - **Lượt chơi:** mặc định máy tự đánh (AI máy chủ, nhịp 2,6 giây / lượt chia theo tốc độ ×1 / ×2 / ×3; ×2 từ cấp 20, ×3

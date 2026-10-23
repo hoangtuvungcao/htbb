@@ -12,15 +12,17 @@ import java.util.TimeZone;
  * Viet Nam (Asia/Ho_Chi_Minh), khong con theo tuan ISO co dinh (lich cu SuKienLauDai.LICH lech Tet / Trung Thu /
  * Noel moi nam). Le am lich (Tet Nguyen Dan, Gio To, Vu Lan, Trung Thu) tinh bang {@link AmLich}.
  *
- * MOI MOC DOI CHUYEN LUC {@link #GIO_CHUYEN}:00 - ngay truoc gio bao tri hang ngay (ngau nhien 04:30-05:30,
- * real/BaoTriDaily). Su kien chi doi hieu luc sau khi khoi dong lai (SuKien), nen moc 04:00 de LichSuKien hoan
- * viec khoi dong lai toi luc bao tri: KHONG them lan khoi dong lai nao ngoai bao tri hang ngay.
+ * Le / ngay cong dong doi luc {@link #GIO_CHUYEN}:00; moi lan TUAN (tuan Pokemon, Cup PvP tuan) doi luc thu Hai
+ * {@link #GIO_DOI_TUAN}:00 - CUNG moc tuan voi nhiem vu tuan / Gym / ve chuong (NhiemVuLauDai). Ca hai moc deu TRUOC
+ * gio bao tri hang ngay (ngau nhien 05:01-05:30, real/BaoTriDaily). Su kien chi doi hieu luc sau khi khoi dong lai
+ * (SuKien), nen LichSuKien hoan viec khoi dong lai toi luc bao tri: KHONG them lan khoi dong lai nao ngoai bao tri.
  *
  * Ngay cong dong (moi:congdong, 0.9.7): MOT ngay moi thang (NgayCongDong.ngay - Chu nhat cua tuan cong dong ISO hoac
  * Chu nhat thu ba), 04:00 -> 04:00; mo ta tung lan = dong noi bat cua thang (CuaSo.moTa, data_ngay_cong_dong).
  *
  * Tuan Pokemon (tuan he, shiny, dot kich, mua PvP, Pokedex, chien vung, bung phat) van theo tuan ISO
- * (HE_TUAN / DOT_KICH gan voi so tuan) - lay tu SuKienLauDai.LICH, thu Hai 04:00 -> thu Hai tuan sau 04:00.
+ * (HE_TUAN / DOT_KICH gan voi so tuan) - lay tu SuKienLauDai.LICH, thu Hai 05:00 -> thu Hai tuan sau 05:00 (cung moc
+ * SuKienLauDai.tuanIso / moLuc ma hieu ung song cua tuan dung).
  *
  * Lop THUAN: test/KiemLichNam.java. Ban keo noi CSDL + web: real/LichNamGame, bang tob_su_kien_lich.
  * Bang ra web: /api/su-kien (trang chu, cam nang), tin tu dong (web/server/plugins/tin-su-kien.ts).
@@ -28,8 +30,14 @@ import java.util.TimeZone;
 public final class LichNam {
 
     public static final TimeZone MUI_GIO = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
-    /** Gio doi trang thai su kien (gio Viet Nam). */
+    /** Gio doi trang thai le / ngay cong dong (gio Viet Nam). */
     public static final int GIO_CHUYEN = 4;
+    /**
+     * Gio doi TUAN (thu Hai, gio Viet Nam) - MOT moc cho moi reset tuan: nhiem vu tuan / Gym / ve chuong
+     * (NhiemVuLauDai.tuan), Cup PvP tuan + gioi han tuan Dau truong (CupLogic.tuan), tuan Pokemon (thuHaiTuanIso,
+     * SuKienLauDai.tuanIso). Truoc 0.9.14: cup / tuan su kien doi luc 04:00.
+     */
+    public static final int GIO_DOI_TUAN = NhiemVuLauDai.GIO_DOI_TUAN;
 
     static final int DUONG = 0;
     static final int AM = 1;
@@ -341,7 +349,7 @@ public final class LichNam {
         return ra;
     }
 
-    /** Thu Hai GIO_CHUYEN:00 cua tuan ISO {@code tuan} nam {@code nam} (gio Viet Nam). */
+    /** Thu Hai GIO_DOI_TUAN:00 (05:00) cua tuan ISO {@code tuan} nam {@code nam} (gio Viet Nam). */
     public static long thuHaiTuanIso(final int nam, final int tuan) {
         final Calendar c = Calendar.getInstance(MUI_GIO);
         c.clear();
@@ -350,7 +358,7 @@ public final class LichNam {
         c.set(Calendar.YEAR, nam);
         c.set(Calendar.WEEK_OF_YEAR, tuan);
         c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        c.set(Calendar.HOUR_OF_DAY, GIO_CHUYEN);
+        c.set(Calendar.HOUR_OF_DAY, GIO_DOI_TUAN);
         return c.getTimeInMillis();
     }
 

@@ -477,7 +477,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `bao_tri.bat` | Chế độ bảo trì đăng nhập | cờ 0/1 | `0` |  | ngay | game | 1 = từ chối đăng nhập mới (người đang chơi không bị đá). Tương đương tệp bao_tri.txt — bật một trong hai là bảo trì. |
 | `bao_tri.cau` | Câu thông báo bảo trì | chuỗi | *(trống)* | ≤ 200 ký tự | ngay | game | Trống = câu mặc định. |
 | `bao_tri.cho` | Tài khoản được vào khi bảo trì | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên tài khoản (chữ thường), cách nhau dấu phẩy. |
-| `sv.gioBaoTri` | Giờ bảo trì hằng ngày | chuỗi | *(trống)* | ≤ 5 ký tự | ngay | game | HH:MM cố định, 'tat' = không tự bảo trì, trống = ngẫu nhiên 4:30–5:30. |
+| `sv.gioBaoTri` | Giờ bảo trì hằng ngày | chuỗi | *(trống)* | ≤ 5 ký tự | ngay | game | HH:MM cố định, 'tat' = không tự bảo trì, trống = ngẫu nhiên 05:01–05:30. |
 | `sv.website` | Địa chỉ website (hiện trong game) | chuỗi | `https://huyenthoaibaoboi.fun/` | ≤ 200 ký tự | ngay | game |  |
 | `sv.linkTaiGame` | Link tải game (hiện trong game) | chuỗi | `https://huyenthoaibaoboi.fun/` | ≤ 200 ký tự | ngay | game |  |
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |

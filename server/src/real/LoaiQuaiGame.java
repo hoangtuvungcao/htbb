@@ -376,9 +376,14 @@ public final class LoaiQuaiGame {
         }
     }
 
-    /** Ngay epoch theo gio may chu (DongHo) - cung mui gio voi lich tuan. */
+    /**
+     * Ngay epoch cua lich xoay Vung hoang da theo gio may chu (DongHo): ngay doi luc {@link com.htbb.pokemon.LichNam#GIO_DOI_TUAN}:00
+     * (05:00) chu khong phai nua dem, nen tuan xoay doi dung thu Hai 05:00 - cung moc tuan voi nhiem vu tuan / Gym / cup
+     * (0.9.14; truoc doi luc 00:00).
+     */
     public static long ngayHienTai() {
         final Calendar c = com.htbb.pokemon.DongHo.lich();
+        c.add(Calendar.HOUR_OF_DAY, -com.htbb.pokemon.LichNam.GIO_DOI_TUAN);
         return java.time.LocalDate.of(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)).toEpochDay();
     }
 

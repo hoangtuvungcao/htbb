@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Cúp PvP tuần (0.9.7): cúp tuần này (xoay vòng mỗi thứ Hai 04:00), luật, lịch thi đấu, bảng điểm Thuỵ Sĩ và nhà vô
+ * Cúp PvP tuần (0.9.7): cúp tuần này (xoay vòng mỗi thứ Hai 05:00), luật, lịch thi đấu, bảng điểm Thuỵ Sĩ và nhà vô
  * địch các tuần trước. Dữ liệu: GET /api/cup (máy chủ game ghi tob_cup_dang_ky + tob_su_kien_lich). Tin "Sắp / Đang /
  * Đã kết thúc" của cúp tự đăng ở chuyên mục Sự kiện (server/plugins/tin-su-kien.ts).
  */

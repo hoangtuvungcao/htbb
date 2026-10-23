@@ -873,7 +873,7 @@ public class TeamServer {
             com.htbb.pokemon.LauDai.datNgayKhaiTruong(p.getProperty("sv.ngay_khai_truong"));
             // Tran cap theo mua: mac dinh TAT (thieu dong = 0) - docs/thiet-ke-game.md.
             com.htbb.pokemon.LauDai.datTranTheoMua(com.htbb.pokemon.LauDai.docGiaTri(p.getProperty("sv.tran_cap_theo_mua")));
-            // Gio bao tri hang ngay (HH:MM | tat | trong = ngau nhien 4:30-5:30 nhu cu).
+            // Gio bao tri hang ngay (HH:MM | tat | trong = ngau nhien 05:01-05:30).
             real.BaoTriDaily.datGio(p.getProperty("sv.gioBaoTri"));
             System.out.println("LAU DAI -> " + (com.htbb.pokemon.LauDai.bat() ? "BAT" : "TAT")
                     + ", khai truong ngay thu " + com.htbb.pokemon.LauDai.ngayHienTai()

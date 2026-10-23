@@ -497,6 +497,10 @@ public final class CupGame {
             ghepVong(t, ph[1], bay);
         }
         if (ph[0] == CupLogic.PHA_XONG && !t.daChot && TRAN.isEmpty()) {
+            if (!CupLogic.daDienRa(t.doi.values())) {
+                t.huy = true; // khong ai dau tran nao (tuan hoan / khoi dong lai sau khi hoan): khong chot, khong bao vo dich
+                return;
+            }
             chot(t);
         }
     }

@@ -21,9 +21,10 @@ test('không có lịch -> -1', () => {
   assert.equal(chuKyXoay(goc, goc, 0), -1)
 })
 
-test('giờ máy chủ UTC+7: 17:00 UTC Chủ nhật đã là thứ Hai ở máy chủ', () => {
-  const bay = Date.UTC(2026, 9, 25, 17, 30)
-  assert.equal(homNayMayChu(bay), goc)
+test('giờ máy chủ UTC+7, đổi tuần thứ Hai 05:00: 22:00 UTC Chủ nhật (05:00 VN) đã là thứ Hai, 04:59 VN vẫn Chủ nhật', () => {
+  assert.equal(homNayMayChu(Date.UTC(2026, 9, 25, 22, 0)), goc)
+  assert.equal(homNayMayChu(Date.UTC(2026, 9, 25, 21, 59)), goc - 1)
+  assert.equal(homNayMayChu(Date.UTC(2026, 9, 25, 17, 30)), goc - 1) // 00:30 thứ Hai VN: tuần cũ tới 05:00
 })
 
 test('tuần này + 2 tuần tới bắt đầu từ thứ Hai', () => {

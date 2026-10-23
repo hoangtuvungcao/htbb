@@ -38,17 +38,18 @@ public class BaoTriDaily implements Runnable {
     // nhien roi thoat (xem cuoi run()), nen khong can dat lai ve false.
     private static boolean daBaoTruoc = false;
 
+    /** Khung bao tri ngau nhien (phut trong ngay, gom ca hai dau): 05:01 .. 05:30. */
+    public static final int PHUT_BAO_TRI_SOM = 5 * 60 + 1;
+    public static final int PHUT_BAO_TRI_MUON = 5 * 60 + 30;
+
     // Khởi tạo thời gian bảo trì random khi class được load
     static {
         Random r = new Random();
-        // Random giờ từ 4-5
-        maintenanceHour = 4 + r.nextInt(2);
-        // Random phút từ 30-59 nếu là 4h, hoặc 0-30 nếu là 5h
-        if (maintenanceHour == 4) {
-            maintenanceMinute = 30 + r.nextInt(30);
-        } else {
-            maintenanceMinute = r.nextInt(31);
-        }
+        // Ngau nhien 05:01-05:30 (0.9.14; truoc la 04:30-05:30): SAU ca hai moc doi lich - le / ngay cong dong 04:00
+        // (LichNam.GIO_CHUYEN) va doi tuan thu Hai 05:00 (LichNam.GIO_DOI_TUAN: nhiem vu tuan, Gym, cup, tuan Pokemon)
+        // - nen moi thay doi theo lich deu ap dung o lan bao tri nay (LichSuKien hoan toi bao tri), khong khoi dong lai them.
+        maintenanceHour = PHUT_BAO_TRI_SOM / 60;
+        maintenanceMinute = PHUT_BAO_TRI_SOM % 60 + r.nextInt(PHUT_BAO_TRI_MUON - PHUT_BAO_TRI_SOM + 1);
         final int tongPhutBaoTri = maintenanceHour * 60 + maintenanceMinute;
         final int tongPhutCanhBao = (tongPhutBaoTri - 1 + 24 * 60) % (24 * 60);
         warnHour = tongPhutCanhBao / 60;
@@ -77,7 +78,7 @@ public class BaoTriDaily implements Runnable {
 
     /**
      * Dat gio bao tri tu server.ini (sv.gioBaoTri): "HH:MM" = co dinh, "tat" = khong tu tat may hang
-     * ngay, trong/sai = ngau nhien 4:30-5:30 nhu cu. Goi tu TeamServer luc doc cau hinh. Unit systemd
+     * ngay, trong/sai = ngau nhien 05:01-05:30 (PHUT_BAO_TRI_SOM..MUON). Goi tu TeamServer luc doc cau hinh. Unit systemd
      * (vps/htbb-game.service, Restart=always) tu bat lai sau khi bao tri.
      */
     public static void datGio(final String s) {

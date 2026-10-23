@@ -19,9 +19,12 @@ export function ngayEpoch(iso: string): number {
   return Math.floor(Date.UTC(y!, m! - 1, d!) / MS_NGAY)
 }
 
-/** Ngày epoch hôm nay theo giờ máy chủ (UTC+7). */
+/** Giờ đổi tuần chung của máy chủ (thứ Hai 05:00, LichNam.GIO_DOI_TUAN): lịch xoay đổi ngày lúc 05:00. */
+export const GIO_DOI_TUAN = 5
+
+/** Ngày epoch của lịch xoay theo giờ máy chủ (UTC+7), đổi ngày lúc 05:00 (khớp LoaiQuaiGame.ngayHienTai). */
 export function homNayMayChu(bay = Date.now()): number {
-  return Math.floor((bay + 7 * 3_600_000) / MS_NGAY)
+  return Math.floor((bay + 7 * 3_600_000 - GIO_DOI_TUAN * 3_600_000) / MS_NGAY)
 }
 
 export function chuKyXoay(ngay: number, goc: number, n: number): number {

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 /**
  * Pho ban Ham nguc (to doi 5 tang) + Cup PvP tuan xoay vong (0.9.7, de xuat 7 + 10 chu game duyet 19/10/2026).
  *
- * Phan A (cup): tuan ISO thu Hai 04:00 gio Viet Nam (khop LichNam.thuHaiTuanIso), xoay vong, lich trong tuan, dang ky
+ * Phan A (cup): tuan ISO thu Hai 05:00 gio Viet Nam (moc tuan chung LichNam.GIO_DOI_TUAN, khop LichNam.thuHaiTuanIso), xoay vong, lich trong tuan, dang ky
  * (cap / he / tuoi tai khoan / gio choi), ghep Thuy Si (khong gap lai, CHONG CLONE: chung thiet bi / IP / tai khoan
  * khong bao gio gap nhau - thu ngau nhien nhieu giai), xep hang, thuong (tran luong khoa, danh hieu co han, treo may
  * khong nhan), chuan hoa sat thuong, lich nam (web tu dang tin). Phan B (pho ban): chu de theo thu, chi so quai noi
@@ -90,11 +90,14 @@ public final class KiemPhoBanCup {
 
     static void tuanCup() {
         // 19/10/2026 la thu Hai (tuan ISO 43)
-        final long mo = vn(2026, 10, 19, 4, 0);
-        Kiem.bang("tuan: moTuan(tuan(thu Hai 04:00)) = dung moc", Long.valueOf(mo), Long.valueOf(CupLogic.moTuan(CupLogic.tuan(mo))));
-        Kiem.bang("tuan: thu Hai 03:59 van la tuan truoc", Integer.valueOf(CupLogic.tuan(mo) - 1), Integer.valueOf(CupLogic.tuan(mo - 60000L)));
+        final long mo = vn(2026, 10, 19, 5, 0);
+        Kiem.bang("tuan: moc doi tuan cup = 05:00 (moc tuan chung)", Integer.valueOf(5), Integer.valueOf(CupLogic.GIO_DOI_TUAN));
+        Kiem.bang("tuan: moTuan(tuan(thu Hai 05:00)) = dung moc", Long.valueOf(mo), Long.valueOf(CupLogic.moTuan(CupLogic.tuan(mo))));
+        Kiem.bang("tuan: thu Hai 04:59 van la tuan truoc", Integer.valueOf(CupLogic.tuan(mo) - 1), Integer.valueOf(CupLogic.tuan(mo - 60000L)));
+        Kiem.bang("tuan: thu Hai 04:00 van la tuan truoc (truoc 0.9.14 da sang tuan)", Integer.valueOf(CupLogic.tuan(mo) - 1), Integer.valueOf(CupLogic.tuan(vn(2026, 10, 19, 4, 0))));
         Kiem.bang("tuan: Chu nhat 23:59 cung tuan", Integer.valueOf(CupLogic.tuan(mo)), Integer.valueOf(CupLogic.tuan(vn(2026, 10, 25, 23, 59))));
-        Kiem.bang("tuan: thu Hai sau 04:00 sang tuan moi", Integer.valueOf(CupLogic.tuan(mo) + 1), Integer.valueOf(CupLogic.tuan(vn(2026, 10, 26, 4, 0))));
+        Kiem.bang("tuan: thu Hai sau 04:59 van tuan nay", Integer.valueOf(CupLogic.tuan(mo)), Integer.valueOf(CupLogic.tuan(vn(2026, 10, 26, 4, 59))));
+        Kiem.bang("tuan: thu Hai sau 05:00 sang tuan moi", Integer.valueOf(CupLogic.tuan(mo) + 1), Integer.valueOf(CupLogic.tuan(vn(2026, 10, 26, 5, 0))));
         Kiem.bang("tuan ISO 2026-43", "2026-43", CupLogic.namTuanIso(mo)[0] + "-" + CupLogic.namTuanIso(mo)[1]);
         boolean khop = true;
         boolean lienTuc = true;
@@ -113,10 +116,85 @@ public final class KiemPhoBanCup {
                 truoc = CupLogic.tuan(t);
             }
         }
-        Kiem.dung("tuan: moi thu Hai 04:00 ISO 2025-2032 (ca nam 53 tuan 2026) = moc tuan cup", khop);
+        Kiem.dung("tuan: moi thu Hai 05:00 ISO 2025-2032 (ca nam 53 tuan 2026) = moc tuan cup", khop);
         Kiem.dung("tuan: chi so tuan lien tuc qua tuan 53 / doi nam (xoay vong khong nhay)", lienTuc);
         Kiem.bang("2026 co tuan 53 (28/12/2026)", "2026-53", CupLogic.namTuanIso(vn(2026, 12, 28, 10, 0))[0] + "-" + CupLogic.namTuanIso(vn(2026, 12, 28, 10, 0))[1]);
-        Kiem.bang("04/01/2027 03:00 van la tuan 2026-53", "2026-53", CupLogic.namTuanIso(vn(2027, 1, 4, 3, 0))[0] + "-" + CupLogic.namTuanIso(vn(2027, 1, 4, 3, 0))[1]);
+        Kiem.bang("04/01/2027 04:30 van la tuan 2026-53", "2026-53", CupLogic.namTuanIso(vn(2027, 1, 4, 4, 30))[0] + "-" + CupLogic.namTuanIso(vn(2027, 1, 4, 4, 30))[1]);
+        Kiem.bang("04/01/2027 05:00 la tuan 2027-1", "2027-1", CupLogic.namTuanIso(vn(2027, 1, 4, 5, 0))[0] + "-" + CupLogic.namTuanIso(vn(2027, 1, 4, 5, 0))[1]);
+        doiMocTuan();
+    }
+
+    /**
+     * Doi moc tuan 04:00 -> 05:00 (0.9.14): cung moc NhiemVuLauDai.tuan; khong tuan nao bi bo / chay hai lan; gio
+     * [thu Hai 04:00, 05:00) ngay doi (deploy) chi la tuan cu o PHA_XONG (khong chot lai, khong mo dang ky som).
+     */
+    static void doiMocTuan() {
+        final java.util.TimeZone cu = java.util.TimeZone.getDefault();
+        java.util.TimeZone.setDefault(LichNam.MUI_GIO); // may that: gio may = gio Viet Nam
+        try {
+            boolean khop = true;
+            String sai = "";
+            final int lech = CupLogic.tuan(vn(2026, 10, 19, 12, 0)) - com.htbb.pokemon.NhiemVuLauDai.tuan(vn(2026, 10, 19, 12, 0));
+            for (long t = vn(2026, 1, 1, 0, 0); t < vn(2028, 1, 10, 0, 0); t += 13L * 60000L) { // moi 13 phut, 2 nam
+                if (CupLogic.tuan(t) - com.htbb.pokemon.NhiemVuLauDai.tuan(t) != lech) {
+                    khop = false;
+                    sai = new java.util.Date(t).toString();
+                    break;
+                }
+            }
+            Kiem.dung("doi moc: tuan cup luon doi CUNG luc voi nhiem vu tuan / Gym (NhiemVuLauDai.tuan) " + sai, khop);
+            Kiem.bang("doi moc: tuan cup = tuan nhiem vu (cung goc thu Hai 05/01/1970)", Integer.valueOf(0), Integer.valueOf(lech));
+            Kiem.bang("doi moc: LichNam.GIO_DOI_TUAN = NhiemVuLauDai.GIO_DOI_TUAN", Integer.valueOf(com.htbb.pokemon.NhiemVuLauDai.GIO_DOI_TUAN),
+                    Integer.valueOf(LichNam.GIO_DOI_TUAN));
+            boolean tuanPokemon = true;
+            for (long t = vn(2026, 1, 5, 0, 0); t < vn(2027, 12, 27, 0, 0); t += 17L * 60000L) {
+                final int iso = CupLogic.namTuanIso(t)[1];
+                if (iso != com.htbb.pokemon.SuKienLauDai.tuanIso(t)) {
+                    tuanPokemon = false;
+                    break;
+                }
+            }
+            Kiem.dung("doi moc: tuan ISO cua cup = tuan Pokemon song (SuKienLauDai.tuanIso, 05:00)", tuanPokemon);
+        } finally {
+            java.util.TimeZone.setDefault(cu);
+        }
+        // Chuyen moc: chi so tuan cu (04:00) va moi (05:00) chi khac trong [thu Hai 04:00, 05:00), lech dung 1 tuan
+        boolean chiMotGio = true;
+        int soPhutLech = 0;
+        for (long t = vn(2026, 10, 18, 0, 0); t < vn(2026, 11, 3, 0, 0); t += 60000L) {
+            final int moi = CupLogic.tuan(t);
+            final int cu04 = (int) Math.floorDiv(Math.floorDiv(t + 7L * 3600000L - 4L * 3600000L, 86400000L) - 4L, 7L);
+            if (moi != cu04) {
+                soPhutLech++;
+                final java.util.Calendar k = java.util.Calendar.getInstance(LichNam.MUI_GIO);
+                k.setTimeInMillis(t);
+                chiMotGio &= cu04 == moi + 1 && k.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.MONDAY
+                        && k.get(java.util.Calendar.HOUR_OF_DAY) == 4;
+            }
+        }
+        Kiem.dung("doi moc: cu / moi chi lech o gio thu Hai 04:xx, lech dung 1 tuan (khong bo / khong nhay tuan)", chiMotGio);
+        Kiem.bang("doi moc: 18/10-02/11 (3 thu Hai) -> dung 3 x 60 phut lech", Integer.valueOf(180), Integer.valueOf(soPhutLech));
+        final int g = CupLogic.GIO_VONG_DAU;
+        final int[] ph = CupLogic.pha(vn(2026, 10, 26, 4, 30), g, CupLogic.PHUT_MOI_VONG, CupLogic.SO_VONG);
+        Kiem.bang("doi moc: deploy thu Hai 04:30 -> tuan cu, PHA_XONG (dang ky tuan moi chua mo, ghep vong khong chay)", "3-5",
+                ph[0] + "-" + ph[1]);
+        // Chot chan: tuan da hoan / chua ai dau ma khoi dong lai o PHA_XONG -> KHONG chot (khong bao vo dich, khong thuong)
+        final CupLogic.Doi a = new CupLogic.Doi(1, 0, new HashSet<String>());
+        final CupLogic.Doi b = new CupLogic.Doi(2, 1, new HashSet<String>());
+        Kiem.sai("chot: 2 doi chua dau tran nao (tuan hoan) -> khong chot", CupLogic.daDienRa(Arrays.asList(a, b)));
+        CupLogic.ghiMien(a);
+        Kiem.sai("chot: chi co mien dau -> van khong chot", CupLogic.daDienRa(Arrays.asList(a, b)));
+        CupLogic.ghiTran(a, b, CupLogic.A_THANG);
+        Kiem.dung("chot: co it nhat 1 tran -> chot", CupLogic.daDienRa(Arrays.asList(a, b)));
+        Kiem.sai("chot: danh sach rong / null -> khong chot", CupLogic.daDienRa(new ArrayList<CupLogic.Doi>()) || CupLogic.daDienRa(null));
+        final String game = doc("src/real/CupGame.java");
+        Kiem.dung("chot: CupGame chi chot khi CupLogic.daDienRa (khong chot tuan hoan sau khoi dong lai)",
+                game.contains("CupLogic.daDienRa(t.doi.values())") && game.indexOf("CupLogic.daDienRa(t.doi.values())") < game.indexOf("            chot(t);"));
+        final String bt = doc("src/real/BaoTriDaily.java");
+        Kiem.dung("bao tri ngau nhien 05:01-05:30: sau moc tuan 05:00 (thay doi lich ap dung o lan bao tri, khong khoi dong lai them)",
+                real.BaoTriDaily.PHUT_BAO_TRI_SOM > LichNam.GIO_DOI_TUAN * 60 && real.BaoTriDaily.PHUT_BAO_TRI_SOM > LichNam.GIO_CHUYEN * 60
+                && real.BaoTriDaily.PHUT_BAO_TRI_MUON - LichNam.GIO_CHUYEN * 60 <= real.LichSuKien.HOAN_TOI_BAO_TRI_PHUT
+                && bt.contains("PHUT_BAO_TRI_SOM % 60 + r.nextInt(PHUT_BAO_TRI_MUON - PHUT_BAO_TRI_SOM + 1)"));
     }
 
     static void xoayVong() {
@@ -149,7 +227,8 @@ public final class KiemPhoBanCup {
         Kiem.bang("pha: 20:00 = vong 1 (chi so 0)", "2-0", CupLogic.pha(vn(2026, 10, 25, 20, 0), g, p, v)[0] + "-" + CupLogic.pha(vn(2026, 10, 25, 20, 0), g, p, v)[1]);
         Kiem.bang("pha: 20:41 = vong 5", "2-4", CupLogic.pha(vn(2026, 10, 25, 20, 41), g, p, v)[0] + "-" + CupLogic.pha(vn(2026, 10, 25, 20, 41), g, p, v)[1]);
         Kiem.bang("pha: 20:50 = xong (chot)", Integer.valueOf(CupLogic.PHA_XONG), Integer.valueOf(CupLogic.pha(vn(2026, 10, 25, 20, 50), g, p, v)[0]));
-        Kiem.bang("pha: thu Hai 04:00 tuan sau = dang ky tuan moi", Integer.valueOf(CupLogic.PHA_DANG_KY), Integer.valueOf(CupLogic.pha(vn(2026, 10, 26, 4, 0), g, p, v)[0]));
+        Kiem.bang("pha: thu Hai 04:30 tuan sau = van xong tuan cu (khong mo dang ky som)", Integer.valueOf(CupLogic.PHA_XONG), Integer.valueOf(CupLogic.pha(vn(2026, 10, 26, 4, 30), g, p, v)[0]));
+        Kiem.bang("pha: thu Hai 05:00 tuan sau = dang ky tuan moi", Integer.valueOf(CupLogic.PHA_DANG_KY), Integer.valueOf(CupLogic.pha(vn(2026, 10, 26, 5, 0), g, p, v)[0]));
         Kiem.dung("pha: tran toi da + chuan bi vua trong mot vong 10 phut", CupLogic.GIAY_TRAN + 5 + 4 < p * 60);
     }
 
@@ -363,10 +442,11 @@ public final class KiemPhoBanCup {
             final CupLogic.Loai l = CupLogic.loaiTuan(CupLogic.tuan(c.mo));
             ten &= c.ten.startsWith(l.ten) && c.ten.contains("tuần " + c.lan) && c.moTa.contains(l.luat()) && c.ten.length() <= 100 && c.moTa.length() <= 500;
         }
-        Kiem.dung("lich nam: tuan cup lien nhau, moi tuan 7 ngay, mo thu Hai 04:00", lienTuc);
+        Kiem.dung("lich nam: tuan cup lien nhau, moi tuan 7 ngay, mo thu Hai 05:00", lienTuc);
+        Kiem.bang("lich nam: tuan cup 2026-43 mo dung thu Hai 19/10 05:00", Long.valueOf(vn(2026, 10, 19, 5, 0)), Long.valueOf(c26.get(42).mo));
         Kiem.dung("lich nam: ten / mo ta moi tuan = loai cup cua tuan do (web dang tin dung ten)", ten);
         Kiem.dung("lich nam: luon dang dien ra (khong bat / tat lam khoi dong lai may chu)", LichNam.dangDienRa(CupLogic.MA_LICH, vn(2026, 10, 21, 12, 0))
-                && LichNam.dangDienRa(CupLogic.MA_LICH, vn(2027, 1, 4, 3, 59)) && LichNam.dangDienRa(CupLogic.MA_LICH, vn(2027, 1, 4, 4, 0)));
+                && LichNam.dangDienRa(CupLogic.MA_LICH, vn(2027, 1, 4, 4, 59)) && LichNam.dangDienRa(CupLogic.MA_LICH, vn(2027, 1, 4, 5, 0)));
         Kiem.dung("lich nam: phan thuong <= 300 ky tu (cot phan_thuong)", m.phanThuong.length() <= 300);
         final String web = doc("../web/shared/utils/suKienNam.ts");
         Kiem.dung("web: suKienNam.ts biet nhom 'Cúp PvP' (bao truoc 1 ngay, tin co link bang xep hang)", web.contains("'Cúp PvP'") && web.contains("/cup"));

@@ -1,7 +1,7 @@
 /**
  * Đấu trường Bảo Bối 3v3 (D12) — phần THUẦN dùng chung cho web (/dau-truong, /api/dau-truong, /cam-nang/dau-truong).
  * Số liệu khớp máy chủ com.htbb.pokemon.DauTruongLogic / DauTruongTran / DauTruongDuLieu (server/test/KiemDauTruong
- * kiểm bên đó; tests/dau-truong.test.ts kiểm bên này). Tuần = tuần cúp (thứ Hai 04:00 giờ Việt Nam, CupLogic.tuan).
+ * kiểm bên đó; tests/dau-truong.test.ts kiểm bên này). Tuần = tuần cúp (thứ Hai 05:00 giờ Việt Nam, CupLogic.tuan).
  * Bảng: tob_dau_truong_mua (điểm mùa), tob_dau_truong_tran (từng trận), tob_dau_truong_doi (tên hiện).
  */
 

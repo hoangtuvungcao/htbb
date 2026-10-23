@@ -68,7 +68,7 @@ defineExpose({ refresh })
           <h2 class="font-semibold text-highlighted">Lịch năm (tự động)</h2>
           <p class="mt-1 max-w-3xl text-xs text-muted">
             Mọi sự kiện có lịch tự bật / tắt đúng ngày thật (giờ Việt Nam; Tết, Giỗ Tổ, Vu Lan, Trung Thu theo âm lịch).
-            Mốc mở / đóng lúc 04:00 nên được áp dụng ở lần bảo trì hằng ngày (04:30–05:30) — không khởi động lại thêm.
+            Mốc mở / đóng lúc 04:00 (lễ) và thứ Hai 05:00 (tuần Pokémon, cúp) nên được áp dụng ở lần bảo trì hằng ngày (05:01–05:30) — không khởi động lại thêm.
             Ghi đè chỉ cho <strong>một năm</strong>; bật / tắt / hẹn giờ tay ở bảng dưới thì sự kiện chuyển sang thủ công.
             Website tự đăng tin "Sắp diễn ra" (3 ngày trước), "Đang diễn ra" và "Đã kết thúc".
           </p>

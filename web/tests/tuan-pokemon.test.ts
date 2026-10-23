@@ -1,4 +1,4 @@
-/** "Tuần Pokémon" trên web phải trùng tuần máy chủ đang chạy (LichNam: tuần ISO, đổi tuần 04:00 thứ Hai giờ VN). */
+/** "Tuần Pokémon" trên web phải trùng tuần máy chủ đang chạy (LichNam: tuần ISO, đổi tuần 05:00 thứ Hai giờ VN). */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { tuanTrongNam } from '../shared/utils/danhMucCamNang.ts'
@@ -12,9 +12,9 @@ test('tuần ISO theo giờ Việt Nam', () => {
   assert.equal(tuanTrongNam(vn('2026-01-01T12:00:00')), 1) // thứ Năm 1/1/2026 -> tuần 1
 })
 
-test('đổi tuần lúc 04:00 thứ Hai, không phải nửa đêm', () => {
-  assert.equal(tuanTrongNam(vn('2026-10-26T03:59:00')), 43)
-  assert.equal(tuanTrongNam(vn('2026-10-26T04:00:00')), 44)
+test('đổi tuần lúc 05:00 thứ Hai (mốc tuần chung), không phải nửa đêm', () => {
+  assert.equal(tuanTrongNam(vn('2026-10-26T04:59:00')), 43)
+  assert.equal(tuanTrongNam(vn('2026-10-26T05:00:00')), 44)
 })
 
 test('tuần ISO 53 và đầu năm thuộc năm trước gộp vào tuần 52', () => {

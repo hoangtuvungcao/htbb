@@ -1,4 +1,4 @@
-/** Cúp PvP tuần (0.9.7): tuần cúp thứ Hai 04:00 giờ VN khớp server CupLogic, gộp đội / xếp hạng, tin tự động. */
+/** Cúp PvP tuần (0.9.7): tuần cúp thứ Hai 05:00 giờ VN khớp server CupLogic, gộp đội / xếp hạng, tin tự động. */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { dongCupTuDong, gopDoi, moTuanCup, tuanCup } from '../shared/utils/cupPvp.ts'
@@ -6,14 +6,16 @@ import { msTuChuoi, tinCanDang, vietTin, type SuKienLan } from '../shared/utils/
 
 const t = (s: string) => msTuChuoi(s)
 
-test('tuần cúp đổi đúng thứ Hai 04:00 giờ Việt Nam', () => {
-  const w = tuanCup(t('2026-10-19 04:00:00'))
-  assert.equal(moTuanCup(w), t('2026-10-19 04:00:00'))
-  assert.equal(tuanCup(t('2026-10-19 03:59:59')), w - 1)
+test('tuần cúp đổi đúng thứ Hai 05:00 giờ Việt Nam (mốc tuần chung)', () => {
+  const w = tuanCup(t('2026-10-19 05:00:00'))
+  assert.equal(moTuanCup(w), t('2026-10-19 05:00:00'))
+  assert.equal(tuanCup(t('2026-10-19 04:59:59')), w - 1)
+  assert.equal(tuanCup(t('2026-10-19 04:00:00')), w - 1) // trước 0.9.14 đây đã là tuần mới
   assert.equal(tuanCup(t('2026-10-25 23:59:00')), w)
-  assert.equal(tuanCup(t('2026-10-26 04:00:00')), w + 1)
-  // tuần 0 = thứ Hai 05/01/1970 04:00 (cùng mốc server)
-  assert.equal(moTuanCup(0), t('1970-01-05 04:00:00'))
+  assert.equal(tuanCup(t('2026-10-26 04:59:00')), w)
+  assert.equal(tuanCup(t('2026-10-26 05:00:00')), w + 1)
+  // tuần 0 = thứ Hai 05/01/1970 05:00 (cùng mốc server)
+  assert.equal(moTuanCup(0), t('1970-01-05 05:00:00'))
 })
 
 test('gộp Cúp Đôi theo doi_id, xếp hạng chốt trước rồi điểm', () => {

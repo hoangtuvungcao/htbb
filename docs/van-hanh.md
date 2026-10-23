@@ -217,8 +217,8 @@ Giờ đặt bằng khoá `sv.gioBaoTri` (`/admin/cau-hinh-he-thong`, nhóm Bả
 
 | Giá trị | Nghĩa |
 |---|---|
-| trống (mặc định) | giờ ngẫu nhiên trong khoảng 04:30–05:30, chọn lại mỗi lần JVM khởi động |
-| `HH:MM` (vd `04:30`) | giờ cố định |
+| trống (mặc định) | giờ ngẫu nhiên trong khoảng 05:01–05:30, chọn lại mỗi lần JVM khởi động (sau mốc lễ 04:00 và mốc tuần thứ Hai 05:00, nên mọi thay đổi theo lịch áp dụng ở lần bảo trì này) |
+| `HH:MM` (vd `05:15`) | giờ cố định — nên chọn sau 05:00; đặt trước 05:00 thì sáng thứ Hai có sự kiện tuần đổi, `LichSuKien` sẽ khởi động lại thêm một lần lúc ~05:03 |
 | `tat` | không tự bảo trì (và không báo trước) |
 
 Việc dọn log (03:20) và sao lưu (03:30) được xếp **trước** khung giờ này.
@@ -410,7 +410,7 @@ Bảng `htbb_db.tob_su_kien`. Danh sách sự kiện do game đăng lên mỗi l
 giờ mở/đóng. Các khoá `sv.isSuKien*` trong `server.ini` chỉ là mặc định khi bảng chưa có dòng tương ứng.
 
 **Lịch năm tự động** (từ 19/10/2026, [thiet-ke-game.md](thiet-ke-game.md) mục 6.2): mọi sự kiện có lịch tự bật / tắt đúng
-ngày thật (giờ Việt Nam, lễ âm lịch tự tính), mốc 04:00 gộp vào bảo trì hằng ngày — **không cần làm gì**. Lịch nằm ở
+ngày thật (giờ Việt Nam, lễ âm lịch tự tính), mốc lễ 04:00 và mốc tuần thứ Hai 05:00 gộp vào bảo trì hằng ngày — **không cần làm gì**. Lịch nằm ở
 `tob_su_kien_lich` (máy chủ ghi năm trước .. năm sau). Ở `/admin/sukien` mục *Lịch năm*: ghi đè **một năm** (Tắt năm nay /
 Đổi giờ / Mở ngay / Theo lịch) hoặc *Chuyển thủ công*; bật / tắt / hẹn giờ tay một sự kiện có lịch cũng chuyển nó sang thủ
 công (bấm *Tự động theo lịch* để trả lại). "Tắt hết" chuyển mọi sự kiện đang bật sang thủ công. Website tự đăng tin

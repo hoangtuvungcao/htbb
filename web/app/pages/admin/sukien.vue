@@ -186,7 +186,7 @@ const lichCot = [
       Mọi sự kiện có lịch <strong class="text-highlighted">tự bật / tắt theo lịch năm</strong> (mục Lịch năm bên dưới) —
       không cần làm gì. Muốn khác một năm: ghi đè năm đó (tắt, đổi giờ, mở ngay). Bảng cuối trang bật / tắt hoặc
       <strong class="text-highlighted">hẹn giờ</strong> tay: dùng cho sự kiện không có lịch (bản cũ, mini) — bật tay một sự kiện có lịch
-      thì nó chuyển sang thủ công. Đổi xong server tự khởi động lại (thay đổi của lịch lúc 04:00 gộp vào bảo trì hằng ngày).
+      thì nó chuyển sang thủ công. Đổi xong server tự khởi động lại (thay đổi của lịch lúc 04:00 / thứ Hai 05:00 gộp vào bảo trì hằng ngày 05:01–05:30).
     </p>
 
     <AdminSuKienLichNam :duoc-ghi="duocGhi" @doi="refresh()" />
