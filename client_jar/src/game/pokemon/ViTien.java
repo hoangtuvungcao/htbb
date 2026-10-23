@@ -80,21 +80,133 @@ public final class ViTien {
         }
     }
 
+    /**
+     * 0.9.10: số dòng hàng ví bề ngang w cần (font ảnh J2ME rộng hơn chữ HD: "1,25 Tr" + lượng không vừa một dòng ở
+     * 4:3 -> chữ đè biểu tượng mục sau). Xếp tham từng mục, đủ dòng thì xuống dòng.
+     */
+    public static int soDong(int w) {
+        MainChar mc = Canvas.gameScr == null ? null : Canvas.gameScr.mainChar;
+        if (mc == null) {
+            return 1;
+        }
+        return dong(mc, w, coIcon(mc, w), ChuDe.SO, null);
+    }
+
+    /**
+     * Cỡ biểu tượng hàng ví: 16 (cao hàng - 6); một dòng không vừa mà biểu tượng 12 px vừa thì 12 (font ảnh J2ME không có
+     * cỡ chữ nhỏ hơn - giữ một dòng để lưới hành trang đủ cao).
+     */
+    static int coIcon(MainChar mc, int w) {
+        int co = Math.min(16, cao() - 6);
+        if (co > 12 && dong(mc, w, co, ChuDe.SO, null) > 1 && dong(mc, w, 12, ChuDe.SO, null) == 1) {
+            return 12;
+        }
+        return co;
+    }
+
+    /** Chia mục vào dòng (ghi chỉ số dòng từng mục vào ra nếu != null); trả số dòng. */
+    static int dong(MainChar mc, int w, int co, int vai, int[] ra) {
+        int n = coKhoa(mc) ? 3 : 2;
+        int[] loai = {TienTe.XU, TienTe.LUONG, TienTe.LUONG_KHOA};
+        long[] gt = {mc.charXu, mc.luong, mc.luongKhoa};
+        int[] wm = new int[3];
+        for (int i = 0; i < n; i++) {
+            wm[i] = rongMuc(loai[i], gt[i], co, vai);
+        }
+        int d = 0, dau = 0;
+        for (int i = 0; i < n; i++) {
+            if (i > dau && !vua(wm, dau, i - dau + 1, w - 8)) {
+                d++;
+                dau = i;
+            }
+            if (ra != null) {
+                ra[i] = d;
+            }
+        }
+        return d + 1;
+    }
+
+    /** so mục từ dau vừa một dòng rộng wTrong: ô chia đều vừa từng mục, hoặc xếp tham (mỗi mục + khe) vừa. */
+    /** khe chữ tối thiểu giữa hai mục (số mục trước - biểu tượng mục sau) khi xếp tham */
+    static final int KHE = 4;
+
+    static boolean vua(int[] wm, int dau, int so, int wTrong) {
+        boolean deu = true;
+        int tong = 0;
+        for (int i = dau; i < dau + so; i++) {
+            deu &= wm[i] <= wTrong / so - 2;
+            tong += wm[i];
+        }
+        return deu || (wTrong - tong) / so >= KHE;
+    }
+
     static void hang0(Graphics g, int x, int y, int w, int h, MainChar mc) {
         int n = coKhoa(mc) ? 3 : 2;
         int[] loai = {TienTe.XU, TienTe.LUONG, TienTe.LUONG_KHOA};
         long[] gt = {mc.charXu, mc.luong, mc.luongKhoa};
         int[] mau = {0xFFE89A, 0xC8E4FF, 0xD8D8DE};
-        int co = Math.min(16, h - 6);
-        int wo = (w - 8) / n;
+        int vai = ChuDe.SO;
+        int co0 = coIcon(mc, w);
+        int soD = dong(mc, w, co0, vai, null);
+        int kD = Bang.cach();
+        int hD = (h - (soD - 1) * kD) / soD;
+        int co = Math.min(co0, hD - 6);
+        int[] dongCua = new int[3];
+        dong(mc, w, co, vai, dongCua);
         int k = Bang.cach();
-        for (int i = 0; i < n; i++) {
-            int xo = x + 4 + i * wo;
-            int wm = rongMuc(loai[i], gt[i], co, ChuDe.SO);
-            int xm = xo + Math.max(2, (wo - wm) / 2);
-            muc(g, loai[i], gt[i], xm, y, h, co, ChuDe.SO, mau[i], false);
-            // vùng chạm: cả ô (trừ khe) -> chú thích + số đầy đủ
-            TienTe.dangKyGoiY(g, loai[i], gt[i], xo + (i == 0 ? 0 : k / 2), y, wo - k, h);
+        int wTrong = w - 8;
+        for (int d = 0; d < soD; d++) {
+            int yd = y + d * (hD + kD);
+            int dau = -1, so = 0, tong = 0;
+            int[] wm = new int[3];
+            for (int i = 0; i < n; i++) {
+                if (dongCua[i] != d) {
+                    continue;
+                }
+                if (dau < 0) {
+                    dau = i;
+                }
+                so++;
+                wm[i] = rongMuc(loai[i], gt[i], co, vai);
+                tong += wm[i];
+            }
+            if (so == 0) {
+                continue;
+            }
+            // ô chia đều (như trước) khi mọi mục vừa ô; không thì ô = bề ngang thật từng mục + phần dư chia đều (khe chữ >= KHE)
+            int wo = wTrong / so;
+            boolean deu = true;
+            for (int i = dau; i < dau + so; i++) {
+                deu &= wm[i] <= wo - 2;
+            }
+            int du = deu ? 0 : Math.max(0, wTrong - tong) / so;
+            int xL = x + 4, xR = x + 4 + wTrong;
+            int xo = xL;
+            int[] bien = new int[so + 1];   // ranh giới ô (vẽ) -> vùng chạm
+            bien[0] = xL;
+            for (int i = dau; i < dau + so; i++) {
+                int j = i - dau;
+                int wO = deu ? wo : wm[i] + du;
+                if (j == so - 1 && !deu) {
+                    wO = xR - xo;
+                }
+                int xm = xo + Math.max(2, (wO - wm[i]) / 2);
+                muc(g, loai[i], gt[i], xm, yd, hD, co, vai, mau[i], false);
+                xo += wO;
+                bien[j + 1] = xo;
+            }
+            // vùng chạm: cả ô (trừ khe) -> chú thích + số đầy đủ; ô xếp tham hẹp thì dời ranh giới cho mỗi vùng >= cỡ chạm
+            int min = VungCham.MIN;
+            for (int j = 1; j < so; j++) {
+                int lo = xL + j * (min + k), hi = xR - (so - j) * (min + k);
+                if (lo <= hi) {
+                    bien[j] = Math.max(lo, Math.min(hi, bien[j]));
+                }
+            }
+            for (int i = dau; i < dau + so; i++) {
+                int j = i - dau;
+                TienTe.dangKyGoiY(g, loai[i], gt[i], bien[j] + (j == 0 ? 0 : k / 2), yd, bien[j + 1] - bien[j] - k, hD);
+            }
         }
     }
 }

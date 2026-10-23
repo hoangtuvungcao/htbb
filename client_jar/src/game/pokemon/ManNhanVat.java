@@ -578,11 +578,14 @@ public final class ManNhanVat extends Screen {
         {
             boolean coDh = m.danhHieuTen != null;
             String chu = coDh ? m.danhHieuTen : "Danh hiệu";
-            int wMax = giuaR0(x, lw, coCot) - giuaL0(x, coCot) - 8;
+            // 0.9.10: vùng chạm viên (wv + 4) cách mép vùng chạm cột ô gần nhất >= Bang.cach() (J2ME 16:9: hở 6 < 7)
+            int mepCot = gon ? d + b + 1 : d + 2 + rs / 3;
+            int wMax = Math.min(giuaR0(x, lw, coCot) - giuaL0(x, coCot) - 8, lw - 2 * (mepCot + k) - 4);
             int wv = ManDanhHieu.vien(g, -10000, yDh, chu + " ›", coDh ? m.danhHieuHiem : 0, null, wMax);   // đo bề ngang
             int xv = x + lw / 2 - wv / 2;
             ManDanhHieu.vien(g, xv, yDh, chu + " ›", coDh ? m.danhHieuHiem : 0, null, wMax);
-            VungCham.them(g, xv - 2, yDh - (hcDh - hDh) / 2, Math.max(wv + 4, VungCham.MIN), hcDh, new IAction() {
+            int wcDh = Math.max(wv + 4, VungCham.MIN);
+            VungCham.them(g, x + lw / 2 - wcDh / 2, yDh - (hcDh - hDh) / 2, wcDh, hcDh, new IAction() {
                 public void perform() {
                     ManDanhHieu.moTuHoSo();
                 }

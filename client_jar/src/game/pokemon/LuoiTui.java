@@ -213,9 +213,11 @@ public final class LuoiTui {
         }
         String dem = soDung() + "/" + suc;
         int wDem = ChuDe.rong(dem, ChuDe.SO) + 16;
-        int hVi = ViTien.cao();
+        int wVi = w - 10 - wDem - k;
+        int soDVi = ViTien.soDong(wVi);
+        int hVi = ViTien.cao() * soDVi + (soDVi - 1) * k;   // 0.9.10: ví hẹp (J2ME 4:3) xuống dòng thay vì chữ đè biểu tượng
         int yVi = y + h - 5 - hVi;
-        ViTien.hang(g, x + 5, yVi, w - 10 - wDem - k, hVi);
+        ViTien.hang(g, x + 5, yVi, wVi, hVi);
         GiaoDien.khoiPixel(g, x + w - 5 - wDem, yVi, wDem, hVi, soDung() >= suc ? ChuDe.DO : 0x5C2E12);
         ChuDe.chuVienGiua(g, dem, x + w - 5 - wDem / 2, yVi, hVi, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
         // lưới

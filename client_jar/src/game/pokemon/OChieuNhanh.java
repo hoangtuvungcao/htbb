@@ -104,7 +104,7 @@ public final class OChieuNhanh {
     /** Nút ở chân bảng: {x, y, w, h} của nút thứ i trong k nút (chia đều). */
     public static int[] nutChan(int[] bc, int i, int k) {
         int x = bc[0] + 8, w = bc[2] - 16, y = bc[1] + bc[3] - bc[8] - 2, h = bc[8] - 6;
-        int gap = ChuUI.bo != null ? Math.max(4, Bang.cach()) : 4;
+        int gap = Bang.cach();   // 0.9.10: cả J2ME (trước 4 px cố định: nút chạm sát nhau trên J2ME cảm ứng)
         int wn = (w - gap * (k - 1)) / k;
         return new int[]{x + i * (wn + gap), y, wn, h};
     }

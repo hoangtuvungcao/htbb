@@ -242,6 +242,21 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản vá 0.9.10 (`BAN=910`: giao diện J2ME - `ChupTrongGame -Dchup.j2me` 35 lỗi -> 0)
+
+Chỉ client (`client_jar/src`, vào cả J2ME / APK / PC); SQL và `htbb-server.jar` KHÔNG đổi. `PHIEN_BAN=0.9.10-opentest`
+(3 phần số khớp `BAN = 0*10000 + 9*100 + 10`; `MIDlet-Version` 0.9.10).
+
+1. Màn Nhân vật (tab Trang bị, kiểu gọn 2 cột): viên Danh hiệu giữa sân khấu cách vùng chạm ô trang bị >= `Bang.cach()`
+   (trước hở 6 < 7 px với ô "Huy hiệu" ở J2ME 16:9); vùng chạm viên canh giữa viên.
+2. Chọn chiêu nhanh: khe các nút chân ("Bỏ trống / Dời sang trái / Dời sang phải") = `Bang.cach()` ở mọi bản (trước J2ME
+   cố định 4 px).
+3. Menu ngữ cảnh (menu máy chủ / NPC): màn thấp (J2ME 19.5:9 / 20:9 / 21:9, PC 21:9) không đủ chỗ cho 6 nút mà không đè
+   HUD (nút Menu, dải chat, nhãn nhặt bóng) -> ít nút mỗi trang hơn (+ "Thêm"), thẻ đặt chỗ không chồng HUD.
+4. Hàng ví (dưới lưới hành trang): font ảnh J2ME rộng hơn chữ HD - "1,25 Tr" đè biểu tượng lượng ở 4:3. Ô theo bề ngang
+   thật từng mục (khe chữ >= 4 px), biểu tượng 12 px khi chật, vẫn không vừa thì xuống dòng; vùng chạm mỗi mục >= cỡ chạm.
+5. Tải gói 910 lên `/admin/tai-game` (Số bản = 910) cho từng nền tảng.
+
 ### Bản vá 0.9.9 (`BAN=909`: menu AUTO, trang chiêu tự động, lỗi J2ME đổi bản đồ, giftcode, nút Cài đặt HUD)
 
 SQL không đổi (không chạy `nang_cap_csdl.sh`); `htbb-server.jar` ĐỔI (chỉ câu trả lời giftcode) - thay jar rồi khởi động lại.

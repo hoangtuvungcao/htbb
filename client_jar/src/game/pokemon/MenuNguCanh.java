@@ -101,6 +101,7 @@ public final class MenuNguCanh extends Dialog {
         m.lenh = boTrung(lenh);
         m.trang = 0;
         m.chon = 0;
+        m.moiTrang = TOI_DA;
         m.left = null;
         m.center = null;
         m.right = null;
@@ -157,22 +158,30 @@ public final class MenuNguCanh extends Dialog {
         }
     }
 
+    /**
+     * 0.9.10: số nút mỗi trang (<= TOI_DA) - paint giảm khi màn thấp (J2ME / 21:9) không có chỗ đặt thẻ đủ TOI_DA hàng
+     * mà không chồng HUD (trước: thẻ 6 hàng đè nút Menu / dải chat / nhãn nhặt bóng).
+     */
+    int moiTrang = TOI_DA;
+
     int soTrang() {
         int n = this.lenh == null ? 0 : this.lenh.size();
-        return n <= TOI_DA ? 1 : (n + TOI_DA - 2) / (TOI_DA - 1);
+        int td = Math.max(2, Math.min(TOI_DA, this.moiTrang));
+        return n <= td ? 1 : (n + td - 2) / (td - 1);
     }
 
     /** Lệnh trên trang hiện tại: chỉ số trong lenh, -1 = nút "Thêm". */
     int[] dsTrang() {
         int n = this.lenh.size();
-        if (n <= TOI_DA) {
+        int td = Math.max(2, Math.min(TOI_DA, this.moiTrang));
+        if (n <= td) {
             int[] r = new int[n];
             for (int i = 0; i < n; i++) {
                 r[i] = i;
             }
             return r;
         }
-        int moi = TOI_DA - 1;
+        int moi = td - 1;
         int dau = this.trang * moi;
         int so = Math.min(moi, n - dau);
         int[] r = new int[so + 1];
@@ -204,45 +213,73 @@ public final class MenuNguCanh extends Dialog {
                 MenuNguCanh.this.dong();
             }
         }, "nen-ngoai");
-        int[] ds = dsTrang();
         int k = Bang.cach();
         int nh = Bang.caoHang();
         int ic = nh - 10;
-        int wNhan = 0;
-        for (int i = 0; i < ds.length; i++) {
-            wNhan = Math.max(wNhan, ChuDe.rong(ds[i] < 0 ? "Thêm" : chu(ds[i]), ChuDe.NHAN));
-        }
         int L = Bang.trai(), T = Bang.tren(), R = Bang.phai(), B = Bang.duoi();
-        int wc = Math.max(ChuDe.dt() ? 170 : 140, Math.min(ChuDe.dt() ? 260 : 220, wNhan + ic + 30));
         String tieu = this.tieuDe != null && this.tieuDe.length() > 0 ? this.tieuDe : null;
         // 0.9.7: đầu hộp = ô chân dung NPC (nếu có hình) + biển tên đỏ; không hình = biển tên giữa
         boolean chanDung = this.dexNpc > 0 && tieu != null;
         int sCd = ChuDe.dt() ? 44 : 38;
         int hBien = ChuDe.cao(ChuDe.TIEU_DE) + 6;
         int hTieu = chanDung ? sCd + 10 : tieu != null ? hBien + 10 : 6;
-        if (tieu != null) {
-            wc = Math.max(wc, Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36)));
-        }
-        int cot = 1;
-        int hang = ds.length;
-        if (hTieu + hang * (nh + k) + 6 > B - T - 4 && ds.length > 1) {
-            cot = 2;
-            hang = (ds.length + 1) / 2;
-        }
-        int w = cot * wc + (cot - 1) * k + 12, h = hTieu + hang * (nh + k) - k + 8;
-        int[] o = viTri(w, h, L, T, R, B);
-        if (o[3] > 0 && cot == 1 && ds.length > 1) {
-            // một cột không có chỗ trống không chồng HUD: thử 2 cột (thẻ thấp hơn)
-            int hang2 = (ds.length + 1) / 2, w2 = 2 * wc + k + 12, h2 = hTieu + hang2 * (nh + k) - k + 8;
-            int[] o2 = viTri(w2, h2, L, T, R, B);
-            if (o2[3] < o[3]) {
-                cot = 2;
-                hang = hang2;
-                w = w2;
-                h = h2;
-                o = o2;
+        // 0.9.10: thử TOI_DA nút / trang rồi ít dần tới khi có chỗ không chồng HUD (màn thấp: thêm trang "Thêm")
+        int[] ds = null;
+        int wc = 0, cot = 1, hang = 0, w = 0, h = 0;
+        int[] o = null;
+        int tdTot = TOI_DA, chongTot = Integer.MAX_VALUE;
+        int trangCu = this.trang, chonCu = this.chon;
+        int nLenh = this.lenh.size();
+        for (int td = Math.min(TOI_DA, Math.max(2, nLenh)); td >= 2; td--) {
+            this.moiTrang = td;
+            this.trang = Math.min(trangCu, soTrang() - 1);
+            int[] ds1 = dsTrang();
+            int wNhan = 0;
+            for (int i = 0; i < ds1.length; i++) {
+                wNhan = Math.max(wNhan, ChuDe.rong(ds1[i] < 0 ? "Thêm" : chu(ds1[i]), ChuDe.NHAN));
+            }
+            int wc1 = Math.max(ChuDe.dt() ? 170 : 140, Math.min(ChuDe.dt() ? 260 : 220, wNhan + ic + 30));
+            if (tieu != null) {
+                wc1 = Math.max(wc1, Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36)));
+            }
+            int cot1 = 1;
+            int hang1 = ds1.length;
+            if (hTieu + hang1 * (nh + k) + 6 > B - T - 4 && ds1.length > 1) {
+                cot1 = 2;
+                hang1 = (ds1.length + 1) / 2;
+            }
+            int w1 = cot1 * wc1 + (cot1 - 1) * k + 12, h1 = hTieu + hang1 * (nh + k) - k + 8;
+            int[] o1 = viTri(w1, h1, L, T, R, B);
+            if (o1[3] > 0 && cot1 == 1 && ds1.length > 1) {
+                // một cột không có chỗ trống không chồng HUD: thử 2 cột (thẻ thấp hơn)
+                int hang2 = (ds1.length + 1) / 2, w2 = 2 * wc1 + k + 12, h2 = hTieu + hang2 * (nh + k) - k + 8;
+                int[] o2 = viTri(w2, h2, L, T, R, B);
+                if (o2[3] < o1[3]) {
+                    cot1 = 2;
+                    hang1 = hang2;
+                    w1 = w2;
+                    h1 = h2;
+                    o1 = o2;
+                }
+            }
+            if (o1[3] < chongTot) {
+                chongTot = o1[3];
+                tdTot = td;
+                ds = ds1;
+                wc = wc1;
+                cot = cot1;
+                hang = hang1;
+                w = w1;
+                h = h1;
+                o = o1;
+            }
+            if (o1[3] == 0 || nLenh <= 1) {
+                break;
             }
         }
+        this.moiTrang = tdTot;
+        this.trang = Math.min(trangCu, soTrang() - 1);
+        this.chon = Math.min(chonCu, Math.max(0, ds.length - 1));
         int x = o[0], y = o[1];
         VUA_VE[0] = x;
         VUA_VE[1] = y;
