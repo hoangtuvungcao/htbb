@@ -43,6 +43,7 @@ import java.util.List;
  *            short cap      cap so sanh (pet: cap pet x 1000 + cap; thu cuoi: level)
  *            int   xu       xu nhan duoc khi tha (0 = thu co han)
  *            UTF   lyDo     vi sao khong tha duoc ("" neu tha duoc)
+ *          (client &gt;= {@link #BAN_DANG_DUNG}) khoi DANG DUNG: thu dang cuoi + pet dang di theo - {@link #ghiDangDung}
  * </pre>
  *
  * Day o: moi duong NHAN thu (mua, no trung, su kien, giftcode, duoc tang / giao dich) goi {@link #chanNhan}: tu choi
@@ -54,6 +55,8 @@ public final class QuanLyThuGame {
     public static final byte KIEU_TRANG_THAI = 0, KIEU_THA = 1, KIEU_KHOA = 2, KIEU_DUNG_VE = 3, KIEU_MUA_VE = 4;
     /** Ban client dau tien co man quan ly thu (doc phan noi them goi 16, gui -119). */
     public static final int BAN_CLIENT = 912; // 0.9.12: ban 911 (0.9.11) phat hanh KHONG co bo doc phan noi them
+    /** Ban client doc khoi DANG DUNG (thu dang cuoi / pet dang di theo) sau phan noi them - xem {@link #ghiDangDung}. */
+    public static final int BAN_DANG_DUNG = 913;
     public static final byte PHIEN = 1;
     /** Id mau nguyen lieu (Map.gemTemplate) cua Ve mo o thu - noi sau ve mo rong hanh trang (270). */
     public static final short ID_VE = 271;
@@ -587,13 +590,109 @@ public final class QuanLyThuGame {
         dos.writeInt((int) Math.min(Integer.MAX_VALUE, xuConNgay(p)));
         dos.writeByte(ds.size());
         for (final Object o : ds) {
-            final String ly = lyDoDangDung(p, o);
-            final boolean khoa = daKhoa(p, o);
-            dos.writeByte((khoa ? CO_KHOA : 0) | (ly != null || khoa ? CO_KHONG_THA : 0));
-            dos.writeInt(loai(o));
-            dos.writeShort(capSoSanh(o));
-            dos.writeInt((int) Math.min(Integer.MAX_VALUE, xuTha(o)));
-            dos.writeUTF(ly == null ? (khoa ? "Đã khoá" : "") : ly);
+            ghiDong(dos, p, o);
+        }
+        if (BanClientNhanVat.ban(p) >= BAN_DANG_DUNG) {
+            ghiDangDung(dos, p, ds);
+        }
+    }
+
+    /** Mot dong quan ly (co, loai, cap, xu, ly do) - dung cho danh sach tui va khoi dang dung. */
+    static void ghiDong(final DataOutputStream dos, final Char p, final Object o) throws IOException {
+        final String ly = lyDoDangDung(p, o);
+        final boolean khoa = daKhoa(p, o);
+        dos.writeByte((khoa ? CO_KHOA : 0) | (ly != null || khoa ? CO_KHONG_THA : 0));
+        dos.writeInt(loai(o));
+        dos.writeShort(capSoSanh(o));
+        dos.writeInt((int) Math.min(Integer.MAX_VALUE, xuTha(o)));
+        dos.writeUTF(ly == null ? (khoa ? "Đã khoá" : "") : ly);
+    }
+
+    /**
+     * Con DANG DUNG (khong nam trong danh sach tui cua goi 16): thu cuoi place == 1 / animalRide, pet dang di theo. Truoc
+     * 0.9.13 client chi doan "dang cuoi" tu goi 15 + goi 3 + -93 va khong bao gio thay pet dang di theo o Trang bi ›
+     * Thu cuoi -&gt; o "Ô thú: 5/20" ma danh sach chi 4 dong, o Thu cuoi trong. Cung danh sach {@link #soThu} dem.
+     */
+    public static List<Object> dangDung(final Char p, final List<Object> ds) {
+        final List<Object> r = new ArrayList<Object>();
+        if (p.animalRide != null && p.animal != null && p.animal.contains(p.animalRide) && !ds.contains(p.animalRide)) {
+            r.add(p.animalRide);
+        }
+        if (p.animal != null) {
+            for (final Animal a : new ArrayList<Animal>(p.animal)) {
+                if (!ds.contains(a) && !r.contains(a)) {
+                    r.add(a);
+                }
+            }
+        }
+        if (p.pet != null) {
+            if (p.petUsing != null && p.pet.contains(p.petUsing) && !ds.contains(p.petUsing)) {
+                r.add(p.petUsing);
+            }
+            for (final Pet t : new ArrayList<Pet>(p.pet)) {
+                if (!ds.contains(t) && !r.contains(t)) {
+                    r.add(t);
+                }
+            }
+        }
+        return r;
+    }
+
+    /** Thu cuoi cu (cuoi bang thuoc): dang cuoi nhung KHONG phai con trong o thu (animalRide null). */
+    public static String tenThuCuoiCu(final Char p) {
+        if (p.rideHorse <= 0 || p.animalRide != null) {
+            return null;
+        }
+        return "Thú cưỡi";
+    }
+
+    /**
+     * Khoi DANG DUNG noi sau n dong (client &gt;= {@link #BAN_DANG_DUNG}):
+     * <pre>
+     *   byte phien (1)
+     *   byte m       so con dang dung (thu cuoi dang cuoi truoc, roi pet dang di theo)
+     *   m x  byte loai 0 thu cuoi / 1 pet
+     *        loai 0: short id, byte idImg, byte icon, byte level, UTF ten, UTF info, byte 1 dang cuoi / 0 khong
+     *        loai 1: short id, byte idImg + 5, byte icon, UTF ten, byte type, UTF info, int phut con, byte 1 di theo / 0
+     *        + mot dong quan ly (byte co, int loai, short cap, int xu, UTF ly do)
+     *   byte coThuCu 1 = dang cuoi thu cuoi cu khong chiem o (thuoc) + UTF ten
+     * </pre>
+     */
+    static void ghiDangDung(final DataOutputStream dos, final Char p, final List<Object> ds) throws IOException {
+        final List<Object> r = dangDung(p, ds);
+        final int n = Math.min(r.size(), 120);
+        dos.writeByte(PHIEN);
+        dos.writeByte(n);
+        for (int i = 0; i < n; i++) {
+            final Object o = r.get(i);
+            if (o instanceof Animal) {
+                final Animal a = (Animal) o;
+                dos.writeByte(0);
+                dos.writeShort(a.id);
+                dos.writeByte(a.idImg);
+                dos.writeByte(a.idImg >= 0 && a.idImg < Animal.idImgIcon.length ? Animal.idImgIcon[a.idImg] : 0);
+                dos.writeByte(a.level);
+                dos.writeUTF(com.htbb.pokemon.ChuPokemon.tenThuCuoi(a.getName()));
+                dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(a.getInfoSendUser()));
+                dos.writeByte(p.animalRide == a ? 1 : 0);
+            } else {
+                final Pet t = (Pet) o;
+                dos.writeByte(1);
+                dos.writeShort(t.id);
+                dos.writeByte(t.idImg + 5);
+                dos.writeByte(t.getIdIconPaint());
+                dos.writeUTF(t.getName());
+                dos.writeByte(t.getType());
+                dos.writeUTF(t.getInfoSendUser());
+                dos.writeInt(t.getTimeExpire());
+                dos.writeByte(p.petUsing == t ? 1 : 0);
+            }
+            ghiDong(dos, p, o);
+        }
+        final String cu = tenThuCuoiCu(p);
+        dos.writeByte(cu != null ? 1 : 0);
+        if (cu != null) {
+            dos.writeUTF(com.htbb.pokemon.ChuPokemon.tenThuCuoi(cu));
         }
     }
 

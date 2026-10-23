@@ -512,6 +512,13 @@ public final class ManNhanVat extends Screen {
         int s = canhO(), k = Bang.cach();
         int rs = (s + 1) / 2;
         int lw = rongKhoiNv(w);
+        if (this.o == O_THU) {
+            // 0.9.13: Trang bị › Thú cưỡi KHÔNG vẽ lưới đồ nhân vật (chủ dự án: "thú cưỡi sao có hành trang của nhân vật")
+            veKhoiThu(g, m, x, y, lw, h);
+            veHanhTrang(g, x + lw + k, y, w - lw - k, h);
+            moXem();
+            return;
+        }
         // Sức mạnh (hoặc tên ô đang chọn) trên cùng
         int hSm = ChuDe.cao(ChuDe.PHU) + ChuDe.cao(ChuDe.SO_TO) - 2;
         // 0.9.7: nút Tiềm năng (cộng điểm) góc trái trên khối nhân vật - kiểu NRO, cạnh "Sức mạnh"
@@ -595,12 +602,7 @@ public final class ManNhanVat extends Screen {
             }
         }
         banRongBe = (giuaR - giuaL) / 2 - 2;
-        if (this.o == O_THU) {
-            // 0.9.11: ô Thú cưỡi chọn -> sân khấu XEM THÚ (thú đang chọn / đang cưỡi / gợi ý) thay vì chỉ người chơi
-            veXemThu(g, m, giuaL, yTren, giuaR - giuaL, cx, yChan, z);
-        } else {
-            veNguoiChoi(g, m, cx, yChan, z);
-        }
+        veNguoiChoi(g, m, cx, yChan, z);
         banRongBe = 1000;
         if (nhanO >= 0 && nhanO < TEN_O.length) {
             String ten = TEN_O[nhanO];
@@ -614,12 +616,82 @@ public final class ManNhanVat extends Screen {
         }
         // bên phải (0.9.7 kiểu NRO): LƯỚI hành trang (lọc theo ô trang bị đang chọn); ô Thú = danh sách thú
         int xr = x + lw + k, wr = w - lw - k;
-        if (this.o == O_THU) {
-            veHanhTrang(g, xr, y, wr, h);
-        } else {
-            veTui(g, xr, y, wr, h);
-        }
+        veTui(g, xr, y, wr, h);
         moXem();
+    }
+
+    /**
+     * Khối trái Trang bị › Thú cưỡi (0.9.13): tên ô trên cùng, sân khấu xem thú (thú đang chọn / đang cưỡi / pet đi theo)
+     * và hàng HAI Ô thú: "Thú cưỡi" (đang cưỡi) + "Đi theo" (pet đang đi theo) - chạm ô = xem con đó. Không ô đồ nhân
+     * vật, không "Tiềm năng", không Danh hiệu.
+     */
+    private void veKhoiThu(Graphics g, MainChar m, int x, int y, int lw, int h) {
+        int k = Bang.cach();
+        int hSm = ChuDe.cao(ChuDe.PHU) + ChuDe.cao(ChuDe.SO_TO) - 2;
+        String tieuDe = TEN_O[O_THU];
+        int wt = ChuDe.rong(tieuDe, ChuDe.NHAN) + 18, ht = ChuDe.cao(ChuDe.NHAN) + 6;
+        int cxS = x + lw / 2;
+        ChuDe.bien(g, cxS - wt / 2 - 6, y + (hSm - ht) / 2, wt + 12, ht);
+        ChuDe.chuVienGiua(g, tieuDe, cxS, y + (hSm - ht) / 2, ht, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
+        int yTren = y + hSm + 2;
+        // hàng ô dưới: [ô] tên + nhãn  [ô] tên + nhãn
+        int d = canhO(), rs = (d + 1) / 2;
+        int hHang = Math.max(d, ChuDe.cao(ChuDe.NHAN_NHO) * 2 + 2);
+        int yHang = y + h - hHang;
+        final AnimalInfo cu = thuDangCuoi(), dt = petDiTheo();
+        boolean coCuoi = dangCuoi(m);
+        boolean coPet = dt != null || (!QuanLyThu.coDung && m.pokePetDex > 0);
+        int wNua = lw / 2;
+        for (int i = 0; i < 2; i++) {
+            final boolean laCuoi = i == 0;
+            int x0 = x + i * wNua;
+            int cxO = x0 + rs + 2, cyO = yHang + hHang / 2;
+            boolean co = laCuoi ? coCuoi : coPet;
+            final AnimalInfo a = laCuoi ? cu : dt;
+            boolean chon = a != null && this.thuChon == a;
+            Bang.oTron(g, cxO, cyO, rs, co, chon, new IAction() {
+                public void perform() {
+                    ManNhanVat.this.thuChon = a == null || ManNhanVat.this.thuChon == a ? null : a;
+                }
+            }, laCuoi ? "o-thu-cuoi" : "o-di-theo");
+            int ic = d - 4;
+            if (a != null) {
+                veHinhThu(g, dexThu(a), shinyThu(a), (short) (a.idPaint + 7500), cxO, cyO, ic);
+            } else if (laCuoi && coCuoi) {
+                veHinhThu(g, m.pokeThuDex, m.pokeThuShiny, (short) (m.idPaintIconAnimal + 7500), cxO, cyO, ic);
+            } else if (!laCuoi && coPet && coHinhThat(m.pokePetDex, m.pokePetShiny)) {
+                PokeBody.paintChanDung(g, m.pokePetDex, m.pokePetShiny, cxO, cyO, ic - 2);
+            } else {
+                int b = d * 11 / 20;
+                BieuTuong.veBong(g, BieuTuong.POKEBALL, cxO - b / 2, cyO - b / 2, Math.max(b, 16), 0x8A6A4A, ChuDe.NEN_PHU);
+            }
+            String ten;
+            if (a != null) {
+                String[] t = tachTen(a.name);
+                ten = t[0].length() > 0 ? t[0] : (laCuoi ? "Thú cưỡi" : "Pokémon");
+            } else if (laCuoi && coCuoi) {
+                String[] t = tachTen(QuanLyThu.thuCu != null ? QuanLyThu.thuCu : m.infoAnimal);
+                ten = t[0].length() > 0 ? t[0] : "Thú cưỡi";
+            } else if (!laCuoi && coPet && m.pokePetTen != null) {
+                ten = m.pokePetTen;
+            } else {
+                ten = laCuoi ? "Chưa cưỡi" : (coPet ? "Pokémon" : "Chưa có");
+            }
+            int xt = cxO + rs + 4, wChu = Math.max(10, x0 + wNua - 2 - xt);
+            int yt = yHang + (hHang - ChuDe.cao(ChuDe.NHAN_NHO) * 2 - 1) / 2;
+            ChuDe.chu(g, ChuDe.cat(laCuoi ? "Thú cưỡi" : "Đi theo", ChuDe.NHAN_NHO, wChu), xt, yt, ChuDe.NHAN_NHO, ChuDe.CHU_PHU, 0);
+            ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN_NHO, wChu), xt, yt + ChuDe.cao(ChuDe.NHAN_NHO) + 1, ChuDe.NHAN_NHO,
+                    co ? ChuDe.CHU : ChuDe.CHU_PHU, 0);
+        }
+        // sân khấu xem thú
+        int cao = yHang - k - yTren;
+        nenSanKhau(g, x, yTren, lw, cao);
+        int rD = Math.min(lw, cao) * 9 / 20, cyD = yTren + cao / 2 + cao / 20;
+        float z = Math.max(1.5f, Math.min(4.2f, Math.min(lw / 46f, rD * 2 / 38f)));
+        int yChan = Math.min(yTren + cao - (int) (4 * z), cyD + rD * 6 / 10);
+        banRongBe = lw / 2 - 6;
+        veXemThu(g, m, x, yTren, lw, x + lw / 2, yChan, z);
+        banRongBe = 1000;
     }
 
     static int giuaL0(int x, int coCot) {
@@ -668,7 +740,12 @@ public final class ManNhanVat extends Screen {
             }
         } else if (co) {
             MainChar m = mc();
-            veHinhThu(g, m.pokeThuDex, m.pokeThuShiny, (short) (m.idPaintIconAnimal + 7500), x + s / 2, y + s / 2, s - 4);
+            AnimalInfo a = thuDangCuoi();
+            if (a != null) {
+                veHinhThu(g, dexThu(a), shinyThu(a), (short) (a.idPaint + 7500), x + s / 2, y + s / 2, s - 4);
+            } else {
+                veHinhThu(g, m.pokeThuDex, m.pokeThuShiny, (short) (m.idPaintIconAnimal + 7500), x + s / 2, y + s / 2, s - 4);
+            }
         }
     }
 
@@ -679,7 +756,42 @@ public final class ManNhanVat extends Screen {
      * mặc đồ 15. idAnimal một mình không đủ: xuống thú máy chủ gửi lại gói 3 + -93 nhưng không gửi gói 15.
      */
     static boolean dangCuoi(Char m) {
+        if (QuanLyThu.coDung && Canvas.gameScr != null && m == Canvas.gameScr.mainChar) {
+            // 0.9.13: máy chủ nói thẳng (khối đang dùng gói 16) - không đoán từ gói 15 / 3 / -93
+            return QuanLyThu.cuoi != null || QuanLyThu.thuCu != null;
+        }
         return m.idAnimal > -1 && (m.pokeThuDex > 0 || m.idhorse > -1 || m.useHorse > -1);
+    }
+
+    /** Người chơi đang cưỡi thú (kiểm thử / màn khác). */
+    public static boolean dangCuoiThu() {
+        return Canvas.gameScr != null && Canvas.gameScr.mainChar != null && dangCuoi(mc());
+    }
+
+    /** Thú đang cưỡi theo máy chủ (khối đang dùng 0.9.13), null = không / máy chủ cũ. */
+    static AnimalInfo thuDangCuoi() {
+        return QuanLyThu.coDung ? QuanLyThu.cuoi : null;
+    }
+
+    /** Pet đang đi theo theo máy chủ (khối đang dùng 0.9.13), null = không / máy chủ cũ. */
+    static AnimalInfo petDiTheo() {
+        return QuanLyThu.coDung ? QuanLyThu.diTheo : null;
+    }
+
+    /** Người chơi trên lưng thú {@code a} (dù -93 chưa tới: pokeThuDex = 0). */
+    static void veNguoiCuoi(Graphics g, Char m, AnimalInfo a, int cx, int yChan, float z) {
+        short dexCu = m.pokeThuDex;
+        boolean shCu = m.pokeThuShiny;
+        if (a != null && m.pokeThuDex <= 0) {
+            m.pokeThuDex = (short) dexThu(a);
+            m.pokeThuShiny = shinyThu(a);
+        }
+        try {
+            veNguoiChoi(g, m, cx, yChan, z);
+        } finally {
+            m.pokeThuDex = dexCu;
+            m.pokeThuShiny = shCu;
+        }
     }
 
     /** Thú cưỡi: idImg (data.Animal) -> số Pokédex - bản sao com.htbb.pokemon.ThuPokemon.DEX của máy chủ. */
@@ -1340,11 +1452,17 @@ public final class ManNhanVat extends Screen {
     /**
      * Danh sách thú: hàng đầu = thú đang cưỡi (máy chủ không gửi con đang cưỡi trong gói túi thú - place 1; tên lấy từ
      * infoAnimal của gói 15) -> chạm = xuống; sau đó thú cưỡi + pet đi theo trong túi (gói 16 loại 2).
+     * 0.9.13 (máy chủ gửi khối đang dùng): con ĐANG CƯỠI + pet ĐANG ĐI THEO đứng đầu (thật, chọn được: Xuống thú / Khoá),
+     * rồi thú cưỡi, rồi Pokémon đi theo trong túi; mỗi hàng có nhãn "Đang cưỡi" / "Đang đi theo" / "Thú cưỡi" / "Đi theo";
+     * số hàng = "Ô thú" (trước: 5/20 mà 4 hàng).
      */
     private void veDanhSachThu(Graphics g, int x, int y, int w, int h) {
         final MainChar m = mc();
-        final int nCuoi = dangCuoi(m) ? 1 : 0;
-        int n = Char.animal.size() + nCuoi;
+        final boolean moi = QuanLyThu.coDung;
+        // hàng "đang cưỡi" kiểu cũ: máy chủ cũ (đoán), hoặc thú cưỡi cũ bằng thuốc (không chiếm ô)
+        final int nCuoi = moi ? (QuanLyThu.thuCu != null ? 1 : 0) : (dangCuoi(m) ? 1 : 0);
+        final int nDung = moi ? QuanLyThu.dung.size() : 0;
+        int n = Char.animal.size() + nCuoi + nDung;
         int k = Bang.cach();
         if (this.thuChon != null && !QuanLyThu.conTrongDs(this.thuChon)) {
             this.thuChon = null;
@@ -1356,7 +1474,7 @@ public final class ManNhanVat extends Screen {
             y += hb + k;
             h -= hb + k;
         }
-        // thanh dưới: thao tác thú đang chọn (cưỡi / gọi, khoá, thả)
+        // thanh dưới: thao tác thú đang chọn (cưỡi / gọi / xuống, khoá, thả)
         if (this.thuChon != null) {
             int hb = Bang.co(26);
             veThaoTacThu(g, x, y + h - hb, w, hb, this.thuChon, nCuoi);
@@ -1370,7 +1488,7 @@ public final class ManNhanVat extends Screen {
             public void ve(Graphics g, int i, int x, int y, int w, int h) {
                 int s;
                 if (i < nCuoi) {
-                    final String[] t = tachTen(m.infoAnimal);
+                    final String[] t = tachTen(moi ? QuanLyThu.thuCu : m.infoAnimal);
                     final String ten = t[0].length() > 0 ? t[0] : "Thú cưỡi";
                     Bang.hang(g, x, y, w, h, i, true, new IAction() {
                         public void perform() {
@@ -1379,10 +1497,13 @@ public final class ManNhanVat extends Screen {
                     }, "thu-dang-cuoi");
                     s = oDau(g, x, y, h);
                     veHinhThu(g, m.pokeThuDex, m.pokeThuShiny, (short) (m.idPaintIconAnimal + 7500), x + 3 + s / 2, y + 3 + s / 2, s);
-                    hangThu(g, x, y, w, h, s, ten, t[1], null, "Đang cưỡi · chạm để xuống", true);
+                    hangThu(g, x, y, w, h, s, ten, t[1], null, moi ? "Đang cưỡi · không chiếm ô · chạm để xuống"
+                            : "Đang cưỡi · chạm để xuống", true);
                     return;
                 }
-                final AnimalInfo a = (AnimalInfo) Char.animal.elementAt(i - nCuoi);
+                final boolean dung = i < nCuoi + nDung;
+                final AnimalInfo a = (AnimalInfo) (dung ? QuanLyThu.dung.elementAt(i - nCuoi)
+                        : Char.animal.elementAt(i - nCuoi - nDung));
                 final String[] t = tachTen(a.name);
                 final String ten = t[0].length() > 0 ? t[0] : (a.typeAnimal == 0 ? "Thú cưỡi" : "Pokémon đi theo");
                 final boolean quanLy = QuanLyThu.coThongTin(a);
@@ -1395,58 +1516,98 @@ public final class ManNhanVat extends Screen {
                             chonThu(a, ten);
                         }
                     }
-                }, "thu-" + (i - nCuoi));
+                }, dung ? "thu-dung-" + (i - nCuoi) : "thu-" + (i - nCuoi - nDung));
                 s = oDau(g, x, y, h);
                 veHinhThu(g, dexThu(a), shinyThu(a), (short) (a.idPaint + 7500), x + 3 + s / 2, y + 3 + s / 2, s);
                 String phu;
                 String dau = quanLy && QuanLyThu.daKhoa(a) ? "Đã khoá · " : "";
+                String nhan = nhanThu(a);
                 if (quanLy) {
-                    phu = dau + (a.typeAnimal == 0 ? "Thú cưỡi" : "Đi theo") + (t[3].length() > 0 ? " · hạn " + t[3] : "")
-                            + " · chạm để chọn";
+                    phu = dau + nhan + (t[3].length() > 0 ? " · hạn " + t[3] : "") + " · chạm để chọn";
                 } else if (a.typeAnimal == 0) {
                     phu = nCuoi > 0 ? "Thú cưỡi · chạm để đổi" : "Thú cưỡi · chạm để cưỡi";
                 } else {
                     phu = "Đi theo" + (t[3].length() > 0 ? " · hạn " + t[3] : "") + " · chạm để gọi";
                 }
-                hangThu(g, x, y, w, h, s, ten, a.level > 0 ? String.valueOf(a.level) : t[1], t[2], phu, a == ManNhanVat.this.thuChon);
+                hangThu(g, x, y, w, h, s, ten, a.level > 0 ? String.valueOf(a.level) : t[1], t[2], phu,
+                        dung || a == ManNhanVat.this.thuChon);
             }
         });
+    }
+
+    /** Nhãn loại / trạng thái một thú: "Đang cưỡi", "Đang đi theo", "Thú cưỡi" hay "Đi theo". */
+    public static String nhanThu(AnimalInfo a) {
+        if (a != null && a == thuDangCuoi()) {
+            return "Đang cưỡi";
+        }
+        if (a != null && a == petDiTheo()) {
+            return "Đang đi theo";
+        }
+        if (QuanLyThu.dangDung(a)) {
+            return a.typeAnimal == 0 ? "Thú cưỡi · đang dùng" : "Đi theo · đang dùng";
+        }
+        return a != null && a.typeAnimal == 0 ? "Thú cưỡi" : "Đi theo";
     }
 
     /**
      * Sân khấu Trang bị khi chọn ô Thú cưỡi: thú đang chọn ở danh sách bên phải (hình to + tên + cấp + xu thả), không thì
      * thú đang cưỡi (người chơi trên lưng thú + tên, cấp), không thì người chơi + gợi ý "chạm một thú bên phải để cưỡi".
      * Trước đây ô này chỉ vẽ người chơi: không cưỡi thì không có gì về thú (hộp trống), sprite người chơi đang tải thì
-     * trống hẳn.
+     * trống hẳn. 0.9.13: thú đang cưỡi / pet đang đi theo theo khối đang dùng của máy chủ (không đoán).
      */
     private void veXemThu(Graphics g, MainChar m, int x, int yTren, int w, int cx, int yChan, float z) {
         AnimalInfo a = this.thuChon != null && QuanLyThu.conTrongDs(this.thuChon) ? this.thuChon : null;
+        AnimalInfo cu = thuDangCuoi(), dt = petDiTheo();
+        if (a == null && cu != null) {
+            a = cu;   // mặc định: con đang cưỡi
+        }
         String dong1, dong2;
         if (a != null) {
             String[] t = tachTen(a.name);
             int dex = dexThu(a);
             boolean sh = shinyThu(a);
-            if (coHinhThat(dex, sh)) {
-                vePoke(g, dex, sh, cx, yChan, z, NgoaiHinhVe.huongThe(Canvas.gameTick));
+            String ten = t[0].length() > 0 ? t[0] : (a.typeAnimal == 0 ? "Thú cưỡi" : "Pokémon đi theo");
+            if (a == cu) {
+                veNguoiCuoi(g, m, a, cx, yChan, z);
+                dong1 = "Đang cưỡi " + ten;
             } else {
-                int sz = Math.max(24, (int) (30 * z));
-                veHinhThu(g, dex, sh, (short) (a.idPaint + 7500), cx, yChan - sz / 2, sz);
+                if (coHinhThat(dex, sh)) {
+                    vePoke(g, dex, sh, cx, yChan, z, NgoaiHinhVe.huongThe(Canvas.gameTick));
+                } else {
+                    int sz = Math.max(24, (int) (30 * z));
+                    veHinhThu(g, dex, sh, (short) (a.idPaint + 7500), cx, yChan - sz / 2, sz);
+                }
+                dong1 = ten;
             }
             String cap = a.level > 0 ? String.valueOf(a.level) : t[1];
-            dong1 = t[0].length() > 0 ? t[0] : (a.typeAnimal == 0 ? "Thú cưỡi" : "Pokémon đi theo");
             int xu = QuanLyThu.xuTha(a);
-            dong2 = (cap.length() > 0 ? "Cấp " + cap + " · " : "") + (a.typeAnimal == 0 ? "Thú cưỡi" : "Đi theo")
-                    + (QuanLyThu.daKhoa(a) ? " · Đã khoá" : (xu > 0 ? " · Thả: +" + TienTe.so(xu) + " xu"
-                    : (QuanLyThu.hetTranNgay(a) ? " · " + QuanLyThu.HET_TRAN : "")));
+            dong2 = (cap.length() > 0 ? "Cấp " + cap + " · " : "") + nhanThu(a)
+                    + (QuanLyThu.daKhoa(a) ? " · Đã khoá" : (QuanLyThu.dangDung(a) ? "" : (xu > 0 ? " · Thả: +" + TienTe.so(xu) + " xu"
+                    : (QuanLyThu.hetTranNgay(a) ? " · " + QuanLyThu.HET_TRAN : ""))));
+            if (a == cu && dt != null) {
+                String[] tp = tachTen(dt.name);
+                dong2 = dong2 + " · " + (tp[0].length() > 0 ? tp[0] : "Pokémon") + " đi theo";
+            }
         } else if (dangCuoi(m)) {
             veNguoiChoi(g, m, cx, yChan, z);
-            String[] t = tachTen(m.infoAnimal);
+            String[] t = tachTen(QuanLyThu.coDung && QuanLyThu.thuCu != null ? QuanLyThu.thuCu : m.infoAnimal);
             dong1 = "Đang cưỡi " + (t[0].length() > 0 ? t[0] : "thú");
             dong2 = t[1].length() > 0 ? "Cấp " + t[1] + " · chạm hàng đầu bên phải để xuống" : "Chạm hàng đầu bên phải để xuống";
         } else {
             veNguoiChoi(g, m, cx, yChan, z);
             dong1 = "Chưa cưỡi thú";
-            dong2 = Char.animal.size() > 0 ? "Chạm một thú bên phải để cưỡi" : "Thú cưỡi có từ nhiệm vụ, trứng, cửa hàng";
+            boolean coThuCuoi = false;
+            for (int i = 0; i < Char.animal.size(); i++) {
+                coThuCuoi |= ((AnimalInfo) Char.animal.elementAt(i)).typeAnimal == 0;
+            }
+            String goiY = coThuCuoi ? "Chạm một thú cưỡi bên phải để cưỡi" : (Char.animal.size() > 0 && !QuanLyThu.coDung
+                    ? "Chạm một thú bên phải để cưỡi" : "Thú cưỡi có từ nhiệm vụ, trứng, cửa hàng");
+            if (dt != null) {
+                String[] tp = tachTen(dt.name);
+                dong2 = (tp[0].length() > 0 ? tp[0] : "Pokémon") + " đang đi theo · " + goiY;
+            } else {
+                dong2 = goiY;
+            }
         }
         int y = yTren + 6;
         ChuDe.chu(g, ChuDe.cat(dong1, ChuDe.NHAN, w - 8), cx, y, ChuDe.NHAN, ChuDe.CHU, 2);
@@ -1498,21 +1659,39 @@ public final class ManNhanVat extends Screen {
         final boolean khoa = QuanLyThu.daKhoa(a);
         boolean tha = QuanLyThu.thaDuoc(a);
         int xu = QuanLyThu.xuTha(a);
-        String c1 = a.typeAnimal == 0 ? (nCuoi > 0 ? "Đổi thú" : "Cưỡi") : "Gọi";
+        final boolean laCuoi = a == thuDangCuoi(), laDiTheo = a == petDiTheo();
+        String c1 = laCuoi ? "Xuống thú" : laDiTheo ? "Đang đi theo"
+                : a.typeAnimal == 0 ? (dangCuoi(mc()) ? "Đổi thú" : "Cưỡi") : "Gọi";
         String c2 = khoa ? "Mở khoá" : "Khoá";
         String c3 = tha ? (xu > 0 ? "Thả +" + TienTe.so(xu) + " xu" : (QuanLyThu.hetTranNgay(a) ? "Thả (hết xu hôm nay)" : "Thả"))
                 : "Không thả được";
-        int w1 = (w - 2 * k) / 3;
-        Bang.nut(g, x, y, w1, h, c1, Bang.XAC_NHAN, new IAction() {
+        // con ĐANG DÙNG (đang cưỡi / đang đi theo): không có nút Thả (máy chủ không cho thả) - hai nút Xuống / Khoá rộng
+        final boolean dung = QuanLyThu.dangDung(a);
+        int w1 = dung ? (w - k) / 2 : (w - 2 * k) / 3;
+        if (laCuoi && ChuDe.rong(c1, ChuDe.SO) + 12 > w1) {
+            c1 = "Xuống";
+        } else if (laDiTheo && ChuDe.rong(c1, ChuDe.SO) + 12 > w1) {
+            c1 = "Đi theo";
+        }
+        Bang.nut(g, x, y, w1, h, c1, laDiTheo ? Bang.TAT : Bang.XAC_NHAN, new IAction() {
             public void perform() {
-                chonThu(a, ten);
+                if (laCuoi) {
+                    xuongThu(ten);
+                } else if (laDiTheo) {
+                    DungDo.bao(ten + " đang đi theo bạn. Gọi pet khác để đổi.");
+                } else {
+                    chonThu(a, ten);
+                }
             }
         }, "thu-dung");
-        Bang.nut(g, x + w1 + k, y, w1, h, c2, Bang.GO, new IAction() {
+        Bang.nut(g, x + w1 + k, y, dung ? w - w1 - k : w1, h, c2, Bang.GO, new IAction() {
             public void perform() {
                 QuanLyThu.doiKhoa(a, !khoa);
             }
         }, "thu-khoa");
+        if (dung) {
+            return;
+        }
         Bang.nut(g, x + 2 * (w1 + k), y, w - 2 * (w1 + k), h, c3, tha ? Bang.NGUY : Bang.TAT, new IAction() {
             public void perform() {
                 QuanLyThu.hoiTha(a, ten);
@@ -2117,7 +2296,8 @@ public final class ManNhanVat extends Screen {
             vePoke(g, m.pokePetDex, m.pokePetShiny, x + lw * 80 / 100, yChan - (int) (2 * z), z * 0.8f, NgoaiHinhVe.huongThe(Canvas.gameTick));
         }
         if (this.thuChon == null || !QuanLyThu.conTrongDs(this.thuChon)) {
-            String nhan = dangCuoi(m) ? (coPet ? "Đang cưỡi · có pet đi theo" : "Đang cưỡi") : (coPet ? "Pet đang đi theo" : "Chưa cưỡi thú");
+            boolean coDiTheo = coPet || petDiTheo() != null;
+            String nhan = dangCuoi(m) ? (coDiTheo ? "Đang cưỡi · có pet đi theo" : "Đang cưỡi") : (coDiTheo ? "Pet đang đi theo" : "Chưa cưỡi thú");
             ChuDe.chu(g, nhan, x + lw / 2, y + 6, ChuDe.NHAN_NHO, ChuDe.CHU_PHU, 2);
         }
         int xr = x + lw + k, wr = w - lw - k;

@@ -18,6 +18,11 @@ import java.util.Vector;
  * byte n + n dòng (cùng thứ tự danh sách): byte cờ (1 khoá, 2 không thả được), int loài, short cấp, int xu, UTF lý do.
  * Máy chủ cũ không gửi phần này -> {@link #co} = false: danh sách như cũ, không nút mới.
  *
+ * 0.9.13 (máy chủ gửi cho client BAN >= 913) KHỐI ĐANG DÙNG sau n dòng: byte phiên, byte m, m x (byte loại 0 thú cưỡi /
+ * 1 pet, các trường như dòng gói 16 cùng loại, byte 1 = đang cưỡi / đang đi theo, + một dòng quản lý), byte có thú cưỡi
+ * cũ (thuốc, không chiếm ô) + UTF tên. Trước đây con đang cưỡi / đang đi theo KHÔNG có trong gói 16 mà "Ô thú" vẫn đếm
+ * -> "Ô thú: 5/20" nhưng danh sách 4 dòng, ô Thú cưỡi trống khi client đoán sai "đang cưỡi" (gói 15 / 3 / -93).
+ *
  * Lệnh -119 (C->S): byte kiểu 0 trạng thái / 1 thả (byte n, n x (byte loại 0 cưỡi / 1 đi theo, short id)) / 2 khoá
  * (byte loại, short id, byte khoá) / 3 dùng vé / 4 mua vé (Cửa hàng lượng).
  */
@@ -31,6 +36,16 @@ public final class QuanLyThu {
     /** xu thả còn nhận được hôm nay (trần mỗi ngày của máy chủ; 0 = đã đạt trần: thả vẫn được, 0 xu) */
     public static int xuConNgay = Integer.MAX_VALUE;
     static Vector ds = new Vector();
+    /** số dòng TÚI đầu {@link #ds} (sau đó là các con đang dùng của khối đang dùng) */
+    static int nTui;
+    /** máy chủ có gửi khối đang dùng (0.9.13): {@link #cuoi} / {@link #diTheo} là trạng thái THẬT */
+    public static boolean coDung;
+    /** con đang dùng (thú cưỡi đang cưỡi trước, rồi pet đang đi theo, rồi con place 1 lạc) - không nằm trong Char.animal */
+    public static Vector dung = new Vector();
+    /** thú đang cưỡi / pet đang đi theo (null = không) */
+    public static AnimalInfo cuoi, diTheo;
+    /** đang cưỡi thú cưỡi cũ (thuốc, không chiếm ô thú): tên; null = không */
+    public static String thuCu;
     static int[] coDong = new int[0], loai = new int[0], cap = new int[0], xu = new int[0];
     static String[] lyDo = new String[0];
     /** chống bấm hai lần: lệnh thả cuối, chờ máy chủ trả lời */
@@ -44,6 +59,7 @@ public final class QuanLyThu {
         try {
             if (r.available() <= 0) {
                 co = false;
+                boKhoiDung();
                 return;
             }
             r.readByte();
@@ -64,6 +80,70 @@ public final class QuanLyThu {
             for (int i = 0; i < animal.size() && i < n; i++) {
                 v.addElement(animal.elementAt(i));
             }
+            int nt = v.size();
+            // 0.9.13 khối đang dùng (máy chủ cũ / client < 913: không có)
+            boolean cd = false;
+            Vector dg = new Vector();
+            AnimalInfo cu = null, dt = null;
+            String tc = null;
+            if (r.available() > 0) {
+                r.readByte();
+                int m = r.readUnsignedByte();
+                int[] c2 = new int[nt + m], l2 = new int[nt + m], cp2 = new int[nt + m], x2 = new int[nt + m];
+                String[] ly2 = new String[nt + m];
+                System.arraycopy(c, 0, c2, 0, nt);
+                System.arraycopy(l, 0, l2, 0, nt);
+                System.arraycopy(cp, 0, cp2, 0, nt);
+                System.arraycopy(x, 0, x2, 0, nt);
+                System.arraycopy(ly, 0, ly2, 0, nt);
+                for (int i = 0; i < m; i++) {
+                    AnimalInfo a = new AnimalInfo();
+                    boolean dangDung;
+                    if (r.readByte() == 0) {
+                        a.id = r.readShort();
+                        a.idImg = r.readByte();
+                        a.idPaint = r.readByte();
+                        a.level = r.readByte();
+                        a.name = r.readUTF();
+                        a.info = r.readUTF();
+                        a.typeAnimal = 0;
+                        dangDung = r.readByte() != 0;
+                        if (dangDung && cu == null) {
+                            cu = a;
+                        }
+                    } else {
+                        a.id = r.readShort();
+                        a.idImg = r.readByte();
+                        a.idPaint = r.readByte();
+                        a.name = r.readUTF();
+                        a.typePet = r.readByte();
+                        a.info = r.readUTF();
+                        a.totalTimeCon = r.readInt();
+                        a.timeStart = System.currentTimeMillis();
+                        a.typeAnimal = 1;
+                        dangDung = r.readByte() != 0;
+                        if (dangDung && dt == null) {
+                            dt = a;
+                        }
+                    }
+                    c2[nt + i] = r.readByte();
+                    l2[nt + i] = r.readInt();
+                    cp2[nt + i] = r.readShort();
+                    x2[nt + i] = r.readInt();
+                    ly2[nt + i] = r.readUTF();
+                    dg.addElement(a);
+                    v.addElement(a);
+                }
+                if (r.readByte() != 0) {
+                    tc = r.readUTF();
+                }
+                c = c2;
+                l = l2;
+                cp = cp2;
+                x = x2;
+                ly = ly2;
+                cd = true;
+            }
             soThu = st;
             sucChua = sc;
             toiDa = td;
@@ -77,11 +157,27 @@ public final class QuanLyThu {
             xu = x;
             lyDo = ly;
             ds = v;
+            nTui = nt;
+            coDung = cd;
+            dung = dg;
+            cuoi = cu;
+            diTheo = dt;
+            thuCu = tc;
             co = true;
             luThaCuoi = 0;
         } catch (Throwable e) {
             co = false;
+            boKhoiDung();
         }
+    }
+
+    static void boKhoiDung() {
+        coDung = false;
+        dung = new Vector();
+        cuoi = null;
+        diTheo = null;
+        thuCu = null;
+        nTui = 0;
     }
 
     static int viTri(AnimalInfo a) {
@@ -148,7 +244,7 @@ public final class QuanLyThu {
         if (!co) {
             return ra;
         }
-        int n = ds.size();
+        int n = Math.min(nTui, ds.size());   // chỉ con trong túi (con đang dùng không bị đề nghị thả, không đổi luật giữ)
         boolean[] xet = new boolean[n];
         for (int i = 0; i < n; i++) {
             if (xet[i]) {
@@ -338,6 +434,11 @@ public final class QuanLyThu {
 
     /** Thú trong danh sách hiện (Char.animal) còn không. */
     public static boolean conTrongDs(AnimalInfo a) {
-        return a != null && Char.animal.contains(a);
+        return a != null && (Char.animal.contains(a) || coDung && dung.contains(a));
+    }
+
+    /** Con đang dùng (khối đang dùng 0.9.13): đang cưỡi / đang đi theo / place 1. */
+    public static boolean dangDung(AnimalInfo a) {
+        return a != null && coDung && dung.contains(a);
     }
 }

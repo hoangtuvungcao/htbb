@@ -61,6 +61,7 @@ public final class KiemQuanLyThu {
             oDayVaVuot();
             ve();
             goiTin();
+            dangDung();
             maNguon();
             duongTraTien();
         } catch (final Throwable e) {
@@ -544,6 +545,144 @@ public final class KiemQuanLyThu {
         moi.doAddGemItem(QuanLyThuGame.ID_VE, 1, false);
         QuanLyThuGame.xuLy(moi, new Message(QuanLyThuGame.LENH, new byte[]{QuanLyThuGame.KIEU_DUNG_VE}));
         Kiem.bang("-119 dung ve: +1 o", 1, (int) moi.oThuMo);
+    }
+
+    // ------------------------------------------------------------------ khoi dang dung (0.9.13)
+
+    /** Nhan vat cua chu du an: DANG CUOI 1 thu + 1 pet DANG DI THEO + 2 pet trong tui (+ 1 thu cuoi trong tui). */
+    static Char nhanVatDangDung(final int ban) {
+        final Char p = nhanVat(ban);
+        final Animal cuoi = thuCuoi(p, 0, 5);
+        cuoi.place = 1;
+        p.animalRide = cuoi;
+        p.rideHorse = Animal.rideHorse[0];
+        thuCuoi(p, 2, 3);
+        final Pet diTheo = pet(p, 4);
+        diTheo.place = 1;
+        p.petUsing = diTheo;
+        pet(p, 1);
+        pet(p, 2);
+        return p;
+    }
+
+    static void dangDung() throws Exception {
+        Kiem.bang("cong ban khoi dang dung = 913", 913, QuanLyThuGame.BAN_DANG_DUNG);
+        final Char p912 = nhanVatDangDung(912);
+        final Char p913 = nhanVatDangDung(913);
+        final byte[] b912 = than(MessageCreator.createCharInventoryMessage(p912, 2));
+        final byte[] b913 = than(MessageCreator.createCharInventoryMessage(p913, 2));
+        Kiem.dung("goi 16: client 913 co them khoi dang dung", b913.length > b912.length);
+        // client 912: phan noi them KET THUC sau n dong (khong byte thua) - doc lai tu dau goi
+        final DataInputStream r12 = new DataInputStream(new ByteArrayInputStream(b912));
+        final int nDong12 = docDenNoiThem(r12);
+        Kiem.bang("912: so dong tui = 1 thu cuoi + 2 pet (con dang cuoi / di theo KHONG trong tui)", 3, nDong12);
+        Kiem.bang("912: het goi sau n dong", 0, r12.available());
+        final DataInputStream r = new DataInputStream(new ByteArrayInputStream(b913));
+        final int nDong = docDenNoiThem(r);
+        Kiem.bang("913: so dong tui 3", 3, nDong);
+        Kiem.bang("913: khoi dang dung phien 1", 1, (int) r.readByte());
+        final int m = r.readUnsignedByte();
+        Kiem.bang("913: 2 con dang dung (thu dang cuoi + pet di theo)", 2, m);
+        Kiem.bang("913: so dong tui + dang dung = O thu (" + QuanLyThuGame.soThu(p913) + ")", QuanLyThuGame.soThu(p913), nDong + m);
+        Kiem.bang("dang dung 1: loai thu cuoi", 0, (int) r.readByte());
+        Kiem.bang("dang dung 1: id = animalRide", (int) p913.animalRide.id, (int) r.readShort());
+        Kiem.bang("dang dung 1: idImg", 0, (int) r.readByte());
+        r.readByte();
+        Kiem.bang("dang dung 1: cap 5", 5, (int) r.readByte());
+        Kiem.dung("dang dung 1: ten khong rong", r.readUTF().length() > 0);
+        r.readUTF();
+        Kiem.bang("dang dung 1: co DANG CUOI", 1, (int) r.readByte());
+        Kiem.bang("dang dung 1: khong tha duoc", (int) QuanLyThuGame.CO_KHONG_THA, (int) r.readByte());
+        Kiem.bang("dang dung 1: loai 100000", 100000, r.readInt());
+        r.readShort();
+        r.readInt();
+        Kiem.bang("dang dung 1: ly do", "Đang cưỡi", r.readUTF());
+        Kiem.bang("dang dung 2: loai pet", 1, (int) r.readByte());
+        Kiem.bang("dang dung 2: id = petUsing", (int) p913.petUsing.id, (int) r.readShort());
+        r.readByte();
+        r.readByte();
+        r.readUTF();
+        r.readByte();
+        r.readUTF();
+        r.readInt();
+        Kiem.bang("dang dung 2: co DANG DI THEO", 1, (int) r.readByte());
+        Kiem.bang("dang dung 2: khong tha duoc", (int) QuanLyThuGame.CO_KHONG_THA, (int) r.readByte());
+        r.readInt();
+        r.readShort();
+        r.readInt();
+        Kiem.bang("dang dung 2: ly do", "Đang đi theo", r.readUTF());
+        Kiem.bang("913: khong cuoi thu cuoi cu", 0, (int) r.readByte());
+        Kiem.bang("913: het goi", 0, r.available());
+        // thao tac dung doi tuong: khoa con dang cuoi duoc, tha con dang cuoi / pet di theo bi tu choi
+        Kiem.bang("khoa con dang cuoi", null, QuanLyThuGame.doiKhoa(p913, 0, p913.animalRide.id, true));
+        Kiem.dung("con dang cuoi da khoa", QuanLyThuGame.daKhoa(p913, p913.animalRide));
+        final int truoc = QuanLyThuGame.soThu(p913);
+        tha(p913, p913.animalRide, p913.petUsing);
+        Kiem.bang("tha con dang cuoi + pet di theo: khong mat con nao", truoc, QuanLyThuGame.soThu(p913));
+        // thu cuoi cu (thuoc Thien Ly Ma): dang cuoi, khong chiem o
+        final Char cu = nhanVat(913);
+        cu.rideHorse = 1;
+        cu.xichtho_thienlyma = 2;
+        final DataInputStream rc = new DataInputStream(new ByteArrayInputStream(than(MessageCreator.createCharInventoryMessage(cu, 2))));
+        Kiem.bang("thu cuoi cu: 0 dong tui", 0, docDenNoiThem(rc));
+        rc.readByte();
+        Kiem.bang("thu cuoi cu: 0 con dang dung (khong chiem o)", 0, rc.readUnsignedByte());
+        Kiem.bang("thu cuoi cu: co dang cuoi thu cuoi cu", 1, (int) rc.readByte());
+        Kiem.dung("thu cuoi cu: co ten", rc.readUTF().length() > 0);
+        Kiem.bang("thu cuoi cu: het goi", 0, rc.available());
+        // khong cuoi gi: khoi rong
+        final Char trong = nhanVat(913);
+        pet(trong, 1);
+        final DataInputStream rt = new DataInputStream(new ByteArrayInputStream(than(MessageCreator.createCharInventoryMessage(trong, 2))));
+        Kiem.bang("khong dung gi: 1 dong tui", 1, docDenNoiThem(rt));
+        rt.readByte();
+        Kiem.bang("khong dung gi: 0 con dang dung", 0, rt.readUnsignedByte());
+        Kiem.bang("khong dung gi: khong thu cuoi cu", 0, (int) rt.readByte());
+        Kiem.bang("khong dung gi: het goi", 0, rt.available());
+    }
+
+    /** Doc goi 16 loai 2 (than) toi het n dong noi them; tra n. */
+    static int docDenNoiThem(final DataInputStream r) throws Exception {
+        Kiem.bang("goi 16 loai 2", 2, (int) r.readByte());
+        r.readInt(); // luong
+        final int na = r.readByte();
+        for (int i = 0; i < na; i++) {
+            r.readShort();
+            r.readByte();
+            r.readByte();
+            r.readByte();
+            r.readUTF();
+            r.readUTF();
+            r.readByte();
+        }
+        final int np = r.readByte();
+        for (int i = 0; i < np; i++) {
+            r.readShort();
+            r.readByte();
+            r.readByte();
+            r.readUTF();
+            r.readByte();
+            r.readUTF();
+            r.readInt();
+            r.readByte();
+        }
+        r.readInt(); // luong khoa
+        r.readByte();
+        for (int i = 0; i < 5; i++) {
+            r.readShort();
+        }
+        r.readInt();
+        r.readInt();
+        final int n = r.readUnsignedByte();
+        Kiem.bang("n dong = so thu cuoi + pet trong tui", na + np, n);
+        for (int i = 0; i < n; i++) {
+            r.readByte();
+            r.readInt();
+            r.readShort();
+            r.readInt();
+            r.readUTF();
+        }
+        return n;
     }
 
     // ------------------------------------------------------------------ ma nguon / SQL
