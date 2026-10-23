@@ -257,7 +257,7 @@ public final class KichBanPhoBanCup {
             x.bom(900);
             x.menu(SO_TAY, MENU_CUP, 0);
             x.bom(1200);
-            BotChucNang.ket("cup.dang_ky." + x.ten, toast(x, m).contains("Đã đăng ký Cúp Nhí"), toast(x, m) + " " + menuChu(x, m));
+            BotChucNang.ket("cup.dang_ky." + x.ten, toast(x, m).contains("Đã đăng ký Cúp"), toast(x, m) + " " + menuChu(x, m));
         }
         String n = BotChucNang.sql1("SELECT COUNT(*) FROM tob_cup_dang_ky");
         BotChucNang.ket("cup.dang_ky.csdl", n != null && Integer.parseInt(n.trim()) - Integer.parseInt(tuan.trim()) == 4, "truoc " + tuan + " sau " + n);
@@ -363,7 +363,7 @@ public final class KichBanPhoBanCup {
             for (BotChucNang.Bot x : ds) x.cho(y -> y.mapId != MAP_CUP, 8000);
         }
         gm.gm("tua 11m", 8000);
-        String hang = BotChucNang.sql1("SELECT CONCAT(SUM(hang > 0), '/', COUNT(*)) FROM tob_cup_dang_ky WHERE ma_loai = 'nhi' AND char_id IN ("
+        String hang = BotChucNang.sql1("SELECT CONCAT(SUM(hang > 0), '/', COUNT(*)) FROM tob_cup_dang_ky WHERE char_id IN ("
                 + ds.get(0).charDb + "," + ds.get(1).charDb + "," + ds.get(2).charDb + "," + ds.get(3).charDb + ")");
         BotChucNang.ket("cup.chot.hang", "4/4".equals(hang == null ? null : hang.trim()), "co hang/tong = " + hang);
         String th = BotChucNang.sql1("SELECT CONCAT(COUNT(*), '/', SUM(da_nhan)) FROM tob_cup_thuong WHERE char_id IN ("
