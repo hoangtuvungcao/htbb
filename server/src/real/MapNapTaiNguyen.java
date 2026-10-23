@@ -498,6 +498,9 @@ class MapNapTaiNguyen {
                 // "Dung" (goi -67 douseGemItem); Map.doTuBinh chuyen id nay sang MoRongTuiGame. NOT_SELL: Persian
                 // khong ban (mua o cua hang luong / mo bang xu tai Kangaskhan). Anh 52 = icon tam (giay vang).
                 MoRongTuiGame.taoMauVe(),
+                // 23/10/2026: Ve mo o thu (real.QuanLyThuGame, +1 o thu cuoi / Pokemon di theo). Cung kieu TU_BINH +
+                // NOT_SELL nhu ve mo rong hanh trang; ban o cua hang luong (ma ve_mo_o_thu). Anh 96 -> icon the do.
+                QuanLyThuGame.taoMauVe(),
             };
         }
     }

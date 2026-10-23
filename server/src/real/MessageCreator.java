@@ -1113,6 +1113,7 @@ public class MessageCreator {
                 }
             }
             m.dos.writeInt(p.getLuong());
+            final java.util.List<Object> dsThu = new java.util.ArrayList<Object>();
             if (type == 2) {
                 // so dong = dung so con duoc ghi (place != 1) - khong suy tu animalRide (lech thi client doc sai ca pet)
                 int soThu = 0;
@@ -1125,6 +1126,7 @@ public class MessageCreator {
                 for (int l = 0; l < p.animal.size(); ++l) {
                     final Animal animal = p.animal.get(l);
                     if (animal.place != 1) {
+                        dsThu.add(animal);
                         m.dos.writeShort(animal.id);
                         m.dos.writeByte(animal.idImg);
                         m.dos.writeByte(Animal.idImgIcon[animal.idImg]);
@@ -1143,6 +1145,7 @@ public class MessageCreator {
                     final Pet animal2 = p.pet.get(j);
                     if (animal2.id != idpetusing) {
                         animal2.place = 0;
+                        dsThu.add(animal2);
                         m.dos.writeShort(animal2.id);
                         m.dos.writeByte(animal2.idImg + 5);
                         m.dos.writeByte(animal2.getIdIconPaint());
@@ -1162,6 +1165,9 @@ public class MessageCreator {
                 }
             }
             m.dos.writeInt(p.lockLuong);
+            if (type == 2 && QuanLyThuGame.coManMoi(p)) {
+                QuanLyThuGame.ghiNoiThem(m.dos, p, dsThu); // o thu / khoa / xu tha tung dong (client >= 911)
+            }
         } catch (final Exception e) {
             e.printStackTrace();
             System.out.println("LOI TAO CHAR INVENTORY TRONG MESSAGECREATOR");

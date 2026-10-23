@@ -835,7 +835,14 @@ public final class NapTienGame implements Runnable {
             return "Hành trang cần 1 ô trống.";
         }
         final boolean veMoRong = NapTienLogic.laVeMoRong(m);
-        if (veMoRong) {
+        final boolean veOThu = NapTienLogic.laVeMoOThu(m);
+        if (veOThu) {
+            // Ve +1 o thu (real.QuanLyThuGame): chi ban khi ve con dung duoc (tinh ca ve dang giu toi o toi da).
+            final String loiVe = real.QuanLyThuGame.kiemMuaVe(p);
+            if (loiVe != null) {
+                return loiVe;
+            }
+        } else if (veMoRong) {
             // Ve +10 o (real.MoRongTuiGame): chi ban khi ve con dung duoc (tinh ca ve dang giu), tui can cho cho ve.
             final String loiVe = real.MoRongTuiGame.kiemMuaVe(p);
             if (loiVe != null) {
@@ -864,6 +871,8 @@ public final class NapTienGame implements Runnable {
                 if (!real.NgoaiHinhGame.moTrangChieu(p)) {
                     throw new IllegalStateException("da du trang chieu");
                 }
+            } else if (veOThu) {
+                real.QuanLyThuGame.traoVe(p, 1);
             } else if (veMoRong) {
                 real.MoRongTuiGame.traoVe(p, 1);
             } else if (NapTienLogic.TRAO_MO_RONG_TUI.equals(m.trao)) {
@@ -910,9 +919,27 @@ public final class NapTienGame implements Runnable {
         return "Đã mua " + m.ten + " (-" + gia + " lượng)."
                 + (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) ? " Xem trong Tủ đồ trang trí." : "")
                 + (veMoRong ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + MoRongHanhTrang.O_MOI_VE + " ô." : "")
+                + (veOThu ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + OThu.O_MOI_VE + " ô thú." : "")
                 + (tangToc ? " Vật phẩm đã vào hành trang; dùng chung giới hạn " + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, "
                         + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "")
                 + (datTen ? " Thẻ đã vào hành trang: bấm Sử dụng để đặt tên cho Pokémon đi theo." : "");
+    }
+
+    /** Gia luong that cua mon dang ban theo ma (danh muc nho 60 giay); -1 = khong ban / cua hang tat / loi CSDL. */
+    public static int giaLuongTheoMa(final String ma) {
+        if (!NapTien.bat()) {
+            return -1;
+        }
+        try {
+            for (final NapTienLogic.Mon m : NapTienDb.cuaHang()) {
+                if (m.ma.equals(ma)) {
+                    return giaThat(m);
+                }
+            }
+        } catch (final Exception e) {
+            return -1;
+        }
+        return -1;
     }
 
     /** Gia luong THAT cua mon: the dat ten theo cau hinh dat_ten_pet.gia_luong, mon khac theo dong nap_cua_hang. */

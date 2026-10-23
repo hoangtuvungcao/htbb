@@ -33,7 +33,9 @@ public class ItemLuckyDraw {
     public void addGif(Char p, int time) {
         String info = "";
         if (this.cat == 12) {
-            if (this.id != 16 && this.id != 17) {
+            if (this.id != 16 && this.id != 17 && real.QuanLyThuGame.chanNhan(p, "vong quay pet " + this.id)) {
+                return; // o thu day (real.QuanLyThuGame)
+            } else if (this.id != 16 && this.id != 17) {
                 Pet pet = new Pet(Map.petTemplate[this.id].idTemplate, Map.petTemplate[this.id].idImg, p.getIDItem(), 0, p.charDBID, Map.petTemplate[this.id].name);
                 if (time == 0) {
                     time = 20160;

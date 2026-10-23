@@ -75,7 +75,7 @@ SO_TOI_DA = 1000  # khop IconPokemon.SO_TOI_DA (14000..14999)
 # Dai anh khong co cot DB: ten -> (id dau, so o, thu muc anh cu, mau ten file)
 DAI = {
     "potion": (5500, 256, "server/map/images_potion", "%d.png"),
-    "gem": (6500, 96, "server/map/images_gem", "%d.png"),
+    "gem": (6500, 97, "server/map/images_gem", "%d.png"),
     "thu": (7500, 58, "server/map/images_animal", "%d.png"),
     "nv": (8000, 10, "server/map/iconquest", "%d.png"),
     "trai": (8200, 15, "server/map/fruit", "b%d.png"),
@@ -211,7 +211,7 @@ ICON = [
     ("Chest_Gold", ["xs:601", "potion:67"]),     # Ruong kho bau, Ruong vang
     ("Medicine_Yellow", ["xs:604", "potion:152"]),  # Thuoc hoi sinh
     ("Scale_Pink", ["xs:627", "potion:93"]),     # Vay trai tim
-    ("Tag_White+mau:FF4040", ["xs:705", "potion:76"]),  # The do, Bao li xi
+    ("Tag_White+mau:FF4040", ["xs:705", "potion:76", "gem:96"]),  # The do, Bao li xi
     ("Tag_White+mau:FFD040", ["xs:706", "potion:11", "potion:12"]),  # The vang, Ve gio vang
     ("Crystal_Yellow", ["xs:734", "potion:230"]),  # Da cau vong tinh khiet, Sao vang
     ("Silk_Pink", ["xs:735", "gem:33"]),         # To lua cap

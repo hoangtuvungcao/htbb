@@ -721,6 +721,7 @@ class MapDoMenu {
                                     return;
                                 }
 
+                                player.thuChoTang = anim; // khoa con nay: tha / doi danh sach khong lam tang nham con khac
                                 player.sendMessage(MessageCreator.createMsgInputText(-32048, idMenu, "Tên người nhận", 0));
                             } else {
                                 Animal anim = (Animal) player.animal.get(idMenu);
@@ -4557,6 +4558,9 @@ class MapDoMenu {
                                 }
                             }
                         } else {
+                            if (QuanLyThuGame.chanNhan(player, "npc ap trung thu cuoi")) {
+                                return; // o thu day: khong tru trung
+                            }
                             Animal anima = null;
                             switch (idOptionMenu) {
                                 case 0:

@@ -432,6 +432,17 @@ public final class NapTienLogic {
     public static boolean laVeMoRong(final Mon m) {
         return m != null && TRAO_MO_RONG_TUI.equals(m.trao) && MA_VE_MO_RONG.equals(m.ma);
     }
+
+    /**
+     * Ve mo o thu +1 o (real.QuanLyThuGame): cung cach trao mo_rong_tui nhu ve mo rong hanh trang (danh sach trang
+     * khong doi, web khong can sua), server phan biet theo ma. 30 luong / o; gioi_han 40 = o toi da 60 - co ban 20.
+     */
+    public static final String MA_VE_MO_O_THU = "ve_mo_o_thu";
+    public static final int GIA_VE_MO_O_THU = 30;
+
+    public static boolean laVeMoOThu(final Mon m) {
+        return m != null && TRAO_MO_RONG_TUI.equals(m.trao) && MA_VE_MO_O_THU.equals(m.ma);
+    }
     public static final int GIA_DOI_TEN = 500;
     public static final int DOI_TEN_CACH_NGAY = 30;
     /** So nhom xoay vong (tuan). Mon co nhom_xoay = 0 luon ban; k > 0 ban khi tuan % 4 == k-1. */
@@ -496,6 +507,9 @@ public final class NapTienLogic {
         new Mon(MA_THE_DAT_TEN, "Thẻ đặt tên Pokémon", "tien_ich", TRAO_DAT_TEN_PET, DatTenPet.GIA_LUONG_MAC_DINH, 0, 0, 0, false),
         // 0.9.8: Thẻ mở trang chiêu 3 (dùng ngay khi mua, mỗi Pokémon một lần) - tiện ích, không chỉ số
         new Mon(MA_THE_TRANG_CHIEU, "Thẻ mở trang chiêu 3", "tien_ich", TRAO_TRANG_CHIEU, 150, 0, 1, 0, false),
+        // Ve +1 o thu (real.QuanLyThuGame): trao mo_rong_tui + ma nay = 1 ve KHOA vao tui. Tran that = cau hinh
+        // thu.o_toi_da (kiemMuaVe tinh ca ve dang giu); gioi_han 40 = 60 - 20 mac dinh. Tien loi, khong chi so.
+        new Mon(MA_VE_MO_O_THU, "Vé mở ô thú (+1 ô)", "tien_ich", TRAO_MO_RONG_TUI, GIA_VE_MO_O_THU, 0, 40, 0, false),
         // Tu do trang tri 0.9.8 (khoi them_do_trang_phuc.sql, sinh boi tools/do_trang_phuc/sinh.py): chi HINH, chi so theo O
         new Mon("tp_hai_tac", "Trang phục Hải tặc", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
         new Mon("tp_ninja", "Trang phục Ninja", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),

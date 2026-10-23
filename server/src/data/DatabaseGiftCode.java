@@ -593,7 +593,9 @@ public class DatabaseGiftCode {
                             
                             
                         } else if (tachTime[0].equals("PHDS")) {
-                            
+                            if (real.QuanLyThuGame.chanNhan(player, "giftcode PHDS")) {
+                                continue;
+                            }
                             Animal anima = null;
                             anima = new Animal();
                             anima.name = "Ho-Oh";

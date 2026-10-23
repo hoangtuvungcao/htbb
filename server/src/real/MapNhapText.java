@@ -354,6 +354,19 @@ class MapNhapText {
                         return;
                     }
 
+                    // real.QuanLyThuGame: con o vi tri idMenu phai dung con da chon o menu Tang (danh sach co the da doi
+                    // vi tha / nhan thu trong luc nhap ten), va nguoi nhan con o thu.
+                    if (!QuanLyThuGame.dungConChoTang(player, idMenu) || p == player) {
+                        player.thuChoTang = null;
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Danh sách thú đã thay đổi, hãy chọn lại thú để tặng.", ""));
+                        return;
+                    }
+                    player.thuChoTang = null;
+                    if (QuanLyThuGame.day(p)) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã đầy ô thú, không nhận thêm được.", ""));
+                        QuanLyThuGame.chanNhan(p, "duoc tang thu cuoi tu " + player.charname);
+                        return;
+                    }
                     Animal anim = (Animal) player.animal.get(idMenu);
                     if (anim != null && anim.isAnimalCanTang() && !map.isMapOffline && anim.place != 1) {
                         anim.ownerId = p.charDBID;
@@ -362,7 +375,7 @@ class MapNhapText {
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
                         Database.instance.saveAnimal(anim);
                         p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được " + anim.getName() + " từ " + player.charname));
-                        player.animal.remove(idMenu);
+                        player.animal.remove(anim);
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                         player.sendMessage(MessageCreator.createServerAlertMessage("Đã tặng " + anim.getName() + " cho " + p.charname, ""));
                         Database.instance

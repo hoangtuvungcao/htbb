@@ -1989,6 +1989,9 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         }
                     }
                     Canvas.gameScr.mainChar.luongKhoa = msg.reader().readInt();
+                    if (type_inventory == 2) {
+                        game.pokemon.QuanLyThu.doc(msg.reader(), animal); // ô thú / khoá / xu thả (máy chủ >= quan-ly-thu)
+                    }
                     Canvas.gameScr.onCharInventory(charxu, potion, items, animal, type_inventory);
                     game.pokemon.TrangThaiNguoiChoi.doi(type_inventory == 0 ? game.pokemon.TrangThaiNguoiChoi.TIEN | game.pokemon.TrangThaiNguoiChoi.TUI : game.pokemon.TrangThaiNguoiChoi.TUI);
                     break;

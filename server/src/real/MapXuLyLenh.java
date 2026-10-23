@@ -581,6 +581,9 @@ class MapXuLyLenh {
             case -112: // 0.9.7 phong rieng: cham the trang thai -> "Rời" (pho ban) / "Bỏ cuộc" (tran cup)
                 PhongRiengGame.xuLy(player, message);
                 break;
+            case QuanLyThuGame.LENH: // -119 Quan ly thu: trang thai / tha ve tu nhien / khoa / dung ve mo o thu
+                QuanLyThuGame.xuLy(player, message);
+                break;
             case MoRongTuiGame.LENH: // -107 Mo rong hanh trang: byte kieu 0 trang thai / 1 dung ve / 2 mua xu
                 MoRongTuiGame.xuLy(player, message);
                 break;

@@ -83,6 +83,12 @@ public class Char extends LiveActor {
      * oMoRong - xem {@link #sucChuaTui()}, com.htbb.pokemon.MoRongHanhTrang, real.MoRongTuiGame.
      */
     public short oMoRong;
+    /** O thu da mo bang "Vé mở ô thú" (cot tob_char.o_thu_mo) - real.QuanLyThuGame, com.htbb.pokemon.OThu. */
+    public short oThuMo;
+    /** Thu da khoa (khong tha duoc): "a&lt;dbid&gt;" thu cuoi / "p&lt;idDB&gt;" pet (cot tob_char.thu_khoa). */
+    public final java.util.Set<String> thuKhoa = java.util.Collections.synchronizedSet(new java.util.LinkedHashSet<String>());
+    /** Thu cuoi dang cho nhap ten nguoi nhan (menu "Tặng"): khong tha, va chan tang nham con khac khi danh sach doi. */
+    public Animal thuChoTang;
     public byte idTeamTongKim;
     public String dbSkill;
     public String dbPotion;
@@ -9050,6 +9056,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void addPet(final int id) {
+        if (QuanLyThuGame.chanNhan(this, "addPet")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         final Pet pet = new Pet(Map.petTemplate[id].idTemplate, Map.petTemplate[id].idImg, this.getIDItem(), 0, this.charDBID, Map.petTemplate[id].name);
         pet.totalMinute = Map.petTemplate[id].timeExpire;
         pet.type = 3;
@@ -9740,6 +9749,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void doCreatePetMax(final int idTemplate, final int level, final int idtemplatetrung, final int time) {
+        if (QuanLyThuGame.chanNhan(this, "doCreatePetMax")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         ItemTemplates template = (ItemTemplates) Map.itemTemplates.get(0).get(new Integer(idTemplate));
         Item newItem = null;
         newItem = new Item(template, false, 0, 0, template.id);
@@ -9758,6 +9770,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void doCreatePetBachThu(final int time, final boolean isShow) {
+        if (QuanLyThuGame.chanNhan(this, "doCreatePetBachThu")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         final ItemTemplates template = (ItemTemplates) Map.itemTemplates.get(0).get(727);
         Item newItem = null;
         newItem = new Item(template, false, 0, 0, template.id);
@@ -9784,6 +9799,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
      * tren nhung dung item 873 ("Capybara", data_item) + petTemplate idTemplate=30 (Map.java).
      */
     public void doCreatePetCapybara(final int time, final boolean isShow) {
+        if (QuanLyThuGame.chanNhan(this, "doCreatePetCapybara")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         final ItemTemplates template = (ItemTemplates) Map.itemTemplates.get(0).get(873);
         Item newItem = null;
         newItem = new Item(template, false, 0, 0, template.id);
@@ -9806,6 +9824,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public synchronized void doCreatePet(final Item itemtrung) {
+        if (QuanLyThuGame.chanNhan(this, "no trung pet")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         if (!this.iItems.contains(itemtrung)) {
             return;
         }
@@ -13806,6 +13827,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean createPoro(final long day, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createPoro")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Wooloo";
@@ -13833,6 +13857,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean createNguaXuong(final long day, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createNguaXuong")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Spectrier";
@@ -13860,6 +13887,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean createHeo(final long day, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createHeo")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Piloswine";
@@ -13887,6 +13917,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean createHeoBang(final long day, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createHeoBang")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Mamoswine";
@@ -13914,6 +13947,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
      public boolean createSuTu(final long day, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createSuTu")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Sư tử";
@@ -13941,6 +13977,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
     
     public boolean createSuTuBang(final long day, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createSuTuBang")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Glastrier";
@@ -13968,6 +14007,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean createRongLon(final long day, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createRongLon")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Dragonite";
@@ -13995,6 +14037,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean createLan(final long minute, final boolean isAlert, final int khanghoatuyet) {
+        if (QuanLyThuGame.chanNhan(this, "createLan")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return false;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Suicune";
@@ -14023,6 +14068,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void createTuanLoc(final long day) {
+        if (QuanLyThuGame.chanNhan(this, "createTuanLoc")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         try {
             final Animal anima = new Animal();
             anima.name = "Tuần lộc";
@@ -14046,6 +14094,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void createPhuongHoang(final long day, final int idPH, final boolean isAlert) {
+        if (QuanLyThuGame.chanNhan(this, "createPhuongHoang")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         try {
             try {
                 final Animal anima = new Animal();
@@ -14314,6 +14365,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void createPet(final int idpet, final int time) {
+        if (QuanLyThuGame.chanNhan(this, "createPet")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         final Pet pet = new Pet(Map.petTemplate[idpet].idTemplate, Map.petTemplate[idpet].idImg, this.getIDItem(), 0, this.charDBID, Map.petTemplate[idpet].name);
         pet.totalMinute = time;
         pet.type = Map.petTemplate[idpet].type_move;
@@ -14327,6 +14381,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void createPetVinhVien(final int idpet) {
+        if (QuanLyThuGame.chanNhan(this, "createPetVinhVien")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return;
+        }
         final Pet pet = new Pet(Map.petTemplate[idpet].idTemplate, Map.petTemplate[idpet].idImg, this.getIDItem(), 0, this.charDBID, Map.petTemplate[idpet].name);
         pet.type = Map.petTemplate[idpet].type_move;
         this.pet.add(pet);
@@ -14338,6 +14395,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public Pet createPet(final int idpet, final int time, final Item itemPet) {
+        if (QuanLyThuGame.chanNhan(this, "createPet item")) { // o thu day: khong nhan (real.QuanLyThuGame)
+            return null;
+        }
         final Pet pet = new Pet(Map.petTemplate[idpet].idTemplate, Map.petTemplate[idpet].idImg, this.getIDItem(), 0, this.charDBID, Map.petTemplate[idpet].name, itemPet);
         pet.totalMinute = time;
         pet.type = Map.petTemplate[idpet].type_move;

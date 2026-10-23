@@ -8022,6 +8022,7 @@ public class Database {
                 // Pokemon: loai + shiny (cot moi, doc trong try rieng).
                 Database.docCotPokemon(rs, p);
                 Database.docCotMoRong(rs, p); // o hanh trang le (cot moi, try rieng)
+                Database.docCotQuanLyThu(rs, p); // o thu + khoa thu (cot moi, try rieng)
                 p.using = rs.getByte("del");
                 p.charname = rs.getString("charname").toLowerCase();
                 p.dbPotion = rs.getString("potion");
@@ -12494,6 +12495,66 @@ public void addCharXaiNapLuong(Char p, int type) {
      */
     public void themCotVeMoRong() {
         themCotBangNeuThieu("tob_char", "o_mo_rong", "INT", "0");
+    }
+
+    /**
+     * O thu + khoa thu (real.QuanLyThuGame, them 23/10/2026): tob_char.o_thu_mo (o da mo bang ve) + tob_char.thu_khoa
+     * ("a&lt;dbid&gt;,p&lt;idDB&gt;"). Goi luc khoi dong; doc / ghi bang cau rieng nen thieu cot KHONG khoa nhan vat.
+     */
+    public void themCotQuanLyThu() {
+        themCotBangNeuThieu("tob_char", "o_thu_mo", "INT", "0");
+        themCotBangNeuThieu("tob_char", "thu_khoa", "VARCHAR(1024)", "''");
+    }
+
+    /** Doc tob_char.o_thu_mo / thu_khoa (thieu cot -> 0 / rong). */
+    public static void docCotQuanLyThu(final ResultSet rs, final Char p) {
+        try {
+            p.oThuMo = (short) com.htbb.pokemon.OThu.kepOMo(rs.getInt("o_thu_mo"));
+        } catch (Exception thieuCot) {
+            p.oThuMo = 0;
+        }
+        try {
+            real.QuanLyThuGame.docKhoa(p, rs.getString("thu_khoa"));
+        } catch (Exception thieuCot) {
+            p.thuKhoa.clear();
+        }
+    }
+
+    /** Ghi tob_char.o_thu_mo + thu_khoa (cau UPDATE rieng, giong luuCotMoRong). conn null -&gt; tu mo ket noi. */
+    public static void luuCotQuanLyThu(final Connection conn, final Char p) {
+        if (p == null || p.charDBID <= 0) {
+            return;
+        }
+        Connection c = conn;
+        PreparedStatement pre = null;
+        try {
+            if (c == null) {
+                if (instance == null) {
+                    return;
+                }
+                c = instance.getConnection();
+            }
+            pre = c.prepareStatement("UPDATE tob_char SET o_thu_mo=?, thu_khoa=? WHERE id=?");
+            pre.setInt(1, com.htbb.pokemon.OThu.kepOMo(p.oThuMo));
+            pre.setString(2, real.QuanLyThuGame.ghiKhoa(p));
+            pre.setInt(3, p.charDBID);
+            pre.execute();
+        } catch (Exception e) {
+            System.out.println("[QUAN_LY_THU] khong luu duoc o thu / khoa thu cho id " + p.charDBID + ": " + e);
+        } finally {
+            try {
+                if (pre != null) {
+                    pre.close();
+                }
+            } catch (Exception ignored) {
+            }
+            if (conn == null && c != null) {
+                try {
+                    c.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
     }
 
     /** Doc tob_char.o_mo_rong (thieu cot -> 0, kep vao [0, MoRongHanhTrang.O_LE_TOI_DA]). */

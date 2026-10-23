@@ -962,6 +962,12 @@ public class TeamServer {
         } catch (Exception exMoRong) {
             System.out.println("[MO_RONG] LOI kiem tra cot tob_char.o_mo_rong: " + exMoRong);
         }
+        // O thu + khoa thu (real.QuanLyThuGame): tob_char.o_thu_mo / thu_khoa - luu bang cau rieng nhu o_mo_rong.
+        try {
+            Database.instance.themCotQuanLyThu();
+        } catch (Exception exThu) {
+            System.out.println("[QUAN_LY_THU] LOI kiem tra cot tob_char.o_thu_mo / thu_khoa: " + exThu);
+        }
         // 0.9.8 kenh chat: hop thu tin rieng offline + danh sach chan (CREATE TABLE IF NOT EXISTS)
         real.KenhChatGame.taoBang();
         // Dau truong Bao Boi 3v3 (D12): doi hinh, diem mua, tran, thuong mua (CREATE TABLE IF NOT EXISTS)

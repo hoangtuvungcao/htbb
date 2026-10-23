@@ -1084,6 +1084,7 @@ public class RealController extends ServerController {
                                                             return;
                                                         }
 
+                                                        p.thuChoTang = anim; // real.QuanLyThuGame: khong tha con dang cho tang
                                                         p.sendMessage(MessageCreator.createMsgInputText(-32048, idMenu, "Tên người nhận", 0));
                                                     } else {
                                                         Animal anim = (Animal) p.animal.get(idMenu);

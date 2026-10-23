@@ -188,6 +188,9 @@ class MapMenuNpc {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "npc doi pet")) {
+                    return; // o thu day: chua tru vat lieu / tien
+                }
                 player.potions[72] = player.potions[72] - 50;
                 player.subLuong(100L);
                 player.createPet(15, 43200);
@@ -303,6 +306,9 @@ class MapMenuNpc {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "npc doi pet")) {
+                    return; // o thu day: chua tru vat lieu / tien
+                }
                 player.potions[120] = player.potions[120] - 50;
                 player.potions[118] = player.potions[118] - 50;
                 player.createPet(6, 43200);
@@ -530,6 +536,9 @@ class MapMenuNpc {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "npc doi pet")) {
+                    return; // o thu day: chua tru vat lieu / tien
+                }
                 player.subLuong(50L);
                 player.potions[82] = player.potions[82] - 100;
                 player.potions[35] = player.potions[35] - 100;
@@ -550,6 +559,9 @@ class MapMenuNpc {
                     return;
                 }
 
+                if (QuanLyThuGame.chanNhan(player, "npc doi pet")) {
+                    return; // o thu day: chua tru vat lieu / tien
+                }
                 player.subXu(5000000L, true, "map 64");
                 player.potions[82] = player.potions[82] - 100;
                 player.potions[35] = player.potions[35] - 100;

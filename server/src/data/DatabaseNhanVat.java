@@ -305,6 +305,7 @@ class DatabaseNhanVat {
                 // Pokemon: loai + shiny (cot moi, doc trong try rieng).
                 Database.docCotPokemon(rs, p);
                 Database.docCotMoRong(rs, p); // o hanh trang le (cot moi, try rieng)
+                Database.docCotQuanLyThu(rs, p); // o thu + khoa thu (cot moi, try rieng)
                 p.using = rs.getByte("del");
                 p.dbPotion = rs.getString("potion");
                 p.dbSkill = rs.getString("skill");
@@ -775,6 +776,7 @@ class DatabaseNhanVat {
                 // Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
                 Database.luuCotPokemon(conn, p.charDBID, p.pokeDex, p.pokeShiny);
                 Database.luuCotMoRong(conn, p.charDBID, p.oMoRong);
+                Database.luuCotQuanLyThu(conn, p);
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
@@ -1017,6 +1019,7 @@ class DatabaseNhanVat {
                 // Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
                 Database.luuCotPokemon(conn, p.charDBID, p.pokeDex, p.pokeShiny);
                 Database.luuCotMoRong(conn, p.charDBID, p.oMoRong);
+                Database.luuCotQuanLyThu(conn, p);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("LOI excute char " + e);

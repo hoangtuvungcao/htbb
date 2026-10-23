@@ -8553,6 +8553,11 @@ public class Map implements Runnable {
                 MoRongTuiGame.dungVeTuGoiCu(player, lock);
                 return;
             }
+            // Ve mo o thu (nguyen lieu kieu 4, nut "Dung" o moi client): real.QuanLyThuGame.
+            if (QuanLyThuGame.laVe(idGem)) {
+                QuanLyThuGame.dungVeTuGoiCu(player, lock);
+                return;
+            }
             if (this.isGemTuBinh(idGem)) {
                 player.doAddManhTubinh(idGem, lock);
             } else {
@@ -10031,6 +10036,14 @@ public class Map implements Runnable {
 
                         if (pet.isPetTradeThoiHan()) {
                             p.moneyTrade = 0;
+                        }
+
+                        if (QuanLyThuGame.day(player)) {
+                            player.nameTangPet = "";
+                            p.nameTangPet = "";
+                            QuanLyThuGame.chanNhan(player, "giao dich pet tu " + p.charname);
+                            p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã đầy ô thú, không nhận thêm được.", ""));
+                            return;
                         }
 
                         if (player.getxu() < (long) p.moneyTrade) {
@@ -12056,6 +12069,9 @@ public class Map implements Runnable {
         try {
             if (player == null || trung == null) {
                 return false;
+            }
+            if (QuanLyThuGame.chanNhan(player, "ap trung Dragonite")) {
+                return false; // o thu day: giu trung
             }
 
             Animal anima = new Animal();
@@ -15637,6 +15653,10 @@ public class Map implements Runnable {
                             n = HanhDongVatPham.kepSoLuong(soLuongXin, n);
                             if (MoRongTuiGame.laVe(gem.idGemTemplate)) {
                                 DungVatPham.loi(player, MoRongTuiGame.TEN_VE + " không bán được.");
+                                return;
+                            }
+                            if (QuanLyThuGame.laVe(gem.idGemTemplate)) {
+                                DungVatPham.loi(player, QuanLyThuGame.TEN_VE + " không bán được.");
                                 return;
                             }
 

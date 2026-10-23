@@ -1368,6 +1368,10 @@ public class OfflineMap extends Map {
                   DungVatPham.loi(player, MoRongTuiGame.TEN_VE + " không bán được.");
                   return;
                }
+               if (QuanLyThuGame.laVe(gem.idGemTemplate)) {
+                  DungVatPham.loi(player, QuanLyThuGame.TEN_VE + " không bán được.");
+                  return;
+               }
                // chong clone: nguyen lieu KHOA chi ban NPC o GIA THAP (0.9.8, com.htbb.pokemon.BanDoKhoa); tat = khong ban.
                final boolean giaThap = typeMaterial == 1 && !com.htbb.pokemon.ChongClone.banNpcDoKhoa();
                if (giaThap && !com.htbb.pokemon.BanDoKhoa.bat()) {
