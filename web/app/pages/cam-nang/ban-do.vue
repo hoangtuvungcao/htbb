@@ -29,7 +29,7 @@ const capHoenn = Math.min(...CAM_NANG_ND.cotTruyen.chuong.filter(c => c.vung ===
 const VUNG = [
   { ten: 'Kanto', mo: `Vùng khởi đầu: đồng cỏ Pallet, Rừng Viridian, Núi Mặt Trăng, tàu S.S. Anne và đảo lửa Cinnabar. ${capVung('Kanto')}` },
   { ten: 'Johto', mo: `Vùng cổ kính: tháp chuông Ecruteak, Rừng Ilex, Hồ Phẫn Nộ, làng rồng Blackthorn và Đường Victory dẫn tới Núi Silver. ${capVung('Johto')}` },
-  { ten: 'Hoenn', mo: `Vùng biển nhiệt đới mở sau cốt truyện năm 1 (${POKEDEX.hoenn.soBanDo} bản đồ): rừng Petalburg, núi lửa Chimney, Thác Meteor, Tháp Trời. Vào qua cổng bắc Cinnabar (cần cấp ${POKEDEX.hoenn.capVao}+); cốt truyện Hoenn từ cấp ${capHoenn}.` },
+  { ten: 'Hoenn', mo: `Vùng biển nhiệt đới mở sau cốt truyện năm 1 (${POKEDEX.hoenn.soBanDo} bản đồ): rừng Petalburg, núi lửa Chimney, Thác Meteor, Tháp Trời. Vào qua cổng bắc Cinnabar (cần cấp ${CAP_VAO_HOENN}+ và xong chương 52 của năm 1); cốt truyện Hoenn từ cấp ${capHoenn}.` },
 ]
 const thiTran = CAM_NANG.nhiemVu.phu
 const luyenCap = [...POKEDEX.map].sort((a, b) => a.capThap - b.capThap || a.id - b.id)
@@ -75,6 +75,8 @@ const dsNpc = computed(() => (npcDb.value?.length ? npcDb.value : NPC_TINH))
         </div>
       </div>
       <ul class="cham mt-5">
+        <li>Bản đồ mở dần theo <strong>cấp</strong> và <strong>12 cửa ải</strong> của cốt truyện năm 1 (ví dụ cửa ải «Rời đồng cỏ Pallet» mở Vermilion và Cerulean). Chưa đủ thì không vào được, kể cả nhờ Pidgeot hay Lapras — game báo rõ còn thiếu cấp hay cửa ải nào. Nhận cửa ải ở NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.</li>
+        <li>Khu an toàn, khu sự kiện, hang boss và đấu trường không dùng được <NuxtLink to="/cam-nang/tu-dong" class="lien-ket">Tự động đánh</NuxtLink>.</li>
         <li>Di chuyển nhanh: nhờ <strong>Pidgeot chở bay</strong> đưa tới bản đồ khác — mỗi lần tốn xu bằng {{ CAM_NANG.kinhTe.dichChuyenPhanTramGio }}% thu nhập một giờ ở cấp của bạn.</li>
         <li>Ra đảo: gặp <strong>Lapras chở đò</strong> ở bến tàu mua vé tàu và đi thuyền.</li>
         <li>NPC dùng được cả ngoài trời, không chỉ trong nhà — danh sách ở mục <a href="#npc" class="lien-ket">NPC & chức năng</a>, giá xem ở <NuxtLink to="/cam-nang/cua-hang" class="lien-ket">Cửa hàng</NuxtLink>.</li>

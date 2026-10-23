@@ -206,7 +206,7 @@ public final class BangChieu {
             }
             boolean buff = laBuff(lop, chon);
             dong(g, x0 + 4, y, buff ? "Tỉ lệ" : "Uy lực", new StringBuffer().append(dam).append('%').toString());
-            dong(g, cot2, y, "MP", String.valueOf(mp));
+            dong(g, cot2, y, "PP", String.valueOf(mp));
             y += 12;
             dong(g, x0 + 4, y, "Hồi", giay(cd));
             if (!buff || tam > 0) {

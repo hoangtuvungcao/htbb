@@ -133,8 +133,8 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   {
     slug: 'thu-cuoi-pet', ten: 'Thú cưỡi & pet', nhom: 'Phát triển', icon: 'i-lucide-rabbit',
     moTa: 'Pokémon cưỡi được, pet đi theo, trứng Pokémon và chuỗi tiến hoá của pet.',
-    muc: [{ id: 'thu-cuoi', ten: 'Thú cưỡi' }, { id: 'pet', ten: 'Pet' }],
-    tuKhoa: 'mount pet trung ponyta rapidash lapras',
+    muc: [{ id: 'thu-cuoi', ten: 'Thú cưỡi' }, { id: 'pet', ten: 'Pet' }, { id: 'o-thu', ten: 'Ô thú' }],
+    tuKhoa: 'mount pet trung ponyta rapidash lapras o thu ve mo o thu tha thu khoa thu',
   },
   {
     slug: 'doi-su-pham', ten: 'Đội, vùng & sư phạm', nhom: 'Cộng đồng', icon: 'i-lucide-users',

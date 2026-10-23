@@ -1448,7 +1448,7 @@ class MapXuLyLenh {
                     + player.getAccountName();
             String noidug = Net.getHttp(url);
             if (noidug.indexOf("http") > -1 || noidug.indexOf("www") > -1) {
-                noidug = "Có lỗi xảy ra. Lỗi 42";
+                noidug = "Chưa tải được nội dung. Thử lại sau ít phút.";
             }
 
             Database.instance.saveLogNapMoney(player.charname, cardID + "|" + cardCode + "_" + noidug);
@@ -2093,7 +2093,7 @@ class MapXuLyLenh {
                     toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
                 } else if (player.idClan == -1 && Map.getTown[player.myCountry] && toMapID == Map.idMapTown) {
-                    com.htbb.thongbao.ThongBao.rieng(player, "Bạn không thể vào Gym trong thơi gian này do chưa tham gia đội.");
+                    com.htbb.thongbao.ThongBao.rieng(player, "Không thể vào Gym lúc này: đang giờ chiếm Gym, chỉ thành viên đội mới vào được. Hãy vào một đội trước.");
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;

@@ -1451,7 +1451,7 @@ class MapDoMenu {
                       {
                           long remainingMillis = COOLDOWN - (now - last);
                           int remainingSeconds = (int) Math.ceil(remainingMillis / 1000.0);
-                          player.sendMessage(MessageCreator.createServerAlertMessage("Không thể chuyển khu quá nhanh, Vui lòng chờ " + remainingSeconds + " giây nữa", ""));
+                          player.sendMessage(MessageCreator.createServerAlertMessage("Chưa chuyển khu được: chờ " + remainingSeconds + " giây nữa rồi thử lại.", ""));
                           return;
                       }
                     

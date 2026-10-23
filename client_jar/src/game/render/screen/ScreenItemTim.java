@@ -122,7 +122,7 @@ public class ScreenItemTim extends Screen {
     public byte soluong = 1;
     public Vector mEffect = new Vector();
     public Vector lazer = new Vector();
-    String infoPoup = "Thong bao";
+    String infoPoup = "Thông báo";
     Vector mDestroy = new Vector();
     public int timeDlay = 15;
     public int dem = -1;
@@ -421,7 +421,7 @@ public class ScreenItemTim extends Screen {
                         if (ScreenItemTim.this.currentCell == 1) {
                             ScreenItemTim.this.selecItemNL1 = (ItemInInventory) ScreenItemTim.listItem.elementAt(ScreenItemTim.this.selectItemInventory);
                             if (ScreenItemTim.this.checKselecitem(ScreenItemTim.this.selecItemNL1)) {
-                                Canvas.startOKDlg("Item Da duoc chon");
+                                Canvas.startOKDlg("Đã chọn món này rồi, hãy chọn món khác.");
                                 ScreenItemTim.this.selecItemNL1 = null;
                             }
                         }
@@ -431,28 +431,28 @@ public class ScreenItemTim extends Screen {
                         if (ScreenItemTim.this.currentCell == 3) {
                             ScreenItemTim.this.selecItemNL3 = (ItemInInventory) ScreenItemTim.listItem.elementAt(ScreenItemTim.this.selectItemInventory);
                             if (ScreenItemTim.this.checKselecitem(ScreenItemTim.this.selecItemNL3)) {
-                                Canvas.startOKDlg("Item Da duoc chon");
+                                Canvas.startOKDlg("Đã chọn món này rồi, hãy chọn món khác.");
                                 ScreenItemTim.this.selecItemNL3 = null;
                             }
                         }
                         if (ScreenItemTim.this.currentCell == 4) {
                             ScreenItemTim.this.selecItemNL4 = (ItemInInventory) ScreenItemTim.listItem.elementAt(ScreenItemTim.this.selectItemInventory);
                             if (ScreenItemTim.this.checKselecitem(ScreenItemTim.this.selecItemNL4)) {
-                                Canvas.startOKDlg("Item Da duoc chon");
+                                Canvas.startOKDlg("Đã chọn món này rồi, hãy chọn món khác.");
                                 ScreenItemTim.this.selecItemNL4 = null;
                             }
                         }
                         if (ScreenItemTim.this.currentCell == 5) {
                             ScreenItemTim.itemSelect = (ItemInInventory) ScreenItemTim.listItem.elementAt(ScreenItemTim.this.selectItemInventory);
                             if (ScreenItemTim.this.checKselecitem(ScreenItemTim.itemSelect)) {
-                                Canvas.startOKDlg("Item Da duoc chon");
+                                Canvas.startOKDlg("Đã chọn món này rồi, hãy chọn món khác.");
                                 ScreenItemTim.itemSelect = null;
                             }
                         }
                         if (ScreenItemTim.this.currentCell == 6) {
                             ScreenItemTim.this.selecItemNL6 = (ItemInInventory) ScreenItemTim.listItem.elementAt(ScreenItemTim.this.selectItemInventory);
                             if (ScreenItemTim.this.checKselecitem(ScreenItemTim.this.selecItemNL6)) {
-                                Canvas.startOKDlg("Item Da duoc chon");
+                                Canvas.startOKDlg("Đã chọn món này rồi, hãy chọn món khác.");
                                 ScreenItemTim.this.selecItemNL6 = null;
                             }
                         }

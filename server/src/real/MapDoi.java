@@ -928,7 +928,7 @@ class MapDoi {
                     // day bao loi ca hai truong hop khien tu choi cung hien thi nham).
                     player.idClanVuaDuocMoi = -1;
                     if (ok) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi khi xảy ra", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không vào được đội: người mời đã thoát game. Nhờ họ mời lại nhé.", ""));
                     }
                     return;
                 }

@@ -86,7 +86,7 @@ public class ScreenDapDo extends Screen {
     public int wTab = 28;
     public String[] arrShowText = {""};
     public String tile = "Cộng thuộc tính";
-    String infoPoup = "Thong bao";
+    String infoPoup = "Thông báo";
 
     public static ScreenDapDo gI() {
         if (me != null) {

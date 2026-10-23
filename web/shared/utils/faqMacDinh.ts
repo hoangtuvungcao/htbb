@@ -23,7 +23,7 @@ export const FAQ_MAC_DINH: { ten: string, hoi: { label: string, content: string 
   {
     ten: 'Lối chơi',
     hoi: [
-      { label: 'Tôi điều khiển một Pokémon hay huấn luyện Pokémon?', content: `Trong ${TEN_SITE} chính bạn là một Pokémon: chọn 1 trong 5 dòng khởi đầu, lên cấp và tiến hoá. Không có con người, không bắt Pokémon bằng bóng.` },
+      { label: 'Tôi điều khiển một Pokémon hay huấn luyện Pokémon?', content: `Trong ${TEN_SITE} chính bạn là một Pokémon: chọn 1 trong 5 dòng khởi đầu, lên cấp và tiến hoá. Thế giới không có con người; Pokémon hoang dã (dấu Poké Ball cạnh tên) thì thu phục được bằng bóng để làm bạn đồng hành — xem Cẩm nang → Thu phục.` },
       { label: 'Nên chọn Pokémon khởi đầu nào?', content: 'Charmander cân bằng, Bulbasaur trâu và tấn công cao khi dồn điểm, Squirtle thủ chắc, Pichu đánh xa cơ động, Eevee linh hoạt với 8 nhánh tiến hoá. Không có lựa chọn sai — hãy chọn con bạn thích.' },
       { label: 'Có đổi được dòng Pokémon sau khi tạo không?', content: 'Không. Nhưng một tài khoản có thể tạo nhiều Pokémon để thử các dòng khác.' },
       { label: 'Vì sao tôi nhận ít EXP hơn sau vài giờ chơi?', content: `Đó là năng lượng huấn luyện: ${C.capDo.nangLuong.phutNgay / 60} giờ đầu mỗi ngày đủ 100%, sau đó giảm dần. Phần chưa dùng được tích lại cho hôm sau.` },
@@ -36,7 +36,7 @@ export const FAQ_MAC_DINH: { ten: string, hoi: { label: string, content: string 
     hoi: [
       { label: 'Có nạp tiền không?', content: 'Nạp là tuỳ chọn và chỉ mở khi máy chủ bật — duy nhất trên trang Nạp tiền của website, tỷ giá cố định ×1, chỉ mua đồ trang trí và tiện ích. Không có cửa hàng bán sức mạnh. Ai nhận tiền nhân danh máy chủ ở ngoài website đều là lừa đảo.' },
       { label: 'Có bị xoá dữ liệu khi cập nhật không?', content: 'Không có kế hoạch xoá. Nếu cần bảo trì lớn, ban quản trị sẽ thông báo trước trên trang Tin tức.' },
-      { label: 'Dùng phần mềm thứ ba, bot có bị khoá?', content: 'Có. Bot, treo máy tự động, lợi dụng lỗi đều bị khoá tài khoản. Hệ thống năng lượng cũng làm bot không có lợi.' },
+      { label: 'Dùng phần mềm thứ ba, bot có bị khoá?', content: 'Có. Bot, phần mềm tự động ngoài game và lợi dụng lỗi đều bị khoá tài khoản. Chỉ Tự động đánh chính thức trong game và Phiếu ủy thác luyện tập là được phép.' },
       { label: 'Website có theo dõi tôi không?', content: 'Không dùng công cụ theo dõi hay quảng cáo bên thứ ba. Xem Chính sách quyền riêng tư.' },
     ],
   },

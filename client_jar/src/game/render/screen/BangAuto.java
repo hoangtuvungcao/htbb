@@ -92,7 +92,7 @@ public class BangAuto extends Screen {
             @Override
             public void perform() {
                 if (Tilemap.lv == 0 || Tilemap.lv == 201 || Tilemap.lv == 70 || Tilemap.lv == 80) {
-                    Canvas.startOKDlg("Không thể bật auto ở đây.");
+                    Canvas.startOKDlg("Bản đồ này không cho phép tự động đánh.");
                 } else {
                     BangAuto.this.doAuto();
                 }

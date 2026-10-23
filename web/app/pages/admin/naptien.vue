@@ -264,7 +264,7 @@ onMounted(() => {
       color="error"
       variant="solid"
       icon="i-lucide-shield-x"
-      title="HTBB_NAP_BAT=true nhưng nạp BỊ TẮT (fail closed): cấu hình chưa an toàn"
+      title="HTBB_NAP_BAT=true nhưng nạp BỊ TẮT (khoá an toàn): cấu hình chưa an toàn"
       :description="tq.canhBao.lyDoTat.join(' · ')"
     />
     <UAlert v-else-if="tq && !tq.canhBao.napBat && !tq.canhBao.demo" color="neutral" variant="subtle" icon="i-lucide-power-off" title="Nạp tiền đang TẮT (HTBB_NAP_BAT=false)" description="Trang /naptien và mọi API /api/nap/** trả 403. Có thể chuẩn bị gói/cửa hàng ở đây trước. Bật cần: giấy phép, bảng nap_* (sql/htbb.sql), sv.nap_tien=1 + sv.lau_dai=1 ở server game." />

@@ -215,7 +215,7 @@ async function hoanTac(d: DongLs) {
     </UAlert>
 
     <UAlert v-if="data && (data.nap.yeuCauBat && !data.nap.bat || !data.nap.daCoGiayPhep)" color="warning" variant="subtle" icon="i-lucide-banknote"
-      title="Thu tiền đang KHOÁ ở tầng biến môi trường (fail closed)"
+      title="Thu tiền đang KHOÁ ở tầng biến môi trường (khoá an toàn)"
       :description="[!data.nap.daCoGiayPhep ? 'Chưa xác nhận giấy phép (NAP_DA_CO_GIAY_PHEP).' : '', ...data.nap.lyDoTat].filter(Boolean).join(' · ') || 'HTBB_NAP_BAT đang tắt.'" />
 
     <UTabs v-model="tab" :items="[{ label: 'Cấu hình', value: 'cau_hinh', icon: 'i-lucide-sliders-horizontal' }, { label: 'Lịch sử thay đổi', value: 'lich_su', icon: 'i-lucide-history' }]" :content="false" />

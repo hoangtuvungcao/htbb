@@ -47,5 +47,14 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
         </li>
       </ul>
     </WikiSection>
+
+    <WikiSection id="o-thu" title="Ô thú" :lead="`Thú cưỡi và Pokémon đi theo dùng chung một danh sách: mỗi người chơi có sẵn ${O_THU.coBan} ô, mở thêm được tới tối đa ${O_THU.toiDa} ô.`">
+      <ul class="cham">
+        <li>Xem số ô ở thanh <strong>Ô thú: đang có/sức chứa</strong> trong tab Thú của hành trang (hoặc Trang bị › Thú cưỡi).</li>
+        <li>Mỗi <strong>Vé mở ô thú</strong> thêm {{ O_THU.oMoiVe }} ô, giá {{ O_THU.giaVeLuong }} lượng ở Cửa hàng lượng (nút <strong>Thêm ô</strong>). Đã đủ {{ O_THU.toiDa }} ô thì không mua hay dùng thêm được — vé chưa dùng không bị mất.</li>
+        <li>Đầy ô thì không nhận thêm thú (mua, nở trứng, quà, giao dịch): hãy thả bớt hoặc mở thêm ô trước.</li>
+        <li><strong>Thả về tự nhiên</strong> (có nút Thả bản trùng) trả lại một ít xu, tối đa {{ O_THU.xuThaNgay.toLocaleString('vi-VN') }} xu mỗi ngày; thú có hạn sử dụng thả không được xu. <strong>Khoá</strong> con yêu thích để không thả nhầm.</li>
+      </ul>
+    </WikiSection>
   </WikiShell>
 </template>

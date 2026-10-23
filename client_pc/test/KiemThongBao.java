@@ -65,7 +65,7 @@ public class KiemThongBao {
         {"Chúc mừng Ash mở rương may mắn trúng Mặt nạ", SK},
         {"Thời gian sử dụng hạt mầm của bạn đã hết", TIN},
         {"Bạn vừa thấy một Pikachu shiny! Đã ghi vào Pokédex.", HIEM},
-        {"Bạn không thể vào Gym trong thơi gian này do chưa tham gia đội.", LOI},
+        {"Không thể vào Gym lúc này: đang giờ chiếm Gym, chỉ thành viên đội mới vào được. Hãy vào một đội trước.", LOI},
         {"Pokémon hỗ trợ của bạn đã hết hạn", TIN},
     };
 

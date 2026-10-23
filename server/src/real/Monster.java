@@ -1280,7 +1280,7 @@ public class Monster extends LiveActor {
                         int[] idTrung = new int[]{16, 17};
                         p.createTrungPhuongHoang(1L, idTrung[Map.r.nextInt(idTrung.length)]);
                         try {
-                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.getName() + " vừa nhặt được trứng Moltres. Điều kiện nhận là bạn không có trứng nào trong rương và phải từ level 40 trở lên.");
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.getName() + " vừa nhặt được trứng Moltres. Điều kiện nhận: chưa có trứng nào trong rương và từ cấp 40 trở lên.");
                         } catch (final Exception ex2) {
                         }
                     }
@@ -1316,7 +1316,7 @@ public class Monster extends LiveActor {
                         int[] idTrung = new int[]{18};
                         p.createTrungPhuongHoang(1L, idTrung[Map.r.nextInt(idTrung.length)]);
                         try {
-                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.getName() + " vừa nhặt được trứng hoả kì nhông. Điều kiện nhận là bạn không có trứng nào trong rương và phải từ level 60 trở lên.");
+                            com.htbb.chongspam.ThongBaoGop.dua("nhan_thuong", "Chúc mừng " + p.getName() + " vừa nhặt được trứng hiếm. Điều kiện nhận: chưa có trứng nào trong rương và từ cấp 60 trở lên.");
                         } catch (final Exception ex2) {
                         }
                     }

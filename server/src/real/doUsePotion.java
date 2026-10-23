@@ -196,7 +196,7 @@ public class doUsePotion {
                         } else {
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ sử dụng được sâm khi level dưới 90.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ dùng được khi dưới cấp 90.", ""));
                         }
                         break;
                     case 10:

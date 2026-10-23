@@ -72,7 +72,7 @@ public class ViewInfoScr extends Screen {
             Vector menu = new Vector();
             if (ViewInfoScr.this.type == 0) {
                 if (Canvas.gameScr.mainChar.isMaster == 0) {
-                    menu.addElement(new Command("Đặt slogan", new AnonymousClass3(this)));
+                    menu.addElement(new Command("Đặt khẩu hiệu", new AnonymousClass3(this)));
                 }
                 menu.addElement(new Command("Danh sách thành viên", new IAction() {
                     @Override
@@ -95,7 +95,7 @@ public class ViewInfoScr extends Screen {
 
         @Override
         public void perform() {
-            Canvas.inputDlg.setInfo("Slogan", new IAction() {
+            Canvas.inputDlg.setInfo("Khẩu hiệu", new IAction() {
                 @Override
                 public void perform() {
                     String str = Canvas.inputDlg.tfInput.getText();

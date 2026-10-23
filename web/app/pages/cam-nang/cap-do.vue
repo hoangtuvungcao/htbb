@@ -51,7 +51,7 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
     <WikiSection id="tran-cap" title="Không giới hạn cấp theo mùa" :lead="`Cấp ${C.capToiDa} mở cho mọi người ngay từ đầu — không còn trần cấp theo mùa. Bù lại, lên cấp chậm: tổng ≈ ${hienGio(gioToiDa)} đánh quái hiệu dụng từ cấp 1 tới ${C.capToiDa}, và năng lượng huấn luyện giới hạn số giờ đầy đủ mỗi ngày.`">
       <ul class="cham">
         <li>Người chơi 1–2 giờ/ngày tới cấp {{ C.capToiDa }} sau khoảng <strong>15–18 tháng</strong>; người cày 5–7 giờ/ngày khoảng <strong>9–12 tháng</strong>.</li>
-        <li>Nội dung mở theo <strong>cấp và cốt truyện</strong>: vùng Hoenn cần cấp 84 và xong chương 52 (kết năm 1, sau khi trở thành Nhà vô địch); chuỗi huyền thoại mở từng bước theo cấp.</li>
+        <li>Nội dung mở theo <strong>cấp và cốt truyện</strong>: vùng Hoenn cần cấp {{ CAP_VAO_HOENN }} và xong chương 52 (kết năm 1, sau khi trở thành Nhà vô địch); chuỗi huyền thoại mở từng bước theo cấp.</li>
         <li>Sự kiện tuần, boss đột kích, mùa PvP và vé mùa vẫn chạy theo lịch.</li>
       </ul>
       <WikiCallout kieu="meo">

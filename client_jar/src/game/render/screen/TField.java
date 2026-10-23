@@ -69,7 +69,7 @@ public class TField extends ObjGame {
         m = GameMidlet.instance;
         final TextBox tb = new TextBox("", "", 500, 0);
         tb.addCommand(new javax.microedition.lcdui.Command("OK", 4, 0));
-        tb.addCommand(new javax.microedition.lcdui.Command("Cancel", 3, 0));
+        tb.addCommand(new javax.microedition.lcdui.Command("Huỷ", 3, 0));
         tb.setCommandListener(new CommandListener() {
             public void commandAction(javax.microedition.lcdui.Command cmd, Displayable arg1) {
                 if (cmd.getLabel().equals("OK")) {

@@ -464,7 +464,7 @@ public class MapLienDau extends Map {
                     toMapID = mapstart[r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
                 } else if (player.idClan == -1 && getTown[player.myCountry] && toMapID == idMapTown) {
-                    com.htbb.thongbao.ThongBao.rieng(player, "Bạn không thể vào Gym trong thơi gian này do chưa tham gia đội.");
+                    com.htbb.thongbao.ThongBao.rieng(player, "Không thể vào Gym lúc này: đang giờ chiếm Gym, chỉ thành viên đội mới vào được. Hãy vào một đội trước.");
                     mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;

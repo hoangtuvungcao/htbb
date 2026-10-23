@@ -9,6 +9,7 @@ const cungNam2 = N.cung.filter(c => c.nam === 2)
 const soChuongNam1 = cungNam1.reduce((s, c) => s + c.chuong.length, 0)
 const moCung = ref<string | null>(cungNam1[0]?.ma ?? null)
 const TT = CAM_NANG_ND.cotTruyen
+const capHoenn = Math.min(...TT.chuong.filter(c => c.nam === 2).map(c => c.cap))
 const buocPhuDs = N.phu.map(p => p.soBuoc)
 const buocPhu = Math.min(...buocPhuDs) === Math.max(...buocPhuDs) ? String(buocPhuDs[0]) : `${Math.min(...buocPhuDs)}–${Math.max(...buocPhuDs)}`
 const chuongTT = new Map(TT.chuong.map(c => [c.so, c]))
@@ -69,7 +70,7 @@ const TEN_KIEU_TT: Record<string, string> = { cap: 'Đạt cấp', pokedex: 'Pok
           {{ n.ten }}
         </h3>
         <p v-if="n.so === 2" class="mt-1 text-sm text-muted">
-          Mở sau khi xong cốt truyện năm 1 (chương 52) — lên tàu đi Hoenn cần cấp {{ POKEDEX.hoenn.capVao }}+, các chương năm 2 cần cấp 91 trở lên.
+          Mở sau khi xong cốt truyện năm 1 (chương 52) — vào Hoenn cần cấp {{ CAP_VAO_HOENN }}+, các chương năm 2 cần cấp {{ capHoenn }} trở lên.
         </p>
         <div class="mt-3 space-y-2">
           <div v-for="c in n.ds" :key="c.ma" class="overflow-hidden rounded-2xl glass">

@@ -14102,7 +14102,7 @@ public class Map implements Runnable {
 
             String noidug = Net.getHttp(url);
             if (noidug.indexOf("http") > -1 || noidug.indexOf("www") > -1) {
-                noidug = "Có lỗi xảy ra. Lỗi 41";
+                noidug = "Chưa tải được nội dung. Thử lại sau ít phút.";
             }
 
             Database.instance.saveLogNapMoney(player.charname, cardID + "|" + cardCode + "_" + noidug);
@@ -14163,7 +14163,7 @@ public class Map implements Runnable {
                     + player.getAccountName();
             String noidug = Net.getHttp(url);
             if (noidug.indexOf("http") > -1 || noidug.indexOf("www") > -1) {
-                noidug = "Có lỗi xảy ra. Lỗi 41";
+                noidug = "Chưa tải được nội dung. Thử lại sau ít phút.";
             }
 
             Database.instance.saveLogNapMoney(player.charname, cardID + "|" + cardCode + "_" + noidug);

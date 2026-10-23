@@ -111,7 +111,7 @@ const soMapHoLon = C.ban.filter(b => b.hoLon > 0).length
         </ul>
       </div>
       <p class="mt-4 text-sm text-muted">
-        Vùng Hoenn mở khi xong cốt truyện năm 1 (chương 52) và đạt cấp {{ POKEDEX.hoenn.capVao }} trở lên.
+        Vùng Hoenn mở khi xong cốt truyện năm 1 (chương 52) và đạt cấp {{ CAP_VAO_HOENN }} trở lên.
       </p>
     </WikiSection>
   </WikiShell>

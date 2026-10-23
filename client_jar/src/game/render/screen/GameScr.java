@@ -1136,7 +1136,7 @@ public class GameScr extends Screen {
             if (a.x > left && a.x < right && a.y > up && a.y < down) {
                 if (a.catagory == 127 || !a.canfocus || ((a.catagory == 0 && a.ID == this.mainChar.ID) || a.catagory == 10 || a.catagory == 11 || a.catagory == 12 || (autoFight && !Canvas.autoTab.isAutoFire && Tilemap.lv != 0 && Tilemap.lv != 201 && Tilemap.lv != 70 && Tilemap.lv != 80 && !Tilemap.isOfflineMap && (a.isItemCanGet() || a.catagory == 126 || a.catagory == 2 || a.catagory == 0)))) {
                     if ((autoFight || autoBomHMP) && a.catagory == 2) {
-                        addChat(this.mainChar, "Bạn hãy tắt auto trước khi focus", 100);
+                        addChat(this.mainChar, "Tắt Tự động đánh trước khi chọn mục tiêu", 100);
                     }
                 } else if ((a.catagory != 1 || a.state != 8) && (!autoFight || (a.state != 3 && !a.isDropItem()))) {
                     if (typeOptionFocus == 1) {
@@ -2123,7 +2123,7 @@ public class GameScr extends Screen {
                 int mpLost = SkillManager.getSkillMP(qs.getSkillType(), Char.skillLevelLearnt[qs.getSkillType() - 4], Canvas.gameScr.mainChar.clazz);
                 if (mpLost > Canvas.gameScr.mainChar.mp) {
                     if (!this.first) {
-                        addChat(new ChatInfo("", "Không đủ MP", 0));
+                        addChat(new ChatInfo("", "Không đủ PP", 0));
                         this.first = true;
                         return;
                     }
@@ -2480,7 +2480,7 @@ public class GameScr extends Screen {
                         int mplost = SkillManager.getSkillMP(skillType, Char.skillLevelLearnt[skillType], this.mainChar.clazz);
                         if (mplost > this.mainChar.mp) {
                             if (!this.first) {
-                                addChat(new ChatInfo("", "Không đủ MP", 0));
+                                addChat(new ChatInfo("", "Không đủ PP", 0));
                                 this.first = true;
                                 return;
                             }
@@ -5025,7 +5025,7 @@ public class GameScr extends Screen {
             hopMatKetNoi(tk, mk);   // hết 3 lần: hộp mất kết nối, "Kết nối lại" vẫn dùng được
             return;
         }
-        Canvas.startOKDlg("Không thể kết nối. Vui lòng chọn server khác", new IAction() {
+        Canvas.startOKDlg("Không kết nối được máy chủ. Kiểm tra mạng rồi đăng nhập lại.", new IAction() {
             @Override
             public void perform() {
                 Canvas.currentDialog = null;
@@ -5552,7 +5552,7 @@ public class GameScr extends Screen {
             }
             if (potionType == 0) {
                 if (this.mainChar.isFirstTimeGetMoney) {
-                    Canvas.startOKDlg("Bạn vừa nhặt được xu Bạn có thể dùng xu để mua HP, MP và đồ dùng khác.", false, 1);
+                    Canvas.startOKDlg("Bạn vừa nhặt được xu. Dùng xu để mua thuốc HP, PP và đồ dùng khác.", false, 1);
                     this.mainChar.isFirstTimeGetMoney = false;
                     return;
                 }
@@ -5907,9 +5907,9 @@ public class GameScr extends Screen {
             game.pokemon.HieuUngDanh.lenCap(c);   // pokemon: no sang + tieng len cap
         }
         if (c == this.mainChar) {
-            addChat(new ChatInfo("", new StringBuffer("Đạt được level ").append((int) newlevel).toString(), 1));
+            addChat(new ChatInfo("", new StringBuffer("Đã lên cấp ").append((int) newlevel).toString(), 1));
             if (newlevel == 2) {
-                Canvas.startOKDlg("Xin chúc mừng! Bạn vừa lên cấp. Chọn menu, Pokémon để tăng điểm tiềm năng và kỹ năng", false, 20);
+                Canvas.startOKDlg("Chúc mừng! Bạn vừa lên cấp. Mở Menu, chọn Pokémon để cộng điểm tiềm năng và kỹ năng.", false, 20);
             }
         }
     }

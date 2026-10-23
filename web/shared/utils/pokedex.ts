@@ -66,6 +66,13 @@ export interface PokedexData {
 
 export const POKEDEX = raw as unknown as PokedexData
 
+/**
+ * Cấp THẬT để vào Hoenn mà trang cẩm nang ghi cho người chơi. Tàu ở cổng bắc Cinnabar chỉ chặn dưới
+ * POKEDEX.hoenn.capVao (BanDoHoenn.CAP_VAO), nhưng khoá bản đồ (data_ban_do_mo_khoa, cửa C52.7 = kết năm 1) chặn mọi
+ * bản đồ Hoenn tới mốc này — cũng là cấp của chương 52. tests/hien-thi-nguoi-choi.test.ts đối chiếu sql/htbb.sql.
+ */
+export const CAP_VAO_HOENN = 90
+
 const THEO_DEX_DEX = new Map(POKEDEX.loai.map(l => [l.dex, l]))
 
 export function loaiTheoDex(dex: number): LoaiDex | undefined {

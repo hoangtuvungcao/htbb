@@ -16,7 +16,9 @@ export async function tvCoBang(): Promise<boolean> {
   return (await coBang(dbGame(), 'tv_thanh_vien')) && (await coBang(dbGame(), 'tv_nhat_ky'))
 }
 
-export function tvThieuBang(): never {
+export function tvThieuBang(nguoiChoi = false): never {
+  // Người chơi không cần biết tên bảng / tệp SQL (giống napThieuBang); trang admin vẫn nhận hướng dẫn đầy đủ.
+  if (nguoiChoi) throw apiLoi(409, 'Thành viên HTBB chưa mở bán. Vui lòng quay lại sau.', { code: 'thieu_bang' })
   throw apiLoi(409, 'Chưa có bảng thành viên — chạy sql/htbb.sql.', { code: 'thieu_bang' })
 }
 

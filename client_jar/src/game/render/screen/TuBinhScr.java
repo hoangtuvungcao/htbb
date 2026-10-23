@@ -39,7 +39,7 @@ public class TuBinhScr extends Screen {
     public Scroll mScrollShowText = new Scroll();
     public int wTab = 80;
     public String[] arrShowText = {""};
-    public String[] arraySubTile = {"Tab 1", "Tab 2", "Tab 3", "Tab 4"};
+    public String[] arraySubTile = {"Trang 1", "Trang 2", "Trang 3", "Trang 4"};
     public String tile = "Cổ vật";
 
     public static TuBinhScr gI() {

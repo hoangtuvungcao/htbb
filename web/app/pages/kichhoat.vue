@@ -92,7 +92,7 @@ const hoTro = useHoTro().link
                   </template>
                 </p>
                 <p v-else class="mt-4 text-sm text-muted">
-                  Vui lòng liên hệ quản trị viên để kích hoạt tài khoản trong 30 ngày.
+                  Kích hoạt (miễn phí) do quản trị viên cấp: bấm <strong class="text-highlighted">Liên hệ hỗ trợ</strong> và gửi tên tài khoản (không gửi mật khẩu).
                 </p>
               </template>
               <p v-if="tv?.coBang" class="mt-4 text-sm">

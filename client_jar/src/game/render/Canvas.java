@@ -929,7 +929,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
             return;   // 0.9.5: màn tải đang hiện - không chồng hộp chờ thứ hai
         }
         msgdlg.isIcon = isIcon;
-        msgdlg.setInfo(info, (game.model.Command) null, new game.model.Command("Cancel", new IAction() {
+        msgdlg.setInfo(info, (game.model.Command) null, new game.model.Command("Huỷ", new IAction() {
             @Override
             public void perform() {
                 Canvas.currentDialog = null;
@@ -943,7 +943,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
             return;
         }
         msgdlg.isIcon = false;
-        msgdlg.setInfo("Xin chờ...", (game.model.Command) null, new game.model.Command("Cancel", new IAction() {
+        msgdlg.setInfo("Xin chờ...", (game.model.Command) null, new game.model.Command("Huỷ", new IAction() {
             @Override
             public void perform() {
                 Canvas.currentDialog = null;

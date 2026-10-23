@@ -142,7 +142,7 @@ public final class SoBay {
                 return true;
             }
             if (t.equals("mp+")) {
-                themSo("+MP", LAM, 2, x, y, false);
+                themSo("+PP", LAM, 2, x, y, false);
                 return true;
             }
             if (c0 == '+' && t.length() > 1) {

@@ -170,7 +170,7 @@ const columns = [
                 </UBadge>
               </div>
               <p v-if="data && !data.activated" class="mt-4 text-sm text-muted">
-                Vui lòng liên hệ quản trị viên để kích hoạt tài khoản trong 30 ngày.
+                Kích hoạt (miễn phí) do quản trị viên cấp — xem cách làm ở trang <NuxtLink to="/kichhoat" class="lien-ket">Kích hoạt</NuxtLink>.
               </p>
               <div v-if="tv?.coBang" class="mt-4 flex items-center justify-between gap-4">
                 <span class="text-muted">Thành viên HTBB</span>

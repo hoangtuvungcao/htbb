@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     return { ma_don: don.ma_don, so_tien: don.so_tien, demo: true }
   }
   const u = await requireUser(event)
-  if (!(await napCoBang()) || !(await tvCoBang())) tvThieuBang()
+  if (!(await napCoBang()) || !(await tvCoBang())) tvThieuBang(true)
   const ban = await tvBanDuoc()
   if (!ban.duoc) throw apiLoi(403, 'Hiện chưa mở bán Thành viên HTBB.', { code: 'tv_tat' })
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))

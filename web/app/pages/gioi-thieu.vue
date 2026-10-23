@@ -25,7 +25,7 @@ const DIEM: { t: string, m: string, dex?: number[], anh?: string, img?: string[]
 const VUNG = [
   { ten: 'Kanto', dex: 4, mo: 'Nơi mọi hành trình bắt đầu. Đồng cỏ Pallet, Rừng Viridian rậm rạp, Núi Mặt Trăng đầy sao băng, con tàu S.S. Anne và đảo lửa Cinnabar.' },
   { ten: 'Johto', dex: 133, mo: 'Vùng đất cổ kính của những ngọn tháp: tháp chuông Ecruteak, Rừng Ilex linh thiêng, Hồ Phẫn Nộ đỏ rực và làng rồng Blackthorn.' },
-  { ten: 'Hoenn', dex: 7, mo: `Biển nhiệt đới và núi lửa, nơi Kyogre và Groudon đang ngủ say. Mở ra khi bạn hoàn thành cốt truyện năm 1 và đạt cấp ${POKEDEX.hoenn.capVao}.` },
+  { ten: 'Hoenn', dex: 7, mo: `Biển nhiệt đới và núi lửa, nơi Kyogre và Groudon đang ngủ say. Mở ra khi bạn hoàn thành cốt truyện năm 1 (chương 52) và đạt cấp ${CAP_VAO_HOENN}.` },
 ]
 </script>
 

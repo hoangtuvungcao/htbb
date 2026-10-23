@@ -448,7 +448,7 @@ public class LoginHandler implements ICommandHandler {
             j.cleanup();
         }
         if (session.privateProvider.equals("0") && !uname.toLowerCase().equals("lamkckc") && !uname.toLowerCase().equals("lamkxkx")) {
-            session.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi xảy ra. Mã lỗi 123", ""));
+            session.sendMessage(MessageCreator.createServerAlertMessage("Chưa đăng nhập được: thoát game rồi đăng nhập lại; vẫn lỗi thì liên hệ hỗ trợ.", ""));
             return;
         }
         // CAM THEO MA MAY — kiem o day, tuc SAU khi mat khau da dung, vi hai le:

@@ -49,7 +49,7 @@ class MapDanhNhau {
             }
 
             if (!p.checkDurableWeapone()) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi đồ cầm tay bị hư hại. Hãy đến Thợ Map.rèn để sửa lại.", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể tấn công khi đồ cầm tay bị hư hại. Hãy nhờ Machamp thợ rèn sửa lại.", ""));
                 return;
             }
 
@@ -136,7 +136,7 @@ class MapDanhNhau {
                     && !((Vector) Map.idMapMONSTER.get(p.myCountry)).contains(map.mapId)) {
                 Message m = new Message(27);
                 m.dos.writeShort(p.id);
-                m.dos.writeUTF("Không thể pk thêm.");
+                m.dos.writeUTF("Không thể PK thêm ở bản đồ này.");
                 p.sendMessage(m);
                 m.cleanup();
                 return;
@@ -397,7 +397,7 @@ class MapDanhNhau {
                         if (ccc != null && ccc.id != p.id && ccc.hp > 0 && !ccc.isMonster) {
                             ccc.potions[102]++;
                             ccc.sendMessage(MessageCreator.createCharInventoryMessage(ccc, 0));
-                            ccc.sendMessage(MessageCreator.createMsgChat(ccc.id, "Nhận được Map.rương bạc"));
+                            ccc.sendMessage(MessageCreator.createMsgChat(ccc.id, "Nhận được rương bạc"));
                             if (ccc.hp <= 0) {
                                 ccc.hp = ccc.maxhp;
                                 ccc.sendMessage(MessageCreator.createMainCharInfoMessage(ccc));
@@ -408,7 +408,7 @@ class MapDanhNhau {
 
                     p.potions[101]++;
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                    p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được Map.rương vàng"));
+                    p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được rương vàng"));
                     map.charMonsterDissapear(c);
                     c.hp = c.maxhp;
                     c.mp = c.maxmp;
@@ -667,7 +667,7 @@ class MapDanhNhau {
                             if (p.hp <= 0) {
                                 p.actorDie();
                             } else if (!p.checkDurableWeapone()) {
-                                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ Map.rèn để sửa lại1.", ""));
+                                p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy nhờ Machamp thợ rèn sửa lại.", ""));
                                 Message m = new Message(104);
 
                                 try {
@@ -712,7 +712,7 @@ class MapDanhNhau {
                                                                                 }
 
                                                                                 if (mt.getInCountry() != p.inCountry) {
-                                                                                    p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đánh Map.rương của làng khác."));
+                                                                                    p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đánh rương của làng khác."));
                                                                                     return;
                                                                                 }
                                                                             }
@@ -1178,7 +1178,7 @@ class MapDanhNhau {
                         }
 
                         if (!p.checkDurableWeapone()) {
-                            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy đến Thợ Map.rèn để sửa lại.", ""));
+                            p.sendMessage(MessageCreator.createServerAlertMessage("Không thể đánh khi đồ cầm tay bị hỏng. Hãy nhờ Machamp thợ rèn sửa lại.", ""));
                             Message m = new Message(104);
 
                             try {
@@ -1266,7 +1266,7 @@ class MapDanhNhau {
                             }
 
                             if (mt.getInCountry() != p.inCountry) {
-                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đánh Map.rương của làng khác."));
+                                p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đánh rương của làng khác."));
                                 return;
                             }
                         }
@@ -1404,7 +1404,7 @@ class MapDanhNhau {
 
                                     if (mt.getInCountry() != p.inCountry) {
                                         i++;
-                                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đánh Map.rương của làng khác."));
+                                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Không thể đánh rương của làng khác."));
                                         continue;
                                     }
                                 }

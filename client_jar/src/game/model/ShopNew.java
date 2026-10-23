@@ -4101,7 +4101,7 @@ public class ShopNew extends Screen {
 
     public void dofireBasePoint() {
         if (Canvas.gameScr.mainChar.basePointLeft == 0) {
-            Canvas.startOKDlg("Đã hết điểm tiềm năng để cộng. Xin đánh lên level để có điểm tiềm năng.");
+            Canvas.startOKDlg("Đã hết điểm tiềm năng. Lên cấp để nhận thêm điểm tiềm năng.");
         } else {
             Canvas.inputDlg.setInfo("Nhập số", new IAction() {
                 @Override
