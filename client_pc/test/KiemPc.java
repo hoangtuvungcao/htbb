@@ -67,6 +67,52 @@ public class KiemPc {
         game.pokemon.SinhThai.datDiemCau(-98, new int[0], new int[0]);
     }
 
+    /**
+     * 0.9.9 (J2ME vietdz "nhip man: ArrayIndexOutOfBoundsException(17 >= 0)"): đổi bản đồ do máy chủ (dịch chuyển, hồi
+     * sinh, về hồi phục) - luồng mạng Tilemap.reset xoá danh sách cổng trong lúc Tilemap.type còn mã cổng của map cũ;
+     * màn chơi vẫn chạy và đứng trên ô cổng cũ -> toOtherMapAt KHÔNG được ném.
+     */
+    static void kiemCongDoiMap() {
+        int[] t0 = game.model.Tilemap.type;
+        int w0 = game.model.Tilemap.w, h0 = game.model.Tilemap.h;
+        java.util.Vector v = game.model.Tilemap.mapchangeLocations;
+        java.util.Vector v0 = new java.util.Vector();
+        for (int i = 0; i < v.size(); i++) v0.addElement(v.elementAt(i));
+        try {
+            game.model.Tilemap.w = 20;
+            game.model.Tilemap.h = 20;
+            game.model.Tilemap.type = new int[400];
+            game.model.Tilemap.type[5 * 20 + 5] = 2000000000 + 17;
+            v.removeAllElements();   // = Tilemap.reset() trước khi luồng nạp đọc map mới
+            String loi = null;
+            Object r = null;
+            try {
+                r = game.model.Tilemap.toOtherMapAt(5 * 16 + 8, 5 * 16 + 8);
+            } catch (Throwable e) {
+                loi = e.toString();
+            }
+            kiem(loi == null && r == null, "doi map: o cong cu (ma 17) + danh sach cong rong -> khong cong, khong nem (" + loi + ")");
+            for (int i = 0; i < 17; i++) v.addElement(new game.model.CMLocation((short) i, 1, 1));
+            kiem(game.model.Tilemap.toOtherMapAt(5 * 16 + 8, 5 * 16 + 8) == null, "doi map: 17 cong, ma 17 -> khong cong (khong nem)");
+            v.addElement(new game.model.CMLocation((short) 99, 2, 3));
+            kiem(game.model.Tilemap.toOtherMapAt(5 * 16 + 8, 5 * 16 + 8) == v.elementAt(17), "doi map: du 18 cong -> cong 17");
+            game.model.Tilemap.type = null;   // loadMap: type = null trước khi đọc map mới
+            boolean nem = false;
+            try {
+                game.model.Tilemap.toOtherMapAt(8, 8);
+            } catch (Throwable e) {
+                nem = true;
+            }
+            kiem(!nem, "doi map: type null (dang nap) -> khong nem");
+        } finally {
+            game.model.Tilemap.type = t0;
+            game.model.Tilemap.w = w0;
+            game.model.Tilemap.h = h0;
+            v.removeAllElements();
+            for (int i = 0; i < v0.size(); i++) v.addElement(v0.elementAt(i));
+        }
+    }
+
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
         // ---- khung PHỦ KÍN (0.9.3): mọi cỡ cửa sổ -> logic <= 640x360 mỗi chiều, phủ kín cửa sổ, không viền
@@ -173,6 +219,7 @@ public class KiemPc {
         htbb.pc.CaiDat.doKhung = dk0;
         htbb.pc.CaiDat.dev = dev0;
         kiemCauCa();
+        kiemCongDoiMap();
         System.out.println("KiemPc: " + dat + " dat, " + hong + " hong");
         if (hong > 0) System.exit(1);
     }

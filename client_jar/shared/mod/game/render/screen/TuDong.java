@@ -107,6 +107,12 @@ public final class TuDong {
      * tuHoiSinh bật và máy chủ cho (tu_dong.hoi_sinh_tra_phi). Mặc định tắt: chỉ Thuốc hồi sinh thường.
      */
     static boolean hoiSinhLuong;
+    /**
+     * 0.9.9 "Trang chiêu dùng khi tự động": -1 = trang đang dùng (mặc định, viên "1/2" đổi là tự động đổi theo), 0..2 =
+     * luôn trang đó. Khi "Thứ tự chiêu" để Tự chọn hết: dùng chiêu đánh trên trang này theo thứ tự ô; trang không có
+     * chiêu đánh nào thì mọi chiêu đánh đã học (như cũ).
+     */
+    static int trangChieu = -1;
     private static long lucChet;
     private static boolean daNap;
 
@@ -696,7 +702,59 @@ public final class TuDong {
             }
             return r;
         }
-        return chieuDanh(mc);
+        byte[] t = chieuTrang(mc, trangDung());
+        return t.length > 0 ? t : chieuDanh(mc);
+    }
+
+    /** Trang chiêu tự động dùng (chỉ số 0..). */
+    static int trangDung() {
+        int so = Math.max(1, Math.min(game.pokemon.TrangChieu.so, game.model.MainChar.quickSlot == null ? 1 : game.model.MainChar.quickSlot.length));
+        int t = trangChieu >= 0 ? trangChieu : GameScr.indexTabSlot;
+        return Math.max(0, Math.min(so - 1, t));
+    }
+
+    /** Nhãn cài đặt trang chiêu: "Trang đang dùng (1)" / "Trang 2". */
+    static String tenTrang() {
+        if (trangChieu < 0) {
+            return new StringBuffer("Trang đang dùng (").append(trangDung() + 1).append(')').toString();
+        }
+        return new StringBuffer("Trang ").append(trangChieu + 1).toString();
+    }
+
+    /** Trang đang dùng -> 1 -> 2 (-> 3 nếu đã mở) -> trang đang dùng. */
+    static void doiTrang() {
+        int so = Math.max(1, Math.min(game.pokemon.TrangChieu.TOI_DA, game.pokemon.TrangChieu.so));
+        trangChieu = trangChieu + 1 >= so ? -1 : trangChieu + 1;
+    }
+
+    /** Chiêu đánh (đã học, không buff, không trùng) trên trang t theo thứ tự ô; rỗng nếu trang không có. */
+    static byte[] chieuTrang(MainChar mc, int t) {
+        game.model.QuickSlot[][] q = game.model.MainChar.quickSlot;
+        if (mc == null || q == null || Char.skillLevelLearnt == null || t < 0 || t >= q.length || q[t] == null) {
+            return new byte[0];
+        }
+        byte[] tam = new byte[q[t].length];
+        int n = 0;
+        for (int i = 0; i < q[t].length; ++i) {
+            game.model.QuickSlot o = q[t][i];
+            if (o == null || o.quickslotType != game.model.QuickSlot.TYPE_SKILL) {
+                continue;
+            }
+            byte s = o.skillType;
+            if (s < 0 || laBuff(mc, s) || s >= Char.skillLevelLearnt.length || Char.skillLevelLearnt[s] <= 0 && s != 0) {
+                continue;
+            }
+            boolean trung = false;
+            for (int k = 0; k < n; ++k) {
+                trung |= tam[k] == s;
+            }
+            if (!trung) {
+                tam[n++] = s;
+            }
+        }
+        byte[] r = new byte[n];
+        System.arraycopy(tam, 0, r, 0, n);
+        return r;
     }
 
     /** Mọi chiêu đánh đã học, mạnh trước (bỏ chiêu buff). */
@@ -918,6 +976,9 @@ public final class TuDong {
             if (s.length() >= 12) {
                 hoiSinhLuong = s.charAt(11) == '1';
             }
+            if (s.length() >= 13) {
+                trangChieu = Math.max(-1, Math.min(2, s.charAt(12) - '0' - 1));   // 0.9.9: '0' = trang đang dùng
+            }
         } catch (Throwable e) {
             // mặc định
         }
@@ -936,7 +997,7 @@ public final class TuDong {
                     k = i;
                 }
             }
-            b.append((char) ('0' + k)).append(tuHoiSinh ? '1' : '0').append(hoiSinhLuong ? '1' : '0');
+            b.append((char) ('0' + k)).append(tuHoiSinh ? '1' : '0').append(hoiSinhLuong ? '1' : '0').append((char) ('0' + trangChieu + 1));
             RMS.saveRMSString(RMS_TEN, b.toString());
         } catch (Throwable e) {
             // không lưu được: giữ trong phiên

@@ -18,8 +18,8 @@ final class BangTuDong {
     private static int dau;
     private static boolean dungPhim;
 
-    private static final int BAT = 0, CHIEU = 1, HP = 5, MP = 6, NHAT = 7, HOI = 8, VUNG = 9, HOI_SINH = 10;
-    private static final int SO_MUC = 11;
+    private static final int BAT = 0, CHIEU = 1, HP = 5, MP = 6, NHAT = 7, HOI = 8, VUNG = 9, HOI_SINH = 10, TRANG = 11;
+    private static final int SO_MUC = 12;
     private static final int[] HP_MUC = new int[]{0, 30, 50, 70};
     private static final int[] MP_MUC = new int[]{0, 20, 30, 50};
 
@@ -29,6 +29,11 @@ final class BangTuDong {
     /** Mở bảng (và xin máy chủ trạng thái mới). */
     static void mo() {
         TuDong.nap();
+        // 0.9.9: mở từ màn khác (Menu, menu chữ, phím #) -> về màn chơi trước, không thì MenuNhanh.ve đóng ngay khung sau
+        if (Canvas.gameScr != null && Canvas.currentScreen != Canvas.gameScr) {
+            Canvas.gameScr.switchToMe();
+        }
+        Canvas.menu.showMenu = false;
         MenuNhanh.mo = false;
         mo = true;
         chon = 0;
@@ -73,6 +78,8 @@ final class BangTuDong {
                 return TuDong.veHoiPhuc ? "Về hồi phục: bật" : "Về hồi phục: tắt";
             case VUNG:
                 return "Vùng: " + TuDong.banKinh() / 16 + " ô";
+            case TRANG:
+                return "Trang chiêu: " + TuDong.tenTrang();
             case HOI_SINH:
                 return !TuDong.tuHoiSinh ? "Tự hồi sinh: tắt" : (TuDong.hoiSinhLuong ? "Tự hồi sinh: cả đồ lượng" : "Tự hồi sinh: thuốc thường");
             default:
@@ -96,6 +103,7 @@ final class BangTuDong {
             case HOI_SINH:
                 return TuDong.tuHoiSinh ? 1 : 0;
             case VUNG:
+            case TRANG:
                 return -1;
             default:
                 return -1;
@@ -177,6 +185,9 @@ final class BangTuDong {
                     TuDong.hoiSinhLuong = false;
                 }
                 break;
+            case TRANG:
+                TuDong.doiTrang();
+                break;
             case VUNG: {
                 int toiDa = TuDong.svBanKinh > 0 ? TuDong.svBanKinh / 16 : 99;
                 int v = sau(TuDong.VUNG_O, TuDong.vungO);
@@ -199,9 +210,12 @@ final class BangTuDong {
         return Canvas.w >= 200 ? 2 : 1;
     }
 
+    /** 0.9.9: tấm mới vẽ lỗi (dữ liệu lạ) -> dùng bảng cũ thay vì tấm vô hình nuốt mọi chạm (lỗi được ghi GiamSat). */
+    static boolean boMoi;
+
     /** Bảng mới (vùng chạm, kiểu NRO): chữ thật HOẶC máy cảm ứng (0.9.7: J2ME cảm ứng cũng dùng); chỉ phím = bảng cũ. */
     private static boolean moi() {
-        return game.pokemon.ChuUI.bo != null || Canvas.instance != null && Canvas.instance.hasPointerEvents();
+        return !boMoi && (game.pokemon.ChuUI.bo != null || Canvas.instance != null && Canvas.instance.hasPointerEvents());
     }
 
     /** khe giữa các ô (bảng mới: đủ khoảng cách chạm) */
@@ -304,8 +318,14 @@ final class BangTuDong {
     static void ve(Graphics g) {
         Canvas.resetTrans(g);
         if (moi()) {
-            veMoi(g);
-            return;
+            try {
+                veMoi(g);
+                return;
+            } catch (Throwable e) {
+                boMoi = true;
+                game.pokemon.GiamSat.loi("ve BangTuDong", e);
+                Canvas.resetTrans(g);
+            }
         }
         int x0 = xBang();
         int y0 = yBang();
@@ -413,7 +433,8 @@ final class BangTuDong {
     private static int[] khungMoi() {
         int k = game.pokemon.Bang.cach();
         int w2 = rongCot2();
-        int cTrai = caoThe() + k + caoChieu();
+        // 0.9.9: hàng "Trang chiêu dùng" ở cột trái dưới thẻ Thứ tự chiêu (cột phải giữ 6 hàng: vừa màn thấp 21:9)
+        int cTrai = caoThe() + k + caoChieu() + k + game.pokemon.Bang.caoHang();
         int cPhai = 6 * (game.pokemon.Bang.caoHang() + k) - k;
         int noi = w2 > 0 ? Math.max(cTrai, cPhai) : cTrai + k + cPhai;
         return game.pokemon.Bang.oTam(0, game.pokemon.Bang.caoDauTam(false) + noi + 2);
@@ -535,8 +556,10 @@ final class BangTuDong {
         }
         // ---- cột phải: hàng thanh trượt (thuốc HP / PP, vùng đánh), hàng công tắc, hàng chọn nhặt đồ
         int xr = w2 > 0 ? x + w1 + k : x, wr = w2 > 0 ? w2 : w;
-        int yr = w2 > 0 ? y : yc + hc + k;
         int nh = game.pokemon.Bang.caoHang();
+        int yr = w2 > 0 ? y : yc + hc + k + nh + k;
+        // 0.9.9: trang chiêu tự động dùng (Tự chọn ở "Thứ tự chiêu"): chạm = trang kế (Trang đang dùng -> 1 -> 2 (-> 3))
+        hangTrang(g, x, yc + hc + k, w1, nh);
         boolean thuoc = TuDong.choThuoc();
         hangTruot(g, xr, yr, wr, nh, "Thuốc HP", 0, thuoc);
         yr += nh + k;
@@ -560,6 +583,21 @@ final class BangTuDong {
         GiaoDien.khoi(g, xn, yr + (nh - hn) / 2, wn, hn, hn / 2, TuDong.nhat > 0 ? game.pokemon.ChuDe.CHINH_NHAT : game.pokemon.ChuDe.NEN_PHU);
         game.pokemon.ChuDe.chuGiua(g, tn, xn + wn / 2, yr + (nh - hn) / 2, hn, game.pokemon.ChuDe.NHAN,
                 TuDong.nhat > 0 ? game.pokemon.ChuDe.CHINH_TOI : game.pokemon.ChuDe.CHU_PHU, 2);
+    }
+
+    /** Hàng "Trang chiêu dùng" + chip giá trị (chạm = trang kế). */
+    private static void hangTrang(Graphics g, int xr, int yr, int wr, int nh) {
+        game.pokemon.Bang.hang(g, xr, yr, wr, nh, 0, false, viec(TRANG), "td-trang");
+        String nt = "Trang chiêu dùng";
+        String tt = TuDong.tenTrang();
+        int hn = Math.min(nh - 8, game.pokemon.Bang.co(18));
+        int wt = Math.min(wr / 2, game.pokemon.ChuDe.rong(tt, game.pokemon.ChuDe.NHAN) + 18);
+        tt = game.pokemon.ChuDe.cat(tt, game.pokemon.ChuDe.NHAN, wt - 10);
+        game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(nt, game.pokemon.ChuDe.NHAN, wr - wt - 24), xr + 8, yr, nh,
+                game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 0);
+        int xt = xr + wr - 8 - wt;
+        GiaoDien.khoi(g, xt, yr + (nh - hn) / 2, wt, hn, hn / 2, game.pokemon.ChuDe.CHINH_NHAT);
+        game.pokemon.ChuDe.chuGiua(g, tt, xt + wt / 2, yr + (nh - hn) / 2, hn, game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHINH_TOI, 2);
     }
 
     /** Mức vùng đánh được phép (máy chủ giới hạn bán kính). */

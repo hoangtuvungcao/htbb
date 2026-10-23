@@ -220,7 +220,7 @@ public class Tilemap {
                     tempx.addElement(new StringBuffer(String.valueOf(x4)).toString());
                     tempy.addElement(new StringBuffer(String.valueOf(y4)).toString());
                 }
-                type[(y4 * w) + x4] = 2000000000 + i3;
+                int oCong = (y4 * w) + x4;   // 0.9.9: ghi mã cổng SAU khi CMLocation đã vào danh sách (luồng game đọc song song)
                 int[] aa1 = {is.read(), is.read()};
                 short value3 = 0;
                 for (int kk = 1; kk >= 0; kk--) {
@@ -230,6 +230,7 @@ public class Tilemap {
                 int yy2 = is.read();
                 CMLocation cmLocation = new CMLocation(value3, xx2, yy2);
                 mapchangeLocations.addElement(cmLocation);
+                type[oCong] = 2000000000 + i3;
             }
             int xxx4 = getMin(tempx);
             int yyy4 = getMin(tempy);
@@ -462,11 +463,28 @@ public class Tilemap {
         return (type[(y * w) + x] & t) == t;
     }
 
+    /**
+     * Cổng chuyển bản đồ ở điểm pixel (null = không có). 0.9.9: luồng mạng đổi bản đồ (GameScr.onMap -> Tilemap.reset)
+     * XOÁ mapchangeLocations trước khi nạp map mới, trong lúc type còn mã cổng của map cũ (tới 0,5 s + thời gian đọc
+     * trên J2ME chậm) và màn chơi vẫn chạy (dịch chuyển / hồi sinh / về hồi phục) -> elementAt(17) trên Vector rỗng
+     * ném "ArrayIndexOutOfBoundsException(17 >= 0)" ở nhịp màn (J2ME vietdz, 0.9.8). Đọc một lần, kiểm cỡ, không ném.
+     */
     public static final CMLocation toOtherMapAt(int px, int py) {
-        if (((py >> sip) * w) + (px >> sip) < type.length && ((py >> sip) * w) + (px >> sip) >= 0 && type[((py >> sip) * w) + (px >> sip)] >= 2000000000) {
-            return (CMLocation) mapchangeLocations.elementAt(type[((py >> sip) * w) + (px >> sip)] - 2000000000);
+        int[] t = type;
+        if (t == null) {
+            return null;
         }
-        return null;
+        int i = ((py >> sip) * w) + (px >> sip);
+        if (i < 0 || i >= t.length || t[i] < 2000000000) {
+            return null;
+        }
+        int k = t[i] - 2000000000;
+        Vector v = mapchangeLocations;
+        try {
+            return k >= 0 && k < v.size() ? (CMLocation) v.elementAt(k) : null;
+        } catch (RuntimeException e) {
+            return null;   // luồng mạng xoá danh sách giữa hai lệnh
+        }
     }
 
     public static final void killTileTypeAt(int px, int py, int t) {

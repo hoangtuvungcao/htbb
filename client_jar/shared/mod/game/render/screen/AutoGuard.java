@@ -216,7 +216,12 @@ public final class AutoGuard {
             }
         }
         catch (Throwable throwable) {
-            // nút lỗi thì bỏ qua
+            // nút lỗi thì bỏ qua - 0.9.9: nhưng ghi lại (tấm Tự động / Menu nhanh vẽ lỗi từng bị nuốt im lặng)
+            try {
+                game.pokemon.GiamSat.loi("ve Menu nhanh / Tu dong", throwable);
+            } catch (Throwable t) {
+                // bỏ qua
+            }
         }
         try {
             TuDong.ve(graphics, Nen.yTrangThai(2));

@@ -9,7 +9,7 @@ import javax.microedition.lcdui.NenPc;
  *  2) ở màn chơi và lúc mở Menu: mọi vùng chạm đã đăng ký (VungCham, lớp trên cùng) có tên riêng - không hai điều
  *     khiển cùng một việc trong cùng ngữ cảnh;
  *  3) phím PC (BanPhim.MAC_DINH): không hai hành động cùng một phím.
- *  4) 0.9.6.1: Menu kiểu GO trên HUD màn rộng không có viên "Tự động đánh" (trùng viên AUTO + bánh răng HUD); menu
+ *  4) 0.9.9: Menu LUÔN có viên "Tự động đánh" (0.9.6.1-0.9.8 bỏ trên HUD màn rộng -> người chơi báo mất menu AUTO); menu
  *     chữ mở từ "Tiện ích & PK" (PauseMenu) không lặp mục đã có ở Menu / HUD, không hàng rỗng, chọn dòng hiện -> đúng mục.
  *
  *   javac -cp client_pc/out/build/cls -d $O client_pc/test/ChupTrongGame.java client_pc/test/KiemTrungLap.java \
@@ -177,14 +177,17 @@ public class KiemTrungLap {
         kiem(game.render.screen.HudRong.bat(), "PC 1280x720: HUD màn rộng bật");
         int[] phu = game.pokemon.ManMenu.phu();
         String[] tenMenu = mang(game.pokemon.ManMenu.class, "TEN");
-        for (int i : phu) kiem(!"Tự động đánh".equals(tenMenu[i]), "Menu GO (HUD rộng) không có viên Tự động đánh");
+        // 0.9.9 (chủ game: "menu AUTO bị mất" ở 0.9.8): Menu LUÔN có viên "Tự động đánh", cả khi HUD có viên AUTO + bánh răng
+        boolean coVien = false;
+        for (int i : phu) coVien |= "Tự động đánh".equals(tenMenu[i]);
+        kiem(coVien, "Menu (HUD rộng) có viên Tự động đánh");
         ChupTrongGame.chay(() -> ChupTrongGame.moMan("menu"));
         ChupTrongGame.ve(1280, 720);
         boolean coTuDong = false;
         for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
             if ("menu-Tự động đánh".equals(game.pokemon.VungCham.ten(i))) coTuDong = true;
         }
-        kiem(!coTuDong, "Menu GO: không có vùng chạm menu-Tự động đánh");
+        kiem(coTuDong, "Menu: có vùng chạm menu-Tự động đánh");
         kiemPauseMenu(tenMenu);
         // 1) HUD x lưới Menu
         String[] hud = mang(game.render.screen.HudRong.class, "TEN_TREN");

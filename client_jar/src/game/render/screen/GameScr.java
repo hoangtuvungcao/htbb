@@ -828,11 +828,13 @@ public class GameScr extends Screen {
         if (timeRemovePos < 0) {
             timeRemovePos = 0;
         }
-        int size0 = aeo.size();
-        for (int i2 = 0; i2 < size0; i2++) {
-            ((Effect) aeo.elementAt(i2)).update();
-            if (((Effect) aeo.elementAt(i2)).wantDetroy) {
+        // 0.9.9: cỡ đọc lại mỗi vòng (trước: cỡ chụp một lần + removeElementAt / luồng mạng xoá khi đổi map -> elementAt ngoài cỡ)
+        for (int i2 = 0; i2 < aeo.size(); i2++) {
+            Effect ef = (Effect) aeo.elementAt(i2);
+            ef.update();
+            if (ef.wantDetroy) {
                 aeo.removeElementAt(i2);
+                i2--;
             }
         }
         if (this.tk != null) {
@@ -865,8 +867,10 @@ public class GameScr extends Screen {
         for (int i4 = this.arrowsDown.size() - 1; i4 >= 0; i4--) {
             ((IArrow) this.arrowsDown.elementAt(i4)).update();
         }
-        int size3 = this.npc_limit.size();
-        for (int i5 = size3 - 1; i5 >= 0; i5--) {
+        for (int i5 = this.npc_limit.size() - 1; i5 >= 0; i5--) {
+            if (i5 >= this.npc_limit.size()) {
+                continue;   // 0.9.9: luồng mạng vừa xoá (đổi bản đồ)
+            }
             Actor a2 = (Actor) this.npc_limit.elementAt(i5);
             if (a2 != null && a2.typeLimit == 1) {
                 a2.update();
@@ -875,6 +879,9 @@ public class GameScr extends Screen {
         PosNPCQuest.removeAllElements();
         Vector removeactor = new Vector();
         for (int i6 = this.actors.size() - 1; i6 >= 0; i6--) {
+            if (i6 >= this.actors.size()) {
+                continue;   // 0.9.9: luồng mạng vừa xoá / thay danh sách (đổi bản đồ)
+            }
             Actor a3 = (Actor) this.actors.elementAt(i6);
             if (a3.isNPC()) {
                 getAllPosNPCMInimap(a3);

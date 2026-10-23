@@ -14,6 +14,7 @@ import java.util.Map;
  *   bang  : bang CSDL (CREATE TABLE `bang`)
  *   hud   : ten vung cham HUD PC / J2ME ("hud-...")
  *   chuoi : chuoi giao dien (ten o Menu, ma phim PC) phai con trong tep
+ *   ma    : (0.9.9) doan ma nguyen van - moi loi vao bang Tu dong danh (HUD, Menu, menu chu, phim #, APK) + muc cua bang
  * Dong "muc = thay bang: ly do" = co y bo / doi (chu game duyet) - khong kiem. Muc moi mat ma khong co dong do -> HONG.
  */
 public final class KiemParity {
@@ -43,6 +44,9 @@ public final class KiemParity {
         }
         if ("khoa".equals(loai)) {
             return s.contains("'" + muc + "'");
+        }
+        if ("ma".equals(loai)) {
+            return s.contains(muc);   // 0.9.9: doan ma nguyen van (loi vao bang Tu dong danh)
         }
         if ("bang".equals(loai)) {
             return s.contains("CREATE TABLE `" + muc + "`") || s.contains("CREATE TABLE IF NOT EXISTS `" + muc + "`");

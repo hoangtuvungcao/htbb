@@ -460,6 +460,102 @@ public class KiemChamHud {
         NenPc.phim(2, 48);
         ngu(250);
         kiem(cho(() -> game.render.screen.GameScr.indexTabSlot == 0), "phim J2ME 0 -> bo 1");
+        kiemMoTuDong();
+    }
+
+    static boolean bangTuDongMo() {
+        try {
+            return (Boolean) tinh(Class.forName("game.render.screen.BangTuDong"), "mo");
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    static void dongTuDong() throws Exception {
+        datTinh(Class.forName("game.render.screen.BangTuDong"), "mo", Boolean.FALSE);
+        ve();
+    }
+
+    /** 0.9.9: mọi lối vào bảng Tự động đánh mở được tấm VÀ tấm vẫn mở sau vài khung (0.9.8 mất menu AUTO). */
+    static void kiemMoTuDong() throws Exception {
+        kiemMoTuDong("");
+        // bản đồ khoá Tự động (gói -108): ổ khoá trên viên AUTO - bảng cài đặt vẫn mở được
+        int map = game.render.Canvas.gameScr.map;
+        game.pokemon.KhoaMap.dat(map, game.pokemon.KhoaMap.CO_KHONG_TU_DONG, null, "Bản đồ này không cho Tự động đánh");
+        kiemMoTuDong(" (map khoa Tu dong)");
+        game.pokemon.KhoaMap.xoa();
+    }
+
+    static void kiemMoTuDong(String bt) throws Exception {
+        String co = KiemChamHud.co + bt;
+        dungCanh(false);
+        dongTuDong();
+        kiem(chamVung("hud-tu-dong-cai-dat"), co + ": co vung banh rang Tu dong (hud-tu-dong-cai-dat)");
+        ngu(300);
+        ve();
+        kiem(bangTuDongMo(), co + ": cham banh rang -> bang Tu dong danh mo va con mo sau vai khung");
+        // 0.9.9: "Trang chiêu dùng khi tự động" (mặc định trang đang dùng), chạm = trang kế, lưu RMS
+        Class<?> td = game.render.screen.TuDong.class;
+        datTinh(td, "trangChieu", Integer.valueOf(-1));
+        ve();
+        kiem(vung("td-trang") != null, co + ": bang Tu dong co hang Trang chieu (td-trang)");
+        if (vung("td-trang") != null) {
+            chamVung("td-trang");
+            kiem(((Integer) tinh(td, "trangChieu")) == 0, co + ": cham Trang chieu -> Trang 1 (" + tinh(td, "trangChieu") + ")");
+            kiem(bangTuDongMo(), co + ": cham Trang chieu khong dong bang");
+            Method dsc = td.getDeclaredMethod("dsChieu", game.model.MainChar.class);
+            dsc.setAccessible(true);
+            Method ct = td.getDeclaredMethod("chieuTrang", game.model.MainChar.class, int.class);
+            ct.setAccessible(true);
+            byte[] thuTu = (byte[]) tinh(td, "thuTu");
+            byte[] cu = thuTu.clone();
+            java.util.Arrays.fill(thuTu, (byte) -1);
+            game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+            byte[] tr0 = (byte[]) ct.invoke(null, mc, 0);
+            byte[] ds = (byte[]) dsc.invoke(null, mc);
+            kiem(tr0.length == 0 || java.util.Arrays.equals(ds, tr0), co + ": Tu chon + Trang 1 -> chieu cua trang 1 " + java.util.Arrays.toString(tr0) + " = " + java.util.Arrays.toString(ds));
+            System.arraycopy(cu, 0, thuTu, 0, cu.length);
+            datTinh(td, "trangChieu", Integer.valueOf(-1));
+            ve();
+        }
+        dongTuDong();
+        // nhấn giữ viên AUTO >= 0,45 s
+        ve();
+        int[] v = vung("hud-tu-dong");
+        kiem(v != null, co + ": co vung vien AUTO");
+        if (v != null) {
+            final int x = v[0] + v[2] / 2, y = v[1] + v[3] / 2;
+            final boolean dangTruoc = game.render.screen.TuDong.dang;
+            ChupTrongGame.chay(() -> goi("pointerPressed", x, y));
+            for (int i = 0; i < 8; i++) {
+                ve();
+                ngu(90);
+            }
+            ChupTrongGame.chay(() -> goi("pointerReleased", x, y));
+            ngu(300);
+            ve();
+            kiem(bangTuDongMo(), co + ": nhan giu vien AUTO -> bang Tu dong mo");
+            kiem(game.render.screen.TuDong.dang == dangTruoc, co + ": nhan giu vien AUTO khong bat / tat tu dong");
+            dongTuDong();
+        }
+        // Menu (ManMenu) -> Tự động đánh: lối vào luôn có
+        ChupTrongGame.chay(() -> game.pokemon.ManMenu.mo());
+        ve();
+        boolean coO = false;
+        for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
+            String t = game.pokemon.VungCham.ten(i);
+            if ("menu-Tự động đánh".equals(t)) coO = true;
+        }
+        kiem(coO, co + ": Menu co o 'Tu dong danh'");
+        if (coO) {
+            chamVung("menu-Tự động đánh");
+            ngu(300);
+            ve();
+            kiem(bangTuDongMo(), co + ": Menu -> Tu dong danh mo bang");
+        }
+        dongTuDong();
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.switchToMe());
+        ve();
     }
 
     public static void main(String[] a) throws Exception {

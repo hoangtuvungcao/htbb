@@ -19,7 +19,7 @@ public final class ManMenu extends Screen {
     /**
      * 0.9.5: MỘT lối vào cho mỗi tính năng. Hành trang, Nhiệm vụ, Bản đồ có nút riêng trên HUD (không lặp ở đây);
      * Kỹ năng là tab của màn Pokémon (bỏ ô riêng); ô cuối mở menu chữ cũ cho việc hiếm (Tiện ích, PK, Đội nhóm...).
-     * 0.9.6.1: viên "Tự động đánh" chỉ hiện khi HUD không có nút cài đặt Tự động riêng (xem {@link #phu()}).
+     * 0.9.9: viên "Tự động đánh" luôn hiện (0.9.6.1 - 0.9.8 ẩn khi HUD màn rộng có bánh răng: người chơi không tìm thấy).
      */
     static final String[] TEN = {"Pokémon", "Pokédex", "Đội/Bạn bè", "Sự kiện", "Hệ sinh thái", "Cửa hàng", "Thư/Quà",
         "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh"};
@@ -208,7 +208,9 @@ public final class ManMenu extends Screen {
      * chơi -> bỏ viên "Tự động đánh" trùng ở đây. HUD APK (Hud.java) chỉ có nhấn giữ -> giữ viên.
      */
     public static int[] phu() {
-        return game.render.screen.HudRong.bat() ? PHU_HUD_RONG : PHU;
+        // 0.9.9: chủ game - "Tự động đánh" LUÔN có ở Menu (0.9.8 bỏ trên HUD màn rộng -> người chơi PC / J2ME báo mất
+        // menu AUTO); viên AUTO + bánh răng HUD vẫn giữ (lối tắt). PHU_HUD_RONG giữ cho kiểm thử cũ.
+        return PHU;
     }
     static final int[] GOC = {166, 128, 90, 52, 14};
 

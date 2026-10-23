@@ -242,6 +242,17 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản vá 0.9.9 (`BAN=909`, chỉ client - máy chủ / SQL không đổi, `htbb-server.jar` giữ nguyên)
+
+1. Menu AUTO: viên "Tự động đánh" luôn có ở Menu (0.9.8 bỏ khi HUD màn rộng có bánh răng - PC / J2ME màn rộng không còn lối
+   vào nhìn thấy ở Menu); mọi lối vào (nhấn giữ viên AUTO, bánh răng, Menu, phím #, menu chữ, APK nhấn giữ) nằm trong
+   `du_lieu/parity_097.txt` mục `[ma]` (KiemParity) + `client_pc/test/KiemChamHud` (mở thật bằng chạm, cả bản đồ khoá Tự
+   động). Bảng có thêm "Trang chiêu dùng" (mặc định trang đang dùng; Tự chọn ở Thứ tự chiêu = chiêu đánh của trang đó).
+2. Lỗi J2ME "nhip man: ArrayIndexOutOfBoundsException(17 >= 0)": đổi bản đồ do máy chủ (dịch chuyển / hồi sinh / về hồi
+   phục) xoá danh sách cổng (`Tilemap.reset`) trong lúc `Tilemap.type` còn mã cổng map cũ -> `toOtherMapAt` kiểm cỡ, ô cổng
+   ghi sau khi cổng vào danh sách (KiemPc `kiemCongDoiMap`).
+3. Tải gói 909 lên `/admin/tai-game` (Số bản = 909) cho từng nền tảng; không cần bảo trì máy chủ.
+
 ### Danh sách kiểm triển khai 0.9.8 (`BAN=908`: học chiêu, bộ / ngọc / chế tạo / thu phục, phó bản + cúp, thời tiết, giao diện NRO, kênh chat, trao đổi + chợ Pokémon, ngắm tay PvP, Lễ kết đôi, thẻ đặt tên, đồ khoá, 1.025 loài, đồ họ mới + tủ đồ trang trí)
 
 Như danh sách 0.9.7 bên dưới (cùng thứ tự: SQL trước, jar sau), khác:

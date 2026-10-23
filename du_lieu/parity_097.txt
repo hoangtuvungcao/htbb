@@ -983,3 +983,52 @@ toan_man
 trai
 xuong
 
+[ma] client_jar/src/game/render/screen/HudRong.java
+"hud-tu-dong"
+"hud-tu-dong-cai-dat"
+BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt
+case 31:
+
+[ma] client_jar/src/game/pokemon/ManMenu.java
+game.render.screen.CauGiaoDien.moTuDong();
+return PHU;
+static final int[] PHU = {I_TU_DONG,
+
+[ma] client_jar/src/game/render/screen/CauGiaoDien.java
+BangTuDong.mo();
+public static void moTuDong()
+
+[ma] client_jar/src/game/render/screen/MenuNhanh.java
+BangTuDong.tick();
+BangTuDong.ve(g);
+case TU_DONG:
+
+[ma] client_jar/src/game/render/screen/GameScr.java
+new Command("Tự động đánh"
+
+[ma] client_jar/shared/mod/game/render/screen/PauseMenu.java
+Nen.moBangTuDong();
+
+[ma] client_jar/shared/mod/game/render/screen/AutoGuard.java
+Nen.menuNhanhTick()
+Nen.menuNhanhVe(graphics)
+
+[ma] client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/Hud.java
+HdCau.moTuDong()
+case N_TU_DONG:
+
+[ma] client_apk/pokemon/src/main/java/game/render/screen/HdCau.java
+Class.forName("game.render.screen.BangTuDong")
+
+[ma] client_jar/src/game/render/screen/BangTuDong.java
+"Trang chiêu dùng"
+"td-bat"
+"td-chieu-
+"td-hoi"
+"td-hoi-sinh"
+"td-nhat"
+"td-thuoc-hp"
+"td-thuoc-pp"
+"td-trang"
+"td-vung"
+
