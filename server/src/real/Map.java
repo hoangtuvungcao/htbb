@@ -14264,7 +14264,7 @@ public class Map implements Runnable {
                             Database.instance.saveCharAuto(player);
                             player.sendMessage(
                                     MessageCreator.createServerAlertMessage(
-                                            "Đã mua " + it.getName() + " với giá " + it.prizeSell + " xu. xu trc mua " + xuold + ", xu sau mua: " + player.getxu(), ""
+                                            "Đã mua lại " + it.getName() + " với giá " + com.htbb.pokemon.TienTeChu.so(it.prizeSell) + " xu (còn " + com.htbb.pokemon.TienTeChu.so(player.getxu()) + " xu).", ""
                                     )
                             );
                             it.prizeSell = 0;

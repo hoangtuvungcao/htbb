@@ -17,6 +17,7 @@ public final class KiemQaToanGame {
         giftcodeTuiDay();
         soOTrongHanhTrang();
         thuongNhiemVuNhieuMon();
+        chuGoLoi();
     }
 
     static String doc(final String f) {
@@ -77,5 +78,11 @@ public final class KiemQaToanGame {
         final String s = doc("src/real/NhiemVuEngine.java");
         Kiem.dung("traThuong so countSlotInventory voi soOThuong (khong chi isFullInventory)",
                 s.contains("p.countSlotInventory() < canO") && !s.contains("coThuongVatPham(m) && p.isFullInventory()"));
+    }
+
+    /** Q4: chu go loi nguoi choi thay ("xu trc mua", mua lai do da ban) + System.err "ok" moi lan nhat do. */
+    static void chuGoLoi() {
+        Kiem.dung("Map: khong con cau 'xu trc mua' (mua lai do)", !doc("src/real/Map.java").contains("xu trc mua"));
+        Kiem.dung("MapXuLyLenh: nhat do khong in System.err \"ok\"", !doc("src/real/MapXuLyLenh.java").contains("System.err.println(\"ok\")"));
     }
 }

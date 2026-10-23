@@ -775,7 +775,6 @@ class MapXuLyLenh {
                 break;
             case 18:
                 map.doGetItem(player, message);
-                System.err.println("ok");
                 break;
             case 19:
                 map.doGetPotion(player, message);
