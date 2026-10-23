@@ -120,7 +120,138 @@ public final class ManNhiemVu extends Screen {
     }
 
     static String loai(Quest q) {
+        if (q.laCuaAi()) {
+            return "Cửa ải";
+        }
+        if (q.stateQuest == 0) {
+            return q.main_sub == 0 ? "Chính tuyến" : (q.main_sub == 2 ? "Đội" : "Phụ");
+        }
         return q == GameScr.mainQuest ? "Chính tuyến" : (q == GameScr.clanQuest ? "Đội" : "Phụ");
+    }
+
+    /**
+     * 0.9.15 dòng 2 của hàng (không cần chạm): việc phải làm + nơi trả / nhận. Máy chủ mới (đuôi -64): "Hạ 20 Weedle ở
+     * Lavender · Trả: Machamp (Pewter)", xong = "Xong! Về trả Machamp (Pewter)". Máy chủ cũ: như trước (+ mô tả ngắn).
+     */
+    public static String dongViec(Quest q, int tab) {
+        if (tab != 0) {
+            String nhan = (q.deltaLv > 0 ? "Cần cấp " + q.deltaLv + " · " : "") + "Nhận ở " + noiNpc(q.idNpcReceive);
+            return q.coMuc() ? q.muc + " · " + nhan : nhan;
+        }
+        if (q.coMuc()) {
+            if (xong(q)) {
+                if (q.tra != null && q.tra.length() > 0) {
+                    return "Xong! Về trả " + q.tra;
+                }
+                return q.laCuaAi() ? "Xong! Nhận thưởng ở Sổ tay (Nhiệm vụ của tôi)" : "Xong! Về trả " + noiNpc(q.idNpcResponse);
+            }
+            if (q.tra != null && q.tra.length() > 0) {
+                return q.muc + " · Trả: " + q.tra;
+            }
+            return q.laCuaAi() ? q.muc + " · Nhận thưởng ở Sổ tay" : q.muc;
+        }
+        if (xong(q)) {
+            return "Xong! Trả ở " + noiNpc(q.idNpcResponse);
+        }
+        return q.decript != null && q.decript.length() > 0 ? q.decript : "Báo lại: " + noiNpc(q.idNpcResponse);
+    }
+
+    /** Dòng khoá (đỏ) của hàng, null = không. */
+    static String dongKhoa(Quest q) {
+        return q.khoa != null && q.khoa.length() > 0 && !xong(q) ? q.khoa : null;
+    }
+
+    static final int DONG_VIEC = 3, DONG_KHOA = 3;
+
+    /** Chữ số bên phải dòng 1 (x/y, "Xong"), null = không. */
+    static String soHang(Quest q, int tab) {
+        if (tab != 0) {
+            return null;
+        }
+        int[] td = tienDo(q);
+        return xong(q) ? "Xong" : (td != null ? td[0] + "/" + td[1] : null);
+    }
+
+    /** Bề ngang tên dòng 1 trong hàng rộng w. */
+    static int rongTen(Quest q, int tab, int w) {
+        String so = soHang(q, tab);
+        return w - (Bang.caoHang() - 6) - 16 - (so == null ? 0 : Font.blackFont.getWidth(so) + 10);
+    }
+
+    /** Dòng 1 đủ chỗ "tên · loại"? Không thì loại xuống đầu dòng 2 (không cắt "Chín.."). */
+    static boolean loaiDong1(Quest q, int tab, int w) {
+        return Font.blackFont.getWidth(q.name + " · " + loai(q)) <= rongTen(q, tab, w);
+    }
+
+    /** Dòng 2 của hàng rộng w (loại ở đầu nếu dòng 1 hết chỗ). */
+    static String dongHai(Quest q, int tab, int w) {
+        return loaiDong1(q, tab, w) ? dongViec(q, tab) : loai(q) + " · " + dongViec(q, tab);
+    }
+
+    /** Bề ngang chữ dòng 2 trong hàng rộng w (ô biểu tượng theo cao hàng chuẩn). */
+    static int rongChu(int w) {
+        return w - (Bang.caoHang() - 6) - 14;
+    }
+
+    /** Cao từng hàng: đủ chứa mọi dòng (không cắt chữ mục tiêu / khoá), tối thiểu cao hàng chuẩn; bề ngang hàng w. */
+    static int[] caoHang(Vector v, int tab, int w) {
+        int[] r = new int[v.size()];
+        int lh = ChuDe.cao(ChuDe.PHU);
+        int wt = rongChu(w);
+        for (int i = 0; i < r.length; i++) {
+            Quest q = (Quest) v.elementAt(i);
+            int n = ChuDe.ngat(dongHai(q, tab, w), ChuDe.PHU, wt, DONG_VIEC).length;
+            String kh = dongKhoa(q);
+            if (kh != null) {
+                n += ChuDe.ngat(kh, ChuDe.PHU, wt, DONG_KHOA).length;
+            }
+            r[i] = Math.max(Bang.caoHang(), 2 + Font.blackFont.getHeight() + 2 + n * lh + 4);
+        }
+        return r;
+    }
+
+    /** Vẽ một hàng nhiệm vụ (icon, tên · loại, x/y, dòng việc tự xuống dòng, dòng khoá đỏ); hàng xong viền vàng. */
+    static void veHang(Graphics g, Quest q, int tab, int x, int y, int w, int h) {
+        int s = Bang.caoHang() - 6;
+        boolean xg = tab == 0 && xong(q);
+        if (xg) {
+            g.setColor(ChuDe.VANG);
+            g.drawRect(x + 1, y + 1, w - 3, h - 3);
+            g.drawRect(x + 2, y + 2, w - 5, h - 5);
+            g.fillRect(x + 3, y + 3, 3, h - 6);
+        }
+        veIcon(g, q, x + 3, y + 3, s);
+        if (ChamMoi.hangNhiemVu(tab, q)) {
+            ChuDe.cham(g, x + 3 + s - 2, y + 5);
+        }
+        String so = soHang(q, tab);
+        int xt = x + s + 9;
+        boolean l1 = loaiDong1(q, tab, w);
+        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, l1 ? q.name + " · " + loai(q) : q.name, rongTen(q, tab, w)), xt, y + 2, 0);
+        if (so != null) {
+            Font.blackFont.drawString(g, so, x + w - 8, y + 2, 1);
+        }
+        int wt = rongChu(w);
+        int lh = ChuDe.cao(ChuDe.PHU);
+        int yy = y + 2 + Font.blackFont.getHeight() + 2;
+        String[] d = ChuDe.ngat(dongHai(q, tab, w), ChuDe.PHU, wt, DONG_VIEC);
+        for (int i = 0; i < d.length; i++) {
+            ChuDe.chu(g, d[i], xt, yy, ChuDe.PHU, xg ? ChuDe.CHINH_TOI : ChuDe.CHU_PHU, 0);
+            yy += lh;
+        }
+        String kh = dongKhoa(q);
+        if (kh != null) {
+            String[] k = ChuDe.ngat(kh, ChuDe.PHU, wt, DONG_KHOA);
+            for (int i = 0; i < k.length; i++) {
+                ChuDe.chu(g, k[i], xt, yy, ChuDe.PHU, ChuDe.DO, 0);
+                yy += lh;
+            }
+        }
+    }
+
+    /** 0.9.15 nút cuối danh sách: mở "Nhiệm vụ của tôi" (Sổ tay: cửa ải, hằng ngày, tuần...) - chỉ máy chủ mới. */
+    static boolean coNutSoTay() {
+        return GameScr.coMucTieuNv;
     }
 
     /** {đã, cần} tổng của các mục tiêu (đánh quái / thu thập); null nếu không đếm được. */
@@ -254,11 +385,24 @@ public final class ManNhiemVu extends Screen {
             return;
         }
         Bang.the(g, x, y, wl, h);
+        int hds = h;
+        if (coNutSoTay()) {
+            int nh0 = Bang.caoHang();
+            hds = h - nh0 - k;
+            Bang.nut(g, x + 4, y + h - 4 - nh0, wl - 8, nh0, "Nhiệm vụ của tôi (cửa ải, ngày, tuần)", Bang.PHU, new IAction() {
+                public void perform() {
+                    GameScr.moNhiemVuCuaToi();
+                }
+            }, "nv-so-tay");
+        }
         if (v.size() == 0) {
-            Bang.trong(g, x, y, wl, h, this.tab == 0 ? "Chưa nhận nhiệm vụ" : "Chưa có nhiệm vụ mới",
+            Bang.trong(g, x, y, wl, hds, this.tab == 0 ? "Chưa nhận nhiệm vụ" : "Chưa có nhiệm vụ mới",
                     this.tab == 0 ? "Nói chuyện với NPC có dấu chấm than để nhận nhiệm vụ." : "Lên cấp hoặc khám phá thêm bản đồ để mở nhiệm vụ mới.");
         } else {
-            Bang.danhSach(g, this.ds, x + 4, y + 4, wl - 8, h - 8, v.size(), Bang.caoHang(), new Bang.Hang() {
+            final int tabVe = this.tab;
+            // hàng cao theo chữ (mục tiêu / khoá xuống dòng, không cắt); chừa thanh cuộn 10 px
+            int[] rh = caoHang(v, tabVe, wl - 8 - 10);
+            Bang.danhSachCao(g, this.ds, x + 4, y + 4, wl - 8, hds - 8, rh, new Bang.Hang() {
                 public void ve(Graphics g, int i, int x, int y, int w, int h) {
                     final Quest q = (Quest) v.elementAt(i);
                     Bang.hang(g, x, y, w, h, i, q == ManNhiemVu.this.chon, new IAction() {
@@ -266,16 +410,7 @@ public final class ManNhiemVu extends Screen {
                             ManNhiemVu.this.chon = q;
                         }
                     }, "nv-" + i);
-                    int s = h - 6;
-                    veIcon(g, q, x + 3, y + 3, s);
-                    if (ChamMoi.hangNhiemVu(ManNhiemVu.this.tab, q)) {
-                        ChuDe.cham(g, x + 3 + s - 2, y + 5);
-                    }
-                    int[] td = tienDo(q);
-                    String so = xong(q) ? "Xong" : (td != null ? td[0] + "/" + td[1] : null);
-                    String phu = ManNhiemVu.this.tab == 0 ? loai(q) + (xong(q) ? " · trả ở " + noiNpc(q.idNpcResponse) : "")
-                            : (q.deltaLv > 0 ? "Cần cấp " + q.deltaLv + " · " : "") + "Nhận ở " + noiNpc(q.idNpcReceive);
-                    ManNhanVat.chuHang(g, x, y, w, h, s, q.name, so, phu);
+                    veHang(g, q, tabVe, x, y, w, h);
                 }
             });
         }
@@ -310,15 +445,29 @@ public final class ManNhiemVu extends Screen {
         int yy = y + 4 + hd + k;
         boolean dangLam = dangLam().contains(q);
         final int idNpc = dangLam ? q.idNpcResponse : q.idNpcReceive;
-        Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, (dangLam ? (xong(q) ? "Trả ở: " : "Báo lại: ") : "Nhận ở: ") + noiNpc(idNpc), w - 20),
-                x + 10, yy, 0);
-        yy += Font.blackFont.getHeight() + 3;
+        if (q.coMuc() && dangLam) {
+            // 0.9.15: nơi trả theo máy chủ ("Machamp (Pewter)"; cửa ải: Sổ tay), xuống dòng thay vì cắt
+            String noi = q.tra != null && q.tra.length() > 0 ? (xong(q) ? "Xong! Về trả " : "Trả: ") + q.tra
+                    : (q.laCuaAi() ? "Nhận thưởng: Sổ tay → Nhiệm vụ của tôi" : (xong(q) ? "Trả ở: " : "Báo lại: ") + noiNpc(idNpc));
+            yy = Bang.doan(g, ChuDe.NHAN, noi, x + 10, yy, w - 20, false, xong(q) ? ChuDe.CHINH_TOI : ChuDe.CHU) + 2;
+        } else {
+            Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, (dangLam ? (xong(q) ? "Trả ở: " : "Báo lại: ") : "Nhận ở: ") + noiNpc(idNpc), w - 20),
+                    x + 10, yy, 0);
+            yy += Font.blackFont.getHeight() + 3;
+        }
         // 0.9.7 NRO: chừa đáy cho HÀNG Ô PHẦN THƯỞNG (nhãn + ô cùng hàng) - mô tả / tiến độ cắt phía trên
         int wNhan = Font.blackFont.getWidth("Phần thưởng:") + 8;
         int hq2 = q.infoGift == null ? 0 : PhanThuong.cao(q.infoGift, w - 20 - wNhan);
         int gh = hq2 > 0 ? yn - k - hq2 - 2 : yn - k;
         g.setClip(x, yy, w, Math.max(0, gh - yy));
-        yy = Bang.doan(g, Font.arialFont, q.decript, x + 10, yy, w - 20, false) + 2;
+        if (q.coMuc()) {
+            yy = Bang.doan(g, ChuDe.PHU, "Mục tiêu: " + q.muc, x + 10, yy, w - 20, false, ChuDe.CHU) + 2;
+            if (q.khoa != null && q.khoa.length() > 0) {
+                yy = Bang.doan(g, ChuDe.PHU, q.khoa, x + 10, yy, w - 20, false, ChuDe.DO) + 2;
+            }
+        } else {
+            yy = Bang.doan(g, Font.arialFont, q.decript, x + 10, yy, w - 20, false) + 2;
+        }
         g.setClip(0, 0, Canvas.w, Canvas.h);
         // tiến độ từng mục tiêu
         try {
@@ -350,7 +499,9 @@ public final class ManNhiemVu extends Screen {
         }
         final Actor a = npc(idNpc);
         String tn = tenNpc(idNpc);
-        boolean huyDuoc = dangLam && q.stateQuest != 3;
+        boolean huyDuoc = dangLam && q.stateQuest != 3 && !q.laCuaAi();
+        // 0.9.15: cửa ải / không NPC trả (máy chủ mới): nút phải mở Sổ tay "Nhiệm vụ của tôi"
+        boolean soTay = GameScr.coMucTieuNv && dangLam && (q.laCuaAi() || q.coMuc() && (q.tra == null || q.tra.length() == 0) && a == null);
         int wb = huyDuoc ? (w - 12 - k) / 2 : w - 12;
         if (huyDuoc) {
             Bang.nut(g, x + 6, yn, wb, nh, "Huỷ nhiệm vụ", Bang.TRUNG, new IAction() {
@@ -365,6 +516,14 @@ public final class ManNhiemVu extends Screen {
                     });
                 }
             }, "huy-nv");
+        }
+        if (soTay) {
+            Bang.nut(g, x + w - 6 - wb, yn, wb, nh, "Mở Nhiệm vụ của tôi", Bang.XAC_NHAN, new IAction() {
+                public void perform() {
+                    GameScr.moNhiemVuCuaToi();
+                }
+            }, "di-toi");
+            return;
         }
         Bang.nut(g, x + w - 6 - wb, yn, wb, nh, a != null ? "Đi tới " + (tn != null ? tn : "NPC") : (tn != null ? tn + " ở bản đồ khác" : "NPC ở bản đồ khác"), a != null ? Bang.XAC_NHAN : Bang.TAT, new IAction() {
             public void perform() {

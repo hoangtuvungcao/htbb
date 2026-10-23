@@ -328,6 +328,9 @@ public class ChupTrongGame {
                 game.pokemon.GhiChu.bat = false;
                 kiemChu(ten + " " + TEN_CO[c]);
                 kiemTrongMan(ten + " " + TEN_CO[c]);
+                if ("nhiem_vu".equals(ten) || "nhiem_vu_chi_tiet".equals(ten)) {
+                    kiemMucNhiemVu(ten + " " + TEN_CO[c]);
+                }
                 kiemXemThu(ten, ten + " " + TEN_CO[c]);
                 if (ten.startsWith("the_gioi") || "suc_khoe".equals(ten) || "goi_y_chieu".equals(ten)) {
                     kiemPhuKin(anh, ten + " " + TEN_CO[c]);
@@ -552,6 +555,10 @@ public class ChupTrongGame {
         q.totalMonskill = new short[]{10};
         q.idNpcReceive = 5;     // Trưởng làng (NPC.NPCNAME)
         q.idNpcResponse = 5;
+        // 0.9.15: đuôi -64 (máy chủ >= 915): mục tiêu + nơi trả hiện ngay trên hàng
+        q.muc = "Hạ 10 Rattata ở Pallet";
+        q.tra = "Xatu (Pewter)";
+        game.render.screen.GameScr.coMucTieuNv = true;
         game.render.screen.GameScr.mainQuest = q;
         game.model.Quest q2 = new game.model.Quest(2);
         q2.name = "Thư gửi giáo sư";
@@ -1385,6 +1392,17 @@ public class ChupTrongGame {
     }
 
     /** 0.9.7: phần HUD / giao diện (khung pixel + biểu tượng đã ghi) nằm TRỌN trong màn (logic). */
+    /** 0.9.15: sổ nhiệm vụ vẽ mục tiêu (quái + bản đồ) và NPC trả ngay trên hàng / thẻ, không cắt. */
+    static void kiemMucNhiemVu(String nhan) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+            if (game.pokemon.GhiChu.CS[i] != null) b.append(game.pokemon.GhiChu.CS[i]).append('\n');
+        }
+        String t = b.toString();
+        kiem(t.contains("Rattata ở Pallet") || t.contains("Rattata") && t.contains("Pallet"), nhan + " so nhiem vu ve muc tieu (Rattata o Pallet)");
+        kiem(t.contains("Xatu (Pewter)") || t.contains("Xatu") && t.contains("(Pewter)"), nhan + " so nhiem vu ve NPC tra (Xatu (Pewter))");
+    }
+
     static void kiemTrongMan(String nhan) {
         int W = NenPc.rong, H = NenPc.cao;
         for (int b = 0; b < game.pokemon.GhiChu.soBieu; b++) {

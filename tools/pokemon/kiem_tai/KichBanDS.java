@@ -27,6 +27,7 @@ class KichBanDS {
         KichBanDatTenPet.dangKy(); // 0.9.6 the dat ten Pokemon
         KichBanGiftcode.dangKy(); // 0.9.9 nhap giftcode an toan (tob_giftcode) dau-cuoi
         KichBanQaToanGame.dangKy(); // vong QA toan game 23/10/2026
+        KichBanTienDoNhiemVu.dangKy(); // sua-tien-do-nv: so Nhiem vu ghi ro muc tieu, cua ai, Nhiem vu cua toi
     }
 
     // ------------------------------------------------------------------ tien ich chung

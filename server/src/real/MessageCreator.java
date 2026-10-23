@@ -2949,16 +2949,24 @@ public class MessageCreator {
                 break;
             }
         }
+        // sua-tien-do-nv: muc tieu / tra / khoa tung dong (MucTieuNhiemVuGame); cua ai dang lam o khe doi (main_sub 2)
+        final boolean moi = MucTieuNhiemVuGame.clientMoi(p);
+        final MucTieuNhiemVuGame.DongCuaAi cuaAi = type == 0 ? null : MucTieuNhiemVuGame.cuaAiTrongSo(p, type);
+        final java.util.List<String[]> duoi = new java.util.ArrayList<String[]>();
         final Message m = new Message(-64);
         try {
             m.dos.writeByte(type);
-            m.dos.writeByte(allQuest.size());
+            m.dos.writeByte(allQuest.size() + (cuaAi != null ? 1 : 0));
             for (int i = 0; i < allQuest.size(); ++i) {
                 final NewCharQuest q = allQuest.get(i);
                 final InfoQuestTemplate info = q.getTemplate();
+                final MucTieuNhiemVuGame.KetQua mt = MucTieuNhiemVuGame.cua(p, info, type);
+                duoi.add(new String[]{mt.muc, mt.tra, mt.khoa, String.valueOf(mt.co)});
                 m.dos.writeShort(q.id_quest);
                 m.dos.writeByte(info.main_sub);
-                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(info.name));
+                // client cu chi hien ten + loai + x/N o hang: noi muc tieu ngan vao ten ("Chứng tỏ sức mạnh · Weedle ở Lavender")
+                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(moi ? info.name
+                        : com.htbb.pokemon.MucTieuNhiemVu.tenCu(info.name, type == 1 ? (mt.tra.isEmpty() ? "" : "Trả " + mt.tra) : mt.ngan)));
                 switch (type) {
                     case 0: {
                         m.dos.writeByte(info.idNpcRcv);
@@ -2976,8 +2984,11 @@ public class MessageCreator {
                     }
                     case 2: {
                         m.dos.writeByte(info.type);
-                        // sua-tuyen: buoc dia diem dang lam -> mo ta + chi duong (o, huong)
-                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(KhuVucNhiemVuGame.moTaDangLam(p, q, info)));
+                        // sua-tuyen: buoc dia diem dang lam -> mo ta + chi duong (o, huong); sua-tien-do-nv: "Mục tiêu: … · Trả: …"
+                        final String chiDuong = KhuVucNhiemVuGame.moTaDangLam(p, q, info);
+                        final String goc = info.shortContent == null ? "" : info.shortContent;
+                        final String them = chiDuong.length() > goc.length() && chiDuong.startsWith(goc) ? chiDuong.substring(goc.length()).trim() : "";
+                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(com.htbb.pokemon.MucTieuNhiemVu.moTa(mt.muc, mt.tra, mt.khoa, false, them)));
                         m.dos.writeByte(KhuVucNhiemVuGame.npcTra(info, 2)); // sua-tuyen: buoc dia diem dang lam -> khong NPC (-1)
                         m.dos.writeByte(info.deltaLv);
                         m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(ChuThuongNhiemVuGame.infoGift(info, p)));
@@ -3011,10 +3022,55 @@ public class MessageCreator {
                     }
                 }
             }
+            if (cuaAi != null) {
+                vietCuaAi(m, cuaAi, type, moi);
+                duoi.add(new String[]{cuaAi.muc, "", cuaAi.khoa, String.valueOf(com.htbb.pokemon.MucTieuNhiemVu.CO_CUA_AI
+                        | (cuaAi.khoa.isEmpty() ? 0 : com.htbb.pokemon.MucTieuNhiemVu.CO_KHOA))});
+            }
+            if (moi) {
+                // duoi goi (client >= 915, ManNhiemVu): n, n x (UTF muc, UTF tra, UTF khoa, u8 co) cung thu tu
+                m.dos.writeByte(duoi.size());
+                for (final String[] d : duoi) {
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(d[0]));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(d[1]));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(d[2]));
+                    m.dos.writeByte(Integer.parseInt(d[3]));
+                }
+            }
         } catch (final Exception e) {
             e.printStackTrace();
         }
         p.sendMessage(m);
+    }
+
+    /**
+     * Dong cua ai ao o khe doi (main_sub 2, id MucTieuNhiemVuGame.ID_CUA_AI+): nhom 1 (xong, cho nhan thuong) / 2 (dang
+     * lam, giet: kieu 0 voi mau quai -> client tu cong khi ha). NPC tra -1 (khong NPC: nhan thuong o So tay).
+     */
+    static void vietCuaAi(final Message m, final MucTieuNhiemVuGame.DongCuaAi d, final int type, final boolean moi) throws java.io.IOException {
+        m.dos.writeShort(d.id);
+        m.dos.writeByte(2);
+        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(moi ? d.ten : com.htbb.pokemon.MucTieuNhiemVu.tenCu(d.ten,
+                type == 1 ? "Xong! Nhận thưởng ở Sổ tay" : "")));
+        if (type == 1) {
+            m.dos.writeByte(-1);
+            m.dos.writeUTF("");
+            m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(d.moTa));
+            m.dos.writeUTF("");
+            return;
+        }
+        final boolean giet = d.mau > 0;
+        m.dos.writeByte(giet ? 0 : 3);
+        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(d.moTa));
+        m.dos.writeByte(-1);
+        m.dos.writeByte(0);
+        m.dos.writeUTF("");
+        if (giet) {
+            m.dos.writeByte(1);
+            m.dos.writeShort(d.mau);
+            m.dos.writeShort(d.da);
+            m.dos.writeShort(d.can);
+        }
     }
 
     public static void createMsgCharFruit(final Char p, final int type, final int index) {

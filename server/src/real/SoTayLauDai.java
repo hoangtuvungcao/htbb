@@ -49,6 +49,13 @@ public final class SoTayLauDai {
         return 2;
     }
 
+    public static final String TEN_NHIEM_VU = "Nhiệm vụ của tôi";
+
+    /** sua-tien-do-nv: vi tri muc "Nhiệm vụ của tôi" o menu -90 - sau So tay (2) va He sinh thai (3, neu bat). */
+    public static int viTriNhiemVu() {
+        return viTri() + 1 + (com.htbb.pokemon.HeSinhThai.bat() ? 1 : 0);
+    }
+
     public static void moMenu(final Char p) {
         if (!LauDai.bat() || p == null) {
             return;

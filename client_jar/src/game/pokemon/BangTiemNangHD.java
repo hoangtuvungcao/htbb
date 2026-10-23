@@ -84,6 +84,17 @@ public final class BangTiemNangHD extends Dialog {
     }
 
     /** Điểm chưa dùng của nút tab Chỉ số: Điểm huấn luyện khi máy chủ bật (HocChieu), không thì điểm tiềm năng. */
+    /** Nhãn nút góc trái thẻ nhân vật: "Huấn luyện" khi máy chủ bật Điểm huấn luyện, ngược lại "Tiềm năng". */
+    public static String nhanNut() {
+        return HocChieu.batHL ? "Huấn luyện" : "Tiềm năng";
+    }
+
+    /** Câu lên cấp (GameScr.onLevelUp): Điểm huấn luyện -> "+N Điểm huấn luyện", ngược lại tiềm năng như cũ. */
+    public static String cauLenCap() {
+        return HocChieu.batHL ? "Chúc mừng! Bạn vừa lên cấp: +" + HocChieu.diemMoiCap + " Điểm huấn luyện. Mở Menu, chọn Pokémon, bấm Huấn luyện để dùng."
+                : "Chúc mừng! Bạn vừa lên cấp. Mở Menu, chọn Pokémon để cộng điểm tiềm năng và kỹ năng.";
+    }
+
     public static int diemNut() {
         return HocChieu.batHL ? HocChieu.conLai() : diemChuaDung();
     }

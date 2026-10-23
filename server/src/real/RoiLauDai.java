@@ -54,6 +54,7 @@ final class RoiLauDai {
         NhiemVuLauDaiGame.khiHaQuai(p, mt);
         HamNgucGame.khiHaQuai(p, mt);
         NhiemVuEngine.khiHaQuai(p, mt); // GD2b engine nhiem vu
+        MucTieuNhiemVuGame.khiHaQuai(p, mt); // sua-tien-do-nv: ha quai cua ai chua nhan -> hop 95 mot lan
     }
 
     /** Shiny 1/4096 (x su kien), pity 2000 lan ha (GD2 7.3). Chi danh hieu/Pokedex, khong suc manh. */

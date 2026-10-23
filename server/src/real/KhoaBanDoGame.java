@@ -249,6 +249,17 @@ public final class KhoaBanDoGame {
         p.sendMessage(MessageCreator.createMsgPopUp(p.id, POPUP_CUA_AI, h.hop));
     }
 
+    /**
+     * sua-tien-do-nv: hop 95 nhac nhan cua ai (MucTieuNhiemVuGame.khiHaQuai - ha quai muc tieu khi chua nhan buoc). Đồng ý
+     * -> {@link #khiTraLoi} -> NhiemVuEngine.khiDongYCuaAi(maCuoi) nhu hop ban do khoa (hop moi nhat thang).
+     */
+    static void hoiNhac(final Char p, final String maCuoi, final String hop) {
+        final long luc = bayGio();
+        final Hoi h = new Hoi(-1, maCuoi, hop, "", hop, luc);
+        DANG_HOI.put(Integer.valueOf(p.charDBID), h);
+        p.sendMessage(MessageCreator.createMsgPopUp(p.id, POPUP_CUA_AI, hop));
+    }
+
     /** Goi 12 toMapID -500 (client nap map xong, MapXuLyLenh / MapLienDau): gui hop cua ai dang cho. */
     public static void sauKhiVaoMap(final Char p) {
         if (p == null) {

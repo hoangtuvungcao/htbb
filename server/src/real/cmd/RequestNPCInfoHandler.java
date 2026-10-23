@@ -969,6 +969,13 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         menuHst[menu.length] = com.htbb.pokemon.HeSinhThaiGame.TEN_MUC;
                         menu = menuHst;
                     }
+                    // sua-tien-do-nv: "Nhiệm vụ của tôi" thang o quay doi thuong (truoc chi o So tay -> muc 9, nguoi choi
+                    // khong tim thay); dung vi tri MapDoMenu cho.
+                    if (com.htbb.pokemon.LauDai.bat() && menu.length == real.SoTayLauDai.viTriNhiemVu()) {
+                        final String[] menuNv = java.util.Arrays.copyOf(menu, menu.length + 1);
+                        menuNv[menu.length] = real.SoTayLauDai.TEN_NHIEM_VU;
+                        menu = menuNv;
+                    }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }

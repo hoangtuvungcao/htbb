@@ -12724,6 +12724,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     public void checkFinishQuest(final int idMonster_item, final boolean iskillMons, final int lv) {
         final Vector<NewCharQuest> allQuestWorking = this.getAllQuestWorking();
+        // sua-tien-do-nv: tien do tang ma chua xong -> gui lai "Dang lam" (x/N dung so may chu; truoc chi gui khi xong,
+        // client tu dem cuc bo va lech khi khong phai don ket lieu / dang nhap lai)
+        boolean guiTienDo = false;
         if (allQuestWorking.size() > 0) {
             for (int i = 0; i < allQuestWorking.size(); ++i) {
                 final NewCharQuest q = allQuestWorking.get(i);
@@ -12738,6 +12741,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 final short[] monsterKilled = q.monsterKilled;
                                 final int n = j;
                                 ++monsterKilled[n];
+                                guiTienDo = true;
                                 break;
                             }
                         }
@@ -12760,6 +12764,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                     final short[] monsterKilled2 = q.monsterKilled;
                                     final int n2 = k;
                                     ++monsterKilled2[n2];
+                                    guiTienDo = true;
                                     break;
                                 }
                             }
@@ -12783,6 +12788,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 final short[] nItem = q.nItem;
                                 final int n3 = j;
                                 ++nItem[n3];
+                                guiTienDo = true;
                                 break;
                             }
                         }
@@ -12801,6 +12807,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     }
                 }
             }
+        }
+        if (guiTienDo) {
+            MessageCreator.createMsgCharQuest(this, 2);
         }
     }
 
@@ -12902,6 +12911,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     private void xuLyNhiemVu(final byte type, final short questID, final byte main_sub) {
+        if (main_sub == 2 && MucTieuNhiemVuGame.laIdCuaAi(questID) && this.clanQuestNew.id_quest == -1) {
+            MucTieuNhiemVuGame.khiGoiCuaAi(this, type, questID); // sua-tien-do-nv: cua ai hien o khe doi so Nhiem vu
+            return;
+        }
         if (main_sub == 0) 
         {
             final InfoQuestTemplate info = this.mainQuest.getTemplate();
@@ -12977,7 +12990,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         KhuVucNhiemVuGame.baoChuaToi(this, info);
                         return;
                     }
-                    final String khongTra = lyDoKhongTra(this.mainQuest.state_quest, info.type, info.name);
+                    final String khongTra = MucTieuNhiemVuGame.kemMucTieu(this, info, this.mainQuest,
+                            lyDoKhongTra(this.mainQuest.state_quest, info.type, info.name));
                     if (khongTra != null) {
                         this.tuChoiNhiemVu(this.mainQuest.state_quest == NewCharQuest.DONE ? null : khongTra);
                         return;
@@ -13125,7 +13139,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     KhuVucNhiemVuGame.baoChuaToi(this, info);
                     return;
                 }
-                final String khongTraPhu = lyDoKhongTra(this.subQuest.state_quest, info.type, info.name);
+                final String khongTraPhu = MucTieuNhiemVuGame.kemMucTieu(this, info, this.subQuest,
+                        lyDoKhongTra(this.subQuest.state_quest, info.type, info.name));
                 if (khongTraPhu != null) {
                     this.tuChoiNhiemVu(khongTraPhu);
                     return;

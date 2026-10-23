@@ -269,6 +269,19 @@ public final class NhiemVuMau {
         if (!kieu.equals(kieuSuKien)) {
             return false;
         }
+        // sua-tien-do-nv: thu_thap - su kien mang id MAU QUAI vua ha (NhiemVuEngine.khiHaQuai), muc_tieu_id la id VAT
+        // PHAM (10 = Goi hang) -> so voi quai_roi. Truoc day so voi muc_tieu_id: N-1.03 dem Oddish (mau 10) thay Sandshrew.
+        if ("thu_thap".equals(kieu) && quaiRoi != null && !quaiRoi.trim().isEmpty()) {
+            if (thamSo == null) {
+                return false;
+            }
+            for (final String id : quaiRoi.split("[,|]")) {
+                if (id.trim().equals(thamSo)) {
+                    return true;
+                }
+            }
+            return false;
+        }
         final boolean rong = mucTieuId == null || mucTieuId.isEmpty();
         if (rong && "pokedex_shiny".equals(kieu)) {
             return false; // shiny phai dung loai muc tieu (so dex); du lieu thieu loai thi khong tinh

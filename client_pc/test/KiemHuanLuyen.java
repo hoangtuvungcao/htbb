@@ -282,6 +282,14 @@ public class KiemHuanLuyen {
         ChupTrongGame.chay(() -> game.render.Canvas.gameScr.mainChar.basePointLeft = 7);
         kiem(!game.pokemon.ChamMoi.co(game.pokemon.ChamMoi.DIEM_TN), "điểm tiềm năng cũ không còn gây chấm khi máy chủ bật Điểm huấn luyện");
         goiHL(46, new int[]{4, 2, 0, 0}, 0L, 0, true);
+        // 0.9.15: nút góc trái tab Trang bị = "Huấn luyện", sáng theo Điểm huấn luyện; lên cấp "+N Điểm huấn luyện"
+        kiem("Huấn luyện".equals(game.pokemon.BangTiemNangHD.nhanNut()), "máy chủ Điểm huấn luyện: nút Trang bị ghi Huấn luyện");
+        kiem(game.pokemon.BangTiemNangHD.diemNut() == 40, "nút Trang bị sáng theo Điểm huấn luyện còn (40), không theo tiềm năng tự do");
+        kiem(game.pokemon.BangTiemNangHD.cauLenCap().indexOf("+" + game.pokemon.HocChieu.diemMoiCap + " Điểm huấn luyện") >= 0
+                && game.pokemon.BangTiemNangHD.cauLenCap().indexOf("tiềm năng") < 0, "hộp lên cấp: +N Điểm huấn luyện (" + game.pokemon.BangTiemNangHD.cauLenCap() + ")");
+        mo("nv_trang_bi");
+        ve("trang_bi_nut_huan_luyen");
+        kiem(coVung("tiem-nang"), "tab Trang bị: có nút Huấn luyện (vùng tiem-nang)");
 
         // ---------------- tab Kỹ năng
         mo("nv_ky_nang");

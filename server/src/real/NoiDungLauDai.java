@@ -165,6 +165,13 @@ public final class NoiDungLauDai {
         m.he2 = t.he2;
     }
 
+    /** Mau goc (truoc khi doi sang loai nam 2 luc hoi sinh), null neu khong doi. */
+    static Integer gocNam2(final Monster m) {
+        synchronized (GOC_NAM2) {
+            return GOC_NAM2.get(m);
+        }
+    }
+
     public static boolean laAlpha(final Monster m) {
         synchronized (LA_ALPHA) {
             return Boolean.TRUE.equals(LA_ALPHA.get(m));

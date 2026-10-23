@@ -2095,6 +2095,7 @@ public class GameScr extends Screen {
         if (!chieuRieng && this.focusedActor != null && this.focusedActor.isNpcChar()) {
             Vector allquest = getAllQuestNpc(this.focusedActor.getTypeNpc());
             if (allquest.size() > 0 && this.focusedActor.isNpcChar()) {
+                themNhiemVuCuaToi(allquest);
                 allquest.addElement(new Command("Nói chuyện", new IAction() {
                     @Override
                     public void perform() {
@@ -2620,6 +2621,7 @@ public class GameScr extends Screen {
                                     }
                                 }));
                             }
+                            themNhiemVuCuaToi(allquest);
                             allquest.addElement(new Command("Nói chuyện", new IAction() {
                                 @Override
                                 public void perform() {
@@ -2926,7 +2928,20 @@ public class GameScr extends Screen {
      * được). NPC chỉ để trò chuyện (gác cổng, trưởng làng, giao nhiệm vụ) vẫn nói câu chào.
      */
     public void moChucNangNpc(int type) {
-        if (type == 4 || type == 5 || type == 8 || type == 23) {
+        if ((type == 5 || type == 8 || type == 23) && coMucTieuNv) {
+            // 0.9.15: NPC giao nhiệm vụ - lối thẳng "Nhiệm vụ của tôi" (Sổ tay) bên cạnh câu chào
+            final Actor npcChao = this.focusedActor;
+            final int loaiChao = type;
+            addChat(npcChao, Res.getDefaultChat(type), 500);
+            Vector menu = new Vector();
+            themNhiemVuCuaToi(menu);
+            menu.addElement(new Command("Nói chuyện", new IAction() {
+                public void perform() {
+                    addChat(npcChao, Res.getDefaultChat(loaiChao), 500);
+                }
+            }));
+            Canvas.menu.startAt(menu, 3);
+        } else if (type == 4 || type == 5 || type == 8 || type == 23) {
             addChat(this.focusedActor, Res.getDefaultChat(type), 500);
         } else if (type == 2 || type == 3 || type == 7 || type == 10 || type == 27 || type == 28 || (type > 10 && type != 24 && type != 26 && type != 29 && type != 30)) {
             showNpcMenu(type, new Vector());
@@ -5907,9 +5922,10 @@ public class GameScr extends Screen {
             game.pokemon.HieuUngDanh.lenCap(c);   // pokemon: no sang + tieng len cap
         }
         if (c == this.mainChar) {
-            addChat(new ChatInfo("", new StringBuffer("Đã lên cấp ").append((int) newlevel).toString(), 1));
+            addChat(new ChatInfo("", new StringBuffer("Đã lên cấp ").append((int) newlevel)
+                    .append(game.pokemon.HocChieu.batHL ? new StringBuffer(" · +").append(game.pokemon.HocChieu.diemMoiCap).append(" Điểm huấn luyện").toString() : "").toString(), 1));
             if (newlevel == 2) {
-                Canvas.startOKDlg("Chúc mừng! Bạn vừa lên cấp. Mở Menu, chọn Pokémon để cộng điểm tiềm năng và kỹ năng.", false, 20);
+                Canvas.startOKDlg(game.pokemon.BangTiemNangHD.cauLenCap(), false, 20);
             }
         }
     }
@@ -8171,9 +8187,11 @@ public class GameScr extends Screen {
             mainQuest = boOCu(mainQuest, type_Group_Quest);
             subQuest = boOCu(subQuest, type_Group_Quest);
             clanQuest = boOCu(clanQuest, type_Group_Quest);
+            Quest[] trongGoi = new Quest[Math.max(0, (int) size)];
             for (int i = 0; i < size; i++) {
                 int idQuest = m.reader().readShort();
                 Quest q = new Quest(idQuest);
+                trongGoi[i] = q;
                 q.stateQuest = type_Group_Quest;
                 q.main_sub = m.reader().readByte();
                 q.name = m.reader().readUTF();
@@ -8249,6 +8267,7 @@ public class GameScr extends Screen {
                     clanQuest = q;
                 }
             }
+            docDuoiNhiemVu(m, trongGoi);
             if (type_Group_Quest == 0) {
                 // nhiệm vụ lại nằm trong "Có thể nhận" (đã huỷ / server từ chối) thì không còn là đang làm
                 mainQuest = boNeuCoTheNhan(mainQuest);
@@ -8258,6 +8277,64 @@ public class GameScr extends Screen {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /** 0.9.15: máy chủ đã gửi đuôi mục tiêu -64 (máy chủ có sổ tay "Nhiệm vụ của tôi" mở từ NPC / sổ nhiệm vụ). */
+    public static boolean coMucTieuNv;
+
+    /**
+     * 0.9.15: đuôi gói -64 (máy chủ chỉ gửi cho client >= 915): {@code u8 n} (= số nhiệm vụ trong gói), n × (UTF mục
+     * tiêu, UTF nơi trả, UTF gợi ý khoá, u8 cờ). Không có đuôi (máy chủ cũ) / n lệch: bỏ qua, sổ vẽ như trước.
+     */
+    static void docDuoiNhiemVu(Message m, Quest[] qs) {
+        try {
+            if (m.reader().available() <= 0) {
+                return;
+            }
+            int n = m.reader().readUnsignedByte();
+            if (n != qs.length) {
+                return;
+            }
+            for (int i = 0; i < n; i++) {
+                String muc = m.reader().readUTF();
+                String tra = m.reader().readUTF();
+                String khoa = m.reader().readUTF();
+                int co = m.reader().readUnsignedByte();
+                if (qs[i] != null) {
+                    qs[i].muc = muc == null ? "" : muc;
+                    qs[i].tra = tra == null ? "" : tra;
+                    qs[i].khoa = khoa == null ? "" : khoa;
+                    qs[i].co = co;
+                }
+            }
+            coMucTieuNv = true;
+        } catch (Exception e) {
+            // đuôi hỏng: giữ phần đã đọc
+        }
+    }
+
+    /** 0.9.15: mở "Nhiệm vụ của tôi" (Sổ tay huấn luyện, NPC ảo -527 menu 0 mục 8) ở máy chủ. */
+    public static void moNhiemVuCuaToi() {
+        try {
+            if (Canvas.gameScr != null && Canvas.currentScreen != Canvas.gameScr) {
+                Canvas.gameScr.switchToMe();   // đóng sổ nhiệm vụ: menu máy chủ hiện trên thế giới
+            }
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        GameService.gI().doMenuOption(-527, (byte) 0, 8);
+    }
+
+    /** 0.9.15: lệnh "Nhiệm vụ của tôi" cho menu NPC (chỉ khi máy chủ có tính năng). */
+    static void themNhiemVuCuaToi(Vector menu) {
+        if (!coMucTieuNv) {
+            return;
+        }
+        menu.addElement(new Command("Nhiệm vụ của tôi", new IAction() {
+            public void perform() {
+                moNhiemVuCuaToi();
+            }
+        }));
     }
 
     /** 0.9.7.1: ô nhiệm vụ còn giữ khi nhận danh sách nhóm {@code nhom} (0 có thể nhận, 1 xong, 2 đang làm)? */

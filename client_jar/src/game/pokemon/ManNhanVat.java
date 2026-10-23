@@ -522,8 +522,11 @@ public final class ManNhanVat extends Screen {
         // Sức mạnh (hoặc tên ô đang chọn) trên cùng
         int hSm = ChuDe.cao(ChuDe.PHU) + ChuDe.cao(ChuDe.SO_TO) - 2;
         // 0.9.7: nút Tiềm năng (cộng điểm) góc trái trên khối nhân vật - kiểu NRO, cạnh "Sức mạnh"
-        int hTn = Bang.co(22), wTn = ChuDe.rong("Tiềm năng", ChuDe.SO) + 20;
-        Bang.nut(g, x + 2, y + 1, wTn, hTn, "Tiềm năng", m.basePointLeft > 0 ? Bang.CHINH : Bang.GO, new IAction() {
+        // 0.9.15: máy chủ dùng Điểm huấn luyện (production) -> nút "Huấn luyện", sáng theo điểm huấn luyện còn lại (cùng
+        // số chấm đỏ BangTiemNangHD.diemNut); trước sáng theo tiềm năng tự do (luôn 0 ở chế độ này)
+        String nhanTn = BangTiemNangHD.nhanNut();
+        int hTn = Bang.co(22), wTn = ChuDe.rong(nhanTn, ChuDe.SO) + 20;
+        Bang.nut(g, x + 2, y + 1, wTn, hTn, nhanTn, BangTiemNangHD.diemNut() > 0 ? Bang.CHINH : Bang.GO, new IAction() {
             public void perform() {
                 HanhDong.moTiemNang();
             }

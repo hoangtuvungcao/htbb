@@ -169,6 +169,47 @@ public final class Bang {
     }
 
     /** Chip lọc (viên): chọn = teal đặc chữ trắng, thường = trắng viền kẻ chữ phụ - trả bề ngang. */
+    /** Như {@link #danhSach} nhưng mỗi hàng một chiều cao (cao[i]) - hàng nhiều dòng chữ không ép hàng khác cao theo. */
+    public static void danhSachCao(Graphics g, Cuon c, int x, int y, int w, int h, int[] cao, Hang hang) {
+        int k = cach();
+        int n = cao.length;
+        int noi = 0;
+        for (int i = 0; i < n; i++) {
+            noi += cao[i] + (i > 0 ? k : 0);
+        }
+        c.khung(g, x, y, w, h, noi);
+        c.capNhat();
+        boolean thanh = noi > h;
+        int wr = thanh ? w - 10 : w;
+        int lech = c.lech();
+        int tx = g.getTranslateX(), ty = g.getTranslateY();
+        g.setClip(x, y, w, h);
+        cat = true;
+        cx0 = x + tx;
+        cy0 = y + ty;
+        cx1 = x + tx + w;
+        cy1 = y + ty + h;
+        try {
+            int yr = y - lech;
+            for (int i = 0; i < n; i++) {
+                if (yr >= y + h) {
+                    break;
+                }
+                if (yr + cao[i] > y) {
+                    hang.ve(g, i, x, yr, wr, cao[i]);
+                    g.setClip(x, y, w, h);
+                }
+                yr += cao[i] + k;
+            }
+        } finally {
+            cat = false;
+        }
+        g.setClip(0, 0, Canvas.w, Canvas.h);
+        if (thanh) {
+            c.veThanh(g, x + w - 5, y + 2, h - 4);
+        }
+    }
+
     public static int chip(Graphics g, int x, int y, String chu, boolean chon, Object viec, String ten) {
         int h = co(22);
         int w = Math.max(h, ChuDe.rong(chu, ChuDe.NHAN) + 20);

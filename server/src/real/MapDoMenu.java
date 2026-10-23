@@ -290,6 +290,11 @@ class MapDoMenu {
                 SoTayLauDai.doMenu(player, idMenu, idOptionMenu);
                 return;
             }
+            // sua-tien-do-nv: "Nhiệm vụ của tôi" thang o quay doi thuong (-90)
+            if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.LauDai.bat() && idOptionMenu == SoTayLauDai.viTriNhiemVu()) {
+                NhiemVuEngine.moMenu(player);
+                return;
+            }
             // he sinh thai: muc cuoi menu NPC -90 + npc ao HeSinhThaiGame.NPC_ID (-528).
             if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.HeSinhThai.bat()
                     && idOptionMenu == com.htbb.pokemon.HeSinhThaiMenu.viTri()) {

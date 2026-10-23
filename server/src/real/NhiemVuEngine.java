@@ -253,6 +253,10 @@ public final class NhiemVuEngine {
 
     static void luu(final Char p, final String ma, final long[] v) {
         DatabaseLauDai.luuNhiemVu(p.charDBID, ma, (int) v[0], (int) v[1], (int) v[2]);
+        final NhiemVuMau m = MAU.get(ma);
+        if (m != null && m.laCuaAi()) {
+            MucTieuNhiemVuGame.khiDoiCuaAi(p, m); // sua-tien-do-nv: cua ai hien o khe doi so Nhiem vu
+        }
     }
 
     static int homNay() {

@@ -36,6 +36,25 @@ public class Quest {
     public String infoGift = "";
     public boolean isShow = false;
     public short deltaLv = 0;
+    /**
+     * 0.9.15 (máy chủ gửi đuôi gói -64 cho client >= 915): câu mục tiêu ("Hạ 20 Weedle ở Lavender"), nơi trả
+     * ("Machamp (Pewter)", "" = không NPC / Sổ tay), gợi ý khoá ("" = không), cờ (bit0 cửa ải ở ô đội, bit1 bản đồ
+     * mục tiêu đang khoá). Rỗng = máy chủ cũ: sổ nhiệm vụ vẽ như trước.
+     */
+    public String muc = "";
+    public String tra = "";
+    public String khoa = "";
+    public int co = 0;
+    public static final int CO_CUA_AI = 1, CO_KHOA = 2;
+
+    /** Có dữ liệu mục tiêu từ máy chủ (đuôi gói -64). */
+    public boolean coMuc() {
+        return this.muc != null && this.muc.length() > 0;
+    }
+
+    public boolean laCuaAi() {
+        return (this.co & CO_CUA_AI) != 0;
+    }
 
     public Quest(int id) {
         this.stateQuest = (byte) 0;

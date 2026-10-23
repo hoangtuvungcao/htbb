@@ -137,7 +137,11 @@ public final class ChuDe {
     /** Bề ngang chuỗi (px logic). */
     /** Ký tự font không có: dấu trừ toán học U+2212 (chữ máy chủ / bảng 0.9.8) -> '-'. */
     static String chuanKyTu(String s) {
-        return s.indexOf('\u2212') >= 0 ? s.replace('\u2212', '-') : s;
+        s = s.indexOf('\u2212') >= 0 ? s.replace('\u2212', '-') : s;
+        if (ChuUI.bo == null && (s.indexOf('\u00ab') >= 0 || s.indexOf('\u00bb') >= 0)) {
+            s = s.replace('\u00ab', '"').replace('\u00bb', '"');   // 0.9.15: font ảnh không có « » (tên cửa ải)
+        }
+        return s;
     }
 
     public static int rong(String s, int vai) {
@@ -148,7 +152,7 @@ public final class ChuDe {
         if (b != null) {
             return b.rong(s, co(vai), DAM[vai]);
         }
-        return fontAnh(vai, CHU).getWidth(s);
+        return fontAnh(vai, CHU).getWidth(chuanKyTu(s));
     }
 
     /** Vẽ chữ: y = đỉnh hộp dòng (cao {@link #cao}), canh 0 trái / 1 phải / 2 giữa. */
