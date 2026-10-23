@@ -114,7 +114,10 @@ public class SelectCharHandler implements ICommandHandler {
 //            }
 
             if (type == 1 && p.using == 0) {
-                session.sendMessage(MessageCreator.createServerAlertMessage("Chức năng đang bảo trì", ""));
+                // 23/10/2026: truoc day bao "Chức năng đang bảo trì" -> nguoi choi tuong may chu hong.
+                // Pokemon da xoa (del=0) van khoi phuc duoc: nut "Xóa" o man chon doi thanh "Khôi phục".
+                session.sendMessage(MessageCreator.createServerAlertMessage("Không vào được: Pokémon «" + p.charname
+                        + "» đã bị xoá. Bấm «Khôi phục» (phím Xóa ở màn chọn Pokémon) để chơi tiếp.", ""));
                 return;
             }
             if (type == 2) {
