@@ -244,6 +244,26 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.19 (`BAN=919`: J2ME Bản thân › "Huấn luyện" ở chế độ Điểm huấn luyện, tên Danh hiệu dài xuống 2-3 dòng)
+
+Client (không gói mới) `PHIEN_BAN=0.9.19-opentest` (`BAN = 0*10000 + 9*100 + 19`; `MIDlet-Version` 0.9.19) trên main
+729ae429, chạy với mọi máy chủ 0.9.15+. `htbb-server.jar` của main (94fa0a78, không build lại khi phát hành) có thêm
+sửa `MapClan` vào / rời bản đồ bang khi bang chưa có danh sách không `NullPointerException` (2ecf8a74, `KiemMapClanVao`
+- cổng kiểm staging 24/10: GM `mto` kẹt giữa `move2Map`) và log theo dõi bất thường `[NAP_MAP_LAP]` / `[KEO_VE]`
+(`com.htbb.log.TheoDoiBatThuong`, đọc bởi `vps/theo-doi/bao-cao-ngay.sh`) - qua cổng staging trước khi lên production.
+
+1. J2ME, menu Bản thân (`PauseMenu`, 58bf1e32): máy chủ bật Điểm huấn luyện (gói -122 loại 1, production) thì mục thứ tư
+   ghi **"Huấn luyện"** và mở bảng Huấn luyện (`HanhDong.moTiemNang` -> `BangHuanLuyen`), bảng Bản thân bỏ tab Tiềm năng
+   (`PauseMenu.tabBanThan` / `viTriTab`: các mục khác vẫn mở đúng tab). Trước: luôn "Tiềm năng" -> tab điểm tiềm năng tự do
+   luôn 0 ở chế độ này. Máy chủ không bật Điểm huấn luyện: như cũ.
+2. Tên danh hiệu dài (`ManDanhHieu.boCucVien`, 85db375e): viên danh hiệu ở thẻ nhân vật không còn cắt "..", ngắt ở dấu
+   cách thành 2 dòng (3 nếu 2 chưa đủ), bỏ đuôi " ›" trước khi phải cắt tên - mọi cỡ, cả J2ME / tablet / pc4x3 / pc16x10.
+   `ManNhanVat`: tab Trang bị tính lại bố cục với hàng Danh hiệu cao hơn, thẻ Chỉ số đưa tên ra hàng riêng khi không vừa
+   cạnh huy hiệu hệ.
+3. Kiểm (b6b12c6e): `ChupTrongGame` tự tìm thư mục `server/` để nạp icon máy chủ (không còn chạy từ thư mục khác thì mọi
+   ô đồ là hộp quà mà vẫn đạt; thiếu là HỎNG, `kiemIconDo`), giả lập chế độ Điểm huấn luyện (-122) + `kiemNhanHL` /
+   `kiemMenuChuHL`, `kiemDanhHieuDai` vẽ đủ 424 danh hiệu ở mọi cỡ, cả đường J2ME (`-Dchup.j2me`).
+
 ### Bản 0.9.18 (`BAN=918`: sửa "game chậm như slow motion" 0.9.15-0.9.17 - vòng game bước cố định)
 
 Client `PHIEN_BAN=0.9.18-opentest` (`BAN = 0*10000 + 9*100 + 18`; `MIDlet-Version` 0.9.18) trên main 4625021c, chạy với
