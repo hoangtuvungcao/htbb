@@ -138,6 +138,7 @@ Các khoá này không nằm trong danh mục (con gà – quả trứng: phải
 | Khoá | Ý nghĩa |
 |---|---|
 | `sv.port` | cổng game TCP (19129) |
+| `sv.ipLangNghe` | địa chỉ lắng nghe cổng game; trống (mặc định) = mọi giao diện. Staging đặt `127.0.0.1` (`vps/staging/`) |
 | `limit.ccu` | số người online tối đa — **bắt buộc**, không có mặc định |
 | `sv.server` | số máy chủ |
 | `sv.portnap` | cổng lệnh nạp nội bộ (khoá vẫn phải có) |

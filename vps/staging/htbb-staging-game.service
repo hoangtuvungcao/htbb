@@ -1,0 +1,59 @@
+# /etc/systemd/system/htbb-staging-game.service - HTBB game server STAGING (TCP 29129, CHI 127.0.0.1).
+# Lam tu vps/htbb-game.service (cung lenh java, cung thu tu tat luu du lieu), khac:
+#   thu muc /opt/htbb-staging, KHONG nap /etc/htbb/htbb.env (bi mat production), heap 768 MB,
+#   gioi han CPU / RAM / IO de staging khong bao gio lam doi production, mang chi localhost,
+#   KHONG bat cung may (khong "systemctl enable") - vps/staging/kiem-truoc-khi-len.sh bat roi tat.
+# Cai: sudo bash /opt/htbb/vps/staging/cai-dat.sh (chep tep nay + daemon-reload).
+[Unit]
+Description=HTBB game server STAGING (TCP 29129, localhost only)
+After=network-online.target mariadb.service htbb-staging-login.service
+Wants=htbb-staging-login.service
+Requires=mariadb.service
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=htbb
+Group=htbb
+WorkingDirectory=/opt/htbb-staging/server
+Environment=LANG=en_US.UTF-8
+UMask=0027
+LimitNOFILE=65535
+TasksMax=4096
+
+# TAI NGUYEN - VPS dung chung voi production: staging luon nhuong.
+#   CPUQuota=60%  : toi da 0.6 nhan (production khong bi gioi han).
+#   CPUWeight/IOWeight thap + Nice 10 + IO idle: khi tranh chap production thang.
+#   MemoryMax     : JVM vuot -> OOM-kill CHINH staging, khong dung toi game production / MariaDB.
+CPUQuota=60%
+CPUWeight=20
+IOWeight=20
+Nice=10
+IOSchedulingClass=idle
+MemoryHigh=1000M
+MemoryMax=1200M
+MemorySwapMax=0
+
+# MANG: chi noi bo may (MariaDB 127.0.0.1, bot chay tren VPS / ssh tunnel). Can kernel ho tro BPF cgroup; khong co
+# thi systemd bo qua (van con sv.ipLangNghe=127.0.0.1 + ufw deny 29129).
+IPAddressDeny=any
+IPAddressAllow=localhost
+
+ExecStart=/usr/bin/java -Xms256m -Xmx768m -Xss256k \
+  -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication \
+  -XX:+ExitOnOutOfMemoryError -XX:ActiveProcessorCount=1 \
+  -Xlog:gc:file=/opt/htbb-staging/logs/gc.log:time:filecount=3,filesize=5m \
+  -Djava.awt.headless=true -Dfile.encoding=UTF-8 \
+  -jar htbb-server.jar
+
+KillSignal=SIGTERM
+TimeoutStopSec=120
+# Staging chet thi de chet (cong kiem bao HONG) - khong lap khoi dong lai lam ban log.
+Restart=no
+ExecStartPre=+/bin/sh -c 'touch /opt/htbb-staging/logs/game.out && chown htbb:htbb /opt/htbb-staging/logs/game.out && chmod 0640 /opt/htbb-staging/logs/game.out'
+StandardOutput=append:/opt/htbb-staging/logs/game.out
+StandardError=append:/opt/htbb-staging/logs/game.out
+
+[Install]
+WantedBy=multi-user.target

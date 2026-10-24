@@ -573,6 +573,9 @@ public class LoginHandler implements ICommandHandler {
             final int userID = s.lgData.UserID;
             s.username = s.lgData.username;
             if (userID == -1 || userID == -2 || userID == -3) {
+                // bao cao van hanh (vps/theo-doi): -1 sai mat khau, -2 bi khoa, -3 loi login server. Nhat gop dong lap.
+                com.htbb.log.Nhat.thongTin("DANG_NHAP_LOI", "ma=" + userID + " tk=" + com.htbb.log.Nhat.sach(s.username)
+                        + " ip=" + s.ip);
                 final Message m = new Message(2);
                 if (!TeamServer.isServerIndo()) {
                     m.dos.writeUTF((userID == -2) ? "Tài khoản của bạn hiện đang bị khoá" : ((userID == -1) ? "Sai tên đăng nhập hoặc mật khẩu." : "Có lỗi xảy ra khi đăng nhập"));

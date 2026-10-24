@@ -175,7 +175,7 @@ public final class KiemDuLieuSql {
                 && mg.contains("`thu_tu` INT") && mg.contains("`lop` VARCHAR(10)"));
         final String nc = doc("../vps/nang_cap_csdl.sh");
         final String xu = doc("../vps/xuat_csdl_day_du.sh");
-        Kiem.dung("vps/nang_cap_csdl.sh nap sql/htbb.sql, dem danh muc trong phan B", nc.contains("SQL=\"$DIR/sql/htbb.sql\"")
+        Kiem.dung("vps/nang_cap_csdl.sh nap sql/htbb.sql, dem danh muc trong phan B", nc.contains("SQL=${HTBB_SQL:-$DIR/sql/htbb.sql}")
                 && nc.contains("MOC='" + DocDumpSql.MOC_NANG_CAP + "'") && nc.contains("sed -n \"/^$MOC/,\\$p\" \"$SQL\""));
         Kiem.dung("vps/xuat_csdl_day_du.sh ghi sql/htbb.sql, giu phan B", xu.contains("RA=${1:-$DIR/sql/htbb.sql}")
                 && xu.contains("MOC='" + DocDumpSql.MOC_NANG_CAP + "'") && xu.contains("CREATE TEMPORARY TABLE"));

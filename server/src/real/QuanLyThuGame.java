@@ -113,6 +113,8 @@ public final class QuanLyThuGame {
             return false;
         }
         DungVatPham.loi(p, cauDay(p));
+        // bao cao van hanh (vps/theo-doi): saveOrtherLog "THUDAY" bi LocLogVatPham bo -> dem qua nhat ky (Nhat gop dong lap).
+        com.htbb.log.Nhat.thongTin("THUDAY", p.charname + " day " + soThu(p) + "/" + sucChua(p) + ": " + nguon);
         if (Database.instance != null && p.charDBID > 0) {
             try {
                 Database.instance.saveOrtherLog("", p.charname, "tu choi nhan thu (day o " + soThu(p) + "/" + sucChua(p)
