@@ -566,12 +566,26 @@ public final class ManNhanVat extends Screen {
         VUNG_TB[1] = y;
         VUNG_TB[2] = w;
         VUNG_TB[3] = h;
-        int[] bc = boCuc(w, h);
+        // 0.9.18: tên danh hiệu dài (không vừa một dòng ở bề ngang khối) -> viên 2-3 dòng: hàng Danh hiệu cao hơn, bố cục
+        // tính lại với hàng đó (ô nhỏ đi / sân khấu thấp đi, không chồng)
+        String chuDh = chuDanhHieu(m);
+        int soDong = 1, hP = caoHangDh();
+        int[] bc = boCuc(w, h, hP);
+        for (int lan = 0; lan < 3; lan++) {
+            int lwThu = 2 * (bc[2] * bc[1] + (bc[2] - 1) * k) + 2 * k + bc[4];
+            int n = ManDanhHieu.soDongVien(chuDh, lwThu - 4);
+            if (n <= soDong) {
+                break;
+            }
+            soDong = n;
+            hP = caoHangDh(n);
+            bc = boCuc(w, h, hP);
+        }
         int kieu = bc[0];
         s = bc[1];
         int cs = bc[2], rh = bc[3], st = bc[4];
         lw = 2 * (cs * s + (cs - 1) * k) + 2 * k + st;
-        int hDau = caoDauNv(), hP = caoHangDh();
+        int hDau = caoDauNv();
         int hCot = rh * s + (rh - 1) * k;
         int xe = kieu == XEP_DOC ? x + (w - lw) / 2 : x;
         int ye = y + 4;
@@ -664,6 +678,16 @@ public final class ManNhanVat extends Screen {
         return Math.max(VungCham.MIN, ManDanhHieu.hVien() + 2);
     }
 
+    /** Cao hàng viên Danh hiệu n dòng. */
+    static int caoHangDh(int n) {
+        return Math.max(VungCham.MIN, ManDanhHieu.hVien(n) + 2);
+    }
+
+    /** Chữ viên Danh hiệu thẻ nhân vật (tên đang đeo hoặc "Danh hiệu") + đuôi gợi ý bấm. */
+    static String chuDanhHieu(MainChar m) {
+        return (m.danhHieuTen != null ? m.danhHieuTen : "Danh hiệu") + (ChuUI.bo != null ? " ›" : " >");   // phông ảnh J2ME không có "›"
+    }
+
     /** Cạnh ô gốc (cùng ô hành trang); máy J2ME màn nhỏ (không cảm ứng) 24. */
     static int coOGoc() {
         if (VungCham.MIN < 20 && (Canvas.w <= 320 || Canvas.h <= 240)) {
@@ -678,10 +702,15 @@ public final class ManNhanVat extends Screen {
      * lưới thấy >= 3 hàng; không vừa thì xếp dọc (3 cột x 2 hàng mỗi bên, hành trang dưới).
      */
     static int[] boCuc(int w, int h) {
+        return boCuc(w, h, caoHangDh());
+    }
+
+    /** boCuc với hàng Danh hiệu cao hP. */
+    static int[] boCuc(int w, int h, int hP) {
         int k = Bang.cach(), min = VungCham.MIN;
         int goc = Math.max(min, coOGoc());
         int tran = Math.max(goc, Math.min(34, goc * 5 / 4));
-        int giua = h - 8 - caoDauNv() - caoHangDh() - 2 * k;
+        int giua = h - 8 - caoDauNv() - hP - 2 * k;
         int hLuoi = h - LuoiTui.caoKhungGon(0);
         // một cột 6 ô mỗi bên
         int sA = Math.min(tran, (giua - 5 * k) / 6);
@@ -782,13 +811,13 @@ public final class ManNhanVat extends Screen {
     /** Viên Danh hiệu (lối vào bảng Danh hiệu) canh giữa hàng (x, y, w, h) dưới sân khấu - đủ chữ (cả bề ngang khối). */
     void veDanhHieuNv(Graphics g, MainChar m, int x, int y, int w, int h) {
         boolean coDh = m.danhHieuTen != null;
-        String chu = (coDh ? m.danhHieuTen : "Danh hiệu") + (ChuUI.bo != null ? " ›" : " >");   // phông ảnh J2ME không có "›"
-        int hDh = ManDanhHieu.hVien();
-        int yDh = y + (h - hDh) / 2;
+        String chu = chuDanhHieu(m);
         int wMax = w - 4;
-        int wv = ManDanhHieu.vien(g, -10000, yDh, chu, coDh ? m.danhHieuHiem : 0, null, wMax);   // đo bề ngang
+        int hDh = ManDanhHieu.hVien(ManDanhHieu.soDongVien(chu, wMax));   // 0.9.18: tên dài 2-3 dòng, không cắt
+        int yDh = y + (h - hDh) / 2;
+        int wv = ManDanhHieu.vienDu(g, -10000, yDh, chu, coDh ? m.danhHieuHiem : 0, wMax);   // đo bề ngang
         int xv = x + w / 2 - wv / 2;
-        ManDanhHieu.vien(g, xv, yDh, chu, coDh ? m.danhHieuHiem : 0, null, wMax);
+        ManDanhHieu.vienDu(g, xv, yDh, chu, coDh ? m.danhHieuHiem : 0, wMax);
         int wcDh = Math.min(w, Math.max(wv + 4, VungCham.MIN));
         VungCham.them(g, x + w / 2 - wcDh / 2, y, wcDh, h, new IAction() {
             public void perform() {
@@ -1228,9 +1257,19 @@ public final class ManNhanVat extends Screen {
         // 0.9.7 lối vào DUY NHẤT của bảng Danh hiệu: viên danh hiệu đang đeo (hoặc "Danh hiệu") cạnh huy hiệu hệ
         {
             boolean coDh = m.danhHieuTen != null;
-            String chu = coDh ? m.danhHieuTen : "Danh hiệu";
-            int wv = ManDanhHieu.vien(g, xb + 2, yy, chu + " ›", coDh ? m.danhHieuHiem : 0, null, xx + ww - xb - 4);
-            VungCham.them(g, xb, yy - 4, Math.max(wv + 4, VungCham.MIN), Math.max(ManDanhHieu.hVien() + 8, VungCham.MIN), new IAction() {
+            String chu = (coDh ? m.danhHieuTen : "Danh hiệu") + " ›";
+            // 0.9.18: tên dài không vừa cạnh huy hiệu hệ (cần thêm dòng / vẫn bị cắt) -> xuống hàng riêng cả bề ngang; vẫn
+            // không vừa -> 2-3 dòng (không cắt)
+            int wToi = xx + ww - xb - 4, nDong = ManDanhHieu.soDongVien(chu, wToi);
+            if (nDong > 1 && xb > xx && (ManDanhHieu.soDongVien(chu, ww - 4) < nDong || !ManDanhHieu.duTen(chu, wToi))) {
+                yy += 17;
+                xb = xx;
+                wToi = ww - 4;
+                nDong = ManDanhHieu.soDongVien(chu, wToi);
+            }
+            int hv = ManDanhHieu.hVien(nDong);
+            int wv = ManDanhHieu.vienDu(g, xb + 2, yy, chu, coDh ? m.danhHieuHiem : 0, wToi);
+            VungCham.them(g, xb, yy - 4, Math.max(wv + 4, VungCham.MIN), Math.max(hv + 8, VungCham.MIN), new IAction() {
                 public void perform() {
                     ManDanhHieu.moTuHoSo();
                 }
@@ -1238,6 +1277,7 @@ public final class ManNhanVat extends Screen {
             if (ChamMoi.co(ChamMoi.DANH_HIEU)) {
                 ChuDe.cham(g, xb + 2 + wv - 2, yy + 1);
             }
+            yy += hv - ManDanhHieu.hVien();
         }
         yy += 17;
         // thanh mảnh có nhãn

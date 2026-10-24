@@ -304,6 +304,98 @@ public final class ManDanhHieu extends ManBang {
         return w;
     }
 
+    /**
+     * 0.9.18: tên danh hiệu ở thẻ nhân vật KHÔNG cắt (chủ dự án: tên dài phải vừa ở mọi cỡ, cả J2ME): vừa viên thường
+     * (vien, một dòng) thì giữ nguyên; không thì ngắt ở dấu cách thành 2 dòng (3 nếu 2 chưa đủ), bỏ đuôi " ›" / " >"
+     * trước khi phải cắt tên. Chữ trả về là chữ VẼ RA (font ảnh J2ME đổi chữ qua ChuPokemon.D lúc vẽ).
+     */
+    public static String[] boCucVien(String ten, int wToiDa) {
+        String s = ten == null ? "" : ten;
+        if (ChuUI.bo == null) {
+            s = ChuPokemon.D(s);
+        }
+        if (ChuDe.rong(s, ChuDe.NHAN) <= Math.max(20, wToiDa - 16)) {
+            return new String[]{s};
+        }
+        int w = Math.max(20, wToiDa - LE_NHIEU_DONG);
+        // ít dòng nhất; cùng số dòng thì bỏ đuôi gợi ý trước khi thêm dòng (không để "›" một mình một dòng)
+        boolean duoi = s.endsWith(" \u203a") || s.endsWith(" >");
+        String goc = duoi ? s.substring(0, s.length() - 2) : s;
+        for (int n = 1; n <= SO_DONG_VIEN; n++) {
+            String[] d = ChuDe.ngat(s, ChuDe.NHAN, w, n);
+            if (du(d, s)) {
+                return d;
+            }
+            if (duoi) {
+                d = ChuDe.ngat(goc, ChuDe.NHAN, w, n);
+                if (du(d, goc)) {
+                    return d;
+                }
+            }
+        }
+        return ChuDe.ngat(goc, ChuDe.NHAN, w, SO_DONG_VIEN);
+    }
+
+    /** Số dòng tối đa của viên danh hiệu nhiều dòng. */
+    static final int SO_DONG_VIEN = 3;
+    /** Viên nhiều dòng: bề ngang = chữ + LE_NHIEU_DONG (viền 2 + lề 3 mỗi bên). */
+    static final int LE_NHIEU_DONG = 10;
+
+    /** Các dòng ghép lại (cách một dấu cách) đúng bằng s - không mất chữ, không "…". */
+    static boolean du(String[] d, String s) {
+        StringBuffer b = new StringBuffer();
+        for (int i = 0; i < d.length; i++) {
+            if (i > 0) {
+                b.append(' ');
+            }
+            b.append(d[i]);
+        }
+        return b.toString().equals(s);
+    }
+
+    /** Viên tên ten ở bề ngang wToiDa giữ đủ tên (có hoặc không đuôi gợi ý), không cắt. */
+    public static boolean duTen(String ten, int wToiDa) {
+        String s = ten == null ? "" : ten;
+        if (ChuUI.bo == null) {
+            s = ChuPokemon.D(s);
+        }
+        String[] d = boCucVien(ten, wToiDa);
+        return du(d, s) || (s.endsWith(" \u203a") || s.endsWith(" >")) && du(d, s.substring(0, s.length() - 2));
+    }
+
+    /** Số dòng viên tên ten ở bề ngang tối đa wToiDa. */
+    public static int soDongVien(String ten, int wToiDa) {
+        return boCucVien(ten, wToiDa).length;
+    }
+
+    /** Cao viên n dòng. */
+    public static int hVien(int n) {
+        return n <= 1 ? hVien() : n * ChuDe.cao(ChuDe.NHAN) + 4;
+    }
+
+    /** Viên danh hiệu thẻ nhân vật (không biểu tượng): vừa thì như vien(); không thì nhiều dòng thay vì cắt. Trả bề ngang. */
+    public static int vienDu(Graphics g, int x, int y, String ten, int doHiem, int wToiDa) {
+        String[] d = boCucVien(ten, wToiDa);
+        if (d.length == 1 && ChuDe.rong(d[0], ChuDe.NHAN) <= Math.max(20, wToiDa - 16)) {
+            return vien(g, x, y, d[0], doHiem, null, wToiDa);   // d[0]: có thể đã bỏ đuôi gợi ý cho vừa
+        }
+        int lh = ChuDe.cao(ChuDe.NHAN);
+        int h = hVien(d.length), mau = ChuDe.mauDanhHieu(doHiem);
+        int w = 0;
+        for (int i = 0; i < d.length; i++) {
+            w = Math.max(w, ChuDe.rong(d[i], ChuDe.NHAN));
+        }
+        w += LE_NHIEU_DONG;
+        GiaoDien.khoi(g, x, y, w, h, 2, ChuDe.VIEN);
+        GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, 1, mau);
+        GiaoDien.khoi(g, x + 2, y + 2, w - 4, h - 4, 1, ChuDe.nenDanhHieu(doHiem));
+        int y0 = y + (h - d.length * lh) / 2;
+        for (int i = 0; i < d.length; i++) {
+            ChuDe.chu(g, d[i], x + w / 2, y0 + i * lh, ChuDe.NHAN, GiaoDien.pha(mau, ChuDe.CHU, 1, 2), 2);
+        }
+        return w;
+    }
+
     /** "3 ngày 4 giờ" / "5 giờ" / "12 phút". */
     static String chuConLai(int phut) {
         int ngay = phut / 1440, gio = (phut % 1440) / 60, p = phut % 60;
