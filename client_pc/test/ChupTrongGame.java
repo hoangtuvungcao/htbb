@@ -270,7 +270,9 @@ public class ChupTrongGame {
             "cua_hang_nguyen_lieu", "cua_hang_nguyen_lieu_the", "kho_do", "kho_do_the", "luyen_do", "luyen_do_dat", "kham",
             "hop_thanh",
             // 0.9.14: thẻ vật phẩm dạng thuốc theo bảng máy chủ (-104 kiểu 9) - Sáo gọi Tauros / nguyên liệu sự kiện
-            "tui_sao_goi", "tui_nguyen_lieu_su_kien"};
+            "tui_sao_goi", "tui_nguyen_lieu_su_kien",
+            // main 3e7649b0: Vé dịch chuyển (thuốc 162, bảng 163 dòng) - thẻ "Vé / thẻ" + nút Sử dụng
+            "tui_ve_dich_chuyen"};
         kiemMenuNhiemVu();
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
@@ -348,6 +350,10 @@ public class ChupTrongGame {
                     kiemMucNhiemVu(ten + " " + TEN_CO[c]);
                 }
                 kiemXemThu(ten, ten + " " + TEN_CO[c]);
+                if ("tui_ve_dich_chuyen".equals(ten)) {
+                    kiem(coChu("Vé / thẻ") && coChu("Vé dịch chuyển"), ten + " " + TEN_CO[c] + " the ve: thieu loai 'Ve / the' / ten");
+                    kiem(coVung("tvp-dung"), ten + " " + TEN_CO[c] + " the ve: thieu nut Su dung");
+                }
                 if (laHq(ten)) {
                     final String nh = ten + " " + TEN_CO[c];
                     final String tn = ten;
@@ -572,14 +578,16 @@ public class ChupTrongGame {
         try {
             String[] tenThuoc = {"", "Thuốc hồi HP", "Siêu thuốc HP", "Thuốc hồi máu tối đa", "Ether", "Ether lớn", "Elixir tối đa"};
             int[] anh = {0, 0, 1, 2, 3, 4, 5};
-            game.model.Potion[] lp = new game.model.Potion[120];
+            // main 3e7649b0: máy chủ có 163 dòng thuốc (162 = Vé dịch chuyển) - bảng như gói đăng nhập
+            game.model.Potion[] lp = new game.model.Potion[163];
             for (int i = 0; i < lp.length; i++) {
                 lp[i] = new game.model.Potion();
                 lp[i].index = (short) (i < anh.length ? anh[i] : 0);
-                lp[i].name = i < tenThuoc.length ? tenThuoc[i] : "Thuốc " + i;
+                lp[i].name = i < tenThuoc.length ? tenThuoc[i] : i == 162 ? "Vé dịch chuyển" : "Thuốc " + i;
                 lp[i].delay = 3000;
             }
             game.model.MainChar.listPotion = lp;
+            game.model.Char.CHAR_POTION = (short) lp.length;
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -927,14 +935,15 @@ public class ChupTrongGame {
             game.pokemon.ManNhanVat.mo(0);
             dat(nv, "o", 7);   // găng: không... (có 1) -> dùng Ruy băng? chọn ô Huy hiệu 2 (trống)
             dat(nv, "o", 6);
-        } else if ("tui_sao_goi".equals(ten) || "tui_nguyen_lieu_su_kien".equals(ten)) {
+        } else if ("tui_sao_goi".equals(ten) || "tui_nguyen_lieu_su_kien".equals(ten) || "tui_ve_dich_chuyen".equals(ten)) {
             // gói -104 kiểu 9 thật qua MessageHandler -> DungDo -> MoTaVatPham
             try {
                 java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
                 java.io.DataOutputStream o = new java.io.DataOutputStream(bo);
                 o.writeByte(game.pokemon.MoTaVatPham.KIEU);
                 o.writeUTF("64\tVật phẩm gọi thú cưỡi\tDùng để nhận thú cưỡi Tauros vĩnh viễn (vào Ô thú, cấp 1).\t1\t\n"
-                        + "103\tNguyên liệu sự kiện\tLá vàng: nguyên liệu sự kiện.\t0\tĐổi ở NPC sự kiện khi sự kiện mở (không dùng trực tiếp từ túi).");
+                        + "103\tNguyên liệu sự kiện\tLá vàng: nguyên liệu sự kiện.\t0\tĐổi ở NPC sự kiện khi sự kiện mở (không dùng trực tiếp từ túi).\n"
+                        + "162\tVé / thẻ\tDùng trong Hành trang: dịch chuyển về làng hoặc thành phố đã mở. Dùng 1 lần là hết. Không dùng khi đang đánh Gym, trong hầm ngục, PvP, giao hàng hay khi bị PK.\t1\t");
                 java.lang.reflect.Constructor<network.Message> k0 = network.Message.class.getDeclaredConstructor(byte.class, byte[].class);
                 k0.setAccessible(true);
                 game.pokemon.DungDo.nhan(k0.newInstance(Byte.valueOf((byte) -104), bo.toByteArray()));
@@ -942,14 +951,16 @@ public class ChupTrongGame {
                 throw new RuntimeException(e);
             }
             game.model.MainChar mc0 = game.render.Canvas.gameScr.mainChar;
-            if (mc0.potions.length < 162) {
-                int[] moi = new int[162];
+            if (mc0.potions.length < 163) {
+                int[] moi = new int[163];
                 System.arraycopy(mc0.potions, 0, moi, 0, mc0.potions.length);
                 mc0.potions = moi;
             }
             mc0.potions[64] = 1;
             mc0.potions[103] = 3;
-            game.pokemon.TheVatPham.mo(new Integer("tui_sao_goi".equals(ten) ? 64 : 103), game.pokemon.TheVatPham.TUI, false, null);
+            mc0.potions[162] = 2;
+            game.pokemon.TheVatPham.mo(new Integer("tui_sao_goi".equals(ten) ? 64 : "tui_ve_dich_chuyen".equals(ten) ? 162 : 103),
+                    game.pokemon.TheVatPham.TUI, false, null);
         } else if ("nv_chi_tiet".equals(ten)) {
             game.pokemon.ManNhanVat.mo(0);
             dat(nv, "o", 1);
