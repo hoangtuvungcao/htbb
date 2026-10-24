@@ -84,6 +84,15 @@ final class LuongManh extends InputStream {
         return this.con;
     }
 
+    /** các mảnh (KhoGoi lưu gói vào kho, không ghép mảng lớn) */
+    byte[][] ds() {
+        return this.ds;
+    }
+
+    int[] dau() {
+        return this.dau;
+    }
+
     /** tổng số byte dữ liệu gói (kiểm thử) */
     int tong() {
         return this.tong;

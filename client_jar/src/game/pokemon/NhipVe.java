@@ -265,9 +265,15 @@ public final class NhipVe {
 
     // ------------------------------------------------------------------ nhịp vẽ thêm (Canvas.run)
     /**
-     * Sau khi xong nhịp logic + khung vẽ của nhịp: vẽ thêm khung tới hết nhịp (nếu fps &gt; 25), rồi ngủ phần còn lại.
+     * Sau khi xong nhịp logic: vẽ các khung theo lưới đều 1000/fps tới hết nhịp (nếu fps &gt; 25; 0.9.15: kể cả khung đầu
+     * nhịp - Canvas.run không vẽ riêng nữa), rồi ngủ phần còn lại.
      * Trả true nếu đã tự ngủ hết nhịp.
      */
+    /** Vẽ > 25 khung/giây: Canvas.run KHÔNG vẽ khung ngay sau logic, mọi khung do veThem vẽ theo lưới đều. */
+    public static boolean veTheoLuoi() {
+        return fps > 25;
+    }
+
     public static boolean veThem(Canvas c, long dauMs) {
         if (fps <= 25) {
             return false;
@@ -278,7 +284,6 @@ public final class NhipVe {
         if (keTiep < now - 4 * buoc || keTiep > now + 4 * buoc) {
             keTiep = now;
         }
-        keTiep += buoc;   // khung của nhịp vừa vẽ
         while (true) {
             now = System.currentTimeMillis();
             if (keTiep >= het) {

@@ -328,6 +328,10 @@ public class LoginHandler implements ICommandHandler {
                 // duoc goi -127). Client cu dung o so ban -> giu 0, khong nhan goi nen nao.
                 if (dis.available() >= 4) {
                     session.khaNang = dis.readInt();
+                    // 0.9.15: client co kho goi khai cac goi du lieu lon dang giu (io.KhoGoi)
+                    if (banClient >= io.KhoGoi.BAN_TOI_THIEU && (session.khaNang & io.KhoGoi.KHA_NANG_KHO) != 0) {
+                        session.khoGoi = io.KhoGoi.docKhai(dis);
+                    }
                 }
             }
         } catch (final Exception exBan) {

@@ -53,6 +53,16 @@ public final class Hud implements NenAndroid.LopPhu {
     /** Hiệu ứng cao (hạt, hào quang, chuyển cảnh...) / thấp. */
     public static boolean hieuUngCao = true;
     public static boolean rung = true;
+    /**
+     * 0.9.15: khung hình 60 (nội suy vị trí giữa hai nhịp logic 40 ms, như bản PC - game.pokemon.NhipVe) hoặc 30 / giây
+     * (tiết kiệm pin). Trước 0.9.15 APK chỉ vẽ mỗi nhịp logic = 25 khung / giây, lệch nhịp màn 60 Hz -> giật.
+     */
+    public static boolean khung60 = true;
+
+    /** Đặt nhịp vẽ của game theo lựa chọn. */
+    public static void apDungKhung() {
+        game.pokemon.NhipVe.fps = khung60 ? 60 : 30;
+    }
     static boolean chatMo = true;
     private static SharedPreferences pref;
 
@@ -67,6 +77,7 @@ public final class Hud implements NenAndroid.LopPhu {
             }
             hieuUngCao = pref.getBoolean("hieuUngCao", true);
             rung = pref.getBoolean("rung", true);
+            khung60 = pref.getBoolean("khung60", true);
             chatMo = pref.getBoolean("chatMo", true);
         } catch (Throwable e) {
             // dùng mặc định
@@ -83,6 +94,7 @@ public final class Hud implements NenAndroid.LopPhu {
         }
         e.putBoolean("hieuUngCao", hieuUngCao);
         e.putBoolean("rung", rung);
+        e.putBoolean("khung60", khung60);
         e.remove("zoomTheGioi"); // camera cố định (HdZoom): bỏ tuỳ chọn Phóng cũ
         e.putBoolean("chatMo", chatMo);
         e.apply();
@@ -96,6 +108,7 @@ public final class Hud implements NenAndroid.LopPhu {
 
     public static void khoiTao() {
         nap();
+        apDungKhung();
         ChuApk.bat();   // 0.9.5: chữ giao diện + biểu tượng vector (game.pokemon.ChuDe / BieuTuong)
         NenAndroid.ganLopPhu(I);
         // 0.9.3: phép phóng cho giao diện mới (Pokémon to ở màn Nhân vật, icon đồ trong ô lớn)
@@ -1287,7 +1300,7 @@ public final class Hud implements NenAndroid.LopPhu {
             chu(c, TEN_NHOM[i], r.centerX(), r.top - 3, 7.5f, 0xFFFFFFFF, 0xC0000000, 2);
         }
         // bảng nút chỉnh giữa màn
-        float w = 340, h = 84;
+        float w = 340, h = 104;
         float x0 = (W - w) / 2, y0 = H * 0.26f;
         HdVe.bangKinh(c, x0, y0, x0 + w, y0 + h, 12);
         chu(c, "Chỉnh nút: kéo để dời, − / + đổi cỡ (" + TEN_NHOM[nhomChon] + ")", W / 2f, y0 + 13, 8f, 0xFFFFFFFF, 0, 2);
@@ -1324,6 +1337,27 @@ public final class Hud implements NenAndroid.LopPhu {
             PV.setStrokeWidth(1f);
             c.drawCircle(kx, r.centerY(), 5.5f, PV);
         }
+        // 0.9.15: Khung hình 60 / 30 (tiết kiệm pin)
+        chu(c, "Khung hình", x0 + 10, y0 + 93, 8f, 0xFFFFFFFF, 0, 0);
+        for (int i = 0; i < 2; i++) {
+            RectF r = NUT_KHUNG[i];
+            float bx = x0 + 70 + i * ((w - 80) / 2);
+            r.set(bx + 1.5f, y0 + 80, bx + (w - 80) / 2 - 1.5f, y0 + 99);
+            boolean bat = (i == 0) == khung60;
+            HdVe.tronDoc(c, r.left, r.top, r.right, r.bottom, 8, bat ? 0xFF6FA6EA : 0xFF2A4C80, bat ? 0xFF3D7DCA : 0xFF15284A);
+            HdVe.vienTron(c, r.left, r.top, r.right, r.bottom, 8, 0.7f, 0x80FFFFFF);
+            chu(c, i == 0 ? "60 khung/giây" : "30 (tiết kiệm pin)", r.centerX(), r.centerY() + 2.4f, 6.6f, 0xFFFFFFFF, 0, 2);
+        }
+    }
+
+    /** 0.9.15: hai nút chọn khung hình 60 / 30 trong bảng Chỉnh nút. */
+    static final RectF[] NUT_KHUNG = {new RectF(), new RectF()};
+
+    /** Chọn khung hình (0 = 60, 1 = 30) - lưu và áp dụng ngay. */
+    static void chonKhung(int i) {
+        khung60 = i == 0;
+        apDungKhung();
+        luu();
     }
 
     static final RectF[] THANH_AM = {new RectF(), new RectF()};
@@ -1391,6 +1425,13 @@ public final class Hud implements NenAndroid.LopPhu {
             for (int i = 0; i < NUT_CS.length; i++) {
                 if (NUT_CS[i].contains(x, y)) {
                     bamChinhSua(i);
+                    return;
+                }
+            }
+            for (int i = 0; i < NUT_KHUNG.length; i++) {
+                if (NUT_KHUNG[i].contains(x, y)) {
+                    if (rung) NenAndroid.rungNhe();
+                    chonKhung(i);
                     return;
                 }
             }

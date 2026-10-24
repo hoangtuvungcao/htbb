@@ -325,17 +325,21 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 game.pokemon.GiamSat.nhipOk();
                 game.pokemon.NhipVe.xong(game.pokemon.NhipVe.LOGIC);
                 game.pokemon.KhoiDong.pha = "ve";
-                repaint();
-                if (isBB) {
-                    synchronized (LOCK) {
-                        try {
-                            LOCK.wait(1000L);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                // 0.9.15: vẽ > 25 khung/giây (PC, APK) -> MỌI khung theo lưới đều 1000/fps trong NhipVe.veThem (nội suy);
+                // trước đây thêm một khung ngay sau logic lệch lưới -> khoảng giữa hai khung 17 / 29 ms xen kẽ (giật)
+                if (!game.pokemon.NhipVe.veTheoLuoi()) {
+                    repaint();
+                    if (isBB) {
+                        synchronized (LOCK) {
+                            try {
+                                LOCK.wait(1000L);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+                    } else {
+                        serviceRepaints();
                     }
-                } else {
-                    serviceRepaints();
                 }
                 if (game.pokemon.NhipVe.veThem(this, l1)) {
                     continue;   // 0.9.5: đã vẽ thêm khung (60 khung/giây) và ngủ hết nhịp 40 ms

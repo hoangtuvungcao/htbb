@@ -33,6 +33,8 @@ public class Session extends Thread {
     public String platfClient = "";
     /** Kha nang client tu bao (so nguyen sau so ban o goi dang nhap; 0 = client cu). Bit io.GoiNen.KHA_NANG_NEN. */
     public volatile int khaNang = 0;
+    /** 0.9.15: cac goi client da co trong kho (io.KhoGoi, khai o goi dang nhap); null = client khong co kho. */
+    public volatile java.util.Set<String> khoGoi = null;
     public byte vsTile = 0;
     public byte firmWareReg = 0;
     public boolean isLogin = false;
@@ -426,6 +428,8 @@ public class Session extends Thread {
             if (m != null) {
                 // Bo dem chan doan - khong lam gi khi khong co tep debug_goi_tin.txt (xem DemGoiTin).
                 DemGoiTin.ghiRa(this.charname, m.command);
+                // 0.9.15: goi du lieu lon client da co trong kho -> goi "dung kho" nho thay the (io.KhoGoi)
+                m = KhoGoi.thayThe(this, m);
                 for(int i = 0; i < hasGroup.size(); ++i) {
                     if (((Hashtable)hasGroup.get(i)).get(m.command) != null) {
                         this.sender.sendMessage(m, i);

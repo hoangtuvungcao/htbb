@@ -310,7 +310,18 @@ public class Session_ME implements ISession {
                         game.pokemon.ManTai.baoLoi("Không đủ bộ nhớ để nhận dữ liệu từ máy chủ.");
                         continue;
                     }
+                    // 0.9.15 kho goi (KhoGoi): -117 kieu 0 = luu goi ke tiep, kieu 1 = goi lay tu kho (hong -> ngat, noi lai)
+                    if (message.command == KhoGoi.LENH) {
+                        message = KhoGoi.nhan(message);
+                        if (message == null) {
+                            break;
+                        }
+                        if (message == KhoGoi.BO_QUA) {
+                            continue;
+                        }
+                    }
                     xuLy(message);
+                    KhoGoi.sauXuLy(message);
                 }
             } catch (Throwable e2) {
                 // 0.9.7.1: bắt cả Error (OutOfMemoryError...) - trước chỉ bắt Exception: luồng mạng chết im lặng, không

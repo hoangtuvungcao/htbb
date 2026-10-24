@@ -833,6 +833,9 @@ public class TeamServer {
             io.GoiNen.BAT = parseIntDefault(p.getProperty("sv.nenGoi"), 1) != 0;
             io.GoiNen.NGUONG = Math.max(64, parseIntDefault(p.getProperty("sv.nenGoiTu"), 2048));
             System.out.println("NEN GOI -> " + (io.GoiNen.BAT ? "bat, goi >= " + io.GoiNen.NGUONG + " B (chi client co kha nang nen)" : "tat"));
+            // 0.9.15: kho goi phia client (io.KhoGoi) - goi du lieu lon client da co thi khong gui lai
+            io.KhoGoi.BAT = parseIntDefault(p.getProperty("sv.khoGoi"), 1) != 0;
+            System.out.println("KHO GOI -> " + (io.KhoGoi.BAT ? "bat (client >= " + io.KhoGoi.BAN_TOI_THIEU + " co kho)" : "tat"));
             // 0.9.7.1: chia goi lon thanh manh cho client J2ME tu bao gom duoc (io.GoiManh)
             io.GoiManh.BAT = parseIntDefault(p.getProperty("sv.manhGoi"), 1) != 0;
             io.GoiManh.NGUONG = Math.max(1024, parseIntDefault(p.getProperty("sv.manhGoiTu"), 16384));

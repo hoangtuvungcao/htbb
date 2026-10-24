@@ -153,6 +153,7 @@ public final class Kiem {
         KiemTinhLuyenBaoVat.chay();
         KiemDonLog.chay();
         KiemToiUuLag.chay();
+        KiemKhoGoi.chay();
         KiemCaiTaoCaiTrang.chay();
         KiemBangMaNguon.chay();
         KiemNpcHoaTieuNhieuKhu.chay();

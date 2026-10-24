@@ -86,7 +86,9 @@ public final class AutoGuard {
             // số bản jar (build.sh sinh PhienBan.java): server (real.BanMoiNhat) báo khi có bản mới hơn
             message.writer().writeInt(PhienBan.BAN);
             // 0.9.7: khả năng client (bit 1 = giải nén gói -127, chỉ PC / Android) - server cũ bỏ qua 4 byte này
-            message.writer().writeInt(network.Session_ME.khaNang());
+            // 0.9.15: bit 4 = co kho goi; ngay sau la danh sach goi du lieu lon dang giu (network.KhoGoi) - server cu bo qua
+            message.writer().writeInt(network.Session_ME.khaNang() | network.KhoGoi.khaNang());
+            network.KhoGoi.khai(message.writer());
             GameService.gI().session.sendMessage(message);
             message.cleanup();
             return true;

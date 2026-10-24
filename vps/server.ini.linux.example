@@ -205,6 +205,8 @@ sv.tranGoiTraCuu=600
 # Nén gói lớn (>= sv.nenGoiTu byte, zlib) — CHỈ cho client tự báo giải nén được (0.9.7+ PC/Android); client cũ không đổi gì.
 sv.nenGoi=1
 sv.nenGoiTu=2048
+# Kho gói phía client (0.9.15+): gói dữ liệu lớn (lệnh 25/26/1/-108/105) client đã giữ thì không gửi lại; client cũ không đổi gì.
+sv.khoGoi=1
 # Chia gói lớn (>= sv.manhGoiTu byte) thành mảnh sv.coManhGoi byte — CHỈ cho client J2ME tự báo gom được (0.9.7.1+); jar 0.9.7 không đổi gì.
 sv.manhGoi=1
 sv.manhGoiTu=16384

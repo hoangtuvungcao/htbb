@@ -32,6 +32,18 @@ public class Message {
      */
     public Message kemTheo = null;
 
+    /** Bam du lieu cho io.KhoGoi (nho lai: goi phat chung nhieu phien chi bam mot lan). */
+    private long bamKho;
+    private boolean daBamKho;
+
+    synchronized long bamKho(final int tu, final int n) {
+        if (!this.daBamKho) {
+            this.bamKho = KhoGoi.bam(this.toByteArray(), tu, n);
+            this.daBamKho = true;
+        }
+        return this.bamKho;
+    }
+
     public Message(int command) {
         this.command = command;
         this.os = new BoDem();

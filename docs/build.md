@@ -244,6 +244,38 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.15 (`BAN=915`: sổ Nhiệm vụ ghi rõ mục tiêu, Huấn luyện, tên trang bị "· Cấp N", chống lag, kho gói, APK 60 khung)
+
+Client + máy chủ + SQL: `PHIEN_BAN=0.9.15-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 15`; `MIDlet-Version`
+0.9.15). Thứ tự: `nang_cap_csdl.sh` (khối `sua_muc_tieu_nhiem_vu.sql`, `loc_tu_cam_ca_tu.sql`, `doi_ten_trang_bi_cap.sql`,
+`doi_icon_trang_bi.sql` - đã chạy cùng các jar máy chủ trước) -> `htbb-server.jar` (kho gói `-117`) -> client. Client 0.9.15
+với máy chủ cũ vẫn chạy (không có kho gói); client cũ với máy chủ mới nhận đúng từng byte như trước.
+
+1. Sổ Nhiệm vụ (main 2d557fa7): mỗi hàng 2-3 dòng **mục tiêu** (đếm từ dữ liệu + bảng sinh quái thật, "Mục tiêu: … ·
+   Trả: …"), xong tô vàng, khoá đỏ, "của ai" ở khe đợi; nút **"Nhiệm vụ của tôi"** ở NPC 5 / 8 / 23 và trong sổ. Máy chủ
+   gửi lại `-64` MỖI lần tiến độ tăng và đuôi `-64` (mục / trả / khoá / cờ) chỉ cho client `BAN >= 915` (client cũ nhận tên
+   kèm mục tiêu). Trang bị: nút **"Huấn luyện"** sáng theo Điểm huấn luyện + hộp giải thích; lên cấp báo "+N Điểm huấn
+   luyện" (main 74def795: một hàm thưởng chung mọi đường EXP, bù điểm lên cấp còn thiếu lúc nạp).
+2. Tên trang bị trùng -> "<Tên> · Cấp N" (`doi_ten_trang_bi_cap.sql`), icon gốc đúng ô (`doi_icon_trang_bi.sql`); client
+   (`ChuDe.cat` / `boCap`) giữ cấp khi cắt tên ("<Tên…> C24"), bỏ "· Cấp N" ở hàng đã hiện cấp, tên dài xuống dòng (túi, Kho
+   đồ, cửa hàng, chợ, thẻ vật phẩm). Tạo Pokémon: tên 4-10 ký tự (chữ hướng dẫn), lọc từ cấm theo cả từ (`LocTuCam`).
+3. Chống lag (máy chủ, main d754da33): gom ghi socket khi kết nối đang đông (CPU 300 bot 484% -> 148%, `-Dhtbb.gomGuiMs`),
+   bỏ chờ 2 giây lần chọn Pokémon đầu của một IP (vào game 2,1 s -> 0,08 s). Client (d781ed06): bỏ cấp phát mỗi khung (chữ
+   hoa có dấu ghép lại mỗi lần vẽ, cắt tên HUD, tên ảnh Pokémon, PP ném lỗi mỗi khung): Hành trang J2ME 50,9 -> 17,1 KB /
+   khung; gửi một khung / gói (trước 4 lần ghi TCP) + đánh thức luồng gửi ngay; PC / APK đọc socket có đệm.
+4. **Kho gói** (`io.KhoGoi`, client `network.KhoGoi`): client `BAN >= 915` giữ gói dữ liệu lớn 25 / 26 / 1 / -108 / 105 trong
+   RMS (mỗi mục một kho `gc<i>_<o>`, khúc 8 KB, băm FNV-1a 64) và khai (lệnh, băm, độ dài) ở gói đăng nhập (bit khả năng 4);
+   gói đã có -> máy chủ gửi `-117` kiểu 1 (21 byte) thay gói gốc, gói mới / đã đổi -> `-117` kiểu 0 + gói gốc (client lưu).
+   Chỉ khai mục đọc lại đủ và đúng băm; đọc kho hỏng lúc dùng -> xoá kho, ngắt, tự nối lại nhận đủ. J2ME: một ô / lệnh, chỉ
+   lưu khi RMS còn trống >= gói + 256 KB và heap trống >= gói + 1 MB. Đo (PC thật, trễ 150 ms, 40 KB/s): vào thế giới
+   4,88 s / 141 KB (lần đầu) -> 1,86 s / 7-15 KB (đã có kho). Tắt: `sv.khoGoi=0`. Kiểm: `server/test/KiemKhoGoi`,
+   `client_pc/test/KiemKhoGoi.java` (`network.KiemKhoGoi`).
+5. **APK 60 khung/giây** (nội suy vị trí như PC, `game.pokemon.NhipVe`): mặc định 60, bảng Chỉnh nút có "Khung hình: 60
+   khung/giây / 30 (tiết kiệm pin)" (trước 0.9.15: 25 khung, lệch nhịp màn 60 Hz). J2ME giữ 25. Mọi khung > 25/giây vẽ theo
+   lưới đều (bỏ khung lệch ngay sau logic): 60 khung khoảng p90 29 -> 18 ms. Kiểm: `client_pc/test/KiemNhipKhung`.
+6. Máy chủ khác (không chặn theo `BAN`): đổi tuần chung thứ Hai 05:00 (cúp, tuần Pokémon, Đấu trường, vùng hoang dã), ngắm
+   tay PvP sát mép tầm, MOBA chưa mở trận từ chối `mto`.
+
 ### Bản 0.9.14 (`BAN=914`: thẻ vật phẩm đúng loại / mô tả, chữ client, thẻ lý do 2 dòng, chợ đấu giá)
 
 Client + máy chủ + SQL: `PHIEN_BAN=0.9.14-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 14`; `MIDlet-Version`

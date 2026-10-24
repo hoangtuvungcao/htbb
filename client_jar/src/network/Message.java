@@ -40,7 +40,11 @@ public class Message {
         this.dos = new DataOutputStream(this.os);
     }
 
+    /** du lieu goi nhan (KhoGoi luu vao kho sau khi xu ly); null voi goi ghi / goi manh */
+    byte[] tho;
+
     Message(byte command, byte[] data) {
+        this.tho = data;
         this.os = null;
         this.dos = null;
         this.is = null;
@@ -51,7 +55,7 @@ public class Message {
     }
 
     /** 0.9.7.1: gói gom từ nhiều mảnh (Session_ME.nhanManh) - đọc qua LuongManh, không ghép thành một mảng. */
-    private LuongManh manh;
+    LuongManh manh;
 
     Message(byte command, LuongManh in) {
         this.command = command;
