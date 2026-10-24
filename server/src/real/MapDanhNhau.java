@@ -656,10 +656,46 @@ class MapDanhNhau {
     }
 
 
+    /**
+     * Lang Pewter / Blackthorn / Cianwood (mapIDLoadMap 0/70/80): luat goc khong cho danh quai (lenh 9 / 106 bi bo qua im
+     * lang). Ngoai le: don nham boss Gym cua chinh nguoi danh (GymLauDai trieu hoi canh nguoi choi, ke ca trong lang) - truoc
+     * day danh boss Gym o Pewter khong gay sat thuong nao (bao loi 24/10/2026). Doc trom id quai dau tien roi tra lai vi
+     * tri doc goi tin. {@code nhieu}: goi 106 (skill byte, so quai byte, id short...); khong: goi 9 (id short, skill byte).
+     */
+    static boolean choDanhQuai(final Map map, final Char p, final Message message, final boolean nhieu) {
+        if (!Map.isMapLang(map)) {
+            return true;
+        }
+        if (message == null || message.dis == null || p == null) {
+            return false;
+        }
+        final DataInputStream dis = message.dis;
+        try {
+            dis.mark(64);
+            try {
+                if (nhieu) {
+                    dis.readByte();
+                    final int n = dis.readByte();
+                    for (int i = 0; i < n; i++) {
+                        if (BossLauDai.laGymCua(map.getMonster(dis.readShort(), p.inCountry, p.region), p)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                return BossLauDai.laGymCua(map.getMonster(dis.readShort(), p.inCountry, p.region), p);
+            } finally {
+                dis.reset();
+            }
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
     static void doAttackMonster(Map map, Char p, Message message) throws IOException {
         if (!p.cannotAttackWhenBienhinh()) {
             if (!p.isHoangSo() && !p.isHoangLoan()) {
-                if (map.mapIDLoadMap != 0 && map.mapIDLoadMap != 70 && map.mapIDLoadMap != 80) {
+                if (choDanhQuai(map, p, message, false)) {
                     if (map.nRegion > 0) {
                         ((Region) map.ALL_REGION.get(p.region)).doAttackMonster(p, message);
                     } else if (!p.countHit() && !p.freeze()) {
@@ -1156,7 +1192,7 @@ class MapDanhNhau {
     static void doAttackMultiTarget(Map map, Char p, Message message) {
         if (!p.cannotAttackWhenBienhinh()) {
             if (!p.isHoangSo() && !p.isHoangLoan()) {
-                if (map.mapIDLoadMap != 0 && map.mapIDLoadMap != 70 && map.mapIDLoadMap != 80) {
+                if (choDanhQuai(map, p, message, true)) {
                     try {
 
                         if (map.nRegion > 0) {

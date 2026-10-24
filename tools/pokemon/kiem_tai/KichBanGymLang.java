@@ -1,0 +1,236 @@
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Kich ban bot "DANH KHONG GAY SAT THUONG" (bao loi 24/10/2026, nguoi choi J2ME cap 27 o Pewter): nhan vat THUONG (khong
+ * GM) cap 27 danh bang duong J2ME (lenh 9 / 106, khong ngam) va - khi chay -Dban=915 - duong PC ngam tay (-113 ban).
+ *   gl_quai      Pokemon hoang da o dong Pallet (map 1): lenh 9 lam giam HP; -Dban>=908: phat ban -113 trung quai
+ *   gl_gym_lang  Thach dau Gym Pewter (So tay -> Thách đấu Gym) KHI DANG DUNG O PEWTER (lang, mapIDLoadMap 0): boss hien
+ *                canh minh; lenh 9 va lenh 106 deu lam giam HP boss (truoc ban sua: HP dung yen - MapDanhNhau bo qua moi
+ *                don danh quai trong lang)
+ *   gl_gym_ngoai Thach dau Gym o dong Pallet (ngoai thi tran): danh giam HP boss
+ *   gl_pvp_lang  Hai nguoi choi thuong o Pewter: lenh 6 khong lam ai mat HP (thi tran van an toan)
+ *
+ *   javac -d /tmp/bot tools/pokemon/kiem_tai/*.java
+ *   java -cp /tmp/bot -Ddb=htbb_db -Dtu=1 -Dden=5 -DtuThuong=101 -DdenThuong=110 KichBanGymLang 127.0.0.1 19129 kg
+ *   (them -Dban=915 de chay duong client PC / APK)
+ */
+public final class KichBanGymLang {
+
+    private KichBanGymLang() {
+    }
+
+    static final int CAP = 27;
+
+    /** Nhan vat THUONG cap {@code lv} (GM slv cong du diem tiem nang / ky nang tu 0.9.13), da cong diem vao chieu, o lang. */
+    static BotChucNang.Bot botThuongCap(BotChucNang.Bot gm, int lv) throws Exception {
+        BotChucNang.Bot b = BotChucNang.botThuong();
+        KichBanDS.veLang(b);
+        gm.gm("slv " + b.ten + " " + lv + " 0", 1200);
+        b.bom(800);
+        b.gui(34, (byte) 0, (short) Math.max(1, 5 * (lv - 1)));
+        b.bom(400);
+        for (int o = 0; o < 7; o++) for (int k = 0; k < 9; k++) { b.gui(36, (byte) o); b.bom(40); }
+        b.lamMoi();
+        b.bom(800);
+        return b;
+    }
+
+    static int hp(BotChucNang.Bot b, int id) throws IOException {
+        b.gui(7, (short) id);
+        b.bom(350);
+        int[] q = b.quai.get(id);
+        return q == null ? -1 : q[2];
+    }
+
+    static int chieuCo(BotChucNang.Bot b, int lan) {
+        List<Integer> co = new ArrayList<>();
+        for (int k = 0; k < Math.min(4, b.chieu.length); k++) if (b.chieu[k] > 0) co.add(k);
+        return co.isEmpty() ? 0 : co.get(lan % co.size());
+    }
+
+    /** Danh {@code lan} don lenh 9 (J2ME / khoa muc tieu). @return {hp truoc, hp sau}. */
+    static int[] danh9(BotChucNang.Bot b, int id, int lan) throws IOException {
+        int truoc = hp(b, id);
+        for (int i = 0; i < lan; i++) {
+            b.gui(9, (short) id, (byte) chieuCo(b, i));
+            b.bom(700);
+        }
+        return new int[]{truoc, hp(b, id)};
+    }
+
+    /** Danh {@code lan} don lenh 106 (chieu dien rong: chieu, so quai, id...). */
+    static int[] danh106(BotChucNang.Bot b, int id, int lan) throws IOException {
+        int truoc = hp(b, id);
+        for (int i = 0; i < lan; i++) {
+            b.gui(106, (byte) chieuCo(b, i), (byte) 1, (short) id);
+            b.bom(700);
+        }
+        return new int[]{truoc, hp(b, id)};
+    }
+
+    /** Ban ngam tay -113 (client &gt;= 908) thang vao quai. */
+    static int[] ban113(BotChucNang.Bot b, int id, int lan) throws IOException {
+        int truoc = hp(b, id);
+        b.gui(-113, (byte) 1, (byte) 1);
+        for (int i = 0; i < lan; i++) {
+            int[] q = b.quai.get(id);
+            if (q == null) break;
+            short[] h = KichBanNgamTay.huong(new int[]{b.px, b.py}, new int[]{q[0], q[1]}, false);
+            b.gui(-113, (byte) 0, (byte) chieuCo(b, i), (short) b.px, (short) b.py, h[0], h[1]);
+            b.bom(900);
+        }
+        return new int[]{truoc, hp(b, id)};
+    }
+
+    static String bang(String duong, int[] h, BotChucNang.Bot b) {
+        return duong + " hp " + h[0] + " -> " + h[1] + " (map " + b.mapId + ", cap " + b.lv + ", chieu " + java.util.Arrays.toString(b.chieu) + ")";
+    }
+
+    /** Ra dong Pallet (map 1) qua cong bac cua lang (khong GM). */
+    static boolean raPallet(BotChucNang.Bot b) throws IOException {
+        for (int t = 0; t < 3 && b.mapLoad != 1; t++) {
+            b.bom(800);
+            if (!KichBanHuongDan.quaCong(b, 0) && KichBanDS.laLang(b.mapId)) KichBanDS2.raNgoai(b);
+            if (b.mapLoad != 1 && !KichBanDS.laLang(b.mapId)) KichBanHuongDan.quaCong(b, 0);
+        }
+        return b.mapLoad == 1;
+    }
+
+    /** So tay -> Thách đấu Gym -> Gym dau (Pewter, cap 12). @return id boss hoac null. */
+    static Integer thachDauGym(BotChucNang.Bot b) throws IOException {
+        KichBanDS.timQuai(b, 0, 300);
+        Set<Integer> cu = new HashSet<>(b.quai.keySet());
+        int m0 = KichBanDS4.chonSoTay(b, 7);
+        b.doiMenu(m0, -527, 5, 2500);
+        int m = b.moc();
+        b.menu(-527, 5, 0);
+        String t = b.doiChu(m, 2500, "");
+        System.out.println("  thach dau: " + t);
+        return KichBanDS.quaiMoi(b, cu, 8000);
+    }
+
+    static void quai() throws Exception {
+        try (BotChucNang.Bot g = BotChucNang.botMoi(0); BotChucNang.Bot b = botThuongCap(g, CAP)) {
+            if (!raPallet(b)) { BotChucNang.ket("gl.quai", false, "khong ra duoc Pallet, map " + b.mapId); return; }
+            b.bom(2500);
+            List<Integer> song = KichBanDS.timQuai(b, 0, 300);
+            Integer gan = null;
+            long d = Long.MAX_VALUE;
+            for (int id : song) {
+                int[] q = b.quai.get(id);
+                long dd = (long) (q[0] - b.px) * (q[0] - b.px) + (long) (q[1] - b.py) * (q[1] - b.py);
+                if (q[4] < 20000 && dd < d) { d = dd; gan = id; }
+            }
+            if (gan == null) { BotChucNang.ket("gl.quai", null, "khong co Pokemon hoang da o Pallet"); return; }
+            // GM keo quai lai gan: GM toi canh quai, roi nguoi choi di bo toi GM khong duoc -> dung o quai bang cach doi
+            // quai di toi (quai tu dong di quanh); don gian: nguoi choi di bo toi o quai
+            int[] q = b.quai.get(gan);
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+            KichBanHuongDan.dongBoViTri(b);
+            int[] o = bd == null ? null : bd.oGan(q[0] / 16, q[1] / 16, 2);
+            if (o != null) b.diDuong(bd, o[0], o[1]);
+            b.bom(600);
+            if (BotChucNang.BAN >= 908) { // PC / APK: phat ban ngam tay truoc (quai yeu, lenh 9 co the ha luon)
+                int[] h2 = ban113(b, gan, 2);
+                BotChucNang.ket("gl.quai.ngam113", h2[0] > 0 && h2[1] < h2[0], bang("-113 ban", h2, b));
+                b.bom(1500);
+            }
+            int[] q2 = b.quai.get(gan);
+            if (q2 == null || q2[2] <= 0) { // con truoc da guc: chon con khac gan nhat
+                gan = null;
+                d = Long.MAX_VALUE;
+                for (int id : KichBanDS.timQuai(b, 0, 300)) {
+                    int[] qq = b.quai.get(id);
+                    long dd = (long) (qq[0] - b.px) * (qq[0] - b.px) + (long) (qq[1] - b.py) * (qq[1] - b.py);
+                    if (qq[4] < 20000 && dd < d) { d = dd; gan = id; }
+                }
+                if (gan == null) { BotChucNang.ket("gl.quai.lenh9", null, "het quai"); return; }
+                int[] qq = b.quai.get(gan);
+                KichBanHuongDan.dongBoViTri(b);
+                int[] o2 = bd == null ? null : bd.oGan(qq[0] / 16, qq[1] / 16, 2);
+                if (o2 != null) b.diDuong(bd, o2[0], o2[1]);
+                b.bom(600);
+            }
+            int[] h = danh9(b, gan, 6);
+            BotChucNang.ket("gl.quai.lenh9", h[0] > 0 && h[1] >= 0 && h[1] < h[0], bang("lenh 9 (J2ME)", h, b));
+        }
+    }
+
+    static void gymLang() throws Exception {
+        try (BotChucNang.Bot g = BotChucNang.botMoi(0); BotChucNang.Bot b = botThuongCap(g, CAP)) {
+            KichBanDS.veLang(b);
+            if (!KichBanDS.laLang(b.mapId)) { BotChucNang.ket("gl.gym_lang", false, "khong o lang, map " + b.mapId); return; }
+            Integer boss = thachDauGym(b);
+            if (boss == null) { BotChucNang.ket("gl.gym_lang", false, "khong thay boss Gym: " + b.chuTu(0)); return; }
+            int[] q = b.quai.get(boss);
+            System.out.println("  boss " + boss + " o " + q[0] + "," + q[1] + " hp " + q[2] + "/" + q[4] + " minh " + b.px + "," + b.py + " map " + b.mapId);
+            int[] h = danh9(b, boss, 6);
+            BotChucNang.ket("gl.gym_lang.lenh9", h[0] > 0 && h[1] < h[0], bang("lenh 9 (J2ME)", h, b));
+            int[] h2 = danh106(b, boss, 4);
+            BotChucNang.ket("gl.gym_lang.lenh106", h2[0] > 0 && h2[1] < h2[0], bang("lenh 106", h2, b));
+            if (BotChucNang.BAN >= 908) {
+                int[] h3 = ban113(b, boss, 4);
+                BotChucNang.ket("gl.gym_lang.ngam113", h3[0] > 0 && h3[1] < h3[0], bang("-113 ban", h3, b));
+            }
+        }
+    }
+
+    static void gymNgoai() throws Exception {
+        try (BotChucNang.Bot g = BotChucNang.botMoi(0); BotChucNang.Bot b = botThuongCap(g, CAP)) {
+            if (!raPallet(b)) { BotChucNang.ket("gl.gym_ngoai", false, "khong ra duoc Pallet, map " + b.mapId); return; }
+            Integer boss = thachDauGym(b);
+            if (boss == null) { BotChucNang.ket("gl.gym_ngoai", false, "khong thay boss Gym: " + b.chuTu(0)); return; }
+            int[] h = danh9(b, boss, 6);
+            BotChucNang.ket("gl.gym_ngoai.lenh9", h[0] > 0 && h[1] < h[0], bang("lenh 9", h, b));
+        }
+    }
+
+    static void pvpLang() throws Exception {
+        BotChucNang.Bot c = null;
+        try (BotChucNang.Bot g = BotChucNang.botMoi(0); BotChucNang.Bot a = botThuongCap(g, CAP)) {
+            c = botThuongCap(g, CAP);
+            KichBanDS.veLang(a);
+            KichBanDS.veLang(c);
+            for (int t = 0; t < 4 && a.mapId != c.mapId; t++) { // lang co ban sao (Pewter 0 / 301): vao lai cho cung ban
+                String u = c.user;
+                c.close();
+                Thread.sleep(2500);
+                c = new BotChucNang.Bot(u);
+                if (c.dangNhap("123456") == null) c.vaoGame(0);
+                c.bom(800);
+            }
+            if (a.mapId != c.mapId) { BotChucNang.ket("gl.pvp_lang", null, "hai bot khac lang " + a.mapId + " / " + c.mapId); return; }
+            a.bom(800);
+            c.bom(800);
+            int hc = c.hp;
+            int ma = a.moc();
+            for (int i = 0; i < 4; i++) { a.gui(6, (short) c.actor, (byte) chieuCo(a, i)); a.bom(600); }
+            c.bom(800);
+            boolean bi = false;
+            for (int i = ma; i < a.su.size(); i++) if (a.su.get(i).cmd == 6 && a.su.get(i).d != null && a.su.get(i).d.length >= 13) bi = true;
+            BotChucNang.ket("gl.pvp_lang.khong_mat_hp", !bi && c.hp >= hc, "c hp " + hc + " -> " + c.hp + ", goi 6 sat thuong=" + bi + " | " + a.chuTu(ma));
+        } finally {
+            if (c != null) c.close();
+        }
+    }
+
+    public static void main(String[] a) throws Exception {
+        BotChucNang.dk("gl_quai", true, KichBanGymLang::quai);
+        BotChucNang.dk("gl_gym_lang", true, KichBanGymLang::gymLang);
+        BotChucNang.dk("gl_gym_ngoai", true, KichBanGymLang::gymNgoai);
+        BotChucNang.dk("gl_pvp_lang", true, KichBanGymLang::pvpLang);
+        List<String> chon = new ArrayList<>();
+        for (int i = 3; i < a.length; i++) chon.add(a[i]);
+        if (chon.isEmpty()) chon.addAll(List.of("gl_gym_lang", "gl_gym_ngoai", "gl_quai", "gl_pvp_lang"));
+        String[] b = new String[3 + chon.size()];
+        b[0] = a[0];
+        b[1] = a[1];
+        b[2] = a[2];
+        for (int i = 0; i < chon.size(); i++) b[3 + i] = chon.get(i);
+        BotChucNang.main(b);
+    }
+}

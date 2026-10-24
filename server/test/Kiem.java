@@ -259,6 +259,18 @@ public final class Kiem {
         KiemLocTuCam.chay(); // de xuat QA #7: tu cam ngan chi khop ca tu (loc_tu_cam_ca_tu.sql)
         KiemDoiTenTrangBi.chay(); // de xuat QA #8: trang bi trung ten -> "<Ten> · Cap N" (doi_ten_trang_bi_cap.sql)
         KiemIconTrangBi.chay(); // icon trang bi dung do vat: moi o chi dung icon tap duyet (doi_icon_trang_bi.sql, IconTrangBi)
+        Kiem.nhom("Danh quai trong lang: boss Gym cua minh (bao loi 24/10/2026 danh khong gay sat thuong)");
+        real.KiemDanhQuaiTrongLang.BAO = new real.KiemDanhQuaiTrongLang.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        try {
+            real.KiemDanhQuaiTrongLang.chay();
+        } catch (final Exception e) {
+            Kiem.bang("KiemDanhQuaiTrongLang khong nem loi", "", String.valueOf(e));
+        }
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

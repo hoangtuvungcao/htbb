@@ -246,6 +246,20 @@ public final class BossLauDai {
         BOSS.put(m, t);
     }
 
+    /**
+     * {@code m} la boss Gym con song cua chinh {@code p} (1 dau 1). MapDanhNhau / MapTown: duong danh quai cu bo qua MOI
+     * don trong lang Pewter / Blackthorn / Cianwood (mapIDLoadMap 0/70/80) va quai cung nuoc o Cao nguyen 201 - nhung
+     * Thach dau Gym trieu hoi boss NGAY CANH nguoi choi o ban do dang dung (thuong la Pewter) nen danh mai khong mat HP
+     * (bao loi 24/10/2026 "danh ma khong gay duoc 1 ti sat thuong nao"). Rieng boss Gym cua minh thi duoc danh.
+     */
+    static synchronized boolean laGymCua(final Monster m, final Char p) {
+        if (m == null || p == null || m.isDead || m.hp <= 0) {
+            return false;
+        }
+        final TrangThai t = BOSS.get(m);
+        return t != null && t.gym > 0 && t.chuGym == p.charDBID;
+    }
+
     /** Boss Gym dang mo cua nhan vat (stt) hoac 0. */
     static synchronized int gymDangDanh(final Char p) {
         final long bay = com.htbb.pokemon.DongHo.bay();

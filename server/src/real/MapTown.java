@@ -544,7 +544,7 @@ public class MapTown extends Map {
             return;
          }
 
-         if (mt.inCountry == p.myCountry && !mt.isCongThanh() && !mt.isBossTruRong()) {
+         if (mt.inCountry == p.myCountry && !mt.isCongThanh() && !mt.isBossTruRong() && !BossLauDai.laGymCua(mt, p)) { // boss Gym cua minh: danh duoc (bao loi 24/10)
             return;
          }
 
@@ -958,7 +958,7 @@ public class MapTown extends Map {
                   if (mt != null) {
                      this.removeMonster(mt, mt.inCountry);
                   }
-               } else if (mt.inCountry == p.myCountry && !mt.isCongThanh() && !mt.isBossTruRong()) {
+               } else if (mt.inCountry == p.myCountry && !mt.isCongThanh() && !mt.isBossTruRong() && !BossLauDai.laGymCua(mt, p)) { // boss Gym cua minh: danh duoc (bao loi 24/10)
                   System.out.println("KO CHO DANH 5");
                } else if (mt.inCountry == p.myCountry || !mt.isCongThanh() && !mt.isBossTruRong()) {
                   if (!inRangeActor(p, mt, MAX_RANGE_CHAR[p.charClass])) {
