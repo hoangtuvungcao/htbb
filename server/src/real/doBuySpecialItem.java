@@ -48,6 +48,9 @@ public class doBuySpecialItem {
      */
     private static final ThreadLocal<Boolean> TRA_LUONG_KHOA = new ThreadLocal<Boolean>();
 
+    /** Mon dang mua o lenh 85 nay (bao "Đã mua ...: trừ X lượng khoá" sau khi mua). */
+    private static final ThreadLocal<ShopTemplate> MON_DANG_MUA = new ThreadLocal<ShopTemplate>();
+
     /** Dang xu ly lenh 85 cho mon tra bang luong khoa (xem TRA_LUONG_KHOA). */
     static boolean traLuongKhoa() {
         return Boolean.TRUE.equals(TRA_LUONG_KHOA.get());
@@ -68,8 +71,13 @@ public class doBuySpecialItem {
             doBuySpecialItem0(player, msg);
         } finally {
             TRA_LUONG_KHOA.remove();
+            final ShopTemplate mon = MON_DANG_MUA.get();
+            MON_DANG_MUA.remove();
             try {
                 if (player.getLuongLock() < luongKhoaTruoc) {
+                    // Bao ro loai tien (client cu ve gia bang bieu tuong luong): "Đã mua X: trừ 30 lượng khoá, còn 12."
+                    player.sendMessage(MessageCreator.createServerAlertMessage(TienShopDacBiet.daMua(
+                            mon == null ? null : mon.name, luongKhoaTruoc - player.getLuongLock(), player.getLuongLock()), ""));
                     ThuocKhoa.sauKhiMua(player, thuocTruoc, luongKhoaTruoc);
                     for (Object o : player.iItems.toArray()) {
                         if (o instanceof Item && !doTruoc.contains(o)) {
@@ -94,6 +102,7 @@ public class doBuySpecialItem {
                 try {
                     int id = msg.dis.readUnsignedByte();
                     ShopTemplate item = getShopTemplate(id);
+                    MON_DANG_MUA.set(item);
                     if (player.isFullInventory()) {
                         try {
                             // Hanh trang day thi van phai cho mua nhung thu chi CONG DON
@@ -141,6 +150,15 @@ public class doBuySpecialItem {
                         return;
                     }
 
+                    // Dong tra bang LUONG KHOA (tien_moi = 2 hoac do khoa 116..128/150/176): thieu luong khoa thi tu choi
+                    // NGAY, ghi ro can / dang co - KHONG BAO GIO tru luong thuong thay (truLuongNeuDu chuyen sang
+                    // truLuongKhoaNeuDu khi TRA_LUONG_KHOA; nhanh 132 kiem rieng ben duoi).
+                    if ((traLuongKhoa() || player.map.isItemLock(item.id)) && player.getLuongLock() < (long) item.getPrice(isSale)) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock()), ""));
+                        return;
+                    }
+
                     int oldLuong = player.getLuong();
                     int oldLuongLock = player.getLuongLock();
                     long oldXu = player.getxu();
@@ -161,7 +179,8 @@ public class doBuySpecialItem {
                         // lan subLuongLock, nen gop check+tru vao day la an toan, khong doi
                         // hanh vi khi du tien.
                         if (!player.truLuongKhoaNeuDu((long) item.getPrice(isSale))) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng khoá.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock()), ""));
                             return;
                         }
 
@@ -674,12 +693,25 @@ public class doBuySpecialItem {
                                 // khong co do, va khong the hoan lai trong nhanh nay ma khong
                                 // bay them logic hoan tien moi (ngoai pham vi doi mang tinh
                                 // co hoc cua dot sua nay).
-                                if (player.getLuong() < item.getPrice(isSale)) {
+                                if (traLuongKhoa()) {
+                                    // dong nay tung chuyen sang luong khoa: KHONG kiem / tru luong thuong
+                                    // tru truoc; het cho trong hanh trang thi hoan lai dung so luong khoa vua tru
+                                    if (!player.truLuongKhoaNeuDu((long) item.getPrice(isSale))) {
+                                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                                TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock()), ""));
+                                        return;
+                                    }
+                                    if (!doCreateHuyetBoDe(player, 1)) {
+                                        player.addLuongLock(item.getPrice(isSale));
+                                        return;
+                                    }
+                                    nameItem = item.name;
+                                    soluong = 1;
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                                } else if (player.getLuong() < item.getPrice(isSale)) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
-                                }
-
-                                if (doCreateHuyetBoDe(player, 1)) {
+                                } else if (doCreateHuyetBoDe(player, 1)) {
                                     nameItem = item.name;
                                     soluong = 1;
                                     player.subLuong((long) item.getPrice(isSale));

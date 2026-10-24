@@ -2244,8 +2244,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         shop.shopType = msg.reader().readByte();
                         shop.isSell = msg.reader().readBoolean();
                         shop.value = msg.reader().readShort();
+                        game.pokemon.TienShop.nhanMoTa(shop);   // "[Lượng khoá] ..." (gói phát lại / máy chủ cũ)
                         Res.shopTemplate.addElement(shop);
                     }
+                    game.pokemon.TienShop.docNoiThem(msg.reader());   // máy chủ gửi client BAN >= 918: id trả lượng khoá
                     break;
                 case 26:
                     int nMonster = msg.reader().readUnsignedByte();

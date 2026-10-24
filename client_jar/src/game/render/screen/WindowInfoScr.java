@@ -704,7 +704,7 @@ public class WindowInfoScr extends Screen {
                             gt = (GemTemp) ds.elementAt(i);
                         }
                         ten[i] = gt.name;
-                        gia[i] = game.pokemon.TienTe.chu(gt.typeMoney == 0 ? game.pokemon.TienTe.LUONG : game.pokemon.TienTe.XU, gt.price);
+                        gia[i] = game.pokemon.TienTe.chu(game.pokemon.TienShop.loai(gt), gt.price);
                         co[i] = -1;
                     }
                     datMart(ten, gia, co);
@@ -3988,7 +3988,7 @@ public class WindowInfoScr extends Screen {
                     public void perform() {
                         GemTemp g = Res.getShopByID(shop.id);
                         String itemInfo = ItemInInventory.setTemp(g.name, "0");
-                        WindowInfoScr.this.setShowText(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(g.decript, "0")).toString())).append(ItemInInventory.setTemp(new StringBuffer("Giá mua: ").append(game.pokemon.TienTe.chu(g.typeMoney == 0 ? game.pokemon.TienTe.LUONG : game.pokemon.TienTe.XU, g.price)).toString(), "0")).toString(), (ii % WindowInfoScr.this.numW) * 18, (ii / WindowInfoScr.this.numW) * 18);
+                        WindowInfoScr.this.setShowText(new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(g.decript, "0")).toString())).append(ItemInInventory.setTemp(new StringBuffer("Giá mua: ").append(game.pokemon.TienTe.chu(game.pokemon.TienShop.loai(g), g.price)).toString(), "0")).toString(), (ii % WindowInfoScr.this.numW) * 18, (ii / WindowInfoScr.this.numW) * 18);
                     }
                 }) {
                     @Override
@@ -4077,7 +4077,7 @@ public class WindowInfoScr extends Screen {
                         if (aa == WindowInfoScr.this.selected) {
                             final GemTemp item = (GemTemp) Res.shopTemplate.elementAt(i);
                             GemTemp tg = Res.getShopByID(item.id);
-                            String hoi = tg == null ? "Bạn có muốn mua vật phẩm này không ?" : new StringBuffer("Mua ").append(tg.name).append("? Giá: ").append(game.pokemon.TienTe.chu(tg.typeMoney == 0 ? game.pokemon.TienTe.LUONG : game.pokemon.TienTe.XU, tg.price)).toString();
+                            String hoi = tg == null ? "Bạn có muốn mua vật phẩm này không ?" : new StringBuffer("Mua ").append(tg.name).append("? Giá: ").append(game.pokemon.TienTe.chu(game.pokemon.TienShop.loai(tg), tg.price)).toString();
                             Canvas.startYesNoDlg(hoi, new IAction() {
                                 @Override
                                 public void perform() {

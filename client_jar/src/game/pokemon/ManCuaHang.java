@@ -51,6 +51,7 @@ public final class ManCuaHang extends Screen {
         m.tab = 0;
         m.loc = 0;
         m.chon = null;
+        m.daMoChon = null;   // mở lại cửa hàng: chạm lại đúng món cũ vẫn mở thẻ
         m.soLuong = 1;
         m.ds.den(0);
         m.left = null;
@@ -200,7 +201,8 @@ public final class ManCuaHang extends Screen {
         if (this.kieu == DAC_BIET) {
             for (int i = 0; i < Res.shopTemplate.size(); i++) {
                 GemTemp g = (GemTemp) Res.shopTemplate.elementAt(i);
-                if (g.isSell && (this.loc == 0 || (this.loc == 1) == (g.typeMoney == 0))) {
+                // chip lọc: 0 tất cả, 1 lượng khoá, 2 lượng, 3 xu (LOC_TIEN)
+                if (g.isSell && (this.loc == 0 || (this.loc < LOC_TIEN.length && TienShop.loai(g) == LOC_TIEN[this.loc]))) {
                     v.addElement(g);
                 }
             }
@@ -229,12 +231,15 @@ public final class ManCuaHang extends Screen {
         return v;
     }
 
+    /** loại tiền của chip lọc cửa hàng đặc biệt (chỉ số 0 = tất cả) */
+    static final int[] LOC_TIEN = {-1, TienTe.LUONG_KHOA, TienTe.LUONG, TienTe.XU};
+
     String[] chips() {
         if (this.tab == 1 || this.kieu == MAY_CHU) {
             return null;
         }
         if (this.kieu == DAC_BIET) {
-            return new String[]{"Tất cả", TienTe.ten(TienTe.LUONG), TienTe.ten(TienTe.XU)};
+            return new String[]{"Tất cả", TienTe.tenHoa(TienTe.LUONG_KHOA), TienTe.tenHoa(TienTe.LUONG), TienTe.tenHoa(TienTe.XU)};
         }
         if (this.kieu != DO) {
             return null;
@@ -361,14 +366,14 @@ public final class ManCuaHang extends Screen {
         }
         if (o instanceof GemTemp) {
             final GemTemp t = Res.getShopByID(((GemTemp) o).id) != null ? Res.getShopByID(((GemTemp) o).id) : (GemTemp) o;
-            final int loai = t.typeMoney == 0 ? TienTe.LUONG : TienTe.XU;
+            final int loai = TienShop.loai(t);
             TheVatPham.moMua(t, t.price, loai, 1, new TheVatPham.ViecMua() {
                 public String khongMua(int so) {
                     if (mc().isFullInventory()) {
                         return "Hành trang đã đầy.";
                     }
-                    long co = loai == TienTe.LUONG ? mc().luong : mc().charXu;
-                    return t.price > co ? "Không đủ " + TienTe.ten(loai) + "." : null;
+                    long co = TienShop.dangCo(mc(), loai);
+                    return t.price > co ? "Không đủ " + TienTe.ten(loai) + ": cần " + TienTe.so(t.price) + ", đang có " + TienTe.so(co) + "." : null;
                 }
 
                 public void mua(int so) {
@@ -538,11 +543,9 @@ public final class ManCuaHang extends Screen {
         Bang.the(g, x, y, w, h);
         // tiền đang có + bảng cũ
         int hd = Bang.co(26);
-        int xx = x + 6;
-        xx += TienTe.vePill(g, TienTe.XU, mc().charXu, xx, y + 4, hd, Font.blackFont) + k;
-        TienTe.vePill(g, TienTe.LUONG, mc().luong, xx, y + 4, hd, Font.blackFont);
+        // xu, lượng (+ lượng khoá ở cửa hàng đặc biệt: có dòng trả bằng lượng khoá); hẹp thì xuống dòng
+        int yl = veVi(g, x + 6, y + 4, w - 12, hd, this.kieu == DAC_BIET) + k;
         // 0.9.5: bỏ nút "Bảng cũ" - màn mới đã có Mua / Bán (một lối vào mỗi việc)
-        int yl = y + 4 + hd + k;
         String[] ch = chips();
         if (ch != null) {
             Object[] vl = new Object[ch.length];
@@ -582,6 +585,26 @@ public final class ManCuaHang extends Screen {
         });
     }
 
+    /**
+     * Viên tiền đầu cửa hàng: xu, lượng (+ lượng khoá khi coKhoa) cao h, xếp trái -> phải, không vừa bề ngang w thì
+     * xuống dòng (J2ME 128 / 176 px). Trả y dưới hàng cuối.
+     */
+    static int veVi(Graphics g, int x, int y, int w, int h, boolean coKhoa) {
+        int k = Bang.cach();
+        int[] loai = coKhoa ? new int[]{TienTe.XU, TienTe.LUONG, TienTe.LUONG_KHOA} : new int[]{TienTe.XU, TienTe.LUONG};
+        int xx = x, yy = y;
+        for (int i = 0; i < loai.length; i++) {
+            long v = TienShop.dangCo(mc(), loai[i]);
+            int wp = TienTe.rongPill(loai[i], v, h, Font.blackFont);
+            if (xx > x && xx + wp > x + w) {
+                xx = x;
+                yy += h + k;
+            }
+            xx += TienTe.vePill(g, loai[i], v, xx, yy, h, Font.blackFont) + k;
+        }
+        return yy + h;
+    }
+
     /** Một hàng: ảnh + tên + giá canh phải + dòng phụ. */
     void veHang(Graphics g, Object o, int x, int y, int w, int h) {
         int s = ManNhanVat.oDau(g, x, y, h);
@@ -608,7 +631,7 @@ public final class ManCuaHang extends Screen {
             ten = t.name;
             phu = t.decript;
             gia = t.price;
-            loaiTien = t.typeMoney == 0 ? TienTe.LUONG : TienTe.XU;
+            loaiTien = TienShop.loai(t);
         } else {
             ItemInInventory it = (ItemInInventory) o;
             if (this.kieu == THUOC && this.tab == 0) {

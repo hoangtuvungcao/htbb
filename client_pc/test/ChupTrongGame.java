@@ -249,7 +249,8 @@ public class ChupTrongGame {
             // 0.9.17: Menu › Sự kiện = thẻ "Sự kiện" (mùa + hoạt động), không còn menu "Khác" tiêu đề = tên quái đang nhắm
             "menu_su_kien",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
-            "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
+            "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "cua_hang_dac_biet", "cua_hang_dac_biet_loc",
+            "cua_hang_dac_biet_the", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
             "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
             "hop_thong_bao_dai", "suc_khoe", "chon_chieu", "goi_y_chieu", "tu_dong", "hop_ban", "hop_mac_do", "hop_len_cap", "hop_tien_hoa",
             "hop_phan_thuong", "hop_nhan_nhiem_vu", "hop_bao_tri", "hop_loi", "hop_mat_ket_noi", "hop_hoi_sinh", "hop_giftcode",
@@ -539,6 +540,27 @@ public class ChupTrongGame {
         game.render.Res.gemTemplate.removeAllElements();
         game.render.Res.gemTemplate.addElement(gt);
         game.render.Res.shopTemplate.removeAllElements();
+        // cửa hàng đặc biệt: hai dòng trả bằng LƯỢNG KHOÁ - một dòng nhận qua nhãn mô tả (gói phát lại / máy chủ cũ),
+        // một dòng qua phần nối thêm gói 25 (client BAN >= server TienShopDacBiet.BAN_CLIENT)
+        String[][] lk = {{"0", "11", "Vé giờ vàng 100", "[Lượng khoá] Tăng 100% kinh nghiệm", "30"},
+            {"2", "9", "200 Siêu thuốc hồi máu", "Hồi phục 1500 hp", "20"}};
+        for (int i = 0; i < lk.length; i++) {
+            game.model.GemTemp sp = new game.model.GemTemp();
+            sp.id = (short) Integer.parseInt(lk[i][0]);
+            sp.idImage = (short) Integer.parseInt(lk[i][1]);
+            sp.name = lk[i][2];
+            sp.decript = lk[i][3];
+            sp.price = Integer.parseInt(lk[i][4]);
+            sp.typeMoney = 0;
+            sp.isSell = true;
+            game.pokemon.TienShop.nhanMoTa(sp);
+            game.render.Res.shopTemplate.addElement(sp);
+        }
+        try {
+            game.pokemon.TienShop.docNoiThem(new java.io.DataInputStream(new java.io.ByteArrayInputStream(new byte[]{1, 2})));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
         for (int i = 0; i < 6; i++) {
             game.model.GemTemp sp = new game.model.GemTemp();
             sp.id = (short) (10 + i);
@@ -558,6 +580,7 @@ public class ChupTrongGame {
         game.model.MainChar.itemQuest = new short[]{4, 9};
         mc.charXu = 1250000;
         mc.luong = 320;
+        mc.luongKhoa = 16700;
         mc.skillPointLeft = 2;
         // 0.9.5: nhân vật đã học 3 chiêu (thanh chiêu tự điền: đánh = chiêu 0, ô 1-3 = chiêu đã học)
         // -1 = phải học ở NPC (chiêu 6-8), 0 = cộng 1 điểm khi đủ cấp
@@ -1091,6 +1114,14 @@ public class ChupTrongGame {
             game.pokemon.ManCuaHang.mo(game.pokemon.ManCuaHang.DO, new byte[]{0, 9});
             if (ten.endsWith("chi_tiet")) {
                 dat(game.pokemon.ManCuaHang.gI(), "chon", game.render.Canvas.gameScr.shop.elementAt(1));
+            }
+        } else if (ten.startsWith("cua_hang_dac_biet")) {
+            // Menu › Cửa hàng (lượng): ví 3 viên (xu / lượng / lượng khoá), chip lọc 4 loại tiền, giá theo loại tiền dòng
+            game.pokemon.ManCuaHang.mo(game.pokemon.ManCuaHang.DAC_BIET, new byte[]{0, 1});
+            if (ten.endsWith("_loc")) {
+                dat(game.pokemon.ManCuaHang.gI(), "loc", Integer.valueOf(1));
+            } else if (ten.endsWith("_the")) {
+                dat(game.pokemon.ManCuaHang.gI(), "chon", game.render.Res.shopTemplate.elementAt(0));
             }
         } else if ("cua_hang_ban".equals(ten)) {
             shopDo();
@@ -1723,6 +1754,45 @@ public class ChupTrongGame {
     }
 
     /** Tên vùng chạm đã đăng ký có tiền tố t (lớp nào cũng được). */
+    /**
+     * Cửa hàng đặc biệt (báo lỗi chủ dự án PC 0.9.17: giá vẽ biểu tượng lượng nhưng máy chủ trừ LƯỢNG KHOÁ): ví đủ 3 viên
+     * chạm được (xu / lượng / lượng khoá), chip "Tất cả / Lượng khoá / Lượng / Xu" đủ chữ, dòng lượng khoá vẽ biểu tượng
+     * PNG tien-luong_khoa (không nhãn "[Lượng khoá]" thô), lọc Lượng khoá chỉ còn dòng lượng khoá, thẻ "Giá: 30 lượng khoá".
+     */
+    static void kiemCuaHangLuongKhoa(String ten, String nhan) {
+        kiem(coVungDung("tien-xu") && coVungDung("tien-luong") && coVungDung("tien-luong_khoa"), nhan + " vi cua hang: du 3 vien xu / luong / luong khoa");
+        int nKhoa = 0, nLuong = 0;
+        int rong = game.render.Canvas.w;
+        boolean trongMan = true;
+        for (int i = 0; i < game.pokemon.GhiChu.soBieu; i++) {
+            String b = game.pokemon.GhiChu.BS[i];
+            if ("tien-luong_khoa".equals(b)) nKhoa++;
+            if ("tien-luong".equals(b)) nLuong++;
+            if (b != null && b.startsWith("tien-")) trongMan &= game.pokemon.GhiChu.BX[i] >= 0 && game.pokemon.GhiChu.BX[i] + game.pokemon.GhiChu.BW[i] <= rong;
+        }
+        kiem(trongMan, nhan + " bieu tuong tien trong man");
+        kiem(!coChu("[Lượng khoá]"), nhan + " khong con nhan tho '[Luong khoa]'");
+        if (ten.endsWith("_the")) {
+            kiem(game.pokemon.TheVatPham.dangMo() && coChu("30 lượng khoá"), nhan + " the: 'Gia: 30 luong khoa'");
+            kiem(nKhoa >= 2, nhan + " the: bieu tuong luong khoa o gia (" + nKhoa + ")");
+            return;
+        }
+        String[] chip = {"Tất cả", "Lượng khoá", "Lượng", "Xu"};
+        for (int i = 0; i < chip.length; i++) {
+            boolean co = false;
+            for (int j = 0; j < game.pokemon.GhiChu.soChu; j++) co |= chip[i].equals(game.pokemon.GhiChu.CS[j]);
+            kiem(co, nhan + " chip loc '" + chip[i] + "' du chu");
+        }
+        kiem(coChu("Vé giờ vàng 100") && coChu("Tăng 100% kinh nghiệm"), nhan + " dong luong khoa (nhan mo ta) hien ten + mo ta da bo nhan");
+        if (ten.endsWith("_loc")) {
+            kiem(!coChu("Rương quà"), nhan + " loc Luong khoa: khong dong luong / xu");
+            kiem(nKhoa >= 3 && nLuong == 1, nhan + " loc Luong khoa: gia = bieu tuong luong khoa (" + nKhoa + " khoa, " + nLuong + " luong)");
+        } else {
+            kiem(coChu("Rương quà 1"), nhan + " Tat ca: co dong luong / xu");
+            kiem(nKhoa >= 3, nhan + " gia dong luong khoa = bieu tuong luong khoa (" + nKhoa + ")");
+        }
+    }
+
     static boolean coVung(String t) {
         for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
             String n = game.pokemon.VungCham.ten(i);
@@ -1748,6 +1818,9 @@ public class ChupTrongGame {
             if ("cua_hang_thuoc_chi_tiet".equals(ten)) {
                 kiem(coVung("sl-cong") && coVung("sl-max") && game.pokemon.TheVatPham.soMua() == 12, nhan + " the Mua thuoc co chon so (12)");
             }
+        }
+        if (ten.startsWith("cua_hang_dac_biet")) {
+            kiemCuaHangLuongKhoa(ten, nhan);
         }
         if ("hop_phan_thuong_xem".equals(ten) || "nhiem_vu_chi_tiet".equals(ten)) {
             kiem(coVung("phan-thuong-"), nhan + " phan thuong = hang o vat pham (cham duoc)");

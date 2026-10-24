@@ -11,6 +11,8 @@ public class GemTemp {
     public short id;
     public byte typeMoney;
     public boolean isSell;
+    /** Dòng cửa hàng đặc biệt trả bằng LƯỢNG KHOÁ (gói 25 nối thêm / nhãn "[Lượng khoá] "; game.pokemon.TienShop). */
+    public boolean luongKhoa;
     public static byte TYPE_IMBUE = 0;
     public static byte TYPE_KHAM = 1;
     public static byte TYPE_DUC_LO = 2;

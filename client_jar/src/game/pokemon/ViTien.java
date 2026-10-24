@@ -14,10 +14,16 @@ public final class ViTien {
     private ViTien() {
     }
 
-    /** Lượng khoá có hiện (máy chủ gửi > -1). */
+    /**
+     * Lượng khoá có hiện ở hàng ví đầy đủ (máy chủ gửi > -1): cả khi 0 - cửa hàng đặc biệt có món trả bằng lượng khoá,
+     * người chơi cần thấy số đang có (trước chỉ hiện khi > 0).
+     */
     static boolean coKhoa(MainChar mc) {
-        return mc != null && mc.luongKhoa > 0;
+        return !boKhoa && mc != null && mc.luongKhoa >= 0;
     }
+
+    /** LuoiTui: bảng quá thấp cho ví hai dòng - tạm bỏ mục lượng khoá (đặt lại sau khi vẽ). */
+    static boolean boKhoa;
 
     /** Một mục: biểu tượng cỡ co + số; trả bề ngang. */
     static int muc(Graphics g, int loai, long v, int x, int y, int h, int co, int vai, int mau, boolean vien) {
@@ -49,7 +55,7 @@ public final class ViTien {
         if (xx < x + w - 20) {
             xx += muc(g, TienTe.LUONG, mc.luong, xx, y, h, co, vai, 0xC8E4FF, true) + 8;
         }
-        if (coKhoa(mc) && xx + rongMuc(TienTe.LUONG_KHOA, mc.luongKhoa, co, vai) <= x + w) {
+        if (mc.luongKhoa > 0 && xx + rongMuc(TienTe.LUONG_KHOA, mc.luongKhoa, co, vai) <= x + w) {
             muc(g, TienTe.LUONG_KHOA, mc.luongKhoa, xx, y, h, co, vai, 0xD8D8DE, true);
         }
     }

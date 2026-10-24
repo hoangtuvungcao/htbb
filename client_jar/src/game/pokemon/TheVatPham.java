@@ -737,8 +737,10 @@ public final class TheVatPham extends Dialog {
         int co = Math.min(12, lh - 2);
         TienTe.ve(g, this.muaTien, xg, y + (lh - co) / 2, co);
         MainChar m = mc();
-        long co0 = m == null ? 0 : this.muaTien == TienTe.LUONG ? m.luong : m.charXu;
-        ChuDe.chu(g, TienTe.so(tong), xg + co + 3, y, ChuDe.SO, tong > co0 ? ChuDe.DO : ChuDe.CHU, 0);
+        long co0 = TienShop.dangCo(m, this.muaTien);
+        // lượng khoá: ghi rõ tên tiền ("Giá: 30 lượng khoá") - biểu tượng lượng khoá dễ nhầm với lượng
+        String so = this.muaTien == TienTe.LUONG_KHOA ? TienTe.chu(TienTe.LUONG_KHOA, tong) : TienTe.so(tong);
+        ChuDe.chu(g, so, xg + co + 3, y, ChuDe.SO, tong > co0 ? ChuDe.DO : ChuDe.CHU, 0);
         return y + lh;
     }
 

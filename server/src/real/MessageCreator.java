@@ -891,18 +891,7 @@ public class MessageCreator {
                 m.dos.writeByte(Map.gemTemplate[l].ep);
                 m.dos.writeByte(Map.gemTemplate[l].typeMoney);
             }
-            m.dos.writeByte(Map.shop.length);
-            for (int l = 0; l < Map.shop.length; ++l) {
-                m.dos.writeByte(Map.shop[l].id);
-                m.dos.writeByte(Map.shop[l].idImage);
-                m.dos.writeInt(Map.shop[l].getPrice(Map.isSale));
-                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(Map.shop[l].name));
-                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(Map.shop[l].decript));
-                m.dos.writeByte(Map.shop[l].type);
-                m.dos.writeByte(Map.shop[l].tab);
-                m.dos.writeByte(Map.shop[l].sell);
-                m.dos.writeShort(Map.shop[l].value);
-            }
+            TienShopDacBiet.ghiBangShop(m.dos, Map.shop, Map.isSale, s);
         } catch (final Exception e) {
             e.printStackTrace();
         }

@@ -2427,7 +2427,7 @@ public class Map implements Runnable {
     }
 
     public boolean isItemLock(int id) {
-        return id >= 116 && id <= 128 || id == 150 || id == 176;
+        return TienShopDacBiet.laDongKhoa(id);
     }
 
     // Than method (71 dong) da chuyen sang MapNapTaiNguyen.java. Chu ky GIU NGUYEN.
