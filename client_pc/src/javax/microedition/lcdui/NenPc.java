@@ -30,6 +30,12 @@ public final class NenPc {
     private static LuongSuKien luong;
     /** số khung đã vẽ (đo FPS) */
     public static volatile long soKhung;
+    /**
+     * 0.9.18 kiểm tốc độ game (KiemTocDoGame): giả lập máy chậm - mỗi khung vẽ tốn thêm giaLapVeMs ms CPU, và
+     * giaLapVsync = trình bày chặn tới nhịp quét 60 Hz kế tiếp (như unlockCanvasAndPost của Android). Mặc định tắt.
+     */
+    public static volatile int giaLapVeMs;
+    public static volatile boolean giaLapVsync;
 
     private NenPc() {
     }
@@ -323,7 +329,10 @@ public final class NenPc {
                 return;
             }
             synchronized (this) {
-                if (!choVe) return;
+                // 0.9.18: khung đã được luồng vẽ NHẬN (choVe = false) nhưng chưa vẽ xong cũng phải chờ. Trước đây trả về
+                // ngay -> luồng game chạy nhịp logic SONG SONG với Canvas.paint đang giữ vị trí NỘI SUY (NhipVe.dauKhung):
+                // nhịp đọc / ghi vị trí lùi một phần nhịp (moveTo(x, y) khi bấm đánh = đích lùi, nhân vật đi ngược lại).
+                if (!choVe && soDaVe >= soYeuCau) return;
                 long dich = soYeuCau;
                 long het = System.currentTimeMillis() + 250;
                 while (soDaVe < dich) {
@@ -411,6 +420,22 @@ public final class NenPc {
                 g2.dispose();
             }
             mh.xongVe();
+            int gl = giaLapVeMs;
+            if (gl > 0) {
+                long het = System.nanoTime() + gl * 1000000L;
+                while (System.nanoTime() < het) {
+                    Thread.yield();
+                }
+            }
+            if (giaLapVsync) {
+                long n = System.nanoTime(), q = 16666667L;
+                long cho = (n / q + 1) * q - n;
+                try {
+                    Thread.sleep(cho / 1000000L, (int) (cho % 1000000L));
+                } catch (InterruptedException e) {
+                    // bỏ
+                }
+            }
             soKhung++;
         }
     }

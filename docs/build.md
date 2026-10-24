@@ -244,6 +244,45 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.18 (`BAN=918`: sửa "game chậm như slow motion" 0.9.15-0.9.17 - vòng game bước cố định)
+
+Client (không gói mới, không đổi máy chủ) `PHIEN_BAN=0.9.18-opentest` (`BAN = 0*10000 + 9*100 + 18`; `MIDlet-Version`
+0.9.18), chạy với mọi máy chủ 0.9.15+.
+
+1. Lỗi (chủ dự án / người chơi sau 0.9.15-0.9.17: "game giờ chậm quá, kiểu như slow motion"): `Canvas.run` chạy MỘT nhịp
+   logic mỗi vòng rồi vẽ các khung của nhịp đó và ngủ tới "đầu nhịp + 40 ms" - vẽ quá giờ là nhịp sau trễ, cả game (đi,
+   hoạt hình, đánh, hồi chiêu theo nhịp) chậm theo khung. 0.9.15 bật APK 60 khung (mặc định) và dồn MỌI khung vào
+   `NhipVe.veThem` (vòng vẽ theo `keTiep` chứ không theo giờ thật: vẽ chậm vẫn vẽ đủ 2-3 khung mỗi nhịp) nên trên Android
+   (trình bày chờ vsync 60 Hz) game chạy 60-80 % ngay cả máy nhanh, 26 % khi vẽ 20 ms. Đo `KiemTocDoGame` (vòng game thật,
+   máy chậm giả lập; tốc độ game = nhịp logic / 25, đi px / 125):
+
+   | Đường | vẽ 0 ms | 10 ms | 20 ms | 30 ms | 45 ms | 70 ms |
+   |---|---|---|---|---|---|---|
+   | 0.9.14 J2ME / APK (vẽ mỗi nhịp) | 99 % | 100 % | 100 % | 80 % | 79 % | 48 % |
+   | 0.9.14 PC 60 | 98 % | 80 % | 53 % | 51 % | 56 % | 37 % |
+   | 0.9.17 PC 60 | 98 % | 80 % | 43 % | 27 % | 27 % | 19 % |
+   | 0.9.17 APK 60 (vsync) | 60-80 % | 60-80 % | 27 % | 26 % | 26 % | 16 % |
+   | 0.9.17 APK 30 (vsync) | 90 % | 82 % | 60 % | 50 % | 26 % | 15 % |
+   | 0.9.17 J2ME | 100 % | 100 % | 100 % | 80 % | 75 % | 48 % |
+   | **0.9.18 mọi đường** | 99-100 % | 100-101 % | 99-101 % | 100-101 % | 99-101 % | 100-101 % |
+
+2. Sửa: vòng game **bước cố định** - logic theo lịch 25 nhịp / giây thời gian thật (`nhipKe += 40`), trễ thì chạy bù tối
+   đa `NhipVe.BU_TOI_DA` = 5 nhịp trước một khung, trễ hơn thì bỏ phần thời gian (`NhipVe.boMs`, không xoáy chết); vẽ
+   bao nhiêu khung tuỳ máy (`NhipVe.veKhung`: lưới đều 1000/fps, MỘT khung mỗi lần, lỡ hơn một bước thì bỏ ô; fps <= 25 /
+   J2ME: một khung sau mỗi lượt nhịp), nội suy theo giờ LỊCH của nhịp, ngủ đúng tới việc kế tiếp (tối thiểu 1 ms - J2ME một
+   lõi). Chỉ CLDC 1.1 (không java.util.concurrent).
+3. `serviceRepaints` (PC `NenPc`, APK `NenAndroid`): khung đã được luồng vẽ nhận nhưng chưa vẽ xong cũng phải chờ - trước
+   đây trả về ngay, nhịp logic chạy SONG SONG với `Canvas.paint` đang giữ vị trí NỘI SUY (đọc / ghi vị trí lùi một phần
+   nhịp: `moveTo(x, y)` khi bấm đánh lấy đích lùi, gói vị trí dừng lùi).
+4. APK: chọn 60 khung mà máy không theo kịp 3 giây liền (< 75 % số khung) -> tự hạ 30 (`NhipVe.tuHa`), lưu lựa chọn
+   (`Hud.kiemTuHa`, `khung60=false`) và báo "Máy vẽ chậm: tự chuyển 30 khung/giây"; chọn lại 60 ở Chỉnh nút.
+5. Kiểm mới: `KiemTocDoGame` (PC 60 / APK 60 tự hạ / APK 30 / J2ME x vẽ 0..70 ms: 25 nhịp / giây và 125 px / giây ±3 %,
+   máy nhanh >= 50 khung p90 <= 25 ms), `KiemKeoLui` (đi rồi chạm nút đánh thường, quái gần 16 px / xa 120 px, máy chủ giả
+   kiểm gói đi bằng `real.TocDoDiChuyen`: không gói nào bị từ chối, không lùi, đứng yên sau khi đánh, vị trí máy chủ =
+   client). `NenPc.giaLapVeMs` / `giaLapVsync` (mặc định tắt) giả lập máy chậm cho hai kiểm này. Ngưỡng tốc độ máy chủ
+   (`TocDoDiChuyen`: quỹ 1,5 x tốc độ / 40 ms, trần 2 x 50 px) hợp với bước cố định (trung bình đúng 1 x, chạy bù tối đa
+   5 nhịp = 25 px) - không đổi máy chủ.
+
 ### Bản 0.9.17 (`BAN=917`: Menu › Sự kiện mở thẻ Sự kiện, thẻ menu máy chủ không lấy tên quái đang nhắm, kiểm đích mọi nút HUD)
 
 Client (không gói mới) `PHIEN_BAN=0.9.17-opentest` (`BAN = 0*10000 + 9*100 + 17`; `MIDlet-Version` 0.9.17), chạy với mọi

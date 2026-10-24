@@ -62,6 +62,28 @@ public final class Hud implements NenAndroid.LopPhu {
     /** Đặt nhịp vẽ của game theo lựa chọn. */
     public static void apDungKhung() {
         game.pokemon.NhipVe.fps = khung60 ? 60 : 30;
+        // 0.9.18: chọn 60 mà máy không theo kịp (3 giây liền < 45 khung) -> tự hạ 30 và nhớ (game không chậm đi nữa -
+        // logic theo lịch - nhưng 30 đều mượt hơn 40-45 lệch nhịp và đỡ nóng máy)
+        game.pokemon.NhipVe.tuHa = khung60;
+        game.pokemon.NhipVe.datLaiTuHa();
+    }
+
+    /** NhipVe đã tự hạ 60 -> 30: lưu lựa chọn 30 (lần sau mở game vẫn 30, chọn lại 60 trong Chỉnh nút được). */
+    static void kiemTuHa() {
+        if (!game.pokemon.NhipVe.daTuHa) {
+            return;
+        }
+        game.pokemon.NhipVe.daTuHa = false;
+        if (khung60) {
+            khung60 = false;
+            game.pokemon.NhipVe.tuHa = false;
+            luu();
+            try {
+                game.pokemon.ThongBao.hien("Máy vẽ chậm: tự chuyển 30 khung/giây (đổi ở Chỉnh nút)", game.pokemon.ThongBao.TIN);
+            } catch (Throwable e) {
+                // bỏ qua
+            }
+        }
     }
     static boolean chatMo = true;
     private static SharedPreferences pref;
@@ -446,6 +468,7 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     public void khungXong() {
+        kiemTuHa();
         HdKiem.khungXong();
         try {
             HdNut.khungXong();

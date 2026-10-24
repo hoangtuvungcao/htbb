@@ -480,7 +480,10 @@ public final class NenAndroid {
                 return;
             }
             synchronized (this) {
-                if (!choVe) return;
+                // 0.9.18: khung đã được luồng vẽ NHẬN (choVe = false) nhưng chưa vẽ xong cũng phải chờ. Trước đây trả về
+                // ngay -> luồng game chạy nhịp logic SONG SONG với Canvas.paint đang giữ vị trí NỘI SUY (NhipVe.dauKhung):
+                // nhịp đọc / ghi vị trí lùi một phần nhịp (moveTo(x, y) khi bấm đánh = đích lùi, nhân vật đi ngược lại).
+                if (!choVe && soDaVe >= soYeuCau) return;
                 long dich = soYeuCau;
                 long het = System.currentTimeMillis() + 250;
                 while (soDaVe < dich) {

@@ -89,6 +89,13 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   tiết / nhắm NPC) -> đúng màn / thẻ (tiêu đề) / gói, menu máy chủ không mang tên quái đang nhắm - bảng `dich_nut.txt`
   (`-Dchup.j2me` vẽ như J2ME, `-Dkiem.dich=0` bỏ phần này);
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
+- `KiemTocDoGame` (0.9.18): tốc độ game = thời gian thật - vòng game thật, máy chậm giả lập (`NenPc.giaLapVeMs` ms CPU
+  mỗi khung, `NenPc.giaLapVsync` = trình bày chờ nhịp quét 60 Hz như Android) ở đường PC 60 / APK 60 (tự hạ 30) / APK 30 /
+  J2ME, vẽ 0..70 ms: 25 nhịp logic / giây và tốc độ đi 125 px / giây ±3 %, máy nhanh >= 50 khung / giây p90 <= 25 ms
+  (`bao-cao` = chỉ in bảng, dùng đo bản cũ);
+- `KiemKeoLui` (0.9.18): đi rồi đánh thường bằng tay (phím 5, quái trước mặt) ở các đường / chi phí vẽ trên, máy chủ giả
+  kiểm gói đi bằng `real.TocDoDiChuyen` (trả lệnh 4 khi vượt quỹ): không gói nào bị từ chối, không lùi, đứng tại chỗ khi
+  đánh, vị trí máy chủ = client (biên dịch thêm `-sourcepath client_pc/test:server/src`);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;
 - `KiemThongBao` (0.9.6.1): thông báo (game.pokemon.ThongBao + DungDo) - phân loại câu máy chủ thật, thời gian hiện

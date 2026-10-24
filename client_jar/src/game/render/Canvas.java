@@ -270,97 +270,65 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         isStart = true;
     }
 
+    /**
+     * 0.9.18: VÒNG GAME BƯỚC CỐ ĐỊNH (lỗi "game chậm như slow motion" 0.9.15-0.9.17). Trước đây mỗi vòng = MỘT nhịp
+     * logic + các khung vẽ của nó, rồi ngủ tới "đầu nhịp + 40 ms": vẽ quá giờ (máy chậm, APK 60 khung chờ vsync, J2ME vẽ
+     * &gt; 40 ms) là nhịp sau tới trễ -> cả game (đi, hoạt hình, đánh) chậm theo khung (APK 60 máy nhanh 80 %, vẽ 20 ms
+     * 27 %; PC vẽ 20 ms 45 %; J2ME vẽ 45 ms 79 % - KiemTocDoGame). Nay logic chạy THEO LỊCH 25 nhịp / giây thời gian thật
+     * (nhipKe += 40 ms): trễ thì chạy bù tối đa {@link game.pokemon.NhipVe#BU_TOI_DA} nhịp trước khi vẽ, trễ hơn nữa thì bỏ
+     * phần thời gian thừa (không xoáy chết); vẽ bao nhiêu khung tuỳ máy (fps &gt; 25: lưới đều 1000/fps, nội suy theo giờ
+     * lịch của nhịp; &lt;= 25: một khung sau mỗi lượt nhịp), ngủ đúng phần còn lại tới việc kế tiếp (nhịp hoặc khung).
+     */
     @Override
     public void run() {
         bRun = true;
+        long nhipKe = 0;   // giờ theo lịch của nhịp logic kế tiếp (ms)
         while (bRun) {
             try {
-                long l1 = System.currentTimeMillis();
-                game.pokemon.KhoiDong.pha = "NhipVe";
-                game.pokemon.NhipVe.batDau();
-                game.pokemon.NhipVe.dauNhip(l1);   // 0.9.5: ghi vị trí đầu nhịp (nội suy khi vẽ thêm khung)
-                gameTick++;
-                if (gameTick > 10000) {
-                    gameTick = 0;
+                long now = System.currentTimeMillis();
+                if (nhipKe == 0 || nhipKe - now > 1000) {
+                    nhipKe = now;   // lần đầu / đồng hồ máy lùi
                 }
-                if (isVirTualKey) {
-                    virKey.update();
-                }
-                // pokemon: cú chạm trúng điều khiển đã đăng ký lúc vẽ (VungCham) - chạy trước, nuốt cú chạm
-                game.pokemon.KhoiDong.pha = "VungCham";
-                game.pokemon.VungCham.xuLy();
-                game.pokemon.KhoiDong.pha = "TuNoiLai";
-                game.pokemon.TuNoiLai.tick();   // 0.9.4: tự kết nối lại (luồng game)
-                game.pokemon.KhoiDong.pha = "ManTai";
-                game.pokemon.ManTai.tick();     // 0.9.7.1: màn tải đứng quá lâu -> hộp lỗi + Thử lại (không quay mãi)
-                game.pokemon.KhoiDong.pha = "GiamSat";
-                game.pokemon.GiamSat.tick();   // 0.9.4: gỡ lớp modal kẹt (hộp không ai vẽ / hội thoại nhiệm vụ mồ côi)
-                game.pokemon.KhoiDong.pha = "CapNhat";
-                game.pokemon.CapNhat.tick();   // 0.9.7: hộp bắt buộc cập nhật luôn trên cùng, thẻ "Đã có bản mới" khi vào thế giới
-                game.pokemon.NhipVe.xong(game.pokemon.NhipVe.NHAP);
-                game.pokemon.KhoiDong.pha = "menu";
-                if (menu.showMenu) {
-                    menu.updateMenuKey();
-                    menu.updateMenu();
-                }
-                if (currentDialog != null) {
-                    currentDialog.update();
-                }
-                game.pokemon.KhoiDong.pha = "man";
-                if (currentScreen != null) {
-                    currentScreen.update();
-                    if (!menu.showMenu && currentDialog == null) {
-                        currentScreen.updateKey();
-                    }
-                }
-                if (timeout > 0) {
-                    timeout--;
-                    if (timeout == 0 && currentDialog == null) {
-                        timeoutDlg.show();
-                    }
-                }
-                game.pokemon.KhoiDong.soNhip++;
-                game.pokemon.KhoiDong.nhipCuoi = System.currentTimeMillis();
-                clearKeyPressed();
-                game.pokemon.GiamSat.nhipOk();
-                game.pokemon.NhipVe.xong(game.pokemon.NhipVe.LOGIC);
-                game.pokemon.KhoiDong.pha = "ve";
-                // 0.9.15: vẽ > 25 khung/giây (PC, APK) -> MỌI khung theo lưới đều 1000/fps trong NhipVe.veThem (nội suy);
-                // trước đây thêm một khung ngay sau logic lệch lưới -> khoảng giữa hai khung 17 / 29 ms xen kẽ (giật)
-                if (!game.pokemon.NhipVe.veTheoLuoi()) {
-                    repaint();
-                    if (isBB) {
-                        synchronized (LOCK) {
-                            try {
-                                LOCK.wait(1000L);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    } else {
-                        serviceRepaints();
-                    }
-                }
-                if (game.pokemon.NhipVe.veThem(this, l1)) {
-                    continue;   // 0.9.5: đã vẽ thêm khung (60 khung/giây) và ngủ hết nhịp 40 ms
-                }
-                long l2 = System.currentTimeMillis() - l1;
-                if (l2 < 40) {
+                int chay = 0;
+                while (now >= nhipKe && chay < game.pokemon.NhipVe.BU_TOI_DA && bRun) {
+                    long lucNhip = nhipKe;
+                    nhipKe += game.pokemon.NhipVe.NHIP_MS;
+                    chay++;
                     try {
-                        Thread.sleep(40 - l2);
-                    } catch (InterruptedException e2) {
+                        nhipLogic(lucNhip);
+                    } catch (Throwable e3) {
+                        // 0.9.4: mọi lỗi (cả Error) trong một nhịp chỉ bỏ nhịp đó, không giết vòng lặp game
+                        game.pokemon.KhoiDong.loi("nhip " + game.pokemon.KhoiDong.pha, e3);
+                        try {
+                            game.pokemon.GiamSat.loiNhip(e3);
+                        } catch (Throwable e5) {
+                            // bỏ qua
+                        }
+                        clearKeyPressed();
                     }
-                } else {
-                    Thread.sleep(1L);
+                    now = System.currentTimeMillis();
                 }
+                if (now >= nhipKe) {
+                    // đã bù đủ BU_TOI_DA nhịp mà vẫn trễ (máy đứng / GC / tải map): bỏ phần thời gian thừa thay vì đuổi mãi
+                    game.pokemon.NhipVe.boThoiGian(now - nhipKe);
+                    nhipKe = now;
+                }
+                game.pokemon.KhoiDong.pha = "ve";
+                long ke = nhipKe;
+                if (game.pokemon.NhipVe.veTheoLuoi()) {
+                    // > 25 khung/giây (PC, APK): khung theo lưới đều 1000/fps, vị trí nội suy giữa hai nhịp
+                    long khungKe = game.pokemon.NhipVe.veKhung(this, now);
+                    if (khungKe < ke) {
+                        ke = khungKe;
+                    }
+                } else if (chay > 0) {
+                    veMotKhung();   // J2ME / fps <= 25: một khung sau mỗi lượt nhịp (chạy bù vẫn chỉ vẽ một lần)
+                }
+                long cho = ke - System.currentTimeMillis();
+                // luôn nhường CPU ít nhất 1 ms (máy J2ME một lõi: luồng mạng / phím phải được chạy khi game đang bù nhịp)
+                Thread.sleep(cho > 1 ? cho : 1L);
             } catch (Throwable e3) {
-                // 0.9.4: mọi lỗi (cả Error) trong một nhịp chỉ bỏ nhịp đó, không giết vòng lặp game
                 game.pokemon.KhoiDong.loi("nhip " + game.pokemon.KhoiDong.pha, e3);
-                try {
-                    game.pokemon.GiamSat.loiNhip(e3);
-                } catch (Throwable e5) {
-                    // bỏ qua
-                }
                 // 0.9.7.2: nhịp lỗi vẫn VẼ (trước: lỗi ở đầu nhịp mỗi lần = không bao giờ repaint, màn đứng hình)
                 try {
                     repaint();
@@ -370,11 +338,80 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 }
                 clearKeyPressed();
                 try {
-                    Thread.sleep(40L);   // nhịp lỗi không được thành vòng quay bận (trước: bỏ qua sleep -> 100% CPU)
+                    Thread.sleep(40L);   // lỗi không được thành vòng quay bận (trước: bỏ qua sleep -> 100% CPU)
                 } catch (InterruptedException e4) {
                 }
+                nhipKe = 0;
             }
         }
+    }
+
+    /** Vẽ một khung và chờ vẽ xong (J2ME: serviceRepaints; BlackBerry: chờ LOCK như bản gốc). */
+    public void veMotKhung() {
+        repaint();
+        if (isBB) {
+            synchronized (LOCK) {
+                try {
+                    LOCK.wait(1000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            serviceRepaints();
+        }
+    }
+
+    /** Một nhịp logic 40 ms (nhập, menu, hộp thoại, màn hiện tại). lucNhip = giờ theo lịch của nhịp. */
+    private void nhipLogic(long lucNhip) {
+        game.pokemon.KhoiDong.pha = "NhipVe";
+        game.pokemon.NhipVe.batDau();
+        game.pokemon.NhipVe.dauNhip(lucNhip);   // ghi vị trí đầu nhịp (nội suy) - mốc = giờ THEO LỊCH của nhịp (0.9.18)
+        gameTick++;
+        if (gameTick > 10000) {
+            gameTick = 0;
+        }
+        if (isVirTualKey) {
+            virKey.update();
+        }
+        // pokemon: cú chạm trúng điều khiển đã đăng ký lúc vẽ (VungCham) - chạy trước, nuốt cú chạm
+        game.pokemon.KhoiDong.pha = "VungCham";
+        game.pokemon.VungCham.xuLy();
+        game.pokemon.KhoiDong.pha = "TuNoiLai";
+        game.pokemon.TuNoiLai.tick();   // 0.9.4: tự kết nối lại (luồng game)
+        game.pokemon.KhoiDong.pha = "ManTai";
+        game.pokemon.ManTai.tick();     // 0.9.7.1: màn tải đứng quá lâu -> hộp lỗi + Thử lại (không quay mãi)
+        game.pokemon.KhoiDong.pha = "GiamSat";
+        game.pokemon.GiamSat.tick();   // 0.9.4: gỡ lớp modal kẹt (hộp không ai vẽ / hội thoại nhiệm vụ mồ côi)
+        game.pokemon.KhoiDong.pha = "CapNhat";
+        game.pokemon.CapNhat.tick();   // 0.9.7: hộp bắt buộc cập nhật luôn trên cùng, thẻ "Đã có bản mới" khi vào thế giới
+        game.pokemon.NhipVe.xong(game.pokemon.NhipVe.NHAP);
+        game.pokemon.KhoiDong.pha = "menu";
+        if (menu.showMenu) {
+            menu.updateMenuKey();
+            menu.updateMenu();
+        }
+        if (currentDialog != null) {
+            currentDialog.update();
+        }
+        game.pokemon.KhoiDong.pha = "man";
+        if (currentScreen != null) {
+            currentScreen.update();
+            if (!menu.showMenu && currentDialog == null) {
+                currentScreen.updateKey();
+            }
+        }
+        if (timeout > 0) {
+            timeout--;
+            if (timeout == 0 && currentDialog == null) {
+                timeoutDlg.show();
+            }
+        }
+        game.pokemon.KhoiDong.soNhip++;
+        game.pokemon.KhoiDong.nhipCuoi = System.currentTimeMillis();
+        clearKeyPressed();
+        game.pokemon.GiamSat.nhipOk();
+        game.pokemon.NhipVe.xong(game.pokemon.NhipVe.LOGIC);
     }
 
     // pokemon: tam dung / tiep nhac khi man hinh bi che (cuoc goi, menu he thong)

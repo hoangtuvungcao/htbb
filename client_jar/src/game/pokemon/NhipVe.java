@@ -13,6 +13,8 @@ import java.util.Vector;
  *    được NỘI SUY giữa nhịp trước và nhịp này (trễ đúng một nhịp) nên chuyển động mượt 60 khung; dịch chuyển xa
  *    (đổi map, dịch chuyển tức thời) không nội suy. Vẽ thêm chạy trên luồng vẽ trong lúc luồng game CHỜ
  *    (serviceRepaints) - không chạy song song với logic; vị trí tạm đặt lúc vẽ được trả lại ngay sau khung.
+ *    0.9.18: logic chạy THEO LỊCH (Canvas.run bước cố định, bù tối đa {@link #BU_TOI_DA} nhịp), khung vẽ theo lưới
+ *    {@link #veKhung} - vẽ chậm chỉ giảm khung, không làm game chậm như 0.9.15-0.9.17; nội suy theo giờ lịch của nhịp.
  *
  * 2) Bộ đo khung (Cài đặt -> Nhà phát triển): ms nhập (chạm / phím), logic, vẽ thế giới, vẽ giao diện; nền thêm
  *    trình bày, GC, cấp phát. Đo bằng nano() (mili giây x 10^6: CLDC / MIDP KHÔNG có System.nanoTime - 0.9.7.3, CoffeeCat iOS ném lỗi mọi nhịp), không cấp phát.
@@ -26,7 +28,7 @@ public final class NhipVe {
     /** bật nội suy vị trí khi vẽ thêm */
     public static boolean noiSuy = true;
 
-    static final long NHIP_MS = 40;
+    public static final long NHIP_MS = 40;
     /** thời điểm bắt đầu nhịp logic hiện tại (ms) */
     static long dauNhip;
     /** số nhịp (đánh dấu vị trí trước còn hợp lệ) */
@@ -263,54 +265,88 @@ public final class NhipVe {
         }
     }
 
-    // ------------------------------------------------------------------ nhịp vẽ thêm (Canvas.run)
-    /**
-     * Sau khi xong nhịp logic: vẽ các khung theo lưới đều 1000/fps tới hết nhịp (nếu fps &gt; 25; 0.9.15: kể cả khung đầu
-     * nhịp - Canvas.run không vẽ riêng nữa), rồi ngủ phần còn lại.
-     * Trả true nếu đã tự ngủ hết nhịp.
-     */
-    /** Vẽ > 25 khung/giây: Canvas.run KHÔNG vẽ khung ngay sau logic, mọi khung do veThem vẽ theo lưới đều. */
+    // ------------------------------------------------------------------ vẽ theo lưới (Canvas.run, 0.9.18)
+    /** Số nhịp logic chạy bù tối đa trước một khung vẽ (trễ hơn = bỏ thời gian, không xoáy chết). */
+    public static final int BU_TOI_DA = 5;
+    /** Tổng thời gian (ms) đã bỏ vì trễ quá BU_TOI_DA nhịp (máy đứng / GC / tải map) - bộ đo / kiểm. */
+    public static long boMs;
+
+    public static void boThoiGian(long ms) {
+        boMs += ms;
+    }
+
+    /** Vẽ > 25 khung/giây: khung theo lưới đều 1000/fps (veKhung), không vẽ một khung sau mỗi lượt nhịp. */
     public static boolean veTheoLuoi() {
         return fps > 25;
     }
 
-    public static boolean veThem(Canvas c, long dauMs) {
-        if (fps <= 25) {
-            return false;
-        }
+    /**
+     * Tới giờ khung trên lưới đều 1000/fps thì vẽ MỘT khung (nội suy theo giờ lịch của nhịp) và chờ vẽ xong. Trả giờ
+     * (ms) của khung kế tiếp để Canvas.run ngủ đúng tới đó (hoặc tới nhịp logic kế tiếp nếu sớm hơn). Không bao giờ vẽ
+     * nhiều khung liền nhau: vẽ quá giờ thì bỏ các ô lưới đã lỡ hơn một bước (vẽ chậm chỉ giảm khung, không làm chậm game).
+     */
+    public static long veKhung(Canvas c, long now) {
         double buoc = 1000.0 / fps;
-        long het = dauMs + NHIP_MS;
-        long now = System.currentTimeMillis();
         if (keTiep < now - 4 * buoc || keTiep > now + 4 * buoc) {
             keTiep = now;
         }
-        while (true) {
-            now = System.currentTimeMillis();
-            if (keTiep >= het) {
-                break;
-            }
-            long cho = (long) keTiep - now;
-            if (cho > 0) {
-                try {
-                    Thread.sleep(cho);
-                } catch (InterruptedException e) {
-                    return true;
-                }
-            }
+        if (now >= (long) keTiep) {
             c.repaint();
             c.serviceRepaints();
+            long sau = System.currentTimeMillis();
             keTiep += buoc;
-        }
-        now = System.currentTimeMillis();
-        if (het > now) {
-            try {
-                Thread.sleep(het - now);
-            } catch (InterruptedException e) {
-                // bỏ
+            while (keTiep + buoc <= sau) {
+                keTiep += buoc;   // lỡ hơn một bước: bỏ ô đó (giữ lưới đều)
             }
-        } else {
-            Thread.yield();
+            demTuHa(sau);
         }
-        return true;
+        return (long) keTiep;
+    }
+
+    /**
+     * Tự hạ 60 -> 30 khung/giây khi máy không theo kịp (APK, lựa chọn 60): {@link #SO_CUA_HA} cửa sổ 1 giây liền nhau vẽ
+     * dưới 75 % số khung mong muốn. Game không chậm đi (logic theo lịch) nhưng 30 đều mượt hơn 40-45 lệch nhịp và đỡ
+     * nóng máy. Nền (APK Hud) thấy {@link #daTuHa} thì lưu lựa chọn 30 và báo người chơi.
+     */
+    public static boolean tuHa;
+    public static volatile boolean daTuHa;
+    static final int SO_CUA_HA = 3;
+    static long cuaHa;
+    static int khungCuaHa, cuaCham;
+
+    /** Đặt lại bộ đếm tự hạ (đổi lựa chọn khung). */
+    public static void datLaiTuHa() {
+        cuaHa = 0;
+        khungCuaHa = 0;
+        cuaCham = 0;
+    }
+
+    static void demTuHa(long now) {
+        if (!tuHa || fps <= 30) {
+            cuaHa = 0;
+            return;
+        }
+        if (cuaHa == 0 || now - cuaHa > 3000) {
+            cuaHa = now;   // bắt đầu / ứng dụng vừa ẩn lâu: không tính
+            khungCuaHa = 0;
+            return;
+        }
+        khungCuaHa++;
+        long d = now - cuaHa;
+        if (d < 1000) {
+            return;
+        }
+        if (khungCuaHa * 1000L < (long) fps * d * 3 / 4) {
+            cuaCham++;
+        } else {
+            cuaCham = 0;
+        }
+        cuaHa = now;
+        khungCuaHa = 0;
+        if (cuaCham >= SO_CUA_HA) {
+            cuaCham = 0;
+            fps = 30;
+            daTuHa = true;
+        }
     }
 }
