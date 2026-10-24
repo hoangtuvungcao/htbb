@@ -888,8 +888,21 @@ public class BotChucNang {
         return String.format("%s%03d", TIEN_TO, soThuong++);
     }
 
+    /**
+     * -DnvMoi (mac dinh 1 khi co -Ddb): tai khoan bot dung lai (kt001..040 / kt101..199) vao game bang NHAN VAT MOI - xoa
+     * nhan vat cu truoc khi dang nhap. Cong kiem chay nhieu lan / ngay: nhan vat cu day tui, het luot tuan, chieu toi da,
+     * danh hieu / tien do nhiem vu cu -> FAIL gia (hoi quy 25/10). Kich ban can giu nhan vat thi dang nhap lai bang new Bot(user).
+     */
+    static final boolean NV_MOI = !"0".equals(System.getProperty("nvMoi", "1"));
+
+    static void xoaNhanVatCu(String user) {
+        if (DB.isEmpty() || !NV_MOI) return;
+        sql("DELETE c FROM tob_char c JOIN account.team_user u ON u.id = c.userId WHERE u.username = '" + user.replace("'", "") + "'");
+    }
+
     static Bot botThuong() throws Exception {
         Bot b = new Bot(tkThuong());
+        xoaNhanVatCu(b.user);
         String l = b.dangNhap("123456");
         if (l != null) throw new IllegalStateException(b.user + " dang nhap: " + l);
         l = b.vaoGame(0);
@@ -914,6 +927,7 @@ public class BotChucNang {
     /** Bot moi da vao game (tai khoan rieng). lop -1 = mac dinh 0. */
     static Bot botMoi(int lop) throws Exception {
         Bot b = new Bot(tkMoi());
+        xoaNhanVatCu(b.user);
         String l = b.dangNhap("123456");
         if (l != null && l.contains("khong tra loi")) { // phien cu cua tai khoan dung lai vua bi da: thu lai
             b.close();

@@ -145,7 +145,10 @@ class KichBanDS {
                 b.bom(250);
                 if (!b.quai.containsKey(id)) {
                     b.bom(400);
-                    if (!b.quai.containsKey(id)) return lan;
+                    if (!b.quai.containsKey(id)) {
+                        if (cu != null) { cu[2] = 0; b.quai.put(id, cu); } // giu muc (HP 0) cho noi goi doc lai
+                        return lan;
+                    }
                 }
                 if (cu != null && b.quai.get(id) == null) b.quai.put(id, cu);
             }
@@ -374,6 +377,16 @@ class KichBanDS {
     static void kyNang() throws Exception {
         BotChucNang.Bot b0 = bot();
         String u = b0.user;
+        // tai khoan bot GM dung lai: chieu da cap toi da tu lan chay truoc -> "đã đạt cấp tối đa", khong cong duoc (cong kiem
+        // 25/10 FAIL gia). Xoa nhan vat cu, vao lai = tao nhan vat moi (chieu cap 1).
+        int cuId = b0.charDb;
+        b0.close();
+        Thread.sleep(3000);
+        BotChucNang.sql("DELETE FROM tob_char WHERE id=" + cuId);
+        b0 = new BotChucNang.Bot(u);
+        String l0 = b0.dangNhap("123456");
+        if (l0 == null) l0 = b0.vaoGame(0);
+        if (l0 != null) { ket("ky_nang", false, "tao lai nhan vat: " + l0); b0.close(); return; }
         veLang(b0);
         b0.gm("slv " + b0.ten + " 40 0", 800);
         int idc = b0.charDb;

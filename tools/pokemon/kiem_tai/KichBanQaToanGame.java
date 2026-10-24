@@ -125,7 +125,8 @@ public class KichBanQaToanGame {
     static int[] quaCong(BotChucNang.Bot b, BotChucNang.BanDo bd, int toM) throws Exception {
         for (int[] g : bd.cong) {
             int[] d = dichCong(b, b.mapId, g);
-            if (d == null || d[0] != toM) continue;
+            // ban sao lang (301 / 1701...) dan toi ban sao Pallet cung nhom: so theo nhom ban do, khong theo id
+            if (d == null || d[0] != toM && (KichBanDS2.nhomCua(b, d[0]) < 0 || KichBanDS2.nhomCua(b, d[0]) != KichBanDS2.nhomCua(b, toM))) continue;
             int[] dung = bd.oTruocCong(g[0], g[1]);
             if (dung == null || !b.diDuong(bd, dung[0], dung[1])) continue;
             int m = b.moc();
@@ -163,10 +164,10 @@ public class KichBanQaToanGame {
         if (dung.lv < 3) { BotChucNang.ket("qa_khoa_popup.cap", false, "slv khong doi cap: lv " + dung.lv); dung.close(); return; }
         try (BotChucNang.Bot b = dung) {
             String da = "lv " + b.lv;
-            if (b.mapId != 1) {
+            if (b.mapLoad != 1) {
                 BotChucNang.BanDo bd0 = BotChucNang.BanDo.nap(b.mapLoad);
                 int tu = b.mapId;
-                if (bd0 == null || quaCong(b, bd0, 1) == null || b.mapId != 1) {
+                if (bd0 == null || quaCong(b, bd0, 1) == null || b.mapLoad != 1) {
                     BotChucNang.ket("qa_khoa_popup.vao", false, "khong di bo tu map " + tu + " sang Pallet: map " + b.mapId);
                     return;
                 }
@@ -177,7 +178,7 @@ public class KichBanQaToanGame {
             b.bom(1000);
             int[] m = quaCong(b, bd, 4);
             if (m == null) { BotChucNang.ket("qa_khoa_popup.di_bo", false, "khong di bo toi cong sang Cerulean tu " + b.px / 16 + "," + b.py / 16); return; }
-            BotChucNang.ket("qa_khoa_popup.o_lai", b.mapId == 1, "sau khi buoc qua cong: map " + b.mapId);
+            BotChucNang.ket("qa_khoa_popup.o_lai", b.mapLoad == 1, "sau khi buoc qua cong: map " + b.mapId);
             // hop phai toi SAU khi client bao nap lai map xong (-500): GameScr.onMap dong moi hop dang mo
             String hop = popup(b, m[1], 95);
             boolean truoc500 = false;
@@ -195,7 +196,7 @@ public class KichBanQaToanGame {
             int[] m2 = quaCong(b, bd, 4);
             String hop2 = m2 == null ? null : popup(b, m2[0], 95);
             long troi = m2 == null ? 0 : b.su.get(m2[0]).luc - chan0;
-            BotChucNang.ket("qa_khoa_popup.cho_10s", m2 != null && troi >= 10000 ? null : Boolean.valueOf(m2 != null && hop2 == null && b.mapId == 1),
+            BotChucNang.ket("qa_khoa_popup.cho_10s", m2 != null && troi >= 10000 ? null : Boolean.valueOf(m2 != null && hop2 == null && b.mapLoad == 1),
                     (m2 == null ? "khong buoc lai duoc" : "sau " + troi + " ms: hop2=" + hop2 + " | " + b.chuTu(m2[0])));
             Thread.sleep(10500);
             int[] m3 = quaCong(b, bd, 4);
