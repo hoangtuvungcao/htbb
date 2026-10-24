@@ -1,0 +1,8 @@
+# Mau loi (regex grep -E, moi dong mot mau) cong kiem BO QUA khi dem Exception moi trong log staging.
+# Chi them loi DA BIET, da co ticket, KHONG anh huong nguoi choi - ghi ly do + ngay o dong chu thich phia tren.
+# Them bua o day = cong kiem mu. Moi mau nen du cu the (ten lop + noi xay ra).
+
+# Su kien Van Tien Tran tat: NPE da biet khi nap vung (tools/pokemon/kiem_tai/kiem_hoi_quy.sh cung bo qua).
+RegionVantienTran
+# Bot ngat ket noi giua luc gui: dong [MANG] da bi loai san; ban stack di kem khi phien da dong.
+Session\.Sender\.run: loi gui du lieu

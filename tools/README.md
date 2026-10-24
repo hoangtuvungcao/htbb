@@ -59,6 +59,7 @@ Bot nói giao thức thật của server (khoá `-40`, đăng nhập, tạo / ch
 | `BotVaCham`, `KichBanHoiSinh` | kiểm va chạm bản đồ, hồi sinh |
 | `KichBanPhoBanCup` | Phó bản Hầm ngục (vào phòng riêng, gói -112, lượt ngày, mất kết nối về đúng phòng, rời, hai phòng tách nhau) + Cúp PvP tuần (đăng ký, tua đồng hồ tới Chủ nhật 20:00, ghép Thuỵ Sĩ, trận, chốt hạng, thưởng một lần) — máy chủ thử có `sv.cho_phep_thu_nghiem=1`, chạy `-Dban=908` |
 | `kiem_hoi_quy.sh` | chạy bộ hồi quy |
+| `chay_hoi_quy.sh` + `hoi_quy.conf` | bộ hồi quy của **cổng kiểm** (`vps/staging/kiem-truoc-khi-len.sh`): `chay_hoi_quy.sh <host> <cổng game> <cổng login> <dbConn>` (`dbConn` = `cnf=<tệp mysql>,db=…,dbtk=…` hoặc `port=3399,db=htbb_db`) chạy từng nhóm trong `hoi_quy.conf` (một dòng một nhóm: lớp, giới hạn giây, `-D…`, kịch bản), mã thoát 0 = mọi nhóm DAT, kết quả ở `tong_ket.txt`. `BotChucNang` nhận thêm `-Ddbcnf=<tệp>` (`mysql --defaults-file`) và `-Ddbtk=<CSDL tài khoản>` (đổi mọi `account.` trong truy vấn kịch bản — staging dùng `htbb_staging_account`) |
 
 ```sh
 MYSQL=mysql sh tools/pokemon/chay_tren_novadb.sh                 # server thử

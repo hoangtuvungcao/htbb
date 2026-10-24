@@ -1949,6 +1949,7 @@ class MapXuLyLenh {
                 } catch (Exception var38) {
                 }
             } else if (toMapID == -500) {
+                com.htbb.log.TheoDoiBatThuong.NAP_MAP.ghi(player.charname, player.mapID, null); // bao cao: nap map lien tuc
                 player.calculateAttrib();
                 player.isCrazyChangeMap(player.isCrazy);
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));

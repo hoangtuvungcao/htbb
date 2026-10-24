@@ -1111,6 +1111,7 @@ class CharCapNhat {
                 return;
             }
             if (!self.map.canMove(x, y)) {
+                com.htbb.log.TheoDoiBatThuong.KEO_VE.ghi(self.charname, self.mapID, "o_cam");
                 final Message i = new Message(4);
                 self.writeActorPos(i, self);
                 self.sendMessage(i);
@@ -1207,6 +1208,7 @@ class CharCapNhat {
                     p2.x1 = lastX;
                     p2.y1 = lastY;
                     if (!self.checkToPoint(p1, p2)) {
+                        com.htbb.log.TheoDoiBatThuong.KEO_VE.ghi(self.charname, self.mapID, "vat_can");
                         final Message j = new Message(4);
                         self.writeActorPos(j, self);
                         self.sendMessage(j);
@@ -1239,6 +1241,7 @@ class CharCapNhat {
                         self.charHire.setXtoYto(x, y);
                     }
                 } else {
+                    com.htbb.log.TheoDoiBatThuong.KEO_VE.ghi(self.charname, self.mapID, "toc_do");
                     final Message l = new Message(4);
                     self.writeActorPos(l, self);
                     self.sendMessage(l);

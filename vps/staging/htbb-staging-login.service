@@ -1,0 +1,32 @@
+# /etc/systemd/system/htbb-staging-login.service - login server STAGING (CheckLoginSocket, TCP 28023, localhost).
+# Lam tu vps/htbb-login.service: thu muc /opt/htbb-staging/server/loginServer (server.ini tro htbb_staging_account,
+# port=28023 - vps/staging/sinh-server-ini.sh sinh), mang chi localhost, CPU / RAM thap, khong bat cung may.
+[Unit]
+Description=HTBB login server STAGING (CheckLoginSocket, TCP 28023, localhost only)
+After=network.target mariadb.service
+Requires=mariadb.service
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=htbb
+Group=htbb
+WorkingDirectory=/opt/htbb-staging/server/loginServer
+Environment=LANG=en_US.UTF-8
+UMask=0027
+CPUQuota=20%
+CPUWeight=20
+Nice=10
+MemoryMax=192M
+IPAddressDeny=any
+IPAddressAllow=localhost
+ExecStart=/usr/bin/java -Xms16m -Xmx96m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar CheckLoginSocket.jar
+Restart=on-failure
+RestartSec=5
+ExecStartPre=+/bin/sh -c 'touch /opt/htbb-staging/logs/login.out && chown htbb:htbb /opt/htbb-staging/logs/login.out && chmod 0640 /opt/htbb-staging/logs/login.out'
+StandardOutput=append:/opt/htbb-staging/logs/login.out
+StandardError=append:/opt/htbb-staging/logs/login.out
+
+[Install]
+WantedBy=multi-user.target

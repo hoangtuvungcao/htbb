@@ -26,6 +26,14 @@ USER_SV=htbb
 SV_GAME=htbb-game
 SV_LOGIN=htbb-login
 
+# CONG KIEM (vps/staging/, docs/trien-khai.md muc 4.4): da cai (co /etc/htbb/cong-kiem.key) thi jar / SQL production CHI
+# duoc thay qua vps/len-production.sh (tu choi neu jar + sql chua qua bot hoi quy tren staging). HTBB_BO_CONG_KIEM=1 = bo qua
+# (chi khi da hieu vi sao).
+if [ -e "${CONG_KIEM_KHOA:-/etc/htbb/cong-kiem.key}" ] && [ "${HTBB_BO_CONG_KIEM:-0}" != 1 ]; then
+    echo "[DUNG] Cong kiem dang bat: len production chi qua  sudo bash /opt/htbb/vps/len-production.sh  (docs/trien-khai.md muc 4.4)."
+    exit 1
+fi
+
 # Tra quyen ban checkout cho $USER_SV (htbb-game.service chay User=htbb). KHONG dung vao
 # backups/ (root:root 0750 - ban sao luu CSDL) va web/releases/ (root:htbb - ban build web do
 # htbb-deploy-web.sh quan ly).
