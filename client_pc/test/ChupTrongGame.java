@@ -18,6 +18,11 @@ import javax.microedition.midlet.MIDlet;
  *       server/src/com/htbb/pokemon/IconPokemon.java server/src/com/htbb/pokemon/IconPokemonBang.java \
  *     && java -Djava.awt.headless=true [-Dhtbb.mayChu=server] -cp client_pc/out/build/cls:client_pc/out/build/res:$O ChupTrongGame <thư mục ảnh>
  * (0.9.5: máy chủ ảnh giả - icon vật phẩm nạp từ server/map như lệnh -51 thật; -Dchup.co / -Dchup.man chạy một phần)
+ * 0.9.17: thư mục server/ tự dò (-Dhtbb.mayChu nếu đặt; không thì từ thư mục chạy / nơi đặt lớp, đi ngược lên) - không
+ * thấy = HỎNG; ve() nạp ảnh máy chủ cho MỌI harness chụp qua ChupTrongGame.ve; kiemIconDo: không ô đồ nào còn hộp quà.
+ * Máy chủ giả ở chế độ production (Điểm huấn luyện, gói -122 loại 1) - -Dchup.tiemNang=1 = chế độ cũ (nút Tiềm năng);
+ * kiemNhanHL / kiemMenuChuHL kiểm nhãn. kiemDanhHieuDai: mọi tên danh hiệu thật (sql/htbb.sql) không bị cắt ở viên
+ * thẻ nhân vật (-Dchup.man=danh_hieu_dai chạy riêng phần này; -Dchup.j2me=1 = đường vẽ J2ME).
  * Mã thoát 1 = có lỗi.
  */
 public class ChupTrongGame {
@@ -82,28 +87,14 @@ public class ChupTrongGame {
         final BufferedImage dem = new BufferedImage(NenPc.thatW, NenPc.thatH, BufferedImage.TYPE_INT_RGB);
         chay(new Runnable() {
             public void run() {
-                Graphics2D g2 = dem.createGraphics();
-                g2.setColor(java.awt.Color.MAGENTA);
-                g2.fillRect(0, 0, dem.getWidth(), dem.getHeight());
-                Graphics2D gg = (Graphics2D) g2.create();
-                int k = NenPc.heSo;
-                gg.scale(k, k);
-                gg.clipRect(0, 0, NenPc.rong, NenPc.cao);
-                Graphics g = new Graphics(gg, NenPc.rong, NenPc.cao, k);
-                try {
-                    java.lang.reflect.Method m = javax.microedition.lcdui.Canvas.class.getDeclaredMethod("paint", Graphics.class);
-                    m.setAccessible(true);
-                    m.invoke(game.render.Canvas.instance, g);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                // ảnh máy chủ giả (lệnh -51): icon đã hỏi ở khung trước nạp ngay; icon khung này mới hỏi -> nạp rồi vẽ lại
+                giaMayChuAnh();
+                traLoiHuanLuyen();
+                veVao(dem);
+                if (giaMayChuAnh() + traLoiHuanLuyen() > 0) {
+                    game.pokemon.GhiChu.xoa();   // vẽ lại cả khung: bản ghi chữ / khung của lần vẽ trước bỏ
+                    veVao(dem);
                 }
-                gg.dispose();
-                try {
-                    htbb.pc.LopPhu.ve(g2, dem.getWidth(), dem.getHeight());
-                } catch (Throwable e) {
-                    // bỏ
-                }
-                g2.dispose();
             }
         });
         BufferedImage ra = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
@@ -112,6 +103,32 @@ public class ChupTrongGame {
         g.drawImage(dem, NenPc.hienX, NenPc.hienY, NenPc.hienW, NenPc.hienH, null);
         g.dispose();
         return ra;
+    }
+
+    /** Một khung paint() thật vào dem (luồng sự kiện). */
+    static void veVao(BufferedImage dem) {
+        Graphics2D g2 = dem.createGraphics();
+        g2.setColor(java.awt.Color.MAGENTA);
+        g2.fillRect(0, 0, dem.getWidth(), dem.getHeight());
+        Graphics2D gg = (Graphics2D) g2.create();
+        int k = NenPc.heSo;
+        gg.scale(k, k);
+        gg.clipRect(0, 0, NenPc.rong, NenPc.cao);
+        Graphics g = new Graphics(gg, NenPc.rong, NenPc.cao, k);
+        try {
+            java.lang.reflect.Method m = javax.microedition.lcdui.Canvas.class.getDeclaredMethod("paint", Graphics.class);
+            m.setAccessible(true);
+            m.invoke(game.render.Canvas.instance, g);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        gg.dispose();
+        try {
+            htbb.pc.LopPhu.ve(g2, dem.getWidth(), dem.getHeight());
+        } catch (Throwable e) {
+            // bỏ
+        }
+        g2.dispose();
     }
 
     private static BufferedImage demDo;
@@ -197,6 +214,7 @@ public class ChupTrongGame {
         game.pokemon.Bang.dungHieuUng = true;
         File ra = new File(a.length > 0 ? a[0] : "anh_trong_game");
         ra.mkdirs();
+        RA = ra;
         System.setProperty("htbb.duLieu", new File(ra, "du_lieu").getAbsolutePath());
         System.setProperty("microedition.platform", "HTBB-PC/kiem");
         htbb.pc.CaiDat.thuMucDuLieu();
@@ -226,6 +244,8 @@ public class ChupTrongGame {
             }
         });
         Thread.sleep(800);
+        // ảnh máy chủ (icon id >= 502, đồ họ / vùng, PMD): thiếu thư mục server/ = mọi ô đồ là hộp quà -> HỎNG
+        kiem(timMayChu() != null, "khong tim thay thu muc server/ (map/icon) cho anh may chu - dat -Dhtbb.mayChu");
         htbb.pc.ChuHD.ghi = java.util.Collections.synchronizedSet(new java.util.HashSet<String>());
         if (System.getProperty("chup.j2me") != null) {
             // 0.9.6: vẽ như máy J2ME (font ảnh, khối phẳng - không chữ thật / khung HD), cùng bảng màu ChuDe
@@ -248,6 +268,8 @@ public class ChupTrongGame {
             // 0.9.16: Nhiệm vụ của tôi / Sổ tay huấn luyện ở Menu cá nhân (mọi nơi) - Menu kiểu GO, Sổ tay (MenuNguCanh), menu
             // chữ J2ME (hàng Nhiệm vụ)
             "menu_so_tay", "menu_chu_nhiem_vu",
+            // 0.9.17: menu chữ J2ME › Bản thân: mục "Huấn luyện" khi máy chủ bật Điểm huấn luyện (không "Tiềm năng")
+            "menu_chu_ban_than",
             // 0.9.17: Menu › Sự kiện = thẻ "Sự kiện" (mùa + hoạt động), không còn menu "Khác" tiêu đề = tên quái đang nhắm
             "menu_su_kien",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
@@ -279,6 +301,11 @@ public class ChupTrongGame {
             // main 3e7649b0: Vé dịch chuyển (thuốc 162, bảng 163 dòng) - thẻ "Vé / thẻ" + nút Sử dụng
             "tui_ve_dich_chuyen"};
         kiemMenuNhiemVu();
+        chay(new Runnable() {
+            public void run() {
+                kiemMenuChuHL();
+            }
+        });
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         // -Dchup.j2me: thêm cỡ máy J2ME thật 240x320 / 320x240 (x1, không cỡ chạm) cho các màn MAN_J2ME_THAT
@@ -381,6 +408,8 @@ public class ChupTrongGame {
                 BufferedImage anh = ve(W, H);
                 game.pokemon.GhiChu.bat = false;
                 kiemChu(ten + " " + TEN_COV[c]);
+                kiemIconDo(ten, ten + " " + TEN_COV[c]);
+                kiemNhanHL(ten, ten + " " + TEN_COV[c]);
                 kiemTrongMan(ten + " " + TEN_COV[c]);
                 if ("nhiem_vu".equals(ten) || "nhiem_vu_chi_tiet".equals(ten)) {
                     kiemMucNhiemVu(ten + " " + TEN_COV[c]);
@@ -442,9 +471,12 @@ public class ChupTrongGame {
                         || ten.startsWith("hop_") && game.render.Canvas.currentDialog == null
                         && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
                 // menu chữ J2ME (PauseMenu): bấm phím, không vùng chạm (máy cảm ứng dùng Menu kiểu GO)
-                if ((!theGioi || dpi == 0) && !"menu_chu_nhiem_vu".equals(ten)) {
+                if ((!theGioi || dpi == 0) && !"menu_chu_nhiem_vu".equals(ten) && !"menu_chu_ban_than".equals(ten)) {
                     kiemCham(ten + " " + TEN_COV[c], min, cach);
                 }
+            }
+            if (locMan == null || ("," + locMan + ",").contains(",danh_hieu_dai,")) {
+                kiemDanhHieuDai(TEN_COV[c], W, H, dpi);
             }
         }
         // soát chữ đã vẽ: mọi chuỗi ra màn (ChuHD / ChuGiaoDien) -> chuoi_da_ve.txt (tools/pokemon/kiem_chuoi_ui.py đọc)
@@ -457,6 +489,9 @@ public class ChupTrongGame {
                 + DEM_GIUA[3] + "), lech toi da " + lechGiuaMax + " px");
         for (java.util.Map.Entry<String, String> e : DS_THAY.entrySet()) if (e.getKey().indexOf(" dt") >= 0) System.out.println("DS " + e.getKey() + ": " + e.getValue());
         for (java.util.Map.Entry<String, String> e : HQ_DO.entrySet()) System.out.println("HQ " + e.getKey() + ": " + e.getValue());
+        System.out.println("DANH HIEU: " + DEM_DH[0] + " lan ve ten that (ten x man x co), " + DEM_DH[1] + " lan chup ten rong nhat (+ bo cuc gon)");
+        System.out.println("HUAN LUYEN: che do " + nhanHL() + ", " + DEM_HL[0] + " man co nut/muc da kiem");
+        System.out.println("ICON DO: " + DEM_ICON_DO[0] + " man do nhan vat da kiem (may chu anh " + MAY_CHU + ")");
         System.out.println("ChupTrongGame: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }
@@ -656,6 +691,12 @@ public class ChupTrongGame {
             }
             game.model.MainChar.listPotion = lp;
             game.model.Char.CHAR_POTION = (short) lp.length;
+            // như máy chủ thật: mảng số lượng thuốc của nhân vật cỡ theo bảng (bảng Bản thân J2ME đọc potions[1..162])
+            if (mc.potions.length < lp.length) {
+                int[] p = new int[lp.length];
+                System.arraycopy(mc.potions, 0, p, 0, mc.potions.length);
+                mc.potions = p;
+            }
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -742,7 +783,315 @@ public class ChupTrongGame {
         game.render.screen.GameScr.infoNewSkill.addElement(hoc);
         TOP = top;
         giaLapDanhHieu();
+        giaLapHuanLuyen();
         gs.switchToMe();
+    }
+
+    /** Chế độ máy chủ: true = Điểm huấn luyện (production, mặc định); -Dchup.tiemNang=1 = chế độ cũ (Tiềm năng). */
+    static final boolean CHE_DO_HL = System.getProperty("chup.tiemNang") == null;
+    static boolean daBaoHL;
+
+    /**
+     * 0.9.15+: máy chủ production bật Điểm huấn luyện - gửi -122 loại 1 (real.HocChieuGame.guiHuanLuyen) sau đăng nhập.
+     * Dựng gói ĐÚNG như bộ ghi máy chủ (thứ tự trường) với bảng data_huan_luyen thật (sql/htbb.sql) rồi đưa qua
+     * HocChieu.docGoi như MessageHandler. Chế độ cũ: gói bật = 0 (máy chủ tắt huấn luyện).
+     */
+    static void giaLapHuanLuyen() {
+        try {
+            java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream m = new java.io.DataOutputStream(b);
+            m.writeByte(1);                          // GOI_HUAN_LUYEN
+            m.writeByte(CHE_DO_HL ? 1 : 0);
+            if (CHE_DO_HL) {
+                // data_huan_luyen: id, ten, mo_ta, tran_diem, nguong_giam, phan_nghin_truoc, phan_nghin_sau
+                Object[][] dong = {{0, "HP", "Tăng % HP tối đa", 80, 40, 3, 2}, {1, "Tấn công", "Tăng % tấn công (cả PvP)", 80, 40, 3, 2},
+                    {2, "Phòng thủ", "Tăng % phòng thủ và phòng thủ đặc biệt", 80, 40, 3, 2}, {3, "PP", "Tăng % PP tối đa", 80, 40, 3, 2}};
+                int[] phanBo = {10, 6, 4, 0};
+                int daDung = 0;
+                for (int x : phanBo) daDung += x;
+                m.writeShort(2 * 24 + 1);            // tongDiem: diem_moi_cap 2 x cấp 24 + 1 huy hiệu
+                m.writeShort(daDung);
+                m.writeByte(dong.length);
+                for (int i = 0; i < dong.length; i++) {
+                    m.writeByte((Integer) dong[i][0]);
+                    m.writeUTF((String) dong[i][1]);
+                    m.writeUTF((String) dong[i][2]);
+                    m.writeShort(phanBo[i]);
+                    m.writeShort((Integer) dong[i][3]);
+                    m.writeShort((Integer) dong[i][4]);
+                    m.writeShort((Integer) dong[i][5]);
+                    m.writeShort((Integer) dong[i][6]);
+                }
+                m.writeLong(0L);                     // giaTay: lần đầu miễn phí
+                m.writeInt(0);                       // chờ tẩy (giây)
+                m.writeByte(1);                      // miễn phí
+                m.writeByte(2);                      // diem_moi_cap
+                m.writeByte(1);                      // huy hiệu (<= trần)
+                m.writeByte(16);                     // trần huy hiệu
+            }
+            m.flush();
+            game.pokemon.HocChieu.docGoi(new java.io.DataInputStream(new java.io.ByteArrayInputStream(b.toByteArray())));
+            if (!daBaoHL) System.out.println("ChupTrongGame: che do may chu " + (CHE_DO_HL ? "Diem huan luyen (production)" : "Tiem nang (cu)")
+                    + " - HocChieu.batHL = " + game.pokemon.HocChieu.batHL);
+            daBaoHL = true;
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Client xoá trạng thái huấn luyện ở khung HUD đầu của nhân vật (ThanhNhanh.kiem -> HocChieu.xoa) rồi xin lại -122
+     * (HocChieu.xinNeuChua); máy chủ trả gói loại 1. Giả lời đó: chưa có gói (coGoiHL false) -> gửi lại. Trả 1 nếu đã gửi.
+     */
+    static int traLoiHuanLuyen() {
+        if (game.pokemon.HocChieu.coGoiHL) return 0;
+        giaLapHuanLuyen();
+        return 1;
+    }
+
+    /** Nhãn nút cộng điểm theo chế độ máy chủ. */
+    static String nhanHL() {
+        return CHE_DO_HL ? "Huấn luyện" : "Tiềm năng";
+    }
+
+    /** Màn PHẢI hiện nút / mục cộng điểm (nhãn nhanHL()). */
+    static final String[] MAN_NUT_HL = {"nv_trang_bi", "nv_o_co_do", "nv_o_trong", "nv_hanh_trang", "menu_chu_ban_than"};
+
+    /**
+     * Nhãn Huấn luyện / Tiềm năng: chế độ HL không chữ nào vẽ ra là "Tiềm năng" (nút, mục menu, tab), chế độ cũ không
+     * "Huấn luyện"; ở MAN_NUT_HL nhãn đúng phải có.
+     */
+    static void kiemNhanHL(String ten, String nhan) {
+        kiem(game.pokemon.HocChieu.batHL == CHE_DO_HL, nhan + ": HocChieu.batHL = " + game.pokemon.HocChieu.batHL + " (che do " + nhanHL() + ")");
+        String sai = CHE_DO_HL ? "Tiềm năng" : "Huấn luyện";
+        boolean coSai = false, coDung = false;
+        for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+            String c = game.pokemon.GhiChu.CS[i];
+            if (c == null) continue;
+            c = c.trim();
+            if (c.equals(sai)) coSai = true;
+            if (c.equals(nhanHL())) coDung = true;
+        }
+        kiem(!coSai, nhan + ": nut/muc '" + sai + "' hien o che do " + nhanHL());
+        for (String m : MAN_NUT_HL) {
+            if (m.equals(ten)) {
+                kiem(coDung, nhan + ": thieu nut/muc '" + nhanHL() + "'");
+                DEM_HL[0]++;
+            }
+        }
+    }
+
+    static final int[] DEM_HL = {0};
+
+    /** Tên danh hiệu thật (data_danh_hieu.ten trong sql/htbb.sql) - đọc một lần. */
+    static java.util.List<String> TEN_DANH_HIEU;
+
+    static java.util.List<String> tenDanhHieu() {
+        if (TEN_DANH_HIEU != null) return TEN_DANH_HIEU;
+        java.util.TreeSet<String> ds = new java.util.TreeSet<String>();
+        try {
+            java.io.File goc = timMayChu();
+            java.io.File sql = goc == null ? null : new java.io.File(goc.getParentFile(), "sql/htbb.sql");
+            if (sql != null && sql.isFile()) {
+                String t = new String(java.nio.file.Files.readAllBytes(sql.toPath()), "UTF-8");
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("INSERT INTO `data_danh_hieu` (?:\\([^)]*\\) )?VALUES\\s*(.*?);\n",
+                        java.util.regex.Pattern.DOTALL).matcher(t);
+                java.util.regex.Pattern dong = java.util.regex.Pattern.compile("\\((\\d+),'((?:[^'\\\\]|\\\\.)*)','((?:[^'\\\\]|\\\\.)*)'");
+                while (m.find()) {
+                    java.util.regex.Matcher d = dong.matcher(m.group(1));
+                    while (d.find()) {
+                        String ten = d.group(3).replace("\\'", "'");
+                        if (ten.length() > 0) ds.add(ten);
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        TEN_DANH_HIEU = new java.util.ArrayList<String>(ds);
+        System.out.println("ChupTrongGame: " + TEN_DANH_HIEU.size() + " ten danh hieu that (sql/htbb.sql)");
+        return TEN_DANH_HIEU;
+    }
+
+    static final int[] DEM_DH = {0, 0};
+
+    /** Các dòng chữ vẽ trong vùng chạm viên Danh hiệu ("danh-hieu"), ghép bằng dấu cách. */
+    static String chuTrongVienDh() {
+        int[] v = null;
+        for (int k = 0; k < game.pokemon.VungCham.dem(); k++) {
+            if ("danh-hieu".equals(game.pokemon.VungCham.ten(k))) v = game.pokemon.VungCham.vung(k);
+        }
+        if (v == null) return "";
+        StringBuilder b = new StringBuilder();
+        for (int k = 0; k < game.pokemon.GhiChu.soChu; k++) {
+            String c = game.pokemon.GhiChu.CS[k];
+            if (c == null || game.pokemon.GhiChu.CX[k] < v[0] || game.pokemon.GhiChu.CX[k] + game.pokemon.GhiChu.CW[k] > v[0] + v[2]
+                    || game.pokemon.GhiChu.CY[k] < v[1] || game.pokemon.GhiChu.CY[k] + game.pokemon.GhiChu.CH[k] > v[1] + v[3]) continue;
+            b.append(b.length() > 0 ? " " : "").append(c.trim());
+        }
+        return b.toString();
+    }
+
+    /** Chữ thật vẽ ra: font ảnh J2ME đổi chữ qua ChuPokemon.D lúc vẽ (vd "Vua" -> "Nhà vô địch vùng"). */
+    static String chuVe(String s) {
+        return game.pokemon.ChuUI.bo == null ? game.pokemon.ChuPokemon.D(s) : s;
+    }
+
+    /**
+     * Viên Danh hiệu (sân khấu tab Trang bị + thẻ tab Chỉ số) không cắt tên với MỌI tên danh hiệu thật (sql): mỗi tên
+     * vẽ một khung, chữ trong vùng chạm viên ghép lại = đúng tên (± đuôi gợi ý); 8 tên rộng nhất chụp ảnh thật + kiểm
+     * không "…" / "..", và (tab Trang bị) bố cục gọn của main vẫn đúng (kiemTrangBiGon).
+     */
+    static void kiemDanhHieuDai(final String nhanCo, final int W, final int H, int dpi) throws Exception {
+        final java.util.List<String> ten = tenDanhHieu();
+        kiem(ten.size() >= 100, nhanCo + ": doc ten danh hieu that (" + ten.size() + ")");
+        // tên rộng nhất theo phông đang vẽ (chữ thật PC/APK hoặc font ảnh J2ME): 8 tên vẽ thật
+        java.util.List<String> rong = new java.util.ArrayList<String>(ten);
+        java.util.Collections.sort(rong, new java.util.Comparator<String>() {
+            public int compare(String a, String b) {
+                return game.pokemon.ChuDe.rong(b, game.pokemon.ChuDe.NHAN) - game.pokemon.ChuDe.rong(a, game.pokemon.ChuDe.NHAN);
+            }
+        });
+        String[] man = {"nv_trang_bi", "nv_chi_so"};
+        game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+        String cu = mc.danhHieuTen;
+        int cuHiem = mc.danhHieuHiem;
+        for (final String mn : man) {
+            // MỌI tên thật: vẽ một khung (veThang, rẻ) với tên đó, chữ trong viên ghép lại = đủ tên (viên 1-3 dòng: không
+            // suy được "tên rộng nhất vừa thì mọi tên vừa" - bỏ đuôi / ngắt dòng theo từng tên)
+            chay(new Runnable() {
+                public void run() {
+                    moMan(mn);
+                }
+            });
+            ve(W, H);
+            final String duoiTat = "nv_trang_bi".equals(mn) && game.pokemon.ChuUI.bo == null ? " >" : " ›";
+            java.util.List<String> catTen = new java.util.ArrayList<String>();
+            for (final String t : ten) {
+                mc.danhHieuTen = t;
+                mc.danhHieuHiem = 3;
+                game.pokemon.GhiChu.xoa();
+                game.pokemon.GhiChu.bat = true;
+                chay(new Runnable() {
+                    public void run() {
+                        veThang();
+                    }
+                });
+                game.pokemon.GhiChu.bat = false;
+                String g = chuTrongVienDh().replace("- ", "· ");
+                if (!g.equals(chuVe(t + duoiTat)) && !g.equals(chuVe(t))) catTen.add(t + " -> '" + g + "'");
+                DEM_DH[0]++;
+            }
+            kiem(catTen.isEmpty(), nhanCo + " " + mn + ": " + catTen.size() + " ten danh hieu that bi cat / thieu: " + catTen);
+            for (int i = 0; i < Math.min(8, rong.size()); i++) {
+                final String t = rong.get(i);
+                mc.danhHieuTen = t;
+                mc.danhHieuHiem = 3;
+                chay(new Runnable() {
+                    public void run() {
+                        moMan(mn);
+                    }
+                });
+                game.pokemon.GhiChu.xoa();
+                game.pokemon.GhiChu.bat = true;
+                BufferedImage anh = ve(W, H);
+                game.pokemon.GhiChu.bat = false;
+                int[] v = null;
+                for (int k = 0; k < game.pokemon.VungCham.dem(); k++) {
+                    if ("danh-hieu".equals(game.pokemon.VungCham.ten(k))) v = game.pokemon.VungCham.vung(k);
+                }
+                String duoi = "nv_trang_bi".equals(mn) && game.pokemon.ChuUI.bo == null ? " >" : " ›";   // main: J2ME sân khấu " >"
+                String full = chuVe(t + duoi), tenVe = chuVe(t);
+                StringBuilder ghep = new StringBuilder();
+                boolean ngoai = false, ba = false;
+                for (int k = 0; k < game.pokemon.GhiChu.soChu; k++) {
+                    String c = game.pokemon.GhiChu.CS[k];
+                    if (c == null) continue;
+                    String ct = c.trim();
+                    if ((ct.indexOf('\u2026') >= 0 || ct.indexOf("..") >= 0) && ct.length() > 2 && tenVe.startsWith(ct.substring(0, Math.min(4, ct.length())))) ba = true;
+                    if (ct.length() < 2 || full.indexOf(ct) < 0 || ct.equals("›") || ct.equals(">")) continue;
+                    if (v != null && (game.pokemon.GhiChu.CX[k] < v[0] || game.pokemon.GhiChu.CX[k] + game.pokemon.GhiChu.CW[k] > v[0] + v[2]
+                            || game.pokemon.GhiChu.CY[k] < v[1] || game.pokemon.GhiChu.CY[k] + game.pokemon.GhiChu.CH[k] > v[1] + v[3])) {
+                        continue;   // chữ khác (ngoài viên) trùng một đoạn tên
+                    }
+                    ghep.append(ghep.length() > 0 ? " " : "").append(ct);
+                }
+                String g = ghep.toString().replace("- ", "· ");
+                kiem(!ba, nhanCo + " " + mn + ": ten danh hieu '" + t + "' bi cat (…)");
+                if (v == null || !(g.equals(full) || g.equals(tenVe))) {
+                    StringBuilder ds = new StringBuilder();
+                    for (int k = 0; k < game.pokemon.GhiChu.soChu; k++) {
+                        if (v != null && game.pokemon.GhiChu.CY[k] >= v[1] - 20 && game.pokemon.GhiChu.CY[k] <= v[1] + v[3] + 20)
+                            ds.append(" [").append(game.pokemon.GhiChu.CS[k]).append(" @").append(game.pokemon.GhiChu.CX[k]).append(",")
+                                    .append(game.pokemon.GhiChu.CY[k]).append(" ").append(game.pokemon.GhiChu.CW[k]).append("x").append(game.pokemon.GhiChu.CH[k]).append("]");
+                    }
+                    System.out.println("  chu gan vien:" + ds);
+                }
+                kiem(v != null && (g.equals(full) || g.equals(tenVe)), nhanCo + " " + mn + ": vien danh hieu ve '" + g + "' (can '" + full + "') vung " + java.util.Arrays.toString(v));
+                DEM_DH[1]++;
+                // viên nhiều dòng không chồng ô trang bị / hàng trên, lưới hành trang vẫn đủ hàng (kiểm bố cục gọn của main)
+                if ("nv_trang_bi".equals(mn)) kiemTrangBiGon(mn, nhanCo + " " + mn + " ten dai '" + t + "'", dpi);
+                if (i == 0) ImageIO.write(anh, "png", new File(RA, "danh_hieu_dai_" + mn + "_" + nhanCo + ".png"));
+            }
+        }
+        mc.danhHieuTen = cu;
+        mc.danhHieuHiem = cuHiem;
+    }
+
+    static File RA;
+
+    /**
+     * Menu chữ J2ME (bấm phím) › Bản thân: mục thứ 3 đọc nhanHL(); chọn nó ở chế độ HL mở BangHuanLuyen (không phải tab
+     * Tiềm năng cũ); bảng Bản thân (WindowInfoScr) ở chế độ HL không còn tab Tiềm năng (2), mở đúng tab yêu cầu.
+     */
+    static void kiemMenuChuHL() {
+        try {
+            game.render.Canvas.endDlg();
+            game.render.Canvas.gameScr.switchToMe();
+            game.pokemon.HanhDong.moMenuChinh();
+            moHangChu(2);
+            Object pm = game.render.Canvas.currentScreen;
+            kiem(pm instanceof game.render.screen.PauseMenu, "menu chu Ban than mo (" + pm + ")");
+            java.lang.reflect.Field fn = game.render.screen.PauseMenu.class.getDeclaredField("name");
+            fn.setAccessible(true);
+            String muc = ((String[][]) fn.get(pm))[2][3];
+            kiem(nhanHL().equals(muc), "menu chu Ban than muc 3 = '" + muc + "' (can '" + nhanHL() + "')");
+            java.lang.reflect.Field sel = game.render.screen.PauseMenu.class.getDeclaredField("selected");
+            sel.setAccessible(true);
+            java.lang.reflect.Method vt = game.render.screen.PauseMenu.class.getDeclaredMethod("viTri", int.class);
+            vt.setAccessible(true);
+            sel.setInt(pm, (Integer) vt.invoke(pm, 2));
+            java.lang.reflect.Method ds = game.render.screen.PauseMenu.class.getDeclaredMethod("doSelect");
+            ds.setAccessible(true);
+            ds.invoke(pm);
+            Object d = game.render.Canvas.currentDialog, m = game.render.Canvas.currentScreen;
+            if (CHE_DO_HL) {
+                kiem(d instanceof game.pokemon.BangHuanLuyen, "menu chu > Huan luyen mo BangHuanLuyen (dialog " + d + ", man " + m + ")");
+            } else {
+                kiem(m == game.render.screen.WindowInfoScr.gI() && game.render.screen.WindowInfoScr.index[game.render.screen.WindowInfoScr.focusTab] == 2,
+                        "menu chu > Tiem nang mo tab Tiem nang (man " + m + ")");
+            }
+            game.render.Canvas.endDlg();
+            int[] mo = {0, 1, 3, 4, 5, 6, 7};
+            for (int n : mo) {
+                game.render.screen.WindowInfoScr.gI().isSell = false;
+                try {
+                    game.render.screen.PauseMenu.gI().showMe(n);
+                } catch (Throwable e) {
+                    // tab Kỹ năng cần bảng chiêu máy chủ (SkillManager) - nhân vật giả không có; bảng tab đã đặt trước đó
+                }
+                byte[] tab = game.render.screen.WindowInfoScr.index;
+                boolean co2 = false;
+                for (byte t : tab) if (t == 2) co2 = true;
+                int ma = tab[game.render.screen.WindowInfoScr.focusTab];
+                kiem(co2 != CHE_DO_HL && ma == (n == 7 ? 31 : n), "bang Ban than showMe(" + n + "): tab " + java.util.Arrays.toString(tab)
+                        + " mo tab " + ma);
+            }
+            game.render.Canvas.gameScr.switchToMe();
+        } catch (Throwable e) {
+            kiem(false, "kiemMenuChuHL: " + e);
+            e.printStackTrace();
+        }
     }
 
     /** 0.9.7: bảng danh hiệu giả như máy chủ gửi (-110 loại 0) + nhãn danh hiệu của nhân vật chính. */
@@ -804,43 +1153,186 @@ public class ChupTrongGame {
 
     static java.util.Vector TOP;
 
+    /** Thư mục server/ của monorepo (có map/icon) - timMayChu(); null = không tìm thấy. */
+    static java.io.File MAY_CHU;
+    static boolean daTimMayChu;
+    /** Tệp icon máy chủ không có (không đọc đĩa lại mỗi khung). */
+    static final java.util.HashSet<Integer> THIEU_ANH = new java.util.HashSet<Integer>();
+
+    static boolean laMayChu(java.io.File d) {
+        return d != null && new java.io.File(d, "map/icon").isDirectory();
+    }
+
+    /**
+     * Tìm thư mục server/ (ảnh máy chủ map/icon, map/icon_pokemon, map/icon_do_moi): -Dhtbb.mayChu nếu có; không thì
+     * dò từ thư mục chạy và từ nơi đặt lớp client (client_pc/out/build/cls) / lớp kiểm, đi ngược lên các thư mục cha
+     * (X/server, X/htbb/server). Trước đây mặc định "../server" chỉ đúng khi chạy trong client_pc/ -> ô đồ hiện hộp quà.
+     */
+    static java.io.File timMayChu() {
+        if (daTimMayChu) return MAY_CHU;
+        daTimMayChu = true;
+        String p = System.getProperty("htbb.mayChu");
+        if (p != null) {
+            java.io.File d = new java.io.File(p).getAbsoluteFile();
+            MAY_CHU = laMayChu(d) ? d : null;
+            System.out.println("ChupTrongGame: may chu anh (-Dhtbb.mayChu) = " + d + (MAY_CHU == null ? " - KHONG CO map/icon" : ""));
+            return MAY_CHU;
+        }
+        java.util.ArrayList<java.io.File> goc = new java.util.ArrayList<java.io.File>();
+        goc.add(new java.io.File(System.getProperty("user.dir")));
+        Class[] lop = {ChupTrongGame.class, game.render.Canvas.class};
+        for (Class c : lop) {
+            try {
+                goc.add(new java.io.File(c.getProtectionDomain().getCodeSource().getLocation().toURI()));
+            } catch (Throwable e) {
+                // bỏ
+            }
+        }
+        for (java.io.File g : goc) {
+            for (java.io.File d = g.getAbsoluteFile(); d != null; d = d.getParentFile()) {
+                java.io.File[] thu = {d, new java.io.File(d, "server"), new java.io.File(d, "htbb/server")};
+                for (java.io.File t : thu) {
+                    if (laMayChu(t) && new java.io.File(t, "src").isDirectory()) {
+                        MAY_CHU = t;
+                        System.out.println("ChupTrongGame: may chu anh = " + t + " (tu " + g + ")");
+                        return MAY_CHU;
+                    }
+                }
+            }
+        }
+        System.out.println("ChupTrongGame: KHONG tim thay thu muc server/ (map/icon) - dat -Dhtbb.mayChu=<monorepo>/server");
+        return null;
+    }
+
+    /** Tệp ảnh máy chủ sẽ gửi cho icon id (lệnh -51), null nếu không có. */
+    static java.io.File tepIcon(int id) {
+        java.io.File goc = timMayChu();
+        if (goc == null) return null;
+        java.io.File t;
+        if (id >= 14000 && id < 15000) {
+            t = new java.io.File(goc, "map/icon_pokemon/" + (id - 14000) + ".png");
+        } else if (id >= 15000 && id < 16000) {
+            t = new java.io.File(goc, "map/icon_do_moi/" + (id - 15000) + ".png");   // IconDoMoi (đồ họ / vùng)
+        } else {
+            int n;
+            try {
+                n = com.htbb.pokemon.IconPokemon.doiAnh(id);
+            } catch (Throwable e) {
+                n = -1;
+            }
+            t = n >= 0 ? new java.io.File(goc, "map/icon_pokemon/" + n + ".png") : new java.io.File(goc, "map/icon/" + id + ".png");
+        }
+        return t.isFile() ? t : null;
+    }
+
+    static game.model.ImageIcon[] bangIcon() throws Exception {
+        java.lang.reflect.Field f = game.render.screen.GameData.class.getDeclaredField("BANG");
+        f.setAccessible(true);
+        return (game.model.ImageIcon[]) f.get(null);
+    }
+
     /**
      * Giả MÁY CHỦ ẢNH (lệnh -51): ô icon đang chờ -> nạp đúng tệp server sẽ gửi (server/map/icon_pokemon theo
-     * com.htbb.pokemon.IconPokemon.doiAnh, id 14000+n, hoặc map/icon/id.png). Gọi trên luồng sự kiện trước mỗi ảnh.
+     * com.htbb.pokemon.IconPokemon.doiAnh, id 14000+n, hoặc map/icon/id.png). Gọi trên luồng sự kiện trước mỗi ảnh
+     * (ve() tự gọi: mọi harness chụp qua ChupTrongGame.ve có icon thật). Trả số icon vừa nạp.
      */
-    static void giaMayChuAnh() {
+    static int giaMayChuAnh() {
+        int dem = 0;
         try {
-            java.lang.reflect.Field f = game.render.screen.GameData.class.getDeclaredField("BANG");
-            f.setAccessible(true);
-            game.model.ImageIcon[] b = (game.model.ImageIcon[]) f.get(null);
-            java.io.File goc = new java.io.File(System.getProperty("htbb.mayChu", "../server"));
+            game.model.ImageIcon[] b = bangIcon();
+            if (timMayChu() == null) return 0;
             for (int id = 0; id < b.length; id++) {
                 game.model.ImageIcon ic = b[id];
-                if (ic == null || !ic.isLoad) continue;
-                java.io.File t = null;
-                if (id >= 14000 && id < 15000) {
-                    t = new java.io.File(goc, "map/icon_pokemon/" + (id - 14000) + ".png");
-                } else if (id >= 15000 && id < 16000) {
-                    t = new java.io.File(goc, "map/icon_do_moi/" + (id - 15000) + ".png");   // IconDoMoi (đồ họ / vùng)
-                } else {
-                    int n = -1;
-                    try {
-                        n = com.htbb.pokemon.IconPokemon.doiAnh(id);
-                    } catch (Throwable e) {
-                        n = -1;
-                    }
-                    t = n >= 0 ? new java.io.File(goc, "map/icon_pokemon/" + n + ".png") : new java.io.File(goc, "map/icon/" + id + ".png");
+                if (ic == null || !ic.isLoad || THIEU_ANH.contains(id)) continue;
+                java.io.File t = tepIcon(id);
+                if (t == null) {
+                    THIEU_ANH.add(id);
+                    continue;
                 }
-                if (t.isFile()) {
-                    byte[] d = java.nio.file.Files.readAllBytes(t.toPath());
-                    ic.img = javax.microedition.lcdui.Image.createImage(d, 0, d.length);
-                    ic.isLoad = false;
-                }
+                byte[] d = java.nio.file.Files.readAllBytes(t.toPath());
+                ic.img = javax.microedition.lcdui.Image.createImage(d, 0, d.length);
+                ic.isLoad = false;
+                dem++;
             }
         } catch (Throwable e) {
             e.printStackTrace();
         }
+        return dem;
     }
+
+    /** Icon id có trong gói client (IconBang - vẽ ngay, không chờ máy chủ). */
+    static boolean trongGoi(int id) {
+        try {
+            java.lang.reflect.Method m = Class.forName("game.pokemon.IconBang").getDeclaredMethod("o", int.class);
+            m.setAccessible(true);
+            return ((Integer) m.invoke(null, id)) >= 0;
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    /**
+     * Icon vật phẩm id đã vẽ được ẢNH THẬT (gói client, hoặc ảnh máy chủ đã nạp) - không phải ô chờ / biểu tượng
+     * hộp quà dự phòng (IconVatPham.ve -> BieuTuong.QUA khi ImageIcon còn isLoad).
+     */
+    static boolean iconDaNap(int id) {
+        if (trongGoi(id)) return true;
+        game.model.ImageIcon ic = game.render.screen.GameData.coIcon((short) id);
+        return ic != null && !ic.isLoad && ic.img != null;
+    }
+
+    /** Màn liệt kê đồ của nhân vật giả (đồ đang mặc + hành trang) - mọi icon đồ phải là ảnh thật. */
+    static final String[] MAN_DO_NV = {"nv_trang_bi", "nv_hanh_trang", "nv_o_co_do", "nv_chi_tiet", "nv_cuoi_trang_bi", "nv_trang_bi_hq_cuoi",
+        "giao_dich", "kho_do", "xem_trang_bi", "cua_hang_ban"};
+
+    /**
+     * Không ô đồ nào còn icon chờ / hộp quà: (1) ở màn MAN_DO_NV, mọi đồ đang mặc + đồ hành trang đã yêu cầu icon
+     * (đã vẽ) đều có ảnh thật; ở nv_trang_bi / nv_hanh_trang (lưới "Tất cả") MỌI món phải đã vẽ; (2) ở mọi màn, mọi
+     * icon máy chủ đã yêu cầu mà server/map có tệp đều đã nạp.
+     */
+    static void kiemIconDo(String ten, String nhan) {
+        java.util.ArrayList<String> thieu = new java.util.ArrayList<String>();
+        boolean manDo = false;
+        for (String m : MAN_DO_NV) if (m.equals(ten)) manDo = true;
+        if (manDo) {
+            boolean batBuoc = "nv_trang_bi".equals(ten) || "nv_hanh_trang".equals(ten);
+            java.util.Vector ds = new java.util.Vector();
+            game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+            if (mc.wearingItems != null) for (int i = 0; i < mc.wearingItems.size(); i++) ds.addElement(mc.wearingItems.elementAt(i));
+            for (int i = 0; i < game.model.Char.inventory.size(); i++) ds.addElement(game.model.Char.inventory.elementAt(i));
+            int daVe = 0;
+            for (int i = 0; i < ds.size(); i++) {
+                Object o = ds.elementAt(i);
+                if (!(o instanceof game.model.ItemInInventory)) continue;
+                game.model.ItemInInventory it = (game.model.ItemInInventory) o;
+                game.model.ItemTemplate t;
+                try {
+                    t = game.render.Res.getItem(it.charClazz, it.idTemplate);
+                } catch (Throwable e) {
+                    t = null;
+                }
+                if (t == null) continue;
+                int id = t.idIcon;
+                boolean yeuCau = trongGoi(id) || game.render.screen.GameData.coIcon((short) id) != null;
+                if (!yeuCau && !batBuoc) continue;
+                daVe++;
+                if (!iconDaNap(id)) thieu.add(t.name + " (icon " + id + (yeuCau ? "" : ", chua ve") + ")");
+            }
+            kiem(!batBuoc || daVe > 0, nhan + ": icon do - khong do nao duoc ve");
+        }
+        try {
+            game.model.ImageIcon[] b = bangIcon();
+            for (int id = 0; id < b.length; id++) {
+                if (b[id] != null && b[id].isLoad && tepIcon(id) != null) thieu.add("icon " + id + " (server co tep, chua nap)");
+            }
+        } catch (Throwable e) {
+            thieu.add("BANG: " + e);
+        }
+        kiem(thieu.isEmpty(), nhan + ": icon do con o cho / hop qua " + thieu);
+        if (manDo) DEM_ICON_DO[0]++;
+    }
+
+    static final int[] DEM_ICON_DO = {0};
 
     static void shopThuoc() {
         game.render.screen.GameScr gs = game.render.Canvas.gameScr;
@@ -989,6 +1481,10 @@ public class ChupTrongGame {
             game.render.Canvas.gameScr.switchToMe();
             game.pokemon.HanhDong.moMenuChinh();   // phím mềm trái J2ME: menu chữ đủ mục (không gon)
             moHangNhiemVuChu();
+        } else if ("menu_chu_ban_than".equals(ten)) {
+            game.render.Canvas.gameScr.switchToMe();
+            game.pokemon.HanhDong.moMenuChinh();
+            moHangChu(2);
         } else if (ten.startsWith("the_gioi_hq")) {
             game.render.Canvas.gameScr.switchToMe();
         } else if (ten.startsWith("nv_ngoai_hinh_hq")) {
@@ -1885,7 +2381,9 @@ public class ChupTrongGame {
                 kiem(!c.endsWith("..") && !c.endsWith("\u2026"), nhan + " chu bi cat trong tab Trang bi: '" + c + "'");
             }
             game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
-            if (mc.danhHieuTen != null) kiem(coChu(mc.danhHieuTen), nhan + " vien Danh hieu khong du ten '" + mc.danhHieuTen + "'");
+            // 0.9.18: tên dài viên 2-3 dòng - ghép các dòng trong viên
+            if (mc.danhHieuTen != null) kiem(coChu(mc.danhHieuTen) || chuTrongVienDh().startsWith(chuVe(mc.danhHieuTen)),
+                    nhan + " vien Danh hieu khong du ten '" + mc.danhHieuTen + "' (ve '" + chuTrongVienDh() + "')");
             kiem(coChu(game.pokemon.BangTiemNangHD.nhanNut()), nhan + " thieu chu chip " + game.pokemon.BangTiemNangHD.nhanNut());
         }
         // 12 ô trang bị: cùng cạnh ô hành trang, thẳng cột / hàng
@@ -2287,6 +2785,11 @@ public class ChupTrongGame {
 
     /** Menu chữ (PauseMenu) đang mở: chọn hàng gốc "Nhiệm vụ" như bấm phím (dòng hiện -> doSelect) -> menu con 3 mục. */
     static void moHangNhiemVuChu() {
+        moHangChu(4);
+    }
+
+    /** Menu chữ J2ME đang mở: chọn hàng gốc hang (2 Bản thân, 4 Nhiệm vụ) như bấm phím. */
+    static void moHangChu(int hang) {
         try {
             Object pm = game.render.Canvas.currentScreen;
             if (!(pm instanceof game.render.screen.PauseMenu)) return;
@@ -2296,7 +2799,7 @@ public class ChupTrongGame {
             ds.setAccessible(true);
             java.lang.reflect.Field sel = k.getDeclaredField("selected");
             sel.setAccessible(true);
-            sel.setInt(pm, (Integer) vt.invoke(pm, 4));
+            sel.setInt(pm, (Integer) vt.invoke(pm, hang));
             ds.invoke(pm);
         } catch (Throwable e) {
             e.printStackTrace();
