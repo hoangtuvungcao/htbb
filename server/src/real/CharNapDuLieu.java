@@ -455,7 +455,7 @@ class CharNapDuLieu {
                     self.y = 512 + Database.r.nextInt() % 5;
                 }
             }
-            // khoa ban do: mien tru nhan vat cu / ban do dang luu bi khoa (KHONG dich chuyen ai di)
+            // khoa ban do: mien tru nhan vat cu; dang luu o thuyen (ben kia khoa) / ban do khoa -> ve lang (sua-ket-tau)
             KhoaBanDoGame.khiNap(self);
             int count = 0;
             if (self.dbSkill != null) {

@@ -579,7 +579,10 @@ class CharVongLap {
                     } else {
                         id2 = 107;
                     }
-                    self.map.move2Map(self, 19 + Map.random(3) + 1, 10 + Map.random(3) + 1, id2, self.inCountry);
+                    // ben kia con khoa (vd vua mat dieu kien): khong cho len thuyen (KhoaBanDoGame da bao) - sua-ket-tau
+                    if (!KhoaBanDoGame.chan(self, id2)) {
+                        self.map.move2Map(self, 19 + Map.random(3) + 1, 10 + Map.random(3) + 1, id2, self.inCountry);
+                    }
                 }
                 self.gotoIsland = false;
             }

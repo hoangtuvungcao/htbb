@@ -300,6 +300,19 @@ public final class Kiem {
             e.printStackTrace();
             Kiem.bang("KiemGymMotTran khong nem loi", "", String.valueOf(e));
         }
+        Kiem.nhom("Ket tren thuyen 107 (ben kia khoa): ve ben mot lan, len tau bi tu choi, khong nap map lien tuc, cuu luc nap (bao loi 24/10/2026)");
+        real.KiemKetTau.BAO = new real.KiemKetTau.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        try {
+            real.KiemKetTau.chay();
+        } catch (final Exception e) {
+            e.printStackTrace();
+            Kiem.bang("KiemKetTau khong nem loi", "", String.valueOf(e));
+        }
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

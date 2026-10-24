@@ -685,7 +685,7 @@ public final class KiemKhoaBanDo {
         Kiem.dung("di bo qua cong (goi 12): MapXuLyLenh.doChangeMap chan", doc("src/real/MapXuLyLenh.java").contains("KhoaBanDoGame.chanDiBo(player, toMapID)"));
         Kiem.dung("san Lien minh: MapLienDau.doChangeMap chan", doc("src/real/MapLienDau.java").contains("KhoaBanDoGame.chanDiBo(player, toMapID)"));
         final String map = doc("src/real/Map.java");
-        Kiem.dung("chot cuoi Map.move2Map", map.contains("if (mapID != player.mapID && KhoaBanDoGame.chanDiBo(player, mapID))"));
+        Kiem.dung("chot cuoi Map.move2Map", map.contains("mapID != player.mapID ? KhoaBanDoGame.chanMove2Map(player, mapID) : 0"));
         Kiem.dung("xa phu: chan kieu di bo (hop sau khi nap lai map)", map.contains("if (KhoaBanDoGame.chanDiBo(player, mapID)) {\n                        KhoaBanDoGame.giuTaiCho(player);"));
         Kiem.dung("hop cua ai tra loi o Map.doPopup", map.contains("idpopup == KhoaBanDoGame.POPUP_CUA_AI && idActor == player.id")
                 && map.contains("KhoaBanDoGame.khiTraLoi(player, ok == 1)"));

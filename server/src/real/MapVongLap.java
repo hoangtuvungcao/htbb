@@ -557,10 +557,8 @@ class MapVongLap {
                                 Map.inRangeActor(p, p.monster, 120);
                             }
 
-                            map.move2Map(p, 62 + Map.random(5), 122 + Map.random(5), id, p.inCountry);
-                            if (p.potions[20] > 0) {
-                                p.potions[20]--;
-                            }
+                            // ben kia khoa -> ve ben xuat phat mot lan (truoc: nap lai thuyen moi nhip, ket) - sua-ket-tau
+                            KhoaBanDoGame.xuongThuyen(map, p, id);
                         }
                     } catch (Exception var8) {
                     }
@@ -798,10 +796,8 @@ class MapVongLap {
                                 id += 500;
                             }
 
-                            map.move2Map(p, 62 + Map.random(5), 122 + Map.random(5), id, p.inCountry);
-                            if (p.potions[20] > 0) {
-                                p.potions[20]--;
-                            }
+                            // ben kia khoa -> ve ben xuat phat mot lan (truoc: nap lai thuyen moi nhip, ket) - sua-ket-tau
+                            KhoaBanDoGame.xuongThuyen(map, p, id);
                         }
                     } catch (Exception var8) {
                     }
@@ -1028,10 +1024,8 @@ class MapVongLap {
                                 id += 500;
                             }
 
-                            map.move2Map(p, 62 + Map.random(5), 122 + Map.random(5), id, p.inCountry);
-                            if (p.potions[20] > 0) {
-                                p.potions[20]--;
-                            }
+                            // ben kia khoa -> ve ben xuat phat mot lan (truoc: nap lai thuyen moi nhip, ket) - sua-ket-tau
+                            KhoaBanDoGame.xuongThuyen(map, p, id);
                         }
                     } catch (Exception var8) {
                     }
