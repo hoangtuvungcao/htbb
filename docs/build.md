@@ -246,8 +246,10 @@ mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - l�
 
 ### Bản 0.9.18 (`BAN=918`: sửa "game chậm như slow motion" 0.9.15-0.9.17 - vòng game bước cố định)
 
-Client (không gói mới, không đổi máy chủ) `PHIEN_BAN=0.9.18-opentest` (`BAN = 0*10000 + 9*100 + 18`; `MIDlet-Version`
-0.9.18), chạy với mọi máy chủ 0.9.15+.
+Client `PHIEN_BAN=0.9.18-opentest` (`BAN = 0*10000 + 9*100 + 18`; `MIDlet-Version` 0.9.18) trên main 5e4b84ed, chạy với
+mọi máy chủ 0.9.15+. Kèm main 5e4b84ed: cửa hàng đặc biệt ghi rõ dòng trả bằng **Lượng khoá** (`TienShop`,
+`GemTemp.luongKhoa`; máy chủ `TienShopDacBiet.BAN_CLIENT = 918` chỉ gửi phần mới cho client `BAN >= 918` - cần
+`htbb-server.jar` của main, qua cổng staging trước khi lên production).
 
 1. Lỗi (chủ dự án / người chơi sau 0.9.15-0.9.17: "game giờ chậm quá, kiểu như slow motion"): `Canvas.run` chạy MỘT nhịp
    logic mỗi vòng rồi vẽ các khung của nhịp đó và ngủ tới "đầu nhịp + 40 ms" - vẽ quá giờ là nhịp sau trễ, cả game (đi,
@@ -281,7 +283,7 @@ Client (không gói mới, không đổi máy chủ) `PHIEN_BAN=0.9.18-opentest`
    kiểm gói đi bằng `real.TocDoDiChuyen`: không gói nào bị từ chối, không lùi, đứng yên sau khi đánh, vị trí máy chủ =
    client). `NenPc.giaLapVeMs` / `giaLapVsync` (mặc định tắt) giả lập máy chậm cho hai kiểm này. Ngưỡng tốc độ máy chủ
    (`TocDoDiChuyen`: quỹ 1,5 x tốc độ / 40 ms, trần 2 x 50 px) hợp với bước cố định (trung bình đúng 1 x, chạy bù tối đa
-   5 nhịp = 25 px) - không đổi máy chủ.
+   5 nhịp = 25 px) - sửa slow motion không cần đổi máy chủ.
 
 ### Bản 0.9.17 (`BAN=917`: Menu › Sự kiện mở thẻ Sự kiện, thẻ menu máy chủ không lấy tên quái đang nhắm, kiểm đích mọi nút HUD)
 
