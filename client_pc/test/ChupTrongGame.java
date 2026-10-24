@@ -376,6 +376,9 @@ public class ChupTrongGame {
                     kiemMenuNguCanh(ten + " " + TEN_CO[c]);
                 }
                 kiemTuiNro(ten, ten + " " + TEN_CO[c]);
+                if (game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh) {
+                    kiemMenuGiua(ten + " " + TEN_CO[c]);
+                }
                 if (ten.startsWith("hst_") && !"hst_ky_nang".equals(ten)) {
                     kiemMenuMayChu(ten + " " + TEN_CO[c]);
                 }
@@ -398,6 +401,9 @@ public class ChupTrongGame {
         for (String x : ds) pw.println(x.replace('\n', ' '));
         pw.close();
         System.out.println("ChupTrongGame: " + ds.size() + " chuoi da ve -> chuoi_da_ve.txt");
+        System.out.println("MENU GIUA: " + DEM_GIUA[0] + " the (1 cot " + DEM_GIUA[1] + ", 2 cot " + DEM_GIUA[2] + ", nhieu trang "
+                + DEM_GIUA[3] + "), lech toi da " + lechGiuaMax + " px");
+        for (java.util.Map.Entry<String, String> e : DS_THAY.entrySet()) if (e.getKey().indexOf(" dt") >= 0) System.out.println("DS " + e.getKey() + ": " + e.getValue());
         for (java.util.Map.Entry<String, String> e : HQ_DO.entrySet()) System.out.println("HQ " + e.getKey() + ": " + e.getValue());
         System.out.println("ChupTrongGame: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
@@ -1777,6 +1783,35 @@ public class ChupTrongGame {
         }
     }
 
+    /** số thẻ menu (MenuNguCanh) đã đo canh giữa: [0] tổng, [1] 1 cột, [2] 2 cột, [3] nhiều trang */
+    static final int[] DEM_GIUA = new int[4];
+    static int lechGiuaMax;
+
+    /**
+     * 0.9.16 (chủ dự án: "nó bị lệch nè" - thẻ Sổ tay dạt trái): thẻ menu (NPC / máy chủ / Menu cá nhân) canh giữa ngang
+     * màn: |khoảng trái - khoảng phải| <= 2 px logic (trừ khi bị kẹp vào vùng an toàn), dọc trong vùng an toàn.
+     */
+    static void kiemMenuGiua(String nhan) {
+        int[] r = game.pokemon.MenuNguCanh.VUA_VE;
+        int L = game.pokemon.Bang.trai(), R = game.pokemon.Bang.phai();
+        int trai = r[0], phai = game.render.Canvas.w - (r[0] + r[2]);
+        boolean kep = r[0] <= L + 2 || r[0] + r[2] >= R - 2;
+        int lech = Math.abs(trai - phai);
+        kiem(lech <= 2 || kep, nhan + " the menu lech ngang: trai " + trai + " phai " + phai);
+        if (!kep) lechGiuaMax = Math.max(lechGiuaMax, lech);
+        DEM_GIUA[0]++;
+        try {
+            game.pokemon.MenuNguCanh m = game.pokemon.MenuNguCanh.gI();
+            java.lang.reflect.Method st = m.getClass().getDeclaredMethod("soTrang");
+            st.setAccessible(true);
+            if ((Integer) st.invoke(m) > 1) DEM_GIUA[3]++;
+        } catch (Throwable e) {
+            // bỏ
+        }
+        // cột: thẻ rộng > 1,6 x thẻ một cột tối thiểu = 2 cột
+        DEM_GIUA[r[2] > (game.pokemon.ChuDe.dt() ? 170 : 140) * 2 ? 2 : 1]++;
+    }
+
     /** Menu ngữ cảnh: thẻ trong vùng an toàn, không chồng phần HUD (thẻ trạng thái, nút, bản đồ nhỏ, cụm chiêu, chat). */
     static void kiemMenuNguCanh(String nhan) {
         int[] r = game.pokemon.MenuNguCanh.VUA_VE;
@@ -2033,6 +2068,7 @@ public class ChupTrongGame {
 
     /** Sân khấu Trang bị › Thú cưỡi không trống (luôn có tên thú / gợi ý), tab Thú có "Ô thú: n/max" khi có quản lý. */
     static final java.util.Vector THU_BO = new java.util.Vector();
+    static final java.util.TreeMap<String, String> DS_THAY = new java.util.TreeMap<String, String>();
 
     /** Menu chữ (PauseMenu) đang mở: chọn hàng gốc "Nhiệm vụ" như bấm phím (dòng hiện -> doSelect) -> menu con 3 mục. */
     static void moHangNhiemVuChu() {
@@ -2271,6 +2307,30 @@ public class ChupTrongGame {
             return;
         }
         kiem(coVungDung("thu-loai-0") && coVungDung("thu-loai-1"), nhan + " thieu tab con Thu cuoi / Di theo");
+        {
+            int[] d = game.pokemon.ManNhanVat.VUA_DS;
+            int k = game.pokemon.Bang.cach();
+            int thay = (d[4] + k > 0 ? (d[3] + k) / (d[4] + k) : 0) * Math.max(1, d[6]);
+            DS_THAY.put(nhan, "w " + d[2] + " h " + d[3] + " rh " + d[4] + " thay " + thay + " thu (" + Math.max(1, d[6]) + " cot, " + d[5] + " hang du lieu)" + (game.pokemon.ManNhanVat.gonVuaVe ? " gon" : ""));
+            // 0.9.16 (chủ dự án: Android "chỉ thấy được có 2"): điện thoại thấy >= 5 thú (hoặc cả danh sách)
+            if (nhan.indexOf(" dt") >= 0) {
+                kiem(thay >= 5, nhan + " danh sach thu dien thoai chi thay " + thay + " thu (< 5)");
+            }
+            // sân khấu (nhân vật / thú đang chọn) vẫn có ở mọi cỡ: một lượt PokeBody.paint sau nền thế giới của màn
+            Object tc = null;
+            try {
+                java.lang.reflect.Field f = game.pokemon.ManNhanVat.class.getDeclaredField("thuChon");
+                f.setAccessible(true);
+                tc = f.get(game.pokemon.ManNhanVat.gI());
+            } catch (Throwable e) {
+                // bỏ
+            }
+            if (tc == null && game.render.Canvas.currentDialog == null) {
+                boolean coNv = false;
+                for (int i = 0; i < 8; i++) coNv |= game.pokemon.PokeBody.VE_DEX[i] == game.render.Canvas.gameScr.mainChar.pokeDex;
+                kiem(coNv, nhan + " thieu san khau nhan vat");
+            }
+        }
         java.util.Vector cuoi = game.pokemon.QuanLyThu.dsLoai(0), theo = game.pokemon.QuanLyThu.dsLoai(1);
         game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
         int cu = game.pokemon.QuanLyThu.coDung ? (game.pokemon.QuanLyThu.thuCu != null ? 1 : 0) : (game.pokemon.ManNhanVat.dangCuoiThu() ? 1 : 0);
@@ -2297,7 +2357,7 @@ public class ChupTrongGame {
             kiem(l == 0 ? coChu("Chưa có thú cưỡi") && coChuDoan("Sáo gọi") : coChu("Chưa có Pokémon đi theo") && coChuDoan("ấp trứng"),
                     nhan + " tab trong thieu chu goi y");
         }
-        if (game.pokemon.QuanLyThu.co) {
+        if (game.pokemon.QuanLyThu.co && !(game.pokemon.ManNhanVat.gonVuaVe && coVungDung("thu-khoa"))) {
             int nTrung = game.pokemon.QuanLyThu.banTrung(l).size();
             kiem(nTrung > 0 ? coChu("Thả trùng (" + nTrung + ")") || coChu("Trùng " + nTrung) : !coChu("Thả trùng (") && !coChu("Trùng "),
                     nhan + " so Tha trung theo tab sai (" + nTrung + ")");
@@ -2334,6 +2394,9 @@ public class ChupTrongGame {
                 String t = game.pokemon.VungCham.ten(i);
                 nut |= "thu-tha-trung".equals(t);
             }
+            // 0.9.16 điện thoại (gọn): con đang chọn -> thanh thao tác thay hàng Ô thú trên đầu
+            boolean thayO = game.pokemon.ManNhanVat.gonVuaVe && coVungDung("thu-khoa");
+            if (thayO) return;
             kiem(o, nhan + " thieu 'O thu: n/max'");
             // 0.9.16: Thả trùng theo tab con - tab không có bản trùng: nút xám (không vùng chạm)
             kiem(nut == (game.pokemon.QuanLyThu.banTrung(loaiThuDangXem()).size() > 0), nhan + " nut Tha trung sai theo tab");
@@ -2393,7 +2456,7 @@ public class ChupTrongGame {
                     kiem(goc.length() == 0 || !tenThu[j].startsWith(goc), nhan + " ten thu bi cat: '" + c + "'");
                 }
             }
-            if (ten.startsWith("nv_thu_dang_dung")) {
+            if (ten.startsWith("nv_thu_dang_dung") && loaiThuDangXem() == 0) {
                 boolean co = false;
                 for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) co |= "Rapidash".equals(game.pokemon.GhiChu.CS[i]);
                 kiem(co, nhan + " hang Rapidash khong hien du ten");
@@ -2404,7 +2467,7 @@ public class ChupTrongGame {
             int hang = game.model.Char.animal.size() + game.pokemon.QuanLyThu.dung.size();
             kiem(game.pokemon.QuanLyThu.coDung, nhan + " khong doc duoc khoi dang dung");
             kiem(hang == soThu, nhan + " so hang " + hang + " != O thu " + soThu);
-            kiem(coChu("Ô thú: " + soThu + "/"), nhan + " thieu 'O thu: " + soThu + "/..'");
+            kiem(coChu("Ô thú: " + soThu + "/") || game.pokemon.ManNhanVat.gonVuaVe && coVungDung("thu-khoa"), nhan + " thieu 'O thu: " + soThu + "/..'");
             if (ten.startsWith("nv_thu_dang_dung_tha_trung")) return;   // hộp hỏi đè danh sách
             // 0.9.16: mỗi tab con chỉ một loại - con đang dùng của loại đứng đầu tab (Rapidash / Hoothoot)
             boolean tabTheo = loaiThuDangXem() == 1;

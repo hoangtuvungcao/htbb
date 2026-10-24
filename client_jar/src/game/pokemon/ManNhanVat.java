@@ -536,6 +536,23 @@ public final class ManNhanVat extends Screen {
         int rs = (s + 1) / 2;
         int lw = rongKhoiNv(w);
         if (this.o == O_THU) {
+            if (gonThu(h)) {
+                // 0.9.16 điện thoại (chủ dự án: "menu pet / thú cưỡi trên Android hơi to, chỉ thấy được có 2"): cột hai ô
+                // Thú cưỡi / Đi theo hẹp + danh sách rộng 2 cột, đầu một hàng (lùi + tab con + Ô thú); không sân khấu
+                // sân khấu (người cưỡi thú + pet / thú đang chọn) + hai ô vẫn giữ, hẹp lại 36 %
+                gonVuaVe = true;
+                int wc = w * 36 / 100;
+                veKhoiThu(g, m, x, y, wc, h);
+                Bang.the(g, x + wc + k, y, w - wc - k, h);
+                veDanhSachThu(g, x + wc + k + 4, y + 4, w - wc - k - 8, h - 8, new IAction() {
+                    public void perform() {
+                        ManNhanVat.this.lui();
+                    }
+                }, true);
+                moXem();
+                return;
+            }
+            gonVuaVe = false;
             // 0.9.13: Trang bị › Thú cưỡi KHÔNG vẽ lưới đồ nhân vật (chủ dự án: "thú cưỡi sao có hành trang của nhân vật")
             veKhoiThu(g, m, x, y, lw, h);
             veHanhTrang(g, x + lw + k, y, w - lw - k, h);
@@ -663,36 +680,21 @@ public final class ManNhanVat extends Screen {
         // hàng ô dưới: [ô] tên + nhãn  [ô] tên + nhãn
         int d = canhO(), rs = (d + 1) / 2;
         int hHang = Math.max(d, ChuDe.cao(ChuDe.NHAN_NHO) * 2 + 2);
-        int yHang = y + h - hHang;
+        // 0.9.16 điện thoại (khối hẹp): hai ô xếp DỌC, mỗi ô cả bề ngang (tên Rapidash / Hoothoot không cắt)
+        boolean doc = gonVuaVe;
+        int kd = k + 2;   // khe hai ô dọc (vùng chạm ô tròn rộng hơn hình một chút)
+        int yHang = y + h - (doc ? 2 * hHang + kd : hHang);
         final AnimalInfo cu = thuDangCuoi(), dt = petDiTheo();
         boolean coCuoi = dangCuoi(m);
         boolean coPet = dt != null || (!QuanLyThu.coDung && m.pokePetDex > 0);
-        int wNua = lw / 2;
+        int wNua = doc ? lw : lw / 2;
         for (int i = 0; i < 2; i++) {
             final boolean laCuoi = i == 0;
-            int x0 = x + i * wNua;
-            int cxO = x0 + rs + 2, cyO = yHang + hHang / 2;
+            int x0 = doc ? x : x + i * wNua;
+            int cxO = x0 + rs + 2, cyO = yHang + (doc ? i * (hHang + kd) : 0) + hHang / 2;
             boolean co = laCuoi ? coCuoi : coPet;
             final AnimalInfo a = laCuoi ? cu : dt;
-            boolean chon = a != null && this.thuChon == a;
-            Bang.oTron(g, cxO, cyO, rs, co, chon, new IAction() {
-                public void perform() {
-                    // 0.9.16: ô "Thú cưỡi" / "Đi theo" mở đúng tab con danh sách bên phải
-                    ManNhanVat.this.doiLoaiThu(laCuoi ? QuanLyThu.LOAI_CUOI : QuanLyThu.LOAI_DI_THEO);
-                    ManNhanVat.this.thuChon = a == null || ManNhanVat.this.thuChon == a ? null : a;
-                }
-            }, laCuoi ? "o-thu-cuoi" : "o-di-theo");
-            int ic = d - 4;
-            if (a != null) {
-                veHinhThu(g, dexThu(a), shinyThu(a), (short) (a.idPaint + 7500), cxO, cyO, ic);
-            } else if (laCuoi && coCuoi) {
-                veHinhThu(g, m.pokeThuDex, m.pokeThuShiny, (short) (m.idPaintIconAnimal + 7500), cxO, cyO, ic);
-            } else if (!laCuoi && coPet && coHinhThat(m.pokePetDex, m.pokePetShiny)) {
-                PokeBody.paintChanDung(g, m.pokePetDex, m.pokePetShiny, cxO, cyO, ic - 2);
-            } else {
-                int b = d * 11 / 20;
-                BieuTuong.veBong(g, BieuTuong.POKEBALL, cxO - b / 2, cyO - b / 2, Math.max(b, 16), 0x8A6A4A, ChuDe.NEN_PHU);
-            }
+            veOThu(g, m, laCuoi, cxO, cyO, rs, d);
             String ten;
             if (a != null) {
                 String[] t = tachTen(a.name);
@@ -706,7 +708,7 @@ public final class ManNhanVat extends Screen {
                 ten = laCuoi ? "Chưa cưỡi" : (coPet ? "Pokémon" : "Chưa có");
             }
             int xt = cxO + rs + 4, wChu = Math.max(10, x0 + wNua - 2 - xt);
-            int yt = yHang + (hHang - ChuDe.cao(ChuDe.NHAN_NHO) * 2 - 1) / 2;
+            int yt = cyO - hHang / 2 + (hHang - ChuDe.cao(ChuDe.NHAN_NHO) * 2 - 1) / 2;
             ChuDe.chu(g, ChuDe.cat(laCuoi ? "Thú cưỡi" : "Đi theo", ChuDe.NHAN_NHO, wChu), xt, yt, ChuDe.NHAN_NHO, ChuDe.CHU_PHU, 0);
             ChuDe.chu(g, ChuDe.cat(ten, ChuDe.NHAN_NHO, wChu), xt, yt + ChuDe.cao(ChuDe.NHAN_NHO) + 1, ChuDe.NHAN_NHO,
                     co ? ChuDe.CHU : ChuDe.CHU_PHU, 0);
@@ -717,10 +719,57 @@ public final class ManNhanVat extends Screen {
         int rD = Math.min(lw, cao) * 9 / 20, cyD = yTren + cao / 2 + cao / 20;
         float z = Math.max(1.5f, Math.min(4.2f, Math.min(lw / 46f, rD * 2 / 38f)));
         int yChan = Math.min(yTren + cao - (int) (4 * z), cyD + rD * 6 / 10);
+        if (doc) {
+            // sân khấu thấp (điện thoại): hình thu nhỏ vừa phần dưới hai dòng chữ, chân sát đáy
+            int hChu = ChuDe.cao(ChuDe.NHAN) + ChuDe.cao(ChuDe.NHAN_NHO) + 8;
+            z = Math.max(0.8f, Math.min(z, (cao - hChu - 6) / 36f));
+            yChan = yTren + cao - 4;
+        }
         banRongBe = lw / 2 - 6;
         veXemThu(g, m, x, yTren, lw, x + lw / 2, yChan, z);
         banRongBe = 1000;
     }
+
+    /** Một ô Thú cưỡi / Đi theo (tròn, hình con đang dùng): chạm = tab con đó + chọn con đang dùng. */
+    private void veOThu(Graphics g, MainChar m, final boolean laCuoi, int cxO, int cyO, int rs, int d) {
+        final AnimalInfo cu = thuDangCuoi(), dt = petDiTheo();
+        boolean coCuoi = dangCuoi(m);
+        boolean coPet = dt != null || (!QuanLyThu.coDung && m.pokePetDex > 0);
+        boolean co = laCuoi ? coCuoi : coPet;
+        final AnimalInfo a = laCuoi ? cu : dt;
+        boolean chon = a != null && this.thuChon == a;
+        Bang.oTron(g, cxO, cyO, rs, co, chon, new IAction() {
+            public void perform() {
+                // 0.9.16: ô "Thú cưỡi" / "Đi theo" mở đúng tab con danh sách bên phải
+                ManNhanVat.this.doiLoaiThu(laCuoi ? QuanLyThu.LOAI_CUOI : QuanLyThu.LOAI_DI_THEO);
+                ManNhanVat.this.thuChon = a == null || ManNhanVat.this.thuChon == a ? null : a;
+            }
+        }, laCuoi ? "o-thu-cuoi" : "o-di-theo");
+        int ic = d - 4;
+        if (a != null) {
+            veHinhThu(g, dexThu(a), shinyThu(a), (short) (a.idPaint + 7500), cxO, cyO, ic);
+        } else if (laCuoi && coCuoi) {
+            veHinhThu(g, m.pokeThuDex, m.pokeThuShiny, (short) (m.idPaintIconAnimal + 7500), cxO, cyO, ic);
+        } else if (!laCuoi && coPet && coHinhThat(m.pokePetDex, m.pokePetShiny)) {
+            PokeBody.paintChanDung(g, m.pokePetDex, m.pokePetShiny, cxO, cyO, ic - 2);
+        } else {
+            int b = d * 11 / 20;
+            BieuTuong.veBong(g, BieuTuong.POKEBALL, cxO - b / 2, cyO - b / 2, Math.max(b, 16), 0x8A6A4A, ChuDe.NEN_PHU);
+        }
+    }
+
+    /**
+     * 0.9.16: danh sách thú gọn (điện thoại) khi bố cục thường (đầu + tab con + Ô thú + thao tác) thấy < 5 hàng trong bảng
+     * cao h. Máy tính bảng / PC giữ bố cục cũ.
+     */
+    static boolean gonThu(int h) {
+        int k = Bang.cach();
+        int chrome = 3 * (Bang.co(26) + k) + 8;
+        return (h - chrome + k) / (Bang.caoHang() + k) < 5;
+    }
+
+    /** Kiểm thử: khung vừa vẽ dùng danh sách thú gọn. */
+    public static boolean gonVuaVe;
 
     static int giuaL0(int x, int coCot) {
         return x + coCot - 4;
@@ -1541,6 +1590,11 @@ public final class ManNhanVat extends Screen {
      * chỉ trong tab đang xem; phím trái / phải đổi tab con (mép ngoài: đổi tab màn như cũ).
      */
     private void veDanhSachThu(Graphics g, int x, int y, int w, int h) {
+        veDanhSachThu(g, x, y, w, h, null, false);
+    }
+
+    /** gon (0.9.16 điện thoại): một hàng đầu [lùi][tab con][Ô thú · Trùng · + Ô], lưới 2 cột khi đủ rộng. */
+    private void veDanhSachThu(Graphics g, int x, int y, int w, int h, Object lui, boolean gon) {
         final MainChar m = mc();
         final boolean moi = QuanLyThu.coDung;
         if (this.thuChon != null && !QuanLyThu.conTrongDs(this.thuChon)) {
@@ -1558,7 +1612,57 @@ public final class ManNhanVat extends Screen {
         int n = dsLoai.size() + nCuoi;
         int k = Bang.cach();
         // tab con: Thú cưỡi (n) / Đi theo (m)
-        {
+        boolean daOThu = false, daThaoTac = false;
+        if (gon) {
+            int hc = Bang.caoTab();
+            int xx = x;
+            if (lui != null) {
+                Bang.nutLui(g, xx, y, hc, lui);
+                xx += hc + k;
+            }
+            String[] chu = {"Thú cưỡi (" + (cuoi.size() + nCu) + ")", "Đi theo (" + diTheo.size() + ")"};
+            int wl = Math.max(ChuDe.rong(chu[0], ChuDe.NHAN), ChuDe.rong(chu[1], ChuDe.NHAN)) + 30;
+            int conLai = x + w - xx;
+            int wTab = Math.min(2 * wl, conLai);
+            // hàng đầu còn chỗ: Ô thú (hoặc thao tác con đang chọn) cùng hàng; không thì hàng hai. Con đang chọn: thanh
+            // thao tác THAY hàng Ô thú (không thêm hàng dưới) - danh sách giữ đủ chỗ
+            int wO = ChuDe.rong("Ô thú: " + QuanLyThu.soThu + "/" + QuanLyThu.sucChua, ChuDe.NHAN) + 8
+                    + 2 * Math.max(VungCham.MIN, ChuDe.rong("Trùng 88", ChuDe.SO) + 12) + 2 * k;
+            int canO = this.thuChon != null ? 3 * Math.max(VungCham.MIN, 76) + 2 * k : wO;
+            boolean motHang = (QuanLyThu.co || this.thuChon != null) && conLai - wTab - k >= canO;
+            if (!motHang) {
+                wTab = conLai;
+            }
+            if (!ChuDe.cat(chu[0], ChuDe.NHAN, wTab / 2 - 14).equals(chu[0]) || !ChuDe.cat(chu[1], ChuDe.NHAN, wTab / 2 - 14).equals(chu[1])) {
+                chu[0] = "Cưỡi (" + (cuoi.size() + nCu) + ")";
+            }
+            Object[] viec = new Object[2];
+            for (int i = 0; i < 2; i++) {
+                final int li = i;
+                viec[i] = new IAction() {
+                    public void perform() {
+                        ManNhanVat.this.doiLoaiThu(li);
+                    }
+                };
+            }
+            Bang.ranhTab(g, xx, y + hc - 2, wTab);
+            Bang.tienToTab = "thu-loai-";
+            Bang.phanDoan(g, xx, y, wTab, hc, chu, loaiXem, viec);
+            int xO = motHang ? xx + wTab + k : x, yO = motHang ? y : y + hc + k;
+            if (!motHang && (QuanLyThu.co || this.thuChon != null)) {
+                y += hc + k;
+                h -= hc + k;
+            }
+            if (this.thuChon != null) {
+                veThaoTacThu(g, xO, yO, x + w - xO, hc, this.thuChon, nCuoi);
+                daThaoTac = true;
+            } else if (QuanLyThu.co) {
+                veThanhOThu(g, xO, yO, x + w - xO, hc, loaiXem);
+            }
+            daOThu = true;
+            y += hc + k;
+            h -= hc + k;
+        } else {
             int hc = Bang.caoTab();
             String[] chu = {"Thú cưỡi (" + (cuoi.size() + nCu) + ")", "Đi theo (" + diTheo.size() + ")"};
             int wt = (w - 2) / 2 - 14;   // như Bang.phanDoan (ChuDe.cat(chu, NHAN, ww - 14))
@@ -1581,14 +1685,14 @@ public final class ManNhanVat extends Screen {
             h -= hc + k;
         }
         // thanh trên (máy chủ có quản lý thú): "Ô thú: n/max" (tổng chung) + Thả trùng (tab này) + Thêm ô
-        if (QuanLyThu.co) {
+        if (QuanLyThu.co && !daOThu) {
             int hb = Bang.co(24);
             veThanhOThu(g, x, y, w, hb, loaiXem);
             y += hb + k;
             h -= hb + k;
         }
         // thanh dưới: thao tác thú đang chọn (cưỡi / gọi / xuống, khoá, thả)
-        if (this.thuChon != null) {
+        if (this.thuChon != null && !daThaoTac) {
             int hb = Bang.co(26);
             veThaoTacThu(g, x, y + h - hb, w, hb, this.thuChon, nCuoi);
             h -= hb + k;
@@ -1601,8 +1705,32 @@ public final class ManNhanVat extends Screen {
             }
             return;
         }
-        Bang.danhSach(g, this.ds, x, y, w, h, n, Bang.caoHang(), new Bang.Hang() {
-            public void ve(Graphics g, int i, int x, int y, int w, int h) {
+        // lưới 2-3 cột (gọn, đủ rộng): mỗi ô >= 128 px logic (tên Rapidash / Dragonite không cắt; chật thì cấp xuống dòng phụ)
+        final int cot = gon ? Math.max(1, Math.min(3, (w - 10 + k) / (128 + k))) : 1;
+        final int nThu = n;
+        int nHang = (n + cot - 1) / cot;
+        VUA_DS[0] = x;
+        VUA_DS[1] = y;
+        VUA_DS[2] = w;
+        VUA_DS[3] = h;
+        // gọn: hàng thấp = cỡ chạm tối thiểu (tên + một dòng phụ), vẫn >= VungCham.MIN
+        int rh = gon ? Math.max(30, VungCham.MIN + 1) : Bang.caoHang();
+        VUA_DS[4] = rh;
+        VUA_DS[5] = n;
+        VUA_DS[6] = cot;
+        Bang.danhSach(g, this.ds, x, y, w, h, nHang, rh, new Bang.Hang() {
+            public void ve(Graphics g, int hang, int x, int y, int w, int h) {
+                int kc = Bang.cach();
+                int wo = (w - (cot - 1) * kc) / cot;
+                for (int c = 0; c < cot; c++) {
+                    int i = hang * cot + c;
+                    if (i < nThu) {
+                        o(g, i, x + c * (wo + kc), y, wo, h);
+                    }
+                }
+            }
+
+            void o(Graphics g, int i, int x, int y, int w, int h) {
                 int s;
                 if (i < nCuoi) {
                     final String[] t = tachTen(moi ? QuanLyThu.thuCu : m.infoAnimal);
@@ -1651,6 +1779,9 @@ public final class ManNhanVat extends Screen {
             }
         });
     }
+
+    /** Kiểm thử: vùng danh sách thú vừa vẽ {x, y, w, h, cao hàng, số hàng}. */
+    public static final int[] VUA_DS = new int[7];
 
     /** Tab con danh sách thú đang xem (QuanLyThu.LOAI_CUOI / LOAI_DI_THEO) - giữ lần dùng cuối cho tab Thú. */
     int loaiThu;
@@ -2418,7 +2549,10 @@ public final class ManNhanVat extends Screen {
     private void veThu(Graphics g, int x, int y, int w, int h) {
         MainChar m = mc();
         int k = Bang.cach();
-        int lw = Math.min(w * 45 / 100, 260);
+        // 0.9.16 điện thoại: sân khấu hẹp 36 %, danh sách gọn nhiều cột (thấy >= 5 thú)
+        boolean gon = gonThu(h);
+        gonVuaVe = gon;
+        int lw = gon ? w * 36 / 100 : Math.min(w * 45 / 100, 260);
         nenSanKhau(g, x, y, lw, h);
         // người chơi (cưỡi thú nếu đang cưỡi - veNguoiChoi) + Pokémon đi theo (-94 pokePetDex) bên cạnh
         boolean coPet = m.pokePetDex > 0 && PokeBody.coSprite(m.pokePetDex, m.pokePetShiny);
@@ -2447,6 +2581,10 @@ public final class ManNhanVat extends Screen {
         }
         int xr = x + lw + k, wr = w - lw - k;
         Bang.the(g, xr, y, wr, h);
+        if (gon) {
+            veDanhSachThu(g, xr + 4, y + 4, wr - 8, h - 8, null, true);
+            return;
+        }
         Font.blackFont.drawString(g, "Thú cưỡi / đi theo", xr + 8, y + 6, 0);
         int yl = y + 10 + Font.blackFont.getHeight();
         veDanhSachThu(g, xr + 4, yl, wr - 8, y + h - 4 - yl);

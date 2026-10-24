@@ -356,41 +356,38 @@ public final class MenuNguCanh extends Dialog {
         }
         boolean coMt = this.mx >= 0 && this.mx < Canvas.w && this.my >= 0 && this.my < Canvas.h;
         int ax = coMt ? this.mx : Canvas.hw, ay = coMt ? this.my : B - h / 2;
-        int[] xs = {ax + 26, ax - 26 - w, ax - w / 2, ax - w / 2, (L + R - w) / 2};
-        int[] ys = {ay - h / 2, ay - h / 2, ay - 30 - h, ay + 20, (T + B - h) / 2};
+        // 0.9.16 (chủ dự án: "nó bị lệch nè" - thẻ Sổ tay dạt trái cạnh nhân vật, phải trống 580 px): thẻ LUÔN canh giữa
+        // ngang màn (kẹp vào vùng an toàn), dọc ưu tiên giữa vùng an toàn; chỉ dời dọc khi đè HUD / che mục tiêu
+        int x = Math.max(L + 2, Math.min(R - 2 - w, (Canvas.w - w) / 2));
+        int giua = (T + B - h) / 2;
+        int[] ys = {giua, giua - h / 3, giua + h / 3, ay - 30 - h, ay + 20, T + 2, B - 2 - h};
         int tot = -1;
         long diemTot = Long.MAX_VALUE;
-        int bx = 0, by = 0;
+        int bx = x, by = 0;
         long chongTot = 0;
-        for (int i = 0; i < xs.length; i++) {
-            for (int dy = 0; dy < 5; dy++) {
-                int x = Math.max(L + 2, Math.min(R - 2 - w, xs[i]));
-                int y = Math.max(T + 2, Math.min(B - 2 - h, ys[i] + (dy == 0 ? 0 : (dy % 2 == 1 ? 1 : -1) * ((dy + 1) / 2) * h / 3)));
-                long chong = 0;
-                for (int q = 0; hud != null && q < hud.length; q++) {
-                    String ten = (String) hud[q][0];
-                    if ("ten_chieu".equals(ten) || "muc_tieu".equals(ten)) {
-                        continue;
-                    }
-                    int[] a = (int[]) hud[q][1];
-                    int ox = Math.min(x + w, a[0] + a[2]) - Math.max(x, a[0]);
-                    int oy = Math.min(y + h, a[1] + a[3]) - Math.max(y, a[1]);
-                    if (ox > 0 && oy > 0) {
-                        chong += (long) ox * oy;
-                    }
+        for (int i = 0; i < ys.length; i++) {
+            int y = Math.max(T + 2, Math.min(B - 2 - h, ys[i]));
+            long chong = 0;
+            for (int q = 0; hud != null && q < hud.length; q++) {
+                String ten = (String) hud[q][0];
+                if ("ten_chieu".equals(ten) || "muc_tieu".equals(ten)) {
+                    continue;
                 }
-                // che mục tiêu cũng tính phạt (thẻ không đè lên NPC)
-                if (coMt && ax >= x - 8 && ax <= x + w + 8 && ay >= y - 8 && ay <= y + h + 8) {
-                    chong += 400;
+                int[] a = (int[]) hud[q][1];
+                int ox = Math.min(x + w, a[0] + a[2]) - Math.max(x, a[0]);
+                int oy = Math.min(y + h, a[1] + a[3]) - Math.max(y, a[1]);
+                if (ox > 0 && oy > 0) {
+                    chong += (long) ox * oy;
                 }
-                long diem = chong * 1000 + Math.abs(x + w / 2 - ax) + Math.abs(y + h / 2 - ay) + i * 4;
-                if (diem < diemTot) {
-                    diemTot = diem;
-                    chongTot = chong;
-                    tot = i;
-                    bx = x;
-                    by = y;
-                }
+            }
+            // che mục tiêu cũng tính phạt (thẻ không đè lên NPC) - nhẹ hơn đè HUD
+            long phat = coMt && ax >= x - 8 && ax <= x + w + 8 && ay >= y - 8 && ay <= y + h + 8 ? 400 : 0;
+            long diem = (chong + phat) * 1000 + Math.abs(y - giua) + i;
+            if (diem < diemTot) {
+                diemTot = diem;
+                chongTot = chong;
+                tot = i;
+                by = y;
             }
         }
         return new int[]{bx, by, tot, (int) Math.min(Integer.MAX_VALUE, chongTot)};
