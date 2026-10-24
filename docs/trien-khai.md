@@ -238,7 +238,8 @@ chạy khi biến repo `HTBB_VPS_MONOREPO=1`; địa chỉ SSH nằm ở biến 
    admin. Khi đó script đặt cờ `5h_systems.baotri_thongbao` (báo người chơi 60 giây), `systemctl stop htbb-game`
    (shutdown hook lưu dữ liệu), bật lại và chờ cổng 19129.
 
-Có `flock` chống hai lần deploy chồng nhau và `trap` SIGHUP để bật lại server nếu SSH đứt giữa chừng. Log:
+Khi cổng kiểm đã cài (mục 4.4) `deploy-auto.sh` không kéo code, không khởi động lại — chỉ in đường sang
+`vps/len-production.sh`. Có `flock` chống hai lần deploy chồng nhau và `trap` SIGHUP để bật lại server nếu SSH đứt giữa chừng. Log:
 `/opt/htbb/logs/autodeploy.log` (cũng hiện trong tab Actions). Chạy tay: `sudo /opt/htbb/vps/deploy-auto.sh`.
 
 Nhớ: VPS chạy **tệp jar đã commit**. Sửa `server/src` thì phải build lại `server/htbb-server.jar` ([build.md](build.md))
@@ -285,6 +286,117 @@ Website phát đúng **5 bản tải**, mỗi nền tảng một tệp (`web/sha
 "thuong"), Windows bộ cài `.exe`, Linux `.AppImage` hoặc `.tar.gz`, Android `.apk`, iOS "Sắp ra mắt". Jar "nhẹ",
 bản Windows `.zip` và `HTBB-PC-<bản>.jar` không còn hiện trên web (tệp trên đĩa không bị xoá). Giá trị CMS kiểu cũ
 (mã `pc-java` / `pc` / `pc-jar`, dòng "tệp phụ" `/tai/…` trong ô "Có gì mới") được đổi tự động khi đọc.
+
+### 4.4 Staging và cổng kiểm
+
+Từ 24/10/2026 **mọi** thay đổi game server (jar, `sql/htbb.sql`) lên production qua hai bước: chạy bộ bot hồi quy
+trên một bản **staging** cùng VPS (dữ liệu chép từ bản sao lưu production), rồi `vps/len-production.sh` — script này
+từ chối nếu đúng jar + SQL đó chưa qua cổng kiểm. Lý do: sửa thẳng lên production làm người chơi gặp lỗi trước,
+và bot cũ chạy bằng tài khoản GM (được miễn khoá bản đồ) nên không thấy lỗi người chơi thường gặp.
+
+| Thứ | Production | Staging |
+|---|---|---|
+| CSDL | `htbb_db`, `account` (user `htbb`) | `htbb_staging`, `htbb_staging_account` — user MariaDB **riêng** `htbb_staging`, chỉ có quyền trên hai CSDL này |
+| cổng | game 19129, login 8023 | game 29129 (**chỉ 127.0.0.1**: `sv.ipLangNghe`), login 28023, nạp 29153 |
+| thư mục | `/opt/htbb/{server,sql,logs}` | `/opt/htbb-staging/{server,sql,logs}` |
+| systemd | `htbb-game`, `htbb-login` | `htbb-staging-game`, `htbb-staging-login` — **không** enable, cổng kiểm bật rồi tắt |
+| tài nguyên | heap 1.5 GB | heap 768 MB, `CPUQuota=60%`, `MemoryMax=1200M`, `Nice=10`, IO idle, mạng chỉ localhost (`IPAddressDeny`) |
+| cấu hình | `vps/sinh-server-ini.sh` | `vps/staging/sinh-server-ini.sh`: chép `server.ini` production, chỉ đổi cổng / CSDL / thư mục / GM bot, `sv.cho_phep_thu_nghiem=1`, `sv.choPhepTaoTenGM=1`, `sv.gioBaoTri=tat` |
+| tài khoản | người chơi thật | mật khẩu thật bị thay bằng chuỗi ngẫu nhiên, email / SĐT / IP xoá; thêm bot `kt001..kt040` (GM) và `kt101..kt199` (thường), mật khẩu `123456` |
+
+**Cài một lần** (sau khi `vps/` và `tools/` trên VPS đã có bản mới, xem cuối mục):
+
+```bash
+sudo apt install -y openjdk-17-jdk-headless          # javac cho bot hồi quy (hoặc HTBB_BOT_CP=<thư mục .class>)
+sudo bash /opt/htbb/vps/staging/cai-dat.sh --thu     # xem trước
+sudo bash /opt/htbb/vps/staging/cai-dat.sh           # thư mục, /etc/htbb/staging.env, /etc/htbb/cong-kiem.key,
+                                                     # user MariaDB htbb_staging, 2 unit, ufw deny 29129/28023
+sudo bash /opt/htbb/vps/staging/lam-moi.sh --jar /opt/htbb/server/htbb-server.jar --sql /opt/htbb/sql/htbb.sql
+sudo systemctl stop htbb-staging-game htbb-staging-login
+```
+
+`cai-dat.sh` chạy lại được (không đổi mật khẩu / khoá đã có). Từ lúc có `/etc/htbb/cong-kiem.key`,
+`vps/deploy-auto.sh`, `vps/update.sh`, `vps/capnhat.sh` dừng ngay và chỉ đường sang `len-production.sh`
+(`HTBB_BO_CONG_KIEM=1` để bỏ qua — chỉ khi biết vì sao).
+
+**Mỗi lần lên bản mới** — chép jar + SQL ứng viên lên VPS (ví dụ `/opt/htbb/ung_vien/`), rồi:
+
+```bash
+# 1. cổng kiểm: ~10 phút nạp CSDL + 30–90 phút bot; chạy lúc ít người chơi
+sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh \
+     --jar /opt/htbb/ung_vien/htbb-server.jar --sql /opt/htbb/ung_vien/htbb.sql     # bản có SQL mới
+sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh \
+     --jar /opt/htbb/ung_vien/htbb-server.jar --sql /opt/htbb/sql/htbb.sql          # chỉ jar: SQL đang cài
+# 2. lên production (chỉ chạy được khi bước 1 DAT trong 24 giờ, cùng sha256)
+sudo bash /opt/htbb/vps/len-production.sh --jar /opt/htbb/ung_vien/htbb-server.jar \
+     --sql /opt/htbb/ung_vien/htbb.sql --co-sql            # có nâng cấp CSDL
+sudo bash /opt/htbb/vps/len-production.sh --jar /opt/htbb/ung_vien/htbb-server.jar --chi-jar   # chỉ jar
+#    thêm --web /duong/web-build.tgz để thay luôn website; --thu = chỉ kiểm, không làm gì
+```
+
+Bản ứng viên đổi tài nguyên server (`server/map`, `server/cMap`, `server/lib`): checkout commit đó ra một thư mục
+khác trên VPS rồi thêm `--nguon <thư mục>` vào lệnh `kiem-truoc-khi-len.sh` (truyền tiếp cho `lam-moi.sh`).
+
+**Cổng kiểm quyết định thế nào** (`vps/staging/kiem-truoc-khi-len.sh`, mã thoát ≠ 0 = HỎNG):
+
+1. `lam-moi.sh`: dừng staging → chép tài nguyên server → nạp **bản sao lưu production mới nhất**
+   (`/opt/htbb/backups/htbb_db_<ngày>.sql.gz` + `account_<cùng mốc>.sql.gz` của `vps/backup_db.sh`; `--tu-csdl-song` =
+   `mysqldump` thẳng; từ chối dump có `USE` / `CREATE DATABASE`) → xoá dữ liệu cá nhân → nâng cấp bằng SQL ứng viên
+   (tên CSDL trong tệp được viết lại sang tên staging, `nang_cap_csdl.sh` từ chối tệp không khớp CSDL) → tạo tài khoản
+   bot + ghi đè `cau_hinh` của staging → cài jar → bật, chờ cổng 29129. Hỏng bước nào = HỎNG.
+2. `tools/pokemon/kiem_tai/chay_hoi_quy.sh 127.0.0.1 29129 28023 cnf=…,db=htbb_staging,dbtk=htbb_staging_account`:
+   mỗi nhóm trong `tools/pokemon/kiem_tai/hoi_quy.conf` phải DAT (BotChucNang: mã thoát 0 và `FAIL 0`; BotBangThong:
+   mọi bot vào game, `loi=0`; hết giờ = HỎNG).
+3. Staging còn sống sau bot (unit active, cổng mở).
+4. Log staging từ lúc bật (`game.out` + `nhat_ky/may_chu-*.log`) **không có Exception / Error mới** — trừ mẫu đã biết
+   trong `vps/staging/loi-bo-qua.txt` (mỗi mẫu một dòng, ghi lý do).
+5. Ghi kết quả **ký** `/var/lib/htbb/cong-kiem/<sha256 jar>_<sha256 sql>.txt` (DAT / HỎNG, thời điểm, nhóm bot,
+   chữ ký `sha256(khoá ‖ sha256(khoá ‖ nội dung))` bằng `/etc/htbb/cong-kiem.key`, root 0600), log + kết quả từng nhóm
+   ở `/var/lib/htbb/cong-kiem/nhat_ky/<thời điểm>/` (giữ 30 lần), rồi tắt staging (`--giu-chay` để giữ).
+   `--nhom "a b"` chạy vài nhóm để gỡ lỗi — kết quả là `DAT_MOT_PHAN`, **không** dùng được để lên production.
+
+**`len-production.sh`** — đúng các bước làm tay trước đây, theo thứ tự: kiểm jar (zip) / SQL (phần B, `USE htbb_db`) /
+cổng kiểm (tệp kết quả đúng sha256 jar + sql, chữ ký đúng, `DAT`, dưới `CONG_KIEM_GIO`=24 giờ; `--chi-jar` đòi cổng kiểm
+đã chạy với SQL **giống** `/opt/htbb/sql/htbb.sql` đang cài) / giờ (từ chối **thứ Hai 04:00–05:00** giờ VN — mốc tuần —
+trừ `--force`) → sao lưu CSDL (`htbb-backup-db.sh`) + jar + SQL đang chạy vào `/opt/htbb/backups/len-production/<mốc>/`
+→ `UPDATE htbb_db.5h_systems SET status=0 WHERE command='baotri_thongbao'` → chờ 62 giây → `systemctl stop htbb-game`
+→ (`--co-sql`) cài SQL + `nang_cap_csdl.sh` (hỏng = bật lại jar cũ) → cài jar → bật → chờ cổng 19129 (240 giây; không
+lên = **tự quay lại jar cũ**) → `kiem-suc-khoe.sh` sau khi `trang_thai.json` mới → (`--web`) `htbb-deploy-web.sh nhan-build`
+→ tóm tắt (sha cũ / mới, sao lưu, sức khoẻ, Exception từ lúc bật, lệnh quay lại). Nhật ký: `/opt/htbb/logs/len-production.log`.
+Production hỏng mà cổng kiểm không chạy được: `--khan-cap "<lý do>"` (phải gõ `LEN KHONG KIEM`, ghi vào nhật ký).
+
+`len-production.sh` ghi jar / SQL vào bản checkout `/opt/htbb` (tệp có trong git), nên `git pull` toàn bộ trên VPS sẽ
+đổi jar đang chạy mà không qua cổng kiểm. Cập nhật script / bot / tài liệu trên VPS chỉ theo **đường dẫn**:
+
+```bash
+sudo -u htbb git -C /opt/htbb fetch origin
+sudo -u htbb git -C /opt/htbb checkout origin/main -- vps tools docs
+```
+
+**Theo dõi bất thường hằng ngày** — [`vps/theo-doi/bao-cao-ngay.sh`](../vps/theo-doi/bao-cao-ngay.sh) chỉ đọc log
+(`nhat_ky/may_chu-<ngày>*.log`, `game.out` khi không có nhật ký tệp, `gc.log*`) và ghi báo cáo tiếng Việt
+`/opt/htbb/logs/bao_cao/<ngày>.txt`:
+
+```bash
+bash /opt/htbb/vps/theo-doi/bao-cao-ngay.sh                         # hôm nay
+bash /opt/htbb/vps/theo-doi/bao-cao-ngay.sh --ngay 2026-10-24 --in  # chỉ in
+echo '10 0 * * * root bash /opt/htbb/vps/theo-doi/bao-cao-ngay.sh --hom-qua >> /opt/htbb/logs/bao-cao.log 2>&1' \
+  | sudo tee /etc/cron.d/htbb-bao-cao
+```
+
+| Mục | Nguồn | Ngưỡng "CẦN XEM" |
+|---|---|---|
+| Exception Java theo lớp + khung stack đầu | dòng lỗi + `at …`, cộng cả dòng gộp "loi lap lai N lan" | có bất kỳ |
+| Nạp lại bản đồ liên tục / kẹt cùng bản đồ | `[NAP_MAP_LAP]` (máy chủ: ≥ 6 gói `-500` / 30 giây / nhân vật), chùm `[KHOA_MAP]` ≥ 5 / 10 giây | có nhân vật nào |
+| Vị trí bị kéo về | `[KEO_VE]` (máy chủ: ≥ 20 lần / 60 giây, lý do `toc_do` / `o_cam` / `vat_can`) | ≥ 5 nhân vật |
+| Thao tác bị chặn theo giờ | `[KHOA_MAP]`, `[THUDAY]`, "Không thể…" | giờ ≥ 3 × trung vị và ≥ 30 |
+| Đăng nhập lỗi | `[DANG_NHAP_LOI] ma=-1/-2/-3`, mất kết nối login server, hàng đợi login đầy | login server lỗi, một IP ≥ 50 lần |
+| GC dừng | `gc.log` (`Pause … ms`) | > 200 ms |
+| Nhịp máy chủ | `[NHIP] max=…ms(chỗ)` | > 100 ms |
+
+Dòng bị bộ gộp nhật ký bỏ bớt ("gop dong lap xN … (bo bot M)") được cộng lại nên số liệu là số thật. Webhook (chưa bật):
+`HTBB_BAO_CAO_WEBHOOK=https://…` trong `/etc/htbb/theo-doi.env` → POST JSON `{"text": …}`. `--ma-thoat` trả 3 khi có
+mục cần xem.
 
 ## 5. Sao lưu và khôi phục
 

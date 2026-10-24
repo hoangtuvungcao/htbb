@@ -106,6 +106,7 @@ máy (`vps-db-tai-ve.bat` + `vps-db-nap-vao-local.bat`). Tên máy `htbb-vps` kh
 | `/opt/htbb/logs/gc.log` | GC của JVM (xoay 5 × 10 MB) |
 | `/opt/htbb/logs/autodeploy.log`, `deploy-web.log` | deploy game / web |
 | `/opt/htbb/logs/suc-khoe.log` | kết quả kiểm sức khoẻ mỗi phút (mục 13) |
+| `/opt/htbb/logs/bao_cao/<ngày>.txt`, `len-production.log` | báo cáo bất thường hằng ngày (`vps/theo-doi/bao-cao-ngay.sh`), nhật ký mỗi lần lên production |
 | `/opt/htbb/logs/don-log.log` | dọn bảng log CSDL |
 | `/var/log/htbb-backup.log` | sao lưu + thử khôi phục (theo dòng cron trong đầu script) |
 | `/opt/htbb/server/AdminChat.txt` | mọi câu chat của GM; `AdminChat_lenh47.txt`: lệnh quản trị gói 47 |
@@ -135,6 +136,13 @@ Chuỗi đáng grep trong `game.out`:
 | `NAP TIEN -> BAT` / `NAP TIEN BI TAT (fail closed)` | trạng thái nạp tiền (game / web) |
 | `Data too long for column` | lưu nhân vật thất bại (xem mục 14) |
 | `[GIFTCODE]` | mã bị từ chối / lỗi phát quà |
+| `[NAP_MAP_LAP] <tên> lan=N/Ss cung_map=M` | nhân vật nạp lại bản đồ ≥ 6 lần / 30 giây (kẹt vòng nạp map; `cung_map` = cùng một bản đồ). Một dòng / nhân vật / 5 phút |
+| `[KEO_VE] <tên> lan=N/Ss … ly_do=toc_do,o_cam,vat_can` | máy chủ trả vị trí cũ ≥ 20 lần / 60 giây (người chơi thấy giật lùi liên tục) |
+| `[DANG_NHAP_LOI] ma=-1/-2/-3 tk=… ip=…` | đăng nhập bị từ chối: sai mật khẩu / bị khoá / lỗi login server |
+| `[THUDAY]` | nhận thú (thú cưỡi / Pokémon) bị từ chối vì ô thú đã đầy (mua, nở trứng, sự kiện, giftcode, được tặng) |
+
+Báo cáo tổng hợp theo ngày các dòng trên + Exception, GC, nhịp: `bash /opt/htbb/vps/theo-doi/bao-cao-ngay.sh`
+([trien-khai.md mục 4.4](trien-khai.md)).
 
 Xoay vòng: [`../vps/htbb-logrotate.conf`](../vps/htbb-logrotate.conf) (`game.out`/`login.out` hằng ngày, giữ 30, `copytruncate`;
 `*.log` trong `logs/` hằng tuần; các `.txt` của server hằng tháng). Các bảng log trong CSDL được

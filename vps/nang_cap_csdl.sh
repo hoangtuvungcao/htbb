@@ -19,19 +19,24 @@
 #
 #  Bien moi truong (de thu tren may khac):
 #    MYSQL="mysql ..."            lenh mysql (mac dinh: mysql, root qua unix_socket hoac /etc/htbb/htbb.env)
-#    BO_SAO_LUU=1                 bo buoc sao luu (CHI dung tren CSDL thu, khong bao gio tren production)
+#    BO_SAO_LUU=1                 bo buoc sao luu (CHI dung tren CSDL thu, hoac khi nguoi goi vua sao luu - vps/len-production.sh)
+#    HTBB_SQL=<tep>               nap tep nay thay cho sql/htbb.sql (ban ung vien cua vps/len-production.sh / staging)
+#    HTBB_CSDL_GAME=<ten>         CSDL game (mac dinh htbb_db). Khac htbb_db (staging) thi tep SQL PHAI da duoc viet lai
+#                                 sang ten do (vps/staging/chung.sh viet_lai_sql_staging) - khong thi tu choi.
 # ============================================================
 set -euo pipefail
 
 DIR=$(cd "$(dirname "$0")/.." && pwd)
-SQL="$DIR/sql/htbb.sql"
-DB=htbb_db   # ten CSDL co dinh trong sql/htbb.sql (USE `htbb_db`)
+SQL=${HTBB_SQL:-$DIR/sql/htbb.sql}
+DB=${HTBB_CSDL_GAME:-htbb_db}   # sql/htbb.sql ghi cung USE `htbb_db`; staging dung ban viet lai
 MOC='-- ######## B. NANG CAP'
 ENV_FILE=${HTBB_ENV_FILE:-/etc/htbb/htbb.env}
 
 loi() { echo "[LOI] $*" >&2; exit 1; }
 [ -r "$SQL" ] || loi "khong doc duoc $SQL"
 grep -q "^$MOC" "$SQL" || loi "$SQL thieu phan B (dong '$MOC') - tep hong / ban cu"
+# Tep phai dung CSDL $DB: nap ban goc (USE `htbb_db`) khi tuong la staging se nang cap PRODUCTION.
+grep -q "^USE \`$DB\`;" "$SQL" || loi "$SQL khong co dong 'USE \`$DB\`;' - sai tep cho CSDL $DB"
 
 TAM=$(mktemp -d)
 trap 'rm -rf "$TAM"' EXIT

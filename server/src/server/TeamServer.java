@@ -28,6 +28,8 @@ public class TeamServer {
 
     public static boolean running;
     public static int PORT;
+    /** sv.ipLangNghe - trong = moi giao dien. */
+    public static String ipLangNghe = "";
     private static ServerControllerManager controllerManager;
     private static ServerSocket listenSocket;
     public static long timeStartServer;
@@ -695,6 +697,9 @@ public class TeamServer {
             com.htbb.log.Nhat.docCauHinh(p, p.getProperty("sv.pathLog"));
             BaoTriDaily.Server = Integer.parseInt(p.getProperty("api.sv"));
             TeamServer.PORT = Integer.parseInt(p.getProperty("sv.port"));
+            // sv.ipLangNghe: dia chi lang nghe cong game (trong = moi giao dien, nhu cu). Staging dat 127.0.0.1 de
+            // cong 29129 khong bao gio lo ra internet (vps/staging/sinh-server-ini.sh).
+            TeamServer.ipLangNghe = p.getProperty("sv.ipLangNghe", "").trim();
             TeamServer.LIMIT_CCU = Short.parseShort(p.getProperty("limit.ccu"));
             TeamServer.server = Integer.parseInt(p.getProperty("sv.server"));
             TeamServer.portNapTien = Integer.parseInt(p.getProperty("sv.portnap"));
@@ -1295,8 +1300,11 @@ public class TeamServer {
         RealController.add_more_idMapSend2Client();
 
         try {
-            TeamServer.listenSocket = new ServerSocket(TeamServer.PORT, 200);
-            System.out.println("Listen on port " + TeamServer.PORT);
+            TeamServer.listenSocket = TeamServer.ipLangNghe.isEmpty()
+                    ? new ServerSocket(TeamServer.PORT, 200)
+                    : new ServerSocket(TeamServer.PORT, 200, InetAddress.getByName(TeamServer.ipLangNghe));
+            System.out.println("Listen on port " + TeamServer.PORT
+                    + (TeamServer.ipLangNghe.isEmpty() ? "" : " (chi " + TeamServer.ipLangNghe + ")"));
             while (TeamServer.running) {
                 try {
                     Socket clientSocket = TeamServer.listenSocket.accept();

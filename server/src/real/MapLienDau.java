@@ -363,6 +363,7 @@ public class MapLienDau extends Map {
         try {
             int toMapID = message.dis.readShort();
             if (toMapID == -500) {
+                com.htbb.log.TheoDoiBatThuong.NAP_MAP.ghi(player.charname, player.mapID, null); // bao cao: nap map lien tuc
                 player.isDoChangeMap = false;
                 KhoaBanDoGame.sauKhiVaoMap(player); // vua bi chan o cong (nap lai map xong): hop cua ai
             } else if (this.isMapOffline && player.mapID_the_mua_ban > -1) {

@@ -808,14 +808,30 @@ public class BotChucNang {
         return n.replace('đ', 'd').replace('Đ', 'D').toLowerCase();
     }
 
+    /**
+     * CSDL tai khoan (mac dinh "account"). Staging (vps/staging/) dung ten khac: -Ddbtk=htbb_staging_account -> moi
+     * "account." trong cau truy van cua kich ban duoc doi sang ten nay (khong bao gio cham CSDL account that).
+     */
+    static final String DB_TK = System.getProperty("dbtk", "account");
+    /** -Ddbcnf=<tep>: mysql --defaults-file (host/port/user/password) thay cho -Ddbport + htbb/htbb cua may thu. */
+    static final String DB_CNF = System.getProperty("dbcnf", "");
+
     /** Chay truy van tren CSDL (mysql CLI), tra ve cac dong (tab). Rong neu khong cau hinh -Ddb. */
     static List<String> sql(String q) {
         List<String> kq = new ArrayList<>();
         if (DB.isEmpty()) return kq;
+        if (!"account".equals(DB_TK)) q = q.replaceAll("(?<![A-Za-z0-9_`])`?account`?\\.", DB_TK + ".");
         try {
-            Process p = new ProcessBuilder(System.getProperty("mysql", "mysql"), "--no-defaults", "-h" + System.getProperty("dbhost", "127.0.0.1"), "-P" + System.getProperty("dbport", "3318"),
-                    "-u" + System.getProperty("dbuser", "htbb"), "-p" + System.getProperty("dbpass", "htbb"), "--skip-ssl",
-                    "--default-character-set=utf8mb4", "-N", "-B", DB, "-e", q).redirectErrorStream(true).start();
+            List<String> lenh = new ArrayList<>();
+            lenh.add(System.getProperty("mysql", "mysql"));
+            if (!DB_CNF.isEmpty()) {
+                lenh.add("--defaults-file=" + DB_CNF);
+            } else {
+                lenh.addAll(Arrays.asList("--no-defaults", "-h" + System.getProperty("dbhost", "127.0.0.1"), "-P" + System.getProperty("dbport", "3318"),
+                        "-u" + System.getProperty("dbuser", "htbb"), "-p" + System.getProperty("dbpass", "htbb"), "--skip-ssl"));
+            }
+            lenh.addAll(Arrays.asList("--default-character-set=utf8mb4", "-N", "-B", DB, "-e", q));
+            Process p = new ProcessBuilder(lenh).redirectErrorStream(true).start();
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
             String l;
             while ((l = br.readLine()) != null) if (!l.startsWith("mysql: [Warning]")) kq.add(l);
