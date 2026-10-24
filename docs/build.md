@@ -244,6 +244,41 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.16 (`BAN=916`: tab Thú cưỡi / Đi theo, danh sách thú gọn trên điện thoại, hào quang khi cưỡi, Nhiệm vụ của tôi / Sổ tay ở Menu, thẻ menu canh giữa)
+
+Client (không gói mới) trên main 35416507 (máy chủ Vé dịch chuyển / thuốc 162 / Gym một trận - jar máy chủ của main):
+`PHIEN_BAN=0.9.16-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 +
+16`; `MIDlet-Version` 0.9.16). Client 0.9.16 với máy chủ 0.9.15 / cũ hơn chạy đủ (loại thú lấy từ `typeAnimal` của gói 16
+loại 2 và khối đang dùng 0.9.13 - mọi máy chủ đều gửi, không chặn theo `BAN`).
+
+1. Danh sách thú (chủ dự án: "chia rõ ra thú cưỡi và đi theo chứ nhỉ"): Trang bị › Thú cưỡi và tab Thú có hai **tab con**
+   "Thú cưỡi (n)" / "Đi theo (m)" (`ManNhanVat.veDanhSachThu`, `QuanLyThu.dsLoai`): mỗi tab chỉ một loại, con đang cưỡi /
+   đang đi theo đứng đầu tab của nó. Chạm ô "Thú cưỡi" mở tab Thú cưỡi, ô "Đi theo" mở tab Đi theo, tab Thú mở lại tab con
+   dùng lần cuối; phím trái / phải đổi tab con (ở mép mới đổi tab màn). "Ô thú: n/max" vẫn là tổng chung; **Thả trùng**
+   chỉ thả bản trùng của tab đang xem (`QuanLyThu.banTrung(loai)`, hộp hỏi "Thả thú cưỡi trùng" / "Thả Pokémon đi theo
+   trùng" + "… không bị thả"). Tab trống: "Chưa có thú cưỡi · Mua Sáo gọi ở Cửa hàng đặc biệt" / "Chưa có Pokémon đi theo ·
+   Bắt hoặc ấp trứng". J2ME hẹp: nhãn "Cưỡi (n)", tiêu đề "Hành trang thú" (không cắt chữ).
+2. Hào quang khi cưỡi (chủ dự án: "ở đây hào quang thì ở trên có nhân vật, còn ở ngoài nó dưới chân con thú cưỡi?"): lớp
+   dưới chân (`NgoaiHinhVe.veDuoiChan`: hào quang / vòng sáng theo bậc) vẽ ở mặt đất dưới chân con CHẠM ĐẤT (thú cưỡi khi
+   cưỡi, cỡ theo thú), TRƯỚC thú + người (nằm sau; trước đây bản đồ vẽ sau thú -> đè chân thú). Sân khấu Ngoại hình /
+   Trang bị đang cưỡi vẽ cả thú + người + hào quang một lượt bằng `Char.paintPokemonTinh(..., voiThu)` cùng thứ tự / neo
+   với `Char.paintPokemon` (người nâng `NgoaiHinhVe.nangNguoi`); trước đây hào quang ở chân người trên lưng thú.
+   Kiểm: `ChupTrongGame` màn `nv_ngoai_hinh_hq[_cuoi]`, `nv_trang_bi_hq_cuoi`, `the_gioi_hq[_cuoi]` (neo hào quang lệch chân
+   con chạm đất 0,0 px, lượt vẽ ngay sau là thú, người nâng 17/17) và 8 màn tab con thú (`nv_thu_dang_dung_tb_*`,
+   `_tab_di_theo`, `_tab_nho`, `_tha_trung_*`, `nv_thu_trong_tab0/1`).
+3. Danh sách thú trên điện thoại (chủ dự án: "menu pet / thú cưỡi trên Android hơi to, chỉ thấy được có 2"): khi bố cục
+   thường thấy < 5 hàng (`ManNhanVat.gonThu`) - sân khấu hẹp 36 % (người cưỡi thú + pet / thú đang chọn, hình thu nhỏ dưới
+   hai dòng chữ) + hai ô Thú cưỡi / Đi theo xếp dọc; hàng đầu [lùi][tab con] (+ Ô thú nếu đủ chỗ), hàng hai Ô thú hoặc
+   thanh thao tác con đang chọn (không thêm hàng dưới); lưới 2-3 cột (ô >= 128 px logic), hàng = cỡ chạm tối thiểu. Mọi cỡ
+   điện thoại (16:9 / 19.5:9 / 20:9 / 21:9, cả J2ME) thấy >= 6 thú. Máy tính bảng / PC giữ bố cục cũ.
+4. Menu cá nhân (chủ dự án: "mỗi lần về làng có về trực tiếp được đâu"): Menu kiểu GO có "Nhiệm vụ của tôi" (`-527/0/8`
+   như nút trong sổ Nhiệm vụ) và "Sổ tay huấn luyện" (mục gốc dựng ở client theo `real.SoTayLauDai.MUC_GOC` - thứ tự cố
+   định, mỗi mục `-527/0/i`; ChupTrongGame so với mảng máy chủ) đầu hàng viên phụ; menu chữ J2ME (phím mềm) hàng "Nhiệm
+   vụ" thành menu con Sổ nhiệm vụ / Nhiệm vụ của tôi / Sổ tay huấn luyện. Tiêu đề menu chữ không còn cắt ("Nhiệm...").
+5. Thẻ menu NPC / máy chủ (`MenuNguCanh`, chủ dự án: "nó bị lệch nè"): luôn canh giữa ngang màn (kẹp vùng an toàn), dọc ưu
+   tiên giữa, chỉ dời dọc khi đè HUD / che mục tiêu. ChupTrongGame `kiemMenuGiua`: mọi thẻ menu (1 / 2 cột, nhiều trang)
+   lệch trái - phải <= 2 px. (`MenuNguCanh` chỉ có bố cục 1 hoặc 2 cột.)
+
 ### Bản 0.9.15 (`BAN=915`: sổ Nhiệm vụ ghi rõ mục tiêu, Huấn luyện, tên trang bị "· Cấp N", chống lag, kho gói, APK 60 khung)
 
 Client + máy chủ + SQL: `PHIEN_BAN=0.9.15-opentest` (3 phần số khớp `BAN = 0*10000 + 9*100 + 15`; `MIDlet-Version`
