@@ -76,7 +76,10 @@ hàng tên trên đầu, hộp thoại đáy tự tắt, vùng bản đồ.
 Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `server/src/com/htbb/pokemon/IconPokemon*.java` -
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
-  -Dchup.man=menu,the_gioi` để chạy một phần);
+  -Dchup.man=menu,the_gioi` để chạy một phần); tab Trang bị gọn (`kiemTrangBiGon`): chip lọc một hàng (đủ 5 bộ lọc,
+  lật trang "<" / ">" khi hẹp), lưới hành trang thấy >= 4 hàng PC / >= 3 điện thoại, không chữ cắt, 12 ô cùng cạnh ô
+  hành trang thẳng cột / hàng, chip Tiềm năng trên ô, Danh hiệu dưới ô; `-Dchup.j2me` chạy thêm cỡ J2ME thật
+  `j2me240x320` / `j2me320x240` cho các màn Trang bị / hành trang lọc;
 - `ChupThoiTiet` (0.9.8): thời tiết / phủ màu mùa / ngày cộng đồng (game.pokemon.ThoiTiet, ThoiTietVe) ở 11 cỡ - đĩa
   HUD trong màn và đủ cách nút hàng trên, thẻ gợi ý trong màn, phủ mùa không đổi thẻ HUD và đổi độ sáng thế giới ≤ 16%,
   tắt màu = như không phủ, đường J2ME (Thấp) ≤ 40 lệnh vẽ / khung; ghi ảnh mẫu mỗi thời tiết / mùa vào thư mục tham số;

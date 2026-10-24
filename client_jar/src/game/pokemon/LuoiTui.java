@@ -519,6 +519,13 @@ public final class LuoiTui {
             wVi = wNhip;
         }
         int soDVi = ViTien.soDong(wVi);
+        if (soDVi > 1 && coDem) {
+            // ví xuống dòng (J2ME 320x240): bỏ ô đếm trước khi lấy chiều cao của lưới
+            coDem = false;
+            wDem = 0;
+            wVi = wNhip;
+            soDVi = ViTien.soDong(wVi);
+        }
         int hVi = ViTien.cao() * soDVi + (soDVi - 1) * k;
         int yVi = y + h - 4 - hVi;
         ViTien.hang(g, xl, yVi, wVi, hVi);

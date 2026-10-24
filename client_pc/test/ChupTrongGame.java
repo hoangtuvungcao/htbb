@@ -1872,8 +1872,8 @@ public class ChupTrongGame {
             int[] g = game.pokemon.LuoiTui.GON_CHIP;
             kiem(h0 <= Math.max(game.pokemon.VungCham.MIN, 24), nhan + " chip loc qua cao " + h0);
         }
-        // J2ME thật 320x240 + lượng khoá: ví xuống hai dòng -> >= 2 hàng
-        int canHang = dpi == 0 ? 4 : dpi < 0 && game.render.Canvas.gameScr.mainChar.luongKhoa > 0 ? 2 : 3;
+        // J2ME thật 320x240: ví 3 viên (xu / lượng / lượng khoá) xuống hai dòng -> >= 2 hàng
+        int canHang = dpi == 0 ? 4 : dpi < 0 && game.pokemon.LuoiTui.GON_VI[3] > game.pokemon.ViTien.cao() ? 2 : 3;
         kiem(game.pokemon.LuoiTui.gonHang >= canHang, nhan + " luoi hanh trang thay " + game.pokemon.LuoiTui.gonHang + " hang < " + canHang);
         // chữ trong vùng tab không bị cắt
         int[] r = game.pokemon.ManNhanVat.VUNG_TB;

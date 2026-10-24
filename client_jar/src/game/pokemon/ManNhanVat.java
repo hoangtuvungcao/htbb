@@ -527,13 +527,13 @@ public final class ManNhanVat extends Screen {
     }
 
     /**
-     * Trang bị kiểu chi tiết Pokémon GO: "Sức mạnh" lớn trên, Pokémon to trên bệ tròn màu hệ, 12 ô trang bị TRÒN quanh
-     * (4 trái, 4 phải xếp cung, 4 dưới); bên phải: thẻ chỉ số / hành trang lọc / chi tiết món.
+     * Tab Trang bị (0.9.18 gọn kiểu NRO, xem {@link #boCuc}): hàng đầu "SỨC MẠNH" + chip Tiềm năng / Huấn luyện, 12 ô
+     * vuông sát hai bên sân khấu (cùng cạnh ô hành trang), viên Danh hiệu dưới sân khấu; hành trang gọn bên phải (dưới
+     * khi màn dọc hẹp). Ô Thú cưỡi: khối thú riêng (veKhoiThu).
      */
     private void veTrangBi(Graphics g, int x, int y, int w, int h) {
         MainChar m = mc();
-        int s = canhO(), k = Bang.cach();
-        int rs = (s + 1) / 2;
+        int s, k = Bang.cach();
         int lw = rongKhoiNv(w);
         if (this.o == O_THU) {
             if (gonThu(h)) {
