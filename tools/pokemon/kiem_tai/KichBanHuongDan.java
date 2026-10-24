@@ -362,6 +362,7 @@ class KichBanHuongDan {
             }
         } else if (q.loai == 2) {
             int vat = dang != null && !dang.muc.isEmpty() ? dang.muc.get(0)[0] : -1;
+            if (vat < 0 && BotChucNang.khongDau(q.ten).contains("cau")) vat = 57; // buoc tha cau: goi -64 khong kem vat dau tap
             String lam = hanhDong(b, vat, m);
             if (lam != null) return lam;
         }

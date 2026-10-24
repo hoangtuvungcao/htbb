@@ -84,6 +84,10 @@ public class BotChucNang {
         final Map<Integer, Integer> demLenh = new TreeMap<>();
         int[] menuCuoi; // {npc, menu}
         List<String> menuChu = new ArrayList<>();
+        /** Nghe moi goi den sau khi phan tich (bat bien HoiQuy). */
+        java.util.function.Consumer<SuKien> ngheNhan;
+        /** Nghe moi goi di (cmd, du lieu) truoc khi gui. */
+        java.util.function.BiConsumer<Integer, byte[]> ngheGui;
 
         Bot(String user) {
             this.user = user;
@@ -112,6 +116,7 @@ public class BotChucNang {
                 try { Thread.sleep(5000 - (bay - guiGan.peekFirst()) + 20); } catch (InterruptedException ignored) { }
             }
             guiGan.addLast(System.currentTimeMillis());
+            if (ngheGui != null) ngheGui.accept(cmd, d);
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
             bo.write(wk((byte) cmd));
             bo.write(wk((byte) (d.length >> 8)));
@@ -600,6 +605,9 @@ public class BotChucNang {
                 // goi ngan hon du doan: giu phan da doc
             }
             su.add(e);
+            if (ngheNhan != null) {
+                try { ngheNhan.accept(e); } catch (RuntimeException ex) { System.out.println("[NGHE] " + ex); }
+            }
         }
 
         // ------------------------------------------------------- hanh dong co ban
@@ -805,7 +813,8 @@ public class BotChucNang {
         List<String> kq = new ArrayList<>();
         if (DB.isEmpty()) return kq;
         try {
-            Process p = new ProcessBuilder("mysql", "--no-defaults", "-h127.0.0.1", "-P" + System.getProperty("dbport", "3318"), "-uhtbb", "-phtbb", "--skip-ssl",
+            Process p = new ProcessBuilder(System.getProperty("mysql", "mysql"), "--no-defaults", "-h" + System.getProperty("dbhost", "127.0.0.1"), "-P" + System.getProperty("dbport", "3318"),
+                    "-u" + System.getProperty("dbuser", "htbb"), "-p" + System.getProperty("dbpass", "htbb"), "--skip-ssl",
                     "--default-character-set=utf8mb4", "-N", "-B", DB, "-e", q).redirectErrorStream(true).start();
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
             String l;
