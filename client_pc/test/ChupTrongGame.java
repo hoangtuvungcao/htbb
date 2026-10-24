@@ -241,6 +241,8 @@ public class ChupTrongGame {
             // theo tab (hộp hỏi nói loại), tab trống
             "nv_thu_dang_dung_tb_cuoi", "nv_thu_dang_dung_tb_di_theo", "nv_thu_dang_dung_tab_di_theo", "nv_thu_dang_dung_tab_nho",
             "nv_thu_dang_dung_tha_trung_di_theo", "nv_thu_dang_dung_tha_trung_cuoi", "nv_thu_trong_tab0", "nv_thu_trong_tab1",
+            // 0.9.16: hào quang khi cưỡi - sân khấu Ngoại hình / Trang bị cùng neo + lớp với bản đồ (dưới chân thú, sau thú)
+            "nv_ngoai_hinh_hq", "nv_ngoai_hinh_hq_cuoi", "nv_trang_bi_hq_cuoi", "the_gioi_hq", "the_gioi_hq_cuoi",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
             "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
             "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
@@ -342,6 +344,15 @@ public class ChupTrongGame {
                     kiemMucNhiemVu(ten + " " + TEN_CO[c]);
                 }
                 kiemXemThu(ten, ten + " " + TEN_CO[c]);
+                if (laHq(ten)) {
+                    final String nh = ten + " " + TEN_CO[c];
+                    final String tn = ten;
+                    chay(new Runnable() {
+                        public void run() {
+                            kiemHaoQuang(tn, nh);
+                        }
+                    });
+                }
                 if (ten.startsWith("the_gioi") || "suc_khoe".equals(ten) || "goi_y_chieu".equals(ten)) {
                     kiemPhuKin(anh, ten + " " + TEN_CO[c]);
                     kiemNhanTheGioi(ten + " " + TEN_CO[c]);
@@ -382,6 +393,7 @@ public class ChupTrongGame {
         for (String x : ds) pw.println(x.replace('\n', ' '));
         pw.close();
         System.out.println("ChupTrongGame: " + ds.size() + " chuoi da ve -> chuoi_da_ve.txt");
+        for (java.util.Map.Entry<String, String> e : HQ_DO.entrySet()) System.out.println("HQ " + e.getKey() + ": " + e.getValue());
         System.out.println("ChupTrongGame: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }
@@ -855,6 +867,16 @@ public class ChupTrongGame {
         game.pokemon.ManNhanVat nv = game.pokemon.ManNhanVat.gI();
         dat(nv, "thuChon", null);
         dat(nv, "loaiThu", Integer.valueOf(0));   // 0.9.16: tab con mặc định mỗi màn (lối vào thật đặt lại bằng chạm)
+        game.model.MainChar mcHq = game.render.Canvas.gameScr.mainChar;
+        if (laHq(ten)) {
+            if (HQ_GOC == null) HQ_GOC = new Object[]{mcHq.ngoaiHinh};
+            game.pokemon.NgoaiHinhCua n = new game.pokemon.NgoaiHinhCua();
+            for (int so = 1; so < 256; so++) if (game.pokemon.TrangPhucVe.coHaoQuang(so)) { n.haoQuang = so; break; }
+            mcHq.ngoaiHinh = n;
+        } else if (HQ_GOC != null) {
+            mcHq.ngoaiHinh = (game.pokemon.NgoaiHinhCua) HQ_GOC[0];
+            HQ_GOC = null;
+        }
         if (ten.startsWith("nv_thu_trong_tab")) {
             // tab trống: túi thú chỉ còn loại kia (máy chủ cũ, không cưỡi)
             int bo = ten.endsWith("0") ? 0 : 1;
@@ -868,7 +890,14 @@ public class ChupTrongGame {
             }
             dat(nv, "loaiThu", Integer.valueOf(bo));
         }
-        if ("the_gioi".equals(ten)) {
+        if (ten.startsWith("the_gioi_hq")) {
+            game.render.Canvas.gameScr.switchToMe();
+        } else if (ten.startsWith("nv_ngoai_hinh_hq")) {
+            game.pokemon.ManNhanVat.mo(4);
+            game.pokemon.ManTuDo.xinLuc = Long.MAX_VALUE / 2;
+        } else if ("nv_trang_bi_hq_cuoi".equals(ten)) {
+            game.pokemon.ManNhanVat.mo(0);
+        } else if ("the_gioi".equals(ten)) {
             game.render.Canvas.gameScr.switchToMe();
         } else if ("menu".equals(ten)) {
             game.pokemon.ManMenu.mo();
@@ -1992,6 +2021,60 @@ public class ChupTrongGame {
 
     /** Sân khấu Trang bị › Thú cưỡi không trống (luôn có tên thú / gợi ý), tab Thú có "Ô thú: n/max" khi có quản lý. */
     static final java.util.Vector THU_BO = new java.util.Vector();
+    static Object[] HQ_GOC;
+
+    static boolean laHq(String ten) {
+        return ten.endsWith("_hq") || ten.endsWith("_hq_cuoi");
+    }
+    /** neo hào quang so với thú / thân (lệch x, lệch y) đo được: [0] bản đồ, [1] sân khấu - in cuối */
+    static final java.util.TreeMap<String, String> HQ_DO = new java.util.TreeMap<String, String>();
+
+    /**
+     * 0.9.16 (chủ dự án: "ở đây hào quang thì ở trên có nhân vật, còn ở ngoài nó dưới chân con thú cưỡi?"): lớp dưới chân
+     * (NgoaiHinhVe.veDuoiChan) vẽ NGAY TRƯỚC con chạm đất (thú cưỡi khi cưỡi, không thì thân) - nằm sau - cùng neo
+     * với chân con đó (<= 1 px), người trên lưng nâng đúng NgoaiHinhVe.nangNguoi; bản đồ: vẽ thẳng mainChar.paintPokemon
+     * (không lẫn actor khác); sân khấu: lượt vẽ khung vừa chụp (màn Nhân vật vẽ nền thế giới trước, sân khấu sau).
+     */
+    static void kiemHaoQuang(String ten, String nhan) {
+        game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+        boolean cuoi = ten.endsWith("_cuoi");
+        boolean theGioi = ten.startsWith("the_gioi");
+        if (theGioi) {
+            BufferedImage b = new BufferedImage(400, 400, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = b.createGraphics();
+            Graphics g = new Graphics(g2, 400, 400, 1);
+            g.translate(200 - mc.x, 300 - mc.y);
+            mc.paintPokemon(g);
+            g2.dispose();
+        } else if (game.pokemon.PhongVe.co()) {
+            // sân khấu: khung vừa vẽ ở vòng chụp - vẽ lại một khung để NEO_DAT / VE_* là của sân khấu
+        }
+        int[] neo = game.pokemon.NgoaiHinhVe.NEO_DAT;
+        int sau = game.pokemon.PokeBody.luotVe - neo[3];
+        if (!theGioi && !game.pokemon.PhongVe.co()) {
+            return;   // J2ME: sân khấu không vẽ ngoại hình (như trước) - chỉ kiểm bản đồ
+        }
+        kiem(sau >= (cuoi ? 2 : 1) && sau <= 8, nhan + " hao quang: khong thay luot ve sau lop duoi chan (" + sau + ")");
+        if (sau < 1 || sau > 8) return;
+        int i0 = neo[3] & 7;
+        int dexDat = cuoi ? mc.pokeThuDex : mc.pokeDex;
+        kiem(neo[2] == dexDat, nhan + " hao quang co theo dex " + neo[2] + " (muon " + dexDat + ")");
+        kiem(game.pokemon.PokeBody.VE_DEX[i0] == dexDat, nhan + " luot ve ngay sau hao quang la dex " + game.pokemon.PokeBody.VE_DEX[i0]
+                + " (muon " + dexDat + ": hao quang nam SAU con cham dat)");
+        int dx = neo[0] - game.pokemon.PokeBody.VE_X[i0], dy = neo[1] - game.pokemon.PokeBody.VE_Y[i0];
+        kiem(Math.abs(dx) <= 1 && Math.abs(dy) <= 1, nhan + " neo hao quang lech chan con cham dat (" + dx + ", " + dy + ")");
+        String ghi = "lech chan " + dx + "," + dy;
+        if (cuoi) {
+            int i1 = (neo[3] + 1) & 7;
+            kiem(game.pokemon.PokeBody.VE_DEX[i1] == mc.pokeDex, nhan + " nguoi khong ve ngay sau thu (dex " + game.pokemon.PokeBody.VE_DEX[i1] + ")");
+            int nang = game.pokemon.PokeBody.VE_Y[i0] - game.pokemon.PokeBody.VE_Y[i1];
+            int muon = game.pokemon.NgoaiHinhVe.nangNguoi(mc.pokeThuDex, mc.pokeThuShiny);
+            kiem(Math.abs(nang - muon) <= 1 && game.pokemon.PokeBody.VE_X[i1] == game.pokemon.PokeBody.VE_X[i0] + (theGioi ? mc.pokeLac() : 0),
+                    nhan + " nguoi tren lung lech: nang " + nang + " (muon " + muon + ")");
+            ghi += ", nang nguoi " + nang + "/" + muon;
+        }
+        HQ_DO.put(nhan, ghi);
+    }
 
     static int loaiThuDangXem() {
         try {

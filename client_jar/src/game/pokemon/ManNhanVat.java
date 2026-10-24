@@ -420,14 +420,27 @@ public final class ManNhanVat extends Screen {
     static void veNguoiChoi(Graphics g, Char ch, int cx, int yChan, float z) {
         int huong = NgoaiHinhVe.huongThe(Canvas.gameTick);
         veSanKhau(g, cx, yChan, z);
-        if (ch.pokeThuDex > 0 && PokeBody.coSprite(ch.pokeThuDex, ch.pokeThuShiny)) {
-            int caoThu = PokeBody.caoTrenChan(ch.pokeThuDex, ch.pokeThuShiny, 100);
-            int tong = caoThu * 55 / 100 + Math.max(24, PokeBody.caoTrenChan(ch.pokeDex, ch.pokeShiny, 100));
+        boolean cuoi = ch.pokeThuDex > 0 && PokeBody.coSprite(ch.pokeThuDex, ch.pokeThuShiny);
+        if (cuoi) {
+            int nang = NgoaiHinhVe.nangNguoi(ch.pokeThuDex, ch.pokeThuShiny);
+            int tong = nang + Math.max(24, PokeBody.caoTrenChan(ch.pokeDex, ch.pokeShiny, 100));
             if (tong > 34) {
                 z = Math.max(z / 2, z * 34 / tong);
             }
+        }
+        if (PhongVe.co() && cuoi && ch.pokeDex > 0) {
+            // 0.9.16: đang cưỡi - thú + người + hào quang vẽ MỘT lượt như bản đồ (Char.paintPokemonTinh voiThu): hào quang
+            // dưới chân THÚ ở mặt đất, sau thú (trước: hào quang dưới chân người trên lưng thú, bản đồ dưới chân thú)
+            int tx = g.getTranslateX(), ty = g.getTranslateY();
+            PhongVe.bo.bat(g, z);
+            ch.paintPokemonTinh(g, (int) ((cx + tx) / z), (int) ((yChan + ty) / z), huong, true);
+            PhongVe.bo.tat(g);
+            g.translate(tx, ty);
+            return;
+        }
+        if (cuoi) {
             vePoke(g, ch.pokeThuDex, ch.pokeThuShiny, cx, yChan, z, huong, TrangPhucVe.tpThu(ch.ngoaiHinh));
-            yChan -= (int) (caoThu * 55 / 100 * z);
+            yChan -= (int) (NgoaiHinhVe.nangNguoi(ch.pokeThuDex, ch.pokeThuShiny) * z);
         }
         if (PhongVe.co()) {
             int tx = g.getTranslateX(), ty = g.getTranslateY();

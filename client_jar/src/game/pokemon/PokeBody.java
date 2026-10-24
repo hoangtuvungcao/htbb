@@ -539,11 +539,19 @@ public class PokeBody {
      * Nhu tren, them trangPhuc (1.. = bang mau trang phuc cua PhuKien, 0 = khong): anh dong tac doi mau
      * mot lan roi nho trong bo dem LRU (khoa anh + "~" + trangPhuc). Shiny giu: doi mau tren nen anh shiny.
      */
+    /** 0.9.16 kiểm thử neo (KiemHaoQuangCuoi): 8 lượt vẽ cuối - dex, x, y logic + dịch Graphics; luotVe tăng mỗi lượt. */
+    public static int luotVe;
+    public static final int[] VE_DEX = new int[8], VE_X = new int[8], VE_Y = new int[8];
+
     public static boolean paint(Graphics g, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick, int tiLe, int doSang, int trangPhuc) {
         PokeBody pb = lay(dex, shiny);
         if (pb == null) {
             return false;
         }
+        int lv = luotVe++ & 7;
+        VE_DEX[lv] = dex;
+        VE_X[lv] = x + g.getTranslateX();
+        VE_Y[lv] = y + g.getTranslateY();
         veTrangPhuc = trangPhuc;
         try {
             return pb.ve(g, x, y, dir, dongTac, tick, tiLe, doSang);

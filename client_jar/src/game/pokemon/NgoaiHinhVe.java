@@ -88,17 +88,50 @@ public final class NgoaiHinhVe {
         if (n == null) {
             return;
         }
+        veDuoiChan(g, n, dex, shiny, x, yChan, tick);
+        veSauThan(g, n, dex, shiny, x, y, dir, dongTac, tick);
+    }
+
+    /**
+     * Lop DUOI CHAN (hao quang dang deo, khong thi vong sang theo bac) tai mat dat (x, yDat), co theo con CHAM DAT
+     * (dexDat: thu cuoi khi dang cuoi, khong thi Pokemon nguoi choi). Goi TRUOC thu cuoi + than: luon nam sau.
+     * 0.9.16 (chu du an: "o day hao quang thi o tren co nhan vat, con o ngoai no duoi chan con thu cuoi?"): ban do
+     * (Char.paintPokemon) va san khau Ngoai hinh / Trang bi (Char.paintPokemonTinh) cung goi ham nay cung neo.
+     */
+    public static void veDuoiChan(Graphics g, NgoaiHinhCua n, int dexDat, boolean shDat, int x, int yDat, int tick) {
+        if (n == null) {
+            return;
+        }
+        NEO_DAT[0] = x + g.getTranslateX();
+        NEO_DAT[1] = yDat + g.getTranslateY();
+        NEO_DAT[2] = dexDat;
+        NEO_DAT[3] = PokeBody.luotVe;   // lượt vẽ PokeBody kế tiếp = thú / thân vẽ SAU lớp dưới chân
         // 0.9.8: hao quang dang deo thay vong sang theo bac (TrangPhucVe, ca ban jar khong co neo)
-        boolean hq = TrangPhucVe.veHaoQuang(g, n, dex, shiny, x, yChan, tick);
+        boolean hq = TrangPhucVe.veHaoQuang(g, n, dexDat, shDat, x, yDat, tick);
         // vong sang mem duoi chan (moi bac >= 1; bo du 11 mon sang hon)
         if (!hq && n.bacTot >= 1) {
-            int rw = banKinh(dex, shiny), rh = rw / 3 + 1;
+            int rw = banKinh(dexDat, shDat), rh = rw / 3 + 1;
             int mau = n.bacTot >= 10 ? 0xFFD860 : PhuKien.mauBac(n.bacTot, tick);
             int a = 40 + n.bacTot * 4 + (n.bo >= 11 ? 30 : n.bo >= 7 ? 12 : 0);
             Image e = PhuKien.elip(rw, rh, mau, a > 120 ? 120 : a);
             if (e != null) {
-                g.drawImage(e, x - rw, yChan - rh, Graphics.TOP | Graphics.LEFT);
+                g.drawImage(e, x - rw, yDat - rh, Graphics.TOP | Graphics.LEFT);
             }
+        }
+    }
+
+    /** Kiem thu: neo lop duoi chan vua ve {x, y (ca dich Graphics), dex cham dat, PokeBody.luotVe luc ve}. */
+    public static final int[] NEO_DAT = new int[4];
+
+    /** Do nang nguoi choi tren lung thu cuoi (55% chieu cao thu) - ban do va san khau dung chung. */
+    public static int nangNguoi(int dexThu, boolean shThu) {
+        return PokeBody.caoTrenChan(dexThu, shThu, 100) * 55 / 100;
+    }
+
+    /** Lop SAU tren than (vien, ao choang...) - khong gom lop duoi chan (veDuoiChan). */
+    public static void veSauThan(Graphics g, NgoaiHinhCua n, int dex, boolean shiny, int x, int y, int dir, int dongTac, int tick) {
+        if (n == null) {
+            return;
         }
         if (n.congTot >= 15) {
             PokeBody.veVien(g, dex, shiny, x, y, dir, dongTac, tick, n.bacTot >= 10 ? PhuKien.cauVong(tick / 12) : PhuKien.mauBac(n.bacTot, tick));

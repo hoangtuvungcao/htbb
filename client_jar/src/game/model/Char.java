@@ -1404,22 +1404,30 @@ public class Char extends LiveActor {
         game.pokemon.BatPokemon.veBanDongHanh(g, this, tick); // 0.9.8: Pokémon Hộp PC đi theo (sau lưng, chỉ hình)
         g.drawImage(Res.imgShadow, this.x, this.y - 2, 3);
         int yNguoi = this.y + this.z + this.dy;
-        if (this.pokeThuDex > 0 && this.state != 3 && PokeBody.coSprite(this.pokeThuDex, this.pokeThuShiny)) {
+        // pokemon: chop trang + lac nhe khi trung don (HieuUngDanh)
+        // ngoai hinh trang bi: duoi chan (hao quang / vong sang) -> thu cuoi -> lop sau (vien, ao choang) -> than
+        // (trang phuc) -> lop truoc (mu, khan...)
+        int xThan = this.x + pokeLac();
+        boolean coNgoaiHinh = this.ngoaiHinh != null && this.state != 3 && dexVe == this.pokeDex
+                && (game.pokemon.NgoaiHinhVe.hien || this == Canvas.gameScr.mainChar);
+        boolean cuoi = this.pokeThuDex > 0 && this.state != 3 && PokeBody.coSprite(this.pokeThuDex, this.pokeThuShiny);
+        if (coNgoaiHinh) {
+            // 0.9.16: hao quang duoi chan con CHAM DAT (thu cuoi khi dang cuoi), ve TRUOC thu: nam sau thu + nguoi
+            // (truoc: ve sau thu cuoi -> de len chan thu)
+            game.pokemon.NgoaiHinhVe.veDuoiChan(g, this.ngoaiHinh, cuoi ? this.pokeThuDex : dexVe, cuoi ? this.pokeThuShiny : this.pokeShiny,
+                    cuoi ? this.x : xThan, this.y, tick);
+        }
+        if (cuoi) {
             // thu cuoi: ve thu (dung/chay theo nguoi choi) roi nang nguoi choi len ~55% chieu cao thu
             int dongTacThu = this.state == 1 ? PokeDuLieu.CHAY : PokeDuLieu.DUNG;
             PokeBody.paint(g, this.pokeThuDex, this.pokeThuShiny, this.x, yNguoi, this.dir, dongTacThu, tick, 100, 0,
                     game.pokemon.NgoaiHinhVe.hien || this == Canvas.gameScr.mainChar ? game.pokemon.TrangPhucVe.tpThu(this.ngoaiHinh) : 0);
-            int caoThu = PokeBody.caoTrenChan(this.pokeThuDex, this.pokeThuShiny, 100);
-            yNguoi -= caoThu * 55 / 100;
-            this.height = (short) (this.height + caoThu * 55 / 100);
+            int nang = game.pokemon.NgoaiHinhVe.nangNguoi(this.pokeThuDex, this.pokeThuShiny);
+            yNguoi -= nang;
+            this.height = (short) (this.height + nang);
         }
-        // pokemon: chop trang + lac nhe khi trung don (HieuUngDanh)
-        // ngoai hinh trang bi: lop sau (vong sang, vien, ao choang) -> than (trang phuc) -> lop truoc (mu, khan...)
-        int xThan = this.x + pokeLac();
-        boolean coNgoaiHinh = this.ngoaiHinh != null && this.state != 3 && dexVe == this.pokeDex
-                && (game.pokemon.NgoaiHinhVe.hien || this == Canvas.gameScr.mainChar);
         if (coNgoaiHinh) {
-            game.pokemon.NgoaiHinhVe.veSau(g, this.ngoaiHinh, dexVe, this.pokeShiny, xThan, yNguoi, this.y, this.dir, dongTac, tick);
+            game.pokemon.NgoaiHinhVe.veSauThan(g, this.ngoaiHinh, dexVe, this.pokeShiny, xThan, yNguoi, this.dir, dongTac, tick);
         }
         PokeBody.paint(g, dexVe, this.pokeShiny, xThan, yNguoi, this.dir, dongTac, tick, 100, doSang == 0 && pokeChop() ? 230 : doSang,
                 coNgoaiHinh ? this.ngoaiHinh.trangPhuc : 0);
@@ -1448,13 +1456,30 @@ public class Char extends LiveActor {
 
     /** Nhu tren, them huong (the trang bi xoay Pokemon) + ngoai hinh trang bi. */
     public boolean paintPokemonTinh(Graphics g, int xp, int yp, int huong) {
+        return paintPokemonTinh(g, xp, yp, huong, false);
+    }
+
+    /**
+     * voiThu (0.9.16): dang cuoi (pokeThuDex) -> ve CA thu cuoi + nguoi tren lung theo dung thu tu / neo cua ban do
+     * (paintPokemon): hao quang duoi chan thu tai (xp, yp) = mat dat, thu, nguoi nang NgoaiHinhVe.nangNguoi.
+     */
+    public boolean paintPokemonTinh(Graphics g, int xp, int yp, int huong, boolean voiThu) {
         if (this.pokeDex <= 0) {
             return false;
         }
         int t = Canvas.gameTick;
         game.pokemon.NgoaiHinhCua n = this.ngoaiHinh;
+        boolean cuoi = voiThu && this.pokeThuDex > 0 && PokeBody.coSprite(this.pokeThuDex, this.pokeThuShiny);
         if (n != null) {
-            game.pokemon.NgoaiHinhVe.veSau(g, n, this.pokeDex, this.pokeShiny, xp, yp, yp, huong, PokeDuLieu.DUNG, t);
+            game.pokemon.NgoaiHinhVe.veDuoiChan(g, n, cuoi ? this.pokeThuDex : this.pokeDex, cuoi ? this.pokeThuShiny : this.pokeShiny, xp, yp, t);
+        }
+        if (cuoi) {
+            PokeBody.paint(g, this.pokeThuDex, this.pokeThuShiny, xp, yp, huong, PokeDuLieu.DUNG, t, 100, 0,
+                    game.pokemon.TrangPhucVe.tpThu(n));
+            yp -= game.pokemon.NgoaiHinhVe.nangNguoi(this.pokeThuDex, this.pokeThuShiny);
+        }
+        if (n != null) {
+            game.pokemon.NgoaiHinhVe.veSauThan(g, n, this.pokeDex, this.pokeShiny, xp, yp, huong, PokeDuLieu.DUNG, t);
         }
         boolean ok = PokeBody.paint(g, this.pokeDex, this.pokeShiny, xp, yp, huong, PokeDuLieu.DUNG, t, 100, 0,
                 n != null ? n.trangPhuc : 0);
