@@ -88,16 +88,226 @@ public final class KhoaBanDoGame {
         }
     }
 
-    /** null = vao duoc; nguoc lai cau bao. Khong gui gi. */
+    /**
+     * null = vao duoc; nguoc lai cau bao. Khong gui gi. Tram trung chuyen (thuyen 107 / 2441..2444): xet ban do thuyen
+     * cap ben ({@link #denCuaThuyen}) - khong cho len thuyen ma ben kia con khoa (sua-ket-tau).
+     */
     public static String lyDoChan(final Char p, final int toMapId) {
         if (p == null || p.isAdmin || !bat() || toMapId == p.mapID) {
             return null;
         }
-        final KhoaBanDo.Luat l = luatCua(toMapId);
+        final int dich = dichThuc(toMapId);
+        if (dich == p.mapID) {
+            return null;
+        }
+        return lyDoKhoa(p, dich);
+    }
+
+    /** Nhu {@link #lyDoChan} nhung KHONG mien ban do dang dung (kiem nhan vat dang dung o dau luc nap). */
+    static String lyDoKhoa(final Char p, final int mapId) {
+        if (p == null || p.isAdmin || !bat()) {
+            return null;
+        }
+        final KhoaBanDo.Luat l = luatCua(mapId);
         if (l == null || !l.coKhoa()) {
             return null;
         }
-        return KhoaBanDo.lyDo(l, capCua(p), daXong(p, l), mien(p), tenMap(toMapId));
+        return KhoaBanDo.lyDo(l, capCua(p), daXong(p, l), mien(p), tenMap(mapId));
+    }
+
+    // ------------------------------------------------------------------ tram trung chuyen (thuyen Ben tau -> New Bark)
+
+    /** Thuyen (TeamServer: Ben tau 106 / 2421..2424 -> thuyen 107 / 2441..2444 -> New Bark 10 / 501..504). */
+    public static boolean laTramTrungChuyen(final int mapId) {
+        return mapId == 107 || mapId >= 2441 && mapId <= 2444 || mapId > 0 && goc(mapId) == 107;
+    }
+
+    /** Ban do thuyen cap ben (MapVongLap / Dun: 107 -> 10, 244k -> 50k). Khong phai thuyen: chinh no. */
+    public static int denCuaThuyen(final int mapThuyen) {
+        if (mapThuyen >= 2441 && mapThuyen <= 2444) {
+            return mapThuyen % 2440 + 500;
+        }
+        return laTramTrungChuyen(mapThuyen) ? 10 : mapThuyen;
+    }
+
+    /** Ben len thuyen (CharVongLap: 106 -> 107, 242k -> 244k). */
+    public static int benCuaThuyen(final int mapThuyen) {
+        return mapThuyen >= 2441 && mapThuyen <= 2444 ? mapThuyen - 20 : 106;
+    }
+
+    /** Thuyen cua ben (Map.doUp2Board / CharVongLap). */
+    public static int thuyenCuaBen(final int ben) {
+        return ben >= 2421 && ben <= 2424 ? ben + 20 : 107;
+    }
+
+    /** Ban do that se toi: thuyen -> ben kia, con lai chinh no. */
+    static int dichThuc(final int mapId) {
+        return laTramTrungChuyen(mapId) ? denCuaThuyen(mapId) : mapId;
+    }
+
+    /**
+     * Thuyen cap ben (MapVongLap.update / updateWind / updateSand, Dun.update - truoc day move2Map(den) truc tiep): ben kia
+     * mo -> xuong thuyen (tru 1 ve nhu cu); ben kia KHOA -> dua ve ben xuat phat MOT lan (giu ve), bao ly do + hop cua ai sau
+     * khi nap map. Truoc day move2Map bi chan -> nap lai thuyen tai cho, vong lap ban do (300 ms) goi lai ngay -> nap map
+     * lien tuc, moi hop / menu bi dong (GameScr.onMap), ket mai tren thuyen (bao loi kazuhas4 24/10/2026).
+     */
+    public static void xuongThuyen(final Map map, final Char p, final int den) {
+        final String ly = lyDoChan(p, den);
+        if (ly == null) {
+            map.move2Map(p, 62 + Map.random(5), 122 + Map.random(5), den, p.inCountry);
+            if (p.potions[20] > 0) {
+                p.potions[20]--;
+            }
+            return;
+        }
+        veNoiAnToan(map, p, den, ly);
+    }
+
+    /** Dua nhan vat khoi thuyen ve ben xuat phat (ben khoa / khong co -> lang khoi dau cua vung). */
+    static void veNoiAnToan(final Map map, final Char p, final int den, final String ly) {
+        int ben = benCuaThuyen(p.mapID);
+        int x = 16;
+        int y = 24;
+        final Map mBen = RealController.mapList == null ? null : RealController.mapList.get(Integer.valueOf(ben));
+        int[] o = null;
+        try {
+            o = NpcTinhBanDo.oNpc(goc(ben), NpcDichVu.NPC_LAPRAS);
+        } catch (final Throwable ignored) {
+        }
+        if (mBen == null || lyDoKhoa(p, ben) != null) {
+            final int[] l = lang(p);
+            ben = l[0];
+            x = l[1];
+            y = l[2];
+        } else if (o != null) {
+            x = o[0];
+            y = o[1] + 2;
+        }
+        try {
+            baoChan(p, den, ly, true); // hop cua ai cho toi khi nap xong ben (-500), khong mo roi bi dong
+        } catch (final Throwable ignored) {
+        }
+        map.move2Map(p, x, y, ben, p.inCountry);
+        final String tenBen = tenMap(ben);
+        final String tenDen = tenMap(den);
+        bao(p, "Chưa mở " + (tenDen.isEmpty() ? "bến bên kia" : tenDen) + ": tàu đã đưa bạn về "
+                + (tenBen.isEmpty() ? "bến" : tenBen) + ". Hoàn thành cửa ải rồi lên tàu lại.");
+        ghi("thuyen " + p.charname + " cap " + capCua(p) + " ben " + den + " khoa -> ve " + ben);
+    }
+
+    /** {map, x o, y o} lang khoi dau cua vung (nhu CharNapDuLieu / NpcDichVu "Về làng"). */
+    static int[] lang(final Char p) {
+        try {
+            final int[][] ds = LangKhoiDau.bang(p);
+            final int vung = Math.max(0, Math.min(ds.length - 1, p.myCountry));
+            final int den = ds[vung][0];
+            final int[] vt = LangKhoiDau.viTri(den);
+            return new int[]{den, vt != null ? vt[0] : 16, vt != null ? vt[1] : 24};
+        } catch (final Throwable e) {
+            return new int[]{0, 16, 24};
+        }
+    }
+
+    static void ghi(final String s) {
+        System.out.println("[KHOA BAN DO] " + s);
+        try {
+            com.htbb.log.Nhat.thongTin("KHOA_MAP", s);
+        } catch (final Throwable ignored) {
+        }
+    }
+
+    // ------------------------------------------------------------------ move2Map: chong nap lai lien tuc
+
+    /** Trong chung nay sau mot lan move2Map bi chan + nap lai tai cho, move2Map bi chan tiep KHONG nap lai / bao nua. */
+    static final long NAP_LAI_MS = 3000L;
+    /** charDBID -> luc nap lai tai cho gan nhat (move2Map bi chan). */
+    private static final ConcurrentHashMap<Integer, Long> NAP_LAI = new ConcurrentHashMap<Integer, Long>();
+
+    /**
+     * Map.move2Map (chot cuoi): 0 = di duoc; 1 = bi chan, nap lai tai cho (lan dau, bao + hop cua ai sau -500);
+     * 2 = bi chan va vua nap lai trong {@link #NAP_LAI_MS}: nguoi goi bo qua (khong nap lai, khong bao) - mot duong may
+     * chu goi lap (vong lap ban do, hen gio) khong lam client nap map lien tuc / dong menu.
+     */
+    public static int chanMove2Map(final Char p, final int mapId) {
+        if (p == null || mapId == p.mapID || lyDoChan(p, mapId) == null) {
+            return 0;
+        }
+        final Integer k = Integer.valueOf(p.charDBID);
+        final long bay = bayGio();
+        final Long cu = NAP_LAI.get(k);
+        if (cu != null && bay - cu.longValue() < NAP_LAI_MS) {
+            return 2;
+        }
+        NAP_LAI.put(k, Long.valueOf(bay));
+        chanDiBo(p, mapId);
+        return 1;
+    }
+
+    // ------------------------------------------------------------------ cuu nhan vat ket luc nap
+
+    /** charDBID -> {cau bao, ban do chua mo} cho gui sau khi client nap map dau tien (-500). */
+    private static final ConcurrentHashMap<Integer, Object[]> CUU = new ConcurrentHashMap<Integer, Object[]>();
+
+    /**
+     * Luc nap (sau {@link #khiNap} co moc mien): dang luu o thuyen ma ben kia khoa, hoac o ban do khoa voi nhan vat ->
+     * dua ve lang khoi dau cua vung (doi p.mapID / x / y truoc khi vao map), ghi nhat ky, bao sau -500. true = da dua.
+     */
+    static boolean cuuKhiNap(final Char p) {
+        if (p == null || p.isAdmin || !bat() || p.myCountry < 0) {
+            return false;
+        }
+        final int dich = dichThuc(p.mapID);
+        final KhoaBanDo.Luat l = luatCua(dich);
+        if (l == null || !l.coKhoa()) {
+            return false;
+        }
+        if (!l.ma.isEmpty() && com.htbb.pokemon.LauDai.bat() && NhiemVuEngine.td(p) == null) {
+            return false; // CSDL nhiem vu loi: khong biet da xong cua ai chua -> khong dua ai di
+        }
+        final String ly = lyDoKhoa(p, dich);
+        if (ly == null) {
+            return false;
+        }
+        final int tu = p.mapID;
+        final int[] lg = lang(p);
+        p.mapID = lg[0];
+        p.x = lg[1] * 16 + 8;
+        p.y = lg[2] * 16 + 8;
+        p.region = 0;
+        p.inCountry = p.myCountry;
+        final String tenLang = tenMap(lg[0]);
+        final String tenDen = tenMap(dich);
+        final String cau = "Bạn đã được đưa về " + (tenLang.isEmpty() ? "làng" : tenLang) + " vì chưa mở "
+                + (tenDen.isEmpty() ? "bản đồ này" : tenDen) + ". " + ly;
+        CUU.put(Integer.valueOf(p.charDBID), new Object[]{cau, Integer.valueOf(dich),
+                "Bạn đã được đưa về " + (tenLang.isEmpty() ? "làng" : tenLang) + "."});
+        ghi("cuu luc nap " + p.charname + " cap " + capCua(p) + " o map " + tu + " (" + dich + " khoa) -> " + lg[0]);
+        return true;
+    }
+
+    /** sauKhiVaoMap: bao nhan vat vua duoc dua ve (hop cua ai kem cau bao neu co, khong thi hop thong bao). */
+    static boolean baoCuu(final Char p) {
+        final Object[] c = CUU.remove(Integer.valueOf(p.charDBID));
+        if (c == null) {
+            return false;
+        }
+        final String cau = (String) c[0];
+        final long luc = bayGio();
+        Hoi h = null;
+        try {
+            h = taoHoi(p, ((Integer) c[1]).intValue(), luc);
+        } catch (final Throwable ignored) {
+        }
+        bao(p, cau);
+        try {
+            if (h != null && h.hop != null) {
+                hoi(p, new Hoi(h.goc, h.maCuoi, h.chinh, h.phu, c[2] + "\n" + h.hop, luc), luc);
+            } else {
+                p.sendMessage(MessageCreator.createServerAlertMessage(cau, ""));
+            }
+        } catch (final Throwable ignored) {
+        }
+        return true;
     }
 
     /**
@@ -122,7 +332,7 @@ public final class KhoaBanDoGame {
         if (ly == null) {
             return false;
         }
-        baoChan(p, toMapId, ly, sauNapMap);
+        baoChan(p, dichThuc(toMapId), ly, sauNapMap); // thuyen: hop cua ai cua ben kia
         try {
             com.htbb.log.Nhat.thongTin("KHOA_MAP", "chan " + p.charname + " cap " + capCua(p) + " -> map " + toMapId);
         } catch (final Throwable ignored) {
@@ -278,6 +488,10 @@ public final class KhoaBanDoGame {
         if (p == null) {
             return;
         }
+        if (baoCuu(p)) {
+            CHO.remove(Integer.valueOf(p.charDBID));
+            return;
+        }
         final Hoi h = CHO.remove(Integer.valueOf(p.charDBID));
         if (h == null) {
             return;
@@ -339,6 +553,8 @@ public final class KhoaBanDoGame {
         CHO.remove(k);
         DANG_HOI.remove(k);
         VUA_CHAN.remove(k);
+        NAP_LAI.remove(k);
+        CUU.remove(k);
     }
 
     /** Test: lui moc hop gan nhat (gia lap het chung cho). */
@@ -415,8 +631,9 @@ public final class KhoaBanDoGame {
     // ------------------------------------------------------------------ nap nhan vat / mien tru
 
     /**
-     * CharNapDuLieu (sau khi chon cho hoi sinh): lan dau -> moc mien = max(cap, cap ban do dang luu); moi lan: ban do
-     * dang luu bi khoa -> nang moc len cap ban do do (khong bao gio dich chuyen nguoi choi di).
+     * CharNapDuLieu (sau khi chon cho hoi sinh): lan dau -> moc mien = max(cap, cap ban do dang luu) (nhan vat cu truoc
+     * khi co khoa ban do). Sau do (sua-ket-tau): dang luu o thuyen ma ben kia khoa, hoac o ban do khoa voi nhan vat ->
+     * dua ve lang khoi dau cua vung ({@link #cuuKhiNap}); truoc day nang moc mien len cap ban do do (mo nham ca cua ai).
      */
     public static void khiNap(final Char p) {
         if (p == null || p.charDBID <= 0) {
@@ -427,17 +644,14 @@ public final class KhoaBanDoGame {
             int moc = KhoaBanDo.docMien(p.charDBID);
             if (moc == -2) {
                 MIEN.put(Integer.valueOf(p.charDBID), Integer.valueOf(KhoaBanDo.mocMienDau(capCua(p), luu)));
-                return; // loi CSDL: mien tru tam, khong ghi
+                return; // loi CSDL: mien tru tam, khong ghi, khong dua ai di
             }
             if (moc < 0) {
                 moc = KhoaBanDo.mocMienDau(capCua(p), luu);
                 KhoaBanDo.ghiMien(p.charDBID, moc, "dau");
-            } else if (luu != null && !p.isAdmin && !KhoaBanDo.mo(luu, capCua(p), daXong(p, luu), moc)) {
-                moc = Math.max(moc, luu.cap);
-                KhoaBanDo.ghiMien(p.charDBID, moc, "ban_do_luu");
-                System.out.println("[KHOA BAN DO] mien tru " + p.charname + " o map " + p.mapID + " -> moc " + moc);
             }
             MIEN.put(Integer.valueOf(p.charDBID), Integer.valueOf(moc));
+            cuuKhiNap(p);
         } catch (final Exception e) {
             System.out.println("KhoaBanDoGame.khiNap: " + e);
         }

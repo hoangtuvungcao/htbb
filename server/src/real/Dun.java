@@ -106,10 +106,7 @@ public class Dun extends Map {
                             id += 500;
                         }
 
-                        this.move2Map(p, 62 + random(5), 122 + random(5), id, p.inCountry);
-                        if (p.potions[20] > 0) {
-                            p.potions[20]--;
-                        }
+                        KhoaBanDoGame.xuongThuyen(this, p, id); // ben kia khoa -> ve ben (sua-ket-tau)
                     }
                 } catch (Exception var7) {
                 }

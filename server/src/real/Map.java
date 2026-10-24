@@ -14486,6 +14486,12 @@ public class Map implements Runnable {
             }
 
             long now = System.currentTimeMillis();
+            // Khoa ban do: ben kia thuyen (New Bark...) con khoa -> khong cho len tau (truoc day len duoc roi ket tren
+            // thuyen 107, nap map lien tuc - sua-ket-tau). Bao dieu kien + hop "Nhận cửa ải ngay?".
+            if ((this.mapId == 106 || this.mapId >= 2421 && this.mapId <= 2424)
+                    && KhoaBanDoGame.chan(player, KhoaBanDoGame.thuyenCuaBen(this.mapId))) {
+                return;
+            }
             if (!(this.mapId == 106 || this.mapId == 2421 || this.mapId == 2422 || this.mapId == 2423 || this.mapId == 2424)) {
                 // Ben Lapras khac (Hoenn...): cho do toi ben khac thay vi im lang (real.NpcDichVu).
                 NpcDichVu.moBenDo(player);
@@ -16790,8 +16796,13 @@ public class Map implements Runnable {
 
     public void move2Map(Char player, int x, int y, int mapID, int country) {
         this.checkTrade(player);
-        // Khoa ban do (chot cuoi cho moi duong dich chuyen): chua du dieu kien -> o lai cho dang dung, nap lai map.
-        if (mapID != player.mapID && KhoaBanDoGame.chanDiBo(player, mapID)) {
+        // Khoa ban do (chot cuoi cho moi duong dich chuyen): chua du dieu kien -> o lai cho dang dung, nap lai map MOT lan;
+        // bi chan lai trong 3 giay (duong may chu goi lap) -> bo qua, khong nap lai lien tuc (dong menu) - sua-ket-tau.
+        final int khoaBanDo = mapID != player.mapID ? KhoaBanDoGame.chanMove2Map(player, mapID) : 0;
+        if (khoaBanDo == 2) {
+            return;
+        }
+        if (khoaBanDo == 1) {
             x = player.x / 16;
             y = player.y / 16;
             mapID = player.mapID;
