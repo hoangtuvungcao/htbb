@@ -22,14 +22,18 @@ public final class ManMenu extends Screen {
      * 0.9.9: viên "Tự động đánh" luôn hiện (0.9.6.1 - 0.9.8 ẩn khi HUD màn rộng có bánh răng: người chơi không tìm thấy).
      */
     static final String[] TEN = {"Pokémon", "Pokédex", "Đội/Bạn bè", "Sự kiện", "Hệ sinh thái", "Cửa hàng", "Thư/Quà",
-        "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh"};
+        "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh", "Nhiệm vụ của tôi", "Sổ tay huấn luyện"};
     /** màu ô (nền nhạt + biểu tượng màu) */
     static final int[] MAU = {ChuDe.DO, ChuDe.TIM, ChuDe.LA, ChuDe.HONG, 0x6DAA2C, ChuDe.CAM, ChuDe.XANH, 0xE09B00, ChuDe.XAM,
-        0x5C6BC0, ChuDe.CHINH_TOI};
+        0x5C6BC0, ChuDe.CHINH_TOI, ChuDe.CAM, ChuDe.LA};
     static final int[] HINH = {BieuTuong.POKEBALL, BieuTuong.DEX, BieuTuong.DOI, BieuTuong.SU_KIEN, BieuTuong.SINH_THAI,
-        BieuTuong.CUA_HANG, BieuTuong.THU, BieuTuong.XEP_HANG, BieuTuong.CAI_DAT, BieuTuong.TIEN_ICH, BieuTuong.TU_DONG};
+        BieuTuong.CUA_HANG, BieuTuong.THU, BieuTuong.XEP_HANG, BieuTuong.CAI_DAT, BieuTuong.TIEN_ICH, BieuTuong.TU_DONG,
+        BieuTuong.NHIEM_VU, BieuTuong.TIN};
     static final int I_POKEMON = 0, I_DEX = 1, I_DOI = 2, I_SU_KIEN = 3, I_SINH_THAI = 4, I_CUA_HANG = 5, I_THU = 6,
-        I_XEP_HANG = 7, I_CAI_DAT = 8, I_KHAC = 9, I_TU_DONG = 10;
+        I_XEP_HANG = 7, I_CAI_DAT = 8, I_KHAC = 9, I_TU_DONG = 10,
+        // 0.9.16 (chủ dự án: "mỗi lần về làng có về trực tiếp được đâu, đi mất thời gian lắm"): Nhiệm vụ của tôi + Sổ tay
+        // huấn luyện mở ở mọi nơi (trước chỉ qua Quầy đổi thưởng trong làng / nút trong sổ Nhiệm vụ)
+        I_NV_CUA_TOI = 11, I_SO_TAY = 12;
 
     /** Chấm đỏ ô i (dữ liệu client có): nhiệm vụ mới / đủ để trả, thư chưa đọc, điểm kỹ năng chưa cộng. */
     public static boolean cham(int i) {
@@ -143,6 +147,14 @@ public final class ManMenu extends Screen {
             case I_XEP_HANG:
                 ManXepHang.mo();
                 break;
+            case I_NV_CUA_TOI:
+                ve();
+                game.render.screen.GameScr.moNhiemVuCuaToi();   // -527 / 0 / 8 như nút trong sổ Nhiệm vụ (0.9.15)
+                break;
+            case I_SO_TAY:
+                ve();
+                game.render.screen.GameScr.moSoTay();
+                break;
             case I_CAI_DAT:
                 ve();
                 CauGiaoDien.moCaiDat();
@@ -200,7 +212,7 @@ public final class ManMenu extends Screen {
      * dùng). Không còn bảng trắng to với ô nhỏ trôi nổi.
      */
     static final int[] CHINH = {I_POKEMON, I_DEX, I_CUA_HANG, I_DOI, I_SU_KIEN};
-    static final int[] PHU = {I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
+    static final int[] PHU = {I_NV_CUA_TOI, I_SO_TAY, I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
     static final int[] PHU_HUD_RONG = {I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
 
     /**
@@ -230,7 +242,7 @@ public final class ManMenu extends Screen {
         int[] phu = phu();
         int[] wv = new int[phu.length];
         for (int q = 0; q < phu.length; q++) {
-            wv[q] = ChuDe.rong(TEN[phu[q]], ChuDe.NHAN) + 34;
+            wv[q] = ChuDe.rongVien(TEN[phu[q]], ChuDe.NHAN, 0xF6E6C0) + 34;
         }
         int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
         int conCho = yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
@@ -294,7 +306,7 @@ public final class ManMenu extends Screen {
         int[] phu = phu();
         int[] wv = new int[phu.length];
         for (int q = 0; q < phu.length; q++) {
-            wv[q] = ChuDe.rong(TEN[phu[q]], ChuDe.NHAN) + 34;
+            wv[q] = ChuDe.rongVien(TEN[phu[q]], ChuDe.NHAN, 0xF6E6C0) + 34;
         }
         int soHang = soHangPhu(wv, k, wMax);
         int yv = Math.max(Bang.tren() + 4, cy - R - r - 14 - hv - (soHang - 1) * (hv + k));

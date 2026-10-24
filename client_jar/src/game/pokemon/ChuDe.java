@@ -352,6 +352,14 @@ public final class ChuDe {
      * Chữ VIỀN kiểu NRO (tiêu đề, chữ trên nút màu): viền mauVien 1 px logic 4 hướng + bóng dưới, rồi chữ mau.
      * J2ME (font ảnh): font tiêu đề / borderFont đã có viền sẵn -> vẽ thường.
      */
+    /** Bề ngang chữ VẼ bằng chuVien (J2ME: chữ sáng = borderFont, rộng hơn font thường) - 0.9.16. */
+    public static int rongVien(String s, int vai, int mau) {
+        if (s != null && ChuUI.bo == null && GiaoDien.doSang(mau) > 150 && Font.borderFont != null) {
+            return Font.borderFont.getWidth(chuanKyTu(s));
+        }
+        return rong(s, vai);
+    }
+
     public static void chuVien(Graphics g, String s, int x, int y, int vai, int mau, int mauVien, int canh) {
         if (s == null || s.length() == 0) {
             return;

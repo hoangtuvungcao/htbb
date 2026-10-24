@@ -49,7 +49,10 @@ final class Nen {
         javax.microedition.lcdui.Graphics g = (javax.microedition.lcdui.Graphics) g0;
         game.pokemon.GiaoDien.moClip(g);
         if (tieuDe != null && tieuDe.length() > 0) {
-            int wT = game.render.screen.Font.borderFont.getWidth(tieuDe) + 34;
+            // 0.9.16: đủ chỗ cho chữ tiêu đề THẬT của GiaoDien.dai (vai TIEU_DE + chừa 2 x 16 + 12) - trước đo bằng
+            // borderFont nên phông PC cắt "Nhiệm..." / "Bản th.."
+            int wT = Math.max(game.render.screen.Font.borderFont.getWidth(tieuDe) + 34,
+                    game.pokemon.ChuDe.rong(game.pokemon.GiaoDien.tieuDe(tieuDe), game.pokemon.ChuDe.TIEU_DE) + 46);
             if (wT > w - 16) {
                 wT = w - 16;
             }

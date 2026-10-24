@@ -8325,6 +8325,40 @@ public class GameScr extends Screen {
         GameService.gI().doMenuOption(-527, (byte) 0, 8);
     }
 
+    /**
+     * 0.9.16: mục gốc Sổ tay huấn luyện (NPC ảo -527 menu 0), ĐÚNG thứ tự máy chủ real.SoTayLauDai.MUC_GOC (máy chủ ghi
+     * "thứ tự cố định" - chỉ số = idOption; ChupTrongGame so với mảng máy chủ). Máy chủ không có lệnh "mở gốc Sổ tay"
+     * từ client nên Menu cá nhân dựng gốc ở client, mỗi mục gửi -527 / 0 / i như chạm mục trong menu máy chủ.
+     */
+    public static final String[] SO_TAY_MUC = {"Năng lượng và tinh thông", "Nhiệm vụ tuần", "Hầm ngục bí ẩn", "Thang PvP mùa",
+        "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi",
+        "Cửa hàng và đổi vật phẩm", "Cúp PvP tuần"};
+
+    /** 0.9.16: Menu cá nhân › Sổ tay huấn luyện: danh sách mục gốc (MenuNguCanh khi chạm, menu chữ khi bấm phím). */
+    public static void moSoTay() {
+        try {
+            if (Canvas.gameScr != null && Canvas.currentScreen != Canvas.gameScr) {
+                Canvas.gameScr.switchToMe();
+            }
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        Vector v = new Vector();
+        for (int i = 0; i < SO_TAY_MUC.length; i++) {
+            final int muc = i;
+            v.addElement(new Command(SO_TAY_MUC[i], new IAction() {
+                public void perform() {
+                    GameService.gI().doMenuOption(-527, (byte) 0, muc);
+                }
+            }));
+        }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.MenuNguCanh.mo(v, "Sổ tay huấn luyện");
+        } else {
+            Canvas.menu.startAt(v, 3);
+        }
+    }
+
     /** 0.9.15: lệnh "Nhiệm vụ của tôi" cho menu NPC (chỉ khi máy chủ có tính năng). */
     static void themNhiemVuCuaToi(Vector menu) {
         if (!coMucTieuNv) {

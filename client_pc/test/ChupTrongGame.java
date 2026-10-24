@@ -243,6 +243,9 @@ public class ChupTrongGame {
             "nv_thu_dang_dung_tha_trung_di_theo", "nv_thu_dang_dung_tha_trung_cuoi", "nv_thu_trong_tab0", "nv_thu_trong_tab1",
             // 0.9.16: hào quang khi cưỡi - sân khấu Ngoại hình / Trang bị cùng neo + lớp với bản đồ (dưới chân thú, sau thú)
             "nv_ngoai_hinh_hq", "nv_ngoai_hinh_hq_cuoi", "nv_trang_bi_hq_cuoi", "the_gioi_hq", "the_gioi_hq_cuoi",
+            // 0.9.16: Nhiệm vụ của tôi / Sổ tay huấn luyện ở Menu cá nhân (mọi nơi) - Menu kiểu GO, Sổ tay (MenuNguCanh), menu
+            // chữ J2ME (hàng Nhiệm vụ)
+            "menu_so_tay", "menu_chu_nhiem_vu",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
             "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
             "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
@@ -268,6 +271,7 @@ public class ChupTrongGame {
             "hop_thanh",
             // 0.9.14: thẻ vật phẩm dạng thuốc theo bảng máy chủ (-104 kiểu 9) - Sáo gọi Tauros / nguyên liệu sự kiện
             "tui_sao_goi", "tui_nguyen_lieu_su_kien"};
+        kiemMenuNhiemVu();
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         for (int c = 0; c < CO.length; c++) {
@@ -382,7 +386,8 @@ public class ChupTrongGame {
                         // 0.9.6.1: hộp "OK" báo tin trong game (lên cấp, phần thưởng...) nay là thẻ nhanh trên màn chơi
                         || ten.startsWith("hop_") && game.render.Canvas.currentDialog == null
                         && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
-                if (!theGioi || dpi == 0) {
+                // menu chữ J2ME (PauseMenu): bấm phím, không vùng chạm (máy cảm ứng dùng Menu kiểu GO)
+                if ((!theGioi || dpi == 0) && !"menu_chu_nhiem_vu".equals(ten)) {
                     kiemCham(ten + " " + TEN_CO[c], min, cach);
                 }
             }
@@ -890,7 +895,13 @@ public class ChupTrongGame {
             }
             dat(nv, "loaiThu", Integer.valueOf(bo));
         }
-        if (ten.startsWith("the_gioi_hq")) {
+        if ("menu_so_tay".equals(ten)) {
+            game.pokemon.ManMenu.mo();
+        } else if ("menu_chu_nhiem_vu".equals(ten)) {
+            game.render.Canvas.gameScr.switchToMe();
+            game.pokemon.HanhDong.moMenuChinh();   // phím mềm trái J2ME: menu chữ đủ mục (không gon)
+            moHangNhiemVuChu();
+        } else if (ten.startsWith("the_gioi_hq")) {
             game.render.Canvas.gameScr.switchToMe();
         } else if (ten.startsWith("nv_ngoai_hinh_hq")) {
             game.pokemon.ManNhanVat.mo(4);
@@ -1574,6 +1585,7 @@ public class ChupTrongGame {
         }
         if ("kho_do_the".equals(ten)) return new String[]{"kho-kho-0"};
         // 0.9.16: lối vào thật bằng chạm (ô Trang bị › Thú cưỡi, ô Đi theo, tab con, nút Thả trùng)
+        if ("menu_so_tay".equals(ten)) return new String[]{"menu-Sổ tay huấn luyện"};
         if ("nv_thu_dang_dung_tb_cuoi".equals(ten)) return new String[]{"o-Thú cưỡi"};
         if ("nv_thu_dang_dung_tb_di_theo".equals(ten)) return new String[]{"o-Thú cưỡi", "o-di-theo"};
         if ("nv_thu_dang_dung_tab_di_theo".equals(ten)) return new String[]{"thu-loai-1"};
@@ -2021,6 +2033,148 @@ public class ChupTrongGame {
 
     /** Sân khấu Trang bị › Thú cưỡi không trống (luôn có tên thú / gợi ý), tab Thú có "Ô thú: n/max" khi có quản lý. */
     static final java.util.Vector THU_BO = new java.util.Vector();
+
+    /** Menu chữ (PauseMenu) đang mở: chọn hàng gốc "Nhiệm vụ" như bấm phím (dòng hiện -> doSelect) -> menu con 3 mục. */
+    static void moHangNhiemVuChu() {
+        try {
+            Object pm = game.render.Canvas.currentScreen;
+            if (!(pm instanceof game.render.screen.PauseMenu)) return;
+            Class<?> k = pm.getClass();
+            java.lang.reflect.Method vt = k.getDeclaredMethod("viTri", int.class), ds = k.getDeclaredMethod("doSelect");
+            vt.setAccessible(true);
+            ds.setAccessible(true);
+            java.lang.reflect.Field sel = k.getDeclaredField("selected");
+            sel.setAccessible(true);
+            sel.setInt(pm, (Integer) vt.invoke(pm, 4));
+            ds.invoke(pm);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** Gói -30 (doMenuOption) gửi gần nhất qua phiên giả: {npc, menu, mục}; null = không có. */
+    static int[] goiMenu;
+
+    /**
+     * 0.9.16: lối vào Nhiệm vụ của tôi / Sổ tay huấn luyện ở Menu cá nhân gửi ĐÚNG gói máy chủ chờ (-30: -527 / 0 / 8 và
+     * -527 / 0 / i theo real.SoTayLauDai.MUC_GOC - đọc thẳng mã máy chủ, thứ tự cố định); cả chạm (Menu kiểu GO +
+     * MenuNguCanh) và phím (menu chữ J2ME hàng Nhiệm vụ).
+     */
+    static void kiemMenuNhiemVu() throws Exception {
+        final game.networklogic.GameService gs = game.networklogic.GameService.gI();
+        final network.ISession cu = gs.session;
+        gs.setSession(new network.ISession() {
+            public boolean isConnected() {
+                return true;
+            }
+
+            public void setHandler(network.IMessageHandler h) {
+            }
+
+            public void connect(String a, String b) {
+            }
+
+            public void sendMessage(network.Message m) {
+                if (m.command == -30) {
+                    byte[] d = m.getData();
+                    goiMenu = new int[]{(short) (((d[0] & 0xFF) << 8) | (d[1] & 0xFF)), d[2], d[3] & 0xFF};
+                }
+            }
+
+            public void close() {
+            }
+        });
+        try {
+            // mục gốc Sổ tay của máy chủ (nguồn thật): real/SoTayLauDai.java MUC_GOC + hằng DuongMenu
+            String st = new String(java.nio.file.Files.readAllBytes(new File("server/src/real/SoTayLauDai.java").toPath()), "UTF-8");
+            String dm = new String(java.nio.file.Files.readAllBytes(new File("server/src/com/htbb/pokemon/DuongMenu.java").toPath()), "UTF-8");
+            String khoi = st.substring(st.indexOf("MUC_GOC = {") + 11, st.indexOf("};", st.indexOf("MUC_GOC = {")));
+            java.util.List<String> may = new java.util.ArrayList<String>();
+            java.util.regex.Matcher mu = java.util.regex.Pattern.compile("\"([^\"]*)\"|com\\.htbb\\.pokemon\\.DuongMenu\\.([A-Z_]+)").matcher(khoi);
+            while (mu.find()) {
+                String t = mu.group(1) != null ? "\"" + mu.group(1) + "\"" : "." + mu.group(2);
+                if (t.startsWith("\"")) may.add(t.substring(1, t.length() - 1));
+                else {
+                    String h = t.substring(t.lastIndexOf('.') + 1);
+                    java.util.regex.Matcher mt = java.util.regex.Pattern.compile("String " + h + " = \"([^\"]*)\"").matcher(dm);
+                    may.add(mt.find() ? mt.group(1) : "?" + h);
+                }
+            }
+            kiem(java.util.Arrays.asList(game.render.screen.GameScr.SO_TAY_MUC).equals(may), "So tay client " + java.util.Arrays.toString(
+                    game.render.screen.GameScr.SO_TAY_MUC) + " != may chu " + may);
+            // chạm: Menu kiểu GO -> Nhiệm vụ của tôi
+            final int[][] r = new int[1][];
+            chay(new Runnable() {
+                public void run() {
+                    goiMenu = null;
+                    game.pokemon.ManMenu.mo();
+                }
+            });
+            ve(1280, 720);
+            chay(new Runnable() {
+                public void run() {
+                    chamVung("menu-Nhiệm vụ của tôi");
+                    r[0] = goiMenu;
+                }
+            });
+            kiem(r[0] != null && r[0][0] == -527 && r[0][1] == 0 && r[0][2] == 8, "Menu > Nhiem vu cua toi gui -527/0/8: "
+                    + java.util.Arrays.toString(r[0]));
+            // chạm: Sổ tay -> MenuNguCanh đủ mục, chọn mục i -> -527/0/i
+            for (int i = 0; i < Math.min(may.size(), game.render.screen.GameScr.SO_TAY_MUC.length); i++) {
+                final int muc = i;
+                chay(new Runnable() {
+                    public void run() {
+                        goiMenu = null;
+                        game.render.screen.GameScr.moSoTay();
+                        try {
+                            java.lang.reflect.Field f = game.pokemon.MenuNguCanh.class.getDeclaredField("lenh");
+                            f.setAccessible(true);
+                            java.util.Vector v = (java.util.Vector) f.get(game.pokemon.MenuNguCanh.gI());
+                            ((game.model.Command) v.elementAt(muc)).action.perform();
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                        r[0] = goiMenu;
+                    }
+                });
+                kiem(r[0] != null && r[0][0] == -527 && r[0][1] == 0 && r[0][2] == i, "So tay muc " + i + " gui " + java.util.Arrays.toString(r[0]));
+            }
+            // phím (menu chữ J2ME): hàng Nhiệm vụ -> mục 1 Nhiệm vụ của tôi
+            chay(new Runnable() {
+                public void run() {
+                    goiMenu = null;
+                    game.pokemon.MenuNguCanh.gI();
+                    game.render.Canvas.gameScr.switchToMe();
+                    game.pokemon.HanhDong.moMenuChinh();
+                    moHangNhiemVuChu();
+                    try {
+                        Object pm = game.render.Canvas.currentScreen;
+                        java.lang.reflect.Field sel = pm.getClass().getDeclaredField("selected");
+                        sel.setAccessible(true);
+                        sel.setInt(pm, 1);
+                        java.lang.reflect.Method ds = pm.getClass().getDeclaredMethod("doSelect");
+                        ds.setAccessible(true);
+                        ds.invoke(pm);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                    r[0] = goiMenu;
+                }
+            });
+            kiem(r[0] != null && r[0][0] == -527 && r[0][1] == 0 && r[0][2] == 8, "Menu chu > Nhiem vu > Nhiem vu cua toi gui "
+                    + java.util.Arrays.toString(r[0]));
+            System.out.println("kiemMenuNhiemVu: xong");
+        } finally {
+            gs.setSession(cu);
+            chay(new Runnable() {
+                public void run() {
+                    game.render.Canvas.endDlg();
+                    game.render.Canvas.menu.showMenu = false;
+                    game.render.Canvas.gameScr.switchToMe();
+                }
+            });
+        }
+    }
     static Object[] HQ_GOC;
 
     static boolean laHq(String ten) {
