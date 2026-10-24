@@ -305,6 +305,294 @@ public final class LuoiTui {
         hLuoi = hl;
     }
 
+    // ------------------------------------------------------------------ 0.9.18: kiểu GỌN (màn Nhân vật › Trang bị)
+
+    /** Nhãn ngắn của bộ lọc (chip hẹp). */
+    public static final String[] LOC_NGAN = {"Tất cả", "Đồ", "Thuốc", "N.liệu", "Khác"};
+    /** Icon PNG từng bộ lọc (chip chỉ icon khi bảng rất hẹp). */
+    static final int[] ICON_LOC = {BieuTuong.TUI, BieuTuong.AO, BieuTuong.THUOC, BieuTuong.NGUYEN_LIEU, BieuTuong.HOP_DO};
+
+    /** Hình học lần vẽ gọn gần nhất (kiểm thử): {x, y, w, h} hàng chip lọc / lưới / hàng ví, số cột, số hàng thấy đủ, mức nhãn chip. */
+    public static final int[] GON_CHIP = new int[4], GON_LUOI = new int[4], GON_VI = new int[4];
+    public static int gonCot, gonHang, gonMucNhan;
+    /** Cao đầu bảng gọn (hàng chip / hàng lùi) lần vẽ gần nhất - màn đặt nút lùi đúng cỡ. */
+    public static int gonCaoDau;
+
+    /** Cao hàng chip lọc gọn (>= cỡ chạm). */
+    public static int caoChipGon() {
+        return Bang.co(Math.max(18, ChuDe.cao(ChuDe.NHAN) + 6));
+    }
+
+    /** Cao tối thiểu phần "khung" của bảng gọn (đệm + chip + ví + khe) - màn tính số hàng lưới thấy được. */
+    public static int caoKhungGon(int w) {
+        int k = Bang.cach();
+        return 4 + caoChipGon() + k + k + ViTien.cao() + 4;
+    }
+
+    /** Bề ngang hàng chip ở mức nhãn muc (0 đủ chữ, 1 chữ ngắn, 2 icon + chữ mục chọn, 3 chỉ icon). */
+    static int rongChip(int muc, int i, int chon, int hc) {
+        int ic = coIconChip(hc);
+        int toiThieu = Math.max(VungCham.MIN, hc);
+        if (muc == 0) {
+            return Math.max(toiThieu, ChuDe.rong(LOC[i], ChuDe.NHAN) + 14);
+        }
+        if (muc == 1) {
+            return Math.max(toiThieu, ChuDe.rong(LOC_NGAN[i], ChuDe.NHAN) + 12);
+        }
+        if (muc == 2 && i == chon) {
+            return Math.max(toiThieu, ic + 4 + ChuDe.rong(LOC_NGAN[i], ChuDe.NHAN) + 12);
+        }
+        return Math.max(toiThieu, ic + 8);
+    }
+
+    static int coIconChip(int hc) {
+        return 16 * Math.max(1, (hc - 4) / 24);
+    }
+
+    /** Trang đầu của hàng chip khi phải lật trang (bảng quá hẹp cho 5 chip đủ cỡ chạm - điện thoại 16:9 dpi cao). */
+    static int trangChip;
+
+    /** Chữ nút lật trang chip: phông ảnh J2ME không có "‹ ›". */
+    static String muiTen(boolean phai) {
+        return ChuUI.bo != null ? (phai ? "›" : "‹") : (phai ? ">" : "<");
+    }
+
+    static int rongMuiTen(int hc) {
+        return Math.max(Math.max(VungCham.MIN, hc), ChuDe.rong(muiTen(true), ChuDe.NHAN) + 14);
+    }
+
+    /**
+     * Hàng chip lọc MỘT hàng trong (x, y, w, hc): chọn mức nhãn dài nhất còn vừa (đủ chữ -> chữ ngắn -> icon + chữ mục
+     * chọn -> chỉ icon), phần dư chia đều để hàng phủ kín bề ngang (mép thẳng với lưới). Vùng chạm "loc-i".
+     */
+    static void hangChipGon(Graphics g, int x, int y, int w, int hc, int chon, final Object[] viec) {
+        int k = Bang.cach();
+        int n = LOC.length;
+        int muc = 0;
+        int tong = 0;
+        for (; muc < 3; muc++) {
+            tong = (n - 1) * k;
+            for (int i = 0; i < n; i++) {
+                tong += rongChip(muc, i, chon, hc);
+            }
+            if (tong <= w) {
+                break;
+            }
+        }
+        int dau = 0, cuoi = n;
+        if (muc >= 3) {
+            // không vừa cả icon: LẬT TRANG - chip chữ ngắn đủ cỡ chạm + nút "<" / ">" (không xuống dòng, không chồng)
+            muc = 1;
+            int wm = rongMuiTen(hc);
+            if (chon >= 0 && chon < trangChip) {
+                trangChip = chon;
+            }
+            trangChip = Math.max(0, Math.min(n - 1, trangChip));
+            while (true) {
+                dau = trangChip;
+                int con = w - (dau > 0 ? wm + k : 0);
+                cuoi = dau;
+                while (cuoi < n) {
+                    int wc = rongChip(1, cuoi, chon, hc);
+                    int canPhai = cuoi + 1 < n ? wm + k : 0;
+                    if (wc + (cuoi > dau ? k : 0) + canPhai > con && cuoi > dau) {
+                        break;
+                    }
+                    con -= wc + (cuoi > dau ? k : 0);
+                    cuoi++;
+                }
+                if (chon < cuoi || chon < 0 || trangChip >= n - 1) {
+                    break;
+                }
+                trangChip++;
+            }
+            tong = (dau > 0 ? wm + k : 0) + (cuoi < n ? wm + k : 0) - k;
+            for (int i = dau; i < cuoi; i++) {
+                tong += rongChip(1, i, chon, hc) + k;
+            }
+        }
+        gonMucNhan = dau > 0 || cuoi < n ? 4 : muc;
+        int soMuc = (cuoi - dau) + (dau > 0 ? 1 : 0) + (cuoi < n ? 1 : 0);
+        int du = Math.max(0, w - tong);
+        int xx = x;
+        int ic = coIconChip(hc);
+        int thu = 0;
+        if (dau > 0) {
+            final int lui = dau;
+            int wc = rongMuiTen(hc) + du / soMuc + (thu < du % soMuc ? 1 : 0);
+            veChip(g, xx, y, wc, hc, muiTen(false), -1, false, new game.model.IAction() {
+                public void perform() {
+                    trangChip = Math.max(0, lui - 1);
+                }
+            }, "loc-truoc");
+            xx += wc + k;
+            thu++;
+        }
+        for (int i = dau; i < cuoi; i++) {
+            int wc = rongChip(muc, i, chon, hc) + du / soMuc + (thu < du % soMuc ? 1 : 0);
+            if (i == cuoi - 1 && cuoi == n) {
+                wc = Math.max(wc, x + w - xx);
+            }
+            boolean c = i == chon;
+            String chu = muc == 0 ? LOC[i] : muc == 1 || (muc == 2 && c) ? LOC_NGAN[i] : null;
+            veChip(g, xx, y, wc, hc, chu, muc >= 2 ? ICON_LOC[i] : -1, c, viec == null ? null : viec[i], Bang.tenTab("loc-", i));
+            xx += wc + k;
+            thu++;
+        }
+        if (cuoi < n) {
+            final int toi = cuoi;
+            veChip(g, xx, y, Math.max(rongMuiTen(hc), x + w - xx), hc, muiTen(true), -1, false, new game.model.IAction() {
+                public void perform() {
+                    trangChip = toi;
+                }
+            }, "loc-sau");
+        }
+    }
+
+    /** Một chip lọc (x, y, w, hc): chọn = cam chữ trắng viền, thường = giấy da chữ tối; icon (>= 0) PNG trước chữ. */
+    static void veChip(Graphics g, int x, int y, int w, int hc, String chu, int icon, boolean c, Object v, String ten) {
+        boolean an = v != null && Bang.dangAn(g, x, y, w, hc);
+        int m = c ? KhungNroBang.NUT_CAM : KhungNroBang.NUT_GIAY;
+        if (!KhungNro.ve(g, an ? m + 1 : m, x, y, w, hc)) {
+            GiaoDien.khoi(g, x, y, w, hc, 3, c ? ChuDe.CHINH : ChuDe.KE);
+        }
+        int dy = an ? 1 : 0;
+        int ic = coIconChip(hc);
+        int wNoi = (icon >= 0 ? ic : 0) + (chu != null ? ChuDe.rong(chu, ChuDe.NHAN) + (icon >= 0 ? 4 : 0) : 0);
+        int xn = x + (w - wNoi) / 2;
+        if (icon >= 0) {
+            BieuTuong.ve(g, icon, xn, y + (hc - ic) / 2 + dy, ic, ChuDe.CHU, ChuDe.NEN);
+            xn += ic + 4;
+        }
+        if (chu != null) {
+            if (c) {
+                ChuDe.chuVienGiua(g, chu, xn, y + dy, hc, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 0);
+            } else {
+                ChuDe.chuGiua(g, chu, xn, y + dy, hc, ChuDe.NHAN, ChuDe.CHU, 0);
+            }
+        }
+        VungCham.them(g, x, y, w, hc, v, ten);
+    }
+
+    /**
+     * Bảng hành trang GỌN (0.9.18, chủ dự án: "lộn xộn, nút to"): đầu = MỘT hàng chip lọc nhỏ (hoặc đầu riêng của màn khi
+     * viecLoc null - màn tự vẽ trong {@link #gonCaoDau}), giữa = lưới ô cạnh s chiếm gần hết chiều cao + thanh cuộn mảnh,
+     * đáy = hàng ví gọn (xu, lượng, lượng khoá) + đếm ô. Chip, lưới, ví cùng mép trái / phải.
+     */
+    public static void veGon(Graphics g, Cuon c, int x, int y, int w, int h, int s, int loc, final Vector mon, boolean coKhoa,
+            Object chon, final Object[] viecLoc, final Bam bam, int nguCanh) {
+        capNhatCho();
+        int k = Bang.cach();
+        if (!KhungNro.ve(g, KhungNroBang.THE, x, y, w, h)) {
+            GiaoDien.khoi(g, x, y, w, h, 3, ChuDe.KE);
+        }
+        Font_nenSang();
+        MainChar m = mc();
+        // lưới: cột theo bề ngang (chừa 10 px thanh cuộn), canh giữa; chip + ví cùng nhịp mép với lưới
+        int dem0 = 5;
+        int trong = w - 2 * dem0;
+        final int cot = Math.max(1, (trong - 10 + k) / (s + k));
+        int wLuoi = cot * (s + k) - k;
+        int xl = x + dem0 + Math.max(0, (trong - 10 - wLuoi) / 2);
+        int wNhip = wLuoi + 10;   // mép phải = mép phải thanh cuộn
+        int hc = caoChipGon();
+        int yy = y + 4;
+        gonCaoDau = hc;
+        if (viecLoc != null) {
+            hangChipGon(g, xl, yy, wNhip, hc, loc, viecLoc);
+        }
+        GON_CHIP[0] = xl;
+        GON_CHIP[1] = yy;
+        GON_CHIP[2] = wNhip;
+        GON_CHIP[3] = hc;
+        yy += hc + k;
+        int suc = TrangThaiNguoiChoi.sucChua(m);
+        String dem = soDung() + "/" + suc;
+        int wDem = ChuDe.rong(dem, ChuDe.SO) + 12;
+        int wVi = wNhip - wDem - k;
+        // mỗi mục ví là vùng chạm >= cỡ chạm: hàng hẹp (điện thoại 16:9 + lượng khoá) bỏ ô đếm (lưới đã cho thấy ô trống /
+        // ô khoá) để ví đủ chỗ
+        int soMucVi = ViTien.coKhoa(m) ? 3 : 2;
+        boolean coDem = wVi - 8 >= soMucVi * (VungCham.MIN + k);
+        if (!coDem) {
+            wDem = 0;
+            wVi = wNhip;
+        }
+        int soDVi = ViTien.soDong(wVi);
+        int hVi = ViTien.cao() * soDVi + (soDVi - 1) * k;
+        int yVi = y + h - 4 - hVi;
+        ViTien.hang(g, xl, yVi, wVi, hVi);
+        if (coDem) {
+            GiaoDien.khoiPixel(g, xl + wNhip - wDem, yVi, wDem, hVi, soDung() >= suc ? ChuDe.DO : 0x5C2E12);
+            ChuDe.chuVienGiua(g, dem, xl + wNhip - wDem / 2, yVi, hVi, ChuDe.SO, 0xFFFFFF, ChuDe.VIEN, 2);
+        }
+        GON_VI[0] = xl;
+        GON_VI[1] = yVi;
+        GON_VI[2] = wNhip;
+        GON_VI[3] = hVi;
+        final int n = mon.size();
+        int tran = TrangThaiNguoiChoi.tran(m);
+        int hl = yVi - k - yy;
+        int hangDay = Math.max(1, (hl + k) / (s + k));
+        gonCot = cot;
+        gonHang = hangDay;
+        GON_LUOI[0] = xl;
+        GON_LUOI[1] = yy;
+        GON_LUOI[2] = wNhip;
+        GON_LUOI[3] = hl;
+        int dung = coKhoa ? soDung() : n;
+        final int soTrong = coKhoa ? Math.max(0, suc - dung) : 0;
+        final int soKhoa = coKhoa ? Math.max(0, tran - Math.max(suc, dung)) : 0;
+        soKhoaVe = soKhoa;
+        int tong = n + soTrong + soKhoa;
+        tong = Math.max(((tong + cot - 1) / cot) * cot, hangDay * cot);
+        final int tongO = tong;
+        final Object chonO = chon;
+        final int x0 = xl, s0 = s;
+        nguCanhVe = nguCanh;
+        luoiLuc = System.currentTimeMillis();
+        soO = 0;
+        Bang.danhSach(g, c, xl, yy, wNhip, hl, (tongO + cot - 1) / cot, s, new Bang.Hang() {
+            public void ve(Graphics g, int i, int xr, int yr, int wr, int hr) {
+                for (int q = 0; q < cot; q++) {
+                    int j = i * cot + q;
+                    if (j >= tongO) {
+                        break;
+                    }
+                    int xo = x0 + q * (s0 + Bang.cach());
+                    if (j < n) {
+                        final Object o = mon.elementAt(j);
+                        veO(g, o, xo, yr, s0, o == chonO, new IAction() {
+                            public void perform() {
+                                bamO(o, bam);
+                            }
+                        }, tenO("tui-", TEN_TUI, j));
+                        if (soO < SO_O) {
+                            OX[soO] = xo + g.getTranslateX();
+                            OY[soO] = yr + g.getTranslateY();
+                            OS[soO] = s0;
+                            OM[soO] = o;
+                            soO++;
+                        }
+                    } else if (j < n + soTrong || j >= n + soTrong + soKhoa) {
+                        Bang.oDo(g, xo, yr, s0, false, false, null, null);
+                    } else {
+                        Bang.oKhoa(g, xo, yr, s0, new IAction() {
+                            public void perform() {
+                                hoiMoRong();
+                            }
+                        }, tenO("tui-khoa-", TEN_KHOA, j));
+                    }
+                }
+            }
+        });
+        if (n == 0 && viecLoc != null) {
+            dongTrong(g, xl, yy + Math.min(hl / 3, 2 * (s + k)), wNhip, loc);
+        }
+        yLuoi = yy;
+        hLuoi = hl;
+    }
+
     /** Dòng trống thân thiện (bộ lọc không có món) giữa lưới: bảng tối chỉ vàng + chữ. */
     static void dongTrong(Graphics g, int x, int y, int w, int loc) {
         String c = loc == LOC_TAT_CA ? "Hành trang trống - nhặt đồ từ Pokémon hoang dã hoặc mua ở Poké Mart."
@@ -323,7 +611,7 @@ public final class LuoiTui {
 
     /** Dòng trống với chữ c. */
     public static void dongTrong(Graphics g, int x, int y, int w, String c) {
-        String[] d = ChuDe.ngat(c, ChuDe.NHAN, w - 24, 2);
+        String[] d = ChuDe.ngat(c, ChuDe.NHAN, w - 24, 3);
         int lh = ChuDe.cao(ChuDe.NHAN);
         int h = d.length * lh + 10;
         if (!KhungNro.ve(g, KhungNroBang.TOOLTIP, x, y, w, h)) {

@@ -26,6 +26,8 @@ public class ChupTrongGame {
     static String[] TEN_DO_CAP = new String[0];
     /** Mọi tên mẫu đồ (+ bản bỏ " · Cấp N"): ở màn danh sách / thẻ đồ (MAN_TEN_DU) không tên nào được cắt. */
     static String[] TEN_DO = new String[0];
+    /** Màn chạy thêm ở cỡ máy J2ME thật (240x320 / 320x240) khi -Dchup.j2me: tab Trang bị + hành trang lọc. */
+    static final String MAN_J2ME_THAT = ",nv_trang_bi,nv_o_co_do,nv_o_trong,tui_loc_thuoc,tui_loc_nguyen_lieu,";
     static final String[] MAN_TEN_DU = {"nv_hanh_trang", "nv_chi_tiet", "nv_trang_bi", "kho_do", "cua_hang_do", "cua_hang_ban",
         "xem_trang_bi", "xem_do_thu", "hop_vat_pham", "hop_cho", "hop_mac_do"};
 
@@ -279,10 +281,36 @@ public class ChupTrongGame {
         kiemMenuNhiemVu();
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
-        for (int c = 0; c < CO.length; c++) {
-            if (locCo != null && !("," + locCo + ",").contains("," + TEN_CO[c] + ",")) continue;
-            final int W = CO[c][0], H = CO[c][1], dpi = CO[c][2];
-            NenPc.tinhKichThuoc(W, H);
+        // -Dchup.j2me: thêm cỡ máy J2ME thật 240x320 / 320x240 (x1, không cỡ chạm) cho các màn MAN_J2ME_THAT
+        int[][] COV = CO;
+        String[] TEN_COV = TEN_CO;
+        if (System.getProperty("chup.j2me") != null) {
+            COV = new int[CO.length + 2][];
+            TEN_COV = new String[CO.length + 2];
+            System.arraycopy(CO, 0, COV, 0, CO.length);
+            System.arraycopy(TEN_CO, 0, TEN_COV, 0, CO.length);
+            COV[CO.length] = new int[]{240, 320, -1};
+            COV[CO.length + 1] = new int[]{320, 240, -1};
+            TEN_COV[CO.length] = "j2me240x320";
+            TEN_COV[CO.length + 1] = "j2me320x240";
+        }
+        for (int c = 0; c < COV.length; c++) {
+            if (locCo != null && !("," + locCo + ",").contains("," + TEN_COV[c] + ",")) continue;
+            final int W = COV[c][0], H = COV[c][1], dpi = COV[c][2];
+            if (dpi < 0) {
+                // máy J2ME thật: màn logic đúng W x H, x1, không cỡ chạm (bấm phím)
+                NenPc.rong = W;
+                NenPc.cao = H;
+                NenPc.heSo = 1;
+                NenPc.thatW = W;
+                NenPc.thatH = H;
+                NenPc.hienX = 0;
+                NenPc.hienY = 0;
+                NenPc.hienW = W;
+                NenPc.hienH = H;
+            } else {
+                NenPc.tinhKichThuoc(W, H);
+            }
             chay(new Runnable() {
                 public void run() {
                     game.render.Canvas.instance.sizeChanged(NenPc.rong, NenPc.cao);
@@ -290,7 +318,11 @@ public class ChupTrongGame {
             });
             float s = NenPc.hienW / (float) NenPc.rong;
             int min, cach;
-            if (dpi > 0) {
+            if (dpi < 0) {
+                min = 0;
+                cach = 0;
+                game.pokemon.Bang.anTrai = 0;
+            } else if (dpi > 0) {
                 // giả lập Android: 44 dp / 8 dp theo px logic của khung phủ kín
                 float dpL = (dpi / 160f) / s;
                 min = (int) Math.ceil(44 * dpL);
@@ -305,6 +337,7 @@ public class ChupTrongGame {
             game.pokemon.VungCham.CACH = cach;
             for (int m = 0; m < man.length; m++) {
                 final String ten = man[m];
+                if (dpi < 0 && !MAN_J2ME_THAT.contains("," + ten + ",")) continue;
                 if (locMan != null && !("," + locMan + ",").contains("," + ten + ",")) continue;
                 chay(new Runnable() {
                     public void run() {
@@ -347,25 +380,25 @@ public class ChupTrongGame {
                 game.render.screen.Font.thieuNet = 0;
                 BufferedImage anh = ve(W, H);
                 game.pokemon.GhiChu.bat = false;
-                kiemChu(ten + " " + TEN_CO[c]);
-                kiemTrongMan(ten + " " + TEN_CO[c]);
+                kiemChu(ten + " " + TEN_COV[c]);
+                kiemTrongMan(ten + " " + TEN_COV[c]);
                 if ("nhiem_vu".equals(ten) || "nhiem_vu_chi_tiet".equals(ten)) {
-                    kiemMucNhiemVu(ten + " " + TEN_CO[c]);
+                    kiemMucNhiemVu(ten + " " + TEN_COV[c]);
                 }
-                kiemXemThu(ten, ten + " " + TEN_CO[c]);
+                kiemXemThu(ten, ten + " " + TEN_COV[c]);
                 if ("menu_su_kien".equals(ten)) {
                     kiem(game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh && "Sự kiện".equals(game.pokemon.MenuNguCanh.tieuDe()),
-                            ten + " " + TEN_CO[c] + ": the 'Su kien' (tieu de " + game.pokemon.MenuNguCanh.tieuDe() + ")");
+                            ten + " " + TEN_COV[c] + ": the 'Su kien' (tieu de " + game.pokemon.MenuNguCanh.tieuDe() + ")");
                     String[] l = game.pokemon.MenuNguCanh.cacLenh();
                     kiem(l.length == 1 + game.render.screen.GameScr.SU_KIEN_MUC.length && "Mùa: Hoàng hôn Halloween".equals(l[0]),
-                            ten + " " + TEN_CO[c] + ": hang the Su kien " + java.util.Arrays.toString(l));
+                            ten + " " + TEN_COV[c] + ": hang the Su kien " + java.util.Arrays.toString(l));
                 }
                 if ("tui_ve_dich_chuyen".equals(ten)) {
-                    kiem(coChu("Vé / thẻ") && coChu("Vé dịch chuyển"), ten + " " + TEN_CO[c] + " the ve: thieu loai 'Ve / the' / ten");
-                    kiem(coVung("tvp-dung"), ten + " " + TEN_CO[c] + " the ve: thieu nut Su dung");
+                    kiem(coChu("Vé / thẻ") && coChu("Vé dịch chuyển"), ten + " " + TEN_COV[c] + " the ve: thieu loai 'Ve / the' / ten");
+                    kiem(coVung("tvp-dung"), ten + " " + TEN_COV[c] + " the ve: thieu nut Su dung");
                 }
                 if (laHq(ten)) {
-                    final String nh = ten + " " + TEN_CO[c];
+                    final String nh = ten + " " + TEN_COV[c];
                     final String tn = ten;
                     chay(new Runnable() {
                         public void run() {
@@ -374,29 +407,32 @@ public class ChupTrongGame {
                     });
                 }
                 if (ten.startsWith("the_gioi") || "suc_khoe".equals(ten) || "goi_y_chieu".equals(ten)) {
-                    kiemPhuKin(anh, ten + " " + TEN_CO[c]);
-                    kiemNhanTheGioi(ten + " " + TEN_CO[c]);
-                    if (game.render.screen.HudRong.bat()) kiemKheChieu(ten + " " + TEN_CO[c]);
+                    kiemPhuKin(anh, ten + " " + TEN_COV[c]);
+                    kiemNhanTheGioi(ten + " " + TEN_COV[c]);
+                    if (game.render.screen.HudRong.bat()) kiemKheChieu(ten + " " + TEN_COV[c]);
                 }
-                ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_CO[c] + ".png"));
+                ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_COV[c] + ".png"));
                 // 0.9.7 quy tắc chủ dự án: mọi icon là ẢNH PNG - không icon nào vẽ bằng hình (vector / cung / nét)
-                kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_CO[c] + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, "
+                kiem(game.pokemon.VeTay.dem == 0, ten + " " + TEN_COV[c] + " icon ve bang code (" + game.pokemon.VeTay.dem + " lan, "
                         + game.pokemon.VeTay.cuoi + ")");
                 if (ten.startsWith("hop_") || ten.equals("xac_nhan") || ten.equals("so_luong")) {
-                    kiemHop(ten + " " + TEN_CO[c]);
+                    kiemHop(ten + " " + TEN_COV[c]);
                 }
                 // 0.9.6: tấm (sheet) canh giữa vùng an toàn, trong giới hạn cỡ theo tỉ lệ màn; menu ngữ cảnh trong vùng
                 // an toàn và không chồng phần HUD
-                kiemTam(ten + " " + TEN_CO[c], demTam0);
+                kiemTam(ten + " " + TEN_COV[c], demTam0);
                 if ("menu_ngu_canh".equals(ten)) {
-                    kiemMenuNguCanh(ten + " " + TEN_CO[c]);
+                    kiemMenuNguCanh(ten + " " + TEN_COV[c]);
                 }
-                kiemTuiNro(ten, ten + " " + TEN_CO[c]);
+                kiemTuiNro(ten, ten + " " + TEN_COV[c]);
+                if (MAN_J2ME_THAT.contains("," + ten + ",")) {
+                    kiemTrangBiGon(ten, ten + " " + TEN_COV[c], dpi);
+                }
                 if (game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh) {
-                    kiemMenuGiua(ten + " " + TEN_CO[c]);
+                    kiemMenuGiua(ten + " " + TEN_COV[c]);
                 }
                 if (ten.startsWith("hst_") && !"hst_ky_nang".equals(ten)) {
-                    kiemMenuMayChu(ten + " " + TEN_CO[c]);
+                    kiemMenuMayChu(ten + " " + TEN_COV[c]);
                 }
                 // màn chơi: HUD PC (HudRong) chỉ ở cỡ PC; HUD APK (Hud.java) kiểm riêng bằng client_jar/tools/KiemCoCham
                 boolean theGioi = ten.startsWith("the_gioi") || "thong_bao_kich_hoat".equals(ten) || "suc_khoe".equals(ten)
@@ -407,7 +443,7 @@ public class ChupTrongGame {
                         && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
                 // menu chữ J2ME (PauseMenu): bấm phím, không vùng chạm (máy cảm ứng dùng Menu kiểu GO)
                 if ((!theGioi || dpi == 0) && !"menu_chu_nhiem_vu".equals(ten)) {
-                    kiemCham(ten + " " + TEN_CO[c], min, cach);
+                    kiemCham(ten + " " + TEN_COV[c], min, cach);
                 }
             }
         }
@@ -1801,6 +1837,84 @@ public class ChupTrongGame {
         return false;
     }
 
+    /** Vùng chạm tên đúng t (lớp trên cùng) -> {x, y, w, h} hoặc null. */
+    static int[] vungTen(String t) {
+        int top = game.pokemon.VungCham.lopCaoNhat();
+        for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
+            if (game.pokemon.VungCham.lopVung(i) == top && t.equals(game.pokemon.VungCham.ten(i))) return game.pokemon.VungCham.vungVe(i);
+        }
+        return null;
+    }
+
+    /**
+     * 0.9.18 tab Trang bị GỌN (chủ dự án: "lộn xộn, xấu, nút to"): chip lọc MỘT hàng (đủ 5 bộ lọc, lật trang nếu hẹp),
+     * lưới hành trang thấy >= 4 hàng (PC) / >= 3 (điện thoại, máy tính bảng, J2ME), không chữ bị cắt trong vùng tab,
+     * 12 ô trang bị cùng cạnh ô hành trang, thẳng cột / hàng đều nhịp, chip Tiềm năng ở hàng đầu (trên ô), viên Danh hiệu
+     * dưới ô, đủ tên.
+     */
+    static void kiemTrangBiGon(String ten, String nhan, int dpi) {
+        if (!(game.render.Canvas.currentScreen instanceof game.pokemon.ManNhanVat) || game.render.Canvas.currentDialog != null) return;
+        // chip lọc một hàng
+        if (coVung("loc-")) {
+            int y0 = Integer.MIN_VALUE, h0 = -1, so = 0;
+            boolean mot = true, lat = false;
+            for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
+                String n = game.pokemon.VungCham.ten(i);
+                if (n == null || !n.startsWith("loc-")) continue;
+                int[] v = game.pokemon.VungCham.vungVe(i);
+                if (y0 == Integer.MIN_VALUE) { y0 = v[1]; h0 = v[3]; }
+                mot &= v[1] == y0 && v[3] == h0;
+                if (n.equals("loc-truoc") || n.equals("loc-sau")) lat = true;
+                else so++;
+            }
+            kiem(mot, nhan + " chip loc khong cung mot hang");
+            kiem(so == 5 || lat && so >= 1, nhan + " chip loc thieu bo loc (" + so + ", lat trang " + lat + ")");
+            int[] g = game.pokemon.LuoiTui.GON_CHIP;
+            kiem(h0 <= Math.max(game.pokemon.VungCham.MIN, 24), nhan + " chip loc qua cao " + h0);
+        }
+        // J2ME thật 320x240 + lượng khoá: ví xuống hai dòng -> >= 2 hàng
+        int canHang = dpi == 0 ? 4 : dpi < 0 && game.render.Canvas.gameScr.mainChar.luongKhoa > 0 ? 2 : 3;
+        kiem(game.pokemon.LuoiTui.gonHang >= canHang, nhan + " luoi hanh trang thay " + game.pokemon.LuoiTui.gonHang + " hang < " + canHang);
+        // chữ trong vùng tab không bị cắt
+        int[] r = game.pokemon.ManNhanVat.VUNG_TB;
+        if ("nv_trang_bi".equals(ten) || ten.startsWith("tui_loc")) {
+            for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+                String c = game.pokemon.GhiChu.CS[i];
+                int cx = game.pokemon.GhiChu.CX[i], cy = game.pokemon.GhiChu.CY[i];
+                if (c == null || cx < r[0] || cy < r[1] || cx >= r[0] + r[2] || cy >= r[1] + r[3]) continue;
+                kiem(!c.endsWith("..") && !c.endsWith("\u2026"), nhan + " chu bi cat trong tab Trang bi: '" + c + "'");
+            }
+            game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+            if (mc.danhHieuTen != null) kiem(coChu(mc.danhHieuTen), nhan + " vien Danh hieu khong du ten '" + mc.danhHieuTen + "'");
+            kiem(coChu(game.pokemon.BangTiemNangHD.nhanNut()), nhan + " thieu chu chip " + game.pokemon.BangTiemNangHD.nhanNut());
+        }
+        // 12 ô trang bị: cùng cạnh ô hành trang, thẳng cột / hàng
+        String[] tenO = {"Đồ cầm tay", "Khăn quàng", "Băng đô", "Đai", "Vòng cổ", "Huy hiệu", "Huy hiệu 2", "Găng đấm", "Lông vũ",
+            "Phiến đá hệ", "Ruy băng", "Thú cưỡi"};
+        int[] tui = vungTen("tui-0");
+        int s = game.pokemon.ManNhanVat.BO_CUC[1];
+        java.util.TreeSet<Integer> xs = new java.util.TreeSet<Integer>(), ys = new java.util.TreeSet<Integer>();
+        int yMin = Integer.MAX_VALUE, yMax = Integer.MIN_VALUE;
+        for (int i = 0; i < tenO.length; i++) {
+            int[] v = vungTen("o-" + tenO[i]);
+            if (v == null) { kiem(false, nhan + " thieu o " + tenO[i]); continue; }
+            kiem(v[2] == s && v[3] == s, nhan + " o " + tenO[i] + " " + v[2] + "x" + v[3] + " != " + s);
+            xs.add(v[0]);
+            ys.add(v[1]);
+            yMin = Math.min(yMin, v[1]);
+            yMax = Math.max(yMax, v[1] + v[3]);
+        }
+        if (tui != null && tui[3] == tui[2]) kiem(tui[2] == s, nhan + " o hanh trang " + tui[2] + " != o trang bi " + s);
+        int kieu = game.pokemon.ManNhanVat.BO_CUC[0];
+        int cot = kieu == 0 ? 2 : kieu == 1 ? 4 : 6, hang = kieu == 0 ? 6 : kieu == 1 ? 3 : 2;
+        kiem(xs.size() == cot && ys.size() == hang, nhan + " o trang bi khong thang hang: " + xs.size() + " cot / " + ys.size() + " hang (can " + cot + " / " + hang + ")");
+        Integer[] ya = ys.toArray(new Integer[0]);
+        for (int i = 2; i < ya.length; i++) kiem(ya[i] - ya[i - 1] == ya[1] - ya[0], nhan + " nhip hang o trang bi lech");
+        int[] tn = vungTen("tiem-nang"), dh = vungTen("danh-hieu");
+        kiem(tn != null && tn[1] + tn[3] <= yMin, nhan + " chip Tiem nang khong o hang dau (tren o)");
+        kiem(dh != null && dh[1] >= yMax, nhan + " vien Danh hieu khong duoi o / san khau");
+    }
+
     /**
      * 0.9.7 hành trang kiểu NRO: tab Trang bị / tab Bán = LƯỚI ô (vùng tui-0..), hàng ví có vùng chạm xu + lượng, "Tất cả"
      * có ô khoá cuối lưới; thẻ vật phẩm (nv_chi_tiet) trong vùng an toàn, có nút Mặc / Vứt / Đóng; tab Bán có nút Bán.
@@ -1809,6 +1923,7 @@ public class ChupTrongGame {
         if ("nv_trang_bi".equals(ten) || "nv_hanh_trang".equals(ten) || "cua_hang_ban".equals(ten) || ten.startsWith("tui_loc")) {
             kiem(coVung("tui-0"), nhan + " luoi hanh trang co o (tui-0)");
             kiem(coVung("tien-xu") && coVung("tien-luong"), nhan + " hang vi co xu + luong (cham duoc)");
+            if ("nv_trang_bi".equals(ten) || ten.startsWith("tui_loc")) kiem(coVung("tien-luong_khoa"), nhan + " hang vi gon thieu luong khoa");
             if ("nv_trang_bi".equals(ten) || "nv_hanh_trang".equals(ten)) {
                 kiem(game.pokemon.LuoiTui.soKhoaVe > 0, nhan + " luoi Tat ca co o khoa cuoi (mo rong) - " + game.pokemon.LuoiTui.soKhoaVe);
             }

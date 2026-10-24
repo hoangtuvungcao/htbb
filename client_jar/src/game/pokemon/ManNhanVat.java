@@ -559,108 +559,245 @@ public final class ManNhanVat extends Screen {
             moXem();
             return;
         }
-        // Sức mạnh (hoặc tên ô đang chọn) trên cùng
-        int hSm = ChuDe.cao(ChuDe.PHU) + ChuDe.cao(ChuDe.SO_TO) - 2;
-        // 0.9.7: nút Tiềm năng (cộng điểm) góc trái trên khối nhân vật - kiểu NRO, cạnh "Sức mạnh"
-        // 0.9.15: máy chủ dùng Điểm huấn luyện (production) -> nút "Huấn luyện", sáng theo điểm huấn luyện còn lại (cùng
-        // số chấm đỏ BangTiemNangHD.diemNut); trước sáng theo tiềm năng tự do (luôn 0 ở chế độ này)
-        String nhanTn = BangTiemNangHD.nhanNut();
-        int hTn = Bang.co(22), wTn = ChuDe.rong(nhanTn, ChuDe.SO) + 20;
-        Bang.nut(g, x + 2, y + 1, wTn, hTn, nhanTn, BangTiemNangHD.diemNut() > 0 ? Bang.CHINH : Bang.GO, new IAction() {
-            public void perform() {
-                HanhDong.moTiemNang();
-            }
-        }, "tiem-nang");
-        BangTiemNangHD.chamDo(g, x + 2, y + 1, wTn);
-        int cxS = x + 2 + wTn + (lw - wTn - 2) / 2;
-        if (this.o >= 0 && this.o < TEN_O.length) {
-            String ten = TEN_O[this.o];
-            int wt = ChuDe.rong(ten, ChuDe.NHAN) + 18, ht = ChuDe.cao(ChuDe.NHAN) + 6;
-            ChuDe.bien(g, cxS - wt / 2 - 6, y + (hSm - ht) / 2, wt + 12, ht);
-            ChuDe.chuVienGiua(g, ten, cxS, y + (hSm - ht) / 2, ht, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
-        } else {
-            ChuDe.chu(g, "SỨC MẠNH", cxS, y, ChuDe.PHU, ChuDe.CHU_PHU, 2);
-            ChuDe.chu(g, String.valueOf(sucManh(m)), cxS, y + ChuDe.cao(ChuDe.PHU) - 3, ChuDe.SO_TO, ChuDe.CHU, 2);
+        // 0.9.18 (chủ dự án: "giao diện này bị lộn xộn với xấu, button to"): bố cục GỌN kiểu NRO - đầu một hàng (Sức mạnh +
+        // chip Tiềm năng / Huấn luyện), 12 ô sát quanh sân khấu (cùng cạnh ô hành trang), viên Danh hiệu dưới sân khấu;
+        // phải: hành trang gọn (chip lọc một hàng, lưới chiếm gần hết chiều cao, ví gọn)
+        VUNG_TB[0] = x;
+        VUNG_TB[1] = y;
+        VUNG_TB[2] = w;
+        VUNG_TB[3] = h;
+        int[] bc = boCuc(w, h);
+        int kieu = bc[0];
+        s = bc[1];
+        int cs = bc[2], rh = bc[3], st = bc[4];
+        lw = 2 * (cs * s + (cs - 1) * k) + 2 * k + st;
+        int hDau = caoDauNv(), hP = caoHangDh();
+        int hCot = rh * s + (rh - 1) * k;
+        int xe = kieu == XEP_DOC ? x + (w - lw) / 2 : x;
+        int ye = y + 4;
+        int he = kieu == XEP_DOC ? hDau + k + hCot + k + hP : h - 8;
+        BO_CUC[0] = kieu;
+        BO_CUC[1] = s;
+        BO_CUC[2] = lw;
+        BO_CUC[3] = st;
+        BO_CUC[4] = hCot;
+        veDauNv(g, m, xe, ye, lw, hDau);
+        int yP = ye + he - hP;
+        int yS = ye + hDau + k + Math.max(0, (yP - k - (ye + hDau + k) - hCot) / 2);
+        int wCot = cs * s + (cs - 1) * k;
+        int xSan = xe + wCot + k;
+        BO_CUC[5] = xSan;
+        BO_CUC[6] = yS;
+        // sân khấu giữa hai cụm ô, cao bằng cụm ô
+        nenSanKhau(g, xSan, yS, st, hCot);
+        for (int i = 0; i < 6; i++) {
+            int c = i / rh, r = i % rh;
+            int yo = yS + r * (s + k);
+            veOVuong(g, i, xe + c * (s + k), yo, s);
+            veOVuong(g, 6 + i, xe + lw - s - c * (s + k), yo, s);
         }
-        int yTren = y + hSm + 2;
-        int d = 2 * rs, b = d + k + 1;   // đường kính ô tròn, bước (khe >= cach)
-        boolean gon = 4 * b - k + k + d > y + h - yTren;   // không đủ cao cho 4 hàng + hàng dưới: 2 cột x 3 hàng mỗi bên
-        int yDuoi = gon ? y + h : y + h - d;
-        // sân khấu: đĩa màu hệ giữa vùng ô
-        int coCot = gon ? 2 * b : b;
-        nenSanKhau(g, x + coCot - 4, yTren, lw - 2 * coCot + 8, yDuoi - k - yTren);
-        if (gon) {
-            int caoCot = 3 * b - k - 1;
-            int y0 = yTren + Math.max(0, (yDuoi - yTren - caoCot) / 2);
-            for (int i = 0; i < 6; i++) {
-                int c = i / 3, r = i % 3;
-                veO(g, i, x + rs + 1 + c * b, y0 + r * b + rs, rs);
-                veO(g, 6 + i, x + lw - rs - 1 - c * b, y0 + r * b + rs, rs);
-            }
-        } else {
-            int caoCot = 4 * b - k - 1;
-            int y0 = yTren + Math.max(0, (yDuoi - k - yTren - caoCot) / 2);
-            for (int i = 0; i < 4; i++) {
-                int lech = i == 1 || i == 2 ? rs / 3 : 0;   // cung nhẹ ôm lấy Pokémon
-                veO(g, i, x + rs + 2 + lech, y0 + i * b + rs, rs);
-                veO(g, 4 + i, x + lw - rs - 2 - lech, y0 + i * b + rs, rs);
-            }
-            int wDuoi = 4 * d + 3 * (k + 5);
-            int xd = x + (lw - wDuoi) / 2;
-            for (int i = 0; i < 4; i++) {
-                veO(g, 8 + i, xd + i * (d + k + 5) + rs, yDuoi + rs, rs);
-            }
-        }
-        int s0 = s;
-        s = coCot;
-        // Pokémon to ở giữa
-        int giuaL = x + s + 4, giuaR = x + lw - s - 4;
-        int cao = yDuoi - k - yTren;
-        // đứng giữa đĩa màu hệ (cùng phép tính nenSanKhau), chân hơi dưới tâm
-        int wD = lw - 2 * s + 8, rD = Math.min(wD, cao) * 9 / 20, cyD = yTren + cao / 2 + cao / 20;
-        float z = Math.max(1.5f, Math.min(4.2f, Math.min((giuaR - giuaL) / 40f, rD * 2 / 38f)));
-        int cx = (giuaL + giuaR) / 2;
-        // 0.9.7: viên Danh hiệu (lối vào bảng Danh hiệu) ở đáy sân khấu, dưới chân Pokémon
-        int hDh = ManDanhHieu.hVien();
-        int hcDh = Math.max(VungCham.MIN, hDh + 4);   // vùng chạm đủ cỡ, viên vẽ giữa
-        int yDh = yDuoi - k - 3 - hcDh + (hcDh - hDh) / 2;
-        int yChan = Math.min(yDh - 4 - (int) (2 * z), cyD + rD * 6 / 10);
-        {
-            boolean coDh = m.danhHieuTen != null;
-            String chu = coDh ? m.danhHieuTen : "Danh hiệu";
-            // 0.9.10: vùng chạm viên (wv + 4) cách mép vùng chạm cột ô gần nhất >= Bang.cach() (J2ME 16:9: hở 6 < 7)
-            int mepCot = gon ? d + b + 1 : d + 2 + rs / 3;
-            int wMax = Math.min(giuaR0(x, lw, coCot) - giuaL0(x, coCot) - 8, lw - 2 * (mepCot + k) - 4);
-            int wv = ManDanhHieu.vien(g, -10000, yDh, chu + " ›", coDh ? m.danhHieuHiem : 0, null, wMax);   // đo bề ngang
-            int xv = x + lw / 2 - wv / 2;
-            ManDanhHieu.vien(g, xv, yDh, chu + " ›", coDh ? m.danhHieuHiem : 0, null, wMax);
-            int wcDh = Math.max(wv + 4, VungCham.MIN);
-            VungCham.them(g, x + lw / 2 - wcDh / 2, yDh - (hcDh - hDh) / 2, wcDh, hcDh, new IAction() {
-                public void perform() {
-                    ManDanhHieu.moTuHoSo();
-                }
-            }, "danh-hieu");
-            if (ChamMoi.co(ChamMoi.DANH_HIEU)) {
-                ChuDe.cham(g, xv + wv - 2, yDh + 1);
-            }
-        }
-        banRongBe = (giuaR - giuaL) / 2 - 2;
-        veNguoiChoi(g, m, cx, yChan, z);
+        float z = Math.max(1f, Math.min(3.6f, Math.min((st - 8) / 30f, (hCot - 8) / 38f)));
+        int yChan = yS + hCot - Math.max(6, (int) (4 * z));
+        veTheLoai(g, m, xSan, yS, st, yChan - (int) (36 * z) - yS);
+        banRongBe = st / 2 - 4;
+        veNguoiChoi(g, m, xSan + st / 2, yChan, z);
         banRongBe = 1000;
+        veDanhHieuNv(g, m, xe, yP, lw, hP);
         if (nhanO >= 0 && nhanO < TEN_O.length) {
             String ten = TEN_O[nhanO];
             int wt = ChuDe.rong(ten, ChuDe.NHAN_NHO) + 12, ht = ChuDe.cao(ChuDe.NHAN_NHO) + 4;
-            int xl = Math.max(x + 2, Math.min(x + lw - wt - 2, nhanX - wt / 2));
+            int xl = Math.max(xe + 2, Math.min(xe + lw - wt - 2, nhanX - wt / 2));
             if (!KhungNro.ve(g, KhungNroBang.TOOLTIP, xl, nhanY - ht - 2, wt, ht)) {
                 GiaoDien.khoi(g, xl, nhanY - ht - 2, wt, ht, 2, 0x2B1A10);
             }
             ChuDe.chuGiua(g, ten, xl + wt / 2, nhanY - ht - 2, ht, ChuDe.NHAN_NHO, 0xF6E6C0, 2);
             nhanO = -1;
         }
-        // bên phải (0.9.7 kiểu NRO): LƯỚI hành trang (lọc theo ô trang bị đang chọn); ô Thú = danh sách thú
-        int xr = x + lw + k, wr = w - lw - k;
-        veTui(g, xr, y, wr, h);
+        // hành trang: bên phải (hoặc dưới khi màn dọc hẹp - J2ME 240x320)
+        if (kieu == XEP_DOC) {
+            int yt = ye + he + k;
+            veTui(g, x, yt, w, y + h - yt, s);
+        } else {
+            veTui(g, x + lw + k, y, w - lw - k, h, s);
+        }
         moXem();
+    }
+
+    // ------------------------------------------------------------------ 0.9.18: bố cục gọn tab Trang bị
+
+    /** kiểu bố cục: một cột 6 ô mỗi bên (màn cao: PC / máy tính bảng), hai cột 3 ô (điện thoại), xếp dọc (màn dọc hẹp) */
+    public static final int MOT_COT = 0, HAI_COT = 1, XEP_DOC = 2;
+    /** Kiểm thử: bố cục vừa vẽ {kiểu, cạnh ô, bề ngang khối nhân vật, bề ngang sân khấu, cao cụm ô, x sân khấu, y cụm ô}. */
+    public static final int[] BO_CUC = new int[7];
+    /** Kiểm thử: vùng nội dung tab Trang bị vừa vẽ {x, y, w, h}. */
+    public static final int[] VUNG_TB = new int[4];
+
+    /**
+     * Đầu sân khấu (khi còn chỗ trên hình): tên loài + "Cấp N · Hệ" - sân khấu cao (PC) không còn khoảng trống lớn phía
+     * trên Pokémon. phong = chiều cao còn trống từ đỉnh sân khấu tới đỉnh hình.
+     */
+    static void veTheLoai(Graphics g, MainChar m, int x, int y, int w, int phong) {
+        int h1 = ChuDe.cao(ChuDe.NHAN), h2 = ChuDe.cao(ChuDe.NHAN_NHO);
+        if (phong < 6 + h1 + h2) {
+            return;
+        }
+        String loai = LoaiPokemonClient.ten(m.pokeDex);
+        int he = HePoke.he1(m.pokeDex);
+        String phu = "Cấp " + m.level + (he >= 0 ? " · " + KieuO.tenHe(he) : "");
+        int yy = y + 6;
+        if (loai != null && loai.length() > 0 && ChuDe.rong(loai, ChuDe.NHAN) <= w - 8) {
+            ChuDe.chu(g, loai, x + w / 2, yy, ChuDe.NHAN, ChuDe.CHU, 2);
+            yy += h1;
+        }
+        if (ChuDe.rong(phu, ChuDe.NHAN_NHO) <= w - 8) {
+            ChuDe.chu(g, phu, x + w / 2, yy, ChuDe.NHAN_NHO, he >= 0 ? GiaoDien.pha(KieuO.mauHe(he), ChuDe.CHU, 1, 1) : ChuDe.CHU_PHU, 2);
+        }
+    }
+
+    /** Cao hàng đầu (Sức mạnh + chip Tiềm năng): >= cỡ chạm. */
+    static int caoDauNv() {
+        return Math.max(VungCham.MIN, ChuDe.cao(ChuDe.NHAN) + 8);
+    }
+
+    /** Cao hàng viên Danh hiệu (vùng chạm >= cỡ chạm). */
+    static int caoHangDh() {
+        return Math.max(VungCham.MIN, ManDanhHieu.hVien() + 2);
+    }
+
+    /** Cạnh ô gốc (cùng ô hành trang); máy J2ME màn nhỏ (không cảm ứng) 24. */
+    static int coOGoc() {
+        if (VungCham.MIN < 20 && (Canvas.w <= 320 || Canvas.h <= 240)) {
+            return 24;
+        }
+        return LuoiTui.coO();
+    }
+
+    /**
+     * Chọn bố cục cho vùng w x h: {kiểu, cạnh ô s, số cột mỗi bên, số hàng mỗi bên, bề ngang sân khấu}. Ưu tiên một cột 6
+     * ô mỗi bên (khối hẹp, sân khấu cao), rồi hai cột 3 ô; hành trang bên phải giữ >= 4 (một cột) / 3 (hai cột) cột ô và
+     * lưới thấy >= 3 hàng; không vừa thì xếp dọc (3 cột x 2 hàng mỗi bên, hành trang dưới).
+     */
+    static int[] boCuc(int w, int h) {
+        int k = Bang.cach(), min = VungCham.MIN;
+        int goc = Math.max(min, coOGoc());
+        int tran = Math.max(goc, Math.min(34, goc * 5 / 4));
+        int giua = h - 8 - caoDauNv() - caoHangDh() - 2 * k;
+        int hLuoi = h - LuoiTui.caoKhungGon(0);
+        // một cột 6 ô mỗi bên
+        int sA = Math.min(tran, (giua - 5 * k) / 6);
+        sA = Math.min(sA, (hLuoi - 3 * k) / 4);   // hành trang thấy >= 4 hàng
+        for (int c = 6; c >= 4; c--) {
+            for (int s = sA; s >= goc; s--) {
+                int st = w - k - (2 * s + 2 * k) - rongTui(c, s, k);
+                if (st >= 96) {
+                    return new int[]{MOT_COT, s, 1, 6, Math.min(st, 150)};
+                }
+            }
+        }
+        // hai cột 3 ô mỗi bên
+        int hangTui = ChuDe.dt() ? 3 : 4;   // hành trang thấy >= 3 hàng (cảm ứng) / 4 (PC, J2ME)
+        int sB = Math.min(tran, Math.min((giua - 2 * k) / 3, (hLuoi - (hangTui - 1) * k) / hangTui));
+        int sMin = Math.max(min, Math.min(goc, 24));
+        for (int c = 5; c >= 3; c--) {
+            for (int s = sB; s >= sMin; s--) {
+                int st = w - k - (4 * s + 4 * k) - rongTui(c, s, k);
+                if (st >= (goc <= 24 ? 44 : 60)) {
+                    return new int[]{HAI_COT, s, 2, 3, Math.min(st, 120)};
+                }
+            }
+        }
+        // xếp dọc: 3 cột x 2 hàng mỗi bên, sân khấu giữa, hành trang dưới
+        int s = goc;
+        int st = Math.min(120, w - (6 * s + 6 * k));
+        if (st < 40) {
+            s = Math.max(min, (w - 40 - 6 * k) / 6);
+            st = Math.min(120, w - (6 * s + 6 * k));
+        }
+        return new int[]{XEP_DOC, s, 3, 2, st};
+    }
+
+    /** Bề ngang bảng hành trang gọn có c cột ô cạnh s (đệm 5 + thanh cuộn 10). */
+    static int rongTui(int c, int s, int k) {
+        return 10 + 10 + c * (s + k) - k;
+    }
+
+    /**
+     * Hàng đầu: trái "SỨC MẠNH 1644" một dòng (hẹp: hai dòng / chỉ số) hoặc tên ô đang chọn; phải chip nhỏ Tiềm năng /
+     * Huấn luyện (BangTiemNangHD.nhanNut - theo chế độ máy chủ) có chấm đỏ khi còn điểm. Vùng chạm chip >= cỡ chạm.
+     */
+    void veDauNv(Graphics g, MainChar m, int x, int y, int w, int h) {
+        String nhanTn = BangTiemNangHD.nhanNut();
+        boolean coDiem = BangTiemNangHD.diemNut() > 0;
+        int hv = ChuDe.cao(ChuDe.NHAN) + 6;
+        int wv = ChuDe.rong(nhanTn, ChuDe.NHAN) + 16;
+        int wc = Math.max(wv, VungCham.MIN), hc = Math.max(hv, VungCham.MIN);
+        int xv = x + w - wc + (wc - wv) / 2 - 2, yv = y + (h - hv) / 2;
+        boolean an = Bang.dangAn(g, x + w - wc - 2, y + (h - hc) / 2, wc, hc);
+        int manh = coDiem ? KhungNroBang.NUT_CAM : KhungNroBang.NUT_GIAY;
+        if (!KhungNro.ve(g, an ? manh + 1 : manh, xv, yv, wv, hv)) {
+            GiaoDien.khoi(g, xv, yv, wv, hv, 3, coDiem ? ChuDe.CHINH : ChuDe.KE);
+        }
+        int dy = an ? 1 : 0;
+        if (coDiem) {
+            ChuDe.chuVienGiua(g, nhanTn, xv + wv / 2, yv + dy, hv, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
+        } else {
+            ChuDe.chuGiua(g, nhanTn, xv + wv / 2, yv + dy, hv, ChuDe.NHAN, ChuDe.CHU, 2);
+        }
+        VungCham.them(g, x + w - wc - 2, y + (h - hc) / 2, wc, hc, new IAction() {
+            public void perform() {
+                HanhDong.moTiemNang();
+            }
+        }, "tiem-nang");
+        BangTiemNangHD.chamDo(g, xv, yv, wv);
+        int wTrai = w - wc - 2 - 10;
+        if (this.o >= 0 && this.o < TEN_O.length) {
+            String ten = ChuDe.cat(TEN_O[this.o], ChuDe.NHAN, wTrai - 14);
+            int wt = ChuDe.rong(ten, ChuDe.NHAN) + 14, ht = ChuDe.cao(ChuDe.NHAN) + 6;
+            ChuDe.bien(g, x, y + (h - ht) / 2, wt, ht);
+            ChuDe.chuVienGiua(g, ten, x + wt / 2, y + (h - ht) / 2, ht, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
+            return;
+        }
+        String nhan = "SỨC MẠNH", so = String.valueOf(sucManh(m));
+        // số to (phông hiển thị) khi vừa chiều cao hàng - thứ bậc rõ: nhãn nhỏ nhạt, số đậm to
+        int vs = ChuDe.cao(ChuDe.TIEU_DE) <= h ? ChuDe.TIEU_DE : ChuDe.SO;
+        int wn = ChuDe.rong(nhan, ChuDe.NHAN_NHO), ws = ChuDe.rong(so, vs);
+        int hn = ChuDe.cao(ChuDe.NHAN_NHO), hs = ChuDe.cao(vs);
+        if (wn + 5 + ws <= wTrai) {
+            int yd = y + (h - hs) / 2;
+            ChuDe.chu(g, nhan, x + 2, yd + hs - hn - (hs - hn) / 4, ChuDe.NHAN_NHO, ChuDe.CHU_PHU, 0);
+            ChuDe.chu(g, so, x + 2 + wn + 5, yd, vs, ChuDe.CHU, 0);
+        } else if (hn + hs - 2 <= h && Math.max(wn, ws) <= wTrai) {
+            int yd = y + (h - hn - hs + 2) / 2;
+            ChuDe.chu(g, nhan, x + 2, yd, ChuDe.NHAN_NHO, ChuDe.CHU_PHU, 0);
+            ChuDe.chu(g, so, x + 2, yd + hn - 2, vs, ChuDe.CHU, 0);
+        } else {
+            // hẹp (J2ME 320x240): "SM 1644" như NRO
+            int w2 = ChuDe.rong("SM", ChuDe.NHAN_NHO);
+            int yd = y + (h - hs) / 2;
+            ChuDe.chu(g, "SM", x + 2, yd + hs - hn - (hs - hn) / 4, ChuDe.NHAN_NHO, ChuDe.CHU_PHU, 0);
+            ChuDe.chu(g, so, x + 2 + w2 + 4, yd, vs, ChuDe.CHU, 0);
+        }
+    }
+
+    /** Viên Danh hiệu (lối vào bảng Danh hiệu) canh giữa hàng (x, y, w, h) dưới sân khấu - đủ chữ (cả bề ngang khối). */
+    void veDanhHieuNv(Graphics g, MainChar m, int x, int y, int w, int h) {
+        boolean coDh = m.danhHieuTen != null;
+        String chu = (coDh ? m.danhHieuTen : "Danh hiệu") + (ChuUI.bo != null ? " ›" : " >");   // phông ảnh J2ME không có "›"
+        int hDh = ManDanhHieu.hVien();
+        int yDh = y + (h - hDh) / 2;
+        int wMax = w - 4;
+        int wv = ManDanhHieu.vien(g, -10000, yDh, chu, coDh ? m.danhHieuHiem : 0, null, wMax);   // đo bề ngang
+        int xv = x + w / 2 - wv / 2;
+        ManDanhHieu.vien(g, xv, yDh, chu, coDh ? m.danhHieuHiem : 0, null, wMax);
+        int wcDh = Math.min(w, Math.max(wv + 4, VungCham.MIN));
+        VungCham.them(g, x + w / 2 - wcDh / 2, y, wcDh, h, new IAction() {
+            public void perform() {
+                ManDanhHieu.moTuHoSo();
+            }
+        }, "danh-hieu");
+        if (ChamMoi.co(ChamMoi.DANH_HIEU)) {
+            ChuDe.cham(g, xv + wv - 2, yDh + 1);
+        }
     }
 
     /**
@@ -781,15 +918,21 @@ public final class ManNhanVat extends Screen {
 
     /** Ô trang bị TRÒN tâm (cx, cy) bán kính r. */
     private void veO(Graphics g, final int i, int cx, int cy, int r) {
-        int s = 2 * r, x = cx - r, y = cy - r;
+        veOVuong(g, i, cx - r, cy - r, 2 * r);
+    }
+
+    /** Ô trang bị vuông góc trái trên (x, y) cạnh s (0.9.18: cùng cạnh ô hành trang). */
+    private void veOVuong(Graphics g, final int i, int x, int y, int s) {
+        int r = s / 2;
         ItemInInventory it = i == O_THU ? null : dangMac(i);
         boolean co = it != null || (i == O_THU && dangCuoi(mc()));
-        Bang.oTron(g, cx, cy, r, co, this.o == i, new IAction() {
+        Bang.oDo(g, x, y, s, co, this.o == i, new IAction() {
             public void perform() {
                 ManNhanVat.this.chonO(i);
             }
         }, "o-" + TEN_O[i]);
-        float z = s >= 30 ? s / 22f : 1f;
+        int icO = s - 10;
+        float z = icO >= 22 ? icO / 22f : 1f;   // cùng cỡ icon ô hành trang (LuoiTui.veO)
         if (!co) {
             // ô trống: bóng mờ kiểu ô (mũ, vòng cổ, găng...) thay dấu "+"
             int ic = s * 11 / 20;
@@ -1308,7 +1451,7 @@ public final class ManNhanVat extends Screen {
     }
 
     /** Lưới hành trang (LuoiTui): tất cả + chip lọc, hoặc lọc theo ô trang bị đang chọn (món đang mặc đứng đầu). */
-    private void veTui(Graphics g, int x, int y, int w, int h) {
+    private void veTui(Graphics g, int x, int y, int w, int h, int s) {
         final boolean tat = this.o < 0 || this.o == O_TAT_CA;
         final ItemInInventory mac = tat ? null : dangMac(this.o);
         int[] dem = new int[1];
@@ -1326,7 +1469,7 @@ public final class ManNhanVat extends Screen {
                 };
             }
         }
-        LuoiTui.ve(g, this.ds, x, y, w, h, tat ? this.loc : LOC_DO, ds, tat && this.loc == LOC_TAT_CA, this.xem, vl, new LuoiTui.Bam() {
+        LuoiTui.veGon(g, this.ds, x, y, w, h, s, tat ? this.loc : LOC_DO, ds, tat && this.loc == LOC_TAT_CA, this.xem, vl, new LuoiTui.Bam() {
             public void bam(Object mon) {
                 if (mon instanceof ItemInInventory) {
                     ManNhanVat.this.xemMon((ItemInInventory) mon, mon == mac);
@@ -1336,21 +1479,25 @@ public final class ManNhanVat extends Screen {
             }
         }, TheVatPham.TUI);
         if (!tat) {
-            // đầu lưới khi lọc theo ô: nút lùi + tên ô (thay chip lọc)
-            int hd = Bang.co(22);
-            Bang.nutLui(g, x + 5, y + 5, hd, new IAction() {
+            // đầu lưới khi lọc theo ô: nút lùi + tên ô (thay chip lọc), cùng hàng / mép với chip lọc
+            int hd = LuoiTui.gonCaoDau, xd = LuoiTui.GON_CHIP[0], yd = LuoiTui.GON_CHIP[1], wd = LuoiTui.GON_CHIP[2];
+            Bang.nutLui(g, xd, yd, hd, new IAction() {
                 public void perform() {
                     ManNhanVat.this.o = -1;
                     ManNhanVat.this.ds.den(0);
                 }
             });
-            ChuDe.chuGiua(g, ChuDe.cat("Phù hợp: " + TEN_O[this.o], ChuDe.NHAN, w - hd - 80), x + hd + 12, y + 5, hd, ChuDe.NHAN, ChuDe.CHU, 0);
+            String nhanO = "Phù hợp: " + TEN_O[this.o];
+            if (ChuDe.rong(nhanO, ChuDe.NHAN) > wd - hd - 8) {
+                nhanO = TEN_O[this.o];   // hẹp (J2ME 320x240): chỉ tên ô, không cắt
+            }
+            ChuDe.chuGiua(g, ChuDe.cat(nhanO, ChuDe.NHAN, wd - hd - 8), xd + hd + 6, yd, hd, ChuDe.NHAN, ChuDe.CHU, 0);
             if (ds.size() == 0) {
                 String phu = GOI_Y[this.o];
                 if (dem[0] > 0) {
                     phu = dem[0] + " món cần cấp cao hơn. " + phu;
                 }
-                LuoiTui.dongTrong(g, x + 14, LuoiTui.yLuoi + Math.min(LuoiTui.hLuoi / 4, 40), w - 28,
+                LuoiTui.dongTrong(g, LuoiTui.GON_LUOI[0], LuoiTui.yLuoi + Math.min(LuoiTui.hLuoi / 4, 40), LuoiTui.GON_LUOI[2],
                         "Chưa có trang bị phù hợp cho ô này. " + phu);
             }
         }
