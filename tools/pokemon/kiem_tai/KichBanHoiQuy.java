@@ -639,7 +639,10 @@ final class KichBanHoiQuy {
         try (BotChucNang.Bot c = HoiQuy.vaoLai(u)) {
             c.lamMoi();
             String sau = "lv" + c.lv + " xu" + c.xu + " lk" + c.lk + " luong" + c.luong + " thuoc" + c.soThuoc(1) + " do" + c.doDung.size() + " map" + c.mapId;
-            ket("luu.dang_nhap_lai", truoc.equals(sau), truoc + " => " + sau);
+            // ban sao lang (301 = Dong Pewter) dang nhap lai ve ban goc cung nhom (0) la dung
+            String a1 = truoc.replaceAll(" map\\d+$", ""), a2 = sau.replaceAll(" map\\d+$", "");
+            int mt = Integer.parseInt(truoc.replaceAll(".* map", "")), ms = c.mapId;
+            ket("luu.dang_nhap_lai", a1.equals(a2) && BotXuyenSuot.cungBanDo(mt, ms), truoc + " => " + sau);
             String db = BotChucNang.sql1("SELECT CONCAT(gold,'/',luong,'/',luonglock) FROM tob_char WHERE id=" + c.charDb);
             ket("luu.csdl_khop", db != null && db.equals(c.xu + "/" + c.luong + "/" + c.lk), "CSDL " + db + " client " + c.xu + "/" + c.luong + "/" + c.lk);
             HoiQuy.thoat(c);

@@ -675,6 +675,15 @@ public class BotChucNang {
 
         /** Di bo theo duong ngan nhat (BFS 8 huong tren o di duoc) toi o (tx,ty); tra ve true neu toi noi. */
         boolean diDuong(BanDo bd, int dx, int dy) throws IOException {
+            return diDuong(bd, dx, dy, 3);
+        }
+
+        /**
+         * Nhu tren; {@code lanThu} = so lan tinh lai duong khi may chu tra vi tri cua minh lech (buoc bi tu choi / bi day):
+         * di tiep tu vi tri THAT thay vi tu vi tri bot tuong (lech vi tri -> xin qua cong o sai cho -> may chu kick
+         * "doi map khong dung o", hoi quy 25/10).
+         */
+        boolean diDuong(BanDo bd, int dx, int dy, int lanThu) throws IOException {
             int sx = px / 16, sy = py / 16;
             if (sx == dx && sy == dy) return true;
             int[] truoc = new int[bd.w * bd.h];
@@ -702,9 +711,19 @@ public class BotChucNang {
             Collections.reverse(duong);
             int m = moc();
             for (int c : duong) {
-                diToi((c % bd.w) * 16 + 8, (c / bd.w) * 16 + 8);
+                int mb = moc();
+                int gx = (c % bd.w) * 16 + 8, gy = (c / bd.w) * 16 + 8;
+                diToi(gx, gy);
                 bom(210);
                 if (dut) return false;
+                for (int i = mb; i < su.size(); i++) {
+                    SuKien k = su.get(i);
+                    if (k.cmd == 4 && k.chu != null && k.so != null && (Math.abs(k.so[0] - gx) > 16 || Math.abs(k.so[1] - gy) > 16)) {
+                        px = k.so[0];
+                        py = k.so[1];
+                        return lanThu > 0 && diDuong(bd, dx, dy, lanThu - 1);
+                    }
+                }
             }
             bom(300);
             for (int i = m; i < su.size(); i++) if (su.get(i).cmd == 4 && su.get(i).chu != null) {

@@ -154,7 +154,10 @@ public final class KichBanDanhHieu {
                 && t.contains("Huấn luyện viên tinh anh"), t);
         BotChucNang.ket("dh.cap.so_moi", soMoi(b, m) >= 3, "so moi=" + soMoi(b, m));
         int[] n = nhan(b, m, b.actor);
-        BotChucNang.ket("dh.cap.tu_deo", n != null && n[0] == 9700, n == null ? "khong co nhan" : "nhan " + n[0]);
+        // tu deo danh hieu dau tien CO DUOC: thuong la 9700 (cap 10); trong mua su kien (vd Halloween 9734 "Bí ngô đêm hội"
+        // phat luc vao ban do) may chu deo danh hieu su kien - cung dung (cong kiem 25/10 bao FAIL gia theo ngay)
+        boolean suKien = t.contains("Danh hiệu mới") && n != null && n[0] != 9700 && t.contains("còn ");
+        BotChucNang.ket("dh.cap.tu_deo", n != null && (n[0] == 9700 || suKien), n == null ? "khong co nhan" : "nhan " + n[0]);
     }
 
     static void bangDh() throws Exception {
@@ -165,7 +168,8 @@ public final class KichBanDanhHieu {
         List<Dong> ds = bang(b, m);
         BotChucNang.ket("dh.bang.co", ds != null && ds.size() > 100, ds == null ? "khong co bang" : ds.size() + " dong");
         Dong c10 = tim(ds, 9700), c30 = tim(ds, 9701), c50 = tim(ds, 9703), an = tim(ds, 9714), cu = tim(ds, 8767);
-        BotChucNang.ket("dh.bang.da_co", c10 != null && c10.trangThai == 2 && c30 != null && c30.trangThai == 1 && c30.moi,
+        // c10 dang deo (2), hoac chi so huu (1) khi danh hieu su kien theo mua dang duoc deo (xem dh.cap.tu_deo)
+        BotChucNang.ket("dh.bang.da_co", c10 != null && c10.trangThai >= 1 && c30 != null && c30.trangThai == 1 && c30.moi,
                 c10 == null || c30 == null ? "thieu" : c10.trangThai + "/" + c30.trangThai + " moi=" + c30.moi);
         BotChucNang.ket("dh.bang.tien_do", c50 != null && c50.trangThai == 0 && c50.tienDo == 55 && c50.can == 70,
                 c50 == null ? "thieu" : c50.tienDo + "/" + c50.can);

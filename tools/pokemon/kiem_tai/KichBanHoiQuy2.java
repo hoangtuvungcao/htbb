@@ -297,7 +297,8 @@ final class KichBanHoiQuy2 {
             HoiQuy.datCap(c, 20);
             HoiQuy.duTuoi(a);
             HoiQuy.duTuoi(c);
-            // hai nguoi di bo toi cung o trong lang
+            // hai nguoi cung ban do: lang co nhieu ban sao (0 / 301...) -> cung ra dong Pallet (map 1) roi di bo sat nhau
+            if (a.mapId != c.mapId) { KichBanGymLang.raPallet(a); KichBanGymLang.raPallet(c); }
             BotChucNang.BanDo bd = BotChucNang.BanDo.nap(a.mapLoad);
             KichBanHuongDan.dongBoViTri(a);
             KichBanHuongDan.dongBoViTri(c);
@@ -329,7 +330,7 @@ final class KichBanHoiQuy2 {
             c.bom(1500);
             a.lamMoi();
             c.lamMoi();
-            ket("giao_dich.moi", moi, c.chuTu(m));
+            ket("giao_dich.moi", moi, "map A " + a.mapId + " B " + c.mapId + " | " + c.chuTu(m) + " | A: " + a.chuTu(m));
             ket("giao_dich.bao_toan_thuoc", a.soThuoc(1) + c.soThuoc(1) == a0 + c0, "A " + a0 + "->" + a.soThuoc(1) + " B " + c0 + "->" + c.soThuoc(1));
             ket("giao_dich.chuyen_dung", a.soThuoc(1) == a0 - 3 && c.soThuoc(1) == c0 + 3, "A " + a0 + "->" + a.soThuoc(1) + " B " + c0 + "->" + c.soThuoc(1) + " | " + a.chuTu(m));
             ket("giao_dich.xu_khong_doi", a.xu == xa && c.xu == xc, "xu A " + xa + "->" + a.xu + " B " + xc + "->" + c.xu);
@@ -386,7 +387,17 @@ final class KichBanHoiQuy2 {
         try {
             KichBanHoiQuy.boQuaHuongDan(a);
             KichBanHoiQuy.boQuaHuongDan(c);
+            // lang co nhieu ban sao (0 / 301): ra Pallet roi ve lang toi khi hai nguoi cung ban sao
+            for (int lan = 0; lan < 4 && a.mapId != c.mapId; lan++) {
+                KichBanGymLang.raPallet(c);
+                KichBanHuongDan.quaCong(c, 0);
+            }
+            if (a.mapId != c.mapId) { ket("pvp_an_toan.trong_lang", null, "khong vao duoc cung ban sao lang: " + a.mapId + "/" + c.mapId); return; }
             c.lamMoi();
+            int hpDung = c.hp;
+            c.bom(4000);
+            c.lamMoi();
+            ket("pvp_an_toan.dung_yen_khong_mat_mau", c.hp >= hpDung, "dung yen 4 giay o map " + c.mapId + ": hp " + hpDung + "->" + c.hp + " | " + c.chuTu(Math.max(0, c.moc() - 30)));
             int hp0 = c.hp;
             for (int i = 0; i < 6; i++) { a.gui(6, (short) c.actor, (byte) 0); a.bom(400); }
             c.bom(800);
