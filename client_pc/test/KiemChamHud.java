@@ -583,7 +583,7 @@ public class KiemChamHud {
     // không mục tiêu (quái Ekans, NPC), có / không thẻ thời tiết: chạm từng nút HUD và từng ô Menu -> đúng màn / thẻ / gói,
     // thẻ lệnh không bao giờ mang tên quái đang nhắm; menu máy chủ trả cho yêu cầu từ Menu mang tiêu đề nơi gửi.
 
-    static int soNutDich, soOMenu, soCheThe;
+    static int soNutDich, soOMenu, soCheThe, soChamLai;
     static final java.util.TreeMap<String, String> BANG_DICH = new java.util.TreeMap<String, String>();
 
     /** Trạng thái sau một lần chạm. */
@@ -679,6 +679,8 @@ public class KiemChamHud {
                 game.render.screen.GameScr.indexTabSlot = 0;
                 game.pokemon.ThoiTiet.moThe = the;
                 game.pokemon.MenuNguCanh.boCho();
+                // khung giả không tăng NenPc.soKhung: ô nhập của bảng chat vẽ lần cuối sẽ giữ BanPhim.dangGo() mãi
+                datTinh(htbb.pc.BanPhim.class, "khungONhap", Long.valueOf(-100));
                 game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;   // chiêu không đang hồi / thiếu PP
                 mc.mp = mc.maxmp;
                 mc.state = 0;
@@ -686,7 +688,15 @@ public class KiemChamHud {
                     mc.timeLastUseSkills[i] = 0;
                     mc.coolDownSkill[i] = 0;
                 }
+                mc.x = 200;   // lần chạm trước (Bản đồ, nói NPC, đánh) có thể đã cho nhân vật đi
+                mc.y = 200;
+                mc.xTo = mc.x;
+                mc.yTo = mc.y;
+                mc.posTransRoad = null;
+                datTinh(game.pokemon.HanhDong.class, "choNoi", null);
                 if (quai != null) {
+                    quai.x = (short) (mc.x + 16);
+                    quai.y = mc.y;
                     quai.hp = 500;
                     quai.setRealHP(500);
                     quai.state = 0;
@@ -833,7 +843,10 @@ public class KiemChamHud {
         if (v == null) return false;
         cham(v[0] + v[2] / 2, v[1] + v[3] / 2);
         ChupTrongGame.chay(() -> game.pokemon.ThoiTiet.moThe = the);   // như ảnh: thẻ thời tiết vẫn đang mở
-        return cho(() -> game.render.Canvas.currentScreen instanceof game.pokemon.ManMenu);
+        boolean mo = cho(() -> game.render.Canvas.currentScreen instanceof game.pokemon.ManMenu);
+        ngu(350);   // hết hoạt cảnh mở Menu (vòng cung bung ra) rồi mới chạm ô
+        ve();
+        return mo;
     }
 
     /** Menu máy chủ (-30) tới như gói thật, rồi vài khung (MenuNguCanh.tiepQuan). */
@@ -871,6 +884,13 @@ public class KiemChamHud {
             cham(v[0] + v[2] / 2, v[1] + v[3] / 2);
             ngu(150);
             Kq k = doc();
+            if ("ManMenu".equals(k.man) && k.hop == null && k.lenhGui.isEmpty() && !k.tuDongBang && !k.caiDat) {
+                // máy kiểm nặng (hai JVM song song): nhịp game lỡ cú chạm 90 ms - chạm lại một lần, ghi lại số lần
+                soChamLai++;
+                cham(v[0] + v[2] / 2, v[1] + v[3] / 2);
+                ngu(250);
+                k = doc();
+            }
             soOMenu++;
             khongTenQuai(k, nhan);
             switch (ten[i]) {
@@ -944,7 +964,9 @@ public class KiemChamHud {
                 }
                 case "Sổ tay huấn luyện": {
                     kiem("MenuNguCanh".equals(k.hop) && "Sổ tay huấn luyện".equals(k.tieu)
-                            && java.util.Arrays.equals(k.lenh, game.render.screen.GameScr.SO_TAY_MUC), nhan + " -> the So tay (" + k + ")");
+                            && k.lenh != null && k.lenh.length == game.render.screen.GameScr.SO_TAY_MUC.length + 1
+                            && java.util.Arrays.equals(java.util.Arrays.copyOf(k.lenh, k.lenh.length - 1), game.render.screen.GameScr.SO_TAY_MUC)
+                            && game.render.screen.GameScr.SO_TAY_VE_LANG.equals(k.lenh[k.lenh.length - 1]), nhan + " -> the So tay (" + k + ")");
                     xoaGoi();
                     kiem(chamVung("lenh-0"), nhan + ": cham muc 0");
                     Kq k2 = doc();
@@ -1025,8 +1047,17 @@ public class KiemChamHud {
             npc.name = "Kecleon";
             if (!g.actors.contains(npc)) g.actors.addElement(npc);
             game.pokemon.MenuNguCanh.choTieuDe("Sự kiện");   // chờ cũ còn hạn: chạm NPC phải xoá
-            game.pokemon.HanhDong.chamThe(g, npc.x, npc.y - 4);
         });
+        final boolean[] trung = new boolean[1];
+        for (int lan = 0; lan < 3 && !trung[0]; lan++) {
+            ve();
+            ChupTrongGame.chay(() -> {
+                game.render.screen.GameScr g = game.render.Canvas.gameScr;
+                game.model.Actor a = game.pokemon.HanhDong.actorTai(npc.x, npc.y - 4);
+                trung[0] = a == npc && game.pokemon.HanhDong.chamThe(g, npc.x, npc.y - 4);
+            });
+        }
+        kiem(trung[0], co + " " + canh + ": cham trung NPC");
         ngu(600);
         ChupTrongGame.chay(() -> {
             // việc tại chỗ của NPC giả (menu chữ / hộp) không phải đích kiểm: đóng, giữ mục tiêu NPC
@@ -1189,7 +1220,7 @@ public class KiemChamHud {
         for (java.util.Map.Entry<String, String> e : BANG_DICH.entrySet()) pw.println(e.getKey() + " -> " + e.getValue());
         pw.close();
         System.out.println("KiemChamHud dich nut: " + soNutDich + " lan cham nut HUD, " + soOMenu + " lan cham o Menu, " + soCheThe
-                + " nut duoi the thoi tiet -> " + new java.io.File(ra, "dich_nut.txt"));
+                + " nut duoi the thoi tiet, " + soChamLai + " o cham lai -> " + new java.io.File(ra, "dich_nut.txt"));
         System.out.println("KiemChamHud: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);
     }

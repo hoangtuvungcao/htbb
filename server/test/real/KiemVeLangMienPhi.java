@@ -202,7 +202,13 @@ public final class KiemVeLangMienPhi {
         bang("huong dan tan thu bat dau tu 12", Integer.valueOf(12), Integer.valueOf(SoTayLauDai.SO_MUC_DONG));
         final String c = doc("../client_jar/src/game/render/screen/GameScr.java");
         if (!c.isEmpty()) {
-            dung("client 0.9.16 SO_TAY_MUC: 11 dong co dinh (khong chep muc dong)", !c.contains(VeLangMienPhi.TEN));
+            // client 0.9.17 them dong "Về làng miễn phí" (-527/0/11) SAU mang SO_TAY_MUC (hang SO_TAY_VE_LANG): mang 11 dong co
+            // dinh van khong chep muc dong
+            final int a = c.indexOf("SO_TAY_MUC = {");
+            final String mang = a < 0 ? "" : c.substring(a, c.indexOf("};", a));
+            dung("client SO_TAY_MUC: 11 dong co dinh (khong chep muc dong)", a >= 0 && !mang.contains(VeLangMienPhi.TEN));
+            dung("client 0.9.17: dong Ve lang mien phi gui chi so MUC_VE_LANG", !c.contains(VeLangMienPhi.TEN)
+                    || c.contains("MUC_VE_LANG = " + SoTayLauDai.MUC_VE_LANG + ";"));
         }
     }
 

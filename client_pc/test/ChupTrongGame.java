@@ -2165,6 +2165,12 @@ public class ChupTrongGame {
             }
             kiem(java.util.Arrays.asList(game.render.screen.GameScr.SO_TAY_MUC).equals(may), "So tay client " + java.util.Arrays.toString(
                     game.render.screen.GameScr.SO_TAY_MUC) + " != may chu " + may);
+            // 0.9.17: dòng "Về làng miễn phí" = chỉ số MUC_VE_LANG = SO_MUC_GOC của máy chủ, tên = VeLangMienPhi.TEN
+            String vl = new String(java.nio.file.Files.readAllBytes(new File("server/src/com/htbb/pokemon/VeLangMienPhi.java").toPath()), "UTF-8");
+            kiem(st.contains("MUC_VE_LANG = SO_MUC_GOC") && st.contains("SO_MUC_GOC = " + game.render.screen.GameScr.MUC_VE_LANG + ";")
+                    && game.render.screen.GameScr.MUC_VE_LANG == may.size(), "So tay: chi so Ve lang mien phi client " + game.render.screen.GameScr.MUC_VE_LANG
+                    + " khac may chu");
+            kiem(vl.contains("TEN = \"" + game.render.screen.GameScr.SO_TAY_VE_LANG + "\""), "So tay: ten Ve lang mien phi khac VeLangMienPhi.TEN");
             // 0.9.17: mọi hàng hoạt động của thẻ Menu › Sự kiện là mục gốc Sổ tay của máy chủ (cùng chỉ số -527/0/i)
             for (String x : game.render.screen.GameScr.SU_KIEN_MUC) {
                 kiem(may.contains(x) && game.render.screen.GameScr.mucSoTay(x) == may.indexOf(x), "Su kien: hang '" + x + "' khong khop muc goc So tay may chu " + may);
@@ -2187,7 +2193,7 @@ public class ChupTrongGame {
             kiem(r[0] != null && r[0][0] == -527 && r[0][1] == 0 && r[0][2] == 8, "Menu > Nhiem vu cua toi gui -527/0/8: "
                     + java.util.Arrays.toString(r[0]));
             // chạm: Sổ tay -> MenuNguCanh đủ mục, chọn mục i -> -527/0/i
-            for (int i = 0; i < Math.min(may.size(), game.render.screen.GameScr.SO_TAY_MUC.length); i++) {
+            for (int i = 0; i <= Math.min(may.size(), game.render.screen.GameScr.SO_TAY_MUC.length); i++) {   // + dòng Về làng (11)
                 final int muc = i;
                 chay(new Runnable() {
                     public void run() {

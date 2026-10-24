@@ -8418,6 +8418,13 @@ public class GameScr extends Screen {
     public static final String[] SO_TAY_MUC = {"Năng lượng và tinh thông", "Nhiệm vụ tuần", "Hầm ngục bí ẩn", "Thang PvP mùa",
         "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi",
         "Cửa hàng và đổi vật phẩm", "Cúp PvP tuần"};
+    /**
+     * 0.9.17: dòng 12 của Sổ tay máy chủ (main 618e75da, real.SoTayLauDai.MUC_VE_LANG = SO_MUC_GOC = 11): "Về làng miễn phí
+     * (còn N lượt)" - nhãn đổi theo lượt nên không nằm trong MUC_GOC; client không biết N nên hiện tên gốc
+     * (com.htbb.pokemon.VeLangMienPhi.TEN), máy chủ báo lượt còn lại khi chọn.
+     */
+    public static final String SO_TAY_VE_LANG = "Về làng miễn phí";
+    public static final int MUC_VE_LANG = 11;
 
     /** 0.9.16: Menu cá nhân › Sổ tay huấn luyện: danh sách mục gốc (MenuNguCanh khi chạm, menu chữ khi bấm phím). */
     public static void moSoTay() {
@@ -8437,6 +8444,11 @@ public class GameScr extends Screen {
                 }
             }));
         }
+        v.addElement(new Command(SO_TAY_VE_LANG, new IAction() {
+            public void perform() {
+                GameService.gI().doMenuOption(-527, (byte) 0, MUC_VE_LANG);
+            }
+        }));
         if (game.pokemon.MenuNguCanh.bat()) {
             game.pokemon.MenuNguCanh.mo(v, "Sổ tay huấn luyện");
         } else {
