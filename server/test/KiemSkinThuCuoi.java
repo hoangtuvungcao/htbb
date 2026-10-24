@@ -310,7 +310,8 @@ public final class KiemSkinThuCuoi {
         Kiem.sai("MapDoMenu KHONG con goi thaoSkin tu NPC (nhanh go skin da bi bo)",
                 menu.contains("SkinThuCuoi.thaoSkin(player)"));
         Kiem.dung("NPC -90 van mo bang diem doi thuong",
-                menu.contains("idNpc == -90 && idMenu == 0") && menu.contains("showMenuDiemDoiThuong(player)"));
+                menu.contains("idNpc == -90 && idMenu == 0") && menu.contains("MenuDoiThuong.chon(player, idOptionMenu, map)")
+                        && doc("src/real/MenuDoiThuong.java").contains("map.showMenuDiemDoiThuong(p)"));
 
         final String xuong = doc("src/real/doXuongThuCuoi.java");
         Kiem.dung("xuong thu thi go skin", xuong.contains("SkinThuCuoi.thaoSkin(player)"));

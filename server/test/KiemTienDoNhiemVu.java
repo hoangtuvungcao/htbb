@@ -270,10 +270,11 @@ final class KiemTienDoNhiemVu {
         Kiem.dung("RoiLauDai: ha quai -> nhac cua ai", doc("src/real/RoiLauDai.java").contains("MucTieuNhiemVuGame.khiHaQuai(p, mt);"));
         Kiem.dung("NhiemVuEngine.luu: cua ai doi -> gui lai so", doc("src/real/NhiemVuEngine.java").contains("MucTieuNhiemVuGame.khiDoiCuaAi(p, m);"));
         Kiem.dung("KhoaBanDoGame.hoiNhac: hop 95 (Đồng ý = khiDongYCuaAi)", doc("src/real/KhoaBanDoGame.java").contains("static void hoiNhac("));
-        final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
-        Kiem.dung("-90: muc 'Nhiệm vụ của tôi' thang", npc.contains("real.SoTayLauDai.TEN_NHIEM_VU") && npc.contains("real.SoTayLauDai.viTriNhiemVu()"));
-        Kiem.dung("MapDoMenu: -90 muc Nhiệm vụ của tôi -> NhiemVuEngine.moMenu",
-                doc("src/real/MapDoMenu.java").contains("idOptionMenu == SoTayLauDai.viTriNhiemVu()) {\n                NhiemVuEngine.moMenu(player);"));
+        final String npc = doc("src/real/MenuDoiThuong.java");
+        Kiem.dung("-90: muc 'Nhiệm vụ của tôi' thang", npc.contains("SoTayLauDai.TEN_NHIEM_VU")
+                && doc("src/real/cmd/RequestNPCInfoHandler.java").contains("real.MenuDoiThuong.mo(p);"));
+        Kiem.dung("MenuDoiThuong: -90 muc Nhiệm vụ của tôi -> NhiemVuEngine.moMenu",
+                npc.contains("K_NHIEM_VU.equals(k) && LauDai.bat()) {\n            NhiemVuEngine.moMenu(p);"));
         final com.htbb.pokemon.NhiemVuMau m = new com.htbb.pokemon.NhiemVuMau();
         m.kieu = "thu_thap";
         m.mucTieuId = "10";

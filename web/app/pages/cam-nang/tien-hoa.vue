@@ -42,7 +42,7 @@ const mocCoDa = POKEDEX.mocPokedex.filter(m => m.thuong.some(t => /đá/i.test(t
       </ul>
     </WikiSection>
 
-    <WikiSection id="eevee" title="Eevee & đá tiến hoá" :lead="`Eevee không tự tiến hoá. Từ cấp ${POKEDEX.capNhanhEevee}, mở Pokédex (Menu → Pokédex, hoặc NPC Đổi thưởng → Pokédex) và dùng 1 viên đá để chọn 1 trong ${daEevee.length} nhánh — lựa chọn là vĩnh viễn, đá bị trừ khi tiến hoá thành công.`">
+    <WikiSection id="eevee" title="Eevee & đá tiến hoá" :lead="`Eevee không tự tiến hoá. Từ cấp ${POKEDEX.capNhanhEevee}, mở Pokédex (Menu → Pokédex, hoặc Quầy đổi thưởng → Pokédex) và dùng 1 viên đá để chọn 1 trong ${daEevee.length} nhánh — lựa chọn là vĩnh viễn, đá bị trừ khi tiến hoá thành công.`">
       <ul class="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <li v-for="d in daEevee" :key="d.idItem">
           <NuxtLink :to="`/pokedex/${d.dex}`" class="group block overflow-hidden rounded-2xl glass text-center transition hover:-translate-y-0.5">

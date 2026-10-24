@@ -14,7 +14,7 @@ import data.DatabaseLauDai;
 import java.util.List;
 
 /**
- * "So tay huan luyen": muc noi vao CUOI menu NPC doi thuong (-90) khi bat co sv.lau_dai - cua
+ * "So tay huan luyen": muc trong menu NPC doi thuong (-90, real.MenuDoiThuong) khi bat co sv.lau_dai - cua
  * vao cac he thong dai han khong can doi client (chi dung menu + thong bao co san):
  *   0 Nang luong & tinh thong (chon cong tan cong / HP)
  *   1 Nhiem vu tuan (2 / tuan)
@@ -30,7 +30,7 @@ import java.util.List;
 public final class SoTayLauDai {
 
     public static final int NPC_ID = -527;
-    public static final String TEN_MUC = "Sổ tay huấn luyện";
+    public static final String TEN_MUC = com.htbb.pokemon.DuongMenu.SO_TAY;
 
     static final int MENU_GOC = 0;
     static final int MENU_TINH_THONG = 1;
@@ -44,25 +44,23 @@ public final class SoTayLauDai {
     private SoTayLauDai() {
     }
 
-    /** Vi tri muc trong menu NPC -90: sau "Xem doi thuong" (0) va "Pokédex" (1, neu co). */
-    public static int viTri() {
-        return 2;
-    }
+    public static final String TEN_NHIEM_VU = com.htbb.pokemon.DuongMenu.NHIEM_VU;
 
-    public static final String TEN_NHIEM_VU = "Nhiệm vụ của tôi";
-
-    /** sua-tien-do-nv: vi tri muc "Nhiệm vụ của tôi" o menu -90 - sau So tay (2) va He sinh thai (3, neu bat). */
-    public static int viTriNhiemVu() {
-        return viTri() + 1 + (com.htbb.pokemon.HeSinhThai.bat() ? 1 : 0);
-    }
+    /**
+     * Muc menu goc (chi so = idOption). THU TU CO DINH: client 0.9.15 (nut "Mở Nhiệm vụ của tôi", GameScr.moNhiemVuCuaToi)
+     * gui thang -527 / 0 / 8 khong mo menu truoc, bot kiem_tai cung chon theo chi so - doi thu tu la mo nham muc. Muc hay
+     * dung nhat da co duong tat o menu Quầy đổi thưởng (real.MenuDoiThuong: Thách đấu Gym …, Nhiệm vụ của tôi dau danh sach).
+     */
+    public static final String[] MUC_GOC = {"Năng lượng và tinh thông", "Nhiệm vụ tuần", "Hầm ngục bí ẩn", "Thang PvP mùa",
+        "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", com.htbb.pokemon.DuongMenu.GYM,
+        com.htbb.pokemon.DuongMenu.NHIEM_VU, "Cửa hàng và đổi vật phẩm", "Cúp PvP tuần"};
 
     public static void moMenu(final Char p) {
         if (!LauDai.bat() || p == null) {
             return;
         }
         // huong dan tan thu: muc Bo qua / Huong dan tan thu noi vao CUOI (chi so >= SO_MUC_GOC, chu tu CSDL)
-        p.sendMessage(MessageCreator.createMsgMenu(HuongDanTanThuGame.themMucSoTay(p, new String[]{"Năng lượng và tinh thông", "Nhiệm vụ tuần",
-            "Hầm ngục bí ẩn", "Thang PvP mùa", "Sư phạm (nhận trò)", "Lịch đăng nhập, vé chương", "Quà hoạt động hôm nay", "Thách đấu Gym", "Nhiệm vụ của tôi", "Cửa hàng và đổi vật phẩm", "Cúp PvP tuần"}), NPC_ID, MENU_GOC));
+        p.sendMessage(MessageCreator.createMsgMenu(HuongDanTanThuGame.themMucSoTay(p, MUC_GOC.clone()), NPC_ID, MENU_GOC));
     }
 
     static void bao(final Char p, final String s) {
@@ -128,7 +126,7 @@ public final class SoTayLauDai {
             } else if (idMenu == MENU_TUAN) {
                 chonTuan(p, idOption);
             } else if (idMenu == MENU_GYM) {
-                bao(p, GymLauDai.thachDau(p, idOption));
+                bao(p, GymLauDai.chon(p, idOption)); // cung GymLauDai.thachDauStt voi duong tat (MenuDoiThuong / hop 95)
             } else if (idMenu >= NhiemVuEngine.MENU_DAU && idMenu <= NhiemVuEngine.MENU_CUOI) {
                 NhiemVuEngine.doMenu(p, idMenu, idOption);
             } else if (idMenu == CuaHangLauDai.MENU_NHOM || idMenu == CuaHangLauDai.MENU_DONG) {

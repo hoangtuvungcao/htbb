@@ -872,7 +872,7 @@ public final class KiemLauDaiGd2 {
         dn = CuonHut.dangNhap(6, 20261001, 20261017);
         Kiem.bang("ngay 7: 15, nghi khong mat chuoi", Integer.valueOf(15), Integer.valueOf(dn[1]));
         Kiem.bang("sau ngay 7 lap lai", Integer.valueOf(0), Integer.valueOf(dn[0]));
-        Kiem.dung("NPC -90 co muc So tay huan luyen", doc("src/real/cmd/RequestNPCInfoHandler.java").contains("SoTayLauDai.TEN_MUC"));
+        Kiem.dung("NPC -90 co muc So tay huan luyen", doc("src/real/MenuDoiThuong.java").contains("SoTayLauDai.TEN_MUC"));
     }
 
     // ------------------------------------------------------------------ yeu cau 17/10/2026

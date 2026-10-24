@@ -16,7 +16,7 @@ const soMuaNam = Math.round(52 / P.tuanMoiMua)
 
 <template>
   <WikiShell slug="pvp">
-    <WikiSection id="mua" title="Thang PvP mùa" :lead="`Mỗi mùa dài ${P.tuanMoiMua} tuần (${soMuaNam} mùa mỗi năm), tính từ ngày khai trương máy chủ. Xem điểm và bậc của bạn trong Sổ tay huấn luyện → Thang PvP mùa.`">
+    <WikiSection id="mua" title="Thang PvP mùa" :lead="`Mỗi mùa dài ${P.tuanMoiMua} tuần (${soMuaNam} mùa mỗi năm), tính từ ngày khai trương máy chủ. Xem điểm và bậc của bạn ở Quầy đổi thưởng → Sổ tay huấn luyện → Thang PvP mùa.`">
       <ol class="flex flex-wrap items-center gap-2">
         <li v-for="(b, i) in P.bac" :key="b.ten" class="flex items-center gap-2">
           <UIcon v-if="i > 0" name="i-lucide-chevron-right" class="size-4 text-dimmed" aria-hidden="true" />

@@ -78,7 +78,7 @@ const SP = CAM_NANG_ND.soTay.suPham
         </table>
       </div>
       <p class="van mt-4">
-        Nhận trò trong <NuxtLink to="/cam-nang/so-tay#su-pham" class="lien-ket">Sổ tay huấn luyện</NuxtLink> → Sư phạm (nhận trò). Khi trò đạt cấp {{ SP.moc.join(' và ') }}, cả hai cùng nhận thưởng.
+        Nhận trò ở Quầy đổi thưởng → <NuxtLink to="/cam-nang/so-tay#su-pham" class="lien-ket">Sổ tay huấn luyện</NuxtLink> → Sư phạm (nhận trò). Khi trò đạt cấp {{ SP.moc.join(' và ') }}, cả hai cùng nhận thưởng.
       </p>
     </WikiSection>
   </WikiShell>

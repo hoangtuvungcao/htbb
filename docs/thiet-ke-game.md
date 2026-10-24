@@ -55,7 +55,7 @@ Mục lục:
 | Chữ, thuật ngữ | `ChuPokemon`, `TenMapPokemon` | (lúc chạy + sinh dữ liệu) | `bang_chu.csv` |
 
 Lớp thuần nằm ở `server/src/com/htbb/pokemon/`, lớp nối vào game ở `server/src/real/`. Cửa vào chung cho người chơi là
-**Sổ tay huấn luyện** (NPC đổi thưởng → mục Sổ tay, `real.SoTayLauDai`): nhiệm vụ, Gym, Hầm ngục, cửa hàng, năng lượng,
+**Sổ tay huấn luyện** (Quầy đổi thưởng → Sổ tay huấn luyện, `real.SoTayLauDai`): nhiệm vụ, Gym, Hầm ngục, cửa hàng, năng lượng,
 tinh thông, thang PvP. Hệ sinh thái có menu riêng (gõ `hst`).
 
 #### NPC và vai trò
@@ -435,7 +435,7 @@ tính). `NangLuong` + `ThongSoLauDai.NANG_LUONG_PHUT_NGAY` / `BAC_MET`:
 - Người chơi nhẹ (60–90 phút đánh quái / ngày) gần như không chạm ngưỡng. Treo máy 20 giờ cũng chỉ ≈ người cày 6 giờ.
 - Đổi ngày lúc 00:00 giờ máy chủ. Ghi đè được bằng khoá `exp.nang_luong_phut` / `exp.nang_luong_tich_phut` (bảng
   `cau_hinh`); thiếu dòng thì dùng 90 / 180 của code.
-- Trạng thái hiện ở Sổ tay huấn luyện → Năng lượng.
+- Trạng thái hiện ở Quầy đổi thưởng → Sổ tay huấn luyện → Năng lượng và tinh thông.
 
 ### 3.4 Vật phẩm tăng tốc
 
@@ -761,7 +761,7 @@ client cũ nhận hộp 37). Lưu lỗi thì trả lại thẻ.
 | Không cộng dồn | một dòng mỗi pet, đặt lại = quay lại (thay dòng cũ, là hố hút); chỉ pet **đang đi theo** được tính |
 | Khoá | thẻ vào túi luôn khoá; pet đã đặt tên không giao dịch được (`Pet.canTrade`) |
 | Giá | Cửa hàng lượng (Tiện ích) `dat_ten_pet.gia_luong` = 100 lượng, tối đa `dat_ten_pet.mua_tuan_toi_da` = 3 / tuần |
-| Bản kiếm được (cùng vật phẩm, cùng ngân sách) | Sổ tay → Cửa hàng & đổi: 8 Tem nghiên cứu hoặc 40 lượng khoá (Kecleon), mỗi dòng 1 lần / tuần |
+| Bản kiếm được (cùng vật phẩm, cùng ngân sách) | Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm: 8 Tem nghiên cứu hoặc 40 lượng khoá (Kecleon), mỗi dòng 1 lần / tuần |
 
 **Kinh tế** (mô phỏng 20.000 người, 3 nhóm 85 / 12 / 3%, 156 tuần, người chơi dừng quay khi đạt ý muốn): không nạp đạt
 trung bình +2,2% một chỉ số sau 26 tuần chỉ bằng bản kiếm được; cá voi săn đúng +3% chỉ số ưa thích đạt +2,6% ở tuần 52,
@@ -813,9 +813,16 @@ dịch), `che_tao` (Bụi sao / Mảnh sao / Mảnh thiên thạch / Vảy rồn
 
 ### 5.1 Gym (16 trưởng Gym)
 
-`real.GymLauDai`, dữ liệu [noi_dung_gym.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_gym.csv). Vào từ Sổ tay huấn luyện → "Thách đấu Gym":
-triệu hồi boss tại chỗ, **1 đấu 1** (chỉ người thách đấu gây được sát thương), nộ sau 5 phút, quá 10 phút chưa hạ thì thua.
-Bật / tắt: `gym.bat`.
+`real.GymLauDai`, dữ liệu [noi_dung_gym.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_gym.csv). Vào từ Quầy đổi thưởng → Sổ tay huấn luyện → "Thách đấu Gym" → "Gym Pewter (Golem) - cấp 12"…:
+triệu hồi boss tại chỗ (ngay cạnh người chơi, bản đồ đang đứng, không dịch chuyển), **1 đấu 1** (chỉ người thách đấu gây
+được sát thương), Tự động đánh dừng khi gặp boss, nộ sau 5 phút, quá 10 phút chưa hạ thì thua. Bật / tắt: `gym.bat`.
+
+Đường tắt (nhánh sua-duong-gym): đang làm bước `ha_gym` (cửa ải) thì menu Quầy đổi thưởng (`real.MenuDoiThuong`) có mục
+đầu "Thách đấu Gym Pewter (Golem)"; chọn bước đó ở "Nhiệm vụ của tôi → Đang làm", vừa nhận bước, hoặc bấm Huỷ ở thẻ cửa ải
+trong sổ Nhiệm vụ (client 0.9.14) đều hiện hộp 95 "Thách đấu Trưởng Gym … ngay?" — Đồng ý gọi đúng `GymLauDai.thachDauStt`
+như Sổ tay (cùng kiểm cấp, công tắc, đang đánh, giới hạn tuần). Menu Quầy đổi thưởng xếp: [Thách đấu Gym …], Nhiệm vụ
+của tôi, Sổ tay huấn luyện, Điểm – Xem đổi thưởng, Pokédex, Hệ sinh thái. Mọi chữ chỉ đường menu ghép từ
+`com.htbb.pokemon.DuongMenu`; `test/KiemDuongMenu` dò mọi chuỗi "A → B" trong CSDL / mã nguồn / web theo cây menu thật.
 
 | Gym | Huy hiệu | Trưởng Gym | Cấp | Gym | Huy hiệu | Trưởng Gym | Cấp |
 |---|---|---|---|---|---|---|---|
@@ -898,7 +905,7 @@ Chữ người chơi thấy không nói "hạt giống" — dùng "đổi lối"
 
 #### Phó bản Hầm ngục (0.9.7, tổ đội 5 tầng)
 
-Mở rộng Hầm ngục bí ẩn (Sổ tay → Hầm ngục bí ẩn → "Phó bản tổ đội (5 tầng)"; `com.htbb.pokemon.PhoBanLogic` thuần +
+Mở rộng Hầm ngục bí ẩn (Quầy đổi thưởng → Sổ tay huấn luyện → Hầm ngục bí ẩn → "Phó bản tổ đội (5 tầng)"; `com.htbb.pokemon.PhoBanLogic` thuần +
 `real.PhoBanGame`; dữ liệu `data_pho_ban_ngay`, `data_pho_ban_tang`, bảng rơi `data_noi_dung_roi` nguồn `pho_ban`):
 
 - **Phòng riêng**: mỗi tổ đội (1–4 người, cấp ≥ 20 — `pho_ban.cap_toi_thieu`, chênh cấp ≤ 10, đứng cùng bản đồ với đội
@@ -1010,7 +1017,7 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
   ~1 giờ. Nhiệm vụ không bao giờ thưởng lượng (trừ thành tựu lớn).
 - Engine: chuỗi chính / hướng dẫn chạy trên `data_quest` cũ (bản `data_quest_moi`, `ORDER BY id`); phần còn lại chạy trên
   `real.NhiemVuEngine` + `NhiemVuMau` (3 khe phụ cùng lúc, nhánh lựa chọn, câu đố kiểm trong chat, khoá `truoc` / ẩn, vật
-  phẩm nhiệm vụ 10–50). Mở từ Sổ tay → "Nhiệm vụ của tôi". Danh sách gửi client được lọc theo cấp (≤ 127 mục).
+  phẩm nhiệm vụ 10–50). Mở từ Quầy đổi thưởng → "Nhiệm vụ của tôi". Danh sách gửi client được lọc theo cấp (≤ 127 mục).
 
 ### 6.2 Sự kiện: lịch năm theo ngày thật + tuần Pokémon
 
@@ -1119,7 +1126,7 @@ sao theo khu theo luật bản gốc. Mở khi đủ cấp và xong cửa ải, 
 (`tob_ban_do_mo`: lần đăng nhập đầu sau bản này = max(cấp, cấp bản đồ đang lưu); bản đồ đang lưu bị khoá thì nâng mốc —
 không bao giờ dịch chuyển người chơi). Admin không bị chặn. Công tắc `ban_do.khoa.bat`.
 
-| Chặng | Bản đồ | Cấp | Cửa ải (Sổ tay → Thử thách cửa ải) |
+| Chặng | Bản đồ | Cấp | Cửa ải (Quầy đổi thưởng → Nhiệm vụ của tôi → Thử thách cửa ải) |
 |---|---|---|---|
 | 0 | thị trấn, Pallet 1, Viridian 2 | – | – |
 | 1–2 | Cerulean 4, Vermilion 3 / Lavender 5 | 3–4 / 8 | CA-01 / CA-02: hạ 20–25 quái ở bản đồ trước |
@@ -1599,7 +1606,7 @@ bản đồ / sự kiện đó nếu đỏ.
   (luôn khoá) và vật phẩm khoá (≤ 10 mỗi loại). Giá trị một mã (lượng khoá + số đá + 5 × số vật phẩm) ≤
   `giftcode.gia_tri_toi_da` (30); tổng giá trị phát / tháng toàn máy chủ ≤ `giftcode.ngan_sach_thang` (20.000); mỗi tài khoản 1
   lần / mã, mỗi Pokémon ≤ `giftcode.toi_da_thang` (2) mã / tháng; nhập sai 5 lần khoá 10 phút. Server kiểm lại khi phát.
-- **Cửa hàng** (Sổ tay → Cửa hàng, `real.CuaHangLauDai`): luật "không vật phẩm mồ côi" — mọi dòng **chỉ ra vật phẩm, không bao
+- **Cửa hàng** (Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm, `real.CuaHangLauDai`): luật "không vật phẩm mồ côi" — mọi dòng **chỉ ra vật phẩm, không bao
   giờ ra xu / lượng / lượng khoá**. Trang bị bằng xu (Bronzong, 1,5 giờ), thuốc bằng xu (Chansey), bùa / thuốc hiếm bằng lượng
   khoá có giới hạn tuần (Kecleon), trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện
   lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật).

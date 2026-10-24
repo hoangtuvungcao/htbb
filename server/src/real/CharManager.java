@@ -331,6 +331,7 @@ public class CharManager {
             }
             try {
                 NhiemVuEngine.khiThoat(p); // dong bo 0.9.8: bo dem tien do nhiem vu (nap lai tu CSDL lan vao sau)
+                MenuDoiThuong.khiThoat(p); // sua-duong-gym: bo thu tu menu Quầy đổi thưởng / Thách đấu Gym da gui
                 MucTieuNhiemVuGame.khiThoat(p); // sua-tien-do-nv: nhac cua ai mot lan / phien
                 BoNgocGame.khiThoat(p);    // bo dem chi so bo / ngoc (tinh lai khi vao)
             } catch (Exception exNv) {

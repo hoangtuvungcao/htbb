@@ -299,7 +299,7 @@ public final class NhiemVuLauDaiGame {
             DatabaseLauDai.luuNhiemVu(p.charDBID, (String) d[0], ((Integer) d[1]).intValue(), ((Integer) d[2]).intValue(),
                     ((Integer) d[3]).intValue());
             if (((Integer) d[2]).intValue() == 1) {
-                LauDaiNhanVat.bao(p, "Đã hoàn thành nhiệm vụ tuần, mở Sổ tay huấn luyện để nhận thưởng.");
+                LauDaiNhanVat.bao(p, "Đã hoàn thành nhiệm vụ tuần. Nhận thưởng: " + com.htbb.pokemon.DuongMenu.duong(com.htbb.pokemon.DuongMenu.QUAY, com.htbb.pokemon.DuongMenu.SO_TAY, "Nhiệm vụ tuần") + ".");
             }
         }
     }

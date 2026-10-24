@@ -474,7 +474,7 @@ class KichBanHuongDan {
             b.lamMoi();
             ket("hq.lan_hai_tu_choi", b.xu - xu0 == 1450 && BotChucNang.khongDau(chuSau(b, m3)).contains("da xong huong dan"), chuSau(b, m3));
             int m4 = b.moc();
-            b.menu(-90, 0, 2); // NPC Doi thuong -> So tay huan luyen
+            KichBanDS4.chonQuay(b, "Sổ tay huấn luyện"); // Quay doi thuong -> So tay huan luyen
             b.doiMenu(m4, NPC_SO_TAY, 0, 3000);
             ket("hq.so_tay_het_muc_bo_qua", b.timMuc("Bỏ qua") < 0 && b.timMuc("Hướng dẫn tân thủ") >= 0, String.join(" ; ", b.menuChu));
         }
@@ -486,7 +486,7 @@ class KichBanHuongDan {
         try (BotChucNang.Bot b = botMoiTinh("hs")) {
             roiSan(b);
             int m = b.moc();
-            b.menu(-90, 0, 2);
+            KichBanDS4.chonQuay(b, "Sổ tay huấn luyện");
             int n = b.doiMenu(m, NPC_SO_TAY, 0, 3000);
             int iBo = b.timMuc("Bỏ qua hướng dẫn"), iHd = b.timMuc("công dụng các NPC");
             ket("hs.muc_so_tay", n >= 12 && iBo >= 10 && iHd >= 10, String.join(" ; ", b.menuChu));

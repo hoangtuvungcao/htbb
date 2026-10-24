@@ -166,6 +166,8 @@ public final class KhoaBanDoGame {
         final String phu;
         final String hop;
         final long luc;
+        /** > 0: hop "Thách đấu Gym ngay?" (Đồng ý = GymLauDai.thachDauStt(gym)), khong phai hop cua ai. */
+        int gym;
 
         Hoi(final int goc, final String maCuoi, final String chinh, final String phu, final String hop, final long luc) {
             this.goc = goc;
@@ -260,6 +262,17 @@ public final class KhoaBanDoGame {
         p.sendMessage(MessageCreator.createMsgPopUp(p.id, POPUP_CUA_AI, hop));
     }
 
+    /**
+     * sua-duong-gym: hop 95 "Thách đấu Trưởng Gym … ngay?" (muc tat Quầy đổi thưởng, chon buoc ha Gym o "Đang làm", nhan
+     * buoc, Huỷ o so Nhiem vu). Đồng ý -> {@link #khiTraLoi} -> GymLauDai.thachDauStt (cung cua voi So tay -> Thách đấu Gym).
+     */
+    static void hoiGym(final Char p, final int stt, final String hop) {
+        final Hoi h = new Hoi(-1, "", hop, "", hop, bayGio());
+        h.gym = stt;
+        DANG_HOI.put(Integer.valueOf(p.charDBID), h);
+        p.sendMessage(MessageCreator.createMsgPopUp(p.id, POPUP_CUA_AI, hop));
+    }
+
     /** Goi 12 toMapID -500 (client nap map xong, MapXuLyLenh / MapLienDau): gui hop cua ai dang cho. */
     public static void sauKhiVaoMap(final Char p) {
         if (p == null) {
@@ -283,6 +296,10 @@ public final class KhoaBanDoGame {
         }
         final Hoi h = DANG_HOI.remove(Integer.valueOf(p.charDBID));
         if (h == null || !dongY) {
+            return;
+        }
+        if (h.gym > 0) {
+            SoTayLauDai.bao(p, GymLauDai.thachDauStt(p, h.gym));
             return;
         }
         synchronized (p.khoaNhiemVu()) {

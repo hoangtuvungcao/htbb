@@ -943,41 +943,12 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -90: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    // "Go skin linh thu" bi bo khoi menu nay theo yeu cau nguoi choi (giu
-                    // lai hai duong go khac: lenh chat "boskin" va goi packet 29 chung cho
-                    // moi trang bi thu — xem SkinThuCuoi.thaoSkin / Map.thaoTrangBiThu).
-                    menu = new String[]{
-                            "Điểm hiện tại: " + p.diemDoiThuong + " điểm - Xem đổi thưởng"
-                    };
-                    // Pokemon (G7.D3): noi muc "Pokédex" vao CUOI menu, dung vi tri ma
-                    // MapDoMenu cho (PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG). Menu doi so muc
-                    // thi phai doi hang so do - khong khop thi khong hien, tranh chon nham muc.
-                    if (menu.length == real.PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG) {
-                        final String[] menuPokedex = java.util.Arrays.copyOf(menu, menu.length + 1);
-                        menuPokedex[menu.length] = real.PokedexPokemon.TEN_MUC;
-                        menu = menuPokedex;
-                    }
-                    // GD2: "So tay huan luyen" (thiet ke dai han) noi vao cuoi, dung vi tri MapDoMenu cho.
-                    if (com.htbb.pokemon.LauDai.bat() && menu.length == real.SoTayLauDai.viTri()) {
-                        final String[] menuSoTay = java.util.Arrays.copyOf(menu, menu.length + 1);
-                        menuSoTay[menu.length] = real.SoTayLauDai.TEN_MUC;
-                        menu = menuSoTay;
-                    }
-                    // he sinh thai: muc "He sinh thai" noi vao cuoi, dung vi tri MapDoMenu cho.
-                    if (com.htbb.pokemon.HeSinhThai.bat() && menu.length == com.htbb.pokemon.HeSinhThaiMenu.viTri()) {
-                        final String[] menuHst = java.util.Arrays.copyOf(menu, menu.length + 1);
-                        menuHst[menu.length] = com.htbb.pokemon.HeSinhThaiGame.TEN_MUC;
-                        menu = menuHst;
-                    }
-                    // sua-tien-do-nv: "Nhiệm vụ của tôi" thang o quay doi thuong (truoc chi o So tay -> muc 9, nguoi choi
-                    // khong tim thay); dung vi tri MapDoMenu cho.
-                    if (com.htbb.pokemon.LauDai.bat() && menu.length == real.SoTayLauDai.viTriNhiemVu()) {
-                        final String[] menuNv = java.util.Arrays.copyOf(menu, menu.length + 1);
-                        menuNv[menu.length] = real.SoTayLauDai.TEN_NHIEM_VU;
-                        menu = menuNv;
-                    }
-                    msg = MessageCreator.createMsgMenu(menu, npcType, 0);
-                    session.sendMessage(msg);
+                    // "Go skin linh thu" bi bo khoi menu nay theo yeu cau nguoi choi (giu lai hai duong go khac: lenh chat
+                    // "boskin" va goi packet 29 chung cho moi trang bi thu - SkinThuCuoi.thaoSkin / Map.thaoTrangBiThu).
+                    // sua-duong-gym: menu "Quầy đổi thưởng" xep theo muc dung (Thách đấu Gym … khi dang lam buoc ha Gym,
+                    // Nhiệm vụ của tôi, Sổ tay huấn luyện (SoTayLauDai.TEN_MUC), Xem đổi thưởng, Pokédex, Hệ sinh thái
+                    // (HeSinhThaiGame.TEN_MUC)) - real.MenuDoiThuong; chon theo khoa danh sach da gui.
+                    real.MenuDoiThuong.mo(p);
                 }
                 return;
             }

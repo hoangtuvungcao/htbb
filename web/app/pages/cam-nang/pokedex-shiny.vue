@@ -23,12 +23,12 @@ const suKienShiny = CAM_NANG.suKien.filter(s => /shiny/i.test(`${s.ten1} ${s.coC
         </div>
       </div>
       <p class="van mt-4">
-        Mở Pokédex trong game ở Menu → Pokédex (hoặc NPC Đổi thưởng → Pokédex). Số loài <strong>đã hạ</strong> quyết định mốc thưởng.
+        Mở Pokédex trong game ở Menu → Pokédex (hoặc Quầy đổi thưởng → Pokédex). Số loài <strong>đã hạ</strong> quyết định mốc thưởng.
         Website có <NuxtLink to="/pokedex" class="lien-ket">Pokédex đầy đủ</NuxtLink> để tra hệ, nơi xuất hiện và tiến hoá.
       </p>
     </WikiSection>
 
-    <WikiSection id="moc" title="Mốc thưởng" lead="Nhận trong mục Pokédex (NPC Đổi thưởng) khi đủ số loài đã hạ (cần một ô trống trong hành trang nếu mốc có vật phẩm).">
+    <WikiSection id="moc" title="Mốc thưởng" lead="Nhận trong mục Pokédex (Menu, hoặc Quầy đổi thưởng → Pokédex) khi đủ số loài đã hạ (cần một ô trống trong hành trang nếu mốc có vật phẩm).">
       <ol class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <li v-for="m in POKEDEX.mocPokedex" :key="m.moc" class="rounded-3xl glass ring-gilded p-5">
           <p class="font-display text-4xl font-black text-gilded">

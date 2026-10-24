@@ -20,6 +20,7 @@ const LIEN_KET: Record<string, string> = {
   'Sư phạm (nhận trò)': '/cam-nang/doi-su-pham#su-pham',
   'Thách đấu Gym': '/cam-nang/gym',
   'Cửa hàng và đổi vật phẩm': '/cam-nang/cua-hang',
+  'Cúp PvP tuần': '/cup',
 }
 const mocQua = Q.phut.map((phut, i) => {
   const thuong: string[] = []
@@ -36,8 +37,8 @@ const tongLichDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
   <WikiShell slug="so-tay">
     <WikiSection id="mo" title="Mở sổ tay" lead="Sổ tay huấn luyện gom mọi việc dài hạn vào một menu: năng lượng, nhiệm vụ tuần, Gym, Hầm ngục, PvP mùa, quà hằng ngày.">
       <ol class="cham">
-        <li>Đến NPC <strong>Đổi thưởng</strong> trong làng và mở menu của NPC.</li>
-        <li>Chọn mục <strong>Sổ tay huấn luyện</strong> ở cuối danh sách (sau "Xem đổi thưởng" và "Pokédex").</li>
+        <li>Đến <strong>Quầy đổi thưởng</strong> trong làng và mở menu.</li>
+        <li>Chọn mục <strong>Sổ tay huấn luyện</strong> (ngay sau "Nhiệm vụ của tôi", trang đầu menu). Đang làm bước cửa ải hạ Gym thì mục đầu là «Thách đấu Gym …» — chọn thẳng.</li>
         <li>Chọn một trong {{ ST.muc.length }} mục bên dưới.</li>
       </ol>
       <ul class="mt-5 grid gap-2 sm:grid-cols-2">

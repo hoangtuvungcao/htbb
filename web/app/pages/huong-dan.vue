@@ -304,7 +304,7 @@ const tienHoaDau = (() => {
             </ol>
             <WikiCallout kieu="luu-y" title="Đã quen chơi?">
               Lúc vào làng lần đầu, chọn <strong>Bỏ qua hướng dẫn (đã quen chơi)</strong>: bạn vẫn nhận đủ thưởng của các bước còn lại
-              và gặp Trưởng làng Xatu để vào cốt truyện. Không làm lại được. Công dụng từng NPC trong làng xem ở Sổ tay → Hướng dẫn tân thủ.
+              và gặp Trưởng làng Xatu để vào cốt truyện. Không làm lại được. Công dụng từng NPC trong làng xem ở Quầy đổi thưởng → Sổ tay huấn luyện → Hướng dẫn tân thủ: công dụng các NPC.
             </WikiCallout>
             <WikiCallout kieu="meo" title="Mẹo cho người mới">
               <ul class="cham !gap-1.5">

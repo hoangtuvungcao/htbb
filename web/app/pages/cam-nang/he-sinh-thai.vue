@@ -213,7 +213,7 @@ const gioKhung = (g: number) => `${String(g).padStart(2, '0')}:00–${String(g +
     <WikiSection id="lenh" title="Lệnh nhanh">
       <ul class="grid gap-2 sm:grid-cols-2">
         <li class="rounded-2xl glass px-4 py-3">
-          <code class="font-bold text-highlighted">hst</code> — mở menu Hệ sinh thái (hoặc chọn "Hệ sinh thái" ở NPC Đổi thưởng)
+          <code class="font-bold text-highlighted">hst</code> — mở menu Hệ sinh thái (hoặc chọn "Hệ sinh thái" ở Quầy đổi thưởng)
         </li>
         <li class="rounded-2xl glass px-4 py-3">
           <code class="font-bold text-highlighted">cauca</code> — câu cá khi đứng cạnh hồ

@@ -386,8 +386,16 @@ public final class MucTieuNhiemVuGame {
                 d.muc = Character.toUpperCase(d.muc.charAt(0)) + d.muc.substring(1);
             }
         }
-        d.moTa = (d.nhom == 1 ? "Xong! Nhận thưởng ở: " : "Mục tiêu: " + d.muc + " (" + d.da + "/" + d.can + "). Chỉ tính quái hạ ở đúng bản đồ. Nhận thưởng ở: ")
-                + KhoaBanDo.DUONG + "Đang làm." + (d.khoa.isEmpty() || d.nhom == 1 ? "" : " " + d.khoa);
+        // sua-duong-gym: buoc ha Gym - muc tieu ngan + cach toi Gym that (muc tat o Quầy đổi thưởng / duong So tay day du),
+        // Gym danh o dau; khong ghi "Chỉ tính quái hạ ở đúng bản đồ" (khong phai quai ban do).
+        final Object[] gym = "ha_gym".equals(m.kieu) ? GymLauDai.gymCuaMucTieu(m.mucTieuId) : null;
+        String cach = d.mau > 0 ? " Chỉ tính quái hạ ở đúng bản đồ." : "";
+        if (gym != null) {
+            d.muc = "Hạ " + GymLauDai.tenBoss(gym);
+            cach = " " + com.htbb.pokemon.DuongMenu.cachToiGym(GymLauDai.tenBoss(gym));
+        }
+        d.moTa = (d.nhom == 1 ? "Xong! Nhận thưởng ở: " : "Mục tiêu: " + d.muc + " (" + d.da + "/" + d.can + ")." + cach + " Nhận thưởng ở: ")
+                + KhoaBanDo.DUONG + com.htbb.pokemon.DuongMenu.DANG_LAM + "." + (d.khoa.isEmpty() || d.nhom == 1 ? "" : " " + d.khoa);
         return d;
     }
 
@@ -415,7 +423,12 @@ public final class MucTieuNhiemVuGame {
             if (loai == 1) {
                 NhiemVuEngine.chonDangLam(p, ma);
             } else {
-                SoTayLauDai.bao(p, "Cửa ải không huỷ được (mở bản đồ). Xem ở: " + KhoaBanDo.DUONG + "Đang làm.");
+                // sua-duong-gym: client 0.9.14 chi co nut Huỷ o the cua ai -> buoc ha Gym hoi thach dau ngay (khong huy)
+                final ConcurrentHashMap<String, long[]> t = NhiemVuEngine.td(p);
+                final String khong = "Cửa ải không huỷ được (mở bản đồ).";
+                if (!GymLauDai.hoiNeuGym(p, NhiemVuEngine.MAU.get(ma), t == null ? null : t.get(ma), khong)) {
+                    SoTayLauDai.bao(p, khong + " Xem ở: " + KhoaBanDo.DUONG + com.htbb.pokemon.DuongMenu.DANG_LAM + ".");
+                }
             }
         } catch (final Exception e) {
             System.out.println("MucTieuNhiemVuGame.khiGoiCuaAi: " + e);

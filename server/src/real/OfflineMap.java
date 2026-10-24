@@ -1598,7 +1598,7 @@ public class OfflineMap extends Map {
                         // Thuoc hoi sinh (119) KHONG ban o cua so thuoc NPC (gia o day khong hien theo nguoi mua):
                         // ban o So tay -> Cua hang (HoiSinhGame.moMuaThuoc, gia theo cap + hop xac nhan).
                         if (var32 == com.htbb.pokemon.HoiSinh.THUOC_HOI_SINH && HoiSinhGame.bat()) {
-                           player.sendMessage(MessageCreator.createServerAlertMessage("Thuốc hồi sinh bán ở Sổ tay - Cửa hàng (giá theo cấp).", ""));
+                           player.sendMessage(MessageCreator.createServerAlertMessage("Thuốc hồi sinh bán ở " + com.htbb.pokemon.DuongMenu.duong(com.htbb.pokemon.DuongMenu.QUAY, com.htbb.pokemon.DuongMenu.SO_TAY, "Cửa hàng và đổi vật phẩm") + " (giá theo cấp).", ""));
                            continue;
                         }
                         final long giaMot = Map.potionTemplates2.get(var32).getPrice();

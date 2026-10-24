@@ -48,7 +48,7 @@ const khoang = computed(() => data.value?.mo ? `${gioDep(msTuChuoi(data.value.mo
             <span class="font-semibold text-highlighted">Phần thưởng:</span> {{ data.cup.phanThuong }}
           </p>
           <ul class="cham mt-4 text-sm text-muted">
-            <li>Đăng ký trong game: Sổ tay huấn luyện → Cúp PvP tuần (Cúp Đôi: đội trưởng tổ đội 2 người đăng ký cả đội).</li>
+            <li>Đăng ký trong game: Quầy đổi thưởng → Sổ tay huấn luyện → Cúp PvP tuần (Cúp Đôi: đội trưởng tổ đội 2 người đăng ký cả đội).</li>
             <li>Mỗi thiết bị / tài khoản chỉ dự bằng một Pokémon mỗi tuần; hai bên cùng thiết bị / mạng không bao giờ gặp nhau.</li>
             <li>Trận cúp không làm mất EXP, không tính điểm PK hay thang PvP mùa. Vắng mặt lúc ghép vòng thì không được ghép.</li>
           </ul>

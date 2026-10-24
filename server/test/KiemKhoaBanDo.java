@@ -91,7 +91,7 @@ public final class KiemKhoaBanDo {
         Kiem.dung("khong luat = mo", KhoaBanDo.mo(null, 1, false, 0));
         Kiem.dung("thieu ca cap lan cua ai = khoa", !KhoaBanDo.mo(l, 20, false, 1));
         Kiem.bang("bao du hai dieu kien",
-                "Cần hoàn thành nhiệm vụ «Cửa ải: Đường sang Johto» và đạt cấp 27 để vào New Bark. Nhận ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.",
+                "Cần hoàn thành nhiệm vụ «Cửa ải: Đường sang Johto» và đạt cấp 27 để vào New Bark. Nhận ở: Quầy đổi thưởng → Nhiệm vụ của tôi → Thử thách cửa ải.",
                 KhoaBanDo.lyDo(l, 20, false, 1, "New Bark"));
         Kiem.bang("chi thieu cap", "Cần đạt cấp 27 để vào New Bark.", KhoaBanDo.lyDo(l, 20, true, 1, "New Bark"));
         Kiem.dung("du cap, chua xong cua ai = khoa", !KhoaBanDo.mo(l, 30, false, 1));
@@ -334,16 +334,18 @@ public final class KiemKhoaBanDo {
         Kiem.bang("mo ta buoc khi thieu muc tieu: theo ten", "hạ Gym Pewter", KhoaBanDo.moTaBuoc("", "Cửa ải: hạ Gym Pewter"));
         Kiem.bang("chua nhan: ba dong",
                 "Để vào Tây Cerulean cần xong cửa ải «Rời đồng cỏ Pallet».|Bước 1/2 (chưa nhận): hạ 20 Torchic ở Pallet.|"
-                        + "Nhận ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.",
+                        + "Nhận ở: Quầy đổi thưởng → Nhiệm vụ của tôi → Thử thách cửa ải.",
                 String.join("|", KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 1, 2, "hạ 20 Torchic ở Pallet", KhoaBanDo.CHUA_NHAN, 0, 20, null)));
         Kiem.bang("dang lam: tien do + duong Dang lam",
                 "Để vào Tây Cerulean cần xong cửa ải «Rời đồng cỏ Pallet».|Bước 1/2: hạ 20 Torchic ở Pallet (7/20).|"
-                        + "Xem ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Đang làm.",
+                        + "Xem ở: Quầy đổi thưởng → Nhiệm vụ của tôi → Đang làm.",
                 String.join("|", KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 1, 2, "hạ 20 Torchic ở Pallet", KhoaBanDo.DANG_LAM, 7, 20, null)));
         Kiem.bang("buoc 2 dang lam", "Bước 2/2: hạ 20 Ekans ở Viridian (3/20).",
                 KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 2, 2, "hạ 20 Ekans ở Viridian", KhoaBanDo.DANG_LAM, 3, 20, null)[1]);
-        Kiem.bang("buoc ha Gym (1 tran): khong ghi 0/1", "Bước 2/2: hạ Trưởng Gym Pewter: Golem (Sổ tay huấn luyện → Gym).",
-                KhoaBanDo.baoCuaAi(ca, 5, "X", 2, 2, KhoaBanDo.moTaBuoc("Hạ Trưởng Gym Pewter: Golem (Sổ tay huấn luyện → Gym).", ""),
+        Kiem.bang("buoc ha Gym (1 tran): khong ghi 0/1",
+                "Bước 2/2: hạ Trưởng Gym Pewter: Golem (Quầy đổi thưởng → Sổ tay huấn luyện → Thách đấu Gym → Gym Pewter).",
+                KhoaBanDo.baoCuaAi(ca, 5, "X", 2, 2, KhoaBanDo.moTaBuoc(
+                        "Hạ Trưởng Gym Pewter: Golem (Quầy đổi thưởng → Sổ tay huấn luyện → Thách đấu Gym → Gym Pewter).", ""),
                         KhoaBanDo.DANG_LAM, 0, 1, null)[1]);
         Kiem.bang("xong cho nhan thuong", "Bước 1/2 đã xong: nhận thưởng để mở bước tiếp.",
                 KhoaBanDo.baoCuaAi(ca, 5, "Tây Cerulean", 1, 2, "x", KhoaBanDo.CHO_THUONG, 20, 20, null)[1]);
@@ -403,7 +405,7 @@ public final class KiemKhoaBanDo {
             Kiem.dung("hop: chua nhan + buoc 1/2 + duong + hoi nhan",
                     hop != null && hop.contains("cần xong cửa ải «Rời đồng cỏ Pallet»")
                             && hop.contains("\nBước 1/2 (chưa nhận): hạ 20 Torchic ở Pallet.\n")
-                            && hop.contains("Nhận ở: NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.")
+                            && hop.contains("Nhận ở: Quầy đổi thưởng → Nhiệm vụ của tôi → Thử thách cửa ải.")
                             && hop.endsWith("\nNhận cửa ải ngay?"));
             KhoaBanDoGame.sauKhiVaoMap(p);
             Kiem.bang("-500 lan nua khong gui lai", 1, dem(p, -32));

@@ -18,7 +18,7 @@ const THU = ['', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu
   <WikiShell slug="ham-nguc">
     <WikiSection id="gioi-thieu" title="Hầm ngục là gì" lead="Thử thách mỗi ngày lấy cảm hứng từ Pokémon Mystery Dungeon: leo càng nhiều tầng, thưởng càng lớn. Mọi người chơi cùng một đề trong ngày.">
       <ol class="cham">
-        <li>Mở <NuxtLink to="/cam-nang/so-tay" class="lien-ket">Sổ tay huấn luyện</NuxtLink> → <strong>Hầm ngục bí ẩn</strong> → <strong>Vào tầng</strong>.</li>
+        <li>Quầy đổi thưởng → <NuxtLink to="/cam-nang/so-tay" class="lien-ket">Sổ tay huấn luyện</NuxtLink> → <strong>Hầm ngục bí ẩn</strong> → <strong>Vào tầng</strong>.</li>
         <li>Mỗi tầng yêu cầu hạ một số quái <strong>chênh không quá {{ HN.lechCap }} cấp</strong> so với bạn, ở bất kỳ bản đồ nào. Đủ số quái thì tự sang tầng sau.</li>
         <li>Số quái mỗi tầng tăng dần theo tầng; đề sinh theo ngày nên cả máy chủ gặp cùng một chuỗi tầng.</li>
         <li>Tối đa <strong>{{ HN.tangToiDa }} tầng</strong>. Tiến độ về tầng 0 khi sang ngày mới.</li>
@@ -39,7 +39,7 @@ const THU = ['', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu
       </div>
     </WikiSection>
 
-    <WikiSection id="pho-ban" title="Phó bản tổ đội (5 tầng)" :lead="`Sổ tay → Hầm ngục bí ẩn → Phó bản tổ đội: một phòng riêng cho nhóm 1–${PB.nguoiToiDa} người, từ cấp ${PB.cap}, chênh nhau tối đa ${PB.chenhCap} cấp. ${PB.soTang} tầng, tầng ${PB.soTang} là boss, giới hạn ${PB.phutToiDa} phút.`">
+    <WikiSection id="pho-ban" title="Phó bản tổ đội (5 tầng)" :lead="`Quầy đổi thưởng → Sổ tay huấn luyện → Hầm ngục bí ẩn → Phó bản tổ đội (5 tầng): một phòng riêng cho nhóm 1–${PB.nguoiToiDa} người, từ cấp ${PB.cap}, chênh nhau tối đa ${PB.chenhCap} cấp. ${PB.soTang} tầng, tầng ${PB.soTang} là boss, giới hạn ${PB.phutToiDa} phút.`">
       <ul class="cham">
         <li>Đội trưởng mở phòng, mỗi thành viên mất 1 lượt; mỗi Pokémon <strong>{{ PB.luotNgay }} lượt / ngày</strong> (tính cả lần vào lại sau khi thua).</li>
         <li>Không tự động đánh, không hồi sinh tại chỗ. Rớt mạng thì vào lại đúng phòng.</li>

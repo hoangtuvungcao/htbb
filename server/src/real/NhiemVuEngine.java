@@ -312,7 +312,7 @@ public final class NhiemVuEngine {
                 v[0] = Math.min(m.soLuong, v[0] + n);
                 if (v[0] >= m.soLuong) {
                     v[1] = 1;
-                    LauDaiNhanVat.bao(p, "Hoàn thành nhiệm vụ: " + m.ten + ". Mở Sổ tay huấn luyện để nhận thưởng.");
+                    LauDaiNhanVat.bao(p, "Hoàn thành nhiệm vụ: " + m.ten + ". Nhận thưởng: " + com.htbb.pokemon.KhoaBanDo.DUONG + com.htbb.pokemon.DuongMenu.DANG_LAM + ".");
                 }
                 luu(p, m.ma, v);
             }
@@ -349,7 +349,7 @@ public final class NhiemVuEngine {
             v[0] = Math.min(m.soLuong, giaTri);
             if (v[0] >= m.soLuong) {
                 v[1] = 1;
-                LauDaiNhanVat.bao(p, "Đã đạt: " + m.ten + ". Mở Sổ tay huấn luyện để nhận thưởng.");
+                LauDaiNhanVat.bao(p, "Đã đạt: " + m.ten + ". Nhận thưởng: " + com.htbb.pokemon.KhoaBanDo.DUONG + com.htbb.pokemon.DuongMenu.DANG_LAM + ".");
             }
             luu(p, m.ma, v);
         }
@@ -579,7 +579,7 @@ public final class NhiemVuEngine {
             return;
         }
         if (b.v == null) {
-            SoTayLauDai.bao(p, nhan(p, b.m.ma));
+            baoNhan(p, b.m.ma);
         } else {
             chonDangLam(p, b.m.ma);
         }
@@ -601,7 +601,47 @@ public final class NhiemVuEngine {
         nhan.add(0, n);
     }
 
+    /** Nhan {@code ma} va bao; buoc ha Gym vua nhan -> hop "Thách đấu … ngay?" kem loi nhan (sua-duong-gym). */
+    static void baoNhan(final Char p, final String ma) {
+        final ConcurrentHashMap<String, long[]> t0 = td(p);
+        final boolean co = t0 != null && t0.containsKey(ma);
+        final String s = nhan(p, ma);
+        final ConcurrentHashMap<String, long[]> t = td(p);
+        final NhiemVuMau m = MAU.get(ma);
+        final long[] v = t == null ? null : t.get(ma);
+        // vua nhan: hop ngan (loi giao + muc tieu day du da co o "Đang làm"); da co tu truoc: kem cau bao
+        final String truoc = !co && v != null && m != null ? "Đã nhận: " + m.ten + "." : s;
+        if (!GymLauDai.hoiNeuGym(p, m, v, truoc)) {
+            SoTayLauDai.bao(p, s);
+        }
+    }
+
+    /** sua-duong-gym: buoc "ha_gym" da nhan chua xong dau tien theo ma (cua ai CA-xx.y truoc); null = khong co. */
+    static NhiemVuMau buocGymDangLam(final Char p) {
+        final ConcurrentHashMap<String, long[]> t = p == null ? null : td(p);
+        if (t == null) {
+            return null;
+        }
+        NhiemVuMau tot = null;
+        for (final Entry<String, long[]> e : t.entrySet()) {
+            final NhiemVuMau m = MAU.get(e.getKey());
+            if (m != null && "ha_gym".equals(m.kieu) && e.getValue()[1] == 0 && (tot == null || m.ma.compareTo(tot.ma) < 0)) {
+                tot = m;
+            }
+        }
+        return tot;
+    }
+
     // ------------------------------------------------------------------ menu
+
+    /**
+     * Muc menu "Nhiệm vụ của tôi" (chi so = idOption) va nhom cua tung muc (dsCoTheNhan: 1 phu, 2 ngay, 3 tuan, 4 thanh
+     * tuu, 5 su kien, 6 nam 2, 7 cua ai; 0 = Đang làm). sua-duong-gym: xep theo muc dung - cua ai (mo ban do) ngay sau
+     * Đang làm, trang dau menu J2ME 3 dong.
+     */
+    public static final String[] MUC_GOC = {com.htbb.pokemon.DuongMenu.DANG_LAM, com.htbb.pokemon.DuongMenu.CUA_AI,
+        "Nhiệm vụ hằng ngày", "Nhiệm vụ hằng tuần", "Nhận nhiệm vụ phụ", "Sự kiện tuần này", "Thành tựu", "Cốt truyện năm 2"};
+    static final int[] NHOM_GOC = {0, 7, 2, 3, 1, 5, 4, 6};
 
     static void moMenu(final Char p) {
         if (!LauDai.bat()) {
@@ -617,17 +657,21 @@ public final class NhiemVuEngine {
                 }
             }
         }
-        p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đang làm (" + dang + ")", "Nhận nhiệm vụ phụ", "Nhiệm vụ hằng ngày",
-            "Nhiệm vụ hằng tuần", "Thành tựu", "Sự kiện tuần này", "Cốt truyện năm 2", "Thử thách cửa ải"}, SoTayLauDai.NPC_ID, M_GOC));
+        final String[] muc = MUC_GOC.clone();
+        muc[0] = muc[0] + " (" + dang + ")";
+        p.sendMessage(MessageCreator.createMsgMenu(muc, SoTayLauDai.NPC_ID, M_GOC));
     }
 
     static void doMenu(final Char p, final int idMenu, final int op) {
         try {
             if (idMenu == M_GOC) {
-                if (op == 0) {
+                if (op < 0 || op >= NHOM_GOC.length) {
+                    return;
+                }
+                if (NHOM_GOC[op] == 0) {
                     dsDangLam(p);
                 } else {
-                    dsCoTheNhan(p, op);
+                    dsCoTheNhan(p, NHOM_GOC[op]);
                 }
                 return;
             }
@@ -638,7 +682,7 @@ public final class NhiemVuEngine {
             if (idMenu == M_DANG) {
                 chonDangLam(p, ds[op]);
             } else if (idMenu == M_NHAN) {
-                SoTayLauDai.bao(p, nhan(p, ds[op]));
+                baoNhan(p, ds[op]);
             } else if (idMenu == M_CHON) {
                 chonNhanh(p, ds[op]);
             }
@@ -852,6 +896,10 @@ public final class NhiemVuEngine {
         }
         if (v[1] == 1) {
             SoTayLauDai.bao(p, traThuong(p, m, v));
+            return;
+        }
+        // sua-duong-gym: buoc ha Gym -> hop "Thách đấu Trưởng Gym … ngay?" (Đồng ý = nhu So tay -> Thách đấu Gym)
+        if (GymLauDai.hoiNeuGym(p, m, v, m.ten + " (" + v[0] + "/" + m.soLuong + ")")) {
             return;
         }
         SoTayLauDai.bao(p, chuDangLam(m, v[0]));

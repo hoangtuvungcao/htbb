@@ -734,7 +734,7 @@ public final class KiemHeSinhThai {
             {"src/real/MapChat.java", "HeSinhThaiGame.khiChat(player, msgChat)"},
             {"src/real/Char.java", "HeSinhThaiGame.khiThuHoach(this, cayTruoc, hangTruoc, kq)"},
             {"src/real/MapDoMenu.java", "HeSinhThaiMenu.doMenu(player, idMenu, idOptionMenu)"},
-            {"src/real/cmd/RequestNPCInfoHandler.java", "HeSinhThaiGame.TEN_MUC"},
+            {"src/real/MenuDoiThuong.java", "HeSinhThaiGame.TEN_MUC"},
             {"src/real/MapLienDau.java", "HeSinhThaiGame.ketQuaTranPvp(p, c)"},
             {"src/server/TeamServer.java", "p.getProperty(\"sv.he_sinh_thai\")"},
         };

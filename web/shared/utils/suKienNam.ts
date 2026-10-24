@@ -187,7 +187,7 @@ export function vietTin(l: SuKienLan, kieu: KieuTin, kem: SuKienLan[] = []): Tin
   if (laCup(l)) {
     doan.push(kieu === 'ket'
       ? 'Xem bảng điểm và nhà vô địch ở trang [Cúp PvP tuần](/cup). Phần thưởng đã tự gửi vào game (ai offline nhận khi đăng nhập).'
-      : 'Đăng ký trong game: Sổ tay huấn luyện → Cúp PvP tuần. Bảng điểm trực tiếp: [Cúp PvP tuần](/cup).')
+      : 'Đăng ký trong game: Quầy đổi thưởng → Sổ tay huấn luyện → Cúp PvP tuần. Bảng điểm trực tiếp: [Cúp PvP tuần](/cup).')
   }
   if (kieu !== 'ket') {
     doan.push(`## Có gì trong sự kiện\n\n${l.moTa}`)

@@ -121,10 +121,13 @@ public final class KhoaBanDo {
 
     // ------------------------------------------------------------------ cau bao cua ai chi tiet (bi chan)
 
-    /** Duong that toi danh sach cua ai (NPC -90 -> So tay -527 -> "Nhiệm vụ của tôi" -> muc 7). */
-    public static final String DUONG = "NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → ";
-    public static final String DUONG_NHAN = "Nhận ở: " + DUONG + "Thử thách cửa ải.";
-    public static final String DUONG_XEM = "Xem ở: " + DUONG + "Đang làm.";
+    /**
+     * Duong that toi danh sach cua ai: NPC -90 "Quầy đổi thưởng" -> muc "Nhiệm vụ của tôi" (dau menu, real.MenuDoiThuong)
+     * -> "Thử thách cửa ải" / "Đang làm" (NhiemVuEngine.MUC_GOC). Ghep tu nhan menu that (DuongMenu, test/KiemDuongMenu).
+     */
+    public static final String DUONG = DuongMenu.DUONG_NHIEM_VU;
+    public static final String DUONG_NHAN = "Nhận ở: " + DUONG + DuongMenu.CUA_AI + ".";
+    public static final String DUONG_XEM = "Xem ở: " + DUONG + DuongMenu.DANG_LAM + ".";
     /** Trang thai buoc cua ai ke tiep. */
     public static final int CHUA_NHAN = 0, DANG_LAM = 1, CHO_THUONG = 2;
 
@@ -165,7 +168,7 @@ public final class KhoaBanDo {
     /**
      * Bi chan vi chua xong cua ai: ba dong {dieu kien, buoc hien tai + tien do, duong di trong So tay}. Vd
      * {"Để vào Tây Cerulean cần xong cửa ải «Rời đồng cỏ Pallet».", "Bước 1/2: hạ 20 Torchic ở Pallet (7/20).",
-     * "Xem ở: NPC Đổi thưởng → … → Đang làm."}. {@code loiNhan}: ly do buoc chua nhan duoc (vd "Cần đạt cấp 8"), null =
+     * "Xem ở: Quầy đổi thưởng -> … -> Đang làm."}. {@code loiNhan}: ly do buoc chua nhan duoc (vd "Cần đạt cấp 8"), null =
      * nhan duoc.
      */
     public static String[] baoCuaAi(final Luat l, final int cap, final String tenMap, final int so, final int tong,

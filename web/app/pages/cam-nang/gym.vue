@@ -18,9 +18,10 @@ const johto = G.filter(g => g.so > 8)
   <WikiShell slug="gym">
     <WikiSection id="thach-dau" title="Thách đấu Gym" :lead="`${G.length} Gym trải dài Kanto và Johto. Hạ Trưởng Gym lần đầu nhận huy hiệu và một đồ cầm tay Hoàn mỹ đúng dòng của bạn.`">
       <ol class="cham">
-        <li>Mở <NuxtLink to="/cam-nang/so-tay" class="lien-ket">Sổ tay huấn luyện</NuxtLink> → <strong>Thách đấu Gym</strong> → chọn Gym.</li>
+        <li>Quầy đổi thưởng → <NuxtLink to="/cam-nang/so-tay" class="lien-ket">Sổ tay huấn luyện</NuxtLink> → <strong>Thách đấu Gym</strong>, rồi chọn Gym muốn đánh (vd «Gym Pewter (Golem) - cấp 12»).</li>
+        <li>Đang làm bước cửa ải «hạ Trưởng Gym»: Quầy đổi thưởng có sẵn mục đầu «Thách đấu Gym … (tên trưởng Gym)», bấm rồi Đồng ý là vào trận — không cần tìm trong Sổ tay.</li>
         <li>Chỉ cần đủ cấp của Gym — không bắt buộc đánh theo thứ tự.</li>
-        <li>Trưởng Gym xuất hiện ngay cạnh bạn, trên bản đồ bạn đang đứng. Mỗi lúc chỉ thách đấu được một Gym.</li>
+        <li>Trưởng Gym xuất hiện ngay cạnh bạn, trên bản đồ bạn đang đứng (không dịch chuyển). Đánh tay 1 đấu 1 trong 10 phút — Tự động đánh không dùng được. Mỗi lúc chỉ thách đấu được một Gym.</li>
       </ol>
       <div class="mt-5 grid gap-3 sm:grid-cols-3">
         <div class="the-so">

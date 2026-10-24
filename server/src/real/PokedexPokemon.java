@@ -30,10 +30,7 @@ public final class PokedexPokemon {
      */
     public static final int NPC_ID = -526;
 
-    /** Vi tri muc "Pokédex" trong menu NPC doi thuong (-90) - muc goc duy nhat la 0. */
-    public static final int VI_TRI_MUC_NPC_DOI_THUONG = 1;
-
-    public static final String TEN_MUC = "Pokédex";
+    public static final String TEN_MUC = com.htbb.pokemon.DuongMenu.POKEDEX; // muc o menu Quầy đổi thưởng (real.MenuDoiThuong)
 
     static final int MENU_GOC = 0;
     static final int MENU_MOC = 1;

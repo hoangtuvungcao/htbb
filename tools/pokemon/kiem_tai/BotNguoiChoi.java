@@ -90,7 +90,7 @@ public class BotNguoiChoi {
                 danh(-1, 6, 3 * 60000L);
                 break;
             }
-            if (rd.nextInt(3) == 0) { b.menu(-90, 0, 1); b.bom(800); b.menu(-526, 0, rd.nextInt(2)); b.bom(800); dem("pokedex_menu"); }
+            if (rd.nextInt(3) == 0) { KichBanDS4.chonQuay(b, "Pokédex"); b.bom(800); b.menu(-526, 0, rd.nextInt(2)); b.bom(800); dem("pokedex_menu"); }
         }
 
         // -------------------------------------------------------- he sinh thai: cau ca / dao / nau / cho

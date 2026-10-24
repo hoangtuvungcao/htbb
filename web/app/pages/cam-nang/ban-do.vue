@@ -75,7 +75,7 @@ const dsNpc = computed(() => (npcDb.value?.length ? npcDb.value : NPC_TINH))
         </div>
       </div>
       <ul class="cham mt-5">
-        <li>Bản đồ mở dần theo <strong>cấp</strong> và <strong>12 cửa ải</strong> của cốt truyện năm 1 (ví dụ cửa ải «Rời đồng cỏ Pallet» mở Vermilion và Cerulean). Chưa đủ thì không vào được, kể cả nhờ Pidgeot hay Lapras — game báo rõ còn thiếu cấp hay cửa ải nào. Nhận cửa ải ở NPC Đổi thưởng → Sổ tay huấn luyện → Nhiệm vụ của tôi → Thử thách cửa ải.</li>
+        <li>Bản đồ mở dần theo <strong>cấp</strong> và <strong>12 cửa ải</strong> của cốt truyện năm 1 (ví dụ cửa ải «Rời đồng cỏ Pallet» mở Vermilion và Cerulean). Chưa đủ thì không vào được, kể cả nhờ Pidgeot hay Lapras — game báo rõ còn thiếu cấp hay cửa ải nào. Nhận cửa ải ở Quầy đổi thưởng → Nhiệm vụ của tôi → Thử thách cửa ải.</li>
         <li>Khu an toàn, khu sự kiện, hang boss và đấu trường không dùng được <NuxtLink to="/cam-nang/tu-dong" class="lien-ket">Tự động đánh</NuxtLink>.</li>
         <li>Di chuyển nhanh: nhờ <strong>Pidgeot chở bay</strong> đưa tới bản đồ khác — mỗi lần tốn xu bằng {{ CAM_NANG.kinhTe.dichChuyenPhanTramGio }}% thu nhập một giờ ở cấp của bạn.</li>
         <li>Ra đảo: gặp <strong>Lapras chở đò</strong> ở bến tàu mua vé tàu và đi thuyền.</li>

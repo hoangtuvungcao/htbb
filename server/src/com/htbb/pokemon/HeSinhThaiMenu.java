@@ -97,11 +97,6 @@ public final class HeSinhThaiMenu {
 
     // ================================================================== menu goc
 
-    /** Vi tri muc "Hệ sinh thái" trong menu NPC -90: sau Xem doi thuong, Pokédex, So tay (neu co). */
-    public static int viTri() {
-        return 2 + (LauDai.bat() ? 1 : 0);
-    }
-
     public static void moMenu(final Char p) {
         if (!HeSinhThai.bat() || p == null) {
             return;

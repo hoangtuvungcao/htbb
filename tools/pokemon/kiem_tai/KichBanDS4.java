@@ -59,12 +59,30 @@ class KichBanDS4 {
         throw new IllegalStateException("khong tim duoc bot cung quoc gia " + quocGia(a));
     }
 
-    /** Mo So tay huan luyen (npc -90 muc 2 -> menu -527/0). */
+    /**
+     * Mo menu Quay doi thuong (-90) roi chon muc co chu {@code chua}. sua-duong-gym: thu tu menu -90 doi theo nhan vat
+     * (real.MenuDoiThuong: Thach dau Gym ... khi dang lam buoc ha Gym, Nhiem vu cua toi, So tay, Xem doi thuong, Pokedex,
+     * He sinh thai) - khong chon theo chi so co dinh nua.
+     */
+    static boolean chonQuay(BotChucNang.Bot b, String chua) throws IOException {
+        int m = b.moc();
+        b.gui(23, (byte) -90);
+        if (b.doiMenu(m, -90, 0, 3000) <= 0) return false;
+        int vt = b.timMuc(chua);
+        if (vt < 0) return false;
+        b.menu(-90, 0, vt);
+        return true;
+    }
+
+    /** Mo So tay huan luyen (Quay doi thuong -> So tay huan luyen -> menu -527/0). */
     static boolean moSoTay(BotChucNang.Bot b) throws IOException {
         int m = b.moc();
-        b.menu(-90, 0, 2);
+        if (!chonQuay(b, "Sổ tay huấn luyện")) return false;
         return b.doiMenu(m, -527, 0, 3000) > 0;
     }
+
+    /** Chi so muc cua nhom {@code nhom} (dsCoTheNhan) trong menu "Nhiệm vụ của tôi" (NhiemVuEngine.NHOM_GOC {0,7,2,3,1,5,4,6}). */
+    static final int[] VI_TRI_NHOM = {0, 4, 2, 3, 6, 5, 7, 1};
 
     /** Chon muc trong So tay (menu goc) va tra ve moc truoc khi chon. */
     static int chonSoTay(BotChucNang.Bot b, int muc) throws IOException {
@@ -286,7 +304,7 @@ class KichBanDS4 {
     static List<String> dsNhom(BotChucNang.Bot b, int nhom, int idMenuMongDoi) throws IOException {
         chonSoTay(b, 8);
         int m = b.moc();
-        b.menu(-527, 10, nhom);
+        b.menu(-527, 10, VI_TRI_NHOM[nhom]);
         int n = b.doiMenu(m, -527, idMenuMongDoi, 2500);
         if (n < 0) {
             String t = b.doiChu(m, 0, "");
@@ -503,7 +521,7 @@ class KichBanDS4 {
             a.bom(1500);
             String elo1 = BotChucNang.sql1("SELECT elo FROM tob_pvp_mua WHERE id_char=" + a.charDb + " ORDER BY mua DESC LIMIT 1");
             int ms = a.moc();
-            a.menu(-90, 0, 2);
+            chonQuay(a, "Sổ tay huấn luyện");
             a.doiMenu(ms, -527, 0, 2000);
             ms = a.moc();
             a.menu(-527, 0, 3);
@@ -555,12 +573,13 @@ class KichBanDS4 {
             b.gui(23, (byte) -90);
             b.bom(1200);
             ket("npc_doi_thuong.mo", b.coLenh(m, -30), b.chuTu(m));
+            ket("npc_doi_thuong.thu_tu (Nhiệm vụ của tôi trang dau)", b.timMuc("Nhiệm vụ của tôi") >= 0 && b.timMuc("Nhiệm vụ của tôi") <= 1, String.join(" ; ", b.menuChu));
             m = b.moc();
-            b.menu(-90, 0, 1);
+            b.menu(-90, 0, b.timMuc("Pokédex"));
             b.bom(1200);
             ket("pokedex.menu", !b.chuTu(m).isEmpty(), b.chuTu(m));
             m = b.moc();
-            b.menu(-90, 0, 0);
+            KichBanDS4.chonQuay(b, "Xem đổi thưởng");
             b.bom(1200);
             ket("npc_doi_thuong.xem", !b.chuTu(m).isEmpty() && b.conSong(), b.chuTu(m));
         }

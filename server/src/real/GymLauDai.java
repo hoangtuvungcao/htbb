@@ -11,7 +11,8 @@ import java.util.List;
 
 /**
  * 16 thu linh Gym (GD2b, docs/thiet-ke-game.md; data_noi_dung_gym + data_noi_dung_roi nguon
- * gym / gym_tuan). Vao tu So tay huan luyen -> "Thách đấu Gym": trieu hoi boss tai cho, 1 dau 1 (chi
+ * gym / gym_tuan). Vao tu So tay huan luyen -> "Thách đấu Gym" (hoac muc tat dau menu Quầy đổi thưởng / hop 95 khi dang lam
+ * buoc ha Gym - cung thachDauStt): trieu hoi boss tai cho, 1 dau 1 (chi
  * nguoi thach dau gay duoc sat thuong), no sau no_sau_phut phut (GiaiDoanBoss), het 10 phut chua ha
  * thi thua. Lan dau: huy hieu (bit trong ho so) + 1 vu khi Hoan my dung dong. Danh lai: 1 lan / tuan,
  * 3 Huy chuong Gym (item 1039, khoa).
@@ -47,31 +48,79 @@ public final class GymLauDai {
         return h != null && stt >= 1 && stt <= 30 && (h.gymHuyHieu & (1 << (stt - 1))) != 0;
     }
 
+    /** charDBID -> stt cac dong menu "Thách đấu Gym" vua gui (Gym cua buoc dang lam len dau). */
+    private static final java.util.concurrent.ConcurrentHashMap<Integer, int[]> THU_TU = new java.util.concurrent.ConcurrentHashMap<Integer, int[]>();
+
+    static String tenBoss(final Object[] g) {
+        return g == null || g[5] == null ? "" : String.valueOf(g[5]);
+    }
+
+    /** Thu tu stt menu Gym: Gym {@code dau} (buoc dang lam, 0 = khong) len dau, con lai theo stt. */
+    static int[] thuTu(final List<Object[]> ds, final int dau) {
+        final int[] kq = new int[ds.size()];
+        int i = 0;
+        for (final Object[] g : ds) {
+            if (so(g[0]) == dau) {
+                kq[i++] = dau;
+            }
+        }
+        for (final Object[] g : ds) {
+            if (so(g[0]) != dau) {
+                kq[i++] = so(g[0]);
+            }
+        }
+        return kq;
+    }
+
     static void moMenu(final Char p) {
         final HoSoLauDai h = LauDaiNhanVat.lay(p);
-        if (h == null || GYM.isEmpty()) {
+        final List<Object[]> ds = GYM;
+        if (h == null || ds.isEmpty()) {
             SoTayLauDai.bao(p, "Chưa có dữ liệu Gym.");
             return;
         }
-        final String[] menu = new String[GYM.size()];
-        for (int i = 0; i < menu.length; i++) {
-            final Object[] g = GYM.get(i);
-            final int stt = so(g[0]);
-            menu[i] = g[2] + " - cấp " + so(g[3]) + (coHuyHieu(h, stt) ? " (đã có)" : "");
+        final Object[] dang = buocGym(p);
+        final int[] tt = thuTu(ds, dang == null ? 0 : so(dang[0]));
+        final String[] menu = new String[tt.length];
+        for (int i = 0; i < tt.length; i++) {
+            final Object[] g = gym(tt[i]);
+            menu[i] = (dang != null && i == 0 ? "» " : "") + com.htbb.pokemon.DuongMenu.nhanGym(tenBoss(g), so(g[3]), coHuyHieu(h, tt[i]));
         }
+        THU_TU.put(Integer.valueOf(p.charDBID), tt);
         p.sendMessage(MessageCreator.createMsgMenu(menu, SoTayLauDai.NPC_ID, SoTayLauDai.MENU_GYM));
     }
 
-    /** Chon Gym thu {@code i} trong menu. */
+    /** So tay -> Thách đấu Gym, dong thu {@code i} (thu tu da gui; chua mo menu = theo stt). */
+    static String chon(final Char p, final int i) {
+        int[] tt = THU_TU.get(Integer.valueOf(p.charDBID));
+        if (tt == null) {
+            tt = thuTu(GYM, 0);
+        }
+        if (i < 0 || i >= tt.length) {
+            return "Gym không hợp lệ.";
+        }
+        return thachDauStt(p, tt[i]);
+    }
+
+    /** Chon Gym thu {@code i} theo stt tang dan (giu cho goi cu). */
     static String thachDau(final Char p, final int i) {
+        final List<Object[]> ds = GYM;
+        return i < 0 || i >= ds.size() ? "Gym không hợp lệ." : thachDauStt(p, so(ds.get(i)[0]));
+    }
+
+    /**
+     * Thach dau Gym {@code stt}: MOT cua cho moi duong (So tay -> Thách đấu Gym, muc tat o Quầy đổi thưởng, hop 95 cua
+     * buoc nhiem vu) - cung kiem cong tac, cap, dang danh, gioi han tuan. Boss trieu hoi NGAY CANH nguoi choi o ban do dang
+     * dung (khong dich chuyen), 1 dau 1, 10 phut.
+     */
+    static String thachDauStt(final Char p, final int stt) {
         if (!com.htbb.cauhinh.CongTac.gym()) {
             return "Gym đang tạm đóng. Vui lòng quay lại sau."; // cau hinh trung tam: gym.bat=0
         }
-        if (i < 0 || i >= GYM.size()) {
+        final Object[] g = gym(stt);
+        if (g == null) {
             return "Gym không hợp lệ.";
         }
-        final Object[] g = GYM.get(i);
-        final int stt = so(g[0]);
         final HoSoLauDai h = LauDaiNhanVat.lay(p);
         if (h == null) {
             return "Tạm thời không thách đấu được.";
@@ -105,7 +154,71 @@ public final class GymLauDai {
             Database.instance.saveOrtherLog("", p.charname, "thach dau gym " + stt, "laudai");
         } catch (final Exception ignored) {
         }
-        return g[5] + " xuất hiện! Hãy hạ trong 10 phút (nổi giận sau " + so(g[9]) + " phút).";
+        return g[5] + " xuất hiện ngay cạnh bạn! Hãy đánh tay trong 10 phút (nổi giận sau " + so(g[9]) + " phút).";
+    }
+
+    // ------------------------------------------------------------------ duong tat (buoc nhiem vu ha Gym)
+
+    /** Dong Gym cua muc tieu ha_gym {@code id} (stt "13" hoac ma "C06.6"); null = khong co. */
+    static Object[] gymCuaMucTieu(final String id) {
+        if (id == null) {
+            return null;
+        }
+        final String x = id.trim();
+        for (final Object[] g : GYM) {
+            if (String.valueOf(so(g[0])).equals(x) || x.equals(g[1])) {
+                return g;
+            }
+        }
+        return null;
+    }
+
+    /** Gym cua buoc ha_gym dang lam (da nhan, chua xong) dau tien theo ma; null = khong co / tat. */
+    static Object[] buocGym(final Char p) {
+        try {
+            if (!bat() || p == null || GYM.isEmpty()) {
+                return null;
+            }
+            final com.htbb.pokemon.NhiemVuMau m = NhiemVuEngine.buocGymDangLam(p);
+            return m == null ? null : gymCuaMucTieu(m.mucTieuId);
+        } catch (final Exception e) {
+            System.out.println("GymLauDai.buocGym: " + e);
+            return null;
+        }
+    }
+
+    /** Ten boss Gym cua buoc dang lam ("Trưởng Gym Pewter: Golem"), null = khong (MenuDoiThuong: muc tat). */
+    static String tenBossBuoc(final Char p) {
+        final Object[] g = buocGym(p);
+        return g == null ? null : tenBoss(g);
+    }
+
+    /** Hop 95 "Thách đấu Trưởng Gym … ngay?" (truoc: dong mo dau, co the rong). Đồng ý -> {@link #thachDauStt}. */
+    static void hoi(final Char p, final Object[] g, final String truoc) {
+        KhoaBanDoGame.hoiGym(p, so(g[0]), com.htbb.pokemon.DuongMenu.hoiGym(truoc, tenBoss(g)));
+    }
+
+    /**
+     * Buoc {@code ma} la ha_gym dang lam: hien hop hoi thach dau (kem {@code truoc}) thay cho thong bao thuong, true. Khong
+     * phai (hoac Gym khong co du lieu) -> false, nguoi goi bao nhu cu.
+     */
+    static boolean hoiNeuGym(final Char p, final com.htbb.pokemon.NhiemVuMau m, final long[] v, final String truoc) {
+        if (m == null || v == null || v[1] != 0 || !"ha_gym".equals(m.kieu) || !bat()) {
+            return false;
+        }
+        final Object[] g = gymCuaMucTieu(m.mucTieuId);
+        if (g == null) {
+            return false;
+        }
+        hoi(p, g, truoc);
+        return true;
+    }
+
+    /** Roi game: bo thu tu menu da gui. */
+    static void khiThoat(final Char p) {
+        if (p != null) {
+            THU_TU.remove(Integer.valueOf(p.charDBID));
+        }
     }
 
     /** BossLauDai.khiChet: boss Gym {@code stt} cua {@code idChar} bi ha. */

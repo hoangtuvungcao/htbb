@@ -269,48 +269,24 @@ class MapDoMenu {
                 map.doChonPhuongHoangMocNap(player, idOptionMenu);
                 return;
             }
-            // NPC Doi Thuong (-90): mot dong duy nhat "Xem doi thuong" — nut "Go skin linh
-            // thu" da bi bo (theo yeu cau nguoi choi), nen moi lua chon o day deu mo bang
-            // diem doi thuong. Con hai duong go skin khac: lenh chat "boskin" va goi packet
-            // 29 chung cho moi trang bi thu (Map.thaoTrangBiThu).
-            // Pokemon (G7.D3): muc "Pokédex" noi vao cuoi menu NPC doi thuong (-90),
-            // menu con o npc ao PokedexPokemon.NPC_ID (-526). Tat co: khong co muc nay.
-            if (idNpc == -90 && idMenu == 0
-                    && idOptionMenu == PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG) {
-                PokedexPokemon.moMenu(player);
-                return;
-            }
-            // GD2: So tay huan luyen (thiet ke dai han) - npc ao SoTayLauDai.NPC_ID (-527).
-            if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.LauDai.bat()
-                    && idOptionMenu == SoTayLauDai.viTri()) {
-                SoTayLauDai.moMenu(player);
+            // NPC Doi Thuong (-90) "Quầy đổi thưởng": real.MenuDoiThuong (sua-duong-gym) - muc xep theo muc dung, chon theo
+            // khoa danh sach da gui: duong tat Thách đấu Gym (buoc ha Gym dang lam), Nhiệm vụ của tôi, Sổ tay huấn luyện
+            // (npc ao SoTayLauDai.NPC_ID -527), Xem doi thuong (showMenuDiemDoiThuong(player) - muc la cung ve day),
+            // Pokédex (npc ao -526), He sinh thai (npc ao -528). "Go skin linh thu" da bo (lenh "boskin" / goi 29).
+            if (idNpc == -90 && idMenu == 0) {
+                MenuDoiThuong.chon(player, idOptionMenu, map);
                 return;
             }
             if (idNpc == SoTayLauDai.NPC_ID) {
                 SoTayLauDai.doMenu(player, idMenu, idOptionMenu);
                 return;
             }
-            // sua-tien-do-nv: "Nhiệm vụ của tôi" thang o quay doi thuong (-90)
-            if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.LauDai.bat() && idOptionMenu == SoTayLauDai.viTriNhiemVu()) {
-                NhiemVuEngine.moMenu(player);
-                return;
-            }
-            // he sinh thai: muc cuoi menu NPC -90 + npc ao HeSinhThaiGame.NPC_ID (-528).
-            if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.HeSinhThai.bat()
-                    && idOptionMenu == com.htbb.pokemon.HeSinhThaiMenu.viTri()) {
-                com.htbb.pokemon.HeSinhThaiMenu.moMenu(player);
-                return;
-            }
-            if (idNpc == com.htbb.pokemon.HeSinhThaiGame.NPC_ID) {
+            if (idNpc == com.htbb.pokemon.HeSinhThaiGame.NPC_ID) { // he sinh thai: npc ao -528
                 com.htbb.pokemon.HeSinhThaiMenu.doMenu(player, idMenu, idOptionMenu);
                 return;
             }
             if (idNpc == PokedexPokemon.NPC_ID) {
                 PokedexPokemon.doMenu(player, idMenu, idOptionMenu);
-                return;
-            }
-            if (idNpc == -90 && idMenu == 0) {
-                map.showMenuDiemDoiThuong(player);
                 return;
             }
             if (idNpc == -91) {
