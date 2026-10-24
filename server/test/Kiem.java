@@ -108,6 +108,7 @@ public final class Kiem {
         KiemBoDemGoiTin.chay();
         KiemNhatKyChongSpam.chay();
         KiemTheoDoiBatThuong.chay();
+        KiemMapClanVao.chay(); // vao ban do bang khi chua co danh sach: khong NPE (cong kiem 24/10)
         KiemMatDoKhiTaoDo.chay();
         KiemCuaHangSuKien.chay();
         KiemAoHoaPonyta.chay();

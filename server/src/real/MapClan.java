@@ -152,13 +152,23 @@ public class MapClan extends Map {
     }
 
     public void playerJoin(Char player) {
-        ((Vector)this.playerClan.get(player.idClan)).add(player);
+        // 24/10/2026 (cong kiem staging): GM "mto" vao ban do bang khi bang chua co danh sach (hoac nhan vat khong bang)
+        // -> NullPointerException giua move2Map, nhan vat ket nua chung. Tao danh sach khi chua co.
+        Vector<Char> ds = this.playerClan.get(player.idClan);
+        if (ds == null) {
+            ds = new Vector<Char>();
+            this.playerClan.put(player.idClan, ds);
+        }
+        ds.add(player);
         player.map = this;
         player.mapID = this.mapId;
     }
 
     public void removePLayer(Char player) {
-        ((Vector)this.playerClan.get(player.idClan)).remove(player);
+        final Vector<Char> ds = this.playerClan.get(player.idClan);
+        if (ds != null) {
+            ds.remove(player);
+        }
     }
 
     public void removePlayer(int country, Char p) {
