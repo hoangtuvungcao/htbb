@@ -1974,6 +1974,7 @@ class MapXuLyLenh {
                 MoTaVatPhamGame.gui(player);      // 0.9.14: loai / mo ta / dung duoc cua vat pham dang thuoc (client >= 914)
                 map.doJoinMapOk(player);
                 KhoaBanDoGame.sauKhiVaoMap(player); // vua bi chan o cong (nap lai map xong): hop cua ai
+                BossLauDai.huyGymCua(player, true); // vao ban do / khu khac: huy tran Gym o ban do cu, go boss
             } else if (player.mapID == Map.idMapChanNui) {
                 map.doReturnVillage(player);
             } else if (map.isMapOffline && player.mapID_the_mua_ban > -1) {

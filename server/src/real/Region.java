@@ -318,6 +318,7 @@ public class Region {
             }
             while (this.tempRemoveMonster.get(1).size() > 0) {
                 Monster mt = this.tempRemoveMonster.get(1).remove(0);
+                if (BossLauDai.goKhoiBang(this.map, this.monsters.get(1), mt)) continue; // boss Gym / the gioi: go ca khi da guc
                 if (mt.map == null || mt.map.mapId != this.map.mapId || mt.hp <= 0) continue;
                 mt.map.removeMonster((int)mt.id, 1, mt.region);
             }
@@ -425,6 +426,7 @@ public class Region {
             }
             while (this.tempRemoveMonster.get(2).size() > 0) {
                 mt = this.tempRemoveMonster.get(2).remove(0);
+                if (BossLauDai.goKhoiBang(this.map, this.monsters.get(2), mt)) continue; // boss Gym / the gioi: go ca khi da guc
                 if (mt.map == null || mt.map.mapId != this.map.mapId || mt.hp <= 0) continue;
                 mt.map.removeMonster((int)mt.id, 2, mt.region);
             }
@@ -623,6 +625,7 @@ public class Region {
         }
         while (this.tempRemoveMonster.get(0).size() > 0) {
             mt = this.tempRemoveMonster.get(0).remove(0);
+            if (BossLauDai.goKhoiBang(this.map, this.monsters.get(0), mt)) continue; // boss Gym / the gioi: go ca khi da guc
             if (mt.map == null || mt.map.mapId != this.map.mapId || mt.hp <= 0) continue;
             mt.map.removeMonster((int)mt.id, 0, mt.region);
         }

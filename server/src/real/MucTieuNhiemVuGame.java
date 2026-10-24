@@ -394,8 +394,10 @@ public final class MucTieuNhiemVuGame {
             d.muc = "Hạ " + GymLauDai.tenBoss(gym);
             cach = " " + com.htbb.pokemon.DuongMenu.cachToiGym(GymLauDai.tenBoss(gym));
         }
+        // bao loi 24/10/2026 "moi lan ve lang mat thoi gian": Nhiệm vụ của tôi mo o MOI NOI (nut trong so Nhiem vu, -527/0/8 -
+        // may chu khong kiem vi tri) - ghi duong do truoc, Quầy đổi thưởng chi la mot cach.
         d.moTa = (d.nhom == 1 ? "Xong! Nhận thưởng ở: " : "Mục tiêu: " + d.muc + " (" + d.da + "/" + d.can + ")." + cach + " Nhận thưởng ở: ")
-                + KhoaBanDo.DUONG + com.htbb.pokemon.DuongMenu.DANG_LAM + "." + (d.khoa.isEmpty() || d.nhom == 1 ? "" : " " + d.khoa);
+                + com.htbb.pokemon.DuongMenu.NHAN_THUONG_MOI_NOI + (d.khoa.isEmpty() || d.nhom == 1 ? "" : " " + d.khoa);
         return d;
     }
 
@@ -425,6 +427,13 @@ public final class MucTieuNhiemVuGame {
             } else {
                 // sua-duong-gym: client 0.9.14 chi co nut Huỷ o the cua ai -> buoc ha Gym hoi thach dau ngay (khong huy)
                 final ConcurrentHashMap<String, long[]> t = NhiemVuEngine.td(p);
+                final long[] v = t == null ? null : t.get(ma);
+                if (v != null && v[1] == 1) {
+                    NhiemVuEngine.chonDangLam(p, ma); // buoc da xong: nut tren the (client cu chi co Huỷ) = nhan thuong tai cho
+                    MessageCreator.createMsgCharQuest(p, 1);
+                    MessageCreator.createMsgCharQuest(p, 2);
+                    return;
+                }
                 final String khong = "Cửa ải không huỷ được (mở bản đồ).";
                 if (!GymLauDai.hoiNeuGym(p, NhiemVuEngine.MAU.get(ma), t == null ? null : t.get(ma), khong)) {
                     SoTayLauDai.bao(p, khong + " Xem ở: " + KhoaBanDo.DUONG + com.htbb.pokemon.DuongMenu.DANG_LAM + ".");

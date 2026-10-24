@@ -35,6 +35,13 @@ public final class DuongMenu {
     /** Quay -> Nhiệm vụ của tôi -> (muc con): Nhiệm vụ của tôi la muc thang o quay, dau danh sach. */
     public static final String DUONG_NHIEM_VU = duong(QUAY, NHIEM_VU) + MUI;
 
+    /**
+     * Noi nhan thuong nhiem vu (chi tiet the cua ai): "Nhiệm vụ của tôi → Đang làm" mo duoc o MOI NOI (nut «Mở Nhiệm vụ của
+     * tôi» trong so Nhiem vu / -527/0/8) - khong bat nguoi choi ve Quầy đổi thưởng (bao loi 24/10/2026).
+     */
+    public static final String NHAN_THUONG_MOI_NOI = NHIEM_VU + MUI + DANG_LAM + " (nút «Mở " + NHIEM_VU
+            + "» trong sổ Nhiệm vụ, ở đâu cũng được - không cần về " + QUAY + ").";
+
     private DuongMenu() {
     }
 

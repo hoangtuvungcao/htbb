@@ -38,6 +38,12 @@ public class Monster extends LiveActor {
     public int dmove;
     public boolean isDead;
     public boolean isBoss;
+    /**
+     * Quai trieu hoi mot lan (boss Gym / boss the gioi / de cua boss - BossLauDai): chet hay bi go thi KHONG hoi sinh
+     * (Monster.update), Region / MapVongLap go khoi bang quai qua hang tempRemoveMonster (BossLauDai.goKhoiBang). Truoc
+     * bao loi 24/10/2026 boss Gym bi ha xong 6 giay sau hien lai day mau (timeReBorn) thanh boss mo coi khong ai danh duoc.
+     */
+    public volatile boolean khongHoiSinh;
     public long bornTime;
     public Char target;
     public int level;
@@ -609,6 +615,9 @@ public class Monster extends LiveActor {
     }
 
     public void initInfo() {
+        if (this.khongHoiSinh) {
+            return; // quai trieu hoi mot lan: khong dat lai mau / hoi sinh
+        }
         this.bornTime = System.currentTimeMillis();
         this.isDead = false;
         this.timeOutPoinson = 0L;
@@ -630,6 +639,9 @@ public class Monster extends LiveActor {
     @Override
     public void update() {
         this.kiemDiemSinh();
+        if (this.isDead && this.khongHoiSinh) {
+            return; // boss Gym / the gioi / de: khong bao gio hoi sinh (cho go khoi bang quai)
+        }
         if (this.isDead) {
             final long now = System.currentTimeMillis();
             if (now > this.bornTime && this.idTemplate != 83) {

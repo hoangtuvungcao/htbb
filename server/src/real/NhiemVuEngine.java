@@ -312,7 +312,7 @@ public final class NhiemVuEngine {
                 v[0] = Math.min(m.soLuong, v[0] + n);
                 if (v[0] >= m.soLuong) {
                     v[1] = 1;
-                    LauDaiNhanVat.bao(p, "Hoàn thành nhiệm vụ: " + m.ten + ". Nhận thưởng: " + com.htbb.pokemon.KhoaBanDo.DUONG + com.htbb.pokemon.DuongMenu.DANG_LAM + ".");
+                    LauDaiNhanVat.bao(p, "Hoàn thành nhiệm vụ: " + m.ten + ". Nhận thưởng: " + com.htbb.pokemon.DuongMenu.NHAN_THUONG_MOI_NOI);
                 }
                 luu(p, m.ma, v);
             }

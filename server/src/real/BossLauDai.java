@@ -37,6 +37,8 @@ public final class BossLauDai {
         final long lan;
         final HashMap<Integer, long[]> diem = new HashMap<Integer, long[]>();
         final HashMap<Integer, Char> nguoi = new HashMap<Integer, Char>();
+        /** De (goiDe) cua boss nay - go cung boss (Gym: thang / thua / huy). */
+        final List<Monster> de = new ArrayList<Monster>();
         int[] niem; // {x, y, r, hetHanMsThap, idTarget}
         long niemHet;
         Char niemMucTieu;
@@ -49,6 +51,8 @@ public final class BossLauDai {
     }
 
     private static final WeakHashMap<Monster, TrangThai> BOSS = new WeakHashMap<Monster, TrangThai>();
+    /** De -> trang thai boss cha (de cua boss Gym: chu danh duoc trong lang, go cung boss). */
+    private static final WeakHashMap<Monster, TrangThai> DE = new WeakHashMap<Monster, TrangThai>();
 
     /**
      * Phan thuong (chuoi DatabaseGiftCode.applyItemString): luong khoa. Da nang cap nam trong HOP (Hop vang /
@@ -144,6 +148,16 @@ public final class BossLauDai {
                 de.level = boss.level;
                 de.id = RealController.intance.idGen.getID(1, "de boss lau dai");
                 de.region = boss.region;
+                de.khongHoiSinh = true; // truoc: de "tu bien mat" chi la ghi chu - that ra hoi sinh mai mai sau 6 giay
+                synchronized (BossLauDai.class) {
+                    final TrangThai cha = BOSS.get(boss);
+                    if (cha == null) {
+                        RealController.intance.idGen.putID(de.id, 1, "de boss lau dai (boss da go)");
+                        return; // boss vua bi go: khong goi de mo coi
+                    }
+                    cha.de.add(de);
+                    DE.put(de, cha);
+                }
                 map.addMonster(de, boss.inCountry, boss.region);
             }
         } catch (final Exception e) {
@@ -218,6 +232,7 @@ public final class BossLauDai {
             b.level = cap > 0 ? cap : t.level;
             b.id = RealController.intance.idGen.getID(1, "boss lau dai");
             b.isBoss = true;
+            b.khongHoiSinh = true; // boss trieu hoi mot lan: chet / het gio thi go, khong hoi sinh
             b.region = region;
             if (hp > 0) {
                 b.maxhp = hp;
@@ -247,29 +262,73 @@ public final class BossLauDai {
     }
 
     /**
-     * {@code m} la boss Gym con song cua chinh {@code p} (1 dau 1). MapDanhNhau / MapTown: duong danh quai cu bo qua MOI
-     * don trong lang Pewter / Blackthorn / Cianwood (mapIDLoadMap 0/70/80) va quai cung nuoc o Cao nguyen 201 - nhung
-     * Thach dau Gym trieu hoi boss NGAY CANH nguoi choi o ban do dang dung (thuong la Pewter) nen danh mai khong mat HP
-     * (bao loi 24/10/2026 "danh ma khong gay duoc 1 ti sat thuong nao"). Rieng boss Gym cua minh thi duoc danh.
+     * Mo tran Gym cho {@code p} - NGUYEN TU (khoa lop): moi nhan vat toi da MOT tran Gym dang mo. Da co tran -> tra boss
+     * cu, {@code moi[0] = false}, khong trieu hoi them (bam hai lan / hai cua - So tay, muc tat Quầy đổi thưởng, hop 95 -
+     * deu chi tro ve boss dang co). Bao loi 24/10/2026 "2 Truong Gym xuat hien cung luc".
+     * @return boss (moi hoac dang co) hoac null neu trieu hoi loi.
+     */
+    static Monster moGym(final Char p, final int stt, final MonsterTemplate t, final int cap, final int hp, final int tanCong,
+            final int thu, final long ms, final boolean[] moi) {
+        synchronized (BossLauDai.class) {
+            final Monster cu = gymCua(p);
+            if (cu != null) {
+                moi[0] = false;
+                return cu;
+            }
+            final Monster b = trieuHoi(p.map, t, p.x + 48, p.y, p.inCountry, p.region, cap, hp, tanCong, thu);
+            if (b != null) {
+                datGym(b, stt, p, ms);
+            }
+            moi[0] = b != null;
+            return b;
+        }
+    }
+
+    /** Boss Gym con song, chua het gio cua {@code p}; null = khong co. */
+    static synchronized Monster gymCua(final Char p) {
+        if (p == null) {
+            return null;
+        }
+        final long bay = com.htbb.pokemon.DongHo.bay();
+        for (final java.util.Map.Entry<Monster, TrangThai> e : BOSS.entrySet()) {
+            final Monster m = e.getKey();
+            if (e.getValue().gym > 0 && e.getValue().chuGym == p.charDBID && m != null && m.hp > 0 && !m.isDead
+                    && e.getValue().hetGioGym > bay) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    /** Giay con lai cua tran Gym dang mo cua {@code p} (0 = khong co). */
+    static synchronized long giayConGym(final Char p) {
+        final Monster m = gymCua(p);
+        final TrangThai t = m == null ? null : BOSS.get(m);
+        return t == null ? 0L : Math.max(0L, (t.hetGioGym - com.htbb.pokemon.DongHo.bay()) / 1000L);
+    }
+
+    /**
+     * {@code m} la boss Gym con song cua chinh {@code p} (1 dau 1) hoac de cua boss do. MapDanhNhau / MapTown: duong danh
+     * quai cu bo qua MOI don trong lang Pewter / Blackthorn / Cianwood (mapIDLoadMap 0/70/80) va quai cung nuoc o Cao nguyen
+     * 201 - nhung Thach dau Gym trieu hoi boss NGAY CANH nguoi choi o ban do dang dung (thuong la Pewter) nen danh mai khong
+     * mat HP (bao loi 24/10/2026 "danh ma khong gay duoc 1 ti sat thuong nao"). Rieng boss Gym (va de) cua minh thi duoc danh.
      */
     static synchronized boolean laGymCua(final Monster m, final Char p) {
         if (m == null || p == null || m.isDead || m.hp <= 0) {
             return false;
         }
-        final TrangThai t = BOSS.get(m);
+        TrangThai t = BOSS.get(m);
+        if (t == null) {
+            t = DE.get(m);
+        }
         return t != null && t.gym > 0 && t.chuGym == p.charDBID;
     }
 
     /** Boss Gym dang mo cua nhan vat (stt) hoac 0. */
     static synchronized int gymDangDanh(final Char p) {
-        final long bay = com.htbb.pokemon.DongHo.bay();
-        for (final java.util.Map.Entry<Monster, TrangThai> e : BOSS.entrySet()) {
-            if (e.getValue().gym > 0 && e.getValue().chuGym == p.charDBID && e.getKey() != null && e.getKey().hp > 0
-                    && e.getValue().hetGioGym > bay) {
-                return e.getValue().gym;
-            }
-        }
-        return 0;
+        final Monster m = gymCua(p);
+        final TrangThai t = m == null ? null : BOSS.get(m);
+        return t == null ? 0 : t.gym;
     }
 
     /**
@@ -287,28 +346,172 @@ public final class BossLauDai {
         return false;
     }
 
-    /** Moi 5 giay: boss Gym het gio thi bien mat (thua). */
+    /** Ly do go boss Gym (GymLauDai.baoHuy). */
+    static final int HUY_HET_GIO = 1;
+    static final int HUY_ROI_BAN_DO = 2;
+    static final int HUY_THOAT = 3;
+
+    /**
+     * Moi 5 giay (LauDaiJob): don tran Gym - het 10 phut (thua), chu roi ban do / khu / thoat game (huy), boss da guc ma
+     * chua qua Monster.onDropItem (vd guc vi doc - chi chu gay duoc sat thuong: tinh thang, mot lan). Moi boss bi go: goi
+     * 90 cho moi nguoi trong khu + go khoi bang quai (khong hoi sinh). Khong tham so: dung danh sach nhan vat online.
+     */
     static void donGymHetGio() {
-        final List<Monster> het = new ArrayList<Monster>();
+        donGym(null);
+    }
+
+    /** {@code online} (test): charDBID -> Char; null = CharManager. */
+    static void donGym(final java.util.Map<Integer, Char> online) {
+        final List<Object[]> go = new ArrayList<Object[]>();
         final long bay = com.htbb.pokemon.DongHo.bay();
         synchronized (BossLauDai.class) {
             for (final java.util.Map.Entry<Monster, TrangThai> e : BOSS.entrySet()) {
-                if (e.getValue().gym > 0 && e.getValue().hetGioGym < bay && e.getKey() != null) {
-                    het.add(e.getKey());
+                final Monster m = e.getKey();
+                final TrangThai t = e.getValue();
+                if (m == null || t.gym <= 0) {
+                    continue;
                 }
+                final Char chu = online != null ? online.get(Integer.valueOf(t.chuGym)) : timChar(t.chuGym);
+                final int ly;
+                if (m.isDead || m.hp <= 0) {
+                    ly = 0; // da guc: thang
+                } else if (t.hetGioGym < bay) {
+                    ly = HUY_HET_GIO;
+                } else if (chu == null || chu.exit) {
+                    ly = HUY_THOAT;
+                } else if (chu.map != m.map || chu.region != m.region || chu.inCountry != m.inCountry) {
+                    ly = HUY_ROI_BAN_DO;
+                } else {
+                    continue;
+                }
+                go.add(new Object[]{m, t, Integer.valueOf(ly), chu});
             }
-            for (final Monster m : het) {
-                BOSS.remove(m);
+            for (final Object[] o : go) {
+                BOSS.remove(o[0]);
             }
         }
-        for (final Monster m : het) {
+        for (final Object[] o : go) {
+            final Monster m = (Monster) o[0];
+            final TrangThai t = (TrangThai) o[1];
+            final int ly = ((Integer) o[2]).intValue();
+            goBoss(m, t);
+            if (ly == 0) {
+                GymLauDai.khiHa(t.gym, t.chuGym);
+            } else {
+                GymLauDai.baoHuy((Char) o[3], t.gym, ly);
+            }
+        }
+    }
+
+    static Char timChar(final int charDBID) {
+        try {
+            return CharManager.instance == null ? null : CharManager.instance.getCharByCharDbID(charDBID);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Huy NGAY tran Gym cua {@code p} (thoat game / mat ket noi - CharManager.kickPlayer; vao ban do khac - goi 12 -500).
+     * {@code chiKhiKhacBanDo}: chi huy khi boss khong cung ban do / khu voi {@code p}.
+     */
+    static void huyGymCua(final Char p, final boolean chiKhiKhacBanDo) {
+        if (p == null) {
+            return;
+        }
+        Monster m = null;
+        TrangThai t = null;
+        synchronized (BossLauDai.class) {
+            for (final java.util.Map.Entry<Monster, TrangThai> e : BOSS.entrySet()) {
+                if (e.getValue().gym > 0 && e.getValue().chuGym == p.charDBID && e.getKey() != null) {
+                    final Monster k = e.getKey();
+                    if (chiKhiKhacBanDo && k.map == p.map && k.region == p.region && k.inCountry == p.inCountry) {
+                        return;
+                    }
+                    m = k;
+                    t = e.getValue();
+                    break;
+                }
+            }
+            if (m == null) {
+                return;
+            }
+            BOSS.remove(m);
+        }
+        final boolean guc = m.isDead || m.hp <= 0; // doc TRUOC goBoss (goBoss dat hp = 0)
+        goBoss(m, t);
+        if (guc) {
+            GymLauDai.khiHa(t.gym, t.chuGym); // guc dung luc roi di (chua kip onDropItem): van tinh thang
+        } else if (chiKhiKhacBanDo) {
+            GymLauDai.baoHuy(p, t.gym, HUY_ROI_BAN_DO);
+        }
+    }
+
+    /**
+     * Go boss (va de) khoi ban do cho MOI nguoi: danh dau guc + khong hoi sinh, goi 90 (actorDie) cho ca khu, xep vao hang
+     * go cua khu (tempRemoveMonster - Region / MapVongLap go trong luong cua ban do, khong dung bang quai dang duyet).
+     */
+    static void goBoss(final Monster m, final TrangThai t) {
+        final List<Monster> ds = new ArrayList<Monster>();
+        ds.add(m);
+        if (t != null) {
+            synchronized (BossLauDai.class) {
+                ds.addAll(t.de);
+                for (final Monster d : t.de) {
+                    DE.remove(d);
+                }
+                t.de.clear();
+            }
+        }
+        for (final Monster q : ds) {
+            goQuai(q);
+        }
+    }
+
+    static void goQuai(final Monster q) {
+        if (q == null) {
+            return;
+        }
+        q.khongHoiSinh = true;
+        final boolean daGuc = q.isDead;
+        q.hp = 0;
+        q.isDead = true;
+        q.target = null;
+        q.bornTime = Long.MAX_VALUE;
+        final Map map = q.map;
+        if (map == null) {
+            return;
+        }
+        if (!daGuc) {
             try {
-                m.hp = 0;
-                m.isDead = true;
-                m.bornTime = Long.MAX_VALUE; // khong hoi sinh
+                final Message m = new Message(90);
+                m.dos.writeShort(q.id);
+                m.dos.writeByte(q.cat);
+                map.sendAllPlayer(m, q.inCountry, q.region);
             } catch (final Exception ignored) {
             }
         }
+        map.removeDynamicMonster(q, q.inCountry, q.region);
+    }
+
+    /**
+     * Hang go quai cua khu (Region / MapVongLap, luong ban do): quai trieu hoi mot lan ({@link Monster#khongHoiSinh}) thi go
+     * khoi {@code bang} - ke ca khi da guc (hang cu bo qua quai hp <= 0) - chi khi o trong bang dung la con nay, roi tra id.
+     * @return true = da xu ly (nguoi goi bo qua nhanh cu).
+     */
+    @SuppressWarnings("rawtypes")
+    public static boolean goKhoiBang(final Map map, final java.util.Hashtable bang, final Monster mt) {
+        if (mt == null || !mt.khongHoiSinh) {
+            return false;
+        }
+        try {
+            if (mt.map == map && bang != null && bang.get(Short.valueOf(mt.id)) == mt) {
+                bang.remove(Short.valueOf(mt.id));
+                RealController.intance.idGen.putID(mt.id, 1, "go boss trieu hoi");
+            }
+        } catch (final Exception ignored) {
+        }
+        return true;
     }
 
     /** Danh dau quai la boss the gioi (dong gop -99 + thuong theo dong gop). */
@@ -366,12 +569,15 @@ public final class BossLauDai {
 
     /** Monster.onDropItem (boss chet): phat thuong boss the gioi theo dong gop. */
     static void khiChet(final Monster m) {
-        if (!LauDai.bat()) {
-            return;
-        }
         final TrangThai t;
         synchronized (BossLauDai.class) {
             t = BOSS.remove(m);
+        }
+        if (m.khongHoiSinh) {
+            goBoss(m, t); // thang: go boss (va de) khoi ban do cho moi nguoi ngay, khong hoi sinh
+        }
+        if (!LauDai.bat()) {
+            return;
         }
         if (t != null && t.gym > 0) {
             GymLauDai.khiHa(t.gym, t.chuGym);
@@ -432,6 +638,7 @@ public final class BossLauDai {
             b.level = t.level;
             b.id = RealController.intance.idGen.getID(1, "boss the gioi lau dai");
             b.isBoss = true;
+            b.khongHoiSinh = true; // boss the gioi: ha xong khong hoi sinh (truoc: 6 giay sau hien lai day mau, khong thuong)
             b.region = 0;
             map.addMonster(b, 0, 0);
             datTheGioi(b);

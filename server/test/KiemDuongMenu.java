@@ -433,7 +433,7 @@ final class KiemDuongMenu {
             Kiem.dung("chi tiet cua ai ha Gym: muc tat + duong day du + Gym danh o dau", mt != null
                     && mt.startsWith("Mục tiêu: Hạ Trưởng Gym Pewter: Golem (0/1).") && mt.contains("«Thách đấu Gym Pewter (Golem)»")
                     && mt.contains("Quầy đổi thưởng → Sổ tay huấn luyện → Thách đấu Gym → Gym Pewter") && mt.contains("không dịch chuyển")
-                    && mt.endsWith("Nhận thưởng ở: Quầy đổi thưởng → Nhiệm vụ của tôi → Đang làm."));
+                    && mt.endsWith("Nhận thưởng ở: " + DuongMenu.NHAN_THUONG_MOI_NOI));
             Kiem.sai("chi tiet cua ai ha Gym: khong ghi 'Chỉ tính quái hạ ở đúng bản đồ'", mt != null && mt.contains("Chỉ tính quái"));
             Kiem.bang("chi tiet cua ai ha Gym: duong dung cay menu", "[]", DuongMenu.kiem(mt, cay).toString());
 
@@ -447,8 +447,8 @@ final class KiemDuongMenu {
 
             // ma nguon: moi duong deu qua thachDauStt
             final String gl = doc(Paths.get("src/real/GymLauDai.java"));
-            Kiem.bang("GymLauDai: mot cho trieu hoi boss Gym", Integer.valueOf(1),
-                    Integer.valueOf(gl.split(Pattern.quote("BossLauDai.trieuHoi("), -1).length - 1));
+            Kiem.bang("GymLauDai: mot cho trieu hoi boss Gym (BossLauDai.moGym - nguyen tu, 1 tran / nhan vat)", Integer.valueOf(1),
+                    Integer.valueOf(gl.split(Pattern.quote("BossLauDai.moGym("), -1).length - 1));
             Kiem.dung("So tay MENU_GYM -> GymLauDai.chon", doc(Paths.get("src/real/SoTayLauDai.java")).contains("bao(p, GymLauDai.chon(p, idOption));"));
             Kiem.dung("hop 95 Gym -> GymLauDai.thachDauStt", doc(Paths.get("src/real/KhoaBanDoGame.java")).contains("SoTayLauDai.bao(p, GymLauDai.thachDauStt(p, h.gym));"));
             Kiem.dung("-90 -> MenuDoiThuong (mo + chon)", doc(Paths.get("src/real/cmd/RequestNPCInfoHandler.java")).contains("real.MenuDoiThuong.mo(p);")

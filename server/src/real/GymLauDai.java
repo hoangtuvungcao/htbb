@@ -128,8 +128,12 @@ public final class GymLauDai {
         if (p.lvDetail.lv < so(g[3])) {
             return "Cần đạt cấp " + so(g[3]) + ".";
         }
-        if (BossLauDai.gymDangDanh(p) > 0) {
-            return "Bạn đang thách đấu một Gym.";
+        final String dang = dangDanh(p);
+        if (dang != null) {
+            return dang; // mot tran / nhan vat: bam lai (hai cua, bam dup) chi chi ve boss dang co
+        }
+        if (!banDoDuocTrieu(p.map)) {
+            return "Không thể thách đấu Gym ở khu vực này. Hãy ra bản đồ thường hoặc về làng rồi thử lại.";
         }
         final int tuan = NhiemVuLauDai.tuan(com.htbb.pokemon.DongHo.bay());
         synchronized (h) {
@@ -145,16 +149,78 @@ public final class GymLauDai {
         if (t == null || p.map == null) {
             return "Không triệu hồi được trưởng Gym.";
         }
-        final Monster b = BossLauDai.trieuHoi(p.map, t, p.x + 48, p.y, p.inCountry, p.region, so(g[3]), so(g[6]), so(g[7]), so(g[8]));
+        final boolean[] moi = {false};
+        final Monster b = BossLauDai.moGym(p, stt, t, so(g[3]), so(g[6]), so(g[7]), so(g[8]), THOI_GIAN_MS, moi);
         if (b == null) {
             return "Không triệu hồi được trưởng Gym.";
         }
-        BossLauDai.datGym(b, stt, p, THOI_GIAN_MS);
+        if (!moi[0]) {
+            final String d = dangDanh(p); // luong khac vua mo tran cung luc (bam dup): khong trieu hoi them
+            return d != null ? d : "Bạn đang thách đấu một Gym.";
+        }
         try {
             Database.instance.saveOrtherLog("", p.charname, "thach dau gym " + stt, "laudai");
         } catch (final Exception ignored) {
         }
         return g[5] + " xuất hiện ngay cạnh bạn! Hãy đánh tay trong 10 phút (nổi giận sau " + so(g[9]) + " phút).";
+    }
+
+    /**
+     * Ban do trieu hoi duoc boss Gym: ban do thuong (lop Map) va Cao nguyen (MapTown) - khong trong dau truong, lien dau,
+     * pho ban, ban do bang, nui chau bau... (chong lam dung, va cac ban do do co vong lap quai rieng).
+     */
+    static boolean banDoDuocTrieu(final Map m) {
+        return m != null && (m.getClass() == Map.class || m instanceof MapTown) && !m.isMapLienDau();
+    }
+
+    /** Dang co tran Gym: cau chi ve boss dang co (ten, cach bao xa, giay con lai); null = khong co. */
+    static String dangDanh(final Char p) {
+        final Monster m = BossLauDai.gymCua(p);
+        if (m == null) {
+            return null;
+        }
+        final Object[] g = gym(BossLauDai.gymDangDanh(p));
+        final long giay = BossLauDai.giayConGym(p);
+        final String ten = g == null ? "Trưởng Gym" : tenBoss(g);
+        final String o;
+        if (m.map == p.map && m.region == p.region) {
+            final int dx = (m.x - p.x) / 16;
+            final int dy = (m.y - p.y) / 16;
+            o = "ngay gần bạn (cách " + Math.max(Math.abs(dx), Math.abs(dy)) + " ô)";
+        } else {
+            o = "ở bản đồ khác";
+        }
+        return "Bạn đang thách đấu " + ten + " - " + o + ", còn " + (giay / 60) + " phút " + (giay % 60)
+                + " giây. Hạ boss này trước, không triệu hồi thêm.";
+    }
+
+    /** Sau khi ha Gym: nhan thuong buoc nhiem vu o moi noi (bao loi 24/10/2026 "ve lang mat thoi gian"). */
+    static final String SAU_THANG = "Trưởng Gym đã rời bản đồ. Nhận thưởng nhiệm vụ: "
+            + com.htbb.pokemon.DuongMenu.NHAN_THUONG_MOI_NOI;
+
+    /** "Về làng nhanh: Dây thoát hiểm (1000 xu, cửa hàng thuốc)." - gia doc tu data_potion (id 19). */
+    static String veLangNhanh() {
+        int gia = 0;
+        try {
+            gia = Map.potionTemplates2.get(19).getPrice();
+        } catch (final Exception ignored) {
+        }
+        return "Về làng nhanh: Dây thoát hiểm" + (gia > 0 ? " (" + gia + " xu, cửa hàng thuốc)" : "") + ".";
+    }
+
+    /** Tran Gym bi huy (BossLauDai.donGym / huyGymCua): bao chu (neu con online). Thua / huy deu duoc thach dau lai ngay. */
+    static void baoHuy(final Char p, final int stt, final int ly) {
+        if (p == null || p.exit) {
+            return;
+        }
+        final Object[] g = gym(stt);
+        final String ten = g == null ? "Trưởng Gym" : tenBoss(g);
+        final String vi = ly == BossLauDai.HUY_HET_GIO ? "Hết 10 phút: " + ten + " đã rời đi."
+                : ten + " đã rời đi vì bạn rời khỏi bản đồ thách đấu.";
+        try {
+            LauDaiNhanVat.bao(p, vi + " Bạn có thể thách đấu lại bất cứ lúc nào (Sổ tay huấn luyện → Thách đấu Gym).");
+        } catch (final Exception ignored) {
+        }
     }
 
     // ------------------------------------------------------------------ duong tat (buoc nhiem vu ha Gym)
@@ -223,14 +289,7 @@ public final class GymLauDai {
 
     /** BossLauDai.khiChet: boss Gym {@code stt} cua {@code idChar} bi ha. */
     static void khiHa(final int stt, final int idChar) {
-        Char p = null;
-        for (int i = 0; i < CharManager.instance.vChars.size(); i++) {
-            final Char c = CharManager.instance.vChars.elementAt(i);
-            if (c != null && c.charDBID == idChar) {
-                p = c;
-                break;
-            }
-        }
+        final Char p = BossLauDai.timChar(idChar);
         final Object[] g = gym(stt);
         if (p == null || g == null) {
             return;
@@ -256,7 +315,7 @@ public final class GymLauDai {
         NhiemVuEngine.suKien(p, "ha_gym", String.valueOf(stt), 1);
         if (lanDau) {
             vuKhiHoanMy(p, (String) g[1]);
-            LauDaiNhanVat.bao(p, "Chiến thắng! Nhận " + g[2] + ".");
+            LauDaiNhanVat.bao(p, "Chiến thắng! Nhận " + g[2] + ". " + SAU_THANG + " " + veLangNhanh());
         } else {
             for (final Object[] r : NoiDungLauDai.ROI) {
                 if ("gym_tuan".equals(r[0]) && g[1].equals(r[1])) {

@@ -394,6 +394,9 @@ class MapVongLap {
 
                 while (((Vector) map.tempRemoveMonster.get(1)).size() > 0) {
                     Monster mt = (Monster) ((Vector) map.tempRemoveMonster.get(1)).remove(0);
+                    if (BossLauDai.goKhoiBang(map, (Hashtable) map.monsters.get(1), mt)) {
+                        continue; // boss Gym / the gioi: go ca khi da guc
+                    }
                     if (mt.map != null && mt.map.mapId == map.mapId && mt.hp > 0) {
                         ((Hashtable) mt.map.monsters.get(1)).remove(mt.id);
                     }
@@ -678,6 +681,9 @@ class MapVongLap {
 
                 while (((Vector) map.tempRemoveMonster.get(2)).size() > 0) {
                     Monster mt = (Monster) ((Vector) map.tempRemoveMonster.get(2)).remove(0);
+                    if (BossLauDai.goKhoiBang(map, (Hashtable) map.monsters.get(2), mt)) {
+                        continue; // boss Gym / the gioi: go ca khi da guc
+                    }
                     if (mt.map != null && mt.map.mapId == map.mapId && mt.hp > 0) {
                         ((Hashtable) mt.map.monsters.get(2)).remove(mt.id);
                     }
@@ -905,6 +911,9 @@ class MapVongLap {
 
                 while (((Vector) map.tempRemoveMonster.get(0)).size() > 0) {
                     Monster mt = (Monster) ((Vector) map.tempRemoveMonster.get(0)).remove(0);
+                    if (BossLauDai.goKhoiBang(map, (Hashtable) map.monsters.get(0), mt)) {
+                        continue; // boss Gym / the gioi: go ca khi da guc
+                    }
                     if (mt.map != null && mt.map.mapId == map.mapId && mt.hp > 0) {
                         ((Hashtable) mt.map.monsters.get(0)).remove(mt.id);
                     }

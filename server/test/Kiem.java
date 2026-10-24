@@ -279,6 +279,19 @@ public final class Kiem {
             }
         };
         real.KiemVeDichChuyen.chay();
+        Kiem.nhom("Gym mot tran / nhan vat: boss go khi thang / het gio / roi ban do / thoat, khong hoi sinh (bao loi 24/10/2026)");
+        real.KiemGymMotTran.BAO = new real.KiemGymMotTran.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        try {
+            real.KiemGymMotTran.chay();
+        } catch (final Exception e) {
+            e.printStackTrace();
+            Kiem.bang("KiemGymMotTran khong nem loi", "", String.valueOf(e));
+        }
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);
