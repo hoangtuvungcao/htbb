@@ -11,10 +11,10 @@ import javax.microedition.rms.RecordStore;
  *
  * Bo cuc RMS: moi muc mot kho "gc&lt;i&gt;_&lt;o&gt;" (i = vi tri lenh trong LOAI, o = o 0 / 1; J2ME chi o 0): ban ghi 1 =
  * dau [int MAGIC][i8 lenh][i64 bam][i32 do dai][i32 thu tu][i16 so khuc], ban ghi 2.. = du lieu theo khuc &lt;= KHUC
- * byte (khong cap phat mang lon - may J2ME heap nho). Bam = FNV-1a 64 bit cua du lieu goi (giong server).
+ * byte. Bam = FNV-1a 64 bit cua du lieu goi (giong server). Chi PC / APK (co giai nen); J2ME khong dung kho (coKho).
  *
  * An toan: chi KHAI muc doc lai du va dung bam ngay luc dang nhap. Goi -117 kieu 1 ma doc kho hong -> xoa het kho, tat kho
- * trong phien, ngat ket noi (tu noi lai se nhan du goi). Kho day / may J2ME con it cho -> khong luu (lan sau van nhan du).
+ * trong phien, ngat ket noi (tu noi lai se nhan du goi). Kho day -> khong luu (lan sau van nhan du).
  */
 public final class KhoGoi {
     private KhoGoi() {
@@ -25,14 +25,10 @@ public final class KhoGoi {
     static final int[] LOAI = {25, 26, 1, -108, 105};
     static final int MAGIC = 0x48544743;   // "HTGC"
     static final int KHUC = 8192;
-    /** J2ME: chi luu khi kho con trong >= do dai goi + bay nhieu (chua cho sprite / cai dat). */
-    static final int CHUA_J2ME = 262144;
-    /** J2ME: chi luu khi heap trong con >= do dai goi + bay nhieu. */
-    static final int HEAP_J2ME = 1048576;
 
     /** tat trong phien (kho hong / khong mo duoc RMS) */
     static boolean tat;
-    private static int coRms = -1;
+    static int coRms = -1;
     /** khoa (lenh:bam:dai) -> ten kho, cac muc da kiem luc khai */
     private static final Hashtable daKiem = new Hashtable();
     private static int choLenh = 999;
@@ -78,9 +74,13 @@ public final class KhoGoi {
 
     static final long BAM_DAU = 0xcbf29ce484222325L;
 
-    /** Co RMS dung duoc khong (mo thu mot lan). */
+    /**
+     * Co dung kho khong: co RMS (mo thu mot lan) va KHONG phai J2ME. J2ME (khong nen) khong dung kho: do tren gia lap
+     * heap 7 MB (RMS nam trong heap), luu goi 25 / 26 lam 2/3 lan vao game het bo nho; may that khong biet RMS nam o dau -
+     * giu dung giao thuc 0.9.14 (nhan du goi) cho chac.
+     */
     static boolean coKho() {
-        if (tat) {
+        if (tat || laJ2me()) {
             return false;
         }
         if (coRms < 0) {
@@ -355,13 +355,6 @@ public final class KhoGoi {
         if (i < 0 || dn == null) {
             return false;
         }
-        if (laJ2me()) {
-            // J2ME: nhieu may / gia lap giu RMS trong heap - chi luu khi con trong >= goi + HEAP_J2ME (khong thi OOM)
-            Runtime rt = Runtime.getRuntime();
-            if (rt.freeMemory() < (long) dai + HEAP_J2ME) {
-                return false;
-            }
-        }
         byte[][] ds = (byte[][]) dn[0];
         int[] tu = (int[]) dn[1];
         long h = BAM_DAU;
@@ -410,7 +403,7 @@ public final class KhoGoi {
         boolean xong = false;
         try {
             r = RecordStore.openRecordStore(t, true);
-            int can = dai + 4096 + (laJ2me() ? CHUA_J2ME : 0);
+            int can = dai + 4096;
             if (r.getSizeAvailable() < can) {
                 return false;   // kho may con it cho: khong luu
             }

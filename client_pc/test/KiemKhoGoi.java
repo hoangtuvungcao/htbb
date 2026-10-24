@@ -77,6 +77,20 @@ public final class KiemKhoGoi {
     }
 
     public static void main(String[] a) throws Exception {
+        // canh gio: kiem khong bao gio duoc treo (lan thu J2ME heap nho 10/2026 treo 5 gio) - qua 120 s la HONG
+        Thread canh = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(120000L);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                System.out.println("HONG: KiemKhoGoi qua 120 s (treo)");
+                System.exit(2);
+            }
+        });
+        canh.setDaemon(true);
+        canh.start();
         java.io.File du = java.nio.file.Files.createTempDirectory("kiem_kho_goi").toFile();
         System.setProperty("htbb.duLieu", du.getAbsolutePath());
         System.setProperty("java.awt.headless", "true");
@@ -165,6 +179,23 @@ public final class KiemKhoGoi {
         KhoGoi.nhan(goi117(0, 26, bam(to), to.length));
         KhoGoi.sauXuLy(new Message((byte) 26, to));
         kiem(KhoGoi.soLuu == truoc && khai().length == 0, "goi vuot cho trong kho -> khong luu");
+
+        // KHONG co RMS (may khong mo duoc kho / J2ME): khong bao bit, khai 0, goi -117 kieu 0 bo qua va KHONG luu, kieu 1
+        // (khong the xay ra vi khong khai) -> null = ngat; lan noi sau van khong bao bit -> may chu gui du. Khong vong lap.
+        KhoGoi.coRms = 0;
+        KhoGoi.tat = false;
+        int luu0 = KhoGoi.soLuu;
+        kiem(KhoGoi.khaNang() == 0, "khong RMS: khong bao bit kho");
+        kiem(khai().length == 0, "khong RMS: khai 0 muc");
+        byte[] dk = ngauNhien(30000, 11);
+        kiem(KhoGoi.nhan(goi117(0, 105, bam(dk), dk.length)) == KhoGoi.BO_QUA, "khong RMS: -117 kieu 0 bo qua");
+        KhoGoi.sauXuLy(new Message((byte) 105, dk));
+        kiem(KhoGoi.soLuu == luu0, "khong RMS: goi du van xu ly, khong luu");
+        long t0 = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            KhoGoi.nhan(goi117(1, 105, bam(dk), dk.length));
+        }
+        kiem(KhoGoi.khaNang() == 0 && System.currentTimeMillis() - t0 < 5000, "khong RMS: dung kho that bai lap lai van tra ngay, khong bat lai kho");
 
         System.out.println("KiemKhoGoi: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);

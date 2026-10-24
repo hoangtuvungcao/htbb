@@ -34,6 +34,8 @@ public final class KhoGoi {
     public static final int KHAI_TOI_DA = 16;
     /** sv.khoGoi: 0 = tat (moi client nhan du goi nhu cu). */
     public static volatile boolean BAT = true;
+    /** -Dhtbb.khoGoiNhatKy=true: mot dong [KHO_GOI] moi goi thuoc kho (chan doan). */
+    static final boolean NHAT_KY = Boolean.getBoolean("htbb.khoGoiNhatKy");
     /** Goi nho hon nguong nay khong dang dung kho. */
     public static final int NGUONG = 2048;
 
@@ -131,6 +133,10 @@ public final class KhoGoi {
             t.dos.writeInt(vt[1]);
         } catch (Exception e) {
             return m;
+        }
+        if (NHAT_KY) {
+            com.htbb.log.Nhat.thongTin("KHO_GOI", (s.username == null ? "?" : s.username) + " lenh " + m.command + " " + vt[1] + " B "
+                    + (co ? "DUNG KHO" : "gui + luu") + " (client khai " + s.khoGoi.size() + " muc)");
         }
         if (co) {
             t.kemTheo = m.kemTheo;

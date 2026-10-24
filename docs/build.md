@@ -266,8 +266,9 @@ với máy chủ cũ vẫn chạy (không có kho gói); client cũ với máy c
 4. **Kho gói** (`io.KhoGoi`, client `network.KhoGoi`): client `BAN >= 915` giữ gói dữ liệu lớn 25 / 26 / 1 / -108 / 105 trong
    RMS (mỗi mục một kho `gc<i>_<o>`, khúc 8 KB, băm FNV-1a 64) và khai (lệnh, băm, độ dài) ở gói đăng nhập (bit khả năng 4);
    gói đã có -> máy chủ gửi `-117` kiểu 1 (21 byte) thay gói gốc, gói mới / đã đổi -> `-117` kiểu 0 + gói gốc (client lưu).
-   Chỉ khai mục đọc lại đủ và đúng băm; đọc kho hỏng lúc dùng -> xoá kho, ngắt, tự nối lại nhận đủ. J2ME: một ô / lệnh, chỉ
-   lưu khi RMS còn trống >= gói + 256 KB và heap trống >= gói + 1 MB. Đo (PC thật, trễ 150 ms, 40 KB/s): vào thế giới
+   Chỉ khai mục đọc lại đủ và đúng băm; đọc kho hỏng lúc dùng -> xoá kho, tắt kho cả phiên, ngắt, tự nối lại nhận đủ (không
+   vòng lặp); RMS không mở được / đầy -> không lưu, nhận đủ như cũ. **J2ME không dùng kho** (không báo bit 4): giả lập heap
+   7 MB giữ RMS trong heap, lưu gói 25 / 26 làm 2/3 lần vào game hết bộ nhớ. Đo (PC thật, trễ 150 ms, 40 KB/s): vào thế giới
    4,88 s / 141 KB (lần đầu) -> 1,86 s / 7-15 KB (đã có kho). Tắt: `sv.khoGoi=0`. Kiểm: `server/test/KiemKhoGoi`,
    `client_pc/test/KiemKhoGoi.java` (`network.KiemKhoGoi`).
 5. **APK 60 khung/giây** (nội suy vị trí như PC, `game.pokemon.NhipVe`): mặc định 60, bảng Chỉnh nút có "Khung hình: 60

@@ -13,7 +13,9 @@ D=$(cd "$(dirname "$0")" && pwd); J=$(cd "$D/../.." && pwd)
 B=${TMPDIR:-/tmp}/kiem_tai_j2me_lop; rm -rf "$B"; mkdir -p "$B"
 javac -nowarn -encoding UTF-8 -cp "$J/tools/microemulator.jar" -d "$B" "$D/KiemTaiJ2me.java" || exit 2
 HEAP=${4:-7168}
-exec java -Xms${HEAP}k -Xmx${HEAP}k -Djava.awt.headless=true -Dw=${W:-240} -Dh=${H:-320} -Dmanh=${MANH:-512} \
+# 0.9.15: JVM gia lap het heap (7 MB) co the khong xu ly duoc ca SIGTERM -> treo mai (lan thu 24/10/2026 treo 5 gio).
+# Luon chay duoi timeout co KILL: qua (giay cho + 120) s thi giet.
+exec timeout -k 10 $(( ${5:-150} + 120 )) java -Xms${HEAP}k -Xmx${HEAP}k -Djava.awt.headless=true -Dw=${W:-240} -Dh=${H:-320} -Dmanh=${MANH:-512} \
   -Drms=${RMS:-0} -DrmsBanGhi=${RMS_BAN_GHI:-0} -DcatSau=${CAT_SAU:-0} -DthuLai=${THU_LAI:+true} -DmongLoi=${MONG_LOI:+true} \
   -DdungMs=${DUNG_MS:-0} -DcongProxy=${CONG_PROXY:-29600} \
   -cp "$J/tools/microemulator.jar:$B" KiemTaiJ2me "$1" "$2" "$3" "${5:-150}"
