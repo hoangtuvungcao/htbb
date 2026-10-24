@@ -100,8 +100,8 @@ while IFS= read -r DONG || [ -n "$DONG" ]; do
     echo "-- $NHOM ($LOP, toi da ${GH}s) ..."
     BD=$(date +%s)
     case "$KIEU" in
-        cn) timeout -k 15 "$GH" java "${CHUNG[@]}" "${OPT[@]}" "-Dra=$RA/$NHOM.ketqua" -cp "$CP" "$LOP" "$HOST" "$CONG" "$TT" "${DOI[@]}" > "$LOG" 2>&1 ;;
-        bt) timeout -k 15 "$GH" java "${CHUNG[@]}" "${OPT[@]}" -cp "$CP" "$LOP" "$HOST" "$CONG" "${DOI[@]}" > "$LOG" 2>&1 ;;
+        cn) timeout -k 15 "$GH" java "${CHUNG[@]}" "${OPT[@]}" "-Dra=$RA/$NHOM.ketqua" -cp "$CP" "$LOP" "$HOST" "$CONG" "$TT" "${DOI[@]}" < /dev/null > "$LOG" 2>&1 ;;
+        bt) timeout -k 15 "$GH" java "${CHUNG[@]}" "${OPT[@]}" -cp "$CP" "$LOP" "$HOST" "$CONG" "${DOI[@]}" < /dev/null > "$LOG" 2>&1 ;;
         *) echo "kieu la '$KIEU' o nhom $NHOM" > "$LOG"; false ;;
     esac
     MA=$?
@@ -132,4 +132,13 @@ done < "$CONF"
 
 echo "== $SO nhom, $(( $(date +%s) - BD_TONG ))s: $(grep -c '^DAT' "$TONG") DAT, $(grep -cE '^(HONG|LOI)' "$TONG") HONG/LOI, $(grep -c '^TAT' "$TONG") tam tat"
 [ "$SO" -gt 0 ] || { echo "[LOI] khong co nhom nao duoc chay"; exit 2; }
+# Chot: moi nhom duoc chon PHAI co dong tong ket (vong doc conf bi nuot stdin = mat nhom im lang).
+CAN=0
+while read -r T1 _; do
+    case "$T1" in ''|'#'*) continue ;; esac
+    chon "${T1#!}" && CAN=$((CAN + 1))
+done < "$CONF"
+if [ "$(grep -c . "$TONG")" != "$CAN" ]; then
+    echo "[LOI] chi co $(grep -c . "$TONG")/$CAN nhom co ket qua"; exit 1
+fi
 exit $HONG
