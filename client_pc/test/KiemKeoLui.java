@@ -284,7 +284,9 @@ public class KiemKeoLui {
                 kiem(r[0] == 0, n + ": may chu khong tu choi goi di (" + r[0] + ")");
                 kiem(r[5] == 0, n + ": khong lui khi di (" + r[5] + ")");
                 kiem(r[4] >= r[2] - 1 && r[4] <= r[2] + (kc > 80 ? kc : 6 * mc.speed), n + ": dung tai cho khi danh (x danh " + r[2] + ", cuoi " + r[4] + ")");
-                kiem(r[4] == r[3], n + ": khong di / lui sau khi danh (" + r[3] + " -> " + r[4] + ")");
+                // quái gần: đứng yên sau khi đánh; quái xa: 0,3 s sau chạm có thể còn đang đuổi (tiến), không bao giờ lùi
+                if (kc <= 80) kiem(r[4] == r[3], n + ": khong di / lui sau khi danh (" + r[3] + " -> " + r[4] + ")");
+                else kiem(r[4] >= r[3], n + ": khong lui sau khi danh (" + r[3] + " -> " + r[4] + ")");
                 kiem(r[7] != 1, n + ": khong con dang di (state " + r[7] + ")");
                 kiem(r[6] == r[4], n + ": vi tri may chu = client (" + r[6] + " / " + r[4] + ")");
             }
