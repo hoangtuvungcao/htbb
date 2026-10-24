@@ -264,6 +264,7 @@ public final class HanhDong {
             return false;
         }
         Canvas.isPointerClick = false;
+        MenuNguCanh.boCho();   // 0.9.17: menu tới sau chạm này là của mục tiêu (tiêu đề = tên mục tiêu)
         boolean lai = g.focusedActor == ac;
         if (ac.catagory == 0 && !ac.isNPC() && !lai && GameScr.typeOptionFocus != 0 && !choChonNguoi(g, ac)) {
             return true;   // chế độ focus loại trừ người này: không đổi mục tiêu
@@ -532,6 +533,7 @@ public final class HanhDong {
         }
         g.focusedActor = ac;
         chon = ac;
+        MenuNguCanh.boCho();
         if (ac.catagory == 0 && ac instanceof Char && ((Char) ac).idBoss == -1 && !ac.isNPC()) {
             g.doParty();
         } else if (ac.isNPC() || ac.catagory == 2) {

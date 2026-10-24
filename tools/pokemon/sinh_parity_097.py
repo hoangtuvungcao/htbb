@@ -24,7 +24,8 @@ sec('chuoi', 'client_pc/src/htbb/pc/BanPhim.java', re.findall(r'"([^"]+)"', m.gr
 LOI_VAO_TU_DONG = [
     ('client_jar/src/game/render/screen/HudRong.java', ['"hud-tu-dong"', '"hud-tu-dong-cai-dat"', 'BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt', 'case 31:',
         '"hud-cai-dat"', 'moCaiDat();   // 0.9.9: nút Cài đặt hàng trên']),
-    ('client_jar/src/game/pokemon/ManMenu.java', ['static final int[] PHU = {I_TU_DONG,', 'return PHU;', 'game.render.screen.CauGiaoDien.moTuDong();']),
+    # 0.9.16: Nhiem vu cua toi + So tay huan luyen dung TRUOC Tu dong danh trong hang vien phu (Tu dong van luon co)
+    ('client_jar/src/game/pokemon/ManMenu.java', ['static final int[] PHU = {I_NV_CUA_TOI, I_SO_TAY, I_TU_DONG,', 'return PHU;', 'game.render.screen.CauGiaoDien.moTuDong();']),
     ('client_jar/src/game/render/screen/CauGiaoDien.java', ['public static void moTuDong()', 'BangTuDong.mo();']),
     ('client_jar/src/game/render/screen/MenuNhanh.java', ['case TU_DONG:', 'BangTuDong.ve(g);', 'BangTuDong.tick();']),
     ('client_jar/src/game/render/screen/GameScr.java', ['new Command("Tự động đánh"']),

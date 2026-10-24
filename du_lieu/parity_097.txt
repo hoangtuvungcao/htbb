@@ -994,7 +994,7 @@ moCaiDat();   // 0.9.9: nút Cài đặt hàng trên
 [ma] client_jar/src/game/pokemon/ManMenu.java
 game.render.screen.CauGiaoDien.moTuDong();
 return PHU;
-static final int[] PHU = {I_TU_DONG,
+static final int[] PHU = {I_NV_CUA_TOI, I_SO_TAY, I_TU_DONG,
 
 [ma] client_jar/src/game/render/screen/CauGiaoDien.java
 BangTuDong.mo();

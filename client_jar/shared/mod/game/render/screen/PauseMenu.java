@@ -22,7 +22,7 @@ import javax.microedition.lcdui.Graphics;
 public class PauseMenu
 extends Screen {
     public static PauseMenu me;
-    private String[][] name = new String[][]{{"", "T\u1ef1 \u0111\u1ed9ng \u0111\u00e1nh", "Hi\u1ec7u \u1ee9ng", "Ti\u1ec7n \u00edch", "Ngo\u1ea1i h\u00ecnh"}, {"C\u00e0i \u0111\u1eb7t", "C\u1ea5u h\u00ecnh", "B\u1ea3n \u0111\u1ed3 l\u1edbn", "B\u1eadt/t\u1eaft giao di\u1ec7n", "H\u01b0\u1edbng d\u1eabn", "\u00c2m thanh", "B\u1eadt/t\u1eaft l\u1eddi m\u1eddi", "B\u1eadt/t\u1eaft auto \u0111\u00e1nh", "Ch\u1ebf \u0111\u1ed9 ch\u1ecdn m\u1ee5c ti\u00eau", "Gi\u1ea5y ph\u00e9p"}, {"B\u1ea3n th\u00e2n", "H\u00e0nh trang", "K\u1ef9 n\u0103ng", "Ti\u1ec1m n\u0103ng", "Trang b\u1ecb", "Th\u00f4ng tin", "Trang b\u1ecb th\u00fa", "C\u00e2y th\u1ea7n", "C\u1ed5 v\u1eadt", "Kh\u00e1c", "T\u00fai sinh th\u00e1i"}, {"N\u1ea1p xu"}, {"Nhi\u1ec7m v\u1ee5", "S\u1ed5 nhi\u1ec7m v\u1ee5", "Nhi\u1ec7m v\u1ee5 c\u1ee7a t\u00f4i", "S\u1ed5 tay hu\u1ea5n luy\u1ec7n"}, {"PK"}, {"Kh\u00e1c", "Tin nh\u1eafn", "Nh\u00f3m", "B\u1ea1n b\u00e8", "Top nh\u00e0 v\u00f4 \u0111\u1ecbch", "Top \u0111\u1ea1i gia", "B\u1ea3ng Top", "K\u00eanh th\u1ebf gi\u1edbi", "Di\u1ec5n \u0111\u00e0n", "R\u1eddi \u0111\u1ed9i"}, {""}, {"C\u1eeda h\u00e0ng"}, {""}};
+    private String[][] name = new String[][]{{"", "T\u1ef1 \u0111\u1ed9ng \u0111\u00e1nh", "Hi\u1ec7u \u1ee9ng", "Ti\u1ec7n \u00edch", "Ngo\u1ea1i h\u00ecnh"}, {"C\u00e0i \u0111\u1eb7t", "C\u1ea5u h\u00ecnh", "B\u1ea3n \u0111\u1ed3 l\u1edbn", "B\u1eadt/t\u1eaft giao di\u1ec7n", "H\u01b0\u1edbng d\u1eabn", "\u00c2m thanh", "B\u1eadt/t\u1eaft l\u1eddi m\u1eddi", "B\u1eadt/t\u1eaft auto \u0111\u00e1nh", "Ch\u1ebf \u0111\u1ed9 ch\u1ecdn m\u1ee5c ti\u00eau", "Gi\u1ea5y ph\u00e9p"}, {"B\u1ea3n th\u00e2n", "H\u00e0nh trang", "K\u1ef9 n\u0103ng", "Ti\u1ec1m n\u0103ng", "Trang b\u1ecb", "Th\u00f4ng tin", "Trang b\u1ecb th\u00fa", "C\u00e2y th\u1ea7n", "C\u1ed5 v\u1eadt", "Kho & ti\u1ec7n \u00edch", "T\u00fai sinh th\u00e1i"}, {"N\u1ea1p xu"}, {"Nhi\u1ec7m v\u1ee5", "S\u1ed5 nhi\u1ec7m v\u1ee5", "Nhi\u1ec7m v\u1ee5 c\u1ee7a t\u00f4i", "S\u1ed5 tay hu\u1ea5n luy\u1ec7n"}, {"PK"}, {"Kh\u00e1c", "Tin nh\u1eafn", "Nh\u00f3m", "B\u1ea1n b\u00e8", "Top nh\u00e0 v\u00f4 \u0111\u1ecbch", "Top \u0111\u1ea1i gia", "B\u1ea3ng Top", "K\u00eanh th\u1ebf gi\u1edbi", "Di\u1ec5n \u0111\u00e0n", "R\u1eddi \u0111\u1ed9i"}, {""}, {"C\u1eeda h\u00e0ng"}, {""}};
     int selected = 0;
     int index = -1;
     int Limit;
@@ -72,8 +72,9 @@ extends Screen {
                       // âm thanh = Cài đặt -> Âm thanh (bảng Cài đặt PC; HUD APK giữ)
                 return muc == 1 || muc == 6 || muc == 4 && HudRong.bat();
             case 2:   // Hành trang (HUD), Kỹ năng / Tiềm năng / Trang bị / Thông tin / Trang bị thú (màn Pokémon),
-                      // Khác (= Menu -> Sự kiện), Túi sinh thái (= Menu -> Hệ sinh thái)
-                return muc >= 0 && muc <= 5 || muc == 8 || muc == 9;
+                      // Túi sinh thái (= Menu -> Hệ sinh thái). 0.9.17: "Kho & tiện ích" (menu Khác -10000 của máy chủ)
+                      // HIỆN - Menu › Sự kiện không còn mở menu này
+                return muc >= 0 && muc <= 5 || muc == 9;
             case 3:   // Nạp xu SMS: máy chủ không gửi cú pháp -> chỉ báo "tạm khóa"
                 return Canvas.gameScr == null || Canvas.gameScr.decriptNap == null || Canvas.gameScr.decriptNap.size() == 0;
             case 4:   // Nhiệm vụ = nút HUD; Nhiệm vụ của tôi / Sổ tay = Menu kiểu GO (0.9.16)
@@ -739,7 +740,10 @@ extends Screen {
                         return;
                     }
                     if (this.index == 2) {
-                        GameService.gI().dosendKhacMenu();
+                        if (game.pokemon.MenuNguCanh.bat()) {
+                            Canvas.gameScr.switchToMe();   // 0.9.17: thẻ máy chủ hiện trên thế giới, tiêu đề "Kho & tiện ích"
+                        }
+                        GameScr.moKhoTienIch();
                         return;
                     }
                     if (Canvas.gameScr.mainChar.idClan == -1) {

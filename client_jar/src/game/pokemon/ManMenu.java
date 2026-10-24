@@ -99,13 +99,10 @@ public final class ManMenu extends Screen {
                 ManDoi.mo(0);
                 break;
             case I_SU_KIEN:
-                // sự kiện do máy chủ điều khiển: gói -76 (-10000) trả menu sự kiện -> menu nút to (MenuNguCanh)
+                // 0.9.17: thẻ "Sự kiện" (mùa / ngày cộng đồng + hoạt động ngày / tuần). Trước: -76 / -10000 = menu "Khác"
+                // của game gốc (Mở Túi Đồ, Mở Kho, Shop Đặc Biệt...) với tiêu đề = tên quái đang nhắm.
                 ve();
-                try {
-                    game.networklogic.GameService.gI().dosendKhacMenu();
-                } catch (Throwable e) {
-                    // chưa nối máy chủ
-                }
+                game.render.screen.GameScr.moSuKien();
                 break;
             case I_SINH_THAI:
                 ve();

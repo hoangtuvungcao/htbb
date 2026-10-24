@@ -15,7 +15,11 @@ import javax.microedition.lcdui.NenPc;
  *  3) đang nhắm NPC bán hàng (gian hàng) / NPC menu: chạm chiêu KHÔNG mở cửa hàng / menu NPC (không gói 23, không
  *     menu / hộp thoại), mục tiêu chuyển sang quái; nút đánh chính (phím 5) vẫn nói chuyện với NPC;
  *  4) chạm viên "1/2" (tâm và mép vùng chạm) đổi bộ 1 <-> 2, nút chiêu đổi ngay; phím PC "Đổi bộ chiêu" (R) và
- *     phím J2ME 0 cũng đổi.
+ *     phím J2ME 0 cũng đổi;
+ *  5) 0.9.17 (kiemDichNut): ở mọi cỡ, không mục tiêu / nhắm quái Ekans (+ thẻ thời tiết mở) / nhắm NPC: chạm mọi nút
+ *     HUD và mọi ô Menu cá nhân -> đúng màn / thẻ (tiêu đề) / gói; menu máy chủ trả cho yêu cầu từ Menu mang tiêu đề nơi
+ *     gửi, không bao giờ tên quái đang nhắm (lỗi 0.9.16: Menu › Sự kiện ra thẻ "Ekans" = menu Khác). Bảng dich_nut.txt.
+ *     -Dchup.j2me = vẽ như J2ME; -Dkiem.dich=0 bỏ phần này.
  * Cỡ điện thoại: HudRong chỉ chạy trên J2ME cảm ứng (MIN = 0; APK có HUD HD riêng - client_jar/tools/KiemCoCham).
  *
  *   javac -cp client_pc/out/build/cls -d $O client_pc/test/ChupTrongGame.java client_pc/test/KiemChamHud.java \
@@ -572,6 +576,538 @@ public class KiemChamHud {
         ve();
     }
 
+
+    // ================================================================== 0.9.17: KIỂM ĐÍCH MỌI NÚT HUD + Ô MENU
+    // Chủ dự án (PC 0.9.16): nhắm Ekans, thẻ thời tiết đang mở, bấm Menu › "Sự kiện" -> thẻ tiêu đề "Ekans" với Mở Túi Đồ /
+    // Bỏ đồ vào túi / Mở Kho / Shop Đặc Biệt... (menu "Khác" -10000 của máy chủ + tiêu đề = tên mục tiêu). Ở mọi cỡ, có /
+    // không mục tiêu (quái Ekans, NPC), có / không thẻ thời tiết: chạm từng nút HUD và từng ô Menu -> đúng màn / thẻ / gói,
+    // thẻ lệnh không bao giờ mang tên quái đang nhắm; menu máy chủ trả cho yêu cầu từ Menu mang tiêu đề nơi gửi.
+
+    static int soNutDich, soOMenu, soCheThe;
+    static final java.util.TreeMap<String, String> BANG_DICH = new java.util.TreeMap<String, String>();
+
+    /** Trạng thái sau một lần chạm. */
+    static final class Kq {
+        String man, hop, tieu;
+        String[] lenh;
+        boolean menuChu, caiDat, tuDongBang, theTT, banDoTo, tuDongDang;
+        int tab;
+        List<Integer> lenhGui = new ArrayList<Integer>();
+        List<byte[]> goiGui = new ArrayList<byte[]>();
+
+        public String toString() {
+            return "man=" + man + (hop != null ? " hop=" + hop : "") + (tieu != null ? " tieu='" + tieu + "'" : "")
+                    + (menuChu ? " menuChu" : "") + (caiDat ? " caiDat" : "") + (tuDongBang ? " bangTuDong" : "")
+                    + (theTT ? " theThoiTiet" : "") + (banDoTo ? " banDoTo" : "") + " goi=" + lenhGui;
+        }
+
+        boolean coGoi(int c) {
+            return lenhGui.contains(c);
+        }
+
+        /** gói -30 (menu NPC ảo) đúng (npc, menu, mục) */
+        boolean coMenuOption(int npc, int menu, int muc) {
+            for (int i = 0; i < lenhGui.size(); i++) {
+                byte[] d = goiGui.get(i);
+                if (lenhGui.get(i) == -30 && d.length >= 4) {
+                    int n = (short) (((d[0] & 0xFF) << 8) | (d[1] & 0xFF));
+                    if (n == npc && d[2] == menu && (d[3] & 0xFF) == muc) return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    static Kq doc() throws Exception {
+        final Kq k = new Kq();
+        ChupTrongGame.chay(() -> {
+            try {
+                game.render.screen.Screen s = game.render.Canvas.currentScreen;
+                k.man = s == null ? "null" : s == game.render.Canvas.gameScr ? "the_gioi" : s.getClass().getSimpleName();
+                Object d = game.render.Canvas.currentDialog;
+                k.hop = d == null ? null : d.getClass().getSimpleName();
+                if (d instanceof game.pokemon.MenuNguCanh) {
+                    k.tieu = game.pokemon.MenuNguCanh.tieuDe();
+                    k.lenh = game.pokemon.MenuNguCanh.cacLenh();
+                }
+                k.menuChu = game.render.Canvas.menu.showMenu;
+                Field f = htbb.pc.LopPhu.class.getDeclaredField("caiDatMo");
+                f.setAccessible(true);
+                k.caiDat = f.getBoolean(null);
+                k.tuDongBang = bangTuDongMo();
+                k.theTT = game.pokemon.ThoiTiet.moThe;
+                k.banDoTo = (Boolean) tinh(game.render.screen.HudRong.class, "banDoTo");
+                k.tuDongDang = game.render.screen.TuDong.dang || (Boolean) tinh(game.render.screen.TuDong.class, "choBat");
+                k.tab = game.render.screen.GameScr.indexTabSlot;
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+        synchronized (LENH) {
+            k.lenhGui.addAll(LENH);
+            k.goiGui.addAll(GOI);
+        }
+        return k;
+    }
+
+    /** Thời tiết + mùa như ảnh chủ dự án: "Quang đãng · còn 4 giờ 49 phút", "Mùa: Hoàng hôn Halloween". */
+    static void datThoiTiet() throws Exception {
+        ChupTrongGame.chay(() -> {
+            game.pokemon.ThoiTiet.thu = true;
+            game.pokemon.ThoiTiet.datTrangThai(0, "Quang đãng", "Quang đãng. Trời đẹp, không ảnh hưởng chiêu.", 4 * 3600 + 49 * 60 + 30,
+                    0, 3, "Hoàng hôn Halloween", 0, "", 0, false, "");
+        });
+    }
+
+    /** Về màn chơi sạch, mục tiêu mt, thẻ thời tiết mở / đóng. */
+    static void sach(final game.model.Actor mt, final boolean the) throws Exception {
+        ChupTrongGame.chay(() -> {
+            try {
+                game.render.Canvas.endDlg();
+                game.render.Canvas.menu.showMenu = false;
+                game.render.Canvas.gameScr.switchToMe();
+                datTinh(Class.forName("game.render.screen.BangTuDong"), "mo", Boolean.FALSE);
+                datTinh(game.render.screen.HudRong.class, "banDoTo", Boolean.FALSE);
+                Field f = htbb.pc.LopPhu.class.getDeclaredField("caiDatMo");
+                f.setAccessible(true);
+                f.setBoolean(null, false);
+                if (game.render.screen.TuDong.dang || (Boolean) tinh(game.render.screen.TuDong.class, "choBat")) {
+                    game.render.screen.TuDong.tat(false);
+                }
+                datTinh(game.render.screen.TuDong.class, "choBat", Boolean.FALSE);
+                game.render.screen.TuDong.dang = false;
+                game.render.screen.GameScr.indexTabSlot = 0;
+                game.pokemon.ThoiTiet.moThe = the;
+                game.pokemon.MenuNguCanh.boCho();
+                game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;   // chiêu không đang hồi / thiếu PP
+                mc.mp = mc.maxmp;
+                mc.state = 0;
+                for (int i = 0; i < mc.timeLastUseSkills.length; i++) {
+                    mc.timeLastUseSkills[i] = 0;
+                    mc.coolDownSkill[i] = 0;
+                }
+                if (quai != null) {
+                    quai.hp = 500;
+                    quai.setRealHP(500);
+                    quai.state = 0;
+                }
+                game.render.Canvas.gameScr.focusedActor = mt;
+                datTinh(game.pokemon.HanhDong.class, "chon", mt);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+        ve();
+        ChupTrongGame.chay(() -> {
+            try {
+                game.render.Canvas.gameScr.focusedActor = mt;   // vòng game có thể vừa tự đổi mục tiêu
+                datTinh(game.pokemon.HanhDong.class, "chon", mt);
+                game.pokemon.ThoiTiet.moThe = the;
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+        ve();
+        xoaGoi();
+    }
+
+    static String tenQuai() {
+        try {
+            return quai.getDisplayName();
+        } catch (Throwable e) {
+            return "";
+        }
+    }
+
+    /** Thẻ lệnh đang mở (nếu có) không mang tên quái đang nhắm. */
+    static void khongTenQuai(Kq k, String nhan) {
+        String q = tenQuai();
+        if (k.tieu != null && q != null && q.length() > 0) {
+            kiem(!k.tieu.equals(q), nhan + ": the lenh mang ten quai dang nham '" + q + "' (" + k + ")");
+        }
+    }
+
+    /** Vùng chạm đang vẽ theo tên (null = không có). */
+    static int[] vungTen(String ten) throws Exception {
+        ve();
+        return vung(ten);
+    }
+
+    static boolean trongThe(int[] v) {
+        int[] t = game.pokemon.ThoiTiet.VUNG_THE;
+        int cx = v[0] + v[2] / 2, cy = v[1] + v[3] / 2;
+        return game.pokemon.ThoiTiet.moThe && cx >= t[0] && cx < t[0] + t[2] && cy >= t[1] && cy < t[1] + t[3];
+    }
+
+    /**
+     * Một nút HUD: chạm tâm vùng thật, đọc kết quả, so với đích mong đợi. mt = mục tiêu (null / quai / npc).
+     * Trả false khi nút không hiện ở cảnh này.
+     */
+    static boolean kiemNut(final String ten, game.model.Actor mt, boolean the, String canh) throws Exception {
+        sach(mt, the);
+        int[] v = vungTen(ten);
+        if (v == null) return false;
+        String nhan = co + " " + canh + " " + ten;
+        final boolean dangTruoc = game.render.screen.TuDong.dang;
+        boolean cheThe = !"hud-thoi-tiet".equals(ten) && trongThe(v);
+        cham(v[0] + v[2] / 2, v[1] + v[3] / 2);
+        ngu(150);
+        if (mt == quai && ("hud-danh".equals(ten) || ten.startsWith("hud-chieu"))) {
+            cho(() -> demLenh(9) + demLenh(106) > 0 || game.render.Canvas.currentDialog != null);
+        }
+        Kq k = doc();
+        soNutDich++;
+        khongTenQuai(k, nhan);
+        String ok;
+        if (cheThe) {
+            // nút nằm dưới thẻ thời tiết: chạm chỉ đóng thẻ, không mở việc khác
+            soCheThe++;
+            kiem(!k.theTT && "the_gioi".equals(k.man) && k.hop == null && !k.menuChu, nhan + " (duoi the thoi tiet): cham chi dong the (" + k + ")");
+            BANG_DICH.put(ten + " | " + canh, "dong the thoi tiet");
+            return true;
+        }
+        boolean q = mt == quai, n = mt == npc;
+        switch (ten) {
+            case "hud-the":
+                kiem("ManNhanVat".equals(k.man), nhan + " -> man Nhan vat (" + k + ")");
+                break;
+            case "hud-tren-0":
+                kiem("ManNhanVat".equals(k.man), nhan + " (Hanh trang) -> man Nhan vat / hanh trang (" + k + ")");
+                break;
+            case "hud-tren-1":
+                kiem("ManNhiemVu".equals(k.man), nhan + " (Nhiem vu) -> so Nhiem vu (" + k + ")");
+                break;
+            case "hud-tren-2":
+                kiem(k.banDoTo || !"the_gioi".equals(k.man), nhan + " (Ban do) -> ban do (" + k + ")");
+                kiem(k.hop == null, nhan + " (Ban do) khong mo the lenh (" + k + ")");
+                break;
+            case "hud-tren-3":
+                kiem("ManMenu".equals(k.man) && k.hop == null, nhan + " (Menu) -> Menu ca nhan (" + k + ")");
+                break;
+            case "hud-cai-dat":
+                kiem(k.caiDat && k.hop == null, nhan + " -> bang Cai dat (" + k + ")");
+                break;
+            case "hud-thoi-tiet":
+                kiem(k.theTT != the && k.hop == null && "the_gioi".equals(k.man), nhan + " -> bat / tat the thoi tiet (" + k + ")");
+                break;
+            case "hud-chat":
+                kiem("ManChat".equals(k.man), nhan + " -> bang chat (" + k + ")");
+                break;
+            case "hud-tu-dong":
+                kiem(k.tuDongDang != dangTruoc && k.hop == null && "the_gioi".equals(k.man), nhan + " -> bat / tat Tu dong (" + k + ")");
+                break;
+            case "hud-tu-dong-cai-dat":
+                kiem(k.tuDongBang && k.hop == null, nhan + " -> bang Tu dong danh (" + k + ")");
+                break;
+            case "hud-doi-bo":
+                kiem(k.tab == 1 && k.hop == null && "the_gioi".equals(k.man), nhan + " -> doi bo chieu (" + k + ")");
+                break;
+            case "hud-danh":
+                if (n) {
+                    kiem(k.coGoi(23) || k.hop != null || k.menuChu, nhan + " nham NPC -> noi chuyen (" + k + ")");
+                } else {
+                    kiem("the_gioi".equals(k.man) && k.hop == null && !k.menuChu, nhan + " -> danh, khong mo man / menu (" + k + ")");
+                    if (q) kiem(k.coGoi(9) || k.coGoi(106), nhan + " nham quai -> goi danh (" + k + ")");
+                }
+                break;
+            default:
+                if (ten.startsWith("hud-chieu")) {
+                    boolean gan = "ChonChieuNhanh".equals(k.hop);
+                    kiem("the_gioi".equals(k.man) && (k.hop == null || gan) && !k.menuChu && !k.coGoi(23),
+                            nhan + " -> danh / bang gan chieu, khong mo NPC / menu (" + k + ")");
+                    if (q && !gan) kiem(k.coGoi(9) || k.coGoi(106), nhan + " nham quai -> goi danh (" + k + ")");
+                } else {
+                    // thuốc / câu cá / ném bóng: không mở màn / thẻ lệnh
+                    kiem("the_gioi".equals(k.man) && !"MenuNguCanh".equals(k.hop) && !k.menuChu, nhan + " khong mo man / menu (" + k + ")");
+                }
+        }
+        BANG_DICH.put(ten + " | " + canh, k.toString().replaceAll(" goi=\\[\\]", ""));
+        return true;
+    }
+
+    /** Mở Menu cá nhân bằng nút HUD (như người chơi). */
+    static boolean moMenuHud(game.model.Actor mt, boolean the) throws Exception {
+        sach(mt, the);
+        ChupTrongGame.chay(() -> game.pokemon.ThoiTiet.moThe = false);   // thẻ thời tiết không che nút Menu khi mở Menu
+        int[] v = vungTen("hud-tren-3");
+        if (v == null) return false;
+        cham(v[0] + v[2] / 2, v[1] + v[3] / 2);
+        ChupTrongGame.chay(() -> game.pokemon.ThoiTiet.moThe = the);   // như ảnh: thẻ thời tiết vẫn đang mở
+        return cho(() -> game.render.Canvas.currentScreen instanceof game.pokemon.ManMenu);
+    }
+
+    /** Menu máy chủ (-30) tới như gói thật, rồi vài khung (MenuNguCanh.tiepQuan). */
+    static Kq menuMayChu(final int npcId, final String... muc) throws Exception {
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.onMenuOption(npcId, (byte) 0, muc));
+        ve();
+        ve();
+        cho(() -> game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh || !game.pokemon.MenuNguCanh.bat());
+        return doc();
+    }
+
+    static final String[] MENU_KHAC = {"Mở Túi Đồ", "Bỏ đồ vào túi", "Mở Kho", "Shop Đặc Biệt", "Tắt lời mời", "Bật tự động bán đồ thường",
+        "Bật tự động nghiền bột thường", "Bãi luyện tập", "Bật auto về Map Up"};
+
+    /** Từng ô Menu cá nhân -> đúng màn / thẻ / gói. */
+    static void kiemOMenu(game.model.Actor mt, boolean the, String canh) throws Exception {
+        String[] ten = (String[]) tinh(game.pokemon.ManMenu.class, "TEN");
+        for (int i = 0; i < ten.length; i++) {
+            if (!moMenuHud(mt, the)) {
+                kiem(false, co + " " + canh + ": nut Menu HUD khong mo Menu ca nhan");
+                return;
+            }
+            xoaGoi();
+            String vt = "menu-" + ten[i];
+            int[] v = vungTen(vt);
+            if (v != null) {
+                int j = game.pokemon.VungCham.tim(v[0] + v[2] / 2, v[1] + v[3] / 2);
+                kiem(j >= 0 && vt.equals(game.pokemon.VungCham.ten(j)), co + " " + canh + " Menu > " + ten[i] + ": tam o trung vung '"
+                        + (j < 0 ? "-" : game.pokemon.VungCham.ten(j)) + "' (the thoi tiet " + java.util.Arrays.toString(game.pokemon.ThoiTiet.VUNG_THE)
+                        + ", o " + java.util.Arrays.toString(v) + ")");
+            }
+            String nhan = co + " " + canh + " Menu > " + ten[i];
+            kiem(v != null, nhan + ": co o tren Menu");
+            if (v == null) continue;
+            cham(v[0] + v[2] / 2, v[1] + v[3] / 2);
+            ngu(150);
+            Kq k = doc();
+            soOMenu++;
+            khongTenQuai(k, nhan);
+            switch (ten[i]) {
+                case "Pokémon":
+                    kiem("ManNhanVat".equals(k.man), nhan + " -> man Pokemon (" + k + ")");
+                    break;
+                case "Pokédex":
+                    kiem("ManPokedex".equals(k.man), nhan + " -> Pokedex (" + k + ")");
+                    break;
+                case "Đội/Bạn bè":
+                    kiem("ManDoi".equals(k.man), nhan + " -> Doi / Ban be (" + k + ")");
+                    break;
+                case "Sự kiện": {
+                    if (k.coGoi(-76)) {
+                        // client cũ (<= 0.9.16): ô gửi -76/-10000, máy chủ trả menu "Khác" -> ghi lại thẻ như ảnh chủ dự án
+                        Kq kx = menuMayChu(-516, MENU_KHAC);
+                        kiem(false, nhan + ": gui -76/-10000 (menu Khac) -> the '" + kx.tieu + "' " + java.util.Arrays.toString(kx.lenh));
+                        khongTenQuai(kx, nhan + " (menu Khac)");
+                    }
+                    kiem("MenuNguCanh".equals(k.hop) && "Sự kiện".equals(k.tieu), nhan + " -> the 'Su kien' (" + k + ")");
+                    kiem(k.lenh != null && k.lenh.length > 0 && "Mùa: Hoàng hôn Halloween".equals(k.lenh[0]), nhan + ": dong dau = mua dang dien ra ("
+                            + (k.lenh == null ? null : java.util.Arrays.toString(k.lenh)) + ")");
+                    boolean coKhac = false;
+                    for (int j = 0; k.lenh != null && j < k.lenh.length; j++) {
+                        for (String x : MENU_KHAC) if (x.equals(k.lenh[j])) coKhac = true;
+                    }
+                    kiem(!coKhac && !k.coGoi(-76), nhan + ": khong con menu 'Khac' (Mo Tui Do / Mo Kho...) / goi -76 (" + k + ")");
+                    // chạm "Quà hoạt động hôm nay" -> -527/0/6; máy chủ trả menu -> thẻ vẫn tiêu đề "Sự kiện"
+                    int hang = -1;
+                    for (int j = 0; k.lenh != null && j < k.lenh.length; j++) if ("Quà hoạt động hôm nay".equals(k.lenh[j])) hang = j;
+                    kiem(hang >= 0, nhan + ": co hang 'Qua hoat dong hom nay'");
+                    if (hang >= 0 && hang < game.pokemon.MenuNguCanh.TOI_DA) {
+                        xoaGoi();
+                        kiem(chamVung("lenh-" + hang), nhan + ": cham hang Qua hoat dong");
+                        Kq k2 = doc();
+                        kiem(k2.coMenuOption(-527, 0, game.render.screen.GameScr.mucSoTay("Quà hoạt động hôm nay")),
+                                nhan + " > Qua hoat dong hom nay -> goi -527/0/6 (" + k2 + ")");
+                        Kq k3 = menuMayChu(-527, "Nhận quà điểm danh", "Đóng");
+                        kiem("Sự kiện".equals(k3.tieu), nhan + " > Qua hoat dong: menu may chu tieu de 'Su kien' (" + k3 + ")");
+                        khongTenQuai(k3, nhan + " > menu may chu");
+                    }
+                    break;
+                }
+                case "Hệ sinh thái":
+                    kiem(!k.lenhGui.isEmpty() && k.hop == null, nhan + " -> gui yeu cau he sinh thai (" + k + ")");
+                    break;
+                case "Cửa hàng":
+                    kiem("ManCuaHang".equals(k.man), nhan + " -> Cua hang (" + k + ")");
+                    break;
+                case "Thư/Quà":
+                    kiem("MenuNguCanh".equals(k.hop) && "Thư / Quà".equals(k.tieu), nhan + " -> the 'Thu / Qua' (" + k + ")");
+                    break;
+                case "Xếp hạng":
+                    kiem("ManXepHang".equals(k.man), nhan + " -> Xep hang (" + k + ")");
+                    break;
+                case "Cài đặt":
+                    kiem(k.caiDat || k.hop != null && !"MenuNguCanh".equals(k.hop) || !"the_gioi".equals(k.man) && !"ManMenu".equals(k.man),
+                            nhan + " -> Cai dat (" + k + ")");
+                    break;
+                case "Tiện ích & PK":
+                    kiem("PauseMenu".equals(k.man), nhan + " -> menu chu Tien ich & PK (" + k + ")");
+                    break;
+                case "Tự động đánh":
+                    kiem(k.tuDongBang, nhan + " -> bang Tu dong danh (" + k + ")");
+                    break;
+                case "Nhiệm vụ của tôi": {
+                    kiem(k.coMenuOption(-527, 0, 8), nhan + " -> goi -527/0/8 (" + k + ")");
+                    Kq k3 = menuMayChu(-527, "Nhiệm vụ A", "Nhiệm vụ B");
+                    kiem("Nhiệm vụ của tôi".equals(k3.tieu), nhan + ": menu may chu tieu de 'Nhiem vu cua toi' (" + k3 + ")");
+                    break;
+                }
+                case "Sổ tay huấn luyện": {
+                    kiem("MenuNguCanh".equals(k.hop) && "Sổ tay huấn luyện".equals(k.tieu)
+                            && java.util.Arrays.equals(k.lenh, game.render.screen.GameScr.SO_TAY_MUC), nhan + " -> the So tay (" + k + ")");
+                    xoaGoi();
+                    kiem(chamVung("lenh-0"), nhan + ": cham muc 0");
+                    Kq k2 = doc();
+                    kiem(k2.coMenuOption(-527, 0, 0), nhan + " > muc 0 -> goi -527/0/0 (" + k2 + ")");
+                    Kq k3 = menuMayChu(-527, "Năng lượng", "Tinh thông");
+                    kiem("Sổ tay huấn luyện".equals(k3.tieu), nhan + " > muc 0: menu may chu tieu de 'So tay huan luyen' (" + k3 + ")");
+                    break;
+                }
+                default:
+                    kiem(false, nhan + ": o Menu moi chua co dich trong KiemChamHud.kiemOMenu (" + k + ")");
+            }
+            BANG_DICH.put("Menu > " + ten[i] + " | " + canh, k.toString().replaceAll(" goi=\\[\\]", ""));
+        }
+    }
+
+    /** Menu "Khác" của máy chủ (-10000) ở Tiện ích & PK › Bản thân › Kho & tiện ích; menu máy chủ lạc / NPC. */
+    static void kiemMenuMayChuTieuDe(String canh) throws Exception {
+        // a) Kho & tiện ích (đường của menu "Khác" cũ) - nhắm Ekans
+        sach(quai, true);
+        xoaGoi();
+        ChupTrongGame.chay(() -> {
+            try {
+                game.render.Canvas.gameScr.mainChar.hp = Math.max(1, game.render.Canvas.gameScr.mainChar.hp);
+                java.lang.reflect.Method m = game.pokemon.ManMenu.class.getDeclaredMethod("lam", int.class);
+                m.setAccessible(true);
+                m.invoke(null, 9);   // Tiện ích & PK
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+        Object p = game.render.Canvas.currentScreen;
+        kiem(p instanceof game.render.screen.PauseMenu, co + " " + canh + ": Tien ich & PK mo PauseMenu");
+        if (p instanceof game.render.screen.PauseMenu) {
+            String[][] ten = (String[][]) tinh2(p, "name");
+            int muc = -1;
+            for (int j = 1; j < ten[2].length; j++) if ("Kho & tiện ích".equals(ten[2][j])) muc = j - 1;
+            kiem(muc >= 0, co + " " + canh + ": Ban than co muc 'Kho & tien ich'");
+            java.lang.reflect.Method an = p.getClass().getDeclaredMethod("an", int.class, int.class);
+            an.setAccessible(true);
+            kiem(muc >= 0 && !(Boolean) an.invoke(p, 2, muc), co + " " + canh + ": 'Kho & tien ich' hien o menu chu gon (loi vao duy nhat cua menu Khac)");
+            final int mm = muc;
+            ChupTrongGame.chay(() -> {
+                try {
+                    Field fi = p.getClass().getDeclaredField("index");
+                    fi.setAccessible(true);
+                    fi.setInt(p, 2);
+                    Field fs = p.getClass().getDeclaredField("selected");
+                    fs.setAccessible(true);
+                    java.lang.reflect.Method vt = p.getClass().getDeclaredMethod("tinhHien");
+                    vt.setAccessible(true);
+                    vt.invoke(p);
+                    java.lang.reflect.Method vtr = p.getClass().getDeclaredMethod("viTri", int.class);
+                    vtr.setAccessible(true);
+                    fs.setInt(p, (Integer) vtr.invoke(p, mm));
+                    java.lang.reflect.Method ds = p.getClass().getDeclaredMethod("doSelect");
+                    ds.setAccessible(true);
+                    ds.invoke(p);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            });
+            Kq k = doc();
+            kiem(k.coGoi(-76), co + " " + canh + ": Kho & tien ich -> goi -76 (-10000) (" + k + ")");
+            Kq k3 = menuMayChu(-516, MENU_KHAC);
+            kiem("Kho & tiện ích".equals(k3.tieu), co + " " + canh + ": menu Khac may chu tieu de 'Kho & tien ich' (" + k3 + ")");
+            khongTenQuai(k3, co + " " + canh + " Kho & tien ich");
+            BANG_DICH.put("Tien ich & PK > Ban than > Kho & tien ich | " + canh, k3.toString());
+        }
+        // b) menu máy chủ không ai hỏi (vd hộp vật phẩm) khi đang nhắm Ekans: không tiêu đề "Ekans"
+        sach(quai, true);
+        Kq k4 = menuMayChu(-516, MENU_KHAC);
+        kiem(k4.tieu == null || !k4.tieu.equals(tenQuai()), co + " " + canh + ": menu may chu khi nham quai khong lay ten quai (" + k4 + ")");
+        // c) chạm NPC -> menu máy chủ của NPC: tiêu đề = tên NPC
+        sach(null, false);
+        ChupTrongGame.chay(() -> {
+            game.render.screen.GameScr g = game.render.Canvas.gameScr;
+            npc.type = 9;
+            npc.name = "Kecleon";
+            if (!g.actors.contains(npc)) g.actors.addElement(npc);
+            game.pokemon.MenuNguCanh.choTieuDe("Sự kiện");   // chờ cũ còn hạn: chạm NPC phải xoá
+            game.pokemon.HanhDong.chamThe(g, npc.x, npc.y - 4);
+        });
+        ngu(600);
+        ChupTrongGame.chay(() -> {
+            // việc tại chỗ của NPC giả (menu chữ / hộp) không phải đích kiểm: đóng, giữ mục tiêu NPC
+            game.render.Canvas.endDlg();
+            game.render.Canvas.menu.showMenu = false;
+            game.render.Canvas.gameScr.focusedActor = npc;
+        });
+        kiem(game.pokemon.MenuNguCanh.layChoKiem() == null, co + " " + canh + ": cham NPC xoa tieu de cho");
+        Kq k5 = menuMayChu(-24, "Nói chuyện", "Cửa hàng");
+        kiem("Kecleon".equals(k5.tieu), co + " " + canh + ": cham NPC -> menu may chu tieu de ten NPC (" + k5 + ")");
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.actors.removeElement(npc));
+    }
+
+    static Object tinh2(Object o, String ten) throws Exception {
+        Field f = o.getClass().getDeclaredField(ten);
+        f.setAccessible(true);
+        return f.get(o);
+    }
+
+    static final String[] NUT_HUD = {"hud-the", "hud-tren-0", "hud-tren-1", "hud-tren-2", "hud-tren-3", "hud-cai-dat", "hud-thoi-tiet",
+        "hud-chat", "hud-tu-dong", "hud-tu-dong-cai-dat", "hud-thuoc-hp", "hud-thuoc-pp", "hud-danh", "hud-chieu0", "hud-chieu1",
+        "hud-chieu2", "hud-chieu3", "hud-doi-bo", "hud-ngu-canh", "hud-nem-bong"};
+
+    /** Mọi nút HUD + ô Menu ở cỡ đang đặt: không mục tiêu / Ekans + thẻ thời tiết / NPC. */
+    static void kiemDichNut() throws Exception {
+        dungCanh(true);
+        datThoiTiet();   // sau dungCanh (ChupTrongGame.moMan xoá thời tiết giả)
+        ChupTrongGame.chay(() -> {
+            // quái hoang Ekans như ảnh chủ dự án
+            if (game.render.Res.monsterTemplates != null && game.render.Res.monsterTemplates[quai.monster_type] != null) {
+                game.render.Res.monsterTemplates[quai.monster_type].name = "Ekans";
+            }
+            if (npc == null) {
+                npc = new game.model.NPC();
+                try {
+                    Field f = game.model.NPC.class.getDeclaredField("img");
+                    f.setAccessible(true);
+                    f.set(npc, new javax.microedition.lcdui.Image[2]);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+            game.render.screen.GameScr g = game.render.Canvas.gameScr;
+            npc.type = 9;
+            npc.name = "Kecleon";
+            npc.catagory = 2;
+            npc.ID = 77;
+            npc.x = (short) (g.mainChar.x - 20);
+            npc.y = (short) (g.mainChar.y + 4);
+        });
+        kiem("Ekans".equals(tenQuai()), co + ": quai thu ten Ekans (" + tenQuai() + ")");
+        Object[][] canh = {{null, Boolean.FALSE, "khong-muc-tieu"}, {quai, Boolean.TRUE, "nham-Ekans+the-thoi-tiet"}, {quai, Boolean.FALSE, "nham-Ekans"},
+            {npc, Boolean.FALSE, "nham-NPC"}};
+        for (Object[] c : canh) {
+            final game.model.Actor mt = (game.model.Actor) c[0];
+            boolean the = (Boolean) c[1];
+            String tc = (String) c[2];
+            if (mt == npc) {
+                ChupTrongGame.chay(() -> {
+                    if (!game.render.Canvas.gameScr.actors.contains(npc)) game.render.Canvas.gameScr.actors.addElement(npc);
+                });
+            }
+            int hien = 0;
+            for (String n : NUT_HUD) {
+                boolean h = kiemNut(n, mt, the, tc);
+                if (h) hien++;
+                if ("hud-thoi-tiet".equals(n) || "hud-tren-3".equals(n) || "hud-cai-dat".equals(n)) {
+                    kiem(h, co + " " + tc + ": nut " + n + " hien");
+                }
+            }
+            kiem(hien >= 15, co + " " + tc + ": it nhat 15 nut HUD hien (" + hien + ")");
+            if (mt != npc) kiemOMenu(mt, the, tc);
+            if (mt == npc) {
+                ChupTrongGame.chay(() -> game.render.Canvas.gameScr.actors.removeElement(npc));
+            }
+        }
+        kiemMenuMayChuTieuDe("Ekans");
+        sach(null, false);
+        ChupTrongGame.chay(() -> game.pokemon.ThoiTiet.moThe = false);
+    }
+
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
         java.io.File ra = new java.io.File(a.length > 0 ? a[0] : "kiem_cham_hud");
@@ -616,6 +1152,12 @@ public class KiemChamHud {
         });
         ChupTrongGame.chay(ChupTrongGame::giaLap);
         ngu(500);
+        if (System.getProperty("chup.j2me") != null) {
+            // 0.9.17: như ChupTrongGame -Dchup.j2me - vẽ như máy J2ME (font ảnh, khối phẳng)
+            htbb.pc.GiaoDienHD.bat = false;
+            htbb.pc.ChuHD.bat = false;
+            game.pokemon.ChuUI.bo = null;
+        }
         String locCo = System.getProperty("chup.co");
         for (int c = 0; c < ChupTrongGame.CO.length; c++) {
             if (locCo != null && !("," + locCo + ",").contains("," + ChupTrongGame.TEN_CO[c] + ",")) continue;
@@ -638,7 +1180,16 @@ public class KiemChamHud {
             if ("pc720".equals(co) || "dt20x9".equals(co)) {
                 kiemHoSo(true);
             }
+            if (System.getProperty("kiem.dich") == null || !"0".equals(System.getProperty("kiem.dich"))) {
+                kiemDichNut();
+            }
         }
+        // bảng đích (xem bằng mắt / báo cáo): nút | cảnh -> kết quả, cỡ cuối cùng đã chạy
+        java.io.PrintWriter pw = new java.io.PrintWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(new java.io.File(ra, "dich_nut.txt")), "UTF-8"));
+        for (java.util.Map.Entry<String, String> e : BANG_DICH.entrySet()) pw.println(e.getKey() + " -> " + e.getValue());
+        pw.close();
+        System.out.println("KiemChamHud dich nut: " + soNutDich + " lan cham nut HUD, " + soOMenu + " lan cham o Menu, " + soCheThe
+                + " nut duoi the thoi tiet -> " + new java.io.File(ra, "dich_nut.txt"));
         System.out.println("KiemChamHud: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);
     }

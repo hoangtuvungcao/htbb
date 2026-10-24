@@ -95,8 +95,67 @@ public final class MenuNguCanh extends Dialog {
         return r;
     }
 
+    /**
+     * 0.9.17 (chủ dự án: "bấm vào sự kiện sao lại ra cái này vậy" - Menu › Sự kiện mở thẻ tiêu đề "Ekans" = tên quái đang
+     * nhắm): menu MÁY CHỦ trả về cho một yêu cầu KHÔNG từ mục tiêu (ô Menu, Sổ tay, Kho & tiện ích, lệnh trong thẻ có tiêu
+     * đề riêng) mang tiêu đề của nơi gửi, không lấy tên mục tiêu đang chọn. choTieuDe ngay trước khi gửi; menu kế tiếp
+     * (trong HAN_CHO ms) nhận tiêu đề này. Chạm NPC (GameService.requestNPCInfo) xoá chờ.
+     */
+    static String tieuDeCho;
+    static long choToi;
+    static final long HAN_CHO = 6000L;
+    /** thẻ đang mở có tiêu đề riêng (không phải tên mục tiêu) - lệnh con giữ tiêu đề này */
+    boolean tieuDeRieng;
+
+    public static void choTieuDe(String tieuDe) {
+        tieuDeCho = tieuDe;
+        choToi = System.currentTimeMillis() + HAN_CHO;
+    }
+
+    public static void boCho() {
+        tieuDeCho = null;
+    }
+
+    /** Lấy (và xoá) tiêu đề chờ còn hạn - null = không có. */
+    static String layCho() {
+        String t = tieuDeCho;
+        tieuDeCho = null;
+        return t != null && System.currentTimeMillis() <= choToi ? t : null;
+    }
+
+    /** Kiểm thử: tiêu đề đang chờ còn hạn (không xoá). */
+    public static String layChoKiem() {
+        return tieuDeCho != null && System.currentTimeMillis() <= choToi ? tieuDeCho : null;
+    }
+
+    /** Kiểm thử: tiêu đề thẻ đang mở (null = không tiêu đề). */
+    public static String tieuDe() {
+        return me == null ? null : me.tieuDe;
+    }
+
+    /** Kiểm thử: chữ các lệnh của thẻ đang mở. */
+    public static String[] cacLenh() {
+        if (me == null || me.lenh == null) {
+            return new String[0];
+        }
+        String[] r = new String[me.lenh.size()];
+        for (int i = 0; i < r.length; i++) {
+            r[i] = me.chu(i);
+        }
+        return r;
+    }
+
     /** ganMucTieu = đặt cạnh mục tiêu đang chọn trên bản đồ (false: giữa đáy màn - mở từ bảng). */
     public static void mo(Vector lenh, boolean ganMucTieu) {
+        String cho = layCho();
+        moTrong(lenh, cho == null && ganMucTieu);
+        if (cho != null) {
+            gI().tieuDe = cho;
+            gI().tieuDeRieng = true;
+        }
+    }
+
+    static void moTrong(Vector lenh, boolean ganMucTieu) {
         MenuNguCanh m = gI();
         m.lenh = boTrung(lenh);
         m.trang = 0;
@@ -107,7 +166,11 @@ public final class MenuNguCanh extends Dialog {
         m.right = null;
         GameScr gs = Canvas.gameScr;
         Actor a = gs == null || !ganMucTieu || Canvas.currentScreen != gs ? null : gs.focusedActor;
+        if (a instanceof game.model.Monster) {
+            a = null;   // 0.9.17: quái hoang không có menu - tên quái đang nhắm không bao giờ là tiêu đề thẻ lệnh
+        }
         m.tieuDe = null;
+        m.tieuDeRieng = false;
         m.cham = null;
         m.mx = -1;
         m.dexNpc = -1;
@@ -135,8 +198,10 @@ public final class MenuNguCanh extends Dialog {
 
     /** 0.9.6: thẻ lệnh có tiêu đề riêng, giữa đáy (mở từ Menu: Thư/Quà...). */
     public static void mo(Vector lenh, String tieuDe) {
-        mo(lenh, false);
+        boCho();   // lệnh vừa chọn mở thẻ ở client: không còn chờ menu máy chủ
+        moTrong(lenh, false);
         gI().tieuDe = tieuDe;
+        gI().tieuDeRieng = tieuDe != null && tieuDe.length() > 0;
     }
 
     void dong() {
@@ -150,7 +215,12 @@ public final class MenuNguCanh extends Dialog {
             return;
         }
         Command c = (Command) this.lenh.elementAt(i);
+        boolean rieng = this.tieuDeRieng;
+        String td = this.tieuDe;
         dong();
+        if (rieng) {
+            choTieuDe(td);   // menu máy chủ trả cho lệnh này giữ tiêu đề thẻ (Sổ tay huấn luyện, Sự kiện...)
+        }
         Canvas.clearKeyPressed();   // 0.9.4: phím chọn không lọt xuống màn chơi (bỏ qua lời thoại đầu)
         AmThanh.phat(AmThanh.XAC_NHAN);
         if (c.action != null) {

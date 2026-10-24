@@ -8322,7 +8322,92 @@ public class GameScr extends Screen {
         } catch (Throwable e) {
             // bỏ qua
         }
+        game.pokemon.MenuNguCanh.choTieuDe("Nhiệm vụ của tôi");   // 0.9.17: tiêu đề thẻ máy chủ trả, không phải tên mục tiêu
         GameService.gI().doMenuOption(-527, (byte) 0, 8);
+    }
+
+    /** Chỉ số mục gốc Sổ tay theo tên (-1 = không có) - không phụ thuộc vị trí trong SO_TAY_MUC. */
+    public static int mucSoTay(String ten) {
+        for (int i = 0; i < SO_TAY_MUC.length; i++) {
+            if (SO_TAY_MUC[i].equals(ten)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 0.9.17: Menu › Sự kiện (chủ dự án: "bấm vào sự kiện sao lại ra cái này vậy"). Từ 0.9.3 ô này gửi -76 / -10000 = menu
+     * "Khác" của game gốc (Mở Túi Đồ, Bỏ đồ vào túi, Mở Kho, Shop Đặc Biệt, Tắt lời mời...) - không có gì là sự kiện, và
+     * thẻ lấy tên quái đang nhắm làm tiêu đề. Nay: thẻ "Sự kiện" ở client - mùa / ngày cộng đồng đang diễn ra (gói -118,
+     * chạm = thẻ thời tiết & mùa) + các hoạt động theo ngày / tuần của Sổ tay huấn luyện (-527 / 0 / mục, cùng chỉ số
+     * máy chủ real.SoTayLauDai.MUC_GOC). Menu "Khác" cũ chuyển sang Tiện ích & PK › Bản thân › Kho & tiện ích.
+     */
+    public static final String[] SU_KIEN_MUC = {"Quà hoạt động hôm nay", "Lịch đăng nhập, vé chương", "Nhiệm vụ tuần",
+        "Cúp PvP tuần", "Hầm ngục bí ẩn"};
+
+    /** Dòng đầu thẻ Sự kiện: mùa / ngày cộng đồng đang diễn ra (gói -118), không có thì "Thời tiết và mùa". */
+    public static String dongMuaSuKien() {
+        try {
+            if (game.pokemon.ThoiTiet.co) {
+                if (game.pokemon.ThoiTiet.congDong > 0 && game.pokemon.ThoiTiet.tenDong.length() > 0) {
+                    return "Ngày cộng đồng: " + game.pokemon.ThoiTiet.tenDong;
+                }
+                if (game.pokemon.ThoiTiet.mauMua > 0 && game.pokemon.ThoiTiet.tenMauMua.length() > 0) {
+                    return "Mùa: " + game.pokemon.ThoiTiet.tenMauMua;
+                }
+            }
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        return "Thời tiết và mùa";
+    }
+
+    public static void moSuKien() {
+        try {
+            if (Canvas.gameScr != null && Canvas.currentScreen != Canvas.gameScr) {
+                Canvas.gameScr.switchToMe();
+            }
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        Vector v = new Vector();
+        v.addElement(new Command(dongMuaSuKien(), new IAction() {
+            public void perform() {
+                game.pokemon.ThoiTiet.moTheGoiY();
+                if (!game.pokemon.ThoiTiet.co) {
+                    game.pokemon.ThongBao.hien("Chưa có tin thời tiết / mùa từ máy chủ.", game.pokemon.ThongBao.TIN);
+                }
+            }
+        }));
+        for (int i = 0; i < SU_KIEN_MUC.length; i++) {
+            final int muc = mucSoTay(SU_KIEN_MUC[i]);
+            if (muc < 0) {
+                continue;
+            }
+            v.addElement(new Command(SU_KIEN_MUC[i], new IAction() {
+                public void perform() {
+                    game.pokemon.MenuNguCanh.choTieuDe("Sự kiện");
+                    GameService.gI().doMenuOption(-527, (byte) 0, muc);
+                }
+            }));
+        }
+        if (game.pokemon.MenuNguCanh.bat()) {
+            game.pokemon.MenuNguCanh.mo(v, "Sự kiện");
+        } else {
+            Canvas.menu.startAt(v, 3);
+        }
+    }
+
+    /**
+     * 0.9.17: menu "Khác" của máy chủ (-76 / -10000: Mở Túi Đồ, Bỏ đồ vào túi, Mở Kho, Shop Đặc Biệt, lời mời, tự động bán /
+     * nghiền, Bãi luyện tập...) - trước là ô Menu › Sự kiện; nay Tiện ích & PK › Bản thân › Kho & tiện ích, tiêu đề đúng tên.
+     */
+    public static final String KHO_TIEN_ICH = "Kho & tiện ích";
+
+    public static void moKhoTienIch() {
+        game.pokemon.MenuNguCanh.choTieuDe(KHO_TIEN_ICH);
+        GameService.gI().dosendKhacMenu();
     }
 
     /**

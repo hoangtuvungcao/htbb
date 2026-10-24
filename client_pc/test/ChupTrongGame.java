@@ -246,6 +246,8 @@ public class ChupTrongGame {
             // 0.9.16: Nhiệm vụ của tôi / Sổ tay huấn luyện ở Menu cá nhân (mọi nơi) - Menu kiểu GO, Sổ tay (MenuNguCanh), menu
             // chữ J2ME (hàng Nhiệm vụ)
             "menu_so_tay", "menu_chu_nhiem_vu",
+            // 0.9.17: Menu › Sự kiện = thẻ "Sự kiện" (mùa + hoạt động), không còn menu "Khác" tiêu đề = tên quái đang nhắm
+            "menu_su_kien",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
             "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
             "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
@@ -350,6 +352,13 @@ public class ChupTrongGame {
                     kiemMucNhiemVu(ten + " " + TEN_CO[c]);
                 }
                 kiemXemThu(ten, ten + " " + TEN_CO[c]);
+                if ("menu_su_kien".equals(ten)) {
+                    kiem(game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh && "Sự kiện".equals(game.pokemon.MenuNguCanh.tieuDe()),
+                            ten + " " + TEN_CO[c] + ": the 'Su kien' (tieu de " + game.pokemon.MenuNguCanh.tieuDe() + ")");
+                    String[] l = game.pokemon.MenuNguCanh.cacLenh();
+                    kiem(l.length == 1 + game.render.screen.GameScr.SU_KIEN_MUC.length && "Mùa: Hoàng hôn Halloween".equals(l[0]),
+                            ten + " " + TEN_CO[c] + ": hang the Su kien " + java.util.Arrays.toString(l));
+                }
                 if ("tui_ve_dich_chuyen".equals(ten)) {
                     kiem(coChu("Vé / thẻ") && coChu("Vé dịch chuyển"), ten + " " + TEN_CO[c] + " the ve: thieu loai 'Ve / the' / ten");
                     kiem(coVung("tvp-dung"), ten + " " + TEN_CO[c] + " the ve: thieu nut Su dung");
@@ -857,6 +866,8 @@ public class ChupTrongGame {
 
     static void moMan(String ten) {
         game.render.Canvas.isPointerDown = false;
+        game.pokemon.ThoiTiet.co = false;   // 0.9.17: thời tiết giả của menu_su_kien không lọt sang màn khác
+        game.pokemon.ThoiTiet.moThe = false;
         game.pokemon.DungDo.xoaHet();   // thông báo của màn trước không lọt sang màn này
         try {
             datTinh(Class.forName("game.render.screen.BangTuDong"), "mo", Boolean.FALSE);
@@ -909,7 +920,11 @@ public class ChupTrongGame {
             }
             dat(nv, "loaiThu", Integer.valueOf(bo));
         }
-        if ("menu_so_tay".equals(ten)) {
+        if ("menu_so_tay".equals(ten) || "menu_su_kien".equals(ten)) {
+            if ("menu_su_kien".equals(ten)) {
+                game.pokemon.ThoiTiet.datTrangThai(0, "Quang đãng", "Quang đãng. Trời đẹp, không ảnh hưởng chiêu.", 17370, 0, 3,
+                        "Hoàng hôn Halloween", 0, "", 0, false, "");
+            }
             game.pokemon.ManMenu.mo();
         } else if ("menu_chu_nhiem_vu".equals(ten)) {
             game.render.Canvas.gameScr.switchToMe();
@@ -1603,6 +1618,7 @@ public class ChupTrongGame {
         if ("kho_do_the".equals(ten)) return new String[]{"kho-kho-0"};
         // 0.9.16: lối vào thật bằng chạm (ô Trang bị › Thú cưỡi, ô Đi theo, tab con, nút Thả trùng)
         if ("menu_so_tay".equals(ten)) return new String[]{"menu-Sổ tay huấn luyện"};
+        if ("menu_su_kien".equals(ten)) return new String[]{"menu-Sự kiện"};
         if ("nv_thu_dang_dung_tb_cuoi".equals(ten)) return new String[]{"o-Thú cưỡi"};
         if ("nv_thu_dang_dung_tb_di_theo".equals(ten)) return new String[]{"o-Thú cưỡi", "o-di-theo"};
         if ("nv_thu_dang_dung_tab_di_theo".equals(ten)) return new String[]{"thu-loai-1"};
@@ -2149,6 +2165,10 @@ public class ChupTrongGame {
             }
             kiem(java.util.Arrays.asList(game.render.screen.GameScr.SO_TAY_MUC).equals(may), "So tay client " + java.util.Arrays.toString(
                     game.render.screen.GameScr.SO_TAY_MUC) + " != may chu " + may);
+            // 0.9.17: mọi hàng hoạt động của thẻ Menu › Sự kiện là mục gốc Sổ tay của máy chủ (cùng chỉ số -527/0/i)
+            for (String x : game.render.screen.GameScr.SU_KIEN_MUC) {
+                kiem(may.contains(x) && game.render.screen.GameScr.mucSoTay(x) == may.indexOf(x), "Su kien: hang '" + x + "' khong khop muc goc So tay may chu " + may);
+            }
             // chạm: Menu kiểu GO -> Nhiệm vụ của tôi
             final int[][] r = new int[1][];
             chay(new Runnable() {

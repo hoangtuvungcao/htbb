@@ -82,7 +82,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   tắt màu = như không phủ, đường J2ME (Thấp) ≤ 40 lệnh vẽ / khung; ghi ảnh mẫu mỗi thời tiết / mùa vào thư mục tham số;
 - `KiemChamHud`: chạm HUD màn chơi ở 11 cỡ - vùng chạm thật mọi nút (kể cả viên "1/2", câu cá, ô "+") không chồng
   nhau, chạm ô chiêu = đúng chiêu đó (ô "+" = bảng gán), nhắm NPC thì chiêu không mở cửa hàng / menu NPC, viên "1/2" /
-  phím R / phím 0 đổi bộ chiêu;
+  phím R / phím 0 đổi bộ chiêu; 0.9.17: chạm MỌI nút HUD + mọi ô Menu cá nhân (không mục tiêu / nhắm quái + thẻ thời
+  tiết / nhắm NPC) -> đúng màn / thẻ (tiêu đề) / gói, menu máy chủ không mang tên quái đang nhắm - bảng `dich_nut.txt`
+  (`-Dchup.j2me` vẽ như J2ME, `-Dkiem.dich=0` bỏ phần này);
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemChamMoi` (0.9.6): dấu dẫn đường chấm đỏ (game.pokemon.ChamMoi) - mỗi nguồn (thư, điểm tiềm năng / kỹ năng, chiêu
   mới, nhiệm vụ mới / đủ để trả) có chấm VẼ THẬT ở mọi cấp từ nút HUD xuống đúng hàng / nút; xoá nguồn thì cha tắt;

@@ -244,6 +244,34 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.17 (`BAN=917`: Menu › Sự kiện mở thẻ Sự kiện, thẻ menu máy chủ không lấy tên quái đang nhắm, kiểm đích mọi nút HUD)
+
+Client (không gói mới) `PHIEN_BAN=0.9.17-opentest` (`BAN = 0*10000 + 9*100 + 17`; `MIDlet-Version` 0.9.17), chạy với mọi
+máy chủ 0.9.15+ (chỉ dùng -527 / -76 / -30 đã có).
+
+1. Menu › Sự kiện (chủ dự án, PC 0.9.16: "bấm vào sự kiện sao lại ra cái này vậy" - nhắm Ekans, bấm Sự kiện ra thẻ tiêu
+   đề "Ekans" với Mở Túi Đồ / Bỏ đồ vào túi / Mở Kho / Shop Đặc Biệt / Tắt lời mời / Thêm). Không phải lỗi mới của 0.9.16:
+   từ 0.9.3 ô này gửi -76 / -10000 = menu "Khác" của game gốc (`ManMenu.lam` I_SU_KIEN), và thẻ lệnh tiếp quản menu máy
+   chủ (`MenuNguCanh.tiepQuan` -> `mo(v, true)`) luôn lấy `focusedActor.getDisplayName()` làm tiêu đề. Nay ô mở thẻ
+   **"Sự kiện"** ở client (`GameScr.moSuKien`): dòng đầu = mùa / ngày cộng đồng đang diễn ra từ gói -118 ("Mùa: Hoàng hôn
+   Halloween", chạm = thẻ thời tiết & mùa), rồi Quà hoạt động hôm nay / Lịch đăng nhập, vé chương / Nhiệm vụ tuần / Cúp PvP
+   tuần / Hầm ngục bí ẩn (mục gốc Sổ tay `-527/0/i`, chỉ số tra theo tên trong `SO_TAY_MUC`; ChupTrongGame so với
+   `real.SoTayLauDai.MUC_GOC`). Menu "Khác" của máy chủ giữ một lối vào: Tiện ích & PK › Bản thân › **Kho & tiện ích**
+   (trước là "Khác", ẩn ở menu chữ gọn vì "= Menu › Sự kiện").
+2. Tiêu đề thẻ menu máy chủ (`MenuNguCanh`): yêu cầu gửi từ Menu / Sổ tay / Kho & tiện ích / lệnh của thẻ có tiêu đề riêng
+   đặt tiêu đề chờ (`choTieuDe`, 6 s) -> menu máy chủ trả về mang tiêu đề nơi gửi ("Sự kiện", "Sổ tay huấn luyện", "Nhiệm vụ
+   của tôi", "Kho & tiện ích"), không neo cạnh mục tiêu; chạm NPC / người chơi (`HanhDong.chamThe`, chuột phải,
+   `GameService.requestNPCInfo`) xoá chờ -> thẻ của NPC vẫn mang tên NPC + chân dung. Quái hoang (`Monster`) không bao giờ
+   là tiêu đề thẻ lệnh (trước: Nhiệm vụ của tôi / mục Sổ tay khi đang nhắm quái cũng ra thẻ "Ekans").
+3. Kiểm `KiemChamHud` (thêm `kiemDichNut`, chạy ở 11 cỡ, cả `-Dchup.j2me`): 4 cảnh (không mục tiêu / nhắm Ekans + thẻ thời
+   tiết mở như ảnh / nhắm Ekans / nhắm NPC) x mọi nút HUD (thẻ người chơi, Hành trang, Nhiệm vụ, Bản đồ, Menu, Cài đặt, thời
+   tiết, chat, AUTO, bánh răng AUTO, thuốc HP / PP, đánh, 4 chiêu, 1/2, câu cá / ném bóng) -> đúng màn / bảng / gói; mọi ô
+   Menu cá nhân (3 cảnh) -> đúng màn / thẻ / gói, kể cả menu máy chủ giả trả về (tiêu đề nơi gửi); tâm mỗi ô trúng đúng vùng
+   (thẻ thời tiết không cướp chạm); Kho & tiện ích -> -76 + thẻ "Kho & tiện ích"; menu máy chủ lạc khi nhắm quái không
+   mang tên quái; chạm NPC -> thẻ tên NPC. Bảng đích ghi ra `dich_nut.txt`. Trên mã 0.9.16 kiểm này hỏng 27 chỗ ở pc720
+   (đúng thẻ "Ekans" [Mở Túi Đồ, Bỏ đồ vào túi, Mở Kho, Shop Đặc Biệt, Tắt lời mời...] của ảnh). `ChupTrongGame` thêm màn
+   `menu_su_kien` (thẻ canh giữa, tiêu đề + 6 hàng ở 11 cỡ). Tắt phần mới khi cần chạy nhanh: `-Dkiem.dich=0`.
+
 ### Bản 0.9.16 (`BAN=916`: tab Thú cưỡi / Đi theo, danh sách thú gọn trên điện thoại, hào quang khi cưỡi, Nhiệm vụ của tôi / Sổ tay ở Menu, thẻ menu canh giữa)
 
 Client (không gói mới) trên main 35416507 (máy chủ Vé dịch chuyển / thuốc 162 / Gym một trận - jar máy chủ của main):

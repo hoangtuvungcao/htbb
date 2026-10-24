@@ -706,6 +706,7 @@ public class GameService extends Cmd_message {
     }
 
     public void requestNPCInfo(int type) {
+        game.pokemon.MenuNguCanh.boCho();   // 0.9.17: menu trả về là của NPC đang nói (tiêu đề = tên NPC)
         Message m = init((byte) 23);
         try {
             m.writer().writeByte(type);
@@ -716,6 +717,7 @@ public class GameService extends Cmd_message {
     }
 
     public void requestNPCInfo(int type, int idType) {
+        game.pokemon.MenuNguCanh.boCho();
         Message m = init((byte) 23);
         try {
             m.writer().writeByte(type);
