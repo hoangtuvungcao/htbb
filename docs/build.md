@@ -271,6 +271,13 @@ máy chủ 0.9.15+ (chỉ dùng -527 / -76 / -30 đã có).
    mang tên quái; chạm NPC -> thẻ tên NPC. Bảng đích ghi ra `dich_nut.txt`. Trên mã 0.9.16 kiểm này hỏng 27 chỗ ở pc720
    (đúng thẻ "Ekans" [Mở Túi Đồ, Bỏ đồ vào túi, Mở Kho, Shop Đặc Biệt, Tắt lời mời...] của ảnh). `ChupTrongGame` thêm màn
    `menu_su_kien` (thẻ canh giữa, tiêu đề + 6 hàng ở 11 cỡ). Tắt phần mới khi cần chạy nhanh: `-Dkiem.dich=0`.
+4. Menu cá nhân › Sổ tay huấn luyện thêm dòng cuối **"Về làng miễn phí"** (`-527/0/11` = `real.SoTayLauDai.MUC_VE_LANG` của
+   main 618e75da; máy chủ báo số lượt khi chọn). `SO_TAY_MUC` vẫn đúng 11 mục cố định (`KiemVeLangMienPhi` kiểm mảng,
+   ChupTrongGame kiểm chỉ số + tên `VeLangMienPhi.TEN`). Máy chủ cũ hơn chọn chỉ số 11 thì rơi vào mục hướng dẫn tân thủ
+   (chỉ hỏi lại / mở danh sách NPC, không mất gì) - phát hành cùng máy chủ main.
+5. `du_lieu/parity_097.txt` (KiemParity): đoạn mã giữ viên "Tự động đánh" ở Menu nay là
+   `static final int[] PHU = {I_NV_CUA_TOI, I_SO_TAY, I_TU_DONG,` (0.9.16 thêm hai viên trước nó) - sửa ở
+   `tools/pokemon/sinh_parity_097.py` rồi sinh lại (chỉ dòng này đổi); bộ kiểm máy chủ 17735/17735.
 
 ### Bản 0.9.16 (`BAN=916`: tab Thú cưỡi / Đi theo, danh sách thú gọn trên điện thoại, hào quang khi cưỡi, Nhiệm vụ của tôi / Sổ tay ở Menu, thẻ menu canh giữa)
 
