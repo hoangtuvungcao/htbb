@@ -106,6 +106,9 @@ extends Screen {
 
     /** Tính dòng hiện của cấp đang mở (gon: Limit / cmyLim theo số dòng hiện; không gon: như cũ). */
     void tinhHien() {
+        // 0.9.17: máy chủ bật Điểm huấn luyện (production, gói -122 loại 1) -> mục "Huấn luyện" (bảng BangHuanLuyen), không
+        // còn "Tiềm năng" (tab điểm tiềm năng tự do luôn 0 ở chế độ này)
+        this.name[2][3] = game.pokemon.HocChieu.batHL ? "Hu\u1ea5n luy\u1ec7n" : "Ti\u1ec1m n\u0103ng";
         int n = this.index == -1 ? 9 : Math.max(0, this.name[this.index].length - 1);
         int[] t = new int[n];
         int k = 0;
@@ -577,6 +580,11 @@ extends Screen {
                         break;
                     }
                     if (this.index == 2) {
+                        if (game.pokemon.HocChieu.batHL) {
+                            Canvas.gameScr.switchToMe();
+                            game.pokemon.HanhDong.moTiemNang();   // BangHuanLuyen
+                            break;
+                        }
                         this.showMe(2);
                         break;
                     }
@@ -779,6 +787,26 @@ extends Screen {
         }
     }
 
+    /**
+     * Tab bảng "Bản thân" (WindowInfoScr / ShopNew): 0 hành trang, 1 trang bị, 2 tiềm năng, 3 kỹ năng, 4 thông tin,
+     * 5 nhóm, 6 nhiệm vụ, 31 trang bị thú. 0.9.17: máy chủ bật Điểm huấn luyện -> bỏ tab Tiềm năng (thay bằng mục
+     * "Huấn luyện" = BangHuanLuyen).
+     */
+    static byte[] tabBanThan() {
+        return game.pokemon.HocChieu.batHL ? new byte[]{0, 1, 3, 4, 5, 6, 31} : new byte[]{0, 1, 2, 3, 4, 5, 6, 31};
+    }
+
+    /** showMe(n): n = vị trí trong bảng tab đủ 8 (0..6 = mã tab, 7 = trang bị thú) -> vị trí trong bảng thật. */
+    static int viTriTab(byte[] tab, int n) {
+        int ma = n == 7 ? 31 : n;
+        for (int i = 0; i < tab.length; ++i) {
+            if (tab[i] == ma) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     public void showMe(int n) {
         byte[] byArray;
         WindowInfoScr.gI().switchToMe();
@@ -787,17 +815,9 @@ extends Screen {
         if (WindowInfoScr.gI().isSell) {
             byArray = WindowInfoScr.gI().arrSell;
         } else {
-            byte[] byArray2 = new byte[8];
-            byArray2[1] = 1;
-            byArray2[2] = 2;
-            byArray2[3] = 3;
-            byArray2[4] = 4;
-            byArray2[5] = 5;
-            byArray2[6] = 6;
-            byArray = byArray2;
-            byArray2[7] = 31;
+            byArray = tabBanThan();
         }
-        windowInfoScr.setInfo(n, bl, byArray);
+        windowInfoScr.setInfo(bl ? n : viTriTab(byArray, n), bl, byArray);
         WindowInfoScr.charWearing = Canvas.gameScr.mainChar;
         WindowInfoScr.gI().setImageCharWear();
     }
@@ -810,17 +830,9 @@ extends Screen {
         if (ShopNew.gI().isSell) {
             byArray = ShopNew.gI().arrSell;
         } else {
-            byte[] byArray2 = new byte[8];
-            byArray2[1] = 1;
-            byArray2[2] = 2;
-            byArray2[3] = 3;
-            byArray2[4] = 4;
-            byArray2[5] = 5;
-            byArray2[6] = 6;
-            byArray = byArray2;
-            byArray2[7] = 31;
+            byArray = tabBanThan();
         }
-        shopNew.setInfo(n, bl, byArray);
+        shopNew.setInfo(bl ? n : viTriTab(byArray, n), bl, byArray);
         ShopNew.charWearing = Canvas.gameScr.mainChar;
         ShopNew.gI().setImageCharWear();
     }
