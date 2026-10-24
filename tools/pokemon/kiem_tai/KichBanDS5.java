@@ -27,7 +27,7 @@ class KichBanDS5 {
             int truoc = b.dsNv.size();
             int m = b.moc();
             b.gui(14, "a b!", (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
-            String t = b.doiChu(m, 3000, "không hợp lệ");
+            String t = b.doiChu(m, 3000, "không hợp lệ", "chỉ gồm", "không phù hợp"); // 0.9.14 LocTuCam: cau bao noi ro luat ten
             ket("nhan_vat.ten_sai", t != null, t == null ? b.chuTu(m) : t);
             final int mg = b.moc();
             m = mg;

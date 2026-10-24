@@ -80,14 +80,14 @@ final class KichBanHoiQuy2 {
         HoiQuy.thoat(b);
         HoiQuy.capTien(u, 120000, 0);
         HoiQuy.capLuong(u, 30);
-        String ma = HoiQuy.giftcode("LUONGKHOA:100");
+        String ma = HoiQuy.giftcode("LUONGKHOA:30"); // giftcode.gia_tri_toi_da = 30
         try (BotChucNang.Bot c = HoiQuy.vaoLai(u)) {
             BatBien v = BatBien.of(c);
             v.choPhep("luong", 3000);
             c.lamMoi();
             String t = KichBanGiftcode.nhap(c, ma, "thanh cong", "kich hoat", "khong");
             c.lamMoi();
-            ket("shop_dac_biet.giftcode_luong_khoa", c.lk >= 100, t + " | lk " + c.lk);
+            ket("shop_dac_biet.giftcode_luong_khoa", c.lk >= 30, t + " | lk " + c.lk);
             // {id shop, loai tien 0 luong / 1 xu / 2 luong khoa, gia}
             int[][] mua = {{2, 2, 20}, {8, 1, 50000}, {14, 0, 10}};
             String[] tenTien = {"luong", "xu", "luong khoa"};
@@ -235,17 +235,26 @@ final class KichBanHoiQuy2 {
         String u = b.user;
         KichBanHoiQuy.boQuaHuongDan(b);
         HoiQuy.thoat(b);
-        HoiQuy.capLuong(u, 20);
+        HoiQuy.capLuong(u, 310);
         try (BotChucNang.Bot c = HoiQuy.vaoLai(u)) {
             c.lamMoi();
             int nThu = c.thu.size(), l0 = c.luong;
             Map<String, Integer> t0 = tui(c);
             int m = c.moc();
-            c.gui(85, (byte) 11); // Sao goi Ponyta (10 luong)
+            c.gui(85, (byte) 45); // Sao goi Tauros (300 luong) -> thu cuoi vinh vien (ThuCuoiTuTui)
             c.bom(1500);
             c.lamMoi();
             Map<String, Integer> d = khac(t0, tui(c));
-            ket("thu_cuoi.mua_sao", l0 - c.luong == 10 && !d.isEmpty(), "luong " + l0 + "->" + c.luong + " tui " + d + " | " + c.chuTu(m));
+            ket("thu_cuoi.mua_sao", l0 - c.luong == 300 && !d.isEmpty(), "luong " + l0 + "->" + c.luong + " tui " + d + " | " + c.chuTu(m));
+            // Sao goi Ponyta (10 luong, trang tri): cuoi tam, khong thanh thu
+            int m0 = c.moc();
+            c.gui(85, (byte) 11);
+            c.bom(1200);
+            c.gui(22, (byte) 30);
+            c.bom(1200);
+            ket("thu_cuoi.sao_ponyta_cuoi_tam", c.conSong() && !c.chuTu(m0).contains("Không thể"), c.chuTu(m0));
+            c.gui(108, (byte) 0); // xuong Ponyta truoc khi cuoi thu khac
+            c.bom(1000);
             // dung Sao tu tui (lenh 22, o thuoc moi)
             int o = -1;
             for (Map.Entry<String, Integer> e : d.entrySet()) if (e.getKey().startsWith("thuoc") && e.getValue() > 0) o = Integer.parseInt(e.getKey().substring(5));
@@ -284,6 +293,8 @@ final class KichBanHoiQuy2 {
         try {
             KichBanHoiQuy.boQuaHuongDan(a);
             KichBanHoiQuy.boQuaHuongDan(c);
+            HoiQuy.datCap(a, 20); // giao dich / mua ban xu voi nguoi khac: tu cap 20
+            HoiQuy.datCap(c, 20);
             HoiQuy.duTuoi(a);
             HoiQuy.duTuoi(c);
             // hai nguoi di bo toi cung o trong lang

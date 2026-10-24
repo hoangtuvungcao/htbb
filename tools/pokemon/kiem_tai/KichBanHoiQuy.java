@@ -520,12 +520,16 @@ final class KichBanHoiQuy {
             ket("gym.trong_lang_hien_boss", boss != null, "map " + b.mapId + " boss " + boss + " | " + b.chuTu(Math.max(0, m0)));
             if (boss == null) return;
             // bam lai 2 lan: van mot boss
+            int maxBoss = b.quai.get(boss)[4];
             KichBanGymLang.thachDauGym(b);
-            b.bom(1500);
-            List<Integer> song = KichBanDS.timQuai(b, 0, 400);
+            KichBanGymLang.thachDauGym(b);
+            b.bom(2000);
+            // moi quai quanh minh (id am = quai trieu hoi, goi 4) -> hoi lai HP (7) -> dem quai cung maxhp boss con song
+            for (int id : new ArrayList<>(b.quai.keySet())) { b.gui(7, (short) id); }
+            b.bom(1200);
             int soBoss = 0;
-            for (int id : song) { int[] q = b.quai.get(id); if (q != null && q[4] >= 2000 && q[4] == b.quai.get(boss)[4]) soBoss++; }
-            ket("gym.mot_boss", soBoss <= 1, "boss song cung maxhp: " + soBoss);
+            for (Map.Entry<Integer, int[]> e : b.quai.entrySet()) if (e.getValue()[4] == maxBoss && e.getValue()[2] > 0) soBoss++;
+            ket("gym.mot_boss", soBoss == 1, "bam Thach dau Gym them 2 lan: boss song cung maxhp " + maxBoss + ": " + soBoss);
             int[] h = KichBanGymLang.danh9(b, boss, 4);
             ket("gym.trong_lang_gay_sat_thuong", h[0] > 0 && h[1] < h[0], KichBanGymLang.bang("lenh 9", h, b));
             int m = b.moc();
@@ -626,10 +630,12 @@ final class KichBanHoiQuy {
         String u = b.user;
         boQuaHuongDan(b);
         KichBanGymLang.raPallet(b);
+        BatBien.kiemKet(b); // bat bien cuoi kich ban (co the di chuyen) TRUOC khi chup trang thai
         b.lamMoi();
         Thread.sleep(500);
         String truoc = "lv" + b.lv + " xu" + b.xu + " lk" + b.lk + " luong" + b.luong + " thuoc" + b.soThuoc(1) + " do" + b.doDung.size() + " map" + b.mapId;
-        HoiQuy.thoat(b);
+        b.close();
+        Thread.sleep(2500);
         try (BotChucNang.Bot c = HoiQuy.vaoLai(u)) {
             c.lamMoi();
             String sau = "lv" + c.lv + " xu" + c.xu + " lk" + c.lk + " luong" + c.luong + " thuoc" + c.soThuoc(1) + " do" + c.doDung.size() + " map" + c.mapId;
@@ -667,6 +673,7 @@ final class KichBanHoiQuy {
     // ================================================================== cot truyen
     static void cotTruyen() throws Exception {
         long phut = Long.getLong("phutCotTruyen", 12);
+        final int[] soCuaAi = {0};
         BotChucNang.Bot b0 = HoiQuy.nguoiChoiMoi("ct", 0, 0);
         String u = b0.user;
         b0.close();
@@ -679,12 +686,61 @@ final class KichBanHoiQuy {
                 b.lamMoi();
                 capTruoc = b.lv;
             }
+
+            /** Bi cong khoa vi cua ai: nguoi that bam "Đồng ý" o hop 95 (nhan cua ai) roi lam cua ai. */
+            @Override
+            boolean toi(int dich) throws Exception {
+                int m = b.moc();
+                boolean ok = super.toi(dich);
+                if (!ok) {
+                    for (int i = b.moc() - 1; i >= m; i--) {
+                        BotChucNang.SuKien e = b.su.get(i);
+                        if (e.cmd == -32 && e.so != null && e.so[1] == 95) {
+                            b.gui(-32, (short) e.so[0], (byte) 95, "", (byte) 1);
+                            b.bom(1200);
+                            soCuaAi[0]++;
+                            ghi("nhan cua ai qua hop 95: " + e.chu.replace('\n', ' '));
+                            break;
+                        }
+                    }
+                }
+                return ok;
+            }
+
+            /** Cua ai dang lam (khe doi so Nhiem vu, main_sub 2): ha quai muc tieu truoc nhiem vu chinh. */
+            @Override
+            boolean lamNvChinh() throws Exception {
+                int m = b.moc();
+                b.gui(-64, (byte) 2, (short) 0, (byte) 0);
+                b.bom(1000);
+                KichBanTienDoNhiemVu.Dong ca = KichBanTienDoNhiemVu.tim(KichBanTienDoNhiemVu.ds(b, m, 2), 2);
+                if (ca != null) {
+                    for (int[] t : ca.td) {
+                        if (t[0] < 0 || t[1] >= t[2]) continue;
+                        Set<Integer> maps = BotXuyenSuot.QUAI_MAP.get(t[0]);
+                        if (maps == null) continue;
+                        int tot = -1, ds = Integer.MAX_VALUE;
+                        for (int mid : maps) { List<int[]> dd = BotXuyenSuot.duong(b.mapId, mid); if (dd != null && dd.size() < ds) { ds = dd.size(); tot = mid; } }
+                        if (tot < 0 || !super.toi(tot)) continue;
+                        int ha = danh(t[0], Math.min(10, t[2] - t[1]), 4 * 60000L);
+                        ghi("cua ai '" + ca.ten + "' ha " + ha + " (" + t[1] + "/" + t[2] + ")");
+                        if (ha > 0) lanTienTrien = System.currentTimeMillis();
+                        return true;
+                    }
+                    // xong: nhan thuong o So tay / Nhiem vu cua toi -> Dang lam (gui tra -64 nhom 1 id cua ai)
+                    if (ca.td.stream().allMatch(t -> t[1] >= t[2])) { b.gui(-64, (byte) 1, (short) ca.id, (byte) 2); b.bom(1200); }
+                }
+                return super.lamNvChinh();
+            }
         };
         int vp0 = BatBien.VI_PHAM.size();
         d.run();
         ket("cot_truyen.tien_trien", d.capCao > d.capDau || d.soNvChinh > 0, "cap " + d.capDau + " -> " + d.capCao + ", nv chinh " + d.soNvChinh + ", phu " + d.soNvPhu
                 + ", gym " + d.soGym + ", ha " + d.soHaQuai + ", doi map " + d.soDoiMap + ", chet " + d.soChet);
-        ket("cot_truyen.khong_ket", d.ket.isEmpty(), String.join(" || ", d.ket));
+        // "cong khoa vi cua ai" la DUNG luat (nguoi choi phai nhan cua ai): chi tinh ket khi khong nhan duoc cua ai nao
+        List<String> ket = new ArrayList<>();
+        for (String k : d.ket) if (!(k.contains("cửa ải") && soCuaAi[0] > 0)) ket.add(k);
+        ket("cot_truyen.khong_ket", ket.isEmpty(), "cua ai da nhan " + soCuaAi[0] + "; " + String.join(" || ", ket));
         ket("cot_truyen.khong_loi", d.loi.isEmpty(), String.join(" || ", d.loi));
         String bs = basic(HoiQuy.CHAR_DB.getOrDefault(u, -1));
         ket("cot_truyen.vi_pham", BatBien.VI_PHAM.size() == vp0, "basic " + bs);

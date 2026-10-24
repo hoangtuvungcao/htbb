@@ -84,7 +84,8 @@ final class BatBien {
                 while (buocDi.size() > 30) buocDi.pollFirst();
                 lanDiCuoi = System.currentTimeMillis();
             } else if (cmd == 24 || cmd == -30 || cmd == -32 || cmd == -31 || cmd == 29 || cmd == 22 || cmd == 34 || cmd == 36
-                    || cmd == 66 || cmd == 82 || cmd == -64 || cmd == 23 || cmd == 31 || cmd == 9 || cmd == 106 || cmd == -113) {
+                    || cmd == 66 || cmd == 82 || cmd == -64 || cmd == 23 || cmd == 31 || cmd == 9 || cmd == 106 || cmd == -113
+                    || cmd == 85 || cmd == -45 || cmd == 108 || cmd == 92 || cmd == 94 || cmd == 95 || cmd == 61 || cmd == 25 || cmd == 26 || cmd == -109) {
                 // hanh dong cua nguoi choi co the tieu / nhan tien (mua, menu dich vu, mac do, giao dich, len tau, nhiem vu)
                 choPhep("tien", 6000);
                 if (cmd == 12 || cmd == 31 || cmd == -30 || cmd == -32 || cmd == 82) choPhep("dich_chuyen", 8000);
@@ -124,7 +125,8 @@ final class BatBien {
                     if (++i == buocDi.size()) break;
                     if (Math.abs(p[0] - e.so[0]) <= 8 && Math.abs(p[1] - e.so[1]) <= 8) veCu = true;
                 }
-                if (veCu) {
+                // nhay xa (> 4 o) = bot tu lech vi tri (duong tinh tu vi tri cu), khong phai giat lui cua may chu
+                if (veCu && Math.abs(cuoi[0] - e.so[0]) <= 64 && Math.abs(cuoi[1] - e.so[1]) <= 64) {
                     soKeoLui++;
                     viPham("KEO_LUI", "gui toi " + cuoi[0] + "," + cuoi[1] + " -> server tra " + e.so[0] + "," + e.so[1] + " (lan " + soKeoLui + ")");
                 }
@@ -252,6 +254,12 @@ final class BatBien {
             v.kiemNhiemVu();
         } catch (Exception e) {
             System.out.println("  [BAT BIEN] kiem nhiem vu loi " + e);
+        }
+        // KET: dung o ngoai lang / trong nha / tren thuyen -> phai roi duoc (cong hoac Ve lang mien phi)
+        try {
+            if (b.mapId >= 0 && b.mapId != 105 && !KichBanDS.laLang(b.mapId)) thuRoi(b);
+        } catch (Exception e) {
+            System.out.println("  [BAT BIEN] kiem ket loi " + e);
         }
     }
 

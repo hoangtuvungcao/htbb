@@ -228,7 +228,13 @@ public final class KichBanDauTruong {
             boolean xong = goi(a, m, 4) != null;
             if (!xong) {
                 int mm = a.moc();
+                // dong ho luot (20 giay) chay tu luc may chu gui ket qua luot TRUOC (goi -109 kieu 3), khong tu luc bot
+                // bat dau doi (cong kiem 24/10: "sau 13 giay" = bot da mat ~7 giay o vong chon chieu)
                 long t0 = System.currentTimeMillis();
+                for (int i = a.su.size() - 1; i >= m; i--) {
+                    BotChucNang.SuKien e = a.su.get(i);
+                    if (e.cmd == -109 && e.d != null && e.d.length > 0 && (e.d[0] == 3 || e.d[0] == 2)) { t0 = e.luc; break; }
+                }
                 byte[] l = cho(a, mm, 3, 26000);
                 long giay = (System.currentTimeMillis() - t0) / 1000;
                 BotChucNang.ket("dt.het_gio_may_chon", l != null && giay >= 17, "sau " + giay + " giay");

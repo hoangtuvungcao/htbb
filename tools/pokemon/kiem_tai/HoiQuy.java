@@ -18,7 +18,7 @@ import java.util.regex.*;
  *        -Dra=<bao_cao.md> HoiQuy <host> <cong game> [kich ban ... | all | nhanh]
  *   -Dhonloan=N   so phut bot hon loan (mac dinh 3, 0 = tat)
  *   -Dkhoidonglai="<lenh>"  lenh khoi dong lai game server (kiem luu sau khoi dong lai); trong = bo qua kich ban do
- *   -Dban=917     so ban client gia lap (mac dinh 917 = client 0.9.17)
+ *   -Dban=917     so ban client gia lap (mac dinh 918 = client 0.9.18)
  * Thoat 0 khi khong co FAIL (DA_BIET khong tinh la FAIL), 1 khi co.
  */
 public final class HoiQuy {
@@ -161,6 +161,7 @@ public final class HoiQuy {
         String ten = tenMoi(tienTo);
         String[] k = dangKy(ten, "hq-may-" + ten);
         if (k[1] != null) throw new IllegalStateException("dang ky " + ten + ": " + k[1]);
+        if (KICH_HOAT) kichHoat(ten);
         BotChucNang.Bot b = new BotChucNang.Bot(ten);
         BatBien.gan(b);
         String l = b.dangNhap(MAT_KHAU);
@@ -171,6 +172,20 @@ public final class HoiQuy {
         b.bom(800);
         napTheGioi(b);
         return b;
+    }
+
+    /** -Dkichhoat=0: khong kich hoat tai khoan moi (kiem dung luat tai khoan chua kich hoat). */
+    static final boolean KICH_HOAT = !"0".equals(System.getProperty("kichhoat", "1"));
+
+    /**
+     * CHUAN BI: kich hoat tai khoan (= nguoi choi kich hoat tren web; open test mo kich hoat cho moi tai khoan -
+     * vps/van_hanh). Lam TRUOC lan dang nhap dau (may chu nho trang thai kich hoat 30 giay).
+     */
+    static void kichHoat(String user) {
+        if (BotChucNang.DB.isEmpty()) return;
+        chuanBi("kich hoat " + user + " (5h_active 1 nam, = kich hoat tren web)");
+        BotChucNang.sql("INSERT INTO 5h_active (userID, username, time_end) SELECT id, username, '" + (System.currentTimeMillis() / 1000 + 86400L * 365)
+                + "' FROM account.team_user WHERE username = '" + user + "'");
     }
 
     /** Dang nhap lai tai khoan da co (relog), gan bat bien moi. */
@@ -202,7 +217,8 @@ public final class HoiQuy {
 
     // ================================================================== chuan bi (GM rieng / CSDL)
     static volatile BotChucNang.Bot gm;
-    static final String TEN_GM = System.getProperty("gmTk", "hqgm1");
+    /** GM chuan bi: mac dinh kt040 (tai khoan bot GM cua staging, vps/staging/lam-moi.sh; co trong sv.adminAccounts). */
+    static final String TEN_GM = System.getProperty("gmTk", "kt040");
 
     /** Tai khoan GM CHI de cap thu trong pha chuan bi (ten nhan vat phai co trong sv.adminAccounts). */
     static synchronized BotChucNang.Bot gm() throws Exception {
@@ -363,7 +379,7 @@ public final class HoiQuy {
 
     // ================================================================== main
     public static void main(String[] a) throws Exception {
-        if (System.getProperty("ban") == null) System.setProperty("ban", "917");
+        if (System.getProperty("ban") == null) System.setProperty("ban", "918");
         BotChucNang.HOST = a[0];
         BotChucNang.PORT = Integer.parseInt(a[1]);
         BotChucNang.TIEN_TO = "hq";
@@ -371,7 +387,10 @@ public final class HoiQuy {
         if (!log.isEmpty()) { tepLog = new File(log); viTri = tepLog.isFile() ? tepLog.length() : 0; }
         KichBanHoiQuy.dangKy();
         List<String> chon = new ArrayList<>();
-        for (int i = 2; i < a.length; i++) chon.add(a[i]);
+        // goi kieu BotChucNang (hoi_quy.conf kieu cn): <host> <cong> <tien to> [kich ban ...]; tien to chi de tuong thich
+        int dau = 2;
+        if (a.length > 2 && !KB.containsKey(a[2]) && !a[2].equals("all") && !a[2].equals("nhanh") && !a[2].equals("hon_loan")) dau = 3;
+        for (int i = dau; i < a.length; i++) chon.add(a[i]);
         if (chon.isEmpty() || chon.contains("all")) chon = new ArrayList<>(KB.keySet());
         else if (chon.contains("nhanh")) { chon = new ArrayList<>(KB.keySet()); chon.removeAll(CHAM); }
         long bd = System.currentTimeMillis();
@@ -390,7 +409,7 @@ public final class HoiQuy {
                 if (t.equals("hon_loan")) continue;
                 chay1(t);
             }
-            if (honLoan > 0 && (chon.contains("hon_loan") || a.length <= 2 || chon.size() > 3)) {
+            if (honLoan > 0 && (chon.contains("hon_loan") || a.length <= dau || a[dau].equals("all"))) {
                 KB_HIEN.set("hon_loan");
                 MO_TA.put("hon_loan", "bot hon loan " + honLoan + " phut");
                 KB.putIfAbsent("hon_loan", () -> BotHonLoan.chay(honLoan));
@@ -412,6 +431,8 @@ public final class HoiQuy {
             }
         }
         System.out.printf("=== HOI QUY: PASS %d, FAIL %d, DA_BIET %d, BO QUA %d (%d giay) ===%n", pass, fail, biet, bo, tong);
+        // dong tong ket chung voi BotChucNang (chay_hoi_quy.sh doc dong nay): DA_BIET tinh vao BO QUA (cho nhanh khac)
+        System.out.printf("=== TONG: PASS %d, FAIL %d, BO QUA %d (%ds) ===%n", pass, fail, bo + biet, tong);
         String ra = System.getProperty("ra");
         if (ra != null) baoCao(new File(ra), pass, fail, biet, bo, tong);
         System.exit(fail == 0 ? 0 : 1);

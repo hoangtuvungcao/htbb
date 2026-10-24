@@ -138,6 +138,9 @@ public final class KichBanXepHang {
         String muaNay = BotChucNang.sql1("SELECT COALESCE(MAX(mua), 0) FROM tob_pvp_mua");
         int muaTruoc = (muaNay == null ? 0 : Integer.parseInt(muaNay.trim())) - 1;
         String daCo = BotChucNang.sql1("SELECT COUNT(*) FROM tob_pvp_mua WHERE id_char = " + db);
+        // tai khoan dung lai: dong mua khac cua nhan vat nay (tu tran xep hang lan chay truoc) cung la "mua cu" -> may chu
+        // thuong ca hai (cong kiem 24/10 "luonglock 100 -> 300, so dong=2"). Chi giu dong mua truoc dat o duoi.
+        BotChucNang.sql("DELETE FROM tob_pvp_mua WHERE id_char = " + db + " AND mua <> " + muaTruoc);
         BotChucNang.sql("INSERT INTO tob_pvp_mua (mua, id_char, elo, thang, thua) VALUES (" + muaTruoc + ", " + db + ", 1650, 9, 3)"
                 + " ON DUPLICATE KEY UPDATE elo = 1650, thang = 9, thua = 3");
         BotChucNang.sql("DELETE FROM tob_pvp_thuong WHERE id_char = " + db);

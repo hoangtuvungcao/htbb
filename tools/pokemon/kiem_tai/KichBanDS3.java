@@ -111,7 +111,13 @@ class KichBanDS3 {
             int m = b.moc();
             final int m23 = m;
             b.gui(23, (byte) 1);
-            b.cho(x -> x.coLenh(m23, 23), 3000);
+            // 0.9.15+: Kecleon mo menu truoc ("Mua thuốc, vật phẩm" / "Vé dịch chuyển") -> chon muc dau -> cua so thuoc (23)
+            b.cho(x -> x.coLenh(m23, 23) || x.coLenh(m23, -30), 3000);
+            if (!b.coLenh(m, 23) && b.coLenh(m, -30)) {
+                int i = b.timMuc("Mua thuốc");
+                if (i >= 0) b.menu(b.menuCuoi[0], b.menuCuoi[1], i);
+                b.cho(x -> x.coLenh(m23, 23), 3000);
+            }
             ket("shop_npc.mo_shop_thuoc", b.coLenh(m, 23), b.chuTu(m));
             long xu0 = b.xu;
             int t0 = b.soThuoc(1);

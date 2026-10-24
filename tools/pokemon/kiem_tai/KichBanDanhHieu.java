@@ -123,7 +123,19 @@ public final class KichBanDanhHieu {
 
     static BotChucNang.Bot a() throws Exception {
         if (bot == null) {
-            bot = BotChucNang.botMoi(0);
+            // tai khoan bot GM dung lai (kt0xx) giu danh hieu / bo dem tu lan chay truoc (cong kiem 24/10: "dh.cap.thong_bao"
+            // khong co the vi danh hieu cap da mo tu truoc). Dua ve trang thai MOI: cap 5, xoa danh hieu + bo dem + nhat ky.
+            BotChucNang.Bot b0 = BotChucNang.botMoi(0);
+            b0.gm("slv " + b0.ten + " 5 0", 1200);
+            String u = b0.user;
+            int db = b0.charDb;
+            b0.close();
+            Thread.sleep(3500);
+            for (String t : new String[]{"tob_danh_hieu", "tob_danh_hieu_dem", "tob_danh_hieu_log"}) BotChucNang.sql("DELETE FROM " + t + " WHERE id_char = " + db);
+            bot = new BotChucNang.Bot(u);
+            String l = bot.dangNhap("123456");
+            if (l == null) l = bot.vaoGame(0);
+            if (l != null) throw new IllegalStateException(u + ": " + l);
             bot.den(2, 20, 20);
             bot.bom(1500);
         }

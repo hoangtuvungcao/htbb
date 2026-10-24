@@ -80,6 +80,7 @@ final class BotHonLoan {
                 KichBanHuongDan.roiSan(b);
             }
             int c = r.nextInt(16);
+            try {
             switch (c) {
                 case 0: case 1: case 2: { // di bo ngau nhien
                     BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
@@ -198,6 +199,12 @@ final class BotHonLoan {
                     b.bom(500);
                     dem("cho");
                 }
+            }
+            } catch (IOException e) {
+                // ket noi dut giua hanh dong (rot mang / phien moi day phien cu): vao lai nhu nguoi choi
+                ROT.incrementAndGet();
+                b.close();
+                b = HoiQuy.vaoLai(u);
             }
             if (b.mapId == 105) KichBanHuongDan.roiSan(b);
         }

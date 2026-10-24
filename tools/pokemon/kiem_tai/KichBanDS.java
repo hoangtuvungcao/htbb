@@ -321,26 +321,41 @@ class KichBanDS {
         }
     }
 
-    /** Len cap qua moc tien hoa (GM slv) -> -92; tien hoa GIUA tran: van danh duoc, khong rot ket noi. */
+    /**
+     * Len cap qua moc tien hoa -> -92; tien hoa GIUA tran: van danh duoc, khong rot ket noi. Nhan vat MOI (dang ky that, khong
+     * GM): tai khoan bot dung lai (kt0xx) da tien hoa het tu lan chay truoc nen slv xuong cap khong con -92 (cong kiem
+     * 24/10/2026 bao FAIL gia). GM rieng (HoiQuy.datCap) chi dat cap.
+     */
     static void tienHoa() throws Exception {
-        try (BotChucNang.Bot b = bot()) {
-            veLang(b);
-            b.gm("slv " + b.ten + " 15 0", 800);
-            b.den(2, 20, 20);
-            List<Integer> ds = timQuai(b, 0, 200);
+        try (BotChucNang.Bot b = HoiQuy.nguoiChoiMoi("th", 0, 0)) {
+            KichBanHuongDan.roiSan(b);
+            HoiQuy.datCap(b, 15);
+            KichBanGymLang.raPallet(b);
+            List<Integer> ds = timQuai(b, 0, 260);
             int m = b.moc();
             Integer muc = ds.isEmpty() ? null : ds.get(0);
             if (muc != null) {
                 int[] q = b.quai.get(muc);
-                b.den(2, q[0] / 16, q[1] / 16);
+                BanDoDiToi.toi(b, q);
                 b.gui(9, (short) (int) muc, (byte) 0);
                 b.bom(400);
             }
-            b.gm("slv " + b.ten + " 40 0", 1500);
+            HoiQuy.datCap(b, 40);
+            b.bom(1500);
             boolean th = b.coLenh(m, -92);
-            int don = muc == null ? -1 : haQuai(b, muc, 0, 40);
-            ket("tien_hoa.goi_-92", th, "lenh -92 sau slv 15->40: " + th + " " + b.demLenh.get(-92));
+            int don = muc == null ? -1 : KichBanHoiQuy2.haQuaiDiBo(b, muc, 60);
+            ket("tien_hoa.goi_-92", th, "lenh -92 sau cap 15->40: " + th + " " + b.demLenh.get(-92));
             ket("tien_hoa.giua_tran", muc != null && don > 0 && b.conSong(), "ha quai " + muc + " sau tien hoa: " + don + " don; " + tt(b));
+        }
+    }
+
+    /** Di bo toi canh o (x, y px) tren ban do hien tai. */
+    static final class BanDoDiToi {
+        static void toi(BotChucNang.Bot b, int[] q) throws IOException {
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+            KichBanHuongDan.dongBoViTri(b);
+            int[] o = bd == null ? null : bd.oGan(q[0] / 16, q[1] / 16, 2);
+            if (o != null) b.diDuong(bd, o[0], o[1]);
         }
     }
 
