@@ -376,6 +376,8 @@ public class SelectCharHandler implements ICommandHandler {
             if (p.daPhatHienAmTien()) {
                 session.disconnect(11);
             }
+            // nhan vat da co huy hieu Gym ma chua nhan qua huy hieu dau tien (1 Ve dich chuyen): trao bu, truoc goi tui
+            real.VeLangMienPhiGame.khiVaoGame(p);
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));

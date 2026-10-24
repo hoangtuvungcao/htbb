@@ -279,10 +279,19 @@ public final class KiemGymMotTran {
             BAO.bang("thang: buoc ha_gym CA-03.2 xong (cho nhan thuong)", Long.valueOf(1L), Long.valueOf(t.get("CA-03.2")[1]));
             dung("thang: thong bao nhan thuong o moi noi + ve lang nhanh",
                     p.chu(tuChu).contains("Nhiệm vụ của tôi → Đang làm") && p.chu(tuChu).contains("Dây thoát hiểm") && p.chu(tuChu).contains("Vé dịch chuyển"));
+            // ve lang mien phi: +1 luot them; huy hieu dau tien: +1 Ve dich chuyen (1 lan)
+            dung("thang: nhac Về làng miễn phí trong Sổ tay (còn 2 lượt, +1 nhờ thắng Gym)",
+                    p.chu(tuChu).contains("Về làng miễn phí trong Sổ tay huấn luyện (còn 2 lượt, +1 nhờ thắng Gym)."));
+            BAO.bang("thang: +1 luot Ve lang mien phi (luu ho so)", Integer.valueOf(1), Integer.valueOf(h.vlThem));
+            BAO.bang("thang huy hieu dau: +1 Ve dich chuyen", Integer.valueOf(1), Integer.valueOf(p.potions[com.htbb.pokemon.VeDichChuyen.ID]));
+            BAO.bang("thang huy hieu dau: co qua l4", Integer.valueOf(1), Integer.valueOf(h.vlQuaHuyHieu));
+            dung("thang huy hieu dau: bao Nhận thêm 1 Vé dịch chuyển (quà huy hiệu đầu tiên)",
+                    p.chu(tuChu).contains("Nhận thêm 1 Vé dịch chuyển (quà huy hiệu đầu tiên)"));
             final int bitTuan = h.gymTuanBit;
             BossLauDai.khiChet(boss); // goi lai (vd hai don cung guc) - khong thuong lan hai
             BossLauDai.donGym(new HashMap<Integer, Char>());
             BAO.bang("thang: khiChet lan hai / don 5 giay khong thuong them (bit tuan)", Integer.valueOf(bitTuan), Integer.valueOf(h.gymTuanBit));
+            BAO.bang("thang: khiChet lan hai khong cong them luot / ve", "1/1", h.vlThem + "/" + p.potions[com.htbb.pokemon.VeDichChuyen.ID]);
             BAO.bang("thang: khong con tran Gym", Integer.valueOf(0), Integer.valueOf(BossLauDai.gymDangDanh(p)));
             boss.bornTime = System.currentTimeMillis() - 1000L;
             try {

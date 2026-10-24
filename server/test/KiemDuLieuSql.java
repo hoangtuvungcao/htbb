@@ -47,9 +47,10 @@ public final class KiemDuLieuSql {
      *  +8 khoa pho_ban.* / cup.* (nhom pvp) = 305 / 19 (moi khoa moi deu an, 70 khoa web giu nguyen); +chong_clone.ban_npc_khoa_phan_tram = 306; bat-trade +10 (bat.*, trao_doi.*), kenh-chat +10 (sv.chat.*) = 326, pvp-keo +4 (pvp.ngam_tay*) = 330, bat-trade cho +10 (cho_pokemon.*) = 340, ten-pet +10 (dat_ten_pet.*, an) = 350 / 20, loai-day-du +8 (loai.*, nhom loai) = 358 / 21, do-trang-phuc +2 (do_moi.bat, trang_phuc.bat, luon_bat) = 360 / 21; dong bo 0.9.8: bo sv.chat.thuChoToiDa / thuChoNgay (chat chi trong phien) = 358 / 21; loai.doi_thuong_phan_tram 30 -> 5 (chi Pokemon hoang da bat duoc);
      *  quan-ly-thu: +6 khoa thu.* (o thu + xu tha + tran xu tha / ngay, nhom kinh_te, chinh) = 364 / 21;
      *  han-muc-dang-ky: +2 khoa dang_ky.toi_da_gio / toi_da_ngay (nhom bao_tri, chinh, ca_hai) = 366 / 21;
-     *  doi-tuan-0500 (0.9.14): mo_ta sv.gioBaoTri "ngau nhien 05:01–05:30" (bao tri sau moc tuan thu Hai 05:00) = 366 / 21.
+     *  doi-tuan-0500 (0.9.14): mo_ta sv.gioBaoTri "ngau nhien 05:01–05:30" (bao tri sau moc tuan thu Hai 05:00) = 366 / 21;
+     *  ve-lang-mien-phi: +3 khoa ve_lang.moi_ngay / thang_gym / toi_da (nhom tu_dong, chinh, thu_tu 369..371) = 369 / 21.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "9e11107f3676e943ab1c76d5d667b8decbae6cdd1230c61fc1a1edfb0096f493";
+    static final String VT_DANH_MUC = "9deea9442b08a706b818f327b1b7c14485ef7e38fbd5be2e402dec31d1b399a6";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

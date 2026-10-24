@@ -123,6 +123,13 @@ public final class HoSoLauDai {
     public int tdNgay;
     public long tdMsDung;
 
+    // ---- ve lang mien phi (VeLangMienPhi, So tay): ngay bo dem, luot ngay da dung, luot them (thang Gym) dang giu ----
+    public int vlNgay;
+    public int vlDaDung;
+    public int vlThem;
+    /** 1 = da nhan 1 Ve dich chuyen qua huy hieu Gym dau tien (moi nhan vat 1 lan). */
+    public int vlQuaHuyHieu;
+
     /** Ban sao da doi so voi lan luu truoc (de khong ghi CSDL khi khong doi gi). */
     public boolean ban;
 
@@ -184,6 +191,10 @@ public final class HoSoLauDai {
         dat(b, "zd", tgThoat);
         dat(b, "a1", tdNgay);
         dat(b, "a2", tdMsDung);
+        dat(b, "l1", vlNgay);
+        dat(b, "l2", vlDaDung);
+        dat(b, "l3", vlThem);
+        dat(b, "l4", vlQuaHuyHieu);
         for (final Map.Entry<Integer, Integer> e : truot.entrySet()) {
             if (e.getValue().intValue() > 0) {
                 dat(b, "t" + e.getKey(), e.getValue().intValue());
@@ -345,6 +356,14 @@ public final class HoSoLauDai {
                 h.tdNgay = iv;
             } else if (k.equals("a2")) {
                 h.tdMsDung = v;
+            } else if (k.equals("l1")) {
+                h.vlNgay = iv;
+            } else if (k.equals("l2")) {
+                h.vlDaDung = iv;
+            } else if (k.equals("l3")) {
+                h.vlThem = iv;
+            } else if (k.equals("l4")) {
+                h.vlQuaHuyHieu = iv;
             } else if (k.length() > 1 && k.charAt(0) == 'x') {
                 try {
                     h.thuocKhoa.put(Integer.valueOf(k.substring(1)), Integer.valueOf(iv));

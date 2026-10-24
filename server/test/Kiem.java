@@ -279,6 +279,14 @@ public final class Kiem {
             }
         };
         real.KiemVeDichChuyen.chay();
+        Kiem.nhom("Ve lang mien phi (So tay, luot ngay + thang Gym, hoi chieu chung ve) + qua huy hieu Gym dau tien (1 Ve dich chuyen)");
+        real.KiemVeLangMienPhi.BAO = new real.KiemVeLangMienPhi.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        real.KiemVeLangMienPhi.chay();
         Kiem.nhom("Gym mot tran / nhan vat: boss go khi thang / het gio / roi ban do / thoat, khong hoi sinh (bao loi 24/10/2026)");
         real.KiemGymMotTran.BAO = new real.KiemGymMotTran.Bao() {
             @Override

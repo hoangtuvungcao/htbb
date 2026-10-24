@@ -198,15 +198,25 @@ public final class GymLauDai {
     static final String SAU_THANG = "Trưởng Gym đã rời bản đồ. Nhận thưởng nhiệm vụ: "
             + com.htbb.pokemon.DuongMenu.NHAN_THUONG_MOI_NOI;
 
-    /** "Về làng nhanh: Dây thoát hiểm (1000 xu, cửa hàng thuốc) hoặc Vé dịch chuyển (Kecleon ...)." - gia day doc data_potion 19. */
-    static String veLangNhanh() {
+    /**
+     * "Về làng miễn phí trong Sổ tay huấn luyện (còn N lượt, +1 nhờ thắng Gym). Hoặc Dây thoát hiểm (1000 xu, cửa hàng
+     * thuốc) / Vé dịch chuyển (Kecleon ...)." - gia day doc data_potion 19; {@code ve} = {con lai, vua cong}
+     * (VeLangMienPhiGame.khiThangGym).
+     */
+    static String veLangNhanh(final int[] ve) {
         int gia = 0;
         try {
             gia = Map.potionTemplates2.get(19).getPrice();
         } catch (final Exception ignored) {
         }
-        return "Về làng nhanh: Dây thoát hiểm" + (gia > 0 ? " (" + gia + " xu, cửa hàng thuốc)" : "") + " hoặc "
+        return veLangMienPhi(ve) + " Hoặc Dây thoát hiểm" + (gia > 0 ? " (" + gia + " xu, cửa hàng thuốc)" : "") + " / "
                 + com.htbb.pokemon.VeDichChuyen.TEN + " (Kecleon, về làng / thành phố đã mở).";
+    }
+
+    /** "Về làng miễn phí trong Sổ tay huấn luyện (còn N lượt, +1 nhờ thắng Gym)." */
+    static String veLangMienPhi(final int[] ve) {
+        return com.htbb.pokemon.VeLangMienPhi.TEN + " trong Sổ tay huấn luyện (còn " + ve[0] + " lượt"
+                + (ve[1] > 0 ? ", +" + ve[1] + " nhờ thắng Gym" : "") + ").";
     }
 
     /** Tran Gym bi huy (BossLauDai.donGym / huyGymCua): bao chu (neu con online). Thua / huy deu duoc thach dau lai ngay. */
@@ -314,16 +324,21 @@ public final class GymLauDai {
         }
         NhiemVuEngine.suKien(p, "ha_gym", (String) g[1], 1);
         NhiemVuEngine.suKien(p, "ha_gym", String.valueOf(stt), 1);
+        final int[] ve = VeLangMienPhiGame.khiThangGym(p, h); // +luot Ve lang mien phi moi tran thang
+        final String quaVe = VeLangMienPhiGame.quaHuyHieuDau(p, h); // huy hieu dau tien: +1 Ve dich chuyen (1 lan)
         if (lanDau) {
             vuKhiHoanMy(p, (String) g[1]);
-            LauDaiNhanVat.bao(p, "Chiến thắng! Nhận " + g[2] + ". " + SAU_THANG + " " + veLangNhanh());
+            LauDaiNhanVat.bao(p, "Chiến thắng! Nhận " + g[2] + ". " + SAU_THANG + " " + veLangNhanh(ve));
         } else {
             for (final Object[] r : NoiDungLauDai.ROI) {
                 if ("gym_tuan".equals(r[0]) && g[1].equals(r[1])) {
                     NoiDungLauDai.phat(p, (String) r[2], ((Integer) r[3]).intValue(), ((Integer) r[5]).intValue(), true);
                 }
             }
-            LauDaiNhanVat.bao(p, "Đánh lại Gym thành công: nhận Huy chương Gym.");
+            LauDaiNhanVat.bao(p, "Đánh lại Gym thành công: nhận Huy chương Gym. " + veLangMienPhi(ve));
+        }
+        if (quaVe != null) {
+            LauDaiNhanVat.bao(p, quaVe);
         }
         try {
             Database.instance.saveOrtherLog("", p.charname, "ha gym " + stt + (lanDau ? " lan dau" : " tuan"), "laudai");

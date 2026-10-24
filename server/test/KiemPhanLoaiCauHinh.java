@@ -41,7 +41,8 @@ public final class KiemPhanLoaiCauHinh {
         // <= 77: quan ly thu them 6 khoa chinh (thu.o_co_ban / o_toi_da / tha_xu_* gom tran / ngay - chu game chinh tren web)
         // <= 78: them 2 khoa han muc dang ky (dang_ky.toi_da_gio / toi_da_ngay - open test: mang di dong chung IP);
         //        cung tran voi web/tests/cau-hinh-phan-loai.test.ts
-        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 78), con lai an", chinh <= 78 && chinh >= 40);
+        // <= 81: them 3 khoa Ve lang mien phi (ve_lang.moi_ngay / thang_gym / toi_da - chu game chinh luot tren web)
+        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 81), con lai an", chinh <= 81 && chinh >= 40);
         Kiem.dung("phan loai: co khoa co dinh + luon bat", coDinh > 100 && luonBat >= 15);
         Kiem.dung("luon_bat: moi khoa la co, gia tri 1", luonBatDung);
 

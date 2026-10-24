@@ -23,6 +23,7 @@ import java.util.List;
  *   4 Su pham (nhan tro trong doi)
  *   5 Lich dang nhap 7 ngay / ve chuong
  *   9 Cua hang & doi vat pham (CuaHangLauDai, menu 20/21)
+ *  10 Cup PvP tuan; 11 Ve lang mien phi (con N luot) - real.VeLangMienPhiGame; tu 12: huong dan tan thu
  * NPC ao {@link #NPC_ID} (-527, da grep src/: trong). Moi dieu kien kiem lai o day (muc 11).
  *
  * Text hien cho nguoi choi o day la BAN NHAP - can duyet (CODING_CONVENTION muc 10).
@@ -38,8 +39,17 @@ public final class SoTayLauDai {
     static final int MENU_HAM_NGUC = 3;
     static final int MENU_QUA_HOAT_DONG = 4;
     static final int MENU_GYM = 5;
-    /** So muc co dinh cua menu goc; muc tu chi so nay la muc huong dan tan thu (HuongDanTanThuGame.themMucSoTay). */
+    /** So muc co dinh cua menu goc (= MUC_GOC.length, client 0.9.16 GameScr.SO_TAY_MUC chep dung mang nay). */
     static final int SO_MUC_GOC = 11; // 0..9 + "Cúp PvP tuần" (10, pho-ban-cup)
+    /**
+     * Dong "Về làng miễn phí (còn N lượt)" (real.VeLangMienPhiGame): ngay SAU muc co dinh, nhan doi theo so luot nen KHONG
+     * nam trong MUC_GOC (client 0.9.16 dung danh sach goc co dinh 11 dong o Menu ca nhan va ChupTrongGame so bang mang
+     * nay). Hien o menu goc cua may chu (Quầy đổi thưởng -> Sổ tay huấn luyện) tren moi client. Muc huong dan tan thu tu
+     * {@link #SO_MUC_DONG}.
+     */
+    static final int MUC_VE_LANG = SO_MUC_GOC;
+    /** So muc truoc muc huong dan tan thu (HuongDanTanThuGame.themMucSoTay). */
+    static final int SO_MUC_DONG = SO_MUC_GOC + 1;
 
     private SoTayLauDai() {
     }
@@ -59,8 +69,11 @@ public final class SoTayLauDai {
         if (!LauDai.bat() || p == null) {
             return;
         }
-        // huong dan tan thu: muc Bo qua / Huong dan tan thu noi vao CUOI (chi so >= SO_MUC_GOC, chu tu CSDL)
-        p.sendMessage(MessageCreator.createMsgMenu(HuongDanTanThuGame.themMucSoTay(p, MUC_GOC.clone()), NPC_ID, MENU_GOC));
+        // muc co dinh + "Về làng miễn phí (còn N lượt)" (MUC_VE_LANG), roi huong dan tan thu: muc Bo qua / Huong dan tan thu
+        // noi vao CUOI (chi so >= SO_MUC_DONG, chu tu CSDL)
+        final String[] goc = java.util.Arrays.copyOf(MUC_GOC, SO_MUC_DONG);
+        goc[MUC_VE_LANG] = VeLangMienPhiGame.nhanSoTay(p);
+        p.sendMessage(MessageCreator.createMsgMenu(HuongDanTanThuGame.themMucSoTay(p, goc), NPC_ID, MENU_GOC));
     }
 
     static void bao(final Char p, final String s) {
@@ -112,8 +125,11 @@ public final class SoTayLauDai {
                     case 10:
                         CupGame.moMenu(p); // 0.9.7 Cup PvP tuan xoay vong (real.CupGame)
                         break;
+                    case MUC_VE_LANG:
+                        VeLangMienPhiGame.chon(p); // ve lang vung minh, tru 1 luot khi da toi
+                        break;
                     default:
-                        HuongDanTanThuGame.chonMucSoTay(p, idOption - SO_MUC_GOC);
+                        HuongDanTanThuGame.chonMucSoTay(p, idOption - SO_MUC_DONG);
                         break;
                 }
             } else if (idMenu == MENU_TINH_THONG && (idOption == 0 || idOption == 1)) {

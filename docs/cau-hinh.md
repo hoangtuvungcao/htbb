@@ -345,17 +345,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **366 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **369 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 78 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 81 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 249 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (78)
+### Khoá chỉnh trên web (81)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -460,6 +460,9 @@ Giới hạn Tự động đánh (chỉ khi online) và giá hồi sinh tại ch
 | `hoi_sinh.tan_thu_cap` | Bảo vệ tân thủ dưới cấp | số | `15` | 0..100 | ngay | game | Dưới cấp này: không mất EXP / độ bền / Mệt mỏi, hồi sinh tại chỗ miễn phí. |
 | `hoi_sinh.gia_thuoc_phan_tram_gio` | Giá Thuốc hồi sinh (% thu nhập 1 giờ) | số | `30` | 0..1000 | ngay | game | Giá ở cửa hàng NPC theo cấp người mua (cùng bậc phí xu tại chỗ). 0 = giá gốc data_potion. |
 | `hoi_sinh.gia_thuoc_toi_thieu` | Giá Thuốc hồi sinh tối thiểu | số | `407` | 0..100000000 | ngay | game | Xu / viên (không thấp hơn giá gốc). |
+| `ve_lang.moi_ngay` | Về làng miễn phí: lượt mỗi ngày | số | `1` | 0..10 | ngay | game | Số lượt Về làng miễn phí (Sổ tay huấn luyện) mỗi ngày lịch máy chủ, không cộng dồn sang ngày sau. Lưu trong hồ sơ dài hạn: đăng nhập lại / khởi động lại không đặt lại. 0 = chỉ còn lượt thắng Gym. |
+| `ve_lang.thang_gym` | Về làng miễn phí: lượt thêm mỗi trận thắng Gym | số | `1` | 0..10 | ngay | game | Cộng vào lượt thêm đang giữ mỗi lần thắng một trận Gym (lần đầu hoặc đánh lại tuần). 0 = tắt. |
+| `ve_lang.toi_da` | Về làng miễn phí: giữ tối đa lượt thêm | số | `3` | 0..99 | ngay | game | Trần lượt thêm (từ thắng Gym) giữ được; lượt mỗi ngày tính riêng. Dùng lượt ngày trước, hết mới trừ lượt thêm. |
 
 #### Máy chủ, đăng ký & bảo trì (`bao_tri`)
 
