@@ -114,7 +114,7 @@ class CharKhoiTao {
         self.potions = new int[Char.SO_O_THUOC];
         self.itemquest = new short[ItemQuest.NAME_ITEM_QUEST.length];
         self.tPotions = new int[Char.SO_O_THUOC];
-        self.rPotions = new int[162];
+        self.rPotions = new int[Char.SO_O_THUOC];
         self.posNPCInVilage = null;
         self.attackDamage = 10;
         self.outdelay = 0;

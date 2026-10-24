@@ -27,7 +27,7 @@ const CT = CAM_NANG_ND.cheTao
   <WikiShell slug="cua-hang">
     <WikiSection id="tien" title="Trả bằng gì?">
       <ul class="cham">
-        <li><strong>Xu</strong>: tiền thường, kiếm từ quái và nhiệm vụ. Mua thuốc, trang bị, chế tạo, nâng cấp.</li>
+        <li><strong>Xu</strong>: tiền thường, kiếm từ quái và nhiệm vụ. Mua thuốc, trang bị, chế tạo, nâng cấp, và <NuxtLink to="/cam-nang/ban-do" class="lien-ket">Vé dịch chuyển</NuxtLink> ở Kecleon tạp hoá (giá theo cấp).</li>
         <li><strong>Lượng khoá</strong>: nhận từ đăng nhập, nhiệm vụ, sự kiện; không trao đổi được. Mua bùa bảo hộ và thuốc mạnh.</li>
         <li><strong>Lượng</strong>: loại tiền hiếm, chỉ dùng cho đồ trang trí và tiện ích (không cộng sức mạnh).</li>
       </ul>

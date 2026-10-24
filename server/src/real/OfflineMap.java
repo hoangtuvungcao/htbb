@@ -1601,6 +1601,11 @@ public class OfflineMap extends Map {
                            player.sendMessage(MessageCreator.createServerAlertMessage("Thuốc hồi sinh bán ở " + com.htbb.pokemon.DuongMenu.duong(com.htbb.pokemon.DuongMenu.QUAY, com.htbb.pokemon.DuongMenu.SO_TAY, "Cửa hàng và đổi vật phẩm") + " (giá theo cấp).", ""));
                            continue;
                         }
+                        // Ve dich chuyen: gia theo cap, chi ban qua menu Kecleon (VeDichChuyenGame.mua) - chan goi 24 tu che.
+                        if (var32 == com.htbb.pokemon.VeDichChuyen.ID) {
+                           player.sendMessage(MessageCreator.createServerAlertMessage("Vé dịch chuyển bán ở Kecleon tạp hoá (giá theo cấp).", ""));
+                           continue;
+                        }
                         final long giaMot = Map.potionTemplates2.get(var32).getPrice();
                         long price = giaMot * (long) quantity;
                         if (price <= 0L) {

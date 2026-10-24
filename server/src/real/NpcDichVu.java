@@ -37,6 +37,9 @@ public final class NpcDichVu {
     /** Ve tau (potion 20) - mua o Lapras (goi 81, Map.doBuyTicket). */
     static final int VE_TAU = 20;
 
+    /** Kecleon tap hoa (1) / ban le (26): menu dich vu ve dich chuyen. */
+    static final int[] NPC_KECLEON_LOAI = {VeDichChuyenGame.NPC_KECLEON, VeDichChuyenGame.NPC_KECLEON_2};
+
     /** Danh sach thuoc ban o Trung tam / tap hoa (id potionTemplates, cung danh sach Kecleon - goi 23 loai 1). */
     public static final int[] THUOC_BAN = {1, 2, 3, 4, 5, 6, 14, 15, 16, 17, 18, 19};
 
@@ -62,6 +65,15 @@ public final class NpcDichVu {
                 return true;
             case NPC_PIDGEOT:
                 moBay(p);
+                return true;
+            case VeDichChuyenGame.NPC_KECLEON:
+            case VeDichChuyenGame.NPC_KECLEON_2:
+                // Ve dich chuyen (24/10/2026): Kecleon tap hoa -> menu "Mua thuốc, vật phẩm" (cua so cu) / "Vé dịch chuyển"
+                if (!NpcTinhBanDo.oNoiDichVu(p, NPC_KECLEON_LOAI)) {
+                    bao(p, "Hãy đến gần Kecleon tạp hoá.");
+                    return true;
+                }
+                p.sendMessage(MessageCreator.createMsgMenu(VeDichChuyenGame.menuKecleon(p), loai, 0));
                 return true;
             case NPC_ARCANINE:
                 moLoiDi(p);
@@ -316,6 +328,24 @@ public final class NpcDichVu {
 
     /** MapDoMenu: true neu {@code idNpc} la NPC cua lop nay (da xu ly). */
     public static boolean xuLyMenu(final Char p, final int idNpc, final int idMenu, final int chon) {
+        if (VeDichChuyenGame.xuLyMenu(p, idNpc, idMenu, chon)) {
+            return true; // NPC ao ve dich chuyen (dung / mua)
+        }
+        if (idNpc == VeDichChuyenGame.NPC_KECLEON || idNpc == VeDichChuyenGame.NPC_KECLEON_2) {
+            if (idMenu != 0) {
+                return true;
+            }
+            if (!NpcTinhBanDo.oNoiDichVu(p, NPC_KECLEON_LOAI)) {
+                bao(p, "Hãy đến gần Kecleon tạp hoá.");
+                return true;
+            }
+            if (chon == 0) {
+                guiShopThuoc(p);
+            } else if (chon == 1) {
+                VeDichChuyenGame.moMua(p);
+            }
+            return true;
+        }
         if (idNpc == NPC_ARCANINE) {
             if (idMenu == 0) {
                 diLoi(p, chon);

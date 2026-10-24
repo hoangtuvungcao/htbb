@@ -1245,7 +1245,7 @@ class DatabaseNhanVat {
             } else {
                 ct = Database.charTemplatesOld[classID];
             }
-            int[] tempPotion = new int[162];
+            int[] tempPotion = new int[real.Char.SO_O_THUOC];
             tempPotion[4] = (tempPotion[1] = 1);
             long xu = 0L;
             StringBuilder potion = new StringBuilder("0," + ct.nHP1 + ",0,0," + ct.nMP1 + ",0,0");
@@ -1663,7 +1663,7 @@ class DatabaseNhanVat {
             } else {
                 ct = Database.charTemplatesOld[classID];
             }
-            int[] tempPotion = new int[162];
+            int[] tempPotion = new int[real.Char.SO_O_THUOC];
             tempPotion[4] = (tempPotion[1] = 1);
             long xu = 0L;
             StringBuilder potion = new StringBuilder("0," + ct.nHP1 + ",0,0," + ct.nMP1 + ",0,0");

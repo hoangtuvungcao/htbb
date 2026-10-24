@@ -143,6 +143,8 @@ public class Potion extends Actor
     public static final short TYPE_CT_HOA_DUOC = 132;
     public static final short TYPE_QUA_BONG_BAC = 160;
     public static final short TYPE_QUA_BONG_VANG = 161;
+    /** Ve dich chuyen (dung 1 lan, ban o Kecleon bang xu theo cap) - com.htbb.pokemon.VeDichChuyen / real.VeDichChuyenGame. */
+    public static final short TYPE_VE_DICH_CHUYEN = 162;
 
     // Su kien Vu Lan (viet lai) - 4 o con trong cua data_potion: 106, 107, 109, 110.
     // (108 DA BI CHIEM boi "Hop qua may man" cua su kien World Cup - xem

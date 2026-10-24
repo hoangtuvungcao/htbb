@@ -218,6 +218,7 @@ public final class MoTaVatPham {
         {"159", HOP, "Mở bao lì xì: nhận quà ngẫu nhiên.", "1", ""},
         {"160", NGUYEN_LIEU, "Quả bóng bạc: vật phẩm sự kiện World Cup.", "0", buoc("đổi ở NPC sự kiện khi sự kiện mở.")},
         {"161", HOP, "Quả bóng vàng (sự kiện World Cup): dùng để nhận quà.", "1", ""},
+        {"162", VE, "Dùng trong Hành trang: dịch chuyển về làng hoặc thành phố đã mở. Dùng 1 lần là hết. Không dùng khi đang đánh Gym, trong hầm ngục, PvP, giao hàng hay khi bị PK.", "1", ""},
     };
 
     private static final String[][] THEO_ID = new String[256][];

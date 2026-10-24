@@ -165,6 +165,6 @@ dữ liệu chỉ qua bảng tạm) và phần B giống phần A từng dòng c
 - **`data_attribute`** phải có id 0..186 liên tục (client tra theo vị trí; thiếu là đơ khi mở trang bị).
 - **`data_item`**: không bao giờ `DELETE` dòng ở giữa (client ghi mảng theo id). Muốn bỏ vật phẩm thì đổi thành loại
   trơ, giữ dòng. Xoá template trong khi còn người giữ món đó là người đó không vào được game.
-- **`data_potion`** luôn đúng 162 dòng (`Char.SO_O_THUOC`): thuốc mới `UPDATE` vào ô trống.
+- **`data_potion`** luôn đúng `Char.SO_O_THUOC` dòng (163 từ 24/10/2026, id 162 = Vé dịch chuyển, khối `them_ve_dich_chuyen.sql`): thuốc mới ưu tiên `UPDATE` vào ô trống; thêm id mới thì tăng `Char.SO_O_THUOC` cùng lúc (tối đa 255 — client đọc số ô bằng một byte) và chạy SQL trước khi thay jar.
 - Cột `xstart` của `data_item` là **icon trong hành trang** (icon Pokémon dải 14000+), độc lập với hình khi mặc.
 - Tệp ở đây là **LF** (`.gitattributes`).

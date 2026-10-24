@@ -27,7 +27,7 @@ public final class KiemNoiDung {
     private static final String D = "../du_lieu/";
     private static final int ID_TU = 1001;
     private static final int ID_DEN = 1199;
-    private static final int SO_THUOC = 162;
+    private static final int SO_THUOC = real.Char.SO_O_THUOC; // 163: id 162 = Ve dich chuyen
     private static final int SO_NGOC = 67;
 
     private KiemNoiDung() {

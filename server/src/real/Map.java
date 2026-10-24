@@ -2447,7 +2447,7 @@ public class Map implements Runnable {
      * Client cap phat o thuoc theo so dong bang nay (goi dang nhap gui
      * potionTemplates2.size() -> Char.CHAR_POTION) roi tra cuu bang chi so ma khong
      * kiem tra bien. Thieu dong la nguoi choi giu thuoc id cao se lam client rong
-     * TOAN BO hanh trang — xem Char.getAllPotion(). Bang phai co du id 0..161.
+     * TOAN BO hanh trang — xem Char.getAllPotion(). Bang phai co du id 0..Char.SO_O_THUOC-1 (162 tu Ve dich chuyen).
      */
     public static void kiemTraSoDongPotion() {
         final int co = (potionTemplates2 == null) ? 0 : potionTemplates2.size();

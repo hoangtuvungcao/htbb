@@ -759,6 +759,11 @@ public final class DungVatPham {
             loi(p, chan);
             return;
         }
+        // Ve dich chuyen: KHONG tru o day - mo menu diem den, tru 1 ve khi da toi noi (VeDichChuyenGame.chonDiem)
+        if (t == com.htbb.pokemon.VeDichChuyen.ID) {
+            VeDichChuyenGame.dungTuTui(p);
+            return;
+        }
         // 0.9.14: sao goi / trung thu cuoi -> thu cuoi vinh vien (truoc: "Khong the su dung", chi NPC ap trung doi duoc)
         if (ThuCuoiTuTui.la(t)) {
             if (p.userTrade != null && p.userTrade.size() > 0) {

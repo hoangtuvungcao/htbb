@@ -152,7 +152,8 @@ public class RequestNPCInfoHandler implements ICommandHandler {
         // kho do + mo rong hanh trang) - xem real.NpcDichVu.
         if (npcType == real.NpcDichVu.NPC_Y_TA || npcType == real.NpcDichVu.NPC_PIDGEOT || npcType == real.NpcDichVu.NPC_ARCANINE
                 || npcType == real.NpcDichVu.NPC_MEOWTH || npcType == real.NpcDichVu.NPC_MEOWTH_DOI_XU
-                || npcType == real.NpcDichVu.NPC_KANGASKHAN || npcType == real.NpcDichVu.NPC_KANGASKHAN_2) {
+                || npcType == real.NpcDichVu.NPC_KANGASKHAN || npcType == real.NpcDichVu.NPC_KANGASKHAN_2
+                || npcType == real.VeDichChuyenGame.NPC_KECLEON || npcType == real.VeDichChuyenGame.NPC_KECLEON_2) {
             if (real.NpcDichVu.moMenu(CharManager.instance.getByUserID(session.userID), npcType)) {
                 return;
             }

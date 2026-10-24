@@ -1331,10 +1331,13 @@ public class Char extends LiveActor {
     }
 
     /**
-     * So o thuoc cua nhan vat. Bang so dong cua bang data_potion (id 0..161) va bang
+     * So o thuoc cua nhan vat. Bang so dong cua bang data_potion (id 0..162) va bang
      * so truong CSV cua cot tob_char.potion. Doi so nay la phai doi ca hai cho.
+     * 163 tu 24/10/2026: them id 162 = Ve dich chuyen (com.htbb.pokemon.VeDichChuyen, khoi SQL
+     * them_ve_dich_chuyen.sql). CSV cu 162 truong van nap duoc (CharNapDuLieu doc theo do dai chuoi);
+     * client cap phat o thuoc theo so dong data_potion gui luc dang nhap (doc unsigned byte, toi da 255).
      */
-    public static final int SO_O_THUOC = 162;
+    public static final int SO_O_THUOC = 163;
 
     /** Da canh bao thieu dong data_potion chua (chi ghi log mot lan cho do ram log). */
     private static boolean daCanhBaoThieuPotion = false;
@@ -2063,9 +2066,9 @@ public class Char extends LiveActor {
             }
         }
         this.tPotions = null;
-        this.tPotions = new int[162];
+        this.tPotions = new int[Char.SO_O_THUOC];
         this.userTrade.get(0).tPotions = null;
-        this.userTrade.get(0).tPotions = new int[162];
+        this.userTrade.get(0).tPotions = new int[Char.SO_O_THUOC];
         info = String.valueOf(info) + " ||| " + this.charname + " nhận_";
         for (int i = 0; i < this.rPotions.length; ++i) {
             if (this.rPotions[i] > 0) {
@@ -2085,9 +2088,9 @@ public class Char extends LiveActor {
             }
         }
         this.rPotions = null;
-        this.rPotions = new int[162];
+        this.rPotions = new int[Char.SO_O_THUOC];
         this.userTrade.get(0).rPotions = null;
-        this.userTrade.get(0).rPotions = new int[162];
+        this.userTrade.get(0).rPotions = new int[Char.SO_O_THUOC];
         try {
             // 14/09/2026: ghi kem vi tri chi tiet (map/khu/toa do) de biet giao dich xay ra
             // o dau (vd "Thanh Tran Danh" idMapTown=201), doc duoc ngay tu tob_log_all_item.

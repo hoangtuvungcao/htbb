@@ -271,6 +271,14 @@ public final class Kiem {
         } catch (final Exception e) {
             Kiem.bang("KiemDanhQuaiTrongLang khong nem loi", "", String.valueOf(e));
         }
+        Kiem.nhom("Ve dich chuyen (Kecleon xu theo cap, Su dung -> lang / thanh pho da mo, dung 1 lan, cam Gym/PvP/pho ban/PK)");
+        real.KiemVeDichChuyen.BAO = new real.KiemVeDichChuyen.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        real.KiemVeDichChuyen.chay();
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);
