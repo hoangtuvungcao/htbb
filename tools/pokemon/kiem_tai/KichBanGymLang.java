@@ -274,8 +274,10 @@ public final class KichBanGymLang {
 
     /** Ha boss {@code id} bang lenh 9 (server thu nhanBoss): @return hp cuoi. */
     static int haBoss(BotChucNang.Bot b, int id) throws IOException {
+        int moc = b.moc();
         int h = hp(b, id);
         for (int i = 0; i < 400 && h > 0; i++) {
+            if (co90(b, moc, id)) return 0; // da guc (may chu go boss: lenh 7 khong con tra loi, hp cu dung yen)
             if (i % 25 == 0) {
                 int[] q0 = b.quai.get(id);
                 System.out.println("  ha boss " + id + " lan " + i + ": hp " + h + (q0 == null ? "" : " o " + q0[0] + "," + q0[1]) + " minh " + b.px + "," + b.py + " hp minh " + b.hp);
@@ -353,51 +355,48 @@ public final class KichBanGymLang {
             BotChucNang.ket("gl.mot_tran.khong_hoi_sinh", (qb == null || qb[2] <= 0) && (qc == null || qc[2] <= 0) && moiSau.isEmpty(),
                     "9 giay sau: chu " + (qb == null ? "khong co" : "hp " + qb[2]) + ", nguoi canh " + (qc == null ? "khong co" : "hp " + qc[2])
                             + ", boss song moi " + moiSau);
-            // ---- 3. danh lai roi ra Pallet: boss bien mat voi nguoi o lai
+            // ---- 3. danh lai roi thoat game: boss bien mat voi nguoi o lai
             Set<Integer> cu3 = new HashSet<>(c.quai.keySet());
             cu3.addAll(b.quai.keySet());
             thachDauLien(b, 1);
-            List<Integer> b3 = bossMoi(b, cu3, 4000);
+            List<Integer> b3 = bossMoi(c, cu3, 4000);
             if (b3.size() == 1) {
                 int id3 = b3.get(0);
                 int mc3 = c.moc();
-                boolean ra = raPallet(b);
+                b.close();
                 boolean mat = c.cho(x -> co90(x, mc3, id3), 8000);
-                BotChucNang.ket("gl.mot_tran.roi_ban_do", ra && mat, "ra Pallet " + ra + " (map " + b.mapId + "), nguoi o lai thay boss " + id3 + " mat " + mat
-                        + " | " + b.doiChu(0, 0, "rời khỏi bản đồ"));
+                BotChucNang.ket("gl.mot_tran.thoat_game", mat, "thoat game: nguoi o lai thay boss " + id3 + " mat " + mat);
             } else {
-                BotChucNang.ket("gl.mot_tran.roi_ban_do", false, "danh lai: " + b3.size() + " boss | " + b.chuTu(0));
+                BotChucNang.ket("gl.mot_tran.thoat_game", false, "danh lai: nguoi canh thay " + b3.size() + " boss");
+                b.close();
             }
-            // ---- 4. danh lai roi thoat game: boss bien mat
-            String u = b.user;
-            BotChucNang.Bot b4 = new BotChucNang.Bot(u);
-            b.close();
+            // ---- 4. vao lai, danh lai roi ra Pallet: boss bien mat voi nguoi o lai
             Thread.sleep(2500);
-            if (b4.dangNhap("123456") == null) b4.vaoGame(0);
-            b4.bom(800);
-            for (int t = 0; t < 3 && !KichBanDS.laLang(b4.mapId); t++) {
-                KichBanDS.veLang(b4);
-                b4.bom(2500);
-            }
-            b4 = cungLang(c, b4);
-            if (b4.mapId == c.mapId) {
-                KichBanDS.timQuai(b4, 0, 300);
-                Set<Integer> cu4 = new HashSet<>(c.quai.keySet());
-                cu4.addAll(b4.quai.keySet());
-                thachDauLien(b4, 1);
-                List<Integer> b5 = bossMoi(c, cu4, 4000);
-                if (b5.size() == 1) {
-                    int id5 = b5.get(0);
-                    int mc5 = c.moc();
-                    b4.close();
-                    boolean mat = c.cho(x -> co90(x, mc5, id5), 8000);
-                    BotChucNang.ket("gl.mot_tran.thoat_game", mat, "thoat game: nguoi o lai thay boss " + id5 + " mat " + mat);
+            BotChucNang.Bot b4 = new BotChucNang.Bot(b.user);
+            try {
+                if (b4.dangNhap("123456") == null) b4.vaoGame(0);
+                b4.bom(800);
+                b4 = cungLang(c, b4);
+                if (b4.mapId != c.mapId) {
+                    BotChucNang.ket("gl.mot_tran.roi_ban_do", null, "khong cung lang " + b4.mapId + " / " + c.mapId);
                 } else {
-                    BotChucNang.ket("gl.mot_tran.thoat_game", false, "danh lai lan 3: nguoi canh thay " + b5.size() + " boss");
-                    b4.close();
+                    KichBanDS.timQuai(b4, 0, 300);
+                    Set<Integer> cu4 = new HashSet<>(c.quai.keySet());
+                    cu4.addAll(b4.quai.keySet());
+                    thachDauLien(b4, 1);
+                    List<Integer> b5 = bossMoi(c, cu4, 4000);
+                    if (b5.size() == 1) {
+                        int id5 = b5.get(0);
+                        int mc5 = c.moc();
+                        boolean ra = raPallet(b4);
+                        boolean mat = c.cho(x -> co90(x, mc5, id5), 8000);
+                        BotChucNang.ket("gl.mot_tran.roi_ban_do", ra && mat, "ra Pallet " + ra + " (map " + b4.mapId + "), nguoi o lai thay boss "
+                                + id5 + " mat " + mat + " | " + b4.doiChu(0, 0, "rời khỏi bản đồ"));
+                    } else {
+                        BotChucNang.ket("gl.mot_tran.roi_ban_do", false, "danh lai lan 3: nguoi canh thay " + b5.size() + " boss");
+                    }
                 }
-            } else {
-                BotChucNang.ket("gl.mot_tran.thoat_game", null, "khong cung lang " + b4.mapId + " / " + c.mapId);
+            } finally {
                 b4.close();
             }
         } finally {

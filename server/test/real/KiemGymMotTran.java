@@ -278,7 +278,7 @@ public final class KiemGymMotTran {
             dung("thang: huy hieu Gym 1", GymLauDai.coHuyHieu(h, 1));
             BAO.bang("thang: buoc ha_gym CA-03.2 xong (cho nhan thuong)", Long.valueOf(1L), Long.valueOf(t.get("CA-03.2")[1]));
             dung("thang: thong bao nhan thuong o moi noi + ve lang nhanh",
-                    p.chu(tuChu).contains("Nhiệm vụ của tôi → Đang làm") && p.chu(tuChu).contains("Dây thoát hiểm"));
+                    p.chu(tuChu).contains("Nhiệm vụ của tôi → Đang làm") && p.chu(tuChu).contains("Dây thoát hiểm") && p.chu(tuChu).contains("Vé dịch chuyển"));
             final int bitTuan = h.gymTuanBit;
             BossLauDai.khiChet(boss); // goi lai (vd hai don cung guc) - khong thuong lan hai
             BossLauDai.donGym(new HashMap<Integer, Char>());

@@ -198,14 +198,15 @@ public final class GymLauDai {
     static final String SAU_THANG = "Trưởng Gym đã rời bản đồ. Nhận thưởng nhiệm vụ: "
             + com.htbb.pokemon.DuongMenu.NHAN_THUONG_MOI_NOI;
 
-    /** "Về làng nhanh: Dây thoát hiểm (1000 xu, cửa hàng thuốc)." - gia doc tu data_potion (id 19). */
+    /** "Về làng nhanh: Dây thoát hiểm (1000 xu, cửa hàng thuốc) hoặc Vé dịch chuyển (Kecleon ...)." - gia day doc data_potion 19. */
     static String veLangNhanh() {
         int gia = 0;
         try {
             gia = Map.potionTemplates2.get(19).getPrice();
         } catch (final Exception ignored) {
         }
-        return "Về làng nhanh: Dây thoát hiểm" + (gia > 0 ? " (" + gia + " xu, cửa hàng thuốc)" : "") + ".";
+        return "Về làng nhanh: Dây thoát hiểm" + (gia > 0 ? " (" + gia + " xu, cửa hàng thuốc)" : "") + " hoặc "
+                + com.htbb.pokemon.VeDichChuyen.TEN + " (Kecleon, về làng / thành phố đã mở).";
     }
 
     /** Tran Gym bi huy (BossLauDai.donGym / huyGymCua): bao chu (neu con online). Thua / huy deu duoc thach dau lai ngay. */
