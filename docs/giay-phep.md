@@ -64,6 +64,7 @@ Sprite và chân dung PMDCollab theo [CC BY-NC 4.0](https://creativecommons.org/
 | `client_pc/res/phong/GIAY_PHEP.txt`, `OFL-NotoSans.txt`, `OFL-Baloo2.txt` | phông bản PC | — |
 | `client_pc/res/soundbank/GIAY_PHEP.txt`, `GPL-2.txt` | soundbank TimGM6mb | — |
 | `web/public/pokemon/GHI_CONG.txt` | bản sao cho trang `/giay-phep` (đọc lúc build) | chép từ tệp Unity khi đồng bộ dữ liệu web |
+| `server/map/icon_pokemon/GHI_CONG.txt` | icon vật phẩm 14503–14526 (trang phục, mặt nạ, vũ khí trong ô trang bị, 24/10/2026): chân dung SpriteCollab (người vẽ từng loài, CC BY-NC 4.0) và icon RawAsset, nguồn + phép đổi màu từng tệp | `tools/pokemon/them_icon_trang_phuc.py` |
 | `server/map/loai/GHI_CONG.txt` | gói tải theo nhu cầu: người vẽ bản thường (251 loài), **bản sắc màu** PMDCollab (240 loài, `<NNNN>s.goi`) và **chân dung Pokédex tĩnh** (`web/public/pokemon/loai/<dex>.png`, loài chưa có gói) - cùng commit ghim `4702f10d`, CC BY-NC 4.0 | `tools/pokemon/loai/ghi_cong_loai.py` |
 
 Trong game: Menu màn đăng nhập → **Ghi công** (jar/APK), nút **Ghi công** dưới khung đăng nhập (Unity), F10 → **Giấy
@@ -170,6 +171,7 @@ Nintendo (Bulbapedia / Serebii...) ở bất kỳ đâu.
 | Thú cưỡi, pet, skin linh thú, hoá hình (ô dự phòng `d_effect`, `pet/`, `avtathu/`, `skinthu/`); 5 loài mới 0483 Dialga, 0675 Pangoro, 0716 Xerneas, 0745 Lycanroc, 0879 Copperajah | PMDCollab SpriteCollab (CC BY-NC 4.0, ghi công theo loài) | `tools/pokemon/sinh_bang_thu.py`, `tai_sprite_pmd.py`, `DongGoiSprite.java`, `ve_thu_pet_thay_cu.py` |
 | NPC dự phòng (`npc.sh`), quái / boss dự phòng (`map/monster`, `thanthu`, `rong/`), tranh Tủ bình, icon skin | PMDCollab SpriteCollab | `sinh_npc_sh.py`, `sinh_anh_quai_cu.py`, `sinh_icon_thay_cu.py` |
 | Icon vật phẩm còn ở dải cũ (`map/icon`, `images_*`, `iconquest`, `fruit`) | PMDCollab RawAsset (đã dùng từ trước) | `sinh_icon_pokemon.py` → `sinh_icon_thay_cu.py` |
+| Icon trang phục / mặt nạ / nón / vũ khí / skin trong ô trang bị (`map/icon_pokemon/503..526`, khối `doi_icon_trang_phuc.sql`) | PMDCollab SpriteCollab (chân dung cùng loài) + RawAsset (khăn, mặt nạ, gậy, áo choàng đổi màu); 59 món còn lại dùng icon PMD sẵn có | `tools/pokemon/them_icon_trang_phuc.py` |
 | Huy hiệu đội, icon kỹ năng đội, huy hiệu hệ, Poké Ball, quả mọng; hiệu ứng kiếm (mảnh băng), băng-rôn danh hiệu, vầng sáng, icon chiêu `sk0..4`; đèn lồng, tượng, ô vườn, rương; nút / khung giao diện Unity, khiên vùng, vòng quay | tự vẽ bằng code (CC0) | `sinh_icon_thay_cu.py`, `ve_hieu_ung_thay_cu.py`, `ve_giao_dien_thay_cu.py`, `ve_vong_quay.py` |
 | Vật trang trí bản đồ `map/tree`; đèn lồng, tượng, ô vườn, rương | Ninja Adventure (CC0); tự vẽ (CC0) | `tools/pokemon/p2_ban_do/tree_moi.py`, `ve_trang_tri.py`, `ve_dat.py` |
 | Bộ phận người / vũ khí paper-doll (`c/`, `wpa/`, `wpsplash/`, ngựa cũ gửi trong `-8`) | làm trong suốt, giữ định dạng (client Pokémon không vẽ) | `xoa_hinh_nguoi_cu.py` |

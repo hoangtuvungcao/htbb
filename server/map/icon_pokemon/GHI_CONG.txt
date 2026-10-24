@@ -1,0 +1,33 @@
+Icon map/icon_pokemon/<n>.png (id anh 14000+n) them boi tools/pokemon/them_icon_trang_phuc.py.
+O 0..502 sinh boi tools/luu_tru_sinh_du_lieu/pokemon/sinh_icon_pokemon.py tu cung hai nguon duoi day.
+
+Chan dung: PMDCollab SpriteCollab (CC BY-NC 4.0, https://creativecommons.org/licenses/by-nc/4.0/),
+  thu nho 40x40 -> 20x20 va them vien toi. Nguoi ve theo portrait/<dex>/credits.txt
+  (CHUNSOFT = trich tu Pokemon Mystery Dungeon, (c) Nintendo / Chunsoft).
+Icon vat pham: PMDCollab RawAsset Item (trich tu Pokemon Mystery Dungeon, (c) Nintendo / Chunsoft;
+  khong co LICENSE, chi dung phi thuong mai). "bien doi" (xam, sang, mau:RRGGBB) = to lai mau hinh goc.
+
+503.png	Ao Zoroark	https://github.com/PMDCollab/SpriteCollab portrait/0571/Normal.png	nguoi ve: Deeshura	
+504.png	Ao Gardevoir	https://github.com/PMDCollab/SpriteCollab portrait/0282/Normal.png	nguoi ve: CHUNSOFT	
+505.png	Ao Absol	https://github.com/PMDCollab/SpriteCollab portrait/0359/Normal.png	nguoi ve: Emmuffin	
+506.png	Ao Oricorio	https://github.com/PMDCollab/SpriteCollab portrait/0741/Normal.png	nguoi ve: Emmuffin, Top_Kec	
+507.png	Ao Milotic	https://github.com/PMDCollab/SpriteCollab portrait/0350/Normal.png	nguoi ve: CHUNSOFT	
+508.png	Ao Minun	https://github.com/PMDCollab/SpriteCollab portrait/0312/Normal.png	nguoi ve: C_Pariah	
+509.png	Ao Blaziken	https://github.com/PMDCollab/SpriteCollab portrait/0257/Normal.png	nguoi ve: Noo	
+510.png	Ao Plusle	https://github.com/PMDCollab/SpriteCollab portrait/0311/Normal.png	nguoi ve: C_Pariah	
+511.png	Ao Zapdos	https://github.com/PMDCollab/SpriteCollab portrait/0145/Normal.png	nguoi ve: CHUNSOFT	
+512.png	Ao Raikou nam / nu	https://github.com/PMDCollab/SpriteCollab portrait/0243/Normal.png	nguoi ve: CHUNSOFT	
+513.png	Ao Glameow	https://github.com/PMDCollab/SpriteCollab portrait/0431/Normal.png	nguoi ve: JFain	
+514.png	Ao Persian	https://github.com/PMDCollab/SpriteCollab portrait/0053/Normal.png	nguoi ve: baronessfaron	
+515.png	Hoc tro cap 1..3 (khan quang dong phuc)	https://github.com/PMDCollab/RawAsset Item/Scarf_2_LightBlue.None.png	
+516.png	Mat na Haunter	https://github.com/PMDCollab/SpriteCollab portrait/0093/Normal.png	nguoi ve: PhillipsYoung	
+517.png	Mat na Houndoom	https://github.com/PMDCollab/SpriteCollab portrait/0229/Normal.png	nguoi ve: CHUNSOFT	
+518.png	Mat na Yamask	https://github.com/PMDCollab/SpriteCollab portrait/0562/Normal.png	nguoi ve: Emmuffin	
+519.png	Mat na Gengar	https://github.com/PMDCollab/SpriteCollab portrait/0094/Normal.png	nguoi ve: CHUNSOFT	
+520.png	Mat na Snorlax	https://github.com/PMDCollab/SpriteCollab portrait/0143/Normal.png	nguoi ve: CHUNSOFT	
+521.png	Mat na tho (mat na vang to xam bac)	https://github.com/PMDCollab/RawAsset Item/Mask_Gold.None.png	bien doi: xam+sang
+522.png	Mat na cao	https://github.com/PMDCollab/RawAsset Item/Mask_Gold.None.png	
+523.png	Luoi liem Scyther	https://github.com/PMDCollab/SpriteCollab portrait/0123/Normal.png	nguoi ve: Noo	
+524.png	Gay Anh Trang	https://github.com/PMDCollab/RawAsset Item/Wand_White.None.png	
+525.png	Giap rong (ao choang to xanh rong, cung kieu Ao Emboar / Swampert)	https://github.com/PMDCollab/RawAsset Item/Cape_Gray.None.png	bien doi: mau:50B050
+526.png	Gay xuong Marowak	https://github.com/PMDCollab/SpriteCollab portrait/0105/Normal.png	nguoi ve: Emmuffin	

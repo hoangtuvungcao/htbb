@@ -31131,7 +31131,7 @@ INSERT INTO `bad_word` (`word`) SELECT w.`word` FROM (SELECT 'dume' AS `word` UN
 --  (map/icon_do_moi, id 15000+n, da co PNG): mau "Meowth" (he Thuong) cho o ho, mau thanh pho hop do vat cho o vung.
 --  Giu: Khăn quàng 14000, Hạt giống thần 14004, Nước thần 14006, Phiến đá 14012, Ruy băng 14013 (da dung hinh).
 --  Bang ma: server/src/com/htbb/pokemon/IconTrangBi.java. Kiem: server/test/KiemIconTrangBi.java.
---  Do thoi trang / mat na / skin trong cung o (ten khong bat dau bang danh tu cua o) KHONG doi: xem bao cao.
+--  Do thoi trang / mat na / skin trong cung o (ten khong bat dau bang danh tu cua o): khoi doi_icon_trang_phuc.sql.
 -- ==================================================================================
 UPDATE `data_item` SET `xstart` = 15005 WHERE `type` = 1 AND `xstart` = 14001 AND `name` LIKE 'Đai %';
 UPDATE `data_item` SET `xstart` = 15010 WHERE `type` = 2 AND `xstart` = 14002 AND `name` LIKE 'Băng đô %';
@@ -31142,3 +31142,76 @@ UPDATE `data_item` SET `xstart` = 15540 WHERE `type` = 8 AND `xstart` = 14008 AN
 UPDATE `data_item` SET `xstart` = 15015 WHERE `type` = 9 AND `xstart` = 14009 AND `name` LIKE 'Vòng cổ %';
 UPDATE `data_item` SET `xstart` = 15020 WHERE `type` = 10 AND `xstart` = 14010 AND `name` LIKE 'Lông vũ %';
 UPDATE `data_item` SET `xstart` = 15541 WHERE `type` = 11 AND `xstart` = 14011 AND `name` LIKE 'Găng %';
+
+-- >>> doi_icon_trang_phuc.sql
+-- ==================================================================================
+--  ICON TRANG PHUC / MAT NA / NON / VU KHI / SKIN TRONG O TRANG BI (them 24/10/2026, chu game "tu kiem di").
+--  Chay lai bao nhieu lan cung duoc (UPDATE theo id + o + icon CU: admin da doi icon thi giu; lan sau khong khop).
+--  89 mon nam trong o trang bi nhung ten khong bat dau bang danh tu cua o (69 ao / cai trang o Khăn quàng, 9 mat na o
+--  Đai, 2 non o Băng đô, Quạt lá / Gậy xương / Lưỡi liềm o Hạt giống thần, Gậy Ánh Trăng o Khăn lụa, 5 skin o Ruy băng)
+--  van hien icon goc cua o (khan do, soi day, tui nau, hat giong, cuc da, no hong). Nay tro sang icon PMD dung hinh trong
+--  map/icon_pokemon (14000+n): cung icon voi mon do ban o cua hang (Ao Lunala, Ao dai, Non noel, Bong da...), chan dung
+--  cung loai Pokemon (ao / mat na / skin mang ten loai), ao choang bo Emboar / Swampert; 24 icon them moi 14503..14526
+--  (tools/pokemon/them_icon_trang_phuc.py, PMDCollab, ghi cong map/icon_pokemon/GHI_CONG.txt).
+--  Kiem: server/test/KiemIconTrangBi.java. Giu: Ruy Băng Hoenn / Ruy Băng bóng đá (no hong dung hinh).
+-- ==================================================================================
+UPDATE `data_item` SET `xstart` = 14211 WHERE `id` IN (264,743) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14213 WHERE `id` IN (265,756) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14214 WHERE `id` = 266 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14210 WHERE `id` IN (267,582,583,754,755) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14209 WHERE `id` = 507 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14212 WHERE `id` = 508 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14224 WHERE `id` IN (573,575) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14072 WHERE `id` = 574 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14073 WHERE `id` = 576 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14215 WHERE `id` IN (579,580,888,889) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14236 WHERE `id` IN (609,610) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14285 WHERE `id` IN (620,621) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14278 WHERE `id` IN (622,623) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14515 WHERE `id` IN (624,625,626,627,628,629) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14289 WHERE `id` = 671 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14288 WHERE `id` = 672 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14290 WHERE `id` = 673 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14291 WHERE `id` = 674 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14503 WHERE `id` = 723 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14504 WHERE `id` = 724 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14505 WHERE `id` = 725 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14506 WHERE `id` = 726 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14260 WHERE `id` = 736 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14261 WHERE `id` = 737 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14262 WHERE `id` = 740 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14263 WHERE `id` = 741 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14264 WHERE `id` = 744 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14362 WHERE `id` = 757 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14269 WHERE `id` IN (788,791) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14270 WHERE `id` IN (789,792) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14507 WHERE `id` = 797 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14508 WHERE `id` = 798 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14509 WHERE `id` = 799 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14510 WHERE `id` = 800 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14511 WHERE `id` = 801 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14512 WHERE `id` IN (805,806) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14513 WHERE `id` = 833 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14514 WHERE `id` = 834 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14525 WHERE `id` = 839 AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14154 WHERE `id` IN (841,842,843,844,904) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14142 WHERE `id` IN (845,846,847,903) AND `type` = 0 AND `xstart` = 14000;
+UPDATE `data_item` SET `xstart` = 14226 WHERE `id` IN (577,745) AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14516 WHERE `id` = 746 AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14517 WHERE `id` = 747 AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14518 WHERE `id` = 748 AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14519 WHERE `id` = 749 AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14521 WHERE `id` = 837 AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14522 WHERE `id` = 838 AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14520 WHERE `id` = 872 AND `type` = 1 AND `xstart` = 14001;
+UPDATE `data_item` SET `xstart` = 14225 WHERE `id` = 578 AND `type` = 2 AND `xstart` = 14002;
+UPDATE `data_item` SET `xstart` = 14208 WHERE `id` = 581 AND `type` = 2 AND `xstart` = 14002;
+UPDATE `data_item` SET `xstart` = 14110 WHERE `id` = 890 AND `type` = 4 AND `xstart` = 14004;
+UPDATE `data_item` SET `xstart` = 14526 WHERE `id` = 891 AND `type` = 4 AND `xstart` = 14004;
+UPDATE `data_item` SET `xstart` = 14523 WHERE `id` = 892 AND `type` = 4 AND `xstart` = 14004;
+UPDATE `data_item` SET `xstart` = 14524 WHERE `id` = 796 AND `type` = 5 AND `xstart` = 14005;
+UPDATE `data_item` SET `xstart` = 14090 WHERE `id` = 950 AND `type` = 19 AND `xstart` = 14013;
+UPDATE `data_item` SET `xstart` = 14091 WHERE `id` = 951 AND `type` = 19 AND `xstart` = 14013;
+UPDATE `data_item` SET `xstart` = 14092 WHERE `id` = 952 AND `type` = 19 AND `xstart` = 14013;
+UPDATE `data_item` SET `xstart` = 14093 WHERE `id` = 953 AND `type` = 19 AND `xstart` = 14013;
+UPDATE `data_item` SET `xstart` = 14094 WHERE `id` = 954 AND `type` = 19 AND `xstart` = 14013;
