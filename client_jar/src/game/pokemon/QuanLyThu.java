@@ -9,7 +9,7 @@ import java.io.DataInputStream;
 import java.util.Vector;
 
 /**
- * QUẢN LÝ THÚ (thú cưỡi + Pokémon đi theo, chung một danh sách): ô thú có giới hạn, thả về tự nhiên lấy ít xu, khoá
+ * QUẢN LÝ THÚ (thú cưỡi + Pokémon đi theo; 0.9.16 danh sách tách hai tab con, "Ô thú" vẫn chung): ô thú có giới hạn, thả về tự nhiên lấy ít xu, khoá
  * con yêu thích, thả bản trùng, Vé mở ô thú. Máy chủ quyết định mọi thứ (real.QuanLyThuGame); client chỉ hiện và gửi.
  *
  * Gói 16 loại 2 (danh sách thú) có PHẦN NỐI THÊM sau "int luongKhoa" (máy chủ chỉ gửi cho client BAN >= 912):
@@ -226,6 +226,48 @@ public final class QuanLyThu {
         return i >= 0 ? lyDo[i] : "";
     }
 
+    // ------------------------------------------------------------------ 0.9.16: tách Thú cưỡi / Đi theo
+
+    /** Tab con danh sách thú: thú cưỡi (typeAnimal 0) / Pokémon đi theo (pet, typeAnimal khác 0). */
+    public static final int LOAI_CUOI = 0, LOAI_DI_THEO = 1;
+
+    /** Loại một thú (gói 16 loại 2 / khối đang dùng ghi typeAnimal cho mọi máy chủ - không cần chặn theo BAN). */
+    public static int loai(AnimalInfo a) {
+        return a != null && a.typeAnimal == 0 ? LOAI_CUOI : LOAI_DI_THEO;
+    }
+
+    /**
+     * Thú một loại theo thứ tự hiện: con ĐANG DÙNG của loại (đang cưỡi / đang đi theo) đứng đầu, rồi các con đang dùng
+     * khác cùng loại (khối đang dùng), rồi túi thú (Char.animal) cùng loại. Không gồm hàng thú cưỡi cũ (thuốc).
+     */
+    public static Vector dsLoai(int loaiThu) {
+        Vector v = new Vector();
+        AnimalInfo dau = coDung ? (loaiThu == LOAI_CUOI ? cuoi : diTheo) : null;
+        if (dau != null) {
+            v.addElement(dau);
+        }
+        if (coDung) {
+            for (int i = 0; i < dung.size(); i++) {
+                AnimalInfo a = (AnimalInfo) dung.elementAt(i);
+                if (a != dau && loai(a) == loaiThu) {
+                    v.addElement(a);
+                }
+            }
+        }
+        for (int i = 0; i < Char.animal.size(); i++) {
+            AnimalInfo a = (AnimalInfo) Char.animal.elementAt(i);
+            if (loai(a) == loaiThu && !v.contains(a)) {
+                v.addElement(a);
+            }
+        }
+        return v;
+    }
+
+    /** "thú cưỡi" / "Pokémon đi theo" (chữ thường giữa câu). */
+    public static String tenLoai(int loaiThu) {
+        return loaiThu == LOAI_CUOI ? "thú cưỡi" : "Pokémon đi theo";
+    }
+
     public static boolean day() {
         return co && soThu >= sucChua;
     }
@@ -240,6 +282,14 @@ public final class QuanLyThu {
      * là ứng viên. Trả Vector AnimalInfo (thứ tự danh sách).
      */
     public static Vector banTrung() {
+        return banTrung(-1);
+    }
+
+    /**
+     * 0.9.16: bản trùng CHỈ trong một loại (LOAI_CUOI thú cưỡi / LOAI_DI_THEO Pokémon đi theo; -1 = cả hai) - tab
+     * "Thú cưỡi" / "Đi theo" của danh sách thú; thú cưỡi Tauros và Pokémon đi theo cùng loài không giữ thay nhau.
+     */
+    public static Vector banTrung(int loaiThu) {
         Vector ra = new Vector();
         if (!co) {
             return ra;
@@ -247,12 +297,17 @@ public final class QuanLyThu {
         int n = Math.min(nTui, ds.size());   // chỉ con trong túi (con đang dùng không bị đề nghị thả, không đổi luật giữ)
         boolean[] xet = new boolean[n];
         for (int i = 0; i < n; i++) {
+            if (loaiThu >= 0 && loai((AnimalInfo) ds.elementAt(i)) != loaiThu) {
+                xet[i] = true;   // loại khác: không xét, không giữ thay
+            }
+        }
+        for (int i = 0; i < n; i++) {
             if (xet[i]) {
                 continue;
             }
             int giu = i;
             for (int j = i; j < n; j++) {
-                if (loai[j] != loai[i]) {
+                if (loai[j] != loai[i] || (xet[j] && j != i)) {
                     continue;
                 }
                 xet[j] = true;
@@ -262,7 +317,8 @@ public final class QuanLyThu {
                 }
             }
             for (int j = i; j < n; j++) {
-                if (loai[j] == loai[i] && j != giu && (coDong[j] & CO_KHONG_THA) == 0) {
+                if (loai[j] == loai[i] && j != giu && (coDong[j] & CO_KHONG_THA) == 0
+                        && (loaiThu < 0 || loai((AnimalInfo) ds.elementAt(j)) == loaiThu)) {
                     ra.addElement(ds.elementAt(j));
                 }
             }
@@ -414,18 +470,29 @@ public final class QuanLyThu {
         });
     }
 
-    /** Thả bản trùng: giữ con cấp cao nhất mỗi loài, hỏi kèm tổng xu. */
+    /** Thả bản trùng (cả hai loại - giữ cho mã cũ / kiểm thử). */
     public static void hoiThaTrung() {
-        final Vector v = banTrung();
+        hoiThaTrung(-1);
+    }
+
+    /**
+     * Thả bản trùng TRONG MỘT LOẠI (tab đang xem: LOAI_CUOI / LOAI_DI_THEO; -1 = cả hai): giữ con cấp cao nhất mỗi loài,
+     * hộp hỏi ghi rõ loại + tổng xu; loại kia không bị đụng tới.
+     */
+    public static void hoiThaTrung(int loaiThu) {
+        final Vector v = banTrung(loaiThu);
+        String ten = loaiThu < 0 ? "thú" : tenLoai(loaiThu);
         if (v.size() == 0) {
-            DungDo.bao("Không có bản trùng nào để thả (mỗi loài đã giữ con cấp cao nhất; con đang dùng / đã khoá được giữ).");
+            DungDo.bao("Không có " + ten + " trùng nào để thả (mỗi loài đã giữ con cấp cao nhất; con đang dùng / đã khoá được giữ).");
             return;
         }
         long x = tongXu(v), goc = tongXuGoc(v);
         String xuCau = x > 0 ? " Nhận tổng " + TienTe.so(x) + " xu" + (x < goc ? " (chạm trần xu thả hôm nay)." : ".")
                 : (goc > 0 ? " " + HET_TRAN + ": thả không nhận xu." : "");
-        HopXacNhan.hoiNguyHiem("Thả bản trùng", "Thả " + v.size() + " thú trùng loài (mỗi loài giữ lại con cấp cao nhất; con đang dùng "
-                + "và đã khoá không bị thả)." + xuCau, "Thả " + v.size() + " con", new IAction() {
+        String khac = loaiThu < 0 ? "" : " " + (loaiThu == LOAI_CUOI ? "Pokémon đi theo" : "Thú cưỡi") + " không bị thả.";
+        HopXacNhan.hoiNguyHiem(loaiThu == LOAI_CUOI ? "Thả thú cưỡi trùng" : loaiThu == LOAI_DI_THEO ? "Thả Pokémon đi theo trùng"
+                : "Thả bản trùng", "Thả " + v.size() + " " + ten + " trùng loài (mỗi loài giữ lại con cấp cao nhất; con đang dùng "
+                + "và đã khoá không bị thả)." + khac + xuCau, "Thả " + v.size() + " con", new IAction() {
             public void perform() {
                 tha(v);
             }

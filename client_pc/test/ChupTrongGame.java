@@ -237,6 +237,10 @@ public class ChupTrongGame {
             "nv_ds_thu", "nv_ds_thu_quan_ly", "nv_thu_quan_ly", "nv_cuoi_ds_thu_quan_ly", "the_gioi_cuoi", "so_luong",
             // 0.9.13: khối đang dùng (máy chủ >= 913) - ĐANG CƯỠI + pet ĐANG ĐI THEO dù gói 15 / -93 chưa tới (lỗi chủ dự án)
             "nv_thu_dang_dung", "nv_thu_dang_dung_chon", "nv_thu_di_theo_dang_dung", "nv_thu_dang_dung_tab",
+            // 0.9.16: tách tab con Thú cưỡi / Đi theo - hai lối vào (ô Trang bị › Thú cưỡi / ô Đi theo, tab Thú), Thả trùng
+            // theo tab (hộp hỏi nói loại), tab trống
+            "nv_thu_dang_dung_tb_cuoi", "nv_thu_dang_dung_tb_di_theo", "nv_thu_dang_dung_tab_di_theo", "nv_thu_dang_dung_tab_nho",
+            "nv_thu_dang_dung_tha_trung_di_theo", "nv_thu_dang_dung_tha_trung_cuoi", "nv_thu_trong_tab0", "nv_thu_trong_tab1",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
             "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
             "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
@@ -833,11 +837,37 @@ public class ChupTrongGame {
         game.render.screen.TuDong.dang = false;
         datTinh(game.render.screen.TuDong.class, "coServer", Boolean.FALSE);
         datTinh(htbb.pc.LopPhu.class, "caiDatMo", Boolean.FALSE);
-        datCuoi(ten.indexOf("cuoi") >= 0);
+        // thú bỏ tạm ở màn tab trống: trả lại (đúng thứ tự gốc: thú cưỡi trước, pet sau)
+        if (THU_BO.size() > 0) {
+            java.util.Vector a = game.model.Char.animal;
+            java.util.Vector goc = new java.util.Vector();
+            for (int l = 0; l < 2; l++) {
+                for (int i = 0; i < a.size(); i++) if (game.pokemon.QuanLyThu.loai((game.model.AnimalInfo) a.elementAt(i)) == l) goc.addElement(a.elementAt(i));
+                for (int i = THU_BO.size() - 1; i >= 0; i--) if (game.pokemon.QuanLyThu.loai((game.model.AnimalInfo) THU_BO.elementAt(i)) == l) goc.addElement(THU_BO.elementAt(i));
+            }
+            a.removeAllElements();
+            for (int i = 0; i < goc.size(); i++) a.addElement(goc.elementAt(i));
+            THU_BO.removeAllElements();
+        }
+        datCuoi(ten.indexOf("cuoi") >= 0 && !ten.startsWith("nv_thu_dang_dung") && !ten.startsWith("nv_thu_trong"));
         datQuanLyThu(ten.endsWith("_quan_ly") || ten.indexOf("_dang_dung") >= 0,
                 ten.startsWith("nv_thu_dang_dung") ? 2 : "nv_thu_di_theo_dang_dung".equals(ten) ? 1 : 0);
         game.pokemon.ManNhanVat nv = game.pokemon.ManNhanVat.gI();
         dat(nv, "thuChon", null);
+        dat(nv, "loaiThu", Integer.valueOf(0));   // 0.9.16: tab con mặc định mỗi màn (lối vào thật đặt lại bằng chạm)
+        if (ten.startsWith("nv_thu_trong_tab")) {
+            // tab trống: túi thú chỉ còn loại kia (máy chủ cũ, không cưỡi)
+            int bo = ten.endsWith("0") ? 0 : 1;
+            java.util.Vector a = game.model.Char.animal;
+            for (int i = a.size() - 1; i >= 0; i--) {
+                game.model.AnimalInfo an = (game.model.AnimalInfo) a.elementAt(i);
+                if (game.pokemon.QuanLyThu.loai(an) == bo) {
+                    THU_BO.addElement(an);
+                    a.removeElementAt(i);
+                }
+            }
+            dat(nv, "loaiThu", Integer.valueOf(bo));
+        }
         if ("the_gioi".equals(ten)) {
             game.render.Canvas.gameScr.switchToMe();
         } else if ("menu".equals(ten)) {
@@ -913,8 +943,15 @@ public class ChupTrongGame {
             game.pokemon.ManNhanVat.mo(0);
             dat(nv, "o", 11);
             dat(nv, "thuChon", game.pokemon.QuanLyThu.cuoi);
-        } else if ("nv_thu_dang_dung_tab".equals(ten)) {
+        } else if ("nv_thu_dang_dung_tab".equals(ten) || "nv_thu_dang_dung_tab_di_theo".equals(ten) || "nv_thu_dang_dung_tab_nho".equals(ten)
+                || ten.startsWith("nv_thu_dang_dung_tha_trung") || ten.startsWith("nv_thu_trong_tab")) {
             game.pokemon.ManNhanVat.mo(3);
+            if ("nv_thu_dang_dung_tab_nho".equals(ten)) {
+                dat(nv, "loaiThu", Integer.valueOf(1));   // tab Thú mở lại tab con dùng lần cuối (Đi theo)
+            }
+        } else if (ten.startsWith("nv_thu_dang_dung_tb_")) {
+            game.pokemon.ManNhanVat.mo(0);
+            dat(nv, "loaiThu", Integer.valueOf(1));   // lần trước xem Đi theo: chạm ô Thú cưỡi vẫn mở tab Thú cưỡi
         } else if ("nv_cuoi_thu".equals(ten)) {
             game.pokemon.ManNhanVat.mo(3);
         } else if ("the_gioi_cuoi".equals(ten)) {
@@ -1507,6 +1544,12 @@ public class ChupTrongGame {
             return new String[]{"hang-0"};
         }
         if ("kho_do_the".equals(ten)) return new String[]{"kho-kho-0"};
+        // 0.9.16: lối vào thật bằng chạm (ô Trang bị › Thú cưỡi, ô Đi theo, tab con, nút Thả trùng)
+        if ("nv_thu_dang_dung_tb_cuoi".equals(ten)) return new String[]{"o-Thú cưỡi"};
+        if ("nv_thu_dang_dung_tb_di_theo".equals(ten)) return new String[]{"o-Thú cưỡi", "o-di-theo"};
+        if ("nv_thu_dang_dung_tab_di_theo".equals(ten)) return new String[]{"thu-loai-1"};
+        if ("nv_thu_dang_dung_tha_trung_di_theo".equals(ten)) return new String[]{"thu-loai-1", "thu-tha-trung"};
+        if ("nv_thu_dang_dung_tha_trung_cuoi".equals(ten)) return new String[]{"thu-loai-1", "thu-loai-0", "thu-tha-trung"};
         if ("luyen_do_dat".equals(ten)) {
             return new String[]{"luyen-tui-0", "tvp-mua", "luyen-nl-0", "luyen-ngoc-0", "tvp-mua", "luyen-ngoc-0", "tvp-mua"};
         }
@@ -1948,7 +1991,89 @@ public class ChupTrongGame {
     }
 
     /** Sân khấu Trang bị › Thú cưỡi không trống (luôn có tên thú / gợi ý), tab Thú có "Ô thú: n/max" khi có quản lý. */
+    static final java.util.Vector THU_BO = new java.util.Vector();
+
+    static int loaiThuDangXem() {
+        try {
+            java.lang.reflect.Field f = game.pokemon.ManNhanVat.class.getDeclaredField("loaiThu");
+            f.setAccessible(true);
+            return f.getInt(game.pokemon.ManNhanVat.gI());
+        } catch (Throwable e) {
+            return -1;
+        }
+    }
+
+    /** Tên vùng chạm hàng một thú (ManNhanVat.veDanhSachThu): "thu-dung-i" (khối đang dùng) / "thu-i" (túi). */
+    static String tenHang(game.model.AnimalInfo a) {
+        return game.pokemon.QuanLyThu.dangDung(a) ? "thu-dung-" + game.pokemon.QuanLyThu.dung.indexOf(a)
+                : "thu-" + game.model.Char.animal.indexOf(a);
+    }
+
+    /**
+     * 0.9.16 tab con danh sách thú: "Thú cưỡi (n)" / "Đi theo (m)" đúng số, chỉ hàng của loại đang xem, con đang dùng
+     * của loại đứng đầu, lối vào đúng tab (ô Thú cưỡi -> Thú cưỡi, ô Đi theo -> Đi theo, tab Thú = lần cuối), tab trống
+     * có chữ gợi ý, Thả trùng chỉ trong tab (hộp hỏi nói loại).
+     */
+    static void kiemTachThu(String ten, String nhan) {
+        boolean ds = ten.startsWith("nv_thu") || ten.startsWith("nv_ds_thu") || ten.startsWith("nv_cuoi_ds_thu") || "nv_cuoi_thu".equals(ten);
+        if (!ds || game.render.Canvas.currentDialog != null && !ten.startsWith("nv_thu_dang_dung_tha_trung")) return;
+        int l = loaiThuDangXem();
+        int muon = -1;
+        if (ten.endsWith("_tb_cuoi") || ten.endsWith("tha_trung_cuoi") || ten.endsWith("_tab0")) muon = 0;
+        if (ten.endsWith("_tb_di_theo") || ten.endsWith("_tab_di_theo") || ten.endsWith("_tab_nho") || ten.endsWith("tha_trung_di_theo")
+                || ten.endsWith("_tab1")) muon = 1;
+        if (muon >= 0) kiem(l == muon, nhan + " tab con sai: " + l + " (muon " + muon + ")");
+        if (ten.startsWith("nv_thu_dang_dung_tha_trung")) {
+            // hộp hỏi / thông báo Thả trùng nói đúng loại; loại kia không bị đụng
+            if (l == 1) {
+                kiem(coChu("Pokémon đi theo trùng") || coChuDoan("Pokémon đi theo"), nhan + " hop Tha trung khong noi 'Pokemon di theo'");
+                kiem(game.pokemon.QuanLyThu.banTrung(1).size() == 2, nhan + " ban trung Di theo != 2");
+            } else {
+                kiem(game.pokemon.QuanLyThu.banTrung(0).size() == 0, nhan + " ban trung Thu cuoi != 0");
+            }
+            return;
+        }
+        kiem(coVungDung("thu-loai-0") && coVungDung("thu-loai-1"), nhan + " thieu tab con Thu cuoi / Di theo");
+        java.util.Vector cuoi = game.pokemon.QuanLyThu.dsLoai(0), theo = game.pokemon.QuanLyThu.dsLoai(1);
+        game.model.MainChar mc = game.render.Canvas.gameScr.mainChar;
+        int cu = game.pokemon.QuanLyThu.coDung ? (game.pokemon.QuanLyThu.thuCu != null ? 1 : 0) : (game.pokemon.ManNhanVat.dangCuoiThu() ? 1 : 0);
+        int nC = cuoi.size() + cu, nT = theo.size();
+        kiem(coChu("Thú cưỡi (" + nC + ")") || coChu("Cưỡi (" + nC + ")"), nhan + " nhan tab 'Thu cuoi (" + nC + ")'");
+        kiem(coChu("Đi theo (" + nT + ")"), nhan + " nhan tab 'Di theo (" + nT + ")'");
+        java.util.Vector dsXem = l == 0 ? cuoi : theo, khac = l == 0 ? theo : cuoi;
+        for (int i = 0; i < khac.size(); i++) {
+            String h = tenHang((game.model.AnimalInfo) khac.elementAt(i));
+            kiem(!coVungDung(h), nhan + " hang loai khac lot vao tab: " + h);
+        }
+        for (int i = 0; i < dsXem.size(); i++) {
+            game.model.AnimalInfo a = (game.model.AnimalInfo) dsXem.elementAt(i);
+            kiem(game.pokemon.QuanLyThu.loai(a) == l, nhan + " dsLoai sai loai");
+        }
+        game.model.AnimalInfo dangDung = game.pokemon.QuanLyThu.coDung ? (l == 0 ? game.pokemon.QuanLyThu.cuoi : game.pokemon.QuanLyThu.diTheo) : null;
+        if (dangDung != null) {
+            kiem(dsXem.elementAt(0) == dangDung, nhan + " con dang dung khong dung dau tab");
+            kiem(coVungDung(tenHang(dangDung)), nhan + " thieu hang con dang dung");
+        } else if (dsXem.size() > 0 && (l == 1 || cu == 0)) {
+            kiem(coVungDung(tenHang((game.model.AnimalInfo) dsXem.elementAt(0))), nhan + " thieu hang dau tab");
+        }
+        if (dsXem.size() + (l == 0 ? cu : 0) == 0) {
+            kiem(l == 0 ? coChu("Chưa có thú cưỡi") && coChuDoan("Sáo gọi") : coChu("Chưa có Pokémon đi theo") && coChuDoan("ấp trứng"),
+                    nhan + " tab trong thieu chu goi y");
+        }
+        if (game.pokemon.QuanLyThu.co) {
+            int nTrung = game.pokemon.QuanLyThu.banTrung(l).size();
+            kiem(nTrung > 0 ? coChu("Thả trùng (" + nTrung + ")") || coChu("Trùng " + nTrung) : !coChu("Thả trùng (") && !coChu("Trùng "),
+                    nhan + " so Tha trung theo tab sai (" + nTrung + ")");
+        }
+    }
+
+    /** Có chữ chứa đoạn (đoạn văn ngắt dòng: tìm từng dòng). */
+    static boolean coChuDoan(String can) {
+        return coChu(can);
+    }
+
     static void kiemXemThu(String ten, String nhan) {
+        kiemTachThu(ten, nhan);
         kiemKhoiThu(ten, nhan);
         String can = null;
         if ("nv_ds_thu".equals(ten)) can = "Chưa cưỡi";
@@ -1973,7 +2098,8 @@ public class ChupTrongGame {
                 nut |= "thu-tha-trung".equals(t);
             }
             kiem(o, nhan + " thieu 'O thu: n/max'");
-            kiem(nut, nhan + " thieu nut Tha trung");
+            // 0.9.16: Thả trùng theo tab con - tab không có bản trùng: nút xám (không vùng chạm)
+            kiem(nut == (game.pokemon.QuanLyThu.banTrung(loaiThuDangXem()).size() > 0), nhan + " nut Tha trung sai theo tab");
         }
     }
 
@@ -1999,7 +2125,8 @@ public class ChupTrongGame {
      */
     static void kiemKhoiThu(String ten, String nhan) {
         boolean thu = ten.startsWith("nv_cuoi_ds_thu") || ten.startsWith("nv_ds_thu")
-                || (ten.startsWith("nv_thu_") && ten.indexOf("dang_dung") >= 0 && !ten.endsWith("_tab")) || "nv_thu_di_theo_dang_dung".equals(ten);
+                || (ten.startsWith("nv_thu_") && ten.indexOf("dang_dung") >= 0 && !ten.endsWith("_tab") && !ten.endsWith("_tab_di_theo")
+                && !ten.endsWith("_tab_nho") && ten.indexOf("tha_trung") < 0) || "nv_thu_di_theo_dang_dung".equals(ten);
         boolean thuong = "nv_trang_bi".equals(ten) || "nv_cuoi_trang_bi".equals(ten);
         if (!thu && !thuong) return;
         String[] tenO = {"Đồ cầm tay", "Khăn quàng", "Băng đô", "Đai", "Vòng cổ", "Huy hiệu", "Huy hiệu 2", "Găng đấm", "Lông vũ",
@@ -2041,8 +2168,15 @@ public class ChupTrongGame {
             kiem(game.pokemon.QuanLyThu.coDung, nhan + " khong doc duoc khoi dang dung");
             kiem(hang == soThu, nhan + " so hang " + hang + " != O thu " + soThu);
             kiem(coChu("Ô thú: " + soThu + "/"), nhan + " thieu 'O thu: " + soThu + "/..'");
-            kiem(coVungDung("thu-dung-0"), nhan + " thieu hang dang dung dau danh sach");
-            kiem(coChu("Đang đi theo"), nhan + " thieu nhan 'Dang di theo'");
+            if (ten.startsWith("nv_thu_dang_dung_tha_trung")) return;   // hộp hỏi đè danh sách
+            // 0.9.16: mỗi tab con chỉ một loại - con đang dùng của loại đứng đầu tab (Rapidash / Hoothoot)
+            boolean tabTheo = loaiThuDangXem() == 1;
+            game.model.AnimalInfo dauTab = tabTheo ? game.pokemon.QuanLyThu.diTheo : game.pokemon.QuanLyThu.cuoi;
+            if (dauTab != null) {
+                kiem(coVungDung(tenHang(dauTab)), nhan + " thieu hang dang dung dau danh sach");
+                kiem(coChu(tabTheo ? "Đang đi theo" : "Đang cưỡi"), nhan + " thieu nhan 'Dang di theo' / 'Dang cuoi'");
+            }
+            kiem(coChu("Đi theo (" + game.pokemon.QuanLyThu.dsLoai(1).size() + ")"), nhan + " tab Di theo thieu so");
             // nhãn từng hàng (danh sách có thể cuộn ở cỡ nhỏ: kiểm theo dữ liệu)
             for (int i = 0; i < game.model.Char.animal.size(); i++) {
                 game.model.AnimalInfo an = (game.model.AnimalInfo) game.model.Char.animal.elementAt(i);
@@ -2053,7 +2187,11 @@ public class ChupTrongGame {
                 kiem("Đang cưỡi".equals(game.pokemon.ManNhanVat.nhanThu(game.pokemon.QuanLyThu.cuoi)), nhan + " nhan con dang cuoi");
             }
             kiem("Đang đi theo".equals(game.pokemon.ManNhanVat.nhanThu(game.pokemon.QuanLyThu.diTheo)), nhan + " nhan pet di theo");
-            if (ten.startsWith("nv_thu_dang_dung")) {
+            if (ten.startsWith("nv_thu_dang_dung") && ten.endsWith("_tb_di_theo")) {
+                // chạm ô Đi theo: sân khấu xem pet đang đi theo, tab Đi theo
+                kiem(coChu("Hoothoot"), nhan + " o Di theo: san khau thieu Hoothoot");
+                kiem(game.pokemon.ManNhanVat.dangCuoiThu(), nhan + " dangCuoi sai (khoi dang dung noi dang cuoi)");
+            } else if (ten.startsWith("nv_thu_dang_dung")) {
                 kiem(coChu("Đang cưỡi Rapidash"), nhan + " san khau thieu 'Dang cuoi Rapidash'");
                 kiem(coChu("Đang cưỡi"), nhan + " danh sach thieu nhan 'Dang cuoi'");
                 kiem(coChu("Cấp 5"), nhan + " thieu cap thu dang cuoi");
