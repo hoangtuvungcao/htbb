@@ -246,10 +246,12 @@ mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - l�
 
 ### Bản 0.9.18 (`BAN=918`: sửa "game chậm như slow motion" 0.9.15-0.9.17 - vòng game bước cố định)
 
-Client `PHIEN_BAN=0.9.18-opentest` (`BAN = 0*10000 + 9*100 + 18`; `MIDlet-Version` 0.9.18) trên main 5e4b84ed, chạy với
+Client `PHIEN_BAN=0.9.18-opentest` (`BAN = 0*10000 + 9*100 + 18`; `MIDlet-Version` 0.9.18) trên main 4625021c, chạy với
 mọi máy chủ 0.9.15+. Kèm main 5e4b84ed: cửa hàng đặc biệt ghi rõ dòng trả bằng **Lượng khoá** (`TienShop`,
 `GemTemp.luongKhoa`; máy chủ `TienShopDacBiet.BAN_CLIENT = 918` chỉ gửi phần mới cho client `BAN >= 918` - cần
-`htbb-server.jar` của main, qua cổng staging trước khi lên production).
+`htbb-server.jar` của main, qua cổng staging trước khi lên production). Kèm main 6eee99ea / 4625021c: tab **Trang bị gọn**
+kiểu NRO (chip lọc một hàng, ô trang bị sát sân khấu, chip Tiềm năng / Huấn luyện, ví gọn; J2ME 320x240 đủ 3 hàng -
+`ChupTrongGame` kiemTrangBiGon).
 
 1. Lỗi (chủ dự án / người chơi sau 0.9.15-0.9.17: "game giờ chậm quá, kiểu như slow motion"): `Canvas.run` chạy MỘT nhịp
    logic mỗi vòng rồi vẽ các khung của nhịp đó và ngủ tới "đầu nhịp + 40 ms" - vẽ quá giờ là nhịp sau trễ, cả game (đi,
