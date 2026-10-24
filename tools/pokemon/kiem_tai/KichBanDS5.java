@@ -150,6 +150,24 @@ class KichBanDS5 {
 
     /** Chiem thanh: GM 'setting' -> '1' (bat dau sau 2 phut), doi thong bao bat dau, roi 'over' ket thuc. */
     static void chiemThanh() throws Exception {
+        // GM "setting" GHI cau_hinh sv.gioChiemThanh / sv.phutChiemThanh / sv.ngayChiemThanh (lich MOI NGAY) - truoc day khong tra lai: may chu
+        // thu / staging moi dem chiem Gym, cua hang NPC khoa voi moi nguoi, lang mat an toan -> cac nhom chay sau FAIL lay
+        // (hoi quy 25/10). Giu gia tri cu, tra lai cuoi kich ban.
+        String[] khoa = {"sv.gioChiemThanh", "sv.phutChiemThanh", "sv.ngayChiemThanh"};
+        String[] cu = new String[khoa.length];
+        for (int i = 0; i < khoa.length; i++) cu[i] = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = '" + khoa[i] + "'");
+        try {
+            chiemThanh0();
+        } finally {
+            for (int i = 0; i < khoa.length; i++) {
+                BotChucNang.sql(cu[i] == null ? "DELETE FROM cau_hinh WHERE khoa = '" + khoa[i] + "'"
+                        : "UPDATE cau_hinh SET gia_tri = '" + cu[i] + "', sua_luc = NOW() WHERE khoa = '" + khoa[i] + "'");
+            }
+            BotChucNang.sql("UPDATE cau_hinh_phien_ban SET phien_ban = phien_ban + 1 WHERE id = 1");
+        }
+    }
+
+    static void chiemThanh0() throws Exception {
         try (BotChucNang.Bot b = KichBanDS3.botLang(70)) {
             int m = b.moc();
             b.chat("setting");

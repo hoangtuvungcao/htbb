@@ -80,6 +80,9 @@ class KichBanDS2 {
                     KichBanDS.veLang(b);
                     b.gm("slv " + b.ten + " 99 0", 800);
                 }
+                // 206 Lanh dia doi (MapClan): chi vao qua bang; GM khong bang mto vao (truoc 25/10 nem NPE MapClan.playerJoin,
+                // nay vao duoc) thi moi cong sang Cao nguyen 201 bi chan ngoai gio chien -> khong phai loi cong
+                if (mid == 206) { hanChe.add(mid + " (ban do bang, can bang)"); continue; }
                 if (!b.den(mid, 10, 10)) { hanChe.add(mid + "->" + b.mapId); continue; }
                 BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
                 if (bd == null) { boQua.add(mid + "(load " + b.mapLoad + ")"); mapOk++; continue; }

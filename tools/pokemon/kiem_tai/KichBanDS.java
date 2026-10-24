@@ -137,7 +137,18 @@ class KichBanDS {
             }
             b.gui(9, (short) id, (byte) oo);
             b.bom(o < 0 ? 250 : 450);
-            if (o >= 0 || lan % 4 == 0) { b.gui(7, (short) id); b.bom(150); }
+            if (o >= 0 || lan % 4 == 0) {
+                // quai bien mat khoi ban do (boss Gym "đã rời bản đồ" khi thua, quai chet duoc xoa) -> may chu khong tra lenh 7:
+                // coi la da ha (truoc: danh tiep toi maxDon -> nhom cn_dai_han het gio 900 s, cong kiem 25/10)
+                int[] cu = b.quai.remove(id);
+                b.gui(7, (short) id);
+                b.bom(250);
+                if (!b.quai.containsKey(id)) {
+                    b.bom(400);
+                    if (!b.quai.containsKey(id)) return lan;
+                }
+                if (cu != null && b.quai.get(id) == null) b.quai.put(id, cu);
+            }
             int[] q2 = b.quai.get(id);
             if (q2 != null && (Math.abs(q2[0] - b.px) > 40 || Math.abs(q2[1] - b.py) > 40) && lan % 8 == 0) b.den(b.mapId, q2[0] / 16, q2[1] / 16);
             if (q2 != null && q2[2] == -1) { b.gui(7, (short) id); b.bom(200); q2 = b.quai.get(id); } // -1 = chua biet (lenh 4)

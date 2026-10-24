@@ -289,6 +289,9 @@ public final class KichBanNgamTay {
      */
     static void anToan() throws Exception {
         chuanBi();
+        // vao lang tu ngoai (dang o lang san thi khong co goi vao vung an toan moi): ra dong co truoc
+        A.den(1, 30, 30);
+        A.bom(1000);
         int m = A.moc();
         A.den(0, 30, 30);
         A.bom(2500);

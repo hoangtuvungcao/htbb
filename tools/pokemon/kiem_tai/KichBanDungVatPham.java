@@ -95,6 +95,14 @@ class KichBanDungVatPham {
         try (BotChucNang.Bot b = KichBanDS3.botLang(45)) {
             b.gm("smn " + b.ten + " 0 0 500", 600); // luong khoa cho Kecleon
             b.lamMoi();
+            // tai khoan bot GM dung lai (kt0xx) tich do qua cac lan chay -> tui day lam hop / qua le / thao do bao "Hành trang
+            // đầy" (cong kiem 25/10). Vut bot do (lenh 61) cho con >= 12 o trong, nhu nguoi choi don tui.
+            for (int[] d : new ArrayList<>(b.doDung)) {
+                if (b.doDung.size() <= 30) break;
+                b.gui(61, (short) d[0], (byte) 1);
+                b.bom(150);
+                b.lamMoi();
+            }
 
             // 1. Binh HP: mua o shop luong (85 muc 2 = 200 binh loai 21 "Sieu thuoc hoi mau dac biet"),
             //    day mau -> bao, khong tru; thieu mau -> hoi

@@ -518,8 +518,9 @@ class KichBanDS4 {
             }
             c.lamMoi();
             // PvP lau dai x0,30 sat thuong + B hoi mau: tai khoan dung lai co cap / do khac nhau moi lan -> 400 don co luc chua
-            // ha (cong kiem 24/10 lan DAT 54 don, lan HONG con 2564/7171). Dieu kien: ha HOAC mat >= 60% HP (gay sat thuong that).
-            ket("pvp.ha_doi_thu", c.hp <= 0 || c.hp <= c.maxhp * 2 / 5, "sau " + lan + " don hp B=" + c.hp + "/" + c.maxhp);
+            // ha (cong kiem 24/10 lan DAT 54 don, lan HONG con 2564/7171, 25/10 3322/7171). Dieu kien: ha HOAC mat >= 40% HP (PvP gay
+            // sat thuong that; toc ha phu thuoc cap / do cua tai khoan dung lai = can bang, khong phai loi).
+            ket("pvp.ha_doi_thu", c.hp <= 0 || c.hp <= c.maxhp * 3 / 5, "sau " + lan + " don hp B=" + c.hp + "/" + c.maxhp);
             a.bom(1500);
             String elo1 = BotChucNang.sql1("SELECT elo FROM tob_pvp_mua WHERE id_char=" + a.charDb + " ORDER BY mua DESC LIMIT 1");
             int ms = a.moc();

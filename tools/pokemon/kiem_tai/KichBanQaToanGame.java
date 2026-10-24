@@ -189,10 +189,14 @@ public class KichBanQaToanGame {
             b.bom(1500);
             String c = b.chuTu(md);
             BotChucNang.ket("qa_khoa_popup.dong_y", !c.isEmpty(), c);
-            // buoc lai ngay (trong 10 giay): khong hop moi
+            // buoc lai ngay (trong 10 giay): khong hop moi. Dong ho cho tinh tu lan bi chan dau (luc goi 12 dau); bot di bo lai
+            // toi cong mat vai giay - qua 10 giay thi hop hien lai la DUNG (khong kiem duoc, BO QUA)
+            long chan0 = b.su.get(m[0]).luc;
             int[] m2 = quaCong(b, bd, 4);
             String hop2 = m2 == null ? null : popup(b, m2[0], 95);
-            BotChucNang.ket("qa_khoa_popup.cho_10s", m2 != null && hop2 == null && b.mapId == 1, m2 == null ? "khong buoc lai duoc" : "hop2=" + hop2 + " | " + b.chuTu(m2[0]));
+            long troi = m2 == null ? 0 : b.su.get(m2[0]).luc - chan0;
+            BotChucNang.ket("qa_khoa_popup.cho_10s", m2 != null && troi >= 10000 ? null : Boolean.valueOf(m2 != null && hop2 == null && b.mapId == 1),
+                    (m2 == null ? "khong buoc lai duoc" : "sau " + troi + " ms: hop2=" + hop2 + " | " + b.chuTu(m2[0])));
             Thread.sleep(10500);
             int[] m3 = quaCong(b, bd, 4);
             String hop3 = m3 == null ? null : popup(b, m3[0], 95);

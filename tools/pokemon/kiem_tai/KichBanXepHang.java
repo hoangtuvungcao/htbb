@@ -2,6 +2,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Kich ban bot DAU XEP HANG + THUONG MUA PvP (0.9.7: real.XepHangPvpGame). Chay tren MAY CHU THU RIENG (GM: slv / mto),
@@ -169,6 +170,9 @@ public final class KichBanXepHang {
     }
 
     public static void main(String[] a) throws Exception {
+        // may chu khong ghep lai cung cap trong CHAN_LAP_MS / qua 4 tran / 24 gio (chong cay Elo). Moi lan chay deu lay
+        // kt001+kt002 -> cong kiem chay nhieu lan trong ngay thi khong bao gio ghep (25/10). Bat dau tu tai khoan ngau nhien.
+        BotChucNang.soTk = BotChucNang.TK_DAU + new Random().nextInt(Math.max(1, BotChucNang.TK_CUOI - BotChucNang.TK_DAU - 2));
         BotChucNang.dk("xh_ghep", true, KichBanXepHang::ghep);
         BotChucNang.dk("xh_roi", true, KichBanXepHang::roi);
         BotChucNang.dk("xh_mua", true, KichBanXepHang::mua);
