@@ -45,7 +45,10 @@ final class KichBanGiftcode {
             BotChucNang.sql("INSERT INTO tob_giftcode (ma, phan_thuong, han, tong_luot, da_dung, cap_toi_thieu, bat, ghi_chu) VALUES ('"
                     + r[0] + "', '" + r[1] + "', " + r[2] + ", " + r[3] + ", " + r[4] + ", " + r[5] + ", " + r[6] + ", 'bot giftcode')");
         }
-        BotChucNang.Bot b = BotChucNang.botThuong();
+        // tai khoan MOI dang ky that: bo dem nhap sai (5 lan / 10 phut / tai khoan, GiftcodeAnToan.ghiSai) nam trong RAM may chu
+        // - tai khoan bot dung lai (kt1xx) mang so lan sai cua nhom / lan chay truoc -> "Nhập sai quá nhiều lần" giua kich ban
+        BotChucNang.Bot b = HoiQuy.nguoiChoiMoi("gk", 0, 0);
+        KichBanHuongDan.roiSan(b);
         try {
             String uid = BotChucNang.sql1("SELECT userId FROM tob_char WHERE id = " + b.charDb);
             BotChucNang.sql("DELETE FROM tob_giftcode_log WHERE user_id = " + uid);
