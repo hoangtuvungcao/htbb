@@ -269,7 +269,7 @@ class KichBanTienDoNhiemVu {
             // ---- Goi hang tu Litwick o Cerulean
             b.den(4, 50, 50);
             int m7 = b.moc();
-            for (int lan = 0; lan < 6; lan++) {
+            for (int lan = 0; lan < 14; lan++) {   // roi Goi hang la ngau nhien: may cham thi can nhieu luot hon
                 haMau(b, 6, 10, true);
                 Dong cx = tim(ds(b, m7, 1), 0);
                 if (cx != null) break;

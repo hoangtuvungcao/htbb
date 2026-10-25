@@ -23,9 +23,17 @@ public final class KichBanKetTau {
 
     /** Doi truong {@code i} (CSV) cua cot {@code cot} tob_char. */
     static void doiTruong(int charDb, String cot, int[] i, String[] gt) {
-        String v = BotChucNang.sql1("SELECT " + cot + " FROM tob_char WHERE id = " + charDb);
-        if (v == null) throw new IllegalStateException("khong doc duoc " + cot);
-        String[] a = v.split(",", -1);
+        // server luu nhan vat sau khi thoat - may cham thi cot con rong/ngan: doi toi 20 giay
+        String v = null;
+        String[] a = new String[0];
+        int canDai = 0;
+        for (int k = 0; k < i.length; k++) canDai = Math.max(canDai, i[k] + 1);
+        for (int lan = 0; lan < 40; lan++) {
+            v = BotChucNang.sql1("SELECT " + cot + " FROM tob_char WHERE id = " + charDb);
+            if (v != null) { a = v.split(",", -1); if (a.length >= canDai) break; }
+            try { Thread.sleep(500); } catch (InterruptedException e) { Thread.currentThread().interrupt(); break; }
+        }
+        if (v == null || a.length < canDai) throw new IllegalStateException("khong doc duoc " + cot + " (" + a.length + " truong)");
         for (int k = 0; k < i.length; k++) a[i[k]] = gt[k];
         BotChucNang.sql("UPDATE tob_char SET " + cot + " = '" + String.join(",", a) + "' WHERE id = " + charDb);
     }
