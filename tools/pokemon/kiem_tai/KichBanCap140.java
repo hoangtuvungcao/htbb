@@ -505,11 +505,17 @@ final class KichBanCap140 {
         int moc95 = 0;
 
         void hop95(int tu) throws IOException {
+            hop95(tu, false);
+        }
+
+        /** Hop 95: Dong y (nhan cua ai / xem tien do). "Thách đấu Trưởng Gym … ngay?" chi Dong y khi dang di danh Gym. */
+        void hop95(int tu, boolean nhanGym) throws IOException {
             for (int i = Math.max(tu, moc95); i < b.su.size(); i++) {
                 BotChucNang.SuKien e = b.su.get(i);
                 if (e.cmd == -32 && e.so != null && e.so[1] == 95) {
-                    ghi("hop 95: " + e.chu.replace('\n', ' '));
-                    b.gui(-32, (short) e.so[0], (byte) 95, "", (byte) 1);
+                    boolean gym = e.chu.contains("Thách đấu Trưởng Gym") && e.chu.contains("ngay?");
+                    ghi("hop 95" + (gym && !nhanGym ? " (Gym: de sau)" : "") + ": " + e.chu.replace('\n', ' '));
+                    b.gui(-32, (short) e.so[0], (byte) 95, "", (byte) (gym && !nhanGym ? 0 : 1));
                     b.bom(1200);
                 }
             }
@@ -866,10 +872,16 @@ final class KichBanCap140 {
             int m2 = b.moc();
             b.menu(-90, 0, i);
             b.bom(1500);
-            hop95(m2);
-            String t = b.doiChu(m2, 3000, "xuất hiện", "cấp", "tuần", "đã");
+            hop95(m2, true);
+            String t = b.doiChu(m2, 3000, "xuất hiện", "cấp", "tuần", "đã", "đang thách đấu");
             ghi("Gym cua ai: " + t);
             Integer boss = KichBanDS.quaiMoi(b, cu, 8000);
+            if (boss == null && b.chuTu(m2).contains("đang thách đấu")) {
+                // tran cu con (boss dung o cho cu): quai maxhp lon nhat dang biet
+                int mx = 0;
+                for (Map.Entry<Integer, int[]> e : b.quai.entrySet()) if (e.getValue()[4] > mx && e.getValue()[2] > 0) { mx = e.getValue()[4]; boss = e.getKey(); }
+                if (mx < 2000) { boss = null; b.bom(30000); return "dang co tran Gym cu (boss o cho khac) - cho het 10 phut"; }
+            }
             if (boss == null) return "khong thay boss Gym: " + b.chuTu(m2);
             long t0 = System.currentTimeMillis();
             int don = KichBanHoiQuy2.haQuaiDiBo(b, boss, 2600);
