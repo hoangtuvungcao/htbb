@@ -34,6 +34,17 @@ CONG_KIEM_KHOA=${CONG_KIEM_KHOA:-/etc/htbb/cong-kiem.key} # khoa HMAC ky ket qua
 # Tien to tai khoan bot (GM <tt>001..040, thuong <tt>101..199, mat khau 123456 - CHI ton tai trong CSDL staging).
 STG_BOT_TIEN_TO=${STG_BOT_TIEN_TO:-kt}
 SYSTEMCTL=${SYSTEMCTL:-systemctl}
+# KET NOI CSDL (cong kiem 25/10/2026: "ERROR 1040 Too many connections"). Staging va production dung CHUNG mot MariaDB
+# (max_connections 300). Pool cua may chu game MO SAN du so ket noi luc khoi dong (data/ConnPool.initPool): server.ini
+# production db.maxco=100 + db.maxNap=30 (x2: nap + giftcode) + db.maxco1=1 = 161 - staging chep nguyen thi
+# prod (~148) + staging (161) > 300: staging an het ket noi, production co the KHONG mo duoc ket noi moi.
+#   STG_DB_MAXCO / STG_DB_MAXNAP   pool staging (sinh-server-ini.sh ghi de; vai chuc bot la du)
+#   STG_DB_MAX_USER_CONN           tran CUNG cua MariaDB cho user staging (MAX_USER_CONNECTIONS, gom ca bot + login)
+#   STG_DB_DU_TRU                  cong kiem DUNG neu Threads_connected >= max_connections - so nay (de cho production)
+STG_DB_MAXCO=${STG_DB_MAXCO:-12}
+STG_DB_MAXNAP=${STG_DB_MAXNAP:-3}
+STG_DB_MAX_USER_CONN=${STG_DB_MAX_USER_CONN:-48}
+STG_DB_DU_TRU=${STG_DB_DU_TRU:-60}
 
 # Lenh mysql: mac dinh root qua unix_socket (Ubuntu). May dev: MYSQL="mysql -S /duong/sock -uroot".
 if [ -n "${MYSQL:-}" ]; then
@@ -78,6 +89,35 @@ doi_cong() {
         sleep 1
     done
     return 1
+}
+
+# Tran ket noi CUNG cho user staging (MariaDB MAX_USER_CONNECTIONS, ap ngay cho phien moi). Lam lai moi lan lam-moi
+# (cai-dat.sh cu chua co) - khong dong gi toi user production.
+stg_gioi_han_ket_noi() {
+    myq "ALTER USER '$STG_DB_USER'@'localhost' WITH MAX_USER_CONNECTIONS $STG_DB_MAX_USER_CONN;
+         ALTER USER '$STG_DB_USER'@'127.0.0.1' WITH MAX_USER_CONNECTIONS $STG_DB_MAX_USER_CONN;" \
+        || loi "khong dat duoc MAX_USER_CONNECTIONS cho $STG_DB_USER"
+}
+
+# "<dang dung> <toi da> <cua staging>" (Threads_connected, max_connections, so phien user staging) - doc bang root.
+ket_noi_csdl() {
+    local dung toi stg
+    dung=$(myq "SHOW GLOBAL STATUS LIKE 'Threads_connected'" | awk '{print $2}')
+    toi=$(myq "SELECT @@GLOBAL.max_connections")
+    stg=$(myq "SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE USER = '$STG_DB_USER'")
+    printf '%s %s %s\n' "${dung:-0}" "${toi:-0}" "${stg:-0}"
+}
+
+# 0 = con du cho (>= STG_DB_DU_TRU ket noi trong cho production); 1 = gan het -> cong kiem phai DUNG (in ly do).
+ket_noi_con_du() {
+    local d t s
+    read -r d t s < <(ket_noi_csdl)
+    [ "${t:-0}" -gt 0 ] || { echo "   khong doc duoc max_connections"; return 1; }
+    if [ "$d" -ge $(( t - STG_DB_DU_TRU )) ]; then
+        echo "   CSDL GAN HET KET NOI: Threads_connected=$d / max_connections=$t (staging $s), can chua $STG_DB_DU_TRU cho production"
+        return 1
+    fi
+    return 0
 }
 
 # Viet lai sql/htbb.sql (ten CSDL ghi cung `htbb_db` / `account`) sang ten staging. Chi doi ten TRONG DAU `...`:

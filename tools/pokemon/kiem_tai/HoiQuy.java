@@ -240,13 +240,30 @@ public final class HoiQuy {
     /** CHUAN BI: dat cap {@code lv} (= EXP nguoi choi cay duoc; slv cong du diem len cap qua ham chung). */
     static void datCap(BotChucNang.Bot b, int lv) throws Exception {
         chuanBi("cap " + b.ten + " -> " + lv + " (GM slv = EXP cay duoc; diem len cap cong qua ham chung)");
-        BatBien.of(b).choPhep("cap", 4000);
-        BotChucNang.Bot g = gm();
-        synchronized (g) {
-            g.gm("slv " + b.ten + " " + lv + " 0", 1200);
+        // Cong kiem 25/10/2026 (giao_dich "Bạn cần đạt cấp 20"): slv cua GM vua dang nhap (nhan vat GM khong o san 105 ->
+        // khong co buoc roiSan cho) khong an, chuan bi hong IM LANG roi kich ban bao loi luat cap. Nay KIEM cap that sau
+        // slv; chua toi thi doi + gui lai, lan cuoi dang nhap lai GM; van khong toi = loi CHUAN BI ro rang (khong phai loi game).
+        String ly = "";
+        for (int lan = 0; lan < 3; lan++) {
+            BatBien.of(b).choPhep("cap", 6000);
+            BotChucNang.Bot g = gm();
+            synchronized (g) {
+                g.bom(lan == 0 ? 1500 : 3000);
+                int mg = g.moc();
+                g.gm("slv " + b.ten + " " + lv + " 0", 1200);
+                ly = g.chuTu(mg);
+            }
+            b.bom(1000);
+            b.lamMoi();
+            if (b.lv >= lv) return;
+            if (lan == 1) {
+                synchronized (HoiQuy.class) {
+                    if (gm != null) { try { gm.close(); } catch (Exception ignored) { } gm = null; }
+                }
+            }
         }
-        b.bom(1000);
-        b.lamMoi();
+        throw new IllegalStateException("CHUAN BI hong: GM " + TEN_GM + " 'slv " + b.ten + " " + lv + "' khong an (cap van " + b.lv
+                + ") - nhan vat GM co ten trong sv.adminAccounts? | GM thay: " + ly);
     }
 
     /** CHUAN BI (nhan vat da thoat): cong xu / luong khoa tren CSDL = thu kiem duoc khi choi. */
@@ -372,6 +389,7 @@ public final class HoiQuy {
         List<String> loi = loiLogMoi();
         ket(ten + ".log_server_sach", loi.isEmpty(), loi.isEmpty() ? "" : loi.size() + " dong: " + String.join(" || ", loi.subList(0, Math.min(4, loi.size()))));
         List<String> vp;
+        if (BatBien.VI_PHAM.size() > vp0) BatBien.boSungNguonTruXu(vp0);
         synchronized (BatBien.VI_PHAM) { vp = new ArrayList<>(BatBien.VI_PHAM.subList(vp0, BatBien.VI_PHAM.size())); }
         ket(ten + ".bat_bien", vp.isEmpty(), vp.isEmpty() ? "" : vp.size() + ": " + String.join(" || ", vp.subList(0, Math.min(5, vp.size()))));
         THOI_GIAN.put(ten, new long[]{bd, System.currentTimeMillis()});

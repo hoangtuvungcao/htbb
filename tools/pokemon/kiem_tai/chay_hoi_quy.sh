@@ -79,6 +79,11 @@ else
     fi
 fi
 
+# JDBC cho bot: BotChucNang.sql dung MOT ket noi CSDL / JVM (khong mo tien trinh mysql = ket noi moi cho moi truy van;
+# cong kiem 25/10/2026 het ket noi MariaDB dung chung voi production). Thieu jar -> bot tu lui ve mysql CLI.
+JDBC="$GOC/server/lib/mysql-connector-java-5.1.49.jar"
+[ -r "$JDBC" ] && CP="$CP:$JDBC"
+
 chon() { # nhom co duoc chay?
     local n=$1
     if [ -n "${HOI_QUY_NHOM:-}" ]; then case " $HOI_QUY_NHOM " in *" $n "*) ;; *) return 1 ;; esac; fi
@@ -149,9 +154,15 @@ done < "$CONF"
 echo "== $SO nhom, $(( $(date +%s) - BD_TONG ))s: $(grep -c '^DAT' "$TONG") DAT, $(grep -cE '^(HONG|LOI)' "$TONG") HONG/LOI, $(grep -c '^TAT' "$TONG") tam tat"
 [ "$SO" -gt 0 ] || { echo "[LOI] khong co nhom nao duoc chay"; exit 2; }
 # Chot: moi nhom duoc chon PHAI co dong tong ket (vong doc conf bi nuot stdin = mat nhom im lang).
+# Dong "?" (nhom dai) chi tinh khi duoc goi ten - cong kiem 25/10/2026 dem ca "?cap1_40" khong chay -> "[LOI] chi co
+# 23/24 nhom" va ma thoat 1 du moi nhom DAT.
 CAN=0
 while read -r T1 _; do
     case "$T1" in ''|'#'*) continue ;; esac
+    if [ "${T1:0:1}" = "?" ]; then
+        case " ${HOI_QUY_NHOM:-} " in *" ${T1:1} "*) ;; *) continue ;; esac
+        T1=${T1:1}
+    fi
     chon "${T1#!}" && CAN=$((CAN + 1))
 done < "$CONF"
 if [ "$(grep -c . "$TONG")" != "$CAN" ]; then

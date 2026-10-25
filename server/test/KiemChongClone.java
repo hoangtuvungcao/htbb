@@ -63,6 +63,25 @@ public final class KiemChongClone {
         final CauHinh khongTuoi = new CauHinh(true, 20, 0, 0, 2, 3, 10, 200, 5, false);
         Kiem.bang("tuoi = 0 va gio choi = 0: chi con cap", null,
                 ChongCloneLogic.lyDoChan(khongTuoi, ben(1, 20, "", "", 0L, 0L), true));
+
+        // Cong kiem 25/10/2026: giao dich CHI co vat pham (thuoc) van bao "giao dịch / mua bán xu" - loi nhan theo viec.
+        final String gd = ChongCloneLogic.lyDoChan(c, ben(1, 7, "", "", -1L, -1L), true, ChongCloneLogic.viec("giao_dich"));
+        Kiem.bang("giao dich truc tiep cap 7: noi dung viec, khong noi 'mua bán xu'",
+                "Bạn cần đạt cấp 20 mới giao dịch với người chơi khác được.", gd);
+        final String gdT = ChongCloneLogic.lyDoChan(c, ben(1, 30, "", "", 23 * GIO, 999), true, ChongCloneLogic.viec("giao_dich"));
+        Kiem.dung("giao dich, tai khoan 23 gio: 'mới giao dịch với người chơi khác được', khong 'giao dịch xu'",
+                gdT != null && gdT.contains("mới giao dịch với người chơi khác được") && !gdT.contains("giao dịch xu"));
+        Kiem.dung("ky gui: noi cho ky gui", String.valueOf(ChongCloneLogic.lyDoChan(c, ben(1, 7, "", "", -1L, -1L), true,
+                ChongCloneLogic.viec("ky_gui"))).contains("mua bán ở chợ ký gửi"));
+        Kiem.bang("kieu la / null: giu chu mac dinh cu (noi goi .replace theo chuoi nay)",
+                "Bạn cần đạt cấp 20 mới " + ChongCloneLogic.VIEC_MAC_DINH_CAP + " được.",
+                ChongCloneLogic.lyDoChan(c, ben(1, 7, "", "", -1L, -1L), true, ChongCloneLogic.viec("khong_co")));
+        Kiem.bang("3 doi so = chu cu", ChongCloneLogic.lyDoChan(c, ben(1, 7, "", "", -1L, -1L), true, null),
+                ChongCloneLogic.lyDoChan(c, ben(1, 7, "", "", -1L, -1L), true));
+        for (String k : new String[]{"giao_dich", "ky_gui", "thu_cung", "cho_trang_tri", "cho_sinh_thai", "thach_dau", "vong_quay",
+                "trao_doi_pokemon"}) {
+            Kiem.dung("kieu " + k + " co cum tu viec", ChongCloneLogic.viec(k) != null);
+        }
     }
 
     // ------------------------------------------------------------------ 2. gioi han cung thiet bi / IP

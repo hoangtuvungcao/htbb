@@ -848,11 +848,173 @@ public class BotChucNang {
     /** -Ddbcnf=<tep>: mysql --defaults-file (host/port/user/password) thay cho -Ddbport + htbb/htbb cua may thu. */
     static final String DB_CNF = System.getProperty("dbcnf", "");
 
-    /** Chay truy van tren CSDL (mysql CLI), tra ve cac dong (tab). Rong neu khong cau hinh -Ddb. */
+    /**
+     * Chay truy van tren CSDL, tra ve cac dong (cot cach nhau tab, NULL = "NULL", dinh dang nhu {@code mysql -N -B}).
+     * Rong neu khong cau hinh -Ddb.
+     *
+     * <p>Cong kiem 25/10/2026: staging va production dung CHUNG mot MariaDB (max_connections 300). Ban cu mo mot tien
+     * trinh mysql CLI (= mot ket noi moi) cho MOI truy van, va khi CSDL het ket noi thi tra dong "ERROR 1040 ... Too many
+     * connections" nhu DU LIEU (ket_tau: ArrayIndexOutOfBounds khi tach pInfo; pho_ban_cup: so sanh voi chu loi; cac lenh
+     * UPDATE dung canh hong IM LANG). Nay:
+     * <ul>
+     *   <li>co JDBC (mysql-connector tren classpath - chay_hoi_quy.sh them server/lib): MOT ket noi dung chung cho ca JVM
+     *       (dong bo), mo lai khi rot; khong co thi van dung mysql CLI nhu cu (-Ddbjdbc=0 ep dung CLI);</li>
+     *   <li>loi TAM THOI (het ket noi 1040 / vuot max_user_connections 1203,1226 / mat ket noi 2002,2003,2006,2013 /
+     *       khoa 1205,1213): thu lai toi 8 lan, cho tang dan;</li>
+     *   <li>loi con lai / het luot: in "[SQL] LOI ..." va tra MOT dong "LOI SQL ..." (khong con tra chu loi tran nhu du lieu
+     *       hop le).</li>
+     * </ul>
+     */
     static List<String> sql(String q) {
         List<String> kq = new ArrayList<>();
         if (DB.isEmpty()) return kq;
         if (!"account".equals(DB_TK)) q = q.replaceAll("(?<![A-Za-z0-9_`])`?account`?\\.", DB_TK + ".");
+        String loi = null;
+        for (int lan = 0; lan < 8; lan++) {
+            kq.clear();
+            loi = coJdbc() ? sqlJdbc(q, kq) : sqlCli(q, kq);
+            if (loi == null) return kq;
+            if (!loiTamThoi(loi)) break;
+            try { Thread.sleep(1000L * (lan + 1)); } catch (InterruptedException e) { Thread.currentThread().interrupt(); break; }
+        }
+        String ngan = q.length() > 160 ? q.substring(0, 160) + "..." : q;
+        System.out.println("[SQL] LOI: " + loi + " <- " + ngan.replace('\n', ' '));
+        kq.clear();
+        kq.add("LOI SQL " + loi);
+        return kq;
+    }
+
+    /** Ma loi MariaDB/MySQL tam thoi (het ket noi, mat ket noi, khoa) - dang "ERROR nnnn ...". */
+    static boolean loiTamThoi(String loi) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("ERROR (\\d+)").matcher(loi);
+        if (!m.find()) return loi.contains("Too many connections") || loi.contains("Communications link failure");
+        switch (Integer.parseInt(m.group(1))) {
+            case 1040: case 1203: case 1226: case 2002: case 2003: case 2006: case 2013: case 1205: case 1213: case 0:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static final Object KHOA_SQL = new Object();
+    private static java.sql.Connection ketNoiSql;
+    private static Boolean coJdbc;
+
+    static boolean coJdbc() {
+        if (coJdbc == null) {
+            boolean co;
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                co = !"0".equals(System.getProperty("dbjdbc", "1"));
+            } catch (Throwable t) {
+                co = false;
+            }
+            coJdbc = co;
+        }
+        return coJdbc;
+    }
+
+    /** {host, port, user, password} tu -Ddbcnf (muc [client]) hoac -Ddbhost/-Ddbport/-Ddbuser/-Ddbpass. */
+    static String[] thongSoCsdl() {
+        String[] t = {System.getProperty("dbhost", "127.0.0.1"), System.getProperty("dbport", "3318"),
+                System.getProperty("dbuser", "htbb"), System.getProperty("dbpass", "htbb")};
+        if (DB_CNF.isEmpty()) return t;
+        try {
+            String muc = "";
+            for (String d : java.nio.file.Files.readAllLines(java.nio.file.Paths.get(DB_CNF), StandardCharsets.UTF_8)) {
+                d = d.trim();
+                if (d.startsWith("[")) { muc = d; continue; }
+                if (!("[client]".equals(muc) || "[mysql]".equals(muc)) || !d.contains("=")) continue;
+                String k = d.substring(0, d.indexOf('=')).trim(), v = d.substring(d.indexOf('=') + 1).trim();
+                if (v.length() >= 2 && (v.startsWith("\"") && v.endsWith("\"") || v.startsWith("'") && v.endsWith("'"))) v = v.substring(1, v.length() - 1);
+                switch (k) {
+                    case "host": t[0] = v; break;
+                    case "port": t[1] = v; break;
+                    case "user": t[2] = v; break;
+                    case "password": t[3] = v; break;
+                    default: break;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("[SQL] khong doc duoc " + DB_CNF + ": " + e);
+        }
+        return t;
+    }
+
+    /** Ky tu dac biet nhu mysql -B (\\, \n, \t, \0 viet thanh hai ky tu). */
+    static String thoatB(String v) {
+        if (v.indexOf('\\') < 0 && v.indexOf('\n') < 0 && v.indexOf('\t') < 0 && v.indexOf('\0') < 0) return v;
+        StringBuilder b = new StringBuilder(v.length() + 8);
+        for (char c : v.toCharArray()) {
+            switch (c) {
+                case '\\': b.append("\\\\"); break;
+                case '\n': b.append("\\n"); break;
+                case '\t': b.append("\\t"); break;
+                case '\0': b.append("\\0"); break;
+                default: b.append(c);
+            }
+        }
+        return b.toString();
+    }
+
+    /** Mot ket noi JDBC dung chung; null = xong, khac null = chu loi "ERROR nnnn (state): ...". */
+    static String sqlJdbc(String q, List<String> kq) {
+        synchronized (KHOA_SQL) {
+            try {
+                if (ketNoiSql == null || ketNoiSql.isClosed() || !ketNoiSql.isValid(3)) {
+                    dongSql();
+                    String[] t = thongSoCsdl();
+                    // jdbcCompliantTruncation=false: Connector/J 5.1 KHONG tu them STRICT_TRANS_TABLES vao sql_mode (giu y
+                    // nhu mysql CLI); allowMultiQueries: "a; b" trong mot lan goi nhu mysql -e
+                    String url = "jdbc:mysql://" + t[0] + ":" + t[1] + "/" + DB + "?useUnicode=true&characterEncoding=UTF-8"
+                            + "&useSSL=false&allowMultiQueries=true&jdbcCompliantTruncation=false&connectTimeout=10000";
+                    ketNoiSql = java.sql.DriverManager.getConnection(url, t[2], t[3]);
+                    try (java.sql.Statement st = ketNoiSql.createStatement()) { st.execute("SET NAMES utf8mb4"); }
+                }
+                try (java.sql.Statement st = ketNoiSql.createStatement()) {
+                    boolean coKq = st.execute(q);
+                    while (true) {
+                        if (coKq) {
+                            try (java.sql.ResultSet rs = st.getResultSet()) {
+                                int n = rs.getMetaData().getColumnCount();
+                                while (rs.next()) {
+                                    StringBuilder d = new StringBuilder();
+                                    for (int i = 1; i <= n; i++) {
+                                        if (i > 1) d.append('\t');
+                                        // getBytes = chu tho cua giao thuc van ban (nhu mysql CLI): getString them ".0" vao
+                                        // DATETIME va nem loi voi '0000-00-00 00:00:00'
+                                        byte[] v = rs.getBytes(i);
+                                        d.append(v == null ? "NULL" : thoatB(new String(v, StandardCharsets.UTF_8)));
+                                    }
+                                    kq.add(d.toString());
+                                }
+                            }
+                        } else if (st.getUpdateCount() == -1) {
+                            break;
+                        }
+                        coKq = st.getMoreResults();
+                    }
+                }
+                return null;
+            } catch (java.sql.SQLException e) {
+                String st = String.valueOf(e.getSQLState());
+                if (st.startsWith("08") || e.getErrorCode() == 0 || e.getErrorCode() >= 2000) dongSql();
+                return "ERROR " + e.getErrorCode() + " (" + st + "): " + e.getMessage();
+            }
+        }
+    }
+
+    static void dongSql() {
+        synchronized (KHOA_SQL) {
+            if (ketNoiSql != null) {
+                try { ketNoiSql.close(); } catch (Exception ignored) { }
+                ketNoiSql = null;
+            }
+        }
+    }
+
+    /** mysql CLI (khong co JDBC): mot tien trinh / truy van; null = xong, khac null = dong "ERROR ..." cua mysql. */
+    static String sqlCli(String q, List<String> kq) {
         try {
             List<String> lenh = new ArrayList<>();
             lenh.add(System.getProperty("mysql", "mysql"));
@@ -865,13 +1027,18 @@ public class BotChucNang {
             lenh.addAll(Arrays.asList("--default-character-set=utf8mb4", "-N", "-B", DB, "-e", q));
             Process p = new ProcessBuilder(lenh).redirectErrorStream(true).start();
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
-            String l;
-            while ((l = br.readLine()) != null) if (!l.startsWith("mysql: [Warning]")) kq.add(l);
-            p.waitFor();
+            String l, loi = null;
+            while ((l = br.readLine()) != null) {
+                if (l.startsWith("mysql: [Warning]")) continue;
+                if (loi == null && l.matches("^ERROR \\d+ \\(.*")) loi = l;
+                kq.add(l);
+            }
+            int ma = p.waitFor();
+            if (loi == null && ma != 0) loi = "ERROR 0 (mysql thoat " + ma + "): " + String.join(" | ", kq);
+            return loi;
         } catch (Exception e) {
-            kq.add("LOI SQL " + e);
+            return "ERROR 0 (" + e + ")";
         }
-        return kq;
     }
 
     static String sql1(String q) {

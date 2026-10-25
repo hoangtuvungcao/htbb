@@ -118,23 +118,64 @@ public final class ChongCloneLogic {
      * @param laMinh true = loi nhan cho chinh nguoi do ("Bạn cần..."), false = noi ve nguoi kia.
      */
     public static String lyDoChan(final CauHinh c, final Ben b, final boolean laMinh) {
+        return lyDoChan(c, b, laMinh, null);
+    }
+
+    /** Cum tu viec bi chan mac dinh (khong biet viec cu the): giu nguyen chu cu - noi goi .replace() theo chuoi nay. */
+    public static final String VIEC_MAC_DINH_CAP = "giao dịch / mua bán xu với người chơi khác";
+    public static final String VIEC_MAC_DINH_TUOI = "giao dịch xu";
+
+    /**
+     * Nhu tren, {@code viec} = viec dang bi chan, ghi DUNG vao loi nhan ("giao dịch với người chơi khác" cho giao dich
+     * truc tiep - ca vat pham lan xu; cong kiem 25/10/2026: giao dich chi co thuoc van bao "giao dịch / mua bán xu").
+     * null = chu mac dinh cu.
+     */
+    public static String lyDoChan(final CauHinh c, final Ben b, final boolean laMinh, final String viec) {
         if (c == null || !c.bat || b == null) {
             return null;
         }
+        final String vCap = viec == null ? VIEC_MAC_DINH_CAP : viec;
+        final String vTuoi = viec == null ? VIEC_MAC_DINH_TUOI : viec;
         final String ai = laMinh ? "Bạn" : ("Người chơi " + b.ten);
         if (b.cap < c.capToiThieu) {
-            return ai + " cần đạt cấp " + c.capToiThieu + " mới giao dịch / mua bán xu với người chơi khác được.";
+            return ai + " cần đạt cấp " + c.capToiThieu + " mới " + vCap + " được.";
         }
         if (c.tuoiTaiKhoanGio > 0 && b.tuoiTaiKhoanMs >= 0 && b.tuoiTaiKhoanMs < c.tuoiTaiKhoanGio * 3600000L) {
             final long conPhut = (c.tuoiTaiKhoanGio * 3600000L - b.tuoiTaiKhoanMs + 59999L) / 60000L;
             return (laMinh ? "Tài khoản của bạn" : "Tài khoản của " + b.ten) + " cần tạo đủ " + c.tuoiTaiKhoanGio
-                    + " giờ mới giao dịch xu được (còn " + gioPhut(conPhut) + ").";
+                    + " giờ mới " + vTuoi + " được (còn " + gioPhut(conPhut) + ").";
         }
         if (c.gioChoiToiThieu > 0 && b.phutChoi >= 0 && b.phutChoi < c.gioChoiToiThieu * 60L) {
-            return ai + " cần chơi đủ " + c.gioChoiToiThieu + " giờ mới giao dịch xu được (còn "
+            return ai + " cần chơi đủ " + c.gioChoiToiThieu + " giờ mới " + vTuoi + " được (còn "
                     + gioPhut(c.gioChoiToiThieu * 60L - b.phutChoi) + ").";
         }
         return null;
+    }
+
+    /** Cum tu viec theo kieu chuyen (ChongClone.KIEU_*), null = khong biet (chu mac dinh). */
+    public static String viec(final String kieu) {
+        if (kieu == null) {
+            return null;
+        }
+        switch (kieu) {
+            case "giao_dich":
+                return "giao dịch với người chơi khác";
+            case "ky_gui":
+                return "mua bán ở chợ ký gửi";
+            case "thu_cung":
+                return "giao dịch thú cưng với người chơi khác";
+            case "cho_trang_tri":
+            case "cho_sinh_thai":
+                return "mua bán với người chơi khác ở chợ";
+            case "thach_dau":
+                return "thách đấu cược xu";
+            case "vong_quay":
+                return "tham gia vòng quay";
+            case "trao_doi_pokemon":
+                return "trao đổi Pokémon với người chơi khác";
+            default:
+                return null;
+        }
     }
 
     static String gioPhut(final long phut) {

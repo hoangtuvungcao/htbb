@@ -149,6 +149,11 @@ public final class ChongClone {
 
     /** Ly do {@code p} khong duoc chuyen/nhan xu (cap, tuoi tai khoan, gio choi), null neu duoc. */
     public static String lyDo(final Char p, final boolean laMinh) {
+        return lyDo(p, laMinh, null);
+    }
+
+    /** Nhu tren, loi nhan ghi dung viec theo kieu (KIEU_*; null = chu mac dinh "giao dịch / mua bán xu ..."). */
+    public static String lyDo(final Char p, final boolean laMinh, final String kieu) {
         if (laBot(p)) {
             return null;
         }
@@ -156,12 +161,12 @@ public final class ChongClone {
         if (!c.bat) {
             return null;
         }
-        return ChongCloneLogic.lyDoChan(c, ben(p, true), laMinh);
+        return ChongCloneLogic.lyDoChan(c, ben(p, true), laMinh, ChongCloneLogic.viec(kieu));
     }
 
     /** Chi kiem MOT ben (rao ban khi chua biet nguoi mua). true = da chan va da bao. */
     public static boolean chanMotBen(final Char p, final String kieu) {
-        final String m = lyDo(p, true);
+        final String m = lyDo(p, true, kieu);
         if (m == null) {
             return false;
         }
@@ -171,9 +176,9 @@ public final class ChongClone {
 
     /** Ca hai ben deu phai qua cap / tuoi (thach dau). Bao cho {@code nguoiBao}. */
     public static boolean chanCaHai(final Char a, final Char b, final Char nguoiBao, final String kieu) {
-        String m = lyDo(a, a == nguoiBao);
+        String m = lyDo(a, a == nguoiBao, kieu);
         if (m == null) {
-            m = lyDo(b, b == nguoiBao);
+            m = lyDo(b, b == nguoiBao, kieu);
         }
         if (m == null) {
             return false;
@@ -196,9 +201,10 @@ public final class ChongClone {
         }
         final ChongCloneLogic.Ben bg = ben(gui, true);
         final ChongCloneLogic.Ben bn = ben(nhan, true);
-        String m = ChongCloneLogic.lyDoChan(c, bg, gui == nguoiBao);
+        final String viec = ChongCloneLogic.viec(kieu);
+        String m = ChongCloneLogic.lyDoChan(c, bg, gui == nguoiBao, viec);
         if (m == null) {
-            m = ChongCloneLogic.lyDoChan(c, bn, nhan == nguoiBao);
+            m = ChongCloneLogic.lyDoChan(c, bn, nhan == nguoiBao, viec);
         }
         if (m == null) {
             napSoNeuCan();
@@ -258,7 +264,7 @@ public final class ChongClone {
             return false;
         }
         final ChongCloneLogic.Ben bg = ben(gui, true);
-        String m = ChongCloneLogic.lyDoChan(c, bg, true);
+        String m = ChongCloneLogic.lyDoChan(c, bg, true, ChongCloneLogic.viec(kieu));
         final ChongCloneLogic.Ben bn = new ChongCloneLogic.Ben(nhanId, nhanTen, 0, 0, "", "", -1L, -1L);
         if (m == null) {
             napSoNeuCan();

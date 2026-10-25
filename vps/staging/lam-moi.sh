@@ -186,6 +186,11 @@ if [ "$BAT" = 0 ]; then
 else
     LOG="$STG_GOC/logs/game.out"
     MOC_LOG=$(stat -c %s "$LOG" 2>/dev/null || echo 0)
+    # Ket noi CSDL dung chung voi production: tran cung cho user staging + con du cho truoc khi bat (xem chung.sh).
+    stg_gioi_han_ket_noi
+    ket_noi_con_du || loi "khong bat staging: MariaDB gan het ket noi (production can truoc)"
+    read -r KN_D KN_T _ < <(ket_noi_csdl)
+    echo "   CSDL: Threads_connected=$KN_D / max_connections=$KN_T, tran user $STG_DB_USER=$STG_DB_MAX_USER_CONN"
     "$SYSTEMCTL" start "$STG_UNIT_LOGIN"
     doi_cong "$STG_CONG_LOGIN" 30 || loi "login staging khong nghe cong $STG_CONG_LOGIN (xem $STG_GOC/logs/login.out)"
     "$SYSTEMCTL" start "$STG_UNIT_GAME"

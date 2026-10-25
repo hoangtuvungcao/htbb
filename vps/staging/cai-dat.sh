@@ -60,7 +60,7 @@ buoc "3/6 User MariaDB $STG_DB_USER (chi $STG_DB + $STG_DB_TK)"
 PB=$(myq "SELECT VERSION()") || loi "khong vao duoc MariaDB bang root (unix_socket)"
 case "$PB" in *MariaDB*) echo "   $PB" ;; *) loi "can MariaDB, may nay: $PB" ;; esac
 if [ "$THU" = 1 ]; then
-    echo "   (thu) CREATE USER IF NOT EXISTS + ALTER USER + GRANT ALL ON $STG_DB.*, $STG_DB_TK.*"
+    echo "   (thu) CREATE USER IF NOT EXISTS + ALTER USER (MAX_USER_CONNECTIONS $STG_DB_MAX_USER_CONN) + GRANT ALL ON $STG_DB.*, $STG_DB_TK.*"
 else
     MK=$(stg_mat_khau)
     # Mat khau qua stdin cua mysql (khong len dong lenh). Ten CSDL trong GRANT phai thoat dau _ (wildcard).
@@ -71,6 +71,8 @@ CREATE USER IF NOT EXISTS '$STG_DB_USER'@'localhost' IDENTIFIED BY '$MK';
 CREATE USER IF NOT EXISTS '$STG_DB_USER'@'127.0.0.1' IDENTIFIED BY '$MK';
 ALTER USER '$STG_DB_USER'@'localhost' IDENTIFIED BY '$MK';
 ALTER USER '$STG_DB_USER'@'127.0.0.1' IDENTIFIED BY '$MK';
+ALTER USER '$STG_DB_USER'@'localhost' WITH MAX_USER_CONNECTIONS $STG_DB_MAX_USER_CONN;
+ALTER USER '$STG_DB_USER'@'127.0.0.1' WITH MAX_USER_CONNECTIONS $STG_DB_MAX_USER_CONN;
 GRANT ALL PRIVILEGES ON \`${STG_DB//_/\\_}\`.* TO '$STG_DB_USER'@'localhost', '$STG_DB_USER'@'127.0.0.1';
 GRANT ALL PRIVILEGES ON \`${STG_DB_TK//_/\\_}\`.* TO '$STG_DB_USER'@'localhost', '$STG_DB_USER'@'127.0.0.1';
 FLUSH PRIVILEGES;

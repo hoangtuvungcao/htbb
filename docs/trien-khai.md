@@ -301,7 +301,8 @@ và bot cũ chạy bằng tài khoản GM (được miễn khoá bản đồ) n�
 | thư mục | `/opt/htbb/{server,sql,logs}` | `/opt/htbb-staging/{server,sql,logs}` |
 | systemd | `htbb-game`, `htbb-login` | `htbb-staging-game`, `htbb-staging-login` — **không** enable, cổng kiểm bật rồi tắt |
 | tài nguyên | heap 1.5 GB | heap 768 MB, `CPUQuota=60%`, `MemoryMax=1200M`, `Nice=10`, IO idle, mạng chỉ localhost (`IPAddressDeny`) |
-| cấu hình | `vps/sinh-server-ini.sh` | `vps/staging/sinh-server-ini.sh`: chép `server.ini` production, chỉ đổi cổng / CSDL / thư mục / GM bot, `sv.cho_phep_thu_nghiem=1`, `sv.choPhepTaoTenGM=1`, `sv.gioBaoTri=tat` |
+| cấu hình | `vps/sinh-server-ini.sh` | `vps/staging/sinh-server-ini.sh`: chép `server.ini` production, chỉ đổi cổng / CSDL / thư mục / GM bot, `sv.cho_phep_thu_nghiem=1`, `sv.choPhepTaoTenGM=1`, `sv.gioBaoTri=tat`, pool CSDL nhỏ (`db.maxco=12`, `db.maxNap=3`, `db.maxco1=1`) |
+| kết nối CSDL | pool production (~148, mở sẵn lúc bật) | **cùng một MariaDB** (`max_connections` 300): user `htbb_staging` bị chặn cứng `MAX_USER_CONNECTIONS 48` (gồm cả bot + login); cổng kiểm từ chối bật / **dừng bot + tắt staging** khi `Threads_connected` ≥ `max_connections` − 60 (`STG_DB_*` trong `vps/staging/chung.sh`). Trước 25/10/2026 staging chép nguyên pool production (100 + 2×30 + 1) → tổng vượt 300, bot gặp `ERROR 1040 Too many connections` |
 | tài khoản | người chơi thật | mật khẩu thật bị thay bằng chuỗi ngẫu nhiên, email / SĐT / IP xoá; thêm bot `kt001..kt040` (GM) và `kt101..kt199` (thường), mật khẩu `123456` |
 
 **Cài một lần** (sau khi `vps/` và `tools/` trên VPS đã có bản mới, xem cuối mục):
@@ -346,7 +347,10 @@ khác trên VPS rồi thêm `--nguon <thư mục>` vào lệnh `kiem-truoc-khi-l
    bot + ghi đè `cau_hinh` của staging → cài jar → bật, chờ cổng 29129. Hỏng bước nào = HỎNG.
 2. `tools/pokemon/kiem_tai/chay_hoi_quy.sh 127.0.0.1 29129 28023 cnf=…,db=htbb_staging,dbtk=htbb_staging_account`:
    mỗi nhóm trong `tools/pokemon/kiem_tai/hoi_quy.conf` phải DAT (BotChucNang: mã thoát 0 và `FAIL 0`; BotBangThong:
-   mọi bot vào game, `loi=0`; hết giờ = HỎNG).
+   mọi bot vào game, `loi=0`; hết giờ = HỎNG). Bot dùng **một** kết nối JDBC mỗi JVM (`BotChucNang.sql`, thử lại khi
+   CSDL hết kết nối / mất kết nối); trong lúc chạy cổng kiểm đọc `Threads_connected` mỗi 10 giây
+   (`<nhật ký>/ket_noi_csdl.txt`), hai lần liền còn dưới 60 chỗ trống cho production → dừng bot, tắt staging, HỎNG
+   `csdl_gan_het_ket_noi`.
 3. Staging còn sống sau bot (unit active, cổng mở).
 4. Log staging từ lúc bật (`game.out` + `nhat_ky/may_chu-*.log`) **không có Exception / Error mới** — trừ mẫu đã biết
    trong `vps/staging/loi-bo-qua.txt` (mỗi mẫu một dòng, ghi lý do).
