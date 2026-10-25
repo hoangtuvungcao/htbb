@@ -144,6 +144,7 @@ final class KichBanCap140TinhNang {
         sauHanhDong(p, "Về làng");
         boolean ok = KichBanDS.laLang(b.mapId);
         p.tinhNang("Về làng miễn phí (từ " + truoc + ")", (ok ? "OK -> " : "HONG -> ") + b.mapId + " | " + b.chuTu(m));
+        if (!ok && b.chuTu(m).contains("Hết lượt")) { p.tinhNang("Về làng miễn phí", "het luot hom nay (dung luat): " + b.chuTu(m)); return; }
         if (!ok) KichBanCap140.loi("Ve lang mien phi tu map " + truoc + " khong ve lang: map " + b.mapId + " | " + b.chuTu(m));
     }
 

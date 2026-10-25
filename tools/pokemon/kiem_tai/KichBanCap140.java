@@ -243,6 +243,8 @@ final class KichBanCap140 {
                 else if (l.startsWith("chinh=")) for (String x : l.substring(6).split(",")) if (!x.isEmpty()) chinhDaXong.add(Integer.parseInt(x));
                 else if (l.startsWith("phu=")) for (String y : l.substring(4).split(",")) if (!y.isEmpty()) phuDaXong.add(Integer.parseInt(y));
                 else if (l.startsWith("ket=")) ketChi.add(l.substring(4));
+                else if (l.startsWith("moc=")) for (String z : l.substring(4).split(",")) if (!z.isEmpty()) mocTinhNang.add(Integer.parseInt(z));
+                else if (l.startsWith("tn=")) { String[] f = l.substring(3).split("\t", 2); if (f.length == 2) tinhNangKq.put(f[0], f[1]); }
                 else if (l.startsWith("so=")) {
                     String[] f = l.substring(3).split(",");
                     soCuaAi = Integer.parseInt(f[0]); soChet = Integer.parseInt(f[1]); xuKiem = Long.parseLong(f[2]); xuTieu = Long.parseLong(f[3]);
@@ -261,6 +263,8 @@ final class KichBanCap140 {
             s.append("chinh=").append(chinhDaXong.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             s.append("phu=").append(phuDaXong.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             for (String t : dongThoiGian) s.append("tg=").append(t).append('\n');
+            s.append("moc=").append(mocTinhNang.toString().replaceAll("[\\[\\] ]", "")).append('\n');
+            for (Map.Entry<String, String> e : tinhNangKq.entrySet()) s.append("tn=").append(e.getKey().replace('\t', ' ').replace('\n', ' ')).append('\t').append(e.getValue().replace('\n', ' ')).append('\n');
             for (String t : ketChi) s.append("ket=").append(t.replace('\n', ' ')).append('\n');
             try {
                 Files.write(tepCp.toPath(), s.toString().getBytes(StandardCharsets.UTF_8));
@@ -692,7 +696,8 @@ final class KichBanCap140 {
                     nhanCuaAiNeuKhoa();
                     return "khong toi duoc ban do " + tenBd + " (" + dich + ")";
                 }
-                int ha = danh(tpl, Math.min(10, t[2] - t[1]), 4 * 60000L);
+                // thu thap: so lan HA khong bang so vat pham (roi theo ti le) -> moi luot ha 10 con roi doc lai tien do
+                int ha = danh(tpl, q.loai == 2 ? 10 : Math.min(10, t[2] - t[1]), 4 * 60000L);
                 ghi("'" + q.ten + "' ha " + ha + " " + HoiQuy.TEN_QUAI.get(tpl) + " (" + t[1] + "/" + t[2] + ")");
                 if (ha == 0) return "khong ha duoc " + HoiQuy.TEN_QUAI.get(tpl) + " o " + b.mapId;
                 return null;

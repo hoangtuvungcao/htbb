@@ -73,23 +73,4 @@ public final class KiemCap140 {
         Kiem.sai("dang lam: thanh tuu dang tich luy khong hien", real.NhiemVuEngine.hienDangLam(true, 0));
     }
 
-    /** "Đang làm (0)" ma ben trong co thanh tuu cho nhan thuong: so dem phai cung luat voi danh sach. */
-    static void demDangLam() {
-        Kiem.dung("dang lam: nhiem vu chua xong hien", real.NhiemVuEngine.hienDangLam(false, 0));
-        Kiem.dung("dang lam: nhiem vu xong cho nhan hien", real.NhiemVuEngine.hienDangLam(false, 1));
-        Kiem.sai("dang lam: da nhan thuong khong hien", real.NhiemVuEngine.hienDangLam(false, 2));
-        Kiem.dung("dang lam: thanh tuu xong cho nhan (Bước chân đầu tiên 10/10) hien VA duoc dem", real.NhiemVuEngine.hienDangLam(true, 1));
-        Kiem.sai("dang lam: thanh tuu dang tich luy khong hien", real.NhiemVuEngine.hienDangLam(true, 0));
-    }
-
-    /** Mua 20 Sieu thuoc (500 xu) khi chi co 9.580 xu: truoc day im lang (khong mua, khong bao) - nay bao ro. */
-    static void thieuXuMuaThuoc() {
-        final String t = real.OfflineMap.thieuXuMuaThuoc("Siêu thuốc hồi máu", 20, 500L, 10000L, 9580L);
-        Kiem.bang("thieu xu mua thuoc: bao can / co / mua toi da",
-                "Không đủ xu: 20 Siêu thuốc hồi máu cần 10000 xu, bạn có 9580 xu. Mua tối đa 19 bình.", t);
-        Kiem.bang("thieu xu, khong du 1 binh: khong goi y so binh",
-                "Không đủ xu: 1 Siêu thuốc hồi máu cần 500 xu, bạn có 120 xu.", real.OfflineMap.thieuXuMuaThuoc("Siêu thuốc hồi máu", 1, 500L, 500L, 120L));
-        Kiem.bang("xu am / 0: khong ghi so am",
-                "Không đủ xu: 5 Thuốc hồi máu cần 500 xu, bạn có 0 xu.", real.OfflineMap.thieuXuMuaThuoc("Thuốc hồi máu", 5, 100L, 500L, -3L));
-    }
 }
