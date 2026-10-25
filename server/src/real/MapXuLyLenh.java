@@ -1902,6 +1902,34 @@ class MapXuLyLenh {
         }
     }
 
+    /**
+     * Xin qua cong khi may chu thay nhan vat KHONG dung o cong (doChangeMap ca MapXuLyLenh lan MapLienDau). Dem theo nhan
+     * vat (com.htbb.log.DemCongSaiO, > 10 lan / 30 giay moi kick), ghi [CONG_SAI_O] co gioi han. true = DA KICK (dung xu
+     * ly); false = noi goi tu choi: nap lai ban do hien tai o vi tri may chu (toMapID = player.mapID, x/y may chu,
+     * checklocation = false). Truoc 25/10/2026 kick ngay lan dau - client vua bi keo ve (tre mang) bi ngat oan.
+     */
+    static boolean congSaiO(final Map map, final Char player, final int toMapID, final int toTX, final int toTY, final String nhan) {
+        final com.htbb.log.DemCongSaiO.KetQua sai = com.htbb.log.DemCongSaiO.CHUNG.ghiNhan(player.charname, System.currentTimeMillis());
+        if (sai.ghiLog) {
+            try {
+                com.htbb.log.Nhat.canhBao("CONG_SAI_O", player.charname + " map " + map.mapId + " o " + player.x / 16 + ","
+                        + player.y / 16 + " -> " + toMapID + " (" + toTX + "," + toTY + ") lan=" + sai.lan + "/"
+                        + (com.htbb.log.DemCongSaiO.CUA_SO_MS / 1000L) + "s" + (sai.kick ? " -> KICK" : " -> tu choi, tra vi tri"));
+            } catch (Throwable ignored) {
+            }
+        }
+        if (!sai.kick) {
+            return false;
+        }
+        CharManager.instance.kickPlayer(player, nhan + (toMapID != player.mapID ? " 6" : " 5"));
+        try {
+            Database.instance.saveOrtherLog("", player.charname, "hack chuyen map " + map.getMapLoad(map.mapId) + " to " + toMapID
+                    + " (" + sai.lan + " lan sai o cong)", "hcm");
+        } catch (Throwable ignored) {
+        }
+        return true;
+    }
+
     static void doChangeMap(Map map, Char player, Message message) {
         try {
             int toMapID = message.dis.readShort();
@@ -2122,26 +2150,17 @@ class MapXuLyLenh {
                             onPos = true; // vung chu nhat goc lech voi ban do Pokemon: xem Map.dungCanhCong
                         }
                         if (!onPos && contentMap) {
-                            try { // nhat ky: phan biet hack that voi o cong lech vung (bao cao cho nguoi van hanh)
-                                com.htbb.log.Nhat.canhBao("DOI_MAP", "kick doi map khong dung o: " + player.charname + " map " + map.mapId
-                                        + " o " + player.x / 16 + "," + player.y / 16 + " -> " + toMapID + " (" + toTX + "," + toTY + ")");
-                            } catch (Throwable ignored) {
-                            }
-                            if (toMapID != player.mapID) {
-                                toMapID = player.mapID;
-                                toTX = player.x / 16;
-                                toTY = player.y / 16;
-                                CharManager.instance.kickPlayer(player, "map 6");
-                                Database.instance.saveOrtherLog("", player.charname, "hack chuyen map " + map.getMapLoad(map.mapId) + " to " + toMapID, "hcm");
+                            // Xin qua cong khi may chu thay KHONG dung o cong. Truoc 25/10/2026: kick ngay ("map 5" / "map 6") -
+                            // client vua bi keo ve (lenh 4, tre mang) van thay minh o cong -> bi ngat oan (bot hoi quy). Nay: tu
+                            // choi, nap lai ban do hien tai o vi tri MAY CHU (nhu nhanh KhoaBanDoGame / VungHoenn ben tren); chi
+                            // kick khi lap lai ro rang (com.htbb.log.DemCongSaiO: > 10 lan / 30 giay).
+                            if (congSaiO(map, player, toMapID, toTX, toTY, "map")) {
                                 return;
                             }
-
                             toMapID = player.mapID;
                             toTX = player.x / 16;
                             toTY = player.y / 16;
-                            CharManager.instance.kickPlayer(player, "map 5");
-                            Database.instance.saveOrtherLog("", player.charname, "hack chuyen map cung map " + player.mapID, "hcm");
-                            return;
+                            checklocation = false;
                         }
                     }
                 }

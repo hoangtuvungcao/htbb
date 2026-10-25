@@ -488,19 +488,14 @@ public class MapLienDau extends Map {
                         while (true) {
                             if (k >= a.size()) {
                                 if (!onPos && contentMap) {
-                                    if (toMapID == player.mapID) {
-                                        toMapID = player.mapID;
-                                        toTX = player.x / 16;
-                                        toTY = player.y / 16;
-                                        CharManager.instance.kickPlayer(player, "mapliendau 5");
-                                        Database.instance.saveOrtherLog("", player.charname, "hack chuyen map cung map " + player.mapID, "hcm");
-                                    } else {
-                                        toMapID = player.mapID;
-                                        toTX = player.x / 16;
-                                        toTY = player.y / 16;
-                                        CharManager.instance.kickPlayer(player, "mapliendau 6");
-                                        Database.instance.saveOrtherLog("", player.charname, "hack chuyen map " + this.getMapLoad(this.mapId) + " to " + toMapID, "hcm");
+                                    // cong sai o: tu choi + nap lai o vi tri may chu, chi kick khi lap lai (MapXuLyLenh.congSaiO)
+                                    if (MapXuLyLenh.congSaiO(this, player, toMapID, toTX, toTY, "mapliendau")) {
+                                        return;
                                     }
+                                    toMapID = player.mapID;
+                                    toTX = player.x / 16;
+                                    toTY = player.y / 16;
+                                    checklocation = false;
                                 }
                                 break;
                             }

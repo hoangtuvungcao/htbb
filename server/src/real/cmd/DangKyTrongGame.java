@@ -246,11 +246,11 @@ public final class DangKyTrongGame implements ICommandHandler {
             }
         }
         if (ketQua != null) {
-            if (ketQua.startsWith("qua")) {
+            if (laHanMuc(ketQua)) {
                 ghiNhatKy("CHAN han muc " + ketQua, session.ip, maMay, ten);
             }
             guiLoi(session, mot(ketQua, QuyTacDangKy.thongBao(ketQua)),
-                    ketQua.startsWith("qua") ? "" : capCauDoTiep(session, lanGui).cauHoi);
+                    laHanMuc(ketQua) ? "" : capCauDoTiep(session, lanGui).cauHoi);
             return;
         }
         final boolean kichHoat = canTuKichHoat() && kichHoat(userId, ten);
@@ -357,7 +357,7 @@ public final class DangKyTrongGame implements ICommandHandler {
     }
 
     /**
-     * "quaGio" | "quaNgay" | null. Lay MAX cua dem CSDL (gop web+game) va dem RAM. Cac bo dem CHI tang khi tao
+     * "quaGio" | "quaNgay" (IP) | "mayQuaGio" | "mayQuaNgay" (may) | null. Lay MAX cua dem CSDL (gop web+game) va dem RAM. Cac bo dem CHI tang khi tao
      * THANH CONG (ghiLuot) - cau do sai, nhap sai, trung ten, loi CSDL khong tinh; RAM khong co cho giu nhu web.
      */
     private static String kiemHanMuc(final String ip, final String maMay, final long bay) {
@@ -372,7 +372,27 @@ public final class DangKyTrongGame implements ICommandHandler {
         }
         final int[] demMay = demCsdl(khoaMay(maMay), "'" + HANH_DONG_MAY + "'");
         final int[] ramMay = demRam("may|" + maMay, bay);
-        return vuotHanMucHienTai(Math.max(demMay[0], ramMay[0]), Math.max(demMay[1], ramMay[1]));
+        return maHanMucMay(vuotHanMucHienTai(Math.max(demMay[0], ramMay[0]), Math.max(demMay[1], ramMay[1])));
+    }
+
+    /**
+     * Han muc theo MAY (ma thiet bi) co cau bao RIENG: "quaGio" -> "mayQuaGio", "quaNgay" -> "mayQuaNgay" (cau trong
+     * quy-tac-dang-ky.json). Truoc 25/10/2026 dung chung cau cua han muc IP ("...dùng chung mạng di động... Wi-Fi khác")
+     * - sai voi nguoi bi chan theo may (doi Wi-Fi khong giup gi). Public cho kiem thu.
+     */
+    public static String maHanMucMay(final String kq) {
+        if ("quaGio".equals(kq)) {
+            return "mayQuaGio";
+        }
+        if ("quaNgay".equals(kq)) {
+            return "mayQuaNgay";
+        }
+        return kq;
+    }
+
+    /** Ma loi la vuot han muc (IP hoac may) - khong cap cau do moi, ghi nhat ky "CHAN han muc". */
+    public static boolean laHanMuc(final String ma) {
+        return "quaGio".equals(ma) || "quaNgay".equals(ma) || "mayQuaGio".equals(ma) || "mayQuaNgay".equals(ma);
     }
 
     public static int[] demRam(final String khoa, final long bay) {

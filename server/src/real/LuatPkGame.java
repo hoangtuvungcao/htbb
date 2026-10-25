@@ -82,8 +82,10 @@ public final class LuatPkGame {
             if (map.isMapLoiDai() || map.isMapChienTruongMoba() || map instanceof MapLienDau) {
                 return true;
             }
+            // Chiem Gym / chien thanh: CHI ban do Gym (va ban sao) la vung PvP them. Truoc 25/10/2026 co cua VUNG lam moi ban
+            // do - ca thi tran - thanh vung PvP trong ca gio chiem Gym (bot hoi quy: nguoi o Pewter mat HP).
             final int nuoc = p == null ? 0 : p.inCountry;
-            if (nuoc >= 0 && nuoc < Map.nwar.length && (Map.nwar[nuoc] || Map.getTown[nuoc])) {
+            if (Map.vungChiemGym(map, nuoc)) {
                 return true;
             }
         } catch (final Exception ignored) {

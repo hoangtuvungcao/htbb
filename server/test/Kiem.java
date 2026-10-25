@@ -109,6 +109,7 @@ public final class Kiem {
         KiemNhatKyChongSpam.chay();
         KiemTheoDoiBatThuong.chay();
         KiemMapClanVao.chay(); // vao ban do bang khi chua co danh sach: khong NPE (cong kiem 24/10)
+        KiemSuaDeXuatBot.chay(); // 3 de xuat bot hoi quy 25/10: chiem Gym chi trong Gym, cong sai o khong kick ngay, dang ky chan theo may
         KiemMatDoKhiTaoDo.chay();
         KiemCuaHangSuKien.chay();
         KiemAoHoaPonyta.chay();

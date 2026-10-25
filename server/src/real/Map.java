@@ -16200,7 +16200,7 @@ public class Map implements Runnable {
                             return;
                         }
 
-                        if (getTown[player.inCountry]) {
+                        if (camGiaoDichChiemGym(player)) {
                             return;
                         }
 
@@ -18188,6 +18188,32 @@ public class Map implements Runnable {
 
     public static boolean isMapThanh(Map m) {
         return m.mapIDLoadMap == 201;
+    }
+
+    /**
+     * Ban do {@code m} la VUNG TRANH CHAP khi vung {@code nuoc} dang chiem Gym (getTown) / chien thanh (nwar): ban do Gym
+     * (201 va ban sao, {@link #isMapThanh}). Truoc 25/10/2026 co cua VUNG nay ap len MOI ban do - trong gio chiem Gym moi
+     * thi tran mat an toan (LuatPkGame.vungPvp: nguoi o Pewter mat HP) va moi cua hang NPC bi khoa (bot hoi quy).
+     */
+    public static boolean vungChiemGym(Map m, int nuoc) {
+        return m != null && isMapThanh(m) && nuoc >= 0 && nuoc < getTown.length && (getTown[nuoc] || nwar[nuoc]);
+    }
+
+    /**
+     * Khoa mua ban / dich vu NPC vi chiem Gym: CHI khi nguoi choi dang trong vung tranh chap cua tran chiem Gym (getTown) o
+     * vung dang dung - ban do Gym 201 (+ ban sao) hoac cua hang trong Gym (ban do offline, mapID >= 200 - ra cua chi ve
+     * 201). Nguoi trong ban do Gym luc nay = doi da dang ky (MapXuLyLenh chan nguoi khong doi / duoi cap 60 / vung khac).
+     * Moi noi khac (thi tran 0/70/80 va ban sao...) mua ban binh thuong.
+     */
+    public static boolean camGiaoDichChiemGym(Char p) {
+        if (p == null || p.map == null) {
+            return false;
+        }
+        final int nuoc = p.inCountry;
+        if (nuoc < 0 || nuoc >= getTown.length || !getTown[nuoc]) {
+            return false;
+        }
+        return isMapThanh(p.map) || p.map.isMapOffline && p.mapID >= 200;
     }
 
     public boolean isMapMonster() {
