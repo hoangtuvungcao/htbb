@@ -229,7 +229,8 @@ public final class ManMenu extends Screen {
 
     /** Tâm Poké Ball / nút đóng (= nút Menu giữa đáy HUD). */
     static int yBong() {
-        return Canvas.h - 17 - 5;
+        // 0.9.21: nút đóng cỡ chạm lớn (APK mật độ cao: MIN > 38) không tràn mép dưới màn
+        return Canvas.h - Math.max(17 + 5, Math.max(VungCham.MIN, 38) / 2 + 3);
     }
 
     /** Bán kính vòng cung (theo cao màn: đủ chỗ hàng phụ phía trên). */

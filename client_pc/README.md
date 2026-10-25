@@ -76,8 +76,8 @@ hàng tên trên đầu, hộp thoại đáy tự tắt, vùng bản đồ.
 Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `server/src/com/htbb/pokemon/IconPokemon*.java` -
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
-  -Dchup.man=menu,the_gioi` để chạy một phần); tab Trang bị gọn (`kiemTrangBiGon`): chip lọc một hàng (đủ 5 bộ lọc,
-  lật trang "<" / ">" khi hẹp), lưới hành trang thấy >= 4 hàng PC / >= 3 điện thoại, không chữ cắt, 12 ô cùng cạnh ô
+  -Dchup.man=menu,the_gioi` để chạy một phần); tab Trang bị gọn (`kiemTrangBiGon`): chip lọc (0.9.21: mọi chip có chữ - một
+  hàng, hai hàng 3 + 2 khi hẹp, bảng quá hẹp một chip "Lọc: ..." mở danh sách 5 bộ lọc; không chip chỉ icon / lật trang), lưới hành trang thấy >= 4 hàng PC / >= 3 điện thoại, không chữ cắt, 12 ô cùng cạnh ô
   hành trang thẳng cột / hàng, chip Tiềm năng trên ô, Danh hiệu dưới ô; `-Dchup.j2me` chạy thêm cỡ J2ME thật
   `j2me240x320` / `j2me320x240` cho các màn Trang bị / hành trang lọc;
 - `ChupThoiTiet` (0.9.8): thời tiết / phủ màu mùa / ngày cộng đồng (game.pokemon.ThoiTiet, ThoiTietVe) ở 11 cỡ - đĩa
@@ -92,7 +92,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   phím 5 / nút đánh HUD / chạm / chuột trái / chuột phải / Enter / Space = nói chuyện đúng một lần, không gói đánh, không
   thế đánh; phím chiêu không đánh NPC (J2ME màn nhỏ = Giao tiếp, HUD = quái gần nhất); Tự động đánh không nhắm NPC; mỗi
   đường với "Ngắm thủ công" tắt / bật, máy vẽ 0 / 45 ms; J2ME chỉ phím chạy ở tiến trình con `-Dhtbb.khongCham`;
-- `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
+- `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng); 0.9.21 `kiemCayMenu`: mọi
+  tính năng có nhà trong Menu / HUD và menu chữ J2ME, Sổ tay không lặp mục cùng cấp, không còn bánh răng Tự động riêng;
+  `ChupTrongGame.kiemIconHud`: hai nút HUD không cùng icon, nút đổi trang chiêu ghi trang đang dùng;
 - `KiemTocDoGame` (0.9.18): tốc độ game = thời gian thật - vòng game thật, máy chậm giả lập (`NenPc.giaLapVeMs` ms CPU
   mỗi khung, `NenPc.giaLapVsync` = trình bày chờ nhịp quét 60 Hz như Android) ở đường PC 60 / APK 60 (tự hạ 30) / APK 30 /
   J2ME, vẽ 0..70 ms: 25 nhịp logic / giây và tốc độ đi 125 px / giây ±3 %, máy nhanh >= 50 khung / giây p90 <= 25 ms

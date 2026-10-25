@@ -209,7 +209,8 @@ public final class ViTien {
             // vùng chạm: cả ô (trừ khe) -> chú thích + số đầy đủ; ô xếp tham hẹp thì dời ranh giới cho mỗi vùng >= cỡ chạm
             int min = VungCham.MIN;
             for (int j = 1; j < so; j++) {
-                int lo = xL + j * (min + k), hi = xR - (so - j) * (min + k);
+                // 0.9.21: cận dưới theo ranh giới TRƯỚC đã dời (không chỉ theo mép) - ô giữa không bị kẹp hẹp hơn cỡ chạm
+                int lo = Math.max(xL + j * (min + k), bien[j - 1] + min + k), hi = xR - (so - j) * (min + k);
                 if (lo <= hi) {
                     bien[j] = Math.max(lo, Math.min(hi, bien[j]));
                 }

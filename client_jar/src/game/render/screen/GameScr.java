@@ -8472,6 +8472,24 @@ public class GameScr extends Screen {
     public static final String SO_TAY_VE_LANG = "Về làng miễn phí";
     public static final int MUC_VE_LANG = 11;
 
+    /**
+     * 0.9.21 (chủ dự án: "nhiều cái menu button nó có nhiều đường đi vào làm spam menu"): Sổ tay mở từ Menu cá nhân / menu
+     * chữ J2ME KHÔNG lặp mục đã có nhà riêng ngay cạnh nó cùng cấp: "Nhiệm vụ của tôi" (ô riêng Menu / hàng Nhiệm vụ menu
+     * chữ) và các hoạt động của Sự kiện (SU_KIEN_MUC: ô Sự kiện / hàng Nhiệm vụ › Sự kiện menu chữ). Sổ tay của NPC Quầy
+     * đổi thưởng (menu máy chủ) vẫn đủ mục - các đường dẫn "Quầy đổi thưởng → Sổ tay huấn luyện → ..." (DuongMenu) giữ đúng.
+     */
+    public static boolean trongSoTayMenu(String muc) {
+        if ("Nhiệm vụ của tôi".equals(muc)) {
+            return false;
+        }
+        for (int i = 0; i < SU_KIEN_MUC.length; i++) {
+            if (SU_KIEN_MUC[i].equals(muc)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /** 0.9.16: Menu cá nhân › Sổ tay huấn luyện: danh sách mục gốc (MenuNguCanh khi chạm, menu chữ khi bấm phím). */
     public static void moSoTay() {
         try {
@@ -8484,6 +8502,9 @@ public class GameScr extends Screen {
         Vector v = new Vector();
         for (int i = 0; i < SO_TAY_MUC.length; i++) {
             final int muc = i;
+            if (!trongSoTayMenu(SO_TAY_MUC[i])) {
+                continue;   // 0.9.21: đã có nhà riêng cùng cấp ở Menu (Nhiệm vụ của tôi / Sự kiện) - không lặp
+            }
             v.addElement(new Command(SO_TAY_MUC[i], new IAction() {
                 public void perform() {
                     GameService.gI().doMenuOption(-527, (byte) 0, muc);

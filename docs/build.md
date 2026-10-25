@@ -244,6 +244,47 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Chưa phát hành (sau 0.9.20): lọc hành trang có chữ, HUD một bánh răng, nút đổi trang chiêu, gọn lối vào menu
+
+Chủ dự án (0.9.19 / 0.9.20, ảnh màn ngang): "chọn đồ trong phần hành trang cái có icon ?, cài đặt giống nhau vậy, nút xoay
+skill 1-2-3 cái xoay nó sao lại khó nhìn, nhiều cái menu button nó có nhiều đường đi vào làm spam menu". Chưa tăng số bản.
+
+1. **Lọc hành trang** (`LuoiTui.hangChipGon`, tab Trang bị): bỏ chip chỉ icon (chỉ mục chọn có chữ) và kiểu lật trang
+   "< Đồ Thuốc N.liệu Khác" (hàng đổi dạng khi chọn mục chữ dài). MỘT kiểu chip, chip nào cũng có chữ, mức nhãn theo bề
+   ngang bảng (không theo mục chọn): chữ đủ -> chữ ngắn ("Đồ", "N.liệu") -> hai hàng 3 + 2 (điện thoại mật độ cao; bố cục
+   `caoKhungGon` tính cả hàng thứ hai) -> bảng quá hẹp cho cả hai hàng (J2ME 320x240): một chip "Lọc: Tất cả ▾" mở danh sách
+   5 bộ lọc có tên. `ViTien`: ô giữa của hàng ví không còn bị kẹp hẹp hơn cỡ chạm.
+2. **HUD một bánh răng**: bánh răng "Cài đặt Tự động" (APK: nút hàng trên ngay cạnh bánh răng Cài đặt; PC: nút nhỏ cạnh
+   viên AUTO) trùng hình bánh răng Cài đặt -> bỏ. Cài đặt Tự động đánh: nhà chính Menu › Tự động đánh, lối tắt nhấn giữ
+   AUTO (vạch tiến độ; chạm ngắn lần đầu mỗi lần chạy game có gợi ý `HudRong.goiYGiuAuto`). Bánh răng còn lại = Cài đặt.
+3. **Nút đổi trang chiêu** (phím 0 / R): khối gỗ như mọi nút HUD + icon mũi tên xoay + nhãn trang đang dùng "1/3" đè mép
+   dưới (`HudRong.veDoiTrang`, APK `Hud` vẽ cùng hàm) - trước: PC viên cam 18 px chỉ chữ, APK đĩa xám + chấm 1,6 px.
+4. **Lối vào menu** (kiểm `KiemTrungLap.kiemCayMenu`, `ChupTrongGame.kiemMenuNhiemVu`): Sổ tay huấn luyện của Menu cá nhân
+   / menu chữ không lặp mục có nhà riêng cùng cấp (`GameScr.trongSoTayMenu`: "Nhiệm vụ của tôi" = ô Menu; Quà hoạt động,
+   Lịch đăng nhập, Nhiệm vụ tuần, Cúp PvP tuần, Hầm ngục = thẻ Sự kiện); menu chữ J2ME hàng Nhiệm vụ thêm "Sự kiện" (máy
+   bấm phím không có Menu cá nhân). Sổ tay của Quầy đổi thưởng (menu máy chủ) giữ đủ - đường `DuongMenu` không đổi.
+   Menu cá nhân: nút đóng không tràn mép dưới khi cỡ chạm lớn (APK mật độ 3,5).
+
+Bảng lối vào sau khi gọn (cảm ứng = PC / APK; phím = J2ME, phím mềm trái):
+
+| Tính năng | Nhà chính | Lối tắt giữ lại (cấp khác) |
+|---|---|---|
+| Hành trang | Menu › Pokémon › Trang bị (lưới hành trang) | HUD Hành trang; J2ME Bản thân › Hành trang |
+| Sổ nhiệm vụ | HUD Nhiệm vụ | J2ME Nhiệm vụ › Sổ nhiệm vụ |
+| Nhiệm vụ của tôi | Menu › Nhiệm vụ của tôi | nút «Mở Nhiệm vụ của tôi» trong sổ Nhiệm vụ; menu NPC giao nhiệm vụ; Quầy đổi thưởng; J2ME Nhiệm vụ › Nhiệm vụ của tôi |
+| Sổ tay huấn luyện (Năng lượng, Thang PvP mùa, Sư phạm, Thách đấu Gym, Cửa hàng và đổi vật phẩm, Về làng) | Menu › Sổ tay huấn luyện | Quầy đổi thưởng › Sổ tay (đủ mục); J2ME Nhiệm vụ › Sổ tay |
+| Sự kiện (mùa, Quà hoạt động, Lịch đăng nhập, Nhiệm vụ tuần, Cúp PvP tuần, Hầm ngục) | Menu › Sự kiện | Quầy đổi thưởng › Sổ tay; J2ME Nhiệm vụ › Sự kiện |
+| Tự động đánh (cài đặt) | Menu › Tự động đánh | nhấn giữ AUTO / nút Tự động; J2ME hàng đầu › Tự động đánh, Menu nhanh (#) |
+| Cài đặt | Menu › Cài đặt | HUD bánh răng (chủ dự án 0.9.9); J2ME Cài đặt, Menu nhanh |
+| Thú | Menu › Pokémon › tab Thú (+ ô Thú cưỡi / Đi theo của Trang bị) | J2ME Bản thân › Trang bị thú |
+| Huấn luyện | Menu › Pokémon › Trang bị › nút Huấn luyện | J2ME Bản thân › Huấn luyện |
+| Bản đồ lớn | HUD Bản đồ (PC) / chạm bản đồ nhỏ (APK) | J2ME Cài đặt › Bản đồ lớn |
+| Pokédex, Cửa hàng, Đội/Bạn bè, Hệ sinh thái, Thư/Quà, Xếp hạng | ô Menu cùng tên | J2ME hàng Khác / Cửa hàng |
+| Việc hiếm (PK, Kho & tiện ích, Cây thần, Cổ vật, lời mời...) | Menu › Tiện ích & PK (menu chữ gọn, ẩn mục đã có ở trên) | J2ME menu chữ đủ |
+
+Đã bỏ: bánh răng Tự động (HUD APK + PC), 6 mục Sổ tay trùng cùng cấp (Nhiệm vụ của tôi + 5 hoạt động Sự kiện), kiểu chip
+lọc chỉ icon / lật trang.
+
 ### Bản 0.9.20 (`BAN=920`: tab Trang bị trên điện thoại mật độ cao, cập nhật trong game cài thẳng bản mới)
 
 Client `PHIEN_BAN=0.9.20-opentest` (`BAN = 0*10000 + 9*100 + 20`; `MIDlet-Version` 0.9.20) trên main a58d2f87, chạy với

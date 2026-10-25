@@ -125,7 +125,7 @@ public final class HudRong {
      * theo trục lớn nhất (|dx| hoặc |dy|), bằng nhau khi góc = 180, 180 - a, 90 + a, 90 với tan a = 1/2 (a = 26,57 độ):
      * khoảng tâm theo trục = KC sin a = 0,447 KC -> KC 84: khe ~8 px giữa mọi cặp ô. Ô thuốc HP / PP xếp dọc ngoài cung.
      */
-    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 84, R_THUOC = 12, R_NGU_CANH = 16, R_DOI_BO = 9;
+    static final int R_DANH = 27, R_CHIEU = 16, KC_CHIEU = 84, R_THUOC = 12, R_NGU_CANH = 16, R_DOI_BO = 11;
     static final int[] GOC_CHIEU = {180, 153, 117, 90};
     static final int[] PHIM_CHIEU = {1, 3, 7, 9};
     /** cos / sin * 1024 của GOC_CHIEU (180, 153,43, 116,57, 90) */
@@ -198,17 +198,18 @@ public final class HudRong {
     }
 
     /**
-     * Viên đổi bộ chiêu "1/2" (vẽ R_DOI_BO) dưới cụm chiêu, giữa ô chiêu 0 và nút đánh. Vùng CHẠM riêng R_CHAM_DOI_BO
-     * (> vẽ: ngón tay / chuột không phải nhắm đúng viên nhỏ), không chạm vùng chạm nút đánh / chiêu 0 (KiemChamHud).
+     * Nút đổi trang chiêu (vẽ R_DOI_BO) dưới cụm chiêu, giữa ô chiêu 0 và nút đánh. 0.9.21 (chủ dự án: "nút xoay skill 1-2-3
+     * khó nhìn"): khối gỗ như mọi nút HUD + icon mũi tên xoay + nhãn trang ĐANG DÙNG "1/3" (TrangChieu.nhan) đè mép dưới -
+     * trước là viên cam 18 px chỉ có chữ. Vùng CHẠM riêng R_CHAM_DOI_BO, không chạm vùng nút đánh / chiêu 0 (KiemChamHud).
      */
     static final int R_CHAM_DOI_BO = 13;
 
     static int xDoiBo() {
-        return xDanh() - 40;
+        return xDanh() - 44;
     }
 
     static int yDoiBo() {
-        return yDanh() + 26;
+        return yDanh() + 20;   // 0.9.21: khối cao hơn viên cũ - nhãn "1/2" không chạm mép dưới màn
     }
 
     /** Công tắc Tự động: viên trên cụm chiêu, sát mép phải. */
@@ -222,16 +223,44 @@ public final class HudRong {
         return yChieu(3) - R_CHIEU - H_TU_DONG - 6;
     }
 
-    /** 0.9.6: nút bánh răng nhỏ cạnh viên AUTO = bảng cài đặt Tự động đánh (chạm ngắn viên = bật / tắt). */
-    static final int R_TD_CAI = 9;
+    /**
+     * 0.9.21: gợi ý một lần mỗi lần chạy game khi chạm ngắn AUTO (bánh răng nhỏ cạnh viên đã bỏ): cài đặt Tự động đánh ở
+     * nhấn giữ viên / Menu › Tự động đánh. Dùng chung cho HUD APK (com.htbb.pokemon.hd.Hud).
+     */
+    static boolean daGoiYGiu;
 
-    static int xTdCai() {
-        return xTuDong() - R_TD_CAI - 8;
+    public static void goiYGiuAuto() {
+        if (daGoiYGiu) {
+            return;
+        }
+        daGoiYGiu = true;
+        try {
+            game.pokemon.ThongBao.hien("Giữ nút AUTO để cài đặt Tự động đánh (hoặc Menu › Tự động đánh)", game.pokemon.ThongBao.TIN);
+        } catch (Throwable e) {
+            // bỏ qua
+        }
     }
 
-    static int yTdCai() {
-        return yTuDong() + H_TU_DONG / 2;
+    /**
+     * 0.9.21 nút đổi trang chiêu (HUD PC / jar; HUD APK vẽ cùng kiểu bằng hàm này): khối gỗ cạnh r, icon mũi tên xoay
+     * (BieuTuong.DOI_BO, ảnh PNG) và nhãn trang đang dùng "1/3" trên khối pixel tối đè mép dưới - nhìn là biết nút đổi trang
+     * và đang ở trang mấy. an = đang nhấn (lõm 1 px).
+     */
+    public static void veDoiTrang(Graphics g, int x, int y, int r, boolean an) {
+        game.pokemon.Bang.nutVuong(g, x, y, r, game.pokemon.KhungNroBang.NUT_GO, false, an);
+        int dy = an ? 1 : 0;
+        int s = 2 * r >= 40 ? 32 : 16;   // icon PNG pixel 16 / 32 (không phóng lẻ)
+        game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.DOI_BO, x - s / 2, y - r / 4 - s / 2 + dy, s, game.pokemon.ChuDe.CHU, 0xFFFFFF);
+        String nhan = game.pokemon.TrangChieu.nhan();
+        int wN = game.pokemon.ChuDe.rong(nhan, game.pokemon.ChuDe.SO) + 6, hN = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.SO);
+        int yN = y + r - hN / 2 - 1 + dy;
+        GiaoDien.khoiPixel(g, x - wN / 2, yN, wN, hN, 0x5C2E12);
+        game.pokemon.ChuDe.chuVienGiua(g, nhan, x, yN, hN, game.pokemon.ChuDe.SO, game.pokemon.ChuDe.VANG, game.pokemon.ChuDe.VIEN, 2);
+        lastDoiTrang = nhan;
     }
+
+    /** Kiểm thử: nhãn trang của lần vẽ nút đổi trang gần nhất. */
+    public static String lastDoiTrang;
 
     /** lúc bắt đầu giữ viên AUTO (nhấn giữ >= 0,45 giây = mở cài đặt thay vì bật / tắt) */
     static long giuTdLuc;
@@ -398,7 +427,7 @@ public final class HudRong {
         }
         b.tron(24, "hud-danh", xDanh(), yDanh(), R_DANH, R_DANH + 3);
         if (game.pokemon.ThanhNhanh.coBo2()) {
-            b.tron(25, "hud-doi-bo", xDoiBo(), yDoiBo(), R_CHAM_DOI_BO, R_CHAM_DOI_BO);
+            b.tron(25, "hud-doi-bo", xDoiBo(), yDoiBo(), R_DOI_BO, R_CHAM_DOI_BO);
         }
         b.tron(26, "hud-thuoc-hp", xThuoc(), yThuoc(true), R_THUOC, R_THUOC + 2);
         b.tron(27, "hud-thuoc-pp", xThuoc(), yThuoc(false), R_THUOC, R_THUOC + 2);
@@ -409,7 +438,8 @@ public final class HudRong {
             b.tron(28, "hud-ngu-canh", xNguCanh(), yNguCanh(), R_NGU_CANH, R_NGU_CANH + 2);
         }
         b.hop(29, "hud-tu-dong", xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG, 2);
-        b.tron(31, "hud-tu-dong-cai-dat", xTdCai(), yTdCai(), R_TD_CAI, R_TD_CAI + 2);
+        // 0.9.21: bỏ bánh răng nhỏ cạnh AUTO (chủ dự án: hai bánh răng giống hệt nhau trên HUD) - cài đặt Tự động đánh = nhấn
+        // giữ viên AUTO hoặc Menu › Tự động đánh (nhà chính); bánh răng hàng trên chỉ còn là Cài đặt chung
         b.tron(30, "hud-chat", xChat(), yChat(), R_CHAT, R_CHAT + 3);
     }
 
@@ -570,12 +600,9 @@ public final class HudRong {
                 g.drawRect(xd - ra, yd - ra, 2 * ra - 1, 2 * ra - 1);
             }
         }
-        // đổi bộ chiêu (phím 0): chỉ hiện khi có bộ 2 (học quá 4 chiêu / đã gán bộ 2); nhãn = số bộ đang dùng
+        // đổi trang chiêu (phím 0): chỉ hiện khi có trang 2 (học quá 4 chiêu / đã gán trang 2)
         if (game.pokemon.ThanhNhanh.coBo2()) {
-            int xb = xDoiBo(), yb = yDoiBo();
-            nen(g, xb, yb, R_DOI_BO, 0xFFFFFF, game.pokemon.ChuDe.NEN_PHU_TOI, false);
-            game.pokemon.ChuDe.chuGiua(g, game.pokemon.TrangChieu.nhan(), xb, yb - R_DOI_BO, 2 * R_DOI_BO,
-                    game.pokemon.ChuDe.SO, game.pokemon.ChuDe.CHU, 2);
+            veDoiTrang(g, xDoiBo(), yDoiBo(), R_DOI_BO, tro(xDoiBo(), yDoiBo(), R_CHAM_DOI_BO));
         }
         // thuốc
         veThuoc(g, mc, true, now);
@@ -620,19 +647,14 @@ public final class HudRong {
                         game.pokemon.ChuDe.VIEN);
             }
         }
-        // bánh răng cài đặt Tự động (đĩa trắng nhỏ)
-        int xc = xTdCai(), yc2 = yTdCai(), rc = R_TD_CAI - (tro(xc, yc2, R_TD_CAI + 2) ? 1 : 0);
-        nen(g, xc, yc2, rc, 0xFFFFFF, game.pokemon.ChuDe.NEN_DUOI, false);
-        int sc2 = rc * 7 / 5;
-        game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.CAI_DAT, xc - sc2 / 2, yc2 - sc2 / 2, sc2, game.pokemon.ChuDe.CHU_PHU, 0xFFFFFF);
-        // nhấn giữ viên AUTO: vòng tiến độ (0,45 s) rồi mở cài đặt
+        // nhấn giữ viên AUTO: vạch tiến độ (0,45 s) dưới viên rồi mở cài đặt Tự động đánh (0.9.21: thay bánh răng nhỏ)
         if (Canvas.isPointerDown && trongO(Canvas.px, Canvas.py, xt - 2, yt - 2, W_TU_DONG + 4, hp + 4)) {
             if (giuTdLuc == 0) {
                 giuTdLuc = now;
             }
-            int p = (int) Math.min(360, (now - giuTdLuc) * 360 / 450);
-            g.setColor(game.pokemon.ChuDe.CHINH);
-            g.drawArc(xc - rc - 2, yc2 - rc - 2, 2 * rc + 4, 2 * rc + 4, 90, -p);
+            int p = (int) Math.min(W_TU_DONG, (now - giuTdLuc) * W_TU_DONG / 450);
+            g.setColor(game.pokemon.ChuDe.VANG);
+            g.fillRect(xt, yt + hp + 2, p, 2);
         } else if (!Canvas.isPointerClick) {
             giuTdLuc = 0;
         }
@@ -1352,11 +1374,9 @@ public final class HudRong {
                     BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt
                 } else {
                     TuDong.batTat();
+                    goiYGiuAuto();
                 }
                 giuTdLuc = 0;
-                break;
-            case 31:
-                BangTuDong.mo();
                 break;
             case 33:
                 moCaiDat();   // 0.9.9: nút Cài đặt hàng trên
@@ -1441,7 +1461,6 @@ public final class HudRong {
         v.addElement(new Object[]{"ngu_canh", tron(xNguCanh(), yNguCanh(), R_NGU_CANH + 1)});
         v.addElement(new Object[]{"nhan_bong", oNhanBong()});
         v.addElement(new Object[]{"tu_dong", new int[]{xTuDong(), yTuDong(), W_TU_DONG, H_TU_DONG}});
-        v.addElement(new Object[]{"tu_dong_cai_dat", tron(xTdCai(), yTdCai(), R_TD_CAI + 1)});
         v.addElement(new Object[]{"chat", tron(xChat(), yChat(), R_CHAT + 1)});
         v.addElement(new Object[]{"dong_chat", new int[]{xChat() + R_CHAT + 6, Canvas.h - 4 - DONG_CHAT * LH_CHAT, W_CHAT, DONG_CHAT * LH_CHAT}});
         v.addElement(new Object[]{"ten_chieu", new int[]{Canvas.hw - 60, yTenChieu(), 120, 16}});

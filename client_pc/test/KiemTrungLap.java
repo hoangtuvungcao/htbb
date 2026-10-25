@@ -139,6 +139,73 @@ public class KiemTrungLap {
         ChupTrongGame.chay(() -> game.render.Canvas.gameScr.switchToMe());
     }
 
+    /** Hàng menu chữ J2ME (PauseMenu mở bằng phím mềm, đủ hàng): tên hàng -> mục con. */
+    static java.util.Map<String, java.util.List<String>> menuChu() throws Exception {
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.switchToMe());
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.left.action.perform());
+        Object p = game.render.Canvas.currentScreen;
+        java.util.Map<String, java.util.List<String>> m = new java.util.LinkedHashMap<String, java.util.List<String>>();
+        if (p instanceof game.render.screen.PauseMenu) {
+            String[][] ten = (String[][]) truong(p, "name");
+            for (String[] h : ten) {
+                if (h.length == 0) continue;
+                m.put(h[0], java.util.Arrays.asList(h).subList(1, h.length));
+            }
+        }
+        ChupTrongGame.chay(() -> game.render.Canvas.gameScr.switchToMe());
+        return m;
+    }
+
+    static void kiemCayMenu(String[] luoi, String[] hud) throws Exception {
+        java.util.List<String> menu = java.util.Arrays.asList(luoi), tren = java.util.Arrays.asList(hud);
+        String[] tabNv = (String[]) truongTinh(game.pokemon.ManNhanVat.class, "TABS");
+        java.util.List<String> tab = java.util.Arrays.asList(tabNv);
+        // cảm ứng: Menu cá nhân / HUD
+        String[][] canCham = {{"Hành trang", "HUD"}, {"Nhiệm vụ", "HUD"}, {"Bản đồ", "HUD"}, {"Nhiệm vụ của tôi", "Menu"},
+            {"Sổ tay huấn luyện", "Menu"}, {"Sự kiện", "Menu"}, {"Tự động đánh", "Menu"}, {"Cài đặt", "Menu"}, {"Pokémon", "Menu"},
+            {"Cửa hàng", "Menu"}, {"Pokédex", "Menu"}, {"Thư/Quà", "Menu"}, {"Xếp hạng", "Menu"}, {"Hệ sinh thái", "Menu"},
+            {"Đội/Bạn bè", "Menu"}};
+        for (String[] c : canCham) {
+            kiem(("HUD".equals(c[1]) ? tren : menu).contains(c[0]), "cay menu (cam ung): '" + c[0] + "' o " + c[1]);
+        }
+        kiem(tab.contains("Thú") && tab.contains("Trang bị"), "cay menu: Menu > Pokémon co tab Thu / Trang bi " + tab);
+        kiem("Huấn luyện".equals(game.pokemon.BangTiemNangHD.nhanNut()) || "Tiềm năng".equals(game.pokemon.BangTiemNangHD.nhanNut()),
+                "cay menu: Pokémon > Trang bi co nut Huan luyen / Tiem nang");
+        // HUD: không còn bánh răng Tự động riêng (nhà = Menu › Tự động đánh, lối tắt = nhấn giữ AUTO)
+        ChupTrongGame.chay(() -> ChupTrongGame.moMan("the_gioi"));
+        ChupTrongGame.ve(1280, 720);
+        boolean banhRang = false;
+        for (int i = 0; i < game.pokemon.VungCham.dem(); i++) banhRang |= "hud-tu-dong-cai-dat".equals(game.pokemon.VungCham.ten(i));
+        kiem(!banhRang, "HUD: khong con banh rang Tu dong rieng (trung hinh banh rang Cai dat)");
+        // Sổ tay (Menu cá nhân) không lặp mục cùng cấp: ô Menu khác + hàng thẻ Sự kiện
+        java.util.Set<String> cungCap = new java.util.HashSet<String>(menu);
+        cungCap.addAll(java.util.Arrays.asList(game.render.screen.GameScr.SU_KIEN_MUC));
+        for (String m : game.render.screen.GameScr.SO_TAY_MUC) {
+            if (game.render.screen.GameScr.trongSoTayMenu(m)) kiem(!cungCap.contains(m), "So tay (Menu) lap muc cung cap: " + m);
+        }
+        // J2ME bấm phím (menu chữ đủ hàng): mọi tính năng chính tới được
+        java.util.Map<String, java.util.List<String>> chu = menuChu();
+        java.util.List<String> nv = chu.get("Nhiệm vụ"), bt = chu.get("Bản thân");
+        kiem(nv != null && nv.contains("Sổ nhiệm vụ") && nv.contains("Nhiệm vụ của tôi") && nv.contains("Sổ tay huấn luyện") && nv.contains("Sự kiện"),
+                "menu chu J2ME: hang Nhiem vu du (So nhiem vu / Nhiem vu cua toi / So tay / Su kien): " + nv);
+        kiem(bt != null && bt.contains("Hành trang") && bt.contains("Trang bị thú") && (bt.contains("Huấn luyện") || bt.contains("Tiềm năng")),
+                "menu chu J2ME: hang Ban than co Hanh trang / Trang bi thu / Huan luyen: " + bt);
+        java.util.List<String> dau = chu.isEmpty() ? null : chu.values().iterator().next();   // hàng đầu (tên Pokémon)
+        kiem(dau != null && dau.contains("Tự động đánh"), "menu chu J2ME: hang dau co Tu dong danh: " + dau);
+        kiem(chu.containsKey("Cửa hàng"), "menu chu J2ME: co Cua hang " + chu.keySet());
+        for (java.util.Map.Entry<String, java.util.List<String>> e : chu.entrySet()) {
+            java.util.Set<String> mot = new java.util.HashSet<String>();
+            for (String m : e.getValue()) kiem(mot.add(m), "menu chu J2ME: hang '" + e.getKey() + "' lap muc " + m);
+        }
+        System.out.println("CAY MENU: HUD " + tren + " | Menu " + menu + " | tab Pokémon " + tab + " | menu chu " + chu);
+    }
+
+    static Object truongTinh(Class<?> c, String ten) throws Exception {
+        Field f = c.getDeclaredField(ten);
+        f.setAccessible(true);
+        return f.get(null);
+    }
+
     public static void main(String[] a) throws Exception {
         // 2) vùng chạm ở màn chơi + Menu (đường vẽ PC thật, nhân vật giả)
         System.setProperty("java.awt.headless", "true");
@@ -197,6 +264,9 @@ public class KiemTrungLap {
         for (String s : luoi) kiem(da.add(s.toLowerCase()), "Menu trùng HUD / ô khác: " + s);
         kiem(!da.contains("kỹ năng"), "Kỹ năng là tab của màn Pokémon, không có ô riêng");
         kiem(!da.contains("khác"), "ô \"Khác\" đã đổi tên nói rõ nội dung");
+        // 5) 0.9.21 CÂY MENU (chủ dự án: "nhiều cái menu button nó có nhiều đường đi vào làm spam menu"): mỗi tính năng có nhà
+        // trong cây Menu cá nhân / HUD (máy cảm ứng) VÀ trong menu chữ (J2ME bấm phím); không mục nào lặp cùng cấp
+        kiemCayMenu(luoi, hud);
         // 3) phím PC
         HashMap<Integer, String> phim = new HashMap<Integer, String>();
         for (int i = 0; i < htbb.pc.BanPhim.MAC_DINH.length; i++) {
