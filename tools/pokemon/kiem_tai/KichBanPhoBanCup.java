@@ -224,8 +224,76 @@ public final class KichBanPhoBanCup {
 
     // ================================================================== cup
 
+    /** Gio ao cua may chu (ms): GM "tua" khong doi so tra "Đồng hồ thử: lệch N giây". null = khong doc duoc. */
+    static Long gioAo(BotChucNang.Bot gm) throws Exception {
+        int m = gm.moc();
+        gm.chat("tua");
+        String t = gm.doiChu(m, 5000, "Đồng hồ thử");
+        java.util.regex.Matcher k = java.util.regex.Pattern.compile("lệch (-?\\d+) giây").matcher(t == null ? "" : t);
+        return k.find() ? System.currentTimeMillis() + Long.parseLong(k.group(1)) * 1000L : null;
+    }
+
+    /** Thu Hai 06:00 (gio Viet Nam) cua tuan cup KE TIEP sau {@code ms} (doi tuan luc thu Hai 05:00). */
+    static long thuHaiSau(long ms) {
+        java.util.Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        c.setTimeInMillis(ms);
+        c.set(java.util.Calendar.HOUR_OF_DAY, 6);
+        c.set(java.util.Calendar.MINUTE, 0);
+        c.set(java.util.Calendar.SECOND, 0);
+        c.set(java.util.Calendar.MILLISECOND, 0);
+        do {
+            c.add(java.util.Calendar.DAY_OF_MONTH, 1);
+        } while (c.get(java.util.Calendar.DAY_OF_WEEK) != java.util.Calendar.MONDAY);
+        return c.getTimeInMillis();
+    }
+
+    /** Gia tri cau_hinh truoc khi kich ban doi (null = khong co dong), tra lai cuoi kich ban. */
+    static final java.util.Map<String, String> CAU_HINH_CU = new java.util.LinkedHashMap<>();
+
+    static void datCauHinh(String khoa, String gt) {
+        if (!CAU_HINH_CU.containsKey(khoa)) CAU_HINH_CU.put(khoa, BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = '" + khoa + "'"));
+        BotChucNang.sql("INSERT INTO cau_hinh (khoa, gia_tri, sua_boi, sua_luc) VALUES ('" + khoa + "', '" + gt
+                + "', 'hoi_quy', NOW()) ON DUPLICATE KEY UPDATE gia_tri = '" + gt + "', sua_luc = NOW()");
+        BotChucNang.sql("UPDATE cau_hinh_phien_ban SET phien_ban = phien_ban + 1 WHERE id = 1");
+    }
+
+    static void traCauHinh() {
+        for (java.util.Map.Entry<String, String> e : CAU_HINH_CU.entrySet()) {
+            BotChucNang.sql(e.getValue() == null ? "DELETE FROM cau_hinh WHERE khoa = '" + e.getKey() + "'"
+                    : "UPDATE cau_hinh SET gia_tri = '" + e.getValue() + "', sua_luc = NOW() WHERE khoa = '" + e.getKey() + "'");
+        }
+        if (!CAU_HINH_CU.isEmpty()) BotChucNang.sql("UPDATE cau_hinh_phien_ban SET phien_ban = phien_ban + 1 WHERE id = 1");
+        CAU_HINH_CU.clear();
+    }
+
+    /**
+     * cup_vong. CHUAN BI tat dinh (cong kiem 25/10 tren ban sao prod: "Cúp Không trang bị - tuần 43", kt004..007 khong dang
+     * ky duoc): loai cup cua tuan theo lich xoay 16 tuan (data_cup_lich) va may chu nap lich MOT LAN moi tuan (CupGame.tuan,
+     * nho trong bo nho) - sua data_cup_lich giua tuan khong doi cup tuan dang chay; dong ho ao staging co the dang o bat ky
+     * luc nao (nhom truoc / lan chay truoc da "tua", vd sau Chu nhat 19:55 = het dang ky). Nen: dat lich toan Cup Nhi
+     * (cap 20-30, don - bot cap 25 hop le) roi tua dong ho ao sang thu Hai 06:00 cua TUAN KE TIEP (tuan moi -> nap lai lich,
+     * chua ai dang ky) va doc luat / gio vong dau / so vong tu chinh menu Cup cua may chu. Tra lai lich + cau hinh cuoi.
+     */
     static void cupVong() throws Exception {
+        List<String> lichCu = BotChucNang.sql("SELECT CONCAT(vi_tri, ':', ma_loai) FROM data_cup_lich ORDER BY vi_tri");
+        try {
+            cupVong0();
+        } finally {
+            for (String l : lichCu) {
+                String[] f = l.trim().split(":");
+                if (f.length == 2 && f[0].matches("\\d+")) BotChucNang.sql("UPDATE data_cup_lich SET ma_loai = '" + f[1].replace("'", "") + "' WHERE vi_tri = " + f[0]);
+            }
+            traCauHinh();
+        }
+    }
+
+    static void cupVong0() throws Exception {
         BotChucNang.sql("UPDATE data_cup_lich SET ma_loai = 'nhi'");
+        // cup bat + du so doi toi thieu cho 4 bot (ban sao prod co the dat khac mac dinh 4)
+        String soDoi = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = 'cup.so_doi_toi_thieu'");
+        if (soDoi != null && soDoi.trim().matches("\\d+") && Integer.parseInt(soDoi.trim()) > 4) datCauHinh("cup.so_doi_toi_thieu", "4");
+        String bat = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = 'cup.bat'");
+        if (bat != null && !"1".equals(bat.trim())) datCauHinh("cup.bat", "1");
         List<BotChucNang.Bot> ds = new ArrayList<>();
         int[] lop = {0, 1, 3, 4};
         for (int i = 0; i < 4; i++) {
@@ -250,41 +318,53 @@ public final class KichBanPhoBanCup {
             x.den(2, 20 + ds.size(), 20);
             ds.add(x);
         }
+        BotChucNang.Bot gm = ds.get(0);
+        Long ao = gioAo(gm);
+        if (ao == null) {
+            BotChucNang.ket("cup.dong_ho_ao", false, "khong doc duoc dong ho ao (GM tua; can sv.cho_phep_thu_nghiem=1): " + toast(gm, 0));
+            return;
+        }
+        long thuHai = thuHaiSau(ao);
+        gm.gm("tua " + Math.max(1, (thuHai - ao) / 60000L + 1) + "m", 2500);
+        Long ao2 = gioAo(gm);
+        BotChucNang.ket("cup.dong_ho_ao", ao2 != null && ao2 >= thuHai, "gio ao " + new java.util.Date(ao) + " -> " + (ao2 == null ? "?" : new java.util.Date(ao2))
+                + " (thu Hai tuan sau " + new java.util.Date(thuHai) + ")");
         String tuan = BotChucNang.sql1("SELECT COUNT(*) FROM tob_cup_dang_ky");
+        int gioVong = 20, soVong = 5;
         for (BotChucNang.Bot x : ds) {
             int m = x.moc();
             x.menu(SO_TAY, MENU_GOC, 10);
             x.bom(900);
             x.menu(SO_TAY, MENU_CUP, 0);
             x.bom(1200);
-            BotChucNang.ket("cup.dang_ky." + x.ten, toast(x, m).contains("Đã đăng ký Cúp"), toast(x, m) + " " + menuChu(x, m));
+            String t = toast(x, m);
+            java.util.regex.Matcher k = java.util.regex.Pattern.compile("Chủ nhật (\\d+):00 bắt đầu (\\d+) vòng").matcher(t);
+            if (k.find()) { gioVong = Integer.parseInt(k.group(1)); soVong = Integer.parseInt(k.group(2)); }
+            BotChucNang.ket("cup.dang_ky." + x.ten, t.contains("Đã đăng ký Cúp Nhí"), t + " " + menuChu(x, m));
         }
         String n = BotChucNang.sql1("SELECT COUNT(*) FROM tob_cup_dang_ky");
         BotChucNang.ket("cup.dang_ky.csdl", n != null && Integer.parseInt(n.trim()) - Integer.parseInt(tuan.trim()) == 4, "truoc " + tuan + " sau " + n);
-        BotChucNang.Bot gm = ds.get(0);
         int m0 = gm.moc();
         gm.menu(SO_TAY, MENU_GOC, 10);
         gm.bom(900);
         gm.menu(SO_TAY, MENU_CUP, 0);
         gm.bom(1000);
         BotChucNang.ket("cup.dang_ky.lai_bi_chan", menuChu(gm, m0).contains("Huỷ đăng ký") || toast(gm, m0).contains("đã đăng ký"), menuChu(gm, m0) + toast(gm, m0));
-        // tua toi Chu nhat 19:56 gio may chu (Asia/Ho_Chi_Minh)
-        java.util.Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
-        long lech = Long.parseLong(System.getProperty("lech", "0"));
-        c.setTimeInMillis(System.currentTimeMillis() + lech);
-        long bay = c.getTimeInMillis();
-        while (c.get(java.util.Calendar.DAY_OF_WEEK) != java.util.Calendar.SUNDAY) c.add(java.util.Calendar.DAY_OF_MONTH, 1);
-        c.set(java.util.Calendar.HOUR_OF_DAY, 19);
-        c.set(java.util.Calendar.MINUTE, 56);
-        c.set(java.util.Calendar.SECOND, 0);
-        long phut = (c.getTimeInMillis() - bay) / 60000L;
+        // tua toi Chu nhat (gioVong - 1):56 gio ao, cung tuan cup vua dang ky
+        Long bay = gioAo(gm);
+        long cn = thuHai + 6L * 86400000L + (gioVong - 6) * 3600000L - 4L * 60000L;
+        long phut = bay == null ? -1 : (cn - bay) / 60000L;
+        if (phut < 0) {
+            BotChucNang.ket("cup.tua_chu_nhat", false, "gio ao " + (bay == null ? "?" : new java.util.Date(bay)) + " da qua " + new java.util.Date(cn));
+            return;
+        }
         gm.gm("tua " + phut + "m", 2500);
         gm.bom(3000);
         final int[] mv = new int[ds.size()];
         for (int i = 0; i < ds.size(); i++) mv[i] = ds.get(i).moc();
         int mVong = mv[1];
         gm.gm("tua 4m", 1500);
-        // vong 1 bat dau dung 20:00:00 gio ao (con vai giay sau lan tua): cho toi 40 giay de ca 4 bot vao san
+        // vong 1 bat dau dung gioVong:00:00 gio ao (con vai giay sau lan tua): cho toi 40 giay de ca 4 bot vao san
         for (int k = 0; k < 80; k++) {
             boolean du = true;
             for (BotChucNang.Bot x : ds) {
@@ -353,10 +433,13 @@ public final class KichBanPhoBanCup {
         int ra = 0;
         for (BotChucNang.Bot x : ds) if (x.mapId != MAP_CUP) ra++;
         BotChucNang.ket("cup.vong1.ve_cho_cu", ra == 4, ra + "/4 ra khoi san");
-        String tran = BotChucNang.sql1("SELECT CONCAT(COUNT(*), '/', SUM(ket_qua > 0)) FROM tob_cup_tran WHERE vong = 0");
+        // chi tuan cup cua 4 bot (ban sao prod / lan chay truoc co tran cua tuan khac)
+        String tuanBot = BotChucNang.sql1("SELECT MAX(tuan) FROM tob_cup_dang_ky WHERE char_id = " + ds.get(0).charDb);
+        String tran = BotChucNang.sql1("SELECT CONCAT(COUNT(*), '/', SUM(ket_qua > 0)) FROM tob_cup_tran WHERE vong = 0 AND tuan = "
+                + (tuanBot == null || !tuanBot.trim().matches("-?\\d+") ? "-1" : tuanBot.trim()));
         BotChucNang.ket("cup.vong1.ghi_tran", "2/2".equals(tran == null ? null : tran.trim()), "tran/co ket qua = " + tran);
         // het 5 vong: moi 10 phut mot vong (tua tung buoc de nhip ghep / ket thuc tran chay)
-        for (int v = 1; v < 5; v++) {
+        for (int v = 1; v < soVong; v++) {
             gm.gm("tua 6m", 2500); // sang vong v
             for (BotChucNang.Bot x : ds) x.cho(y -> y.mapId == MAP_CUP, 6000);
             gm.gm("tua 4m", 7000); // het gio tran
