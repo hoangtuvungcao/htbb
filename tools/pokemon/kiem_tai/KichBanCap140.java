@@ -301,6 +301,7 @@ final class KichBanCap140 {
             capTruoc = b.lv;
             ptTruoc = b.pt;
             lanVaoLai = System.currentTimeMillis();
+            congDiem(); // diem huan luyen con du (vao lai / lan dau che do huan luyen)
             ghi("vao game map " + b.mapId + " (" + b.tenMap + ") xu " + b.xu);
         }
 
@@ -948,6 +949,30 @@ final class KichBanCap140 {
                 if (b.dut) return -1;
             }
             return -1;
+        }
+
+        /**
+         * Diem huan luyen (client 0.9.8+ nut "Huấn luyện", goi -122): phan 1 diem moi lan, xoay Tấn công / HP / Phòng thủ,
+         * toi khi may chu tu choi (het diem / tran dong). Thay lenh cong tiem nang cu (34) ma che do huan luyen bo qua.
+         */
+        @Override
+        void congDiem() throws IOException {
+            int[] thuTu = {1, 0, 2};
+            int daCong = 0;
+            for (int lan = 0; lan < 60; lan++) {
+                int m = b.moc();
+                b.gui(-122, (byte) 1, (byte) 1, (byte) thuTu[lan % 3], (short) 1);
+                b.bom(250);
+                String t = b.chuTu(m);
+                if (t.contains("DUNG LOI") || t.contains("không") || t.contains("Không") || t.contains("Hết")) {
+                    if (daCong == 0 && lan == 0 && !t.contains("đủ") && !t.contains("điểm")) ghi("huan luyen: " + t);
+                    break;
+                }
+                daCong++;
+            }
+            for (int o = 0; o < 4; o++) { b.gui(36, (byte) o); b.bom(120); } // diem ky nang (chieu)
+            if (daCong > 0) ghi("phan " + daCong + " diem huan luyen (Tấn công/HP/Phòng thủ)");
+            b.lamMoi();
         }
 
         // ---------------------------------------------------------------- mac do roi tot hon
