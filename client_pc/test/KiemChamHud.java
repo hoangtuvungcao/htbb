@@ -1191,7 +1191,9 @@ public class KiemChamHud {
         }
         String locCo = System.getProperty("chup.co");
         // 0.9.20: -Dchup.j2me thêm máy J2ME thật (240x320, 320x240, 400x240 Nokia 6233, 360x640, 640x360) - HUD HudRong x1
-        boolean j2 = System.getProperty("chup.j2me") != null;
+        // -Dchup.coJ2me (riêng, chưa vào cổng kiểm): kỳ vọng HUD cảm ứng chưa đúng với máy J2ME bấm phím 240x320 / 320x240 /
+        // 400x240 / 360x640 (62 HONG lần chạy đầu) - cần viết kỳ vọng riêng cho HUD phím trước khi bật mặc định
+        boolean j2 = System.getProperty("chup.coJ2me") != null;
         int nCo = ChupTrongGame.CO.length + (j2 ? ChupTrongGame.CO_J2ME.length : 0);
         for (int c = 0; c < nCo; c++) {
             boolean laJ2 = c >= ChupTrongGame.CO.length;
