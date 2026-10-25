@@ -1134,6 +1134,9 @@ public class GameScr extends Screen {
         for (int i = 0; i < size0; i++) {
             Actor a = (Actor) this.actors.elementAt(i);
             if (a.x > left && a.x < right && a.y > up && a.y < down) {
+                if ((autoFight || TuDong.dang) && game.pokemon.HanhDong.laNpc(a)) {
+                    continue;   // 0.9.19: tự động đánh không bao giờ nhắm NPC (kể cả bật "tự đánh" isAutoFire)
+                }
                 if (a.catagory == 127 || !a.canfocus || ((a.catagory == 0 && a.ID == this.mainChar.ID) || a.catagory == 10 || a.catagory == 11 || a.catagory == 12 || (autoFight && !Canvas.autoTab.isAutoFire && Tilemap.lv != 0 && Tilemap.lv != 201 && Tilemap.lv != 70 && Tilemap.lv != 80 && !Tilemap.isOfflineMap && (a.isItemCanGet() || a.catagory == 126 || a.catagory == 2 || a.catagory == 0)))) {
                     if ((autoFight || autoBomHMP) && a.catagory == 2) {
                         addChat(this.mainChar, "Tắt Tự động đánh trước khi chọn mục tiêu", 100);
@@ -1834,9 +1837,14 @@ public class GameScr extends Screen {
                         changeToNextFocusActor(false);
                     }
                     if (!isBeginAutoBuff && (this.mainChar.clazz != 2 || !isBuffHoisinh())) {
-                        doFire(1, 1);
-                        doFire(3, 1);
-                        doFire(5, 1);
+                        this.doFireTuDong = true;   // 0.9.19: đòn của tự động - nhắm NPC thì bỏ NPC, không nói chuyện
+                        try {
+                            doFire(1, 1);
+                            doFire(3, 1);
+                            doFire(5, 1);
+                        } finally {
+                            this.doFireTuDong = false;
+                        }
                     }
                 }
                 BangAuto.tgDelay = (int) ((System.currentTimeMillis() / 100) + 10);
@@ -1985,6 +1993,9 @@ public class GameScr extends Screen {
         RMS.saveQuickSlot();
     }
 
+    /** 0.9.19: doFire đang chạy từ vòng Tự động đánh (không phải người chơi bấm). */
+    private boolean doFireTuDong;
+
     private void doFire(int key, int index) {
         if (this.mainChar.state == 3) {
             Canvas.msgdlg.isIcon = false;
@@ -2083,14 +2094,34 @@ public class GameScr extends Screen {
         // pokemon: HUD có nút chiêu riêng - phím / nút CHIÊU (1 3 7 9) khi đang nhắm NPC = nhắm quái gần nhất, không mở
         // cửa hàng / menu NPC (trước: chạm chiêu cạnh NPC bán hàng mở gian hàng); "nói chuyện" chỉ còn ở phím 5
         boolean chieuRieng = key != 5 && game.pokemon.HanhDong.nutChieuRieng();
-        if (chieuRieng) {
-            QuickSlot o = null;
-            try {
-                o = MainChar.quickSlot[index][this.SLOTINDEXOFKEY[key]];
-            } catch (Throwable e) {
-                // chưa có ô nhanh
+        QuickSlot oPhim = null;
+        try {
+            oPhim = MainChar.quickSlot[index][this.SLOTINDEXOFKEY[key]];
+        } catch (Throwable e) {
+            // chưa có ô nhanh
+        }
+        // 0.9.19 (lỗi "chọn NPC lại tấn công"): đang nhắm NPC thì phím / nút đánh KHÔNG BAO GIỜ thành đòn đánh. Trước: phím
+        // 5 đi qua ô nhanh rồi NgamTay.chanDoFire ("Ngắm thủ công" / trận PvP) TRƯỚC khi rẽ sang nói chuyện -> mọi lối nói
+        // chuyện (phím bắn J2ME, nút đánh, chạm NPC, chuột, Enter) bắn một phát theo hướng quay = đánh vào NPC; ô phím 5
+        // là thuốc / trống / chiêu chưa học thì không nói chuyện được. Tự động đánh không bao giờ nhắm NPC.
+        boolean nhamNpc = game.pokemon.HanhDong.laNpc(this.focusedActor);
+        if (nhamNpc && this.doFireTuDong) {
+            game.pokemon.HanhDong.boNhamNpc(this);   // tự động: bỏ NPC, nhắm quái gần nhất (không có thì không mục tiêu)
+            nhamNpc = false;
+            chieuRieng = true;
+        } else if (chieuRieng && nhamNpc) {
+            game.pokemon.HanhDong.boNhamNpcKhiDungChieu(this, oPhim);
+            if (this.focusedActor == null && oPhim != null && oPhim.quickslotType == QuickSlot.TYPE_SKILL && !oPhim.isBuff) {
+                return;   // không có quái gần: chiêu đánh không làm gì (không bắn theo hướng vào NPC)
             }
-            game.pokemon.HanhDong.boNhamNpcKhiDungChieu(this, o);
+            if (this.focusedActor != null && !game.pokemon.HanhDong.laNpc(this.focusedActor) && game.pokemon.NgamTay.dangNgam()) {
+                this.mainChar.dir = Util.findDirection(this.mainChar, this.focusedActor);   // ngắm tay: bắn về quái vừa nhắm
+            }
+            nhamNpc = game.pokemon.HanhDong.laNpc(this.focusedActor);
+        }
+        if (!chieuRieng && nhamNpc && (oPhim == null || oPhim.quickslotType != QuickSlot.TYPE_POTION) && !this.focusedActor.isNpcChar()) {
+            noiVoiNpcDangNham();   // NPC tĩnh / NPC máy chủ: nói chuyện / mở menu NPC, không qua ô nhanh
+            return;
         }
         if (!chieuRieng && this.focusedActor != null && this.focusedActor.isNpcChar()) {
             Vector allquest = getAllQuestNpc(this.focusedActor.getTypeNpc());
@@ -2111,7 +2142,9 @@ public class GameScr extends Screen {
         }
         QuickSlot qs = MainChar.quickSlot[index][this.SLOTINDEXOFKEY[key]];
         // 0.9.8 ngắm tay: trận giữa người chơi / "Ngắm thủ công" -> chiêu tấn công thành phát bắn theo hướng (NgamTay)
-        if (qs != null && game.pokemon.NgamTay.chanDoFire(this, key, qs.getSkillType(), qs.quickslotType == QuickSlot.TYPE_SKILL, qs.isBuff)) {
+        // 0.9.19: không bao giờ khi đang nhắm NPC (ô thuốc giữ mục tiêu NPC: dùng thuốc, không bắn)
+        if (qs != null && !game.pokemon.HanhDong.laNpc(this.focusedActor)
+                && game.pokemon.NgamTay.chanDoFire(this, key, qs.getSkillType(), qs.quickslotType == QuickSlot.TYPE_SKILL, qs.isBuff)) {
             return;
         }
         if (qs.quickslotType != 2) {
@@ -2452,6 +2485,54 @@ public class GameScr extends Screen {
         }
     }
 
+    /**
+     * Nói chuyện với NPC đang nhắm (NPC tĩnh / NPC máy chủ): menu nhiệm vụ của NPC hoặc chức năng NPC. 0.9.19: tách khỏi
+     * doUseSkillToFocusActor - phím / nút đánh khi nhắm NPC vào thẳng đây (không qua ô nhanh / ngắm tay / đòn đánh).
+     */
+    void noiVoiNpcDangNham() {
+        if (this.focusedActor == null || !this.focusedActor.isNPC()) {
+            return;
+        }
+        if (this.focusedActor.getNpcType() == 1) {
+            GameService.gI().requestNPCInfo(this.focusedActor.getTypeNpc());
+            return;
+        }
+        if (!Tilemap.isOfflineMap) {
+            Vector allquest = getAllQuestNpc(this.focusedActor.getTypeNpc());
+            if (allquest.size() > 0 && !this.focusedActor.isNpcChar()) {
+                if (posNpcReceiveClan != null && ((NPC) this.focusedActor).type == posNpcReceiveClan.index) {
+                    allquest.addElement(new Command("Nhiệm vụ Đội", new IAction() {
+                        @Override
+                        public void perform() {
+                            GameScr.this.gameService.questClan(3);
+                            GameScr.posNpcReceiveClan = null;
+                            Canvas.startWaitDlg();
+                        }
+                    }));
+                }
+                themNhiemVuCuaToi(allquest);
+                allquest.addElement(new Command("Nói chuyện", new IAction() {
+                    @Override
+                    public void perform() {
+                        GameScr.this.mainChar.chat = null;
+                        GameScr.this.focusedActor.chat = null;
+                        if (!GameScr.this.focusedActor.isNpcChar()) {
+                            GameScr.this.moChucNangNpc(GameScr.this.focusedActor.getTypeNpc());
+                        }
+                    }
+                }));
+                Canvas.menu.startAt(allquest, 3);
+                return;
+            }
+            this.focusedActor.chat = null;
+            if (!this.focusedActor.isNpcChar()) {
+                moChucNangNpc(this.focusedActor.getTypeNpc());
+            }
+        } else {
+            moChucNangNpc(this.focusedActor.getTypeNpc());
+        }
+    }
+
     public void doUseSkillToFocusActor(byte skillType) {
         if (game.pokemon.NgamTay.dangNgam() && this.focusedActor != null && this.focusedActor.isPlayer()) {
             this.duoiMucTieu = null;   // 0.9.8: không khoá mục tiêu / đuổi đánh người chơi - kéo chiêu để ngắm
@@ -2470,7 +2551,8 @@ public class GameScr extends Screen {
                     this.tg.y = (short) -1;
                     target.x = (short) -1;
                 }
-                if (this.focusedActor.isMonster() || ((this.mainChar.nationID != this.focusedActor.nationID && this.focusedActor.isPlayer()) || ((this.focusedActor.isPlayer() && ((idMapPK == Tilemap.lv && this.mainChar.idClan != ((Char) this.focusedActor).idClan) || (this.focusedActor.pk > 0 && this.mainChar.pk > 0 && this.focusedActor.pk != this.mainChar.pk))) || ((this.mainChar.iskiller && this.focusedActor.isPlayer()) || ((this.focusedActor.isPlayer() && (isChiemThanh() || isMapPK() || isFocusKiller())) || ((this.focusedActor.isPlayer() && ((Char) this.focusedActor).isAnimal) || (this.mainChar.isAnimal && (this.focusedActor.isMonster() || this.focusedActor.isPlayer())))))))) {
+                // 0.9.19: NPC (kể cả NPC dạng nhân vật khác quốc gia) không bao giờ là mục tiêu đánh
+                if (!game.pokemon.HanhDong.laNpc(this.focusedActor) && (this.focusedActor.isMonster() || ((this.mainChar.nationID != this.focusedActor.nationID && this.focusedActor.isPlayer()) || ((this.focusedActor.isPlayer() && ((idMapPK == Tilemap.lv && this.mainChar.idClan != ((Char) this.focusedActor).idClan) || (this.focusedActor.pk > 0 && this.mainChar.pk > 0 && this.focusedActor.pk != this.mainChar.pk))) || ((this.mainChar.iskiller && this.focusedActor.isPlayer()) || ((this.focusedActor.isPlayer() && (isChiemThanh() || isMapPK() || isFocusKiller())) || ((this.focusedActor.isPlayer() && ((Char) this.focusedActor).isAnimal) || (this.mainChar.isAnimal && (this.focusedActor.isMonster() || this.focusedActor.isPlayer()))))))))) {
                     int aa = 0;
                     if (this.focusedActor.isMonster() && this.focusedActor.isMineral()) {
                         aa = 1;
@@ -2604,44 +2686,8 @@ public class GameScr extends Screen {
                     }
                 }
                 if (this.focusedActor.isNPC()) {
-                    if (this.focusedActor.getNpcType() == 1) {
-                        GameService.gI().requestNPCInfo(this.focusedActor.getTypeNpc());
-                        return;
-                    }
-                    if (!Tilemap.isOfflineMap) {
-                        Vector allquest = getAllQuestNpc(this.focusedActor.getTypeNpc());
-                        if (allquest.size() > 0 && !this.focusedActor.isNpcChar()) {
-                            if (posNpcReceiveClan != null && ((NPC) this.focusedActor).type == posNpcReceiveClan.index) {
-                                allquest.addElement(new Command("Nhiệm vụ Đội", new IAction() {
-                                    @Override
-                                    public void perform() {
-                                        GameScr.this.gameService.questClan(3);
-                                        GameScr.posNpcReceiveClan = null;
-                                        Canvas.startWaitDlg();
-                                    }
-                                }));
-                            }
-                            themNhiemVuCuaToi(allquest);
-                            allquest.addElement(new Command("Nói chuyện", new IAction() {
-                                @Override
-                                public void perform() {
-                                    GameScr.this.mainChar.chat = null;
-                                    GameScr.this.focusedActor.chat = null;
-                                    if (!GameScr.this.focusedActor.isNpcChar()) {
-                                        GameScr.this.moChucNangNpc(GameScr.this.focusedActor.getTypeNpc());
-                                    }
-                                }
-                            }));
-                            Canvas.menu.startAt(allquest, 3);
-                            return;
-                        }
-                        this.focusedActor.chat = null;
-                        if (!this.focusedActor.isNpcChar()) {
-                            moChucNangNpc(this.focusedActor.getTypeNpc());
-                        }
-                    } else {
-                        moChucNangNpc(this.focusedActor.getTypeNpc());
-                    }
+                    noiVoiNpcDangNham();
+                    return;
                 }
                 if (this.focusedActor.catagory == 10) {
                     Vector menu = new Vector();

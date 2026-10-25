@@ -88,6 +88,10 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   phím R / phím 0 đổi bộ chiêu; 0.9.17: chạm MỌI nút HUD + mọi ô Menu cá nhân (không mục tiêu / nhắm quái + thẻ thời
   tiết / nhắm NPC) -> đúng màn / thẻ (tiêu đề) / gói, menu máy chủ không mang tên quái đang nhắm - bảng `dich_nut.txt`
   (`-Dchup.j2me` vẽ như J2ME, `-Dkiem.dich=0` bỏ phần này);
+- `KiemPhimNpc` (0.9.19): nhắm NPC ở bản đồ làng thật - chọn NPC (tự nhắm / phím mềm phải / Tab) chỉ nhắm; phím bắn /
+  phím 5 / nút đánh HUD / chạm / chuột trái / chuột phải / Enter / Space = nói chuyện đúng một lần, không gói đánh, không
+  thế đánh; phím chiêu không đánh NPC (J2ME màn nhỏ = Giao tiếp, HUD = quái gần nhất); Tự động đánh không nhắm NPC; mỗi
+  đường với "Ngắm thủ công" tắt / bật, máy vẽ 0 / 45 ms; J2ME chỉ phím chạy ở tiến trình con `-Dhtbb.khongCham`;
 - `KiemTrungLap`: một lối vào mỗi việc (HUD x lưới Menu, vùng chạm trùng tên, phím trùng);
 - `KiemTocDoGame` (0.9.18): tốc độ game = thời gian thật - vòng game thật, máy chậm giả lập (`NenPc.giaLapVeMs` ms CPU
   mỗi khung, `NenPc.giaLapVsync` = trình bày chờ nhịp quét 60 Hz như Android) ở đường PC 60 / APK 60 (tự hạ 30) / APK 30 /

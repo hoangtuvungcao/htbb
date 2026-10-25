@@ -444,13 +444,22 @@ public final class HanhDong {
      * Ô thuốc giữ nguyên mục tiêu.
      */
     public static void boNhamNpcKhiDungChieu(GameScr g, game.model.QuickSlot qs) {
-        Actor f = g.focusedActor;
-        if (f == null || !(f.isNPC() || f.isNpcChar() || f.catagory == 2)) {
+        if (!laNpc(g.focusedActor)) {
             return;
         }
         if (qs != null && qs.quickslotType == game.model.QuickSlot.TYPE_POTION) {
             return;
         }
+        boNhamNpc(g);
+    }
+
+    /** 0.9.19: actor là NPC (NPC tĩnh, NPC máy chủ, NPC dạng nhân vật) - không bao giờ là mục tiêu đánh. */
+    public static boolean laNpc(Actor a) {
+        return a != null && (a.catagory == 2 || a.isNPC() || a.isNpcChar());
+    }
+
+    /** Bỏ nhắm NPC, nhắm quái gần nhất (không có thì không mục tiêu). */
+    public static void boNhamNpc(GameScr g) {
         boChon();
         g.focusedActor = null;
         tuChonQuai(g);
