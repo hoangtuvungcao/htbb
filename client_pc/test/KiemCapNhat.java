@@ -416,12 +416,76 @@ public class KiemCapNhat {
             game.pokemon.CapNhat.hienTai().capNhatNgay();
             kiem(javax.microedition.midlet.MIDlet.daMoLienKet.contains("https://huyenthoaibaoboi.fun/tai/HTBB-0.9.8.apk"),
                     "không có bộ cập nhật -> mở link tệp " + javax.microedition.midlet.MIDlet.daMoLienKet);
-            kiem(!game.pokemon.CapNhat.dangMo(), "NHẮC: đã mở link -> đóng thẻ");
+            // 0.9.20: J2ME / giả lập (platformRequest không bắt thoát) -> thẻ GIỮ, chỉ cách nạp .jar mới
+            game.pokemon.CapNhat h = game.pokemon.CapNhat.hienTai();
+            kiem(game.pokemon.CapNhat.dangMo() && h.daMoLink != null && h.daMoLink.contains("nạp file .jar mới"),
+                    "J2ME: đã mở link -> thẻ giữ + gợi ý giả lập (" + h.daMoLink + ")");
+            String gy = h.goiYNen();
+            kiem(gy != null && gy.contains("https://huyenthoaibaoboi.fun/tai/HTBB-0.9.8.apk") && gy.contains("nạp file .jar mới"),
+                    "J2ME: thẻ ghi link tải + cách nạp .jar ở giả lập (" + gy + ")");
+            h.deSau();
             game.pokemon.CapNhat.datNen(gia);
         });
         // các chuỗi phụ
         kiem("35,8 MB".equals(game.pokemon.CapNhat.mb(37538611L)), "mb(): " + game.pokemon.CapNhat.mb(37538611L));
         kiem(game.pokemon.CapNhat.phanTram(50, 200) == 25 && game.pokemon.CapNhat.phanTram(5, 0) == -1, "phanTram()");
+    }
+
+    /**
+     * 0.9.20 đầu-cuối PC (chủ dự án: "cập nhật qua game là bản mới luôn"): gói -115 với link gốc tải http (sv.gocTaiCapNhat)
+     * -> bộ cập nhật THẬT htbb.pc.CapNhatPc (Windows) -> tải từ máy chủ HTTP cục bộ -> kiểm SHA-256 -> chạy bộ cài /SILENT
+     * + đóng game (bộ cài tự mở lại) - không mở trình duyệt. SHA lệch -> không chạy gì.
+     */
+    static void kiemDauCuoi(File tam) throws Exception {
+        final List<List<String>> lenh = java.util.Collections.synchronizedList(new ArrayList<List<String>>());
+        final int[] thoat = {0};
+        htbb.pc.CapNhatPc.chayLenh = l -> lenh.add(new ArrayList<>(l));
+        htbb.pc.CapNhatPc.thoat = () -> thoat[0]++;
+        htbb.pc.CapNhatPc.choThoatMs = 10;
+        htbb.pc.CapNhatPc.heDieuHanh = "windows";
+        htbb.pc.CapNhatPc.thuMucTai = new File(tam, "dau_cuoi");
+        final htbb.pc.CapNhatPc pc = new htbb.pc.CapNhatPc();
+        final String exe = goc + "/tai/HTBB-PC-Setup-0.9.7.exe";
+        final byte[] du = goi115(2, 907, "0.9.7", exe, shaTep, "60 MB", NHAT_KY, 907, 905);
+        javax.microedition.midlet.MIDlet.daMoLienKet.clear();
+        ChupTrongGame.chay(() -> {
+            game.render.Canvas.endDlg();
+            game.pokemon.CapNhat.datNen(pc);
+            kiem(game.pokemon.CapNhat.nhan(moi(du)), "đầu-cuối: gói -115 (link gốc tải http) đọc được");
+            game.pokemon.CapNhat h = game.pokemon.CapNhat.hienTai();
+            String gy = h.goiYNen();
+            kiem(gy != null && gy.contains("tự cài và tự mở lại"), "đầu-cuối: thẻ nói rõ game tự cài + mở lại (" + gy + ")");
+            h.capNhatNgay();
+        });
+        pc.cho(20000);
+        Thread.sleep(300);
+        File daTai = new File(new File(tam, "dau_cuoi"), "HTBB-PC-Setup-0.9.7.exe");
+        kiem(pc.trangThai() == game.pokemon.CapNhatNen.XONG && java.util.Arrays.equals(Files.readAllBytes(daTai.toPath()), TEP),
+                "đầu-cuối: tải bộ cài từ gốc tải + SHA-256 đúng (" + pc.trangThai() + " " + pc.loi() + ")");
+        kiem(lenh.size() == 1 && lenh.get(0).get(0).equals(daTai.getAbsolutePath()) && lenh.get(0).contains("/SILENT"),
+                "đầu-cuối: chạy bộ cài im lặng " + lenh);
+        kiem(thoat[0] == 1, "đầu-cuối: đóng game để bộ cài thay tệp + tự mở lại");
+        kiem(javax.microedition.midlet.MIDlet.daMoLienKet.isEmpty(), "đầu-cuối: KHÔNG mở trình duyệt / trang web " + javax.microedition.midlet.MIDlet.daMoLienKet);
+        // SHA lệch (tệp trên gốc tải bị thay) -> lỗi, không chạy bộ cài, hộp có Thử lại / Mở trang tải
+        lenh.clear();
+        thoat[0] = 0;
+        final byte[] sai = goi115(2, 907, "0.9.7", exe, sha(TEP_KHAC), "60 MB", NHAT_KY, 907, 905);
+        final htbb.pc.CapNhatPc pc2 = new htbb.pc.CapNhatPc();
+        ChupTrongGame.chay(() -> {
+            game.render.Canvas.endDlg();
+            game.pokemon.CapNhat.datNen(pc2);
+            game.pokemon.CapNhat.nhan(moi(sai));
+            game.pokemon.CapNhat.hienTai().capNhatNgay();
+        });
+        pc2.cho(20000);
+        Thread.sleep(200);
+        kiem(pc2.trangThai() == game.pokemon.CapNhatNen.LOI && lenh.isEmpty() && thoat[0] == 0,
+                "đầu-cuối: SHA-256 lệch -> LỖI, không chạy bộ cài (" + pc2.loi() + ")");
+        ChupTrongGame.chay(() -> game.render.Canvas.endDlg());
+        htbb.pc.CapNhatPc.heDieuHanh = null;
+        htbb.pc.CapNhatPc.thuMucTai = null;
+        htbb.pc.CapNhatPc.chayLenh = l -> { };
+        htbb.pc.CapNhatPc.thoat = () -> { };
     }
 
     /** Vẽ mọi trạng thái hộp ở mọi cỡ chuẩn. */
@@ -539,6 +603,7 @@ public class KiemCapNhat {
             ChupTrongGame.chay(ChupTrongGame::giaLap);
             Thread.sleep(800);
             kiemGoi();
+            kiemDauCuoi(tam);
             kiemVe(ra);
         } finally {
             http.stop(0);

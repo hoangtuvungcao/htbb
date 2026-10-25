@@ -137,6 +137,11 @@ public final class ViTien {
     static final int KHE = 4;
 
     static boolean vua(int[] wm, int dau, int so, int wTrong) {
+        // 0.9.20: mỗi mục là vùng chạm >= cỡ chạm (bảng hẹp 3 cột ô ở điện thoại mật độ cao: "320" chỉ 33 px) - không đủ
+        // chỗ cho so vùng thì xuống dòng
+        if (so > 1 && wTrong < so * (VungCham.MIN + Bang.cach())) {
+            return false;
+        }
         boolean deu = true;
         int tong = 0;
         for (int i = dau; i < dau + so; i++) {

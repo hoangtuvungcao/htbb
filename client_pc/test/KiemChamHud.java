@@ -1190,15 +1190,25 @@ public class KiemChamHud {
             game.pokemon.ChuUI.bo = null;
         }
         String locCo = System.getProperty("chup.co");
-        for (int c = 0; c < ChupTrongGame.CO.length; c++) {
-            if (locCo != null && !("," + locCo + ",").contains("," + ChupTrongGame.TEN_CO[c] + ",")) continue;
-            final int W = ChupTrongGame.CO[c][0], H = ChupTrongGame.CO[c][1], dpi = ChupTrongGame.CO[c][2];
-            co = ChupTrongGame.TEN_CO[c];
-            NenPc.tinhKichThuoc(W, H);
+        // 0.9.20: -Dchup.j2me thêm máy J2ME thật (240x320, 320x240, 400x240 Nokia 6233, 360x640, 640x360) - HUD HudRong x1
+        boolean j2 = System.getProperty("chup.j2me") != null;
+        int nCo = ChupTrongGame.CO.length + (j2 ? ChupTrongGame.CO_J2ME.length : 0);
+        for (int c = 0; c < nCo; c++) {
+            boolean laJ2 = c >= ChupTrongGame.CO.length;
+            int[] cc = laJ2 ? ChupTrongGame.CO_J2ME[c - ChupTrongGame.CO.length] : ChupTrongGame.CO[c];
+            String tenCo = laJ2 ? ChupTrongGame.TEN_CO_J2ME[c - ChupTrongGame.CO.length] : ChupTrongGame.TEN_CO[c];
+            if (locCo != null && !("," + locCo + ",").contains("," + tenCo + ",")) continue;
+            final int W = cc[0], H = cc[1], dpi = cc[2];
+            co = tenCo;
+            if (laJ2) {
+                ChupTrongGame.datCoJ2me(W, H);
+            } else {
+                NenPc.tinhKichThuoc(W, H);
+            }
             ChupTrongGame.chay(() -> game.render.Canvas.instance.sizeChanged(NenPc.rong, NenPc.cao));
             float s = NenPc.hienW / (float) NenPc.rong;
             // PC: 32 px thật; điện thoại: HudRong chỉ chạy trên J2ME (không nới cỡ chạm)
-            int min = dpi > 0 ? 0 : (int) Math.ceil(32 / s);
+            int min = dpi != 0 ? 0 : (int) Math.ceil(32 / s);
             game.pokemon.VungCham.MIN = min;
             dungCanh(false);
             kiemBoCuc(min);

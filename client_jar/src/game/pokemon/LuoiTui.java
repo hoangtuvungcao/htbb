@@ -323,10 +323,46 @@ public final class LuoiTui {
         return Bang.co(Math.max(18, ChuDe.cao(ChuDe.NHAN) + 6));
     }
 
-    /** Cao tối thiểu phần "khung" của bảng gọn (đệm + chip + ví + khe) - màn tính số hàng lưới thấy được. */
+    /** Cao tối thiểu phần "khung" của bảng gọn (đệm + chip + ví một dòng + khe) - màn tính số hàng lưới thấy được. */
     public static int caoKhungGon(int w) {
         int k = Bang.cach();
         return 4 + caoChipGon() + k + k + ViTien.cao() + 4;
+    }
+
+    /**
+     * 0.9.20: cao phần "khung" của bảng gọn rộng w với ô cạnh s - tính cả ví XUỐNG DÒNG khi bảng hẹp (điện thoại mật độ
+     * cao: 3 cột ô, ví 3 mục không vừa một dòng). Màn chọn bố cục dùng để lưới thấy đủ hàng thật.
+     */
+    public static int caoKhungGon(int w, int s) {
+        int k = Bang.cach();
+        int trong = w - 10;
+        int cot = Math.max(1, (trong - 10 + k) / (s + k));
+        return 4 + caoChipGon() + k + k + viGon(cot * (s + k) - k + 10)[0] + 4;
+    }
+
+    /**
+     * Hàng ví bảng gọn có mép nhịp wNhip: {cao, bề ngang ô đếm "12/21" (0 = bỏ)}. Mỗi mục ví là vùng chạm >= cỡ chạm:
+     * hàng hẹp (điện thoại 16:9 + lượng khoá) bỏ ô đếm (lưới đã cho thấy ô trống / ô khoá) để ví đủ chỗ; ví xuống dòng
+     * (J2ME 320x240) cũng bỏ ô đếm trước khi lấy chiều cao.
+     */
+    static int[] viGon(int wNhip) {
+        MainChar m = mc();
+        int k = Bang.cach();
+        int suc = TrangThaiNguoiChoi.sucChua(m);
+        int wDem = ChuDe.rong(soDung() + "/" + suc, ChuDe.SO) + 12;
+        int wVi = wNhip - wDem - k;
+        int soMucVi = ViTien.coKhoa(m) ? 3 : 2;
+        boolean coDem = wVi - 8 >= soMucVi * (VungCham.MIN + k);
+        if (!coDem) {
+            wVi = wNhip;
+        }
+        int soDVi = ViTien.soDong(wVi);
+        if (soDVi > 1 && coDem) {
+            coDem = false;
+            wVi = wNhip;
+            soDVi = ViTien.soDong(wVi);
+        }
+        return new int[]{ViTien.cao() * soDVi + (soDVi - 1) * k, coDem ? wDem : 0};
     }
 
     /** Bề ngang hàng chip ở mức nhãn muc (0 đủ chữ, 1 chữ ngắn, 2 icon + chữ mục chọn, 3 chỉ icon). */
@@ -508,26 +544,13 @@ public final class LuoiTui {
         yy += hc + k;
         int suc = TrangThaiNguoiChoi.sucChua(m);
         String dem = soDung() + "/" + suc;
-        int wDem = ChuDe.rong(dem, ChuDe.SO) + 12;
-        int wVi = wNhip - wDem - k;
-        // mỗi mục ví là vùng chạm >= cỡ chạm: hàng hẹp (điện thoại 16:9 + lượng khoá) bỏ ô đếm (lưới đã cho thấy ô trống /
-        // ô khoá) để ví đủ chỗ
-        int soMucVi = ViTien.coKhoa(m) ? 3 : 2;
-        boolean coDem = wVi - 8 >= soMucVi * (VungCham.MIN + k);
-        if (!coDem) {
-            wDem = 0;
-            wVi = wNhip;
-        }
-        int soDVi = ViTien.soDong(wVi);
-        if (soDVi > 1 && coDem) {
-            // ví xuống dòng (J2ME 320x240): bỏ ô đếm trước khi lấy chiều cao của lưới
-            coDem = false;
-            wDem = 0;
-            wVi = wNhip;
-            soDVi = ViTien.soDong(wVi);
-        }
-        int hVi = ViTien.cao() * soDVi + (soDVi - 1) * k;
-        int yVi = y + h - 4 - hVi;
+        int[] vi = viGon(wNhip);
+        boolean coDem = vi[1] > 0;
+        int wDem = vi[1];
+        int wVi = wNhip - (coDem ? wDem + k : 0);
+        int hVi = vi[0];
+        // 0.9.20: bảng quá thấp (lỗi chủ dự án: Android 1080p mật độ cao) - ví không bao giờ đè lên hàng chip / lưới
+        int yVi = Math.max(yy + hc + k, y + h - 4 - hVi);
         ViTien.hang(g, xl, yVi, wVi, hVi);
         if (coDem) {
             GiaoDien.khoiPixel(g, xl + wNhip - wDem, yVi, wDem, hVi, soDung() >= suc ? ChuDe.DO : 0x5C2E12);
