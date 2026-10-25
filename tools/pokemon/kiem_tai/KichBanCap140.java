@@ -664,9 +664,21 @@ final class KichBanCap140 {
                 return null;
             }
             if (q.loai == 4) {
+                // "chênh không quá N cấp": quai ban do ghi trong chu (neu co) co the da thap hon cap minh > N -> khong tinh.
+                // Nguoi choi doc chu "chênh không quá 5 cấp" -> tim ban do quai ngang cap (mapLuyen: lech <= 3).
+                Matcher mc = Pattern.compile("chênh không quá (\\d+) cấp").matcher(chu);
+                int lech = mc.find() ? Integer.parseInt(mc.group(1)) : 5;
                 int dich = tenBd == null ? -1 : mapTheoTen(b.mapId, tenBd);
-                if (dich >= 0 && !toi(dich)) return "khong toi duoc " + tenBd;
-                int ha = danh(-1, 10, 3 * 60000L);
+                if (dich >= 0) {
+                    boolean coNgangCap = false;
+                    for (int t : BotXuyenSuot.luoiQuai(BotXuyenSuot.LOAD.getOrDefault(dich, -1))) { Integer c = BotXuyenSuot.CAP_QUAI.get(t); if (c != null && Math.abs(c - b.lv) <= lech) coNgangCap = true; }
+                    if (!coNgangCap) { chuNv("'" + q.ten + "': chu ghi " + tenBd + " nhung quai o do lech > " + lech + " cap voi cap " + b.lv + " (khong tinh)"); dich = -1; }
+                }
+                if (dich < 0) dich = mapLuyen();
+                if (dich >= 0 && !toi(dich)) return "khong toi duoc ban do luyen " + dich;
+                lechDuoi = lech;
+                int ha;
+                try { ha = danh(-1, 10, 3 * 60000L); } finally { lechDuoi = 999; }
                 ghi("'" + q.ten + "' ha lech cap " + ha);
                 return ha > 0 ? null : "khong ha duoc quai nao o " + b.mapId;
             }
@@ -767,10 +779,12 @@ final class KichBanCap140 {
         }
 
         // ---------------------------------------------------------------- mac do roi tot hon
+        final Set<Integer> daMac = new HashSet<>();
+
         void macDoTot() throws IOException {
             // do trong tui co cap <= cap minh: mac (may chu tu doi cho cung o); chi mac khi cap do cao hon do dang mac cung tpl nhom
             for (int[] d : new ArrayList<>(b.doDung)) {
-                if (d.length < 4 || d[3] > b.lv || d[3] <= 0) continue;
+                if (d.length < 4 || d[3] > b.lv || d[3] <= 0 || !daMac.add(d[0])) continue; // moi mon trong tui thu mac MOT lan
                 int m = b.moc();
                 b.gui(29, (short) d[0]);
                 b.bom(500);
