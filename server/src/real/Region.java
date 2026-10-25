@@ -1058,6 +1058,10 @@ public class Region {
                 }
                 return;
             }
+            if (BossLauDai.laGymNguoiKhac(mt, p)) {
+                p.sendMessage(MessageCreator.createServerAlertMessage(BossLauDai.GYM_MOT_DAU_MOT, ""));
+                return;
+            }
             if (mt.getCharID() == p.charDBID) {
                 return;
             }
@@ -1183,6 +1187,10 @@ public class Region {
                     int delta;
                     int dxp;
                     if (i > 0) {
+                        if (BossLauDai.laGymNguoiKhac(mt, p)) { // chieu dien rong khong lan sang boss Gym cua nguoi khac
+                            ++i;
+                            continue;
+                        }
                         if (mt.isMyMonster(p) || !Map.canAttackMonsterVantieu((Monster)mt, (Char)p) || !Map.inRangeActor((LiveActor)firstMonster, (LiveActor)mt, (int)MAX_RANGE_CHAR[p.charClass])) {
                             ++i;
                             continue;
@@ -1458,6 +1466,10 @@ public class Region {
             return;
         }
         if (mt.getCharID() == p.charDBID) {
+            return;
+        }
+        if (BossLauDai.laGymNguoiKhac(mt, p)) {
+            p.sendMessage(MessageCreator.createServerAlertMessage(BossLauDai.GYM_MOT_DAU_MOT, ""));
             return;
         }
         if (!Map.inRangeActor((LiveActor)p, (LiveActor)mt, (int)MAX_RANGE_CHAR[p.charClass])) {

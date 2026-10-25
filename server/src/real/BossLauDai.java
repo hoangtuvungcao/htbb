@@ -313,6 +313,24 @@ public final class BossLauDai {
      * 201 - nhung Thach dau Gym trieu hoi boss NGAY CANH nguoi choi o ban do dang dung (thuong la Pewter) nen danh mai khong
      * mat HP (bao loi 24/10/2026 "danh ma khong gay duoc 1 ti sat thuong nao"). Rieng boss Gym (va de) cua minh thi duoc danh.
      */
+    /**
+     * Boss Gym cua NGUOI KHAC (tran 1 dau 1): nhan vat nay khong duoc danh / hut mau / ket lieu - bot-cap1-40 (25/10/2026):
+     * truoc day chi duong satThuongVaoBoss ve 0 sat thuong, con hut mau (hphut), than thu va chieu dien rong (goi 106) van tru
+     * HP boss -> nguoi dung canh ket lieu boss Gym cua nguoi khac, an ca EXP boss (bot len 21 -> 27 trong 1 giay).
+     */
+    public static synchronized boolean laGymNguoiKhac(final Monster m, final Char p) {
+        if (m == null || p == null) {
+            return false;
+        }
+        TrangThai t = BOSS.get(m);
+        if (t == null) {
+            t = DE.get(m);
+        }
+        return t != null && t.gym > 0 && t.chuGym != p.charDBID;
+    }
+
+    public static final String GYM_MOT_DAU_MOT = "Trận Gym 1 đấu 1: chỉ người thách đấu được đánh Trưởng Gym này.";
+
     static synchronized boolean laGymCua(final Monster m, final Char p) {
         if (m == null || p == null || m.isDead || m.hp <= 0) {
             return false;

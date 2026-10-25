@@ -857,10 +857,15 @@ final class KichBanCap140 {
 
         // ---------------------------------------------------------------- Gym cua ai
         final Map<String, Integer> gymThuCap = new HashMap<>();
+        final Map<String, Long> gymThuLuc = new HashMap<>();
 
         String gymCuaAi(KichBanTienDoNhiemVu.Dong q, String chu) throws Exception {
-            if (b.lv < gymThuCap.getOrDefault(q.ten, 0) + 2) { luyen(4); return null; }
+            // thua thi luyen them 2 cap hoac (khong con cho luyen ngang cap) thu lai sau 15 phut, mua thuoc tot hon
+            if (b.lv < gymThuCap.getOrDefault(q.ten, 0) + 2 && System.currentTimeMillis() - gymThuLuc.getOrDefault(q.ten, 0L) < 15 * 60000L) { luyen(4); return null; }
             gymThuCap.put(q.ten, b.lv);
+            gymThuLuc.put(q.ten, System.currentTimeMillis());
+            lanMuaThuoc = 0;
+            muaThuoc();
             if (KichBanDS.laLang(b.mapId) || KichBanDS2.laOffline(b.mapId)) { int ml = mapLuyen(); if (ml >= 0) toi(ml); }
             KichBanDS.timQuai(b, 0, 260);
             Set<Integer> cu = new HashSet<>(b.quai.keySet());
@@ -876,6 +881,14 @@ final class KichBanCap140 {
             String t = b.doiChu(m2, 3000, "xuất hiện", "cấp", "tuần", "đã", "đang thách đấu");
             ghi("Gym cua ai: " + t);
             Integer boss = KichBanDS.quaiMoi(b, cu, 8000);
+            // nhieu boss Gym cung ban do (nguoi khac cung thach dau): boss CUA MINH hien ngay canh minh -> chon con moi gan nhat
+            int gan = Integer.MAX_VALUE;
+            for (Map.Entry<Integer, int[]> e : b.quai.entrySet()) {
+                int[] qq = e.getValue();
+                if (cu.contains(e.getKey()) || qq[4] < 2000 || qq[2] <= 0) continue;
+                int d = Math.abs(qq[0] - b.px) + Math.abs(qq[1] - b.py);
+                if (d < gan) { gan = d; boss = e.getKey(); }
+            }
             if (boss == null && b.chuTu(m2).contains("đang thách đấu")) {
                 // tran cu con (boss dung o cho cu): quai maxhp lon nhat dang biet
                 int mx = 0;
@@ -884,7 +897,7 @@ final class KichBanCap140 {
             }
             if (boss == null) return "khong thay boss Gym: " + b.chuTu(m2);
             long t0 = System.currentTimeMillis();
-            int don = KichBanHoiQuy2.haQuaiDiBo(b, boss, 2600);
+            int don = danhBoss(boss, q.ten);
             String kq = b.doiChu(m2, 3000, "Chiến thắng", "thua", "hết giờ", "Hết giờ");
             boolean thang = kq != null && kq.contains("Chiến thắng");
             ghi("Gym '" + q.ten + "' cap " + b.lv + ": " + (thang ? "THANG" : "thua") + " " + don + " don " + (System.currentTimeMillis() - t0) / 1000 + "s | " + kq);
@@ -895,13 +908,55 @@ final class KichBanCap140 {
             return null;
         }
 
+        /**
+         * Danh boss Gym nhu nguoi choi: lai gan, danh lien tuc (lenh 9, xoay chieu), uong thuoc tot nhat khi HP < 50%. Ghi
+         * HP boss / minh moi 60 giay (do sat thuong / giay de biet thua vi thieu suc hay vi bot). Tra so don, -1 = khong ha.
+         */
+        int danhBoss(int boss, String ten) throws IOException {
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+            KichBanHuongDan.dongBoViTri(b);
+            long bd0 = System.currentTimeMillis(), moc = bd0;
+            int hp0 = -1;
+            for (int lan = 1; lan <= 3000 && System.currentTimeMillis() - bd0 < 620000L; lan++) {
+                int[] q = b.quai.get(boss);
+                if (q != null && bd != null && (Math.abs(q[0] - b.px) > 40 || Math.abs(q[1] - b.py) > 40) && lan % 5 == 1) {
+                    int[] o = bd.oGan(q[0] / 16, q[1] / 16, 2);
+                    if (o != null) b.diDuong(bd, o[0], o[1]);
+                }
+                b.gui(9, (short) boss, (byte) KichBanGymLang.chieuCo(b, lan));
+                b.bom(280);
+                if (lan % 10 == 0) {
+                    b.gui(7, (short) boss);
+                    b.lamMoi();
+                    q = b.quai.get(boss);
+                    if (q != null && hp0 < 0 && q[2] > 0) hp0 = q[2];
+                    if (q == null || q[2] == 0) return lan;
+                    if (b.hp > 0 && b.hp < b.maxhp / 2) for (int t : new int[]{3, 2, 1}) if (b.soThuoc(t) > 0) { b.gui(22, (byte) t); b.bom(200); break; }
+                    if (System.currentTimeMillis() - moc > 60000L) {
+                        moc = System.currentTimeMillis();
+                        long giay = (moc - bd0) / 1000;
+                        ghi("Gym " + ten + " " + giay + "s: boss " + q[2] + "/" + q[4] + " (" + (hp0 > 0 ? (hp0 - q[2]) / Math.max(1, giay) : 0) + " sat thuong/giay), minh "
+                                + b.hp + "/" + b.maxhp + ", thuoc " + b.soThuoc(1) + "/" + b.soThuoc(2) + "/" + b.soThuoc(3));
+                    }
+                    if (b.hp <= 0) {
+                        long giay = (System.currentTimeMillis() - bd0) / 1000;
+                        loi("Gym " + ten + ": guc o cap " + b.lv + " sau " + giay + "s, boss con " + q[2] + "/" + q[4] + " (" + (hp0 > 0 ? (hp0 - q[2]) / Math.max(1, giay) : 0)
+                                + " st/giay; can " + q[4] / 600 + " st/giay de ha trong 10 phut); do: vu khi shop, xu " + b.xu);
+                        return -1;
+                    }
+                }
+                if (b.dut) return -1;
+            }
+            return -1;
+        }
+
         // ---------------------------------------------------------------- mac do roi tot hon
         final Set<Integer> daMac = new HashSet<>();
 
         void macDoTot() throws IOException {
             // do trong tui co cap <= cap minh: mac (may chu tu doi cho cung o); chi mac khi cap do cao hon do dang mac cung tpl nhom
             for (int[] d : new ArrayList<>(b.doDung)) {
-                if (d.length < 4 || d[3] > b.lv || d[3] <= 0 || !daMac.add(d[0])) continue; // moi mon trong tui thu mac MOT lan
+                if (d.length < 4 || d[3] > b.lv || d[3] <= 0 || !daMac.add(d[1] * 1000 + d[3])) continue; // moi loai (tpl, cap) mac MOT lan
                 int m = b.moc();
                 b.gui(29, (short) d[0]);
                 b.bom(500);

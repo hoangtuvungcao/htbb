@@ -527,6 +527,10 @@ public class MapTown extends Map {
          short idMonster = dis.readShort();
          Monster mt = this.getMonster(idMonster, p.inCountry, p.region);
          firstMonster = mt;
+         if (BossLauDai.laGymNguoiKhac(mt, p)) {
+            p.sendMessage(MessageCreator.createServerAlertMessage(BossLauDai.GYM_MOT_DAU_MOT, ""));
+            return;
+         }
          if (mt == null || mt.isDead) {
             this.onMosterDie(p, idMonster, skill, 1, effect, (byte)0);
             if (mt != null) {
@@ -660,6 +664,10 @@ public class MapTown extends Map {
 
             if (mt != null) {
                if (i > 0) {
+                  if (BossLauDai.laGymNguoiKhac(mt, p)) { // chieu dien rong khong lan sang boss Gym cua nguoi khac
+                     i++;
+                     continue;
+                  }
                   if (!inRangeActor(firstMonster, mt, CharManager.getRangeSkillAeo(p.charClass, skill, _level))) {
                      i++;
                      continue;
@@ -938,6 +946,10 @@ public class MapTown extends Map {
                DataInputStream dis = message.dis;
                short idMonster = dis.readShort();
                Monster mt = this.getMonster(idMonster, p.inCountry, p.region);
+               if (BossLauDai.laGymNguoiKhac(mt, p)) {
+                  p.sendMessage(MessageCreator.createServerAlertMessage(BossLauDai.GYM_MOT_DAU_MOT, ""));
+                  return;
+               }
                short skill = dis.readByte();
                byte effect = 0;
                int ahp = p.attackDamage;
