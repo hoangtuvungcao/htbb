@@ -446,6 +446,7 @@ final class KichBanCap140 {
             if (System.currentTimeMillis() - lanVaoLai > 30 * 60000L) { vaoLaiCheckpoint(); return; }
             for (int moc : new int[]{5, 10, 15, 20, 25, 30, 35, 40}) {
                 if (b.lv >= moc && mocTinhNang.add(moc)) {
+                    luuCp();
                     if (moc < 40 && b.lv >= moc + 5) continue; // nhay qua nhieu moc cung luc: chi chay moc cao nhat
                     KichBanCap140TinhNang.chay(this);
                     return;
@@ -603,6 +604,36 @@ final class KichBanCap140 {
         }
 
         final Set<Integer> daGhiChu = new HashSet<>();
+        /** Ban do luyen da bi chan (khoa cap / cua ai) o cap hien tai - mapLuyen bo qua; xoa khi len cap. */
+        final Set<Integer> mapKhoa = new HashSet<>();
+        int capMapKhoa;
+
+        @Override
+        int mapLuyen() {
+            if (capMapKhoa != b.lv) { mapKhoa.clear(); capMapKhoa = b.lv; }
+            int tot = -1, diem = Integer.MAX_VALUE;
+            for (int mid : BotXuyenSuot.MAP_THU) {
+                Integer l = BotXuyenSuot.LOAD.get(mid);
+                if (l == null || KichBanDS2.laOffline(mid) || mapKhoa.contains(mid)) continue;
+                for (int t : BotXuyenSuot.luoiQuai(l)) {
+                    Integer c = BotXuyenSuot.CAP_QUAI.get(t);
+                    if (c == null || c - b.lv < -3 || c - b.lv > 3) continue;
+                    List<int[]> d = BotXuyenSuot.duong(b.mapId, mid);
+                    if (d == null) continue;
+                    int sc = d.size() * 2 + Math.abs(c - b.lv);
+                    if (sc < diem) { diem = sc; tot = mid; }
+                }
+            }
+            return tot;
+        }
+
+        @Override
+        void luyen(int phut) throws Exception {
+            int mid = mapLuyen();
+            if (mid < 0) { ketLai("khong con ban do luyen mo cho cap " + b.lv + " (da khoa: " + mapKhoa + ")"); b.bom(5000); return; }
+            if (!toi(mid)) { mapKhoa.add(mid); hop95(0); return; }
+            danh(-1, 40, phut * 60000L);
+        }
         final Map<Integer, Integer> lanToiDich = new HashMap<>();
 
         /**
@@ -679,7 +710,7 @@ final class KichBanCap140 {
                     if (!coNgangCap) { chuNv("'" + q.ten + "': chu ghi " + tenBd + " nhung quai o do lech > " + lech + " cap voi cap " + b.lv + " (khong tinh)"); dich = -1; }
                 }
                 if (dich < 0) dich = mapLuyen();
-                if (dich >= 0 && !toi(dich)) return "khong toi duoc ban do luyen " + dich;
+                if (dich >= 0 && !toi(dich)) { mapKhoa.add(dich); hop95(0); return "khong toi duoc ban do luyen " + dich + " (thu ban do khac)"; }
                 lechDuoi = lech;
                 int ha;
                 try { ha = danh(-1, 10, 3 * 60000L); } finally { lechDuoi = 999; }
