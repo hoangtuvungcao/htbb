@@ -143,6 +143,16 @@ test('câu báo vượt hạn mức: ngắn, chỉ cách xử lý (Wi-Fi khác /
   assert.notEqual(thongBaoDangKy(qt, 'quaGio'), thongBaoDangKy(qt, 'quaNgay'))
 })
 
+test('câu báo hạn mức theo THIẾT BỊ (đăng ký trong game, mã máy) riêng, không nói mạng di động / Wi-Fi', () => {
+  assert.equal(thongBaoDangKy(qt, 'mayQuaNgay'), 'Thiết bị này đã tạo đủ tài khoản hôm nay. Thử lại vào ngày mai hoặc liên hệ hỗ trợ.')
+  for (const ma of ['mayQuaGio', 'mayQuaNgay']) {
+    const c = thongBaoDangKy(qt, ma)
+    assert.ok(c.startsWith('Thiết bị') && c.includes('liên hệ hỗ trợ') && !c.includes('mạng di động') && !c.includes('Wi-Fi'), c)
+    assert.ok(c.length <= 160, `${ma}: ${c.length} ký tự`)
+  }
+  assert.notEqual(thongBaoDangKy(qt, 'mayQuaGio'), thongBaoDangKy(qt, 'mayQuaNgay'))
+})
+
 test('lần lỗi không tính vào hạn mức: chỗ giữ được trả, lần bấm lại ngay không bị chặn', () => {
   const khoa = `dang_ky|thu-${Date.now()}`
   // lần 1: giữ chỗ rồi lỗi (trùng tên / lỗi CSDL) -> trả

@@ -1112,7 +1112,7 @@ class MapEpNgoc {
             int prizeImbue = 5000;
 
             try {
-                if (getTown[player.inCountry]) {
+                if (Map.camGiaoDichChiemGym(player)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm Gym", ""));
                     return;
                 }

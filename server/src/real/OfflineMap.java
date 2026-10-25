@@ -1571,7 +1571,7 @@ public class OfflineMap extends Map {
       } else if (player.startAutoImbue) {
          player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch khi đang luyện đồ tự động.", ""));
       } else if (!this.checkTrade(player)) {
-         if (!getTown[0] && !getTown[1] && !getTown[2]) {
+         if (!camGiaoDichChiemGym(player)) { // chi khoa trong ban do Gym dang chiem (truoc: moi nguoi moi noi)
             String nameItem = "";
             int soluong = 1;
             long sumPrice = 0L;
@@ -1780,7 +1780,7 @@ public class OfflineMap extends Map {
          Message msg = null;
 
          try {
-            if (getTown[0] || getTown[1] || getTown[2]) {
+            if (camGiaoDichChiemGym(player)) {
                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm Gym", ""));
                return;
             }

@@ -28,6 +28,8 @@
     "trungTen": "Tên tài khoản đã tồn tại, vui lòng chọn tên khác.",
     "quaGio": "Mạng của bạn vừa tạo nhiều tài khoản trong một giờ qua (có thể do dùng chung mạng di động). Thử lại sau ít phút bằng Wi-Fi khác hoặc liên hệ hỗ trợ.",
     "quaNgay": "Mạng của bạn đã tạo nhiều tài khoản trong 24 giờ qua (có thể do dùng chung mạng di động). Hãy dùng Wi-Fi khác, thử lại vào ngày mai hoặc liên hệ hỗ trợ.",
+    "mayQuaGio": "Thiết bị này vừa tạo nhiều tài khoản trong một giờ qua. Thử lại sau ít phút hoặc liên hệ hỗ trợ.",
+    "mayQuaNgay": "Thiết bị này đã tạo đủ tài khoản hôm nay. Thử lại vào ngày mai hoặc liên hệ hỗ trợ.",
     "loiHeThong": "Hệ thống tạm thời chưa tạo được tài khoản. Vui lòng thử lại sau."
   },
   "thuNghiem": [
