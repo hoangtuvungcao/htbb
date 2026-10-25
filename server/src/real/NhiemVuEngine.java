@@ -248,6 +248,7 @@ public final class NhiemVuEngine {
         if (p != null && p.charDBID > 0) {
             TD.remove(Integer.valueOf(p.charDBID));
             MENU.remove(Integer.valueOf(p.charDBID));
+            HanhDongNhiemVuGame.khiThoat(p);
         }
     }
 
@@ -283,6 +284,7 @@ public final class NhiemVuEngine {
     public static void suKien(final Char p, final String kieu, final String thamSo, final int n) {
         DanhHieuGame.suKien(p, kieu, thamSo, n); // danh hieu (bo dem rieng, chay ca khi khong co nhiem vu kieu nay)
         HuongDanTanThuGame.suKien(p, kieu, thamSo, n); // buoc huong dan tan thu (chuoi chinh HD.xx) + moi khi vao lang
+        HanhDongNhiemVuGame.suKien(p, kieu, thamSo, n); // sua-buoc-hanh-dong: buoc noi chuyen -64 co muc tieu that
         if (!LauDai.bat() || p == null || p.charDBID <= 0 || n <= 0) {
             return;
         }
@@ -398,6 +400,7 @@ public final class NhiemVuEngine {
         if (!LauDai.bat()) {
             return;
         }
+        HanhDongNhiemVuGame.khiHaQuai(p, mt); // sua-buoc-hanh-dong: quan sat theo gio / ha quai tinh gio cua buoc -64
         final String id = String.valueOf(mt.idTemplate);
         final int delta = Math.abs(p.lvDetail.lv - mt.level);
         suKien(p, "giet", id, 1);
