@@ -594,6 +594,17 @@ public class Char extends LiveActor {
         }
     }
 
+    /** 0.9.20: hiệu ứng id còn bao lâu (ms) theo hạn máy chủ gửi; 0 = không có / đã hết. */
+    public long conLaiBuffMs(int id, long now) {
+        for (int i = 0; i < this.buff.size(); i++) {
+            CharBuff cb = (CharBuff) this.buff.elementAt(i);
+            if (cb.type == id && !cb.wantDetroy && cb.tick > now) {
+                return cb.tick - now;
+            }
+        }
+        return 0;
+    }
+
     public boolean isExistBuff(int id) {
         for (int i = 0; i < this.buff.size(); i++) {
             if (((CharBuff) this.buff.elementAt(i)).type == id) {

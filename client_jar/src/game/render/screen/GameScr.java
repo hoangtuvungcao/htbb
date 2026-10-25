@@ -1781,13 +1781,6 @@ public class GameScr extends Screen {
             Canvas.menu.startAt(menu, 3);
             return;
         }
-        if (autoFight) {
-            if (this.indexBuff != -1 && timeBuff - (System.currentTimeMillis() / 1000) > 0) {
-                isBeginAutoBuff = true;
-            } else {
-                isBeginAutoBuff = false;
-            }
-        }
         if (this.mainChar.state != 3 && ((autoFight || autoBomHMP) && !this.mainChar.isDie && Tilemap.lv != 0 && Tilemap.lv != 201 && Tilemap.lv != 70 && Tilemap.lv != 80 && !Tilemap.isOfflineMap)) {
             if (autoBomHMP && ((Canvas.autoTab.isAutoMHP || Canvas.autoTab.isAll) && timeDelayHpMp - (System.currentTimeMillis() / 1000) <= 0)) {
                 int nHp = (this.mainChar.hp * 100) / this.mainChar.maxhp;
@@ -1813,6 +1806,10 @@ public class GameScr extends Screen {
                 timeDelayHpMp = (System.currentTimeMillis() / 1000) + 1;
             }
             if (autoFight && ((Canvas.autoTab.isAutoFire || Canvas.autoTab.isAll) && ((long) BangAuto.tgDelay) - (System.currentTimeMillis() / 100) <= 0)) {
+                if (!this.mainChar.beStune) {
+                    // 0.9.20: chiêu bổ trợ ở ô Tự động -> dùng cho bản thân khi hết hiệu lực
+                    tuDungBoTro(indexTabSlot, indexTabSlot == 1 ? -1 : 1, game.pokemon.TuBuff.PHIM);
+                }
                 if (this.mainChar.isDoing) {
                     if (this.focusedActor != null && this.focusedActor.catagory != 2 && this.focusedActor.catagory != 0 && this.focusedActor.catagory != 126) {
                         Canvas.keyPressed[5] = true;
@@ -1827,24 +1824,34 @@ public class GameScr extends Screen {
                             isAC = true;
                         }
                         if (!isAC) {
-                            Canvas.keyPressed[this.dem] = true;
-                            this.dem += 2;
-                            if (this.dem > 5) {
-                                this.dem = 1;
+                            // 0.9.20: ô bổ trợ do tuDungBoTro lo (đúng lúc hết hiệu lực) - không "bấm" nó mỗi nhịp (trước:
+                            // bấm ô bổ trợ = gửi lại khi còn hiệu lực, trừ PP ảo; ô hồi sinh bật hộp "chỉ hồi sinh người
+                            // hết HP" mỗi nhịp). Bỏ qua ô bổ trợ, bấm ô kế tiếp.
+                            for (int t = 0; t < 3; t++) {
+                                int phim = this.dem;
+                                this.dem += 2;
+                                if (this.dem > 5) {
+                                    this.dem = 1;
+                                }
+                                if (!laOBoTro(indexTabSlot, phim)) {
+                                    Canvas.keyPressed[phim] = true;
+                                    break;
+                                }
                             }
                         }
                     } else {
                         changeToNextFocusActor(false);
                     }
-                    if (!isBeginAutoBuff && (this.mainChar.clazz != 2 || !isBuffHoisinh())) {
-                        this.doFireTuDong = true;   // 0.9.19: đòn của tự động - nhắm NPC thì bỏ NPC, không nói chuyện
-                        try {
-                            doFire(1, 1);
-                            doFire(3, 1);
-                            doFire(5, 1);
-                        } finally {
-                            this.doFireTuDong = false;
-                        }
+                    // 0.9.20: trước đây cả ba đòn bị bỏ khi có hiệu ứng bổ trợ (isBeginAutoBuff - timeBuff là ms so với
+                    // giây nên đúng suốt thời lượng) hoặc khi dòng Eevee có ô hồi sinh (isBuffHoisinh). Giờ ô bổ trợ /
+                    // hồi sinh bị doFire bỏ qua khi doFireTuDong (tuDungBoTro lo ô bổ trợ), đòn đánh ở ô khác vẫn đánh.
+                    this.doFireTuDong = true;   // 0.9.19: đòn của tự động - nhắm NPC thì bỏ NPC, không nói chuyện
+                    try {
+                        doFire(1, 1);
+                        doFire(3, 1);
+                        doFire(5, 1);
+                    } finally {
+                        this.doFireTuDong = false;
                     }
                 }
                 BangAuto.tgDelay = (int) ((System.currentTimeMillis() / 100) + 10);
@@ -1881,6 +1888,92 @@ public class GameScr extends Screen {
         }
         if ((this.mainChar.state == 1 || this.mainChar.state == 0 || this.mainChar.state == 4) && aa == 0) {
             doActorMove();
+        }
+    }
+
+    /** 0.9.20: ô (trang, phím) là chiêu bổ trợ. */
+    private boolean laOBoTro(int trang, int phim) {
+        try {
+            QuickSlot q = MainChar.quickSlot[trang][this.SLOTINDEXOFKEY[phim]];
+            return q != null && q.quickslotType == QuickSlot.TYPE_SKILL && q.isBuff;
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    /** 0.9.20: kết quả TuBuff.xet lần gần nhất theo chiêu (kiểm thử đọc); -1 = chưa xét. */
+    public int[] tuBuffKq = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+
+    /**
+     * 0.9.20: Tự động đánh dùng chiêu bổ trợ ở ô Tự động cho CHÍNH MÌNH, mỗi chiêu theo hạn hiệu ứng riêng của nó
+     * (Char.buff), không bao giờ nhắm quái / NPC, không hồi sinh. Luật: game.pokemon.TuBuff. Máy chủ
+     * (ChieuHoTro.kiem) vẫn kiểm PP / hồi chiêu / hiệu lực. Gọi từ TuDong (trang chiêu tự động dùng, cả 5 ô - TuDong
+     * đánh bằng cả trang) và vòng Auto gốc (phím 1 / 3 / 5 của trang đang dùng + trang 2, nơi BangAuto gán bổ trợ).
+     *
+     * @param trangA trang ô nhanh
+     * @param trangB trang thứ hai (-1 = không)
+     * @param phims  phím các ô xét
+     */
+    void tuDungBoTro(int trangA, int trangB, int[] phims) {
+        if (MainChar.quickSlot == null || this.mainChar == null || this.mainChar.isDie || this.mainChar.state == 3
+                || this.mainChar.hp <= 0) {
+            return;
+        }
+        int lop = this.mainChar.clazz;
+        long now = System.currentTimeMillis();
+        int daXet = 0;   // bit theo chiêu: một chiêu ở nhiều ô chỉ xét một lần mỗi nhịp
+        for (int tr = 0; tr < 2; tr++) {
+            int trang = tr == 0 ? trangA : trangB;
+            if (trang < 0 || trang >= MainChar.quickSlot.length || (tr == 1 && trangB == trangA)) {
+                continue;
+            }
+            for (int k = 0; k < phims.length; k++) {
+                int phim = phims[k];
+                if (!laOBoTro(trang, phim)) {
+                    continue;
+                }
+                int sk = MainChar.quickSlot[trang][this.SLOTINDEXOFKEY[phim]].getSkillType();
+                if (sk < 4 || sk >= this.mainChar.timeLastUseSkills.length || sk >= this.mainChar.coolDownSkill.length || sk >= 31
+                        || (daXet & (1 << sk)) != 0) {
+                    continue;
+                }
+                daXet |= 1 << sk;
+                int choMinh = 1;
+                byte eff = -1;
+                try {
+                    choMinh = SkillManager.SKILL_CAN_BUFF_TO_USER[lop][sk - 4];
+                    eff = SkillManager.EFF_BUFF_SKILL[lop][sk - 4];
+                } catch (Throwable e) {
+                    // chiêu ngoài bảng bổ trợ của dòng: không dùng
+                }
+                int cap = Char.skillLevelLearnt != null && sk < Char.skillLevelLearnt.length ? Char.skillLevelLearnt[sk] : 0;
+                int ppCan = SkillManager.ppAnToan(sk, cap, lop);
+                long con = eff < 0 ? 0 : this.mainChar.conLaiBuffMs(eff, now);
+                long daQua = now - this.mainChar.timeLastUseSkills[sk];
+                int kq = eff < 0 ? game.pokemon.TuBuff.KHONG_DUNG_DUOC
+                        : game.pokemon.TuBuff.xet(lop, sk, choMinh, cap, con, daQua, this.mainChar.coolDownSkill[sk], this.mainChar.mp, ppCan);
+                if (sk < this.tuBuffKq.length) {
+                    this.tuBuffKq[sk] = kq;
+                }
+                if (kq != game.pokemon.TuBuff.DUNG) {
+                    continue;
+                }
+                GameService.gI().useBuff(this.mainChar.ID, (byte) 0, eff, (short) 0);
+                this.mainChar.mp -= ppCan;   // máy chủ gửi PP thật ngay sau (gói HP/PP)
+                if (this.mainChar.mp < 0) {
+                    this.mainChar.mp = 0;
+                }
+                long hoi = 0;
+                try {
+                    hoi = SkillManager.getSkillCooldown((byte) sk, (byte) lop, cap);   // gói 35: hồi chiêu hiệu quả của máy chủ
+                } catch (Throwable e) {
+                }
+                if (hoi > this.mainChar.coolDownSkill[sk]) {
+                    this.mainChar.coolDownSkill[sk] = hoi;
+                }
+                this.mainChar.timeLastUseSkills[sk] = now;
+                this.indexBuff = sk;   // biểu tượng bổ trợ trên HUD
+            }
         }
     }
 
@@ -2141,6 +2234,9 @@ public class GameScr extends Screen {
             }
         }
         QuickSlot qs = MainChar.quickSlot[index][this.SLOTINDEXOFKEY[key]];
+        if (this.doFireTuDong && qs != null && qs.quickslotType == QuickSlot.TYPE_SKILL && qs.isBuff) {
+            return;   // 0.9.20: ô bổ trợ trong Tự động do tuDungBoTro lo (cho bản thân, đúng lúc hết hiệu lực)
+        }
         // 0.9.8 ngắm tay: trận giữa người chơi / "Ngắm thủ công" -> chiêu tấn công thành phát bắn theo hướng (NgamTay)
         // 0.9.19: không bao giờ khi đang nhắm NPC (ô thuốc giữ mục tiêu NPC: dùng thuốc, không bắn)
         if (qs != null && !game.pokemon.HanhDong.laNpc(this.focusedActor)
@@ -2154,7 +2250,9 @@ public class GameScr extends Screen {
                     return;
                 }
                 byte b = SkillManager.EFF_BUFF_SKILL[Canvas.gameScr.mainChar.clazz][qs.getSkillType() - 4];
-                int mpLost = SkillManager.getSkillMP(qs.getSkillType(), Char.skillLevelLearnt[qs.getSkillType() - 4], Canvas.gameScr.mainChar.clazz);
+                // 0.9.20: PP theo cấp của CHÍNH chiêu này (trước: cấp của chiêu skillType - 4 = chiêu đánh, sai giá / có thể
+                // ra ngoài bảng); khớp máy chủ ChieuHoTro.giaPP
+                int mpLost = SkillManager.ppAnToan(qs.getSkillType(), level, Canvas.gameScr.mainChar.clazz);
                 if (mpLost > Canvas.gameScr.mainChar.mp) {
                     if (!this.first) {
                         addChat(new ChatInfo("", "Không đủ PP", 0));
@@ -2177,7 +2275,6 @@ public class GameScr extends Screen {
                     }
                 }
                 if (qs.getSkillType() != 6) {
-                    this.mainChar.mp -= mpLost;
                     if (qs.isBuff && (Canvas.gameScr.indexBuff == -1 || Canvas.gameScr.indexBuff == qs.getSkillType())) {
                         Canvas.gameScr.indexBuff = qs.getSkillType();
                     }
@@ -2188,6 +2285,7 @@ public class GameScr extends Screen {
                     }
                     if (timeSinceUseThisSkill > Canvas.gameScr.mainChar.coolDownSkill[qs.getSkillType()]) {
                         GameService.gI().useBuff(Canvas.gameScr.mainChar.ID, (byte) 0, b, (short) 0);
+                        this.mainChar.mp -= mpLost;   // 0.9.20: chỉ trừ khi thật sự gửi (trước: trừ cả lúc đang hồi chiêu)
                         this.mainChar.coolDownSkill[qs.getSkillType()] = SkillManager.getSkillCooldown(qs.getSkillType(), this.mainChar.clazz, Char.skillLevelLearnt[qs.getSkillType()]);
                         this.mainChar.timeLastUseSkills[qs.getSkillType()] = System.currentTimeMillis();
                         return;
@@ -6205,6 +6303,12 @@ public class GameScr extends Screen {
                 return;
             }
             if (use == 0) {
+                if (charID == this.mainChar.ID) {
+                    // 0.9.20: máy chủ báo hết hiệu ứng của CHÍNH MÌNH (ChieuHoTro.goiXoa) - trước chỉ tìm trong actors (không
+                    // có mainChar) nên biểu tượng / hạn cũ còn tới khi đồng hồ client hết; Tự động dùng bổ trợ đọc hạn này
+                    this.mainChar.removeBuff(buffID);
+                    return;
+                }
                 int size2 = this.actors.size();
                 for (int i3 = 0; i3 < size2; i3++) {
                     Actor ch3 = (Actor) this.actors.elementAt(i3);
