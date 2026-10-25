@@ -263,6 +263,16 @@ sửa `MapClan` vào / rời bản đồ bang khi bang chưa có danh sách khô
 3. Kiểm (b6b12c6e): `ChupTrongGame` tự tìm thư mục `server/` để nạp icon máy chủ (không còn chạy từ thư mục khác thì mọi
    ô đồ là hộp quà mà vẫn đạt; thiếu là HỎNG, `kiemIconDo`), giả lập chế độ Điểm huấn luyện (-122) + `kiemNhanHL` /
    `kiemMenuChuHL`, `kiemDanhHieuDai` vẽ đủ 424 danh hiệu ở mọi cỡ, cả đường J2ME (`-Dchup.j2me`).
+4. Lỗi người chơi J2ME 0.9.18 (bàn phím L / R / mũi tên / F, làng: "sao chọn NPC lại tấn công thế này"): `GameScr.doFire`
+   gọi `NgamTay.chanDoFire` TRƯỚC khi rẽ sang nói chuyện NPC -> bật "Ngắm thủ công" (Menu nhanh / Cài đặt) thì phím bắn,
+   phím 5, nút đánh HUD, chạm / chuột trái / chuột phải / Enter / Space vào NPC đều bắn một phát -113 theo hướng đang
+   quay (thế đánh, gói đánh) thay vì mở menu NPC. Sửa: nhắm NPC thì phím / nút đánh đi thẳng `GameScr.noiVoiNpcDangNham`
+   (không qua ô nhanh: ô phím 5 là thuốc / trống / chiêu chưa học cũng nói được), ngắm tay không bao giờ chạy khi nhắm NPC,
+   phím chiêu HUD riêng nhắm quái gần nhất (ngắm tay quay về phía quái; không có quái thì chiêu đánh không làm gì),
+   `doUseSkillToFocusActor` không bao giờ đánh NPC (cả NPC dạng nhân vật khác quốc gia), Tự động đánh (`autoFight` + tự
+   đánh, `TuDong`) không nhắm NPC (`findFocusActor`). Vòng game bước cố định 0.9.18 KHÔNG xử lý phím hai lần (đã đo). Kiểm
+   `client_pc/test/KiemPhimNpc` (J2ME phím 240x320 / 320x240, J2ME cảm ứng 640x360, PC; ngắm tay tắt / bật, vẽ 0 / 45 ms):
+   bản trước sửa 255 hỏng, sau sửa 0.
 
 ### Bản 0.9.18 (`BAN=918`: sửa "game chậm như slow motion" 0.9.15-0.9.17 - vòng game bước cố định)
 
