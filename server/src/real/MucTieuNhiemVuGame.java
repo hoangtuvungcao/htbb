@@ -246,6 +246,12 @@ public final class MucTieuNhiemVuGame {
             final MucTieuNhiemVu.Muc[] a = ds.toArray(new MucTieuNhiemVu.Muc[0]);
             k.muc = MucTieuNhiemVu.muc(info.type, a, info.deltaLv, info.lv, info.shortContent);
             k.ngan = MucTieuNhiemVu.ngan(info.type, a, info.deltaLv);
+            if (nhom == 2 && p != null && HanhDongNhiemVuGame.mau(info) != null) {
+                // sua-buoc-hanh-dong: buoc noi chuyen co muc tieu that - tien do (x/N) ngay trong so nhiem vu
+                final String td = HanhDongNhiemVuGame.tienDo(info.main_sub == 0 ? p.mainQuest : p.subQuest, info);
+                k.muc += td;
+                k.ngan = td.trim();
+            }
             final int npc = nhom == 0 ? info.idNpcRcv : KhuVucNhiemVuGame.npcTra(info, nhom);
             final int npcThat = npc >= 0 && npc < 32000 ? npc : (info.idNpcRcv >= 0 && info.idNpcRcv < 32000 && nhom != 2 ? info.idNpcRcv : -1);
             k.tra = noiNpc(p, npcThat);

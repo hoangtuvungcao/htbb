@@ -318,6 +318,7 @@ public final class Kiem {
             Kiem.bang("KiemKetTau khong nem loi", "", String.valueOf(e));
         }
         KiemCap140.chay();
+        KiemBuocHanhDong.chay(); // sua-buoc-hanh-dong: buoc noi chuyen hua hanh dong -> kiem that hoac chu that (khoi sua_buoc_hanh_dong.sql)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);
