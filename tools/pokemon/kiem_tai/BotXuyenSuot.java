@@ -624,20 +624,37 @@ public class BotXuyenSuot {
         }
 
         String nvChinhMot() throws Exception {
-            // 1) tra nhiem vu da xong
+            // 1) tra nhiem vu da xong. Bao loi 25/10 (bot-cap1-40): truoc day gui id 0 (ca nhan lan tra) - may chu chi nhan
+            // dung id nhiem vu chinh dang moi / dang lam (Char.xuLyNhiemVu), nen bot KHONG BAO GIO nhan/tra duoc nhiem vu chinh
+            // nao (cot_truyen "nv chinh 0" van PASS). Nay: lay id that tu goi -64 (nhom 1 = xong, nhom 0 = co the nhan).
             int m = b.moc();
-            b.gui(-64, (byte) 1, (short) 0, (byte) 0);
-            b.bom(1200);
+            b.gui(-64, (byte) 1, (short) -1, (byte) 0); // id sai co y: may chu chi gui lai 3 danh sach (tuChoiNhiemVu(null))
+            b.bom(900);
+            List<Object[]> xong = dsNv(1);
+            Object[] qx = null;
+            if (xong != null) for (Object[] q : xong) if ((int) q[1] == 0) qx = q;
+            m = b.moc();
+            if (qx != null) { b.gui(-64, (byte) 1, (short) (int) qx[0], (byte) 0); b.bom(1200); }
             String t = b.chuTu(m);
-            if (t.contains("hoàn thành") || t.contains("Hoàn thành") || t.contains("Nhận được") || t.contains("nhận thưởng")) {
+            if (qx != null && (t.contains("hoàn thành") || t.contains("Hoàn thành") || t.contains("Nhận được") || t.contains("nhận thưởng"))) {
                 soNvChinh++;
                 lanTienTrien = System.currentTimeMillis();
                 ghi("TRA nhiem vu chinh: " + t.replace('\n', ' ').substring(0, Math.min(140, t.length())));
             }
-            // 2) nhan nhiem vu chinh moi
+            // 2) nhan nhiem vu chinh moi (dung id; noi chuyen type 3: client nghe het loi thoai la gui thang "tra")
+            List<Object[]> moi = dsNv(0);
+            Object[] qm = null;
+            if (moi != null) for (Object[] q : moi) if ((int) q[1] == 0) qm = q;
             m = b.moc();
-            b.gui(-64, (byte) 0, (short) 0, (byte) 0);
-            b.bom(1200);
+            if (qm != null) {
+                boolean noiChuyen = (int) qm[3] == 3;
+                b.gui(-64, (byte) (noiChuyen ? 1 : 0), (short) (int) qm[0], (byte) 0);
+                b.bom(1200);
+                if (noiChuyen && b.chuTu(m).contains("hoàn thành")) { soNvChinh++; lanTienTrien = System.currentTimeMillis(); }
+            } else {
+                b.gui(-64, (byte) 1, (short) -1, (byte) 0);
+                b.bom(900);
+            }
             t = b.chuTu(m);
             List<Object[]> dang = dsNv(2);
             mucTieu.clear();

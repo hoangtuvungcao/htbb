@@ -652,7 +652,7 @@ public final class NhiemVuEngine {
         if (t != null) {
             for (final Entry<String, long[]> e : t.entrySet()) {
                 final NhiemVuMau m = MAU.get(e.getKey());
-                if (m != null && e.getValue()[1] < 2 && !m.laThanhTuu()) {
+                if (m != null && hienDangLam(m.laThanhTuu(), e.getValue()[1])) {
                     dang++;
                 }
             }
@@ -700,6 +700,15 @@ public final class NhiemVuEngine {
         p.sendMessage(MessageCreator.createMsgMenu(nhan.toArray(new String[0]), SoTayLauDai.NPC_ID, menu));
     }
 
+    /**
+     * Mot dong tien do co hien o "Đang làm" khong: chua nhan thuong (trang thai &lt; 2); thanh tuu chi hien khi da xong cho
+     * nhan (1). Dung CHUNG cho so dem "Đang làm (n)" va danh sach - bot-cap1-40 (25/10/2026): truoc day so dem bo moi thanh
+     * tuu nen hien "Đang làm (0)" trong khi ben trong co "Bước chân đầu tiên 10/10 (nhận thưởng)" - nguoi choi khong mo.
+     */
+    public static boolean hienDangLam(final boolean laThanhTuu, final long trangThai) {
+        return trangThai < 2 && !(laThanhTuu && trangThai == 0);
+    }
+
     static void dsDangLam(final Char p) {
         final ConcurrentHashMap<String, long[]> t = td(p);
         final List<String> ma = new ArrayList<String>();
@@ -708,7 +717,7 @@ public final class NhiemVuEngine {
             for (final Entry<String, long[]> e : t.entrySet()) {
                 final NhiemVuMau m = MAU.get(e.getKey());
                 final long[] v = e.getValue();
-                if (m == null || v[1] >= 2 || m.laThanhTuu() && v[1] == 0 || ma.size() >= NhiemVuMau.DS_TOI_DA) {
+                if (m == null || !hienDangLam(m.laThanhTuu(), v[1]) || ma.size() >= NhiemVuMau.DS_TOI_DA) {
                     continue;
                 }
                 ma.add(m.ma);
