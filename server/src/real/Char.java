@@ -13044,6 +13044,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     e.printStackTrace();
                 }
             } else if (type == 2) {
+                // bot-cap1-40 (25/10/2026): huy chi dung nhiem vu chinh dang co. Truoc day khong kiem id - goi -64 (2, id bat
+                // ky, 0) (vd id 0 tu goi tin cu / ds client cu) huy MAT nhiem vu chinh dang lam: buoc dia diem da nhan quay ve
+                // "co the nhan", quai da ha ve 0, nhan lai tru them ve chuong.
+                if (questID != this.mainQuest.id_quest) {
+                    this.tuChoiNhiemVu(null);
+                    return;
+                }
                 if (this.mainQuest.state_quest == NewCharQuest.DONE) {
                     return;
                 }

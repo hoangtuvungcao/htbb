@@ -268,7 +268,9 @@ final class BatBien {
         if (!HoiQuy.daNapTheGioi) HoiQuy.napTheGioi(b);
         if (!HoiQuy.daNapTheGioi) return;
         int m = b.moc();
-        b.gui(-64, (byte) 2, (short) 0, (byte) 0);
+        // bot-cap1-40: -64 type 2 la HUY (khong phai "xem nhom 2") - truoc day bat bien nay huy mat nhiem vu chinh dang lam
+        // cua MOI bot luc ket thuc. Goi tra voi id -1: may chu chi gui lai 3 danh sach.
+        b.gui(-64, (byte) 1, (short) -1, (byte) 0);
         b.bom(1200);
         List<KichBanTienDoNhiemVu.Dong> ds = KichBanTienDoNhiemVu.ds(b, m, 2);
         if (ds == null) return;

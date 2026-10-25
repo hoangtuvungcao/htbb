@@ -95,6 +95,11 @@ while IFS= read -r DONG || [ -n "$DONG" ]; do
     case "$DONG" in ''|'#'*) continue ;; esac
     TAT=0
     if [ "${DONG:0:1}" = "!" ]; then TAT=1; DONG=${DONG:1}; fi
+    # "?" = nhom DAI (chay dem): chi chay khi goi ten trong HOI_QUY_NHOM, khong thi bo qua im lang (khong tinh HONG/TAT)
+    if [ "${DONG:0:1}" = "?" ]; then
+        DONG=${DONG:1}
+        case " ${HOI_QUY_NHOM:-} " in *" ${DONG%% *} "*) ;; *) continue ;; esac
+    fi
     TRUOC=${DONG%% -- *}; SAU=""
     [[ "$DONG" == *" -- "* ]] && SAU=${DONG#* -- }
     [[ "$DONG" == *" --" ]] && TRUOC=${DONG% --}

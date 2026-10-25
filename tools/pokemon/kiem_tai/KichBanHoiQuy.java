@@ -714,7 +714,7 @@ final class KichBanHoiQuy {
             @Override
             boolean lamNvChinh() throws Exception {
                 int m = b.moc();
-                b.gui(-64, (byte) 2, (short) 0, (byte) 0);
+                b.gui(-64, (byte) 1, (short) -1, (byte) 0); // xin lai danh sach (type 2 = HUY nhiem vu chinh, bot-cap1-40)
                 b.bom(1000);
                 KichBanTienDoNhiemVu.Dong ca = KichBanTienDoNhiemVu.tim(KichBanTienDoNhiemVu.ds(b, m, 2), 2);
                 if (ca != null) {
@@ -738,7 +738,8 @@ final class KichBanHoiQuy {
         };
         int vp0 = BatBien.VI_PHAM.size();
         d.run();
-        ket("cot_truyen.tien_trien", d.capCao > d.capDau || d.soNvChinh > 0, "cap " + d.capDau + " -> " + d.capCao + ", nv chinh " + d.soNvChinh + ", phu " + d.soNvPhu
+        // bao loi 25/10 (bot-cap1-40): "len cap" khong du - bot chi cay quai van PASS du khong xong nhiem vu chinh nao
+        ket("cot_truyen.tien_trien", d.capCao > d.capDau && d.soNvChinh > 0, "cap " + d.capDau + " -> " + d.capCao + ", nv chinh " + d.soNvChinh + ", phu " + d.soNvPhu
                 + ", gym " + d.soGym + ", ha " + d.soHaQuai + ", doi map " + d.soDoiMap + ", chet " + d.soChet);
         // "cong khoa vi cua ai" la DUNG luat (nguoi choi phai nhan cua ai): chi tinh ket khi khong nhan duoc cua ai nao
         List<String> ket = new ArrayList<>();
