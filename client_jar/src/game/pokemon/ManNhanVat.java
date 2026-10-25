@@ -372,12 +372,14 @@ public final class ManNhanVat extends Screen {
         MainChar m = mc();
         Bang.mauTam = mauHePoke(m);   // 0.9.6: tấm nhuốm màu hệ Pokémon (kiểu GO)
         Bang.chamTab = ChamMoi.tabsNhanVat(TABS.length);
+        Bang.dauGon = canDauGon();
         int[] c = Bang.khung(g, m.name == null ? "Hồ sơ" : m.name, TABS, this.tab, vt, new IAction() {
             public void perform() {
                 ManNhanVat.this.dong();
             }
         });
         int x = c[0], y = c[1], w = c[2], h = c[3];
+        minGon = 0;
         switch (this.tab) {
             case TAB_TRANG_BI:
                 veTrangBi(g, x, y, w, h);
@@ -568,6 +570,27 @@ public final class ManNhanVat extends Screen {
         VUNG_TB[3] = h;
         // 0.9.18: tên danh hiệu dài (không vừa một dòng ở bề ngang khối) -> viên 2-3 dòng: hàng Danh hiệu cao hơn, bố cục
         // tính lại với hàng đó (ô nhỏ đi / sân khấu thấp đi, không chồng)
+        // 0.9.20: không bố cục nào vừa với cỡ chạm thường (điện thoại mật độ cao, "cỡ hiển thị lớn") -> cỡ chạm gọn
+        // (36 dp thay 44 dp, hạ dần, không dưới mức tối thiểu 24 dp) chỉ trong tab này; vẫn không vừa -> boCucEp (không xếp dọc)
+        int min0 = VungCham.MIN;
+        minGon = 0;
+        int[] bc = chonBoCuc(m, w, h);
+        for (int f = 9; f >= 6 && bc[0] == KHONG_VUA && ChuDe.dt(); f--) {
+            // 36 dp, 32 dp, 28 dp, 24 dp (mức tối thiểu) - mức lớn nhất còn vừa
+            minGon = Math.max(24, (min0 * f + 10) / 11);
+            VungCham.MIN = minGon;
+            bc = chonBoCuc(m, w, h);
+        }
+        try {
+            veTrangBiGon(g, m, x, y, w, h, bc);
+        } finally {
+            VungCham.MIN = min0;
+        }
+    }
+
+    /** {kiểu, s, cột, hàng, sân khấu, cao hàng Danh hiệu}: boCuc theo tên danh hiệu đang đeo (viên 1-3 dòng). */
+    int[] chonBoCuc(MainChar m, int w, int h) {
+        int k = Bang.cach();
         String chuDh = chuDanhHieu(m);
         int soDong = 1, hP = caoHangDh();
         int[] bc = boCuc(w, h, hP);
@@ -581,6 +604,21 @@ public final class ManNhanVat extends Screen {
             hP = caoHangDh(n);
             bc = boCuc(w, h, hP);
         }
+        if (bc[0] == KHONG_VUA && !ChuDe.dt()) {
+            bc = boCucEp(w, h, hP);
+        }
+        return new int[]{bc[0], bc[1], bc[2], bc[3], bc[4], hP};
+    }
+
+    private void veTrangBiGon(Graphics g, MainChar m, int x, int y, int w, int h, int[] bc) {
+        int k = Bang.cach();
+        if (bc[0] == KHONG_VUA) {
+            int[] e = boCucEp(w, h, bc[5]);
+            bc = new int[]{e[0], e[1], e[2], e[3], e[4], bc[5]};
+        }
+        int hP = bc[5];
+        int s;
+        int lw;
         int kieu = bc[0];
         s = bc[1];
         int cs = bc[2], rh = bc[3], st = bc[4];
@@ -640,7 +678,7 @@ public final class ManNhanVat extends Screen {
     // ------------------------------------------------------------------ 0.9.18: bố cục gọn tab Trang bị
 
     /** kiểu bố cục: một cột 6 ô mỗi bên (màn cao: PC / máy tính bảng), hai cột 3 ô (điện thoại), xếp dọc (màn dọc hẹp) */
-    public static final int MOT_COT = 0, HAI_COT = 1, XEP_DOC = 2;
+    public static final int MOT_COT = 0, HAI_COT = 1, XEP_DOC = 2, KHONG_VUA = 3;
     /** Kiểm thử: bố cục vừa vẽ {kiểu, cạnh ô, bề ngang khối nhân vật, bề ngang sân khấu, cao cụm ô, x sân khấu, y cụm ô}. */
     public static final int[] BO_CUC = new int[7];
     /** Kiểm thử: vùng nội dung tab Trang bị vừa vẽ {x, y, w, h}. */
@@ -699,7 +737,8 @@ public final class ManNhanVat extends Screen {
     /**
      * Chọn bố cục cho vùng w x h: {kiểu, cạnh ô s, số cột mỗi bên, số hàng mỗi bên, bề ngang sân khấu}. Ưu tiên một cột 6
      * ô mỗi bên (khối hẹp, sân khấu cao), rồi hai cột 3 ô; hành trang bên phải giữ >= 4 (một cột) / 3 (hai cột) cột ô và
-     * lưới thấy >= 3 hàng; không vừa thì xếp dọc (3 cột x 2 hàng mỗi bên, hành trang dưới).
+     * lưới thấy >= 3 hàng (tính cả ví xuống dòng); xếp dọc (3 cột x 2 hàng mỗi bên, hành trang dưới) chỉ khi lưới dưới vẫn
+     * thấy >= 3 hàng. Không bố cục nào vừa: kiểu KHONG_VUA (màn tự thu: đầu tấm gọn, cỡ chạm gọn, cuối cùng boCucEp).
      */
     static int[] boCuc(int w, int h) {
         return boCuc(w, h, caoHangDh());
@@ -718,7 +757,7 @@ public final class ManNhanVat extends Screen {
         for (int c = 6; c >= 4; c--) {
             for (int s = sA; s >= goc; s--) {
                 int st = w - k - (2 * s + 2 * k) - rongTui(c, s, k);
-                if (st >= 96) {
+                if (st >= 96 && hangTui(h, c, s, k) >= 4) {
                     return new int[]{MOT_COT, s, 1, 6, Math.min(st, 150)};
                 }
             }
@@ -730,20 +769,69 @@ public final class ManNhanVat extends Screen {
         for (int c = 5; c >= 3; c--) {
             for (int s = sB; s >= sMin; s--) {
                 int st = w - k - (4 * s + 4 * k) - rongTui(c, s, k);
-                if (st >= (goc <= 24 ? 44 : 60)) {
+                if (st >= (goc <= 24 ? 44 : 60) && hangTui(h, c, s, k) >= hangTui) {
                     return new int[]{HAI_COT, s, 2, 3, Math.min(st, 120)};
                 }
             }
         }
-        // xếp dọc: 3 cột x 2 hàng mỗi bên, sân khấu giữa, hành trang dưới
+        // xếp dọc: 3 cột x 2 hàng mỗi bên, sân khấu giữa, hành trang dưới (màn dọc hẹp - J2ME 240x320)
         int s = goc;
         int st = Math.min(120, w - (6 * s + 6 * k));
         if (st < 40) {
             s = Math.max(min, (w - 40 - 6 * k) / 6);
             st = Math.min(120, w - (6 * s + 6 * k));
         }
-        return new int[]{XEP_DOC, s, 3, 2, st};
+        int hTren = 4 + caoDauNv() + k + 2 * s + k + k + hP + k;
+        if ((h - hTren - LuoiTui.caoKhungGon(w, s) + k) / (s + k) >= 3) {
+            return new int[]{XEP_DOC, s, 3, 2, st};
+        }
+        return new int[]{KHONG_VUA, s, 2, 3, st};
     }
+
+    /** Số hàng lưới hành trang thấy được ở bảng gọn c cột ô cạnh s, cao h (ví xuống dòng tính cả). */
+    static int hangTui(int h, int c, int s, int k) {
+        return (h - LuoiTui.caoKhungGon(rongTui(c, s, k), s) + k) / (s + k);
+    }
+
+    /**
+     * 0.9.20 đường cuối (màn quá thấp kể cả đầu tấm gọn + cỡ chạm gọn): hai cột 3 ô, hành trang bên phải, cạnh ô thu cho
+     * cụm ô VÀ lưới hành trang vẫn đủ 3 hàng - không bao giờ xếp dọc làm lưới mất trên màn ngang.
+     */
+    static int[] boCucEp(int w, int h, int hP) {
+        int k = Bang.cach();
+        int giua = h - 8 - caoDauNv() - hP - 2 * k;
+        int s = Math.max(12, Math.min(34, (giua - 2 * k) / 3));
+        for (; s > 12; s--) {
+            if (hangTui(h, 3, s, k) >= 3) {
+                break;
+            }
+        }
+        int c = 3;
+        while (c < 5 && w - k - (4 * s + 4 * k) - rongTui(c + 1, s, k) >= 60) {
+            c++;
+        }
+        while (s > 12 && w - k - (4 * s + 4 * k) - rongTui(c, s, k) < 44) {
+            s--;
+        }
+        int st = w - k - (4 * s + 4 * k) - rongTui(c, s, k);
+        return new int[]{HAI_COT, s, 2, 3, Math.max(20, Math.min(st, 120))};
+    }
+
+    /**
+     * 0.9.20 (chủ dự án: APK 0.9.19 tab Trang bị "mất lưới hành trang" trên điện thoại 1080p mật độ 3 - 44 dp = 44 px logic
+     * trên màn 640x360): màn ngang cảm ứng mà tấm thường không đủ cao cho bố cục gọn -> tấm Nhân vật dùng ĐẦU GỌN (tab cùng
+     * hàng nút X, bỏ dải tên). Cùng một quyết định cho mọi tab (đổi tab không nhảy khung).
+     */
+    static boolean canDauGon() {
+        if (!ChuDe.dt() || Canvas.w <= Canvas.h) {
+            return false;
+        }
+        int[] o = Bang.oTam(0, 0);
+        return boCuc(o[2] - 2 * ChuDe.DEM, o[3] - Bang.caoDauTam(true), caoHangDh())[0] == KHONG_VUA;
+    }
+
+    /** Cỡ chạm gọn đang dùng ở tab Trang bị (0 = cỡ chạm thường) - kiểm thử đọc. */
+    public static int minGon;
 
     /** Bề ngang bảng hành trang gọn có c cột ô cạnh s (đệm 5 + thanh cuộn 10). */
     static int rongTui(int c, int s, int k) {

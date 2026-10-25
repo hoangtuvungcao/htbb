@@ -49,6 +49,47 @@ public class ChupTrongGame {
         {2560, 1600, 320}, {2048, 1536, 320}, {1280, 720, 0}, {1920, 1080, 0}, {2560, 1080, 0}, {1920, 1200, 0}, {1024, 768, 0}};
     static final String[] TEN_CO = {"dt16x9", "dt19.5x9", "dt20x9", "dt21x9", "tablet16x10", "tablet4x3", "pc720", "pc1080", "pc21x9", "pc16x10", "pc4x3"};
 
+    /**
+     * 0.9.20 (lỗi chủ dự án: tab Trang bị mất lưới hành trang trên Android 1080p): máy thật qua đúng phép đổi của APK
+     * (KhungCoDinh phủ kín + NenAndroid.datCoCham 44 dp theo DisplayMetrics.density, vùng an toàn = max(tai thỏ, cạnh ngắn
+     * / 50) hai bên như HtbbActivity). Game chỉ chạy ngang: máy dọc 1080x2400 = bề mặt 2400x1080.
+     * {rộng, cao, dpi (density x 160), tai thỏ trái px}. Mật độ cao ("cỡ hiển thị lớn") làm cỡ chạm logic to -> bố cục chật.
+     */
+    static final int[][] CO_APK = {{1920, 1080, 480, 0}, {1920, 1080, 560, 0}, {1776, 1080, 480, 0}, {1600, 720, 320, 0},
+        {1600, 720, 360, 80}, {2340, 1080, 440, 90}, {2400, 1080, 440, 90}, {2400, 1080, 520, 90}, {3200, 1440, 560, 120},
+        {3200, 1440, 640, 120}, {1280, 800, 213, 0}, {2000, 1200, 240, 0}, {1920, 1200, 320, 0}, {2560, 1600, 360, 0}};
+    static final String[] TEN_CO_APK = {"apk1080x1920d3", "apk1080x1920d3.5", "apk1080x1920nav", "apk720x1600d2", "apk720x1600d2.25",
+        "apk1080x2340d2.75", "apk1080x2400d2.75", "apk1080x2400d3.25", "apk1440x3200d3.5", "apk1440x3200d4", "apk800x1280tab",
+        "apk1200x2000tab", "apk1200x1920tab", "apk1600x2560tab"};
+    /** Máy J2ME / giả lập J2ME người chơi dùng (nhật ký máy chủ: Nokia 6233 400x240...): x1, bấm phím. */
+    static final int[][] CO_J2ME = {{240, 320, -1}, {320, 240, -1}, {400, 240, -1}, {360, 640, -1}, {640, 360, -1}};
+    static final String[] TEN_CO_J2ME = {"j2me240x320", "j2me320x240", "j2me400x240", "j2me360x640", "j2me640x360"};
+
+    /** Máy J2ME thật: màn logic đúng W x H, x1 (không phóng). */
+    static void datCoJ2me(int W, int H) {
+        NenPc.rong = W;
+        NenPc.cao = H;
+        NenPc.heSo = 1;
+        NenPc.thatW = W;
+        NenPc.thatH = H;
+        NenPc.hienX = 0;
+        NenPc.hienY = 0;
+        NenPc.hienW = W;
+        NenPc.hienH = H;
+    }
+
+    /** Đặt cỡ như APK thật: khung phủ kín, cỡ chạm 44 dp / cách 8 dp theo density, vùng an toàn hai bên. */
+    static void datCoApk(int W, int H, int dpi, int taiTho) {
+        NenPc.tinhKichThuoc(W, H);
+        float t = Math.max(W / 640f, H / 360f);
+        float matDo = dpi / 160f;
+        game.pokemon.VungCham.MIN = (int) Math.ceil(44f * matDo / t - 0.01f);
+        game.pokemon.VungCham.CACH = (int) Math.ceil(8f * matDo / t - 0.01f);
+        int bo = Math.min(W, H) / 50;
+        game.pokemon.Bang.anTrai = (int) Math.ceil(Math.max(bo, taiTho) / t - 1e-4f);
+        game.pokemon.Bang.anPhai = (int) Math.ceil(bo / t - 1e-4f);
+    }
+
     /** htbb.pc.ChuHD.thayKyHieu (gói riêng): ký hiệu phông PC không có -> chữ thay, đúng như lúc vẽ. */
     static String thayKyHieuHD(String s) {
         try {
@@ -309,17 +350,18 @@ public class ChupTrongGame {
         // chạy nhanh một phần: -Dchup.co=dt20x9,pc1080 -Dchup.man=menu,the_gioi
         String locCo = System.getProperty("chup.co"), locMan = System.getProperty("chup.man");
         // -Dchup.j2me: thêm cỡ máy J2ME thật 240x320 / 320x240 (x1, không cỡ chạm) cho các màn MAN_J2ME_THAT
-        int[][] COV = CO;
-        String[] TEN_COV = TEN_CO;
-        if (System.getProperty("chup.j2me") != null) {
-            COV = new int[CO.length + 2][];
-            TEN_COV = new String[CO.length + 2];
-            System.arraycopy(CO, 0, COV, 0, CO.length);
-            System.arraycopy(TEN_CO, 0, TEN_COV, 0, CO.length);
-            COV[CO.length] = new int[]{240, 320, -1};
-            COV[CO.length + 1] = new int[]{320, 240, -1};
-            TEN_COV[CO.length] = "j2me240x320";
-            TEN_COV[CO.length + 1] = "j2me320x240";
+        // 0.9.20: + máy Android thật (CO_APK, phép đổi của APK); -Dchup.j2me: + máy J2ME thật (CO_J2ME)
+        boolean j2 = System.getProperty("chup.j2me") != null;
+        int n0 = CO.length + CO_APK.length, n = n0 + (j2 ? CO_J2ME.length : 0);
+        int[][] COV = new int[n][];
+        String[] TEN_COV = new String[n];
+        System.arraycopy(CO, 0, COV, 0, CO.length);
+        System.arraycopy(TEN_CO, 0, TEN_COV, 0, CO.length);
+        System.arraycopy(CO_APK, 0, COV, CO.length, CO_APK.length);
+        System.arraycopy(TEN_CO_APK, 0, TEN_COV, CO.length, CO_APK.length);
+        if (j2) {
+            System.arraycopy(CO_J2ME, 0, COV, n0, CO_J2ME.length);
+            System.arraycopy(TEN_CO_J2ME, 0, TEN_COV, n0, CO_J2ME.length);
         }
         for (int c = 0; c < COV.length; c++) {
             if (locCo != null && !("," + locCo + ",").contains("," + TEN_COV[c] + ",")) continue;
@@ -338,6 +380,8 @@ public class ChupTrongGame {
             } else {
                 NenPc.tinhKichThuoc(W, H);
             }
+            final boolean apk = COV[c].length > 3;
+            game.pokemon.Bang.anPhai = 0;
             chay(new Runnable() {
                 public void run() {
                     game.render.Canvas.instance.sizeChanged(NenPc.rong, NenPc.cao);
@@ -345,7 +389,16 @@ public class ChupTrongGame {
             });
             float s = NenPc.hienW / (float) NenPc.rong;
             int min, cach;
-            if (dpi < 0) {
+            if (apk) {
+                datCoApk(W, H, dpi, COV[c][3]);
+                chay(new Runnable() {
+                    public void run() {
+                        game.render.Canvas.instance.sizeChanged(NenPc.rong, NenPc.cao);
+                    }
+                });
+                min = game.pokemon.VungCham.MIN;
+                cach = game.pokemon.VungCham.CACH;
+            } else if (dpi < 0) {
                 min = 0;
                 cach = 0;
                 game.pokemon.Bang.anTrai = 0;
@@ -472,7 +525,10 @@ public class ChupTrongGame {
                         && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
                 // menu chữ J2ME (PauseMenu): bấm phím, không vùng chạm (máy cảm ứng dùng Menu kiểu GO)
                 if ((!theGioi || dpi == 0) && !"menu_chu_nhiem_vu".equals(ten) && !"menu_chu_ban_than".equals(ten)) {
-                    kiemCham(ten + " " + TEN_COV[c], min, cach);
+                    // 0.9.20: tab Trang bị màn quá thấp dùng cỡ chạm gọn (~36 dp) - kiểm theo cỡ đó
+                    boolean gonTb = game.pokemon.ManNhanVat.minGon > 0 && game.render.Canvas.currentScreen instanceof game.pokemon.ManNhanVat
+                            && game.render.Canvas.currentDialog == null;
+                    kiemCham(ten + " " + TEN_COV[c], gonTb ? game.pokemon.ManNhanVat.minGon : min, cach);
                 }
             }
             if (locMan == null || ("," + locMan + ",").contains(",danh_hieu_dai,")) {

@@ -60,12 +60,35 @@ public class CapNhatApk extends CapNhatChung {
         return new File(thu, ten);
     }
 
+    /** Bộ cập nhật đang chờ người chơi bật quyền "Cài ứng dụng không rõ nguồn" (null = không chờ). */
+    static volatile CapNhatApk choQuyen;
+
+    /** HtbbActivity.onResume: vừa bật quyền ở trang cài đặt -> mở trình cài tệp đã tải + đã kiểm (luồng riêng). */
+    static void khiQuayLai(Activity a) {
+        final CapNhatApk c = choQuyen;
+        if (c == null || a == null) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= 26 && !a.getPackageManager().canRequestPackageInstalls()) {
+            return;   // chưa bật: giữ hộp + nút Cài lại
+        }
+        choQuyen = null;
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                c.caiLai();
+            }
+        }, "HTBB-CapNhat-cai");
+        t.setDaemon(true);
+        t.start();
+    }
+
     protected String cai(File tep) throws Exception {
         final Activity a = NenAndroid.hoatDong;
         if (a == null) {
             throw new IOException("Ứng dụng chưa sẵn sàng");
         }
         if (Build.VERSION.SDK_INT >= 26 && !a.getPackageManager().canRequestPackageInstalls()) {
+            choQuyen = this;
             a.runOnUiThread(new Runnable() {
                 public void run() {
                     try {
@@ -76,7 +99,8 @@ public class CapNhatApk extends CapNhatChung {
                     }
                 }
             });
-            return "Đã tải xong. Bật \"Cho phép từ nguồn này\" cho Huyền Thoại Bảo Bối, quay lại game rồi bấm Cài lại.";
+            return "Đã tải xong. Lần đầu cập nhật, Android cần quyền: bật \"Cho phép từ nguồn này\" cho Huyền Thoại Bảo Bối"
+                    + " rồi bấm quay lại - game tự mở trình cài (hoặc bấm Cài lại).";
         }
         final Uri uri = TepCapNhat.uri(a, tep);
         final Throwable[] loi = new Throwable[1];
@@ -101,6 +125,7 @@ public class CapNhatApk extends CapNhatChung {
             throw new IOException("Không mở được trình cài của Android");
         }
         return "Đã tải xong bản " + (phienBan.length() > 0 ? phienBan : "mới")
-                + ". Bấm Cài đặt / Cập nhật trong hộp của Android (dữ liệu được giữ nguyên).";
+                + ". Android luôn hỏi lại: bấm \"Cài đặt\" / \"Cập nhật\" trong hộp của Android (dữ liệu giữ nguyên), cài xong mở lại game."
+                + " Lỡ đóng hộp thì bấm Cài lại.";
     }
 }

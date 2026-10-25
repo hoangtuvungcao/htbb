@@ -358,6 +358,22 @@ public final class Bang {
         Font.nenSang = true;
         int hd = caoDau();
         int vai = tam ? ChuDe.TIEU_DE_TO : ChuDe.TIEU_DE;
+        boolean gon = dauGon && tabs != null && tabs.length > 0;
+        dauGon = false;
+        if (gon) {
+            // 0.9.20 đầu gọn (màn ngang thấp, cỡ chạm to): hàng tab + nút X cùng một hàng, bỏ dải tiêu đề -> nội dung cao
+            // thêm một hàng chạm
+            int ht = caoTab(), hr = Math.max(ht, hd);
+            if (dong != null) {
+                nutDong(g, x + w - hd - ChuDe.DEM + 2, y + 3 + (hr - hd) / 2, hd, dong);
+            }
+            int wt = Math.min(w - 2 * ChuDe.DEM - hd - cach() - 2, tabs.length * (ChuDe.dt() ? 150 : 110));
+            int yt = y + 3 + hr - ht;
+            ranhTab(g, x + ChuDe.DEM, yt + ht - 2, w - 2 * ChuDe.DEM);
+            phanDoan(g, x + ChuDe.DEM + 2, yt, wt - 2, ht, tabs, tabChon, viecTab);
+            int yNoi = y + 3 + hr + cach();
+            return new int[]{x + ChuDe.DEM, yNoi, w - 2 * ChuDe.DEM, y + h - ChuDe.DEM - yNoi};
+        }
         if (tieuDe != null) {
             String t = ChuDe.cat(tieuDe, vai, w - 2 * hd - 48);
             int wb = Math.min(w - 2 * hd - 16, ChuDe.rong(t, vai) + 44);
@@ -421,6 +437,12 @@ public final class Bang {
 
     /** Kiểm thử: hiệu ứng mở tấm đứng ở trạng thái CUỐI (khung chụp cách nhau > 300 ms không mở lại hiệu ứng). */
     public static boolean dungHieuUng;
+
+    /**
+     * 0.9.20: khung tab kế tiếp dùng ĐẦU GỌN (tab cùng hàng nút X, không dải tiêu đề) - màn đặt ngay trước khung, tự xoá
+     * sau khi vẽ. Dùng khi màn ngang thấp mà nội dung không vừa (ManNhanVat.canDauGon).
+     */
+    public static boolean dauGon;
 
     /** Chấm báo mới cho tab / chip kế tiếp (ChamMoi) - đặt ngay trước khung / hangChip, tự xoá sau khi vẽ. */
     public static boolean[] chamTab, chamChip;

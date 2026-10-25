@@ -38,7 +38,7 @@ public final class CapNhat extends Dialog {
     public int banMoi, banToiThieu, banClient;
     public String phienBan = "", url = "", sha256 = "", dungLuong = "", nhatKy = "", trangTai = "";
     /** chữ thêm khi đã mở trình duyệt (nền tảng không tự cập nhật) */
-    String daMoLink;
+    public String daMoLink;
     boolean dangTaiTrongGame;
 
     private CapNhat() {
@@ -276,8 +276,14 @@ public final class CapNhat extends Dialog {
         } else {
             b.append("Bạn đang dùng ").append(tenHienTai(this.banClient)).append(". Bấm Để sau để chơi tiếp.");
         }
-        if (this.dungLuong != null && this.dungLuong.length() > 0) {
+        // 0.9.20: cách cập nhật ở nền tảng này cùng dòng dung lượng ("Có gì mới" vẫn đủ chỗ trên điện thoại)
+        String gy = goiYNen();
+        boolean coDl = this.dungLuong != null && this.dungLuong.length() > 0;
+        if (coDl) {
             b.append("\nDung lượng: ").append(this.dungLuong);
+        }
+        if (gy != null) {
+            b.append(coDl ? " · " : "\n").append(gy);
         }
         if (this.nhatKy != null && this.nhatKy.trim().length() > 0) {
             b.append("\n\u0001Có gì mới");
@@ -384,11 +390,34 @@ public final class CapNhat extends Dialog {
             game.GameMidlet.instance.notifyDestroyed();
             return;
         }
-        if (this.loai == BAT_BUOC) {
+        if (nen() == null) {
+            // 0.9.20 J2ME / giả lập (J2ME Loader... mở trình duyệt, không tự cài): giữ hộp, chỉ rõ cách nạp .jar mới
+            this.daMoLink = "Đã mở link tải. Máy J2ME: cài đè bản mới rồi mở lại game. Giả lập: tải tệp .jar rồi nạp file .jar mới vào giả lập.";
+        } else if (this.loai == BAT_BUOC) {
             this.daMoLink = "Đã mở link tải. Cài bản mới rồi mở lại game.";
         } else {
             dong();
         }
+    }
+
+    /**
+     * 0.9.20 (chủ dự án: "cập nhật qua game là bản mới luôn, không cần tải trên web cài lại"): câu nói rõ bấm cập nhật
+     * sẽ làm gì ở nền tảng này. APK: Android LUÔN hỏi lại - người chơi bấm "Cài đặt"; lần đầu Android bắt bật "Cho phép từ
+     * nguồn này". J2ME: link .jar + cách nạp ở giả lập. PC: tự cài và mở lại.
+     */
+    public String goiYNen() {
+        CapNhatNen n = nen();
+        boolean tuCai = n != null && this.url.length() > 0 && n.hoTro(this.url, this.sha256);
+        if (tuCai && n.getClass().getName().endsWith("CapNhatApk")) {
+            return "Android hỏi thì bấm \"Cài đặt\".";
+        }
+        if (tuCai) {
+            return "game tự cài và tự mở lại.";
+        }
+        if (n == null && linkMo().length() > 0) {
+            return "Giả lập J2ME: tải .jar ở link rồi nạp file .jar mới.\nLink: " + linkMo();
+        }
+        return null;
     }
 
     public void deSau() {

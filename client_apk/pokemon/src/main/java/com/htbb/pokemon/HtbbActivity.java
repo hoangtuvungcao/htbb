@@ -100,6 +100,8 @@ public class HtbbActivity extends Activity {
     protected void onResume() {
         super.onResume();
         NenAndroid.hoatDong = this;
+        // 0.9.20: quay lại từ trang "Cho phép từ nguồn này" -> cài tiếp bản mới đã tải (không bấm "Cài lại")
+        CapNhatApk.khiQuayLai(this);
         if (dangChay) {
             NenAndroid.anHien(true);
             NenAndroid.luong().them(new Runnable() {
