@@ -164,6 +164,9 @@ public final class Kiem {
         KiemCharManagerBotTrungTen.chay();
         KiemGiaoDichThuoc.chay();
         KiemChiemVatRoi.chay();
+        KiemDocThu.chay();
+        KiemGiaoDichRutDo.chay();
+        KiemKetBan.chay();
         KiemGiftcodeDoCamTayBaoVat.chay();
         KiemGiftcodeRuyBangHoenn.chay();
         KiemNangCapDoCamTayLv86.chay();

@@ -284,6 +284,11 @@ class MapMuaBan {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể lấy vật phẩm ra.", ""));
                                 return;
                             }
+                            // Doi phuong da khoa / xac nhan theo do dang bay: khong duoc rut bot (chong lua rut do sau khi ho khoa).
+                            if (!GiaoDichThuoc.rutDoDuoc(player.finishTrade, dp.finishTrade, dp.lockTrade)) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Đối phương đã khoá giao dịch, không thể lấy vật phẩm ra. Huỷ giao dịch nếu muốn đổi.", ""));
+                                return;
+                            }
 
                             int idpotion = msg.dis.readByte();
                             if (idpotion < 0 || idpotion >= player.tPotions.length) {

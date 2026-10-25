@@ -246,8 +246,18 @@ class MapXaHoi {
                 m.dos.writeByte(0);
                 m.dos.writeUTF(player.charname);
                 m.dos.writeShort(player.id);
+                com.htbb.pokemon.LoiMoiKetBan.ghi(p.charDBID, player.charDBID, System.currentTimeMillis());
                 p.sendMessage(m);
             } else if (ok == 1) {
+                // dong y chi hop le khi p (nguoi moi) THAT SU vua moi player; da la ban thi khong them trung
+                if (!com.htbb.pokemon.LoiMoiKetBan.dungLoiMoi(player.charDBID, p.charDBID, System.currentTimeMillis())) {
+                    data.NghiVanGianLan.ghiChung(player, "ket_ban_khong_moi", "dong y ket ban voi " + p.charname + " ma khong co loi moi");
+                    return;
+                }
+                if (com.htbb.pokemon.LoiMoiKetBan.daLaBan(player.friendListID, p.charDBID)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Đã có trong danh sách bạn", ""));
+                    return;
+                }
                 p.friendListID.add(player.charDBID);
                 player.friendListID.add(p.charDBID);
                 p.friendListName.add(player.charname);

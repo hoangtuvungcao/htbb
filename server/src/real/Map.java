@@ -15404,9 +15404,10 @@ public class Map implements Runnable {
     void doReadMessage(Char player, Message msg) {
         try {
             int index = msg.dis.readByte();
-            CharInboxMessage ib = (CharInboxMessage) player.inbox.get(index);
-            if (ib != null) {
-                Database.instance.delInboxMsg(index);
+            // xoa DUNG thu cua minh (id dong + ten nguoi nhan), khong phai dong co id = chi so (thu nguoi khac)
+            final int idThu = CharInboxMessage.idCanXoa(player.inbox, index);
+            if (idThu > 0) {
+                Database.instance.delInboxMsg(idThu, player.charname);
             }
         } catch (Exception var5) {
         }

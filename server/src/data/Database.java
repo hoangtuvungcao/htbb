@@ -6568,6 +6568,30 @@ public class Database {
         return true;
     }
 
+    /** Xoa mot thu cua dung nguoi nhan (doc thu - Map.doReadMessage). */
+    public void delInboxMsg(final int id, final String charname) {
+        Connection conn = null;
+        PreparedStatement pre = null;
+        try {
+            conn = this.getConnection();
+            pre = conn.prepareStatement("delete from tob_inbox where id=? and charname=?");
+            pre.setInt(1, id);
+            pre.setString(2, charname);
+            pre.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     public void delInboxMsg(int id) {
         Connection conn = null;
         Statement pre = null;
