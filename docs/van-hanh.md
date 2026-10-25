@@ -810,6 +810,12 @@ Cập nhật client (0.9.7, `com.htbb.capnhat.CapNhatClient`) — hai mức, đ�
 - Client ≤ 906 (chưa có hộp cập nhật) nhận hộp chữ có link tải (nút Mở mở thẳng tệp). Client Unity không gửi số bản nên
   luôn qua. Đây là công cụ buộc cập nhật khi bản cũ có lỗi nghiêm trọng, **không** phải chống giả mạo client.
 - Máy chủ đọc lại danh mục tải game mỗi 60 giây; `game.out` in `[CAP NHAT] danh muc ...` khi đổi.
+- **Gốc tải tệp** = `sv.gocTaiCapNhat` (server.ini, sinh từ `HTBB_GOC_TAI_CAP_NHAT` trong `/etc/htbb/htbb.env`; đổi nóng
+  được bằng dòng `cau_hinh` cùng khoá, xoá dòng thì về server.ini). Tên miền nằm sau WAF trả trang thử thách JS (HTTP 403)
+  cho bộ cập nhật PC / APK / trình duyệt J2ME, nên link tệp tương đối `/tai/…` (và link tuyệt đối cùng tên miền website)
+  trong gói -115 / hộp 37 đi qua gốc này, vd `http://<IP origin>` (client kiểm SHA-256). Trống = theo `sv.website`.
+  Trang tải game (`sv.linkTaiGame`, `/download`) vẫn ở tên miền. `game.out` in `[CAP NHAT] goc tai tep cap nhat = ...`.
+  Cổng kiểm `qa_cap_nhat.tai.<nền tảng>` tải đúng link máy chủ gửi bằng User-Agent bộ cập nhật: 403 = chưa đặt khoá này.
 
 ---
 

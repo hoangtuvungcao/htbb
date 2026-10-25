@@ -264,7 +264,7 @@ class KichBanHuongDan {
 
     static int[] diemCau(int load) {
         try {
-            for (String l : Files.readAllLines(new File(BotChucNang.NOI, "du_lieu/diem_cau_ca.csv").toPath())) {
+            for (String l : Files.readAllLines(new File(BotChucNang.GOC, "du_lieu/diem_cau_ca.csv").toPath())) {
                 String[] f = l.split(",");
                 if (f.length >= 8 && f[0].equals(String.valueOf(load))) return new int[]{Integer.parseInt(f[6]), Integer.parseInt(f[7])};
             }

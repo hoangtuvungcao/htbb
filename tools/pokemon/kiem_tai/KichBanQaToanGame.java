@@ -28,64 +28,206 @@ public class KichBanQaToanGame {
         BotChucNang.dk("qa_cap_nhat", false, KichBanQaToanGame::capNhat);
     }
 
-    /** Dang nhap tai khoan thuong voi so ban client {@code ban}: {loai -115 (-1 = khong co), banMoi, banToiThieu, vao duoc (1/0)}. */
+    /** Dang nhap tai khoan thuong voi so ban client {@code ban} (platf J2ME): {loai -115 (-1 = khong co), banMoi, banToiThieu, vao duoc (1/0)}. */
     static int[] dangNhapBan(int ban) throws Exception {
+        Object[] g = goi115(ban, "nokia/1/1");
+        return (int[]) g[0];
+    }
+
+    /**
+     * Dang nhap tai khoan thuong voi so ban + platf ({@code nokia/1/1} = jar, {@code Android/14}, {@code HTBB-PC/Windows 10},
+     * {@code HTBB-PC/Linux} - nhu CapNhatClient.nenTang): {int[]{loai, banMoi, banToiThieu, vao}, String[]{phienBan, url,
+     * sha256, trangTai}}.
+     */
+    static Object[] goi115(int ban, String platf) throws Exception {
         try (BotChucNang.Bot b = new BotChucNang.Bot(BotChucNang.tkThuong())) {
             b.ketNoi();
             int m = b.moc();
-            b.gui(1, b.user, "123456", "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + b.user, ban);
+            b.gui(1, b.user, "123456", "2.7.6", platf, "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + b.user, ban);
             b.cho(x -> x.coLenh(m, 13) || x.coLenh(m, -115) && x.coLenh(m, 2) || x.dut, 6000);
             b.bom(800);
             int[] kq = {-1, 0, 0, b.coLenh(m, 13) ? 1 : 0};
+            String[] chu = {"", "", "", ""};
             for (int i = m; i < b.su.size(); i++) {
                 BotChucNang.SuKien e = b.su.get(i);
                 if (e.cmd != -115 || e.d == null) continue;
                 java.io.DataInputStream r = new java.io.DataInputStream(new java.io.ByteArrayInputStream(e.d));
                 kq[0] = r.readByte();
                 kq[1] = r.readInt();
-                for (int k = 0; k < 6; k++) r.readUTF();
+                chu[0] = r.readUTF();
+                chu[1] = r.readUTF();
+                chu[2] = r.readUTF();
+                r.readUTF();
+                r.readUTF();
+                chu[3] = r.readUTF();
                 kq[2] = r.readInt();
             }
-            return kq;
+            return new Object[]{kq, chu};
         }
     }
 
     /** Dat cau_hinh roi doi may chu nap lai (<= 70 giay) toi khi dangNhapBan(ban) cho loai mong doi. */
     static int[] doiCauHinh(int ban, int loai) throws Exception {
+        return doiCauHinh(ban, loai, -1);
+    }
+
+    /** Nhu tren, them dieu kien ban moi (-1 = bat ky) - danh muc tai game nap lai moi 60 giay, cau_hinh moi ~5 giay. */
+    static int[] doiCauHinh(int ban, int loai, int banMoi) throws Exception {
         int[] kq = null;
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             kq = dangNhapBan(ban);
-            if (kq[0] == loai) return kq;
+            if (kq[0] == loai && (banMoi < 0 || kq[1] == banMoi)) return kq;
             Thread.sleep(9000);
         }
         return kq;
     }
 
+    static final String KHOA_LUU_TAI = "qa.taiGame.luu";
+    static final String KHONG_CO = "<<qa:khong-co-dong>>";
+
+    /** Tra danh muc tai game (web_cai_dat 'taiGame') tu ban luu {@link #KHOA_LUU_TAI} (an toan khi chay lai sau lan bi ngat). */
+    static void traDanhMucTai() {
+        String luu = BotChucNang.sql1("SELECT LEFT(gia_tri, 40) FROM web_cai_dat WHERE khoa = '" + KHOA_LUU_TAI + "'");
+        if (luu == null) return;
+        if (luu.startsWith(KHONG_CO)) {
+            BotChucNang.sql("DELETE FROM web_cai_dat WHERE khoa = 'taiGame'");
+        } else {
+            BotChucNang.sql("INSERT INTO web_cai_dat (khoa, gia_tri, cap_nhat_luc, cap_nhat_boi) SELECT 'taiGame', gia_tri, NOW(), 'qa' FROM web_cai_dat"
+                    + " WHERE khoa = '" + KHOA_LUU_TAI + "' ON DUPLICATE KEY UPDATE gia_tri = VALUES(gia_tri), cap_nhat_luc = NOW()");
+        }
+        BotChucNang.sql("DELETE FROM web_cai_dat WHERE khoa = '" + KHOA_LUU_TAI + "'");
+    }
+
     /**
-     * Viec QA #6: hop cap nhat khi ban may chu &gt; ban client, dau-cuoi qua cau_hinh song (khong khoi dong lai):
-     * sv.banMoiNhat = 999 -&gt; client 913 nhan -115 NHAC (1) va VAN vao duoc; sv.banToiThieu = 950 -&gt; -115 BAT_BUOC (2),
-     * khong vao duoc; ban client 999 khong nhan gi. Tra lai cau hinh cu sau khi kiem.
+     * Viec QA #6: hop cap nhat khi ban may chu &gt; ban client, dau-cuoi qua cau_hinh song (khong khoi dong lai).
+     * <ol>
+     *   <li>{@code tai.<nen tang>}: link tep MAY CHU QUANG CAO trong -115 (danh muc tai game THAT + sv.gocTaiCapNhat) tai
+     *       duoc bang client KHONG phai trinh duyet (User-Agent bo cap nhat PC) - HTTP 200 + sha256 khop (WAF tra 403
+     *       cho ten mien, 25/10/2026). Khong co mang (khong phan giai ten / khong co duong) -&gt; BO QUA.</li>
+     *   <li>Danh muc tai game (web_cai_dat 'taiGame') TAM dat rong - du lieu production (ban sao staging) co so ban
+     *       tung nen tang (vd jar 918) THANG sv.banMoiNhat (cong kiem 25/10: "loai 1 ban moi 918"). Roi sv.banMoiNhat=999
+     *       -&gt; client 913 nhan -115 NHAC (1, ban moi 999) va VAN vao duoc; client 999 khong nhan gi; sv.banToiThieu=950
+     *       -&gt; BAT_BUOC (2), khong vao duoc.</li>
+     *   <li>Tra lai cau hinh + danh muc cu: client 913 nhan DUNG nhu truoc khi kiem (ban dau, khong gia dinh "khong co gi").</li>
+     * </ol>
      */
     static void capNhat() throws Exception {
         if (BotChucNang.DB.isEmpty()) { BotChucNang.ket("qa_cap_nhat", null, "can -Ddb"); return; }
-        String cuMoi = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = 'sv.banMoiNhat'");
-        String cuToi = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = 'sv.banToiThieu'");
+        traDanhMucTai();   // lan truoc bi ngat giua chung
+        String[] khoa = {"sv.banMoiNhat", "sv.banToiThieu", "sv.nhacCapNhat"};
+        String[] cu = new String[khoa.length];
+        for (int i = 0; i < khoa.length; i++) cu[i] = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = '" + khoa[i] + "'");
+        int[] dau = dangNhapBan(913);
         try {
-            BotChucNang.sql("INSERT INTO cau_hinh (khoa, gia_tri, sua_boi, sua_luc) VALUES ('sv.banMoiNhat', '999', 'qa', NOW()) ON DUPLICATE KEY UPDATE gia_tri = '999', sua_luc = NOW()");
-            int[] a = doiCauHinh(913, 1);
+            datCauHinh("sv.nhacCapNhat", "1");
+            datCauHinh("sv.banToiThieu", "0");
+            Thread.sleep(7000);   // cau hinh trung tam hoi phien ban moi 5 giay
+            taiTep();
+            // danh muc tai game rong -> chi con sv.banMoiNhat quyet dinh (giu ban luu TRONG CSDL, khong qua chuoi Java)
+            String coTai = BotChucNang.sql1("SELECT COUNT(*) FROM web_cai_dat WHERE khoa = 'taiGame'");
+            if ("0".equals(coTai)) {
+                BotChucNang.sql("INSERT INTO web_cai_dat (khoa, gia_tri, cap_nhat_boi) VALUES ('" + KHOA_LUU_TAI + "', '" + KHONG_CO + "', 'qa')");
+            } else {
+                BotChucNang.sql("INSERT INTO web_cai_dat (khoa, gia_tri, cap_nhat_boi) SELECT '" + KHOA_LUU_TAI + "', gia_tri, 'qa' FROM web_cai_dat WHERE khoa = 'taiGame'");
+            }
+            BotChucNang.sql("INSERT INTO web_cai_dat (khoa, gia_tri, cap_nhat_boi) VALUES ('taiGame', '{\"ban\":[]}', 'qa') ON DUPLICATE KEY UPDATE gia_tri = VALUES(gia_tri), cap_nhat_luc = NOW()");
+            datCauHinh("sv.banMoiNhat", "999");
+            int[] a = doiCauHinh(913, 1, 999);
             BotChucNang.ket("qa_cap_nhat.nhac", a[0] == 1 && a[1] == 999 && a[3] == 1, "loai " + a[0] + " ban moi " + a[1] + " vao " + a[3]);
             int[] c = dangNhapBan(999);
             BotChucNang.ket("qa_cap_nhat.ban_moi_khong_nhac", c[0] == -1 && c[3] == 1, "client 999: loai " + c[0] + " vao " + c[3]);
-            BotChucNang.sql("INSERT INTO cau_hinh (khoa, gia_tri, sua_boi, sua_luc) VALUES ('sv.banToiThieu', '950', 'qa', NOW()) ON DUPLICATE KEY UPDATE gia_tri = '950', sua_luc = NOW()");
+            datCauHinh("sv.banToiThieu", "950");
             int[] b = doiCauHinh(913, 2);
             BotChucNang.ket("qa_cap_nhat.bat_buoc", b[0] == 2 && b[2] == 950 && b[3] == 0, "loai " + b[0] + " toi thieu " + b[2] + " vao " + b[3]);
         } finally {
-            BotChucNang.sql(cuMoi == null || cuMoi.isEmpty() ? "DELETE FROM cau_hinh WHERE khoa = 'sv.banMoiNhat'"
-                    : "UPDATE cau_hinh SET gia_tri = '" + cuMoi + "' WHERE khoa = 'sv.banMoiNhat'");
-            BotChucNang.sql(cuToi == null || cuToi.isEmpty() ? "DELETE FROM cau_hinh WHERE khoa = 'sv.banToiThieu'"
-                    : "UPDATE cau_hinh SET gia_tri = '" + cuToi + "' WHERE khoa = 'sv.banToiThieu'");
-            int[] d = doiCauHinh(913, -1);
-            BotChucNang.ket("qa_cap_nhat.tra_lai", d[0] == -1 && d[3] == 1, "sau khi tra cau hinh: loai " + d[0] + " vao " + d[3]);
+            for (int i = 0; i < khoa.length; i++) {
+                BotChucNang.sql(cu[i] == null ? "DELETE FROM cau_hinh WHERE khoa = '" + khoa[i] + "'"
+                        : "UPDATE cau_hinh SET gia_tri = '" + cu[i].replace("'", "''") + "', sua_luc = NOW() WHERE khoa = '" + khoa[i] + "'");
+            }
+            BotChucNang.sql("UPDATE cau_hinh_phien_ban SET phien_ban = phien_ban + 1 WHERE id = 1");
+            traDanhMucTai();
+            int[] d = doiCauHinh(913, dau[0], dau[1] == 0 ? -1 : dau[1]);
+            BotChucNang.ket("qa_cap_nhat.tra_lai", d[0] == dau[0] && d[3] == dau[3],
+                    "sau khi tra cau hinh: loai " + d[0] + " ban moi " + d[1] + " vao " + d[3] + " (truoc khi kiem: loai " + dau[0] + " ban moi " + dau[1] + " vao " + dau[3] + ")");
+        }
+    }
+
+    static void datCauHinh(String khoa, String gt) {
+        BotChucNang.sql("INSERT INTO cau_hinh (khoa, gia_tri, sua_boi, sua_luc) VALUES ('" + khoa + "', '" + gt + "', 'qa', NOW())"
+                + " ON DUPLICATE KEY UPDATE gia_tri = '" + gt + "', sua_luc = NOW()");
+        BotChucNang.sql("UPDATE cau_hinh_phien_ban SET phien_ban = phien_ban + 1 WHERE id = 1");
+    }
+
+    /** User-Agent cua bo cap nhat PC (client_jar shared/se/htbb/capnhat/TaiVe) - client KHONG phai trinh duyet. */
+    static final String UA_CAP_NHAT = "HTBB-CapNhat/1";
+
+    /**
+     * qa_cap_nhat.tai.&lt;nen tang&gt;: client ban 907 (ban dau tien biet -115) moi nen tang; may chu bao ban moi (danh muc
+     * that, sv.banMoiNhat=0 / nguong that) thi link tep trong -115 phai tai duoc nhu client that tai: khong cookie, khong
+     * JS, User-Agent bo cap nhat; theo chuyen huong (toi da 5); HTTP 200; sha256 khop goi -115.
+     */
+    static void taiTep() throws Exception {
+        String[][] nt = {{"jar", "nokia/1/1"}, {"android", "Android/14"}, {"windows", "HTBB-PC/Windows 10"}, {"linux", "HTBB-PC/Linux"}};
+        for (String[] n : nt) {
+            String ten = "qa_cap_nhat.tai." + n[0];
+            Object[] g = goi115(907, n[1]);
+            int[] kq = (int[]) g[0];
+            String[] chu = (String[]) g[1];
+            if (kq[0] < 0) { BotChucNang.ket(ten, null, "khong co -115 cho client 907 (" + n[1] + "): danh muc tai game chua co ban moi hon"); continue; }
+            String url = chu[1], sha = chu[2];
+            if (url.isEmpty()) { BotChucNang.ket(ten, null, "-115 khong co link tep (chi trang tai " + chu[3] + ")"); continue; }
+            if (sha.isEmpty()) { BotChucNang.ket(ten, null, url + ": danh muc khong ghi sha256 -> client chi mo trinh duyet, khong tu tai"); continue; }
+            String[] ghi = {""};
+            Boolean ok = kiemTai(url, sha, ghi);
+            BotChucNang.ket(ten, ok, ghi[0]);
+        }
+    }
+
+    /** Tai {@code url} nhu bo cap nhat: true = 200 + sha256 khop, null = BO QUA (khong co mang); ghi[0] = chi tiet. */
+    static Boolean kiemTai(String url, String sha, String[] ghi) {
+        String u = url;
+        try {
+            for (int lan = 0; lan <= 5; lan++) {
+                java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(u).openConnection();
+                c.setInstanceFollowRedirects(false);
+                c.setConnectTimeout(10000);
+                c.setReadTimeout(30000);
+                c.setRequestProperty("User-Agent", UA_CAP_NHAT);
+                c.setRequestProperty("Accept-Encoding", "identity");
+                int ma = c.getResponseCode();
+                if (ma >= 300 && ma < 400 && c.getHeaderField("Location") != null) {
+                    u = new java.net.URL(new java.net.URL(u), c.getHeaderField("Location")).toString();
+                    c.disconnect();
+                    continue;
+                }
+                if (ma != 200) {
+                    String loai = String.valueOf(c.getHeaderField("Content-Type"));
+                    c.disconnect();
+                    ghi[0] = u + " -> HTTP " + ma + " (" + loai + ")"
+                            + (ma == 403 ? " - WAF chan client khong phai trinh duyet? dat sv.gocTaiCapNhat=http://<IP origin>" : "");
+                    return false;
+                }
+                java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+                long dai = 0;
+                try (java.io.InputStream in = c.getInputStream()) {
+                    byte[] buf = new byte[65536];
+                    int n;
+                    while ((n = in.read(buf)) > 0) { md.update(buf, 0, n); dai += n; }
+                }
+                StringBuilder hex = new StringBuilder();
+                for (byte x : md.digest()) hex.append(String.format("%02x", x));
+                boolean khop = hex.toString().equalsIgnoreCase(sha);
+                ghi[0] = u + " -> HTTP 200, " + dai + " byte, sha256 " + (khop ? "khop" : hex + " != " + sha);
+                return khop;
+            }
+            ghi[0] = url + " -> qua 5 lan chuyen huong";
+            return false;
+        } catch (java.net.UnknownHostException | java.net.NoRouteToHostException e) {
+            ghi[0] = url + ": khong co mang (" + e + ")";
+            return null;
+        } catch (Exception e) {
+            ghi[0] = u + " -> " + e;
+            return false;
         }
     }
 

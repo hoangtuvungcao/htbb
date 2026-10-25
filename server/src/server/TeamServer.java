@@ -116,6 +116,9 @@ public class TeamServer {
     // (web /admin/tai-game); sv.banMoiNhat = du phong khi danh muc chua ghi so ban; sv.nhacCapNhat=0 tat nhac ban moi.
     public static int banMoiNhat = 0;
     public static boolean nhacCapNhat = true;
+    // sv.gocTaiCapNhat (http(s)://may, "" = theo sv.website): goc RIENG cho link tep cap nhat trong game (/tai/...) - ten
+    // mien sau WAF tra 403 cho client khong phai trinh duyet. Dat qua CapNhatClient.datGocTaiCapNhat (kiem gia tri).
+    public static volatile String gocTaiCapNhat = "";
     // sv.chiSoMayChu=0: tat bo ghi chi so + che do bao tri bang tep (mac dinh BAT).
     public static boolean batChiSoMayChu = true;
     public static String testCode = "";                     // sv.testCode: mã giftcode test (chỉ chạy khi testMode)
@@ -796,6 +799,7 @@ public class TeamServer {
             TeamServer.banToiThieu = parseIntDefault(p.getProperty("sv.banToiThieu"), 0);
             TeamServer.banMoiNhat = parseIntDefault(p.getProperty("sv.banMoiNhat"), 0);
             TeamServer.nhacCapNhat = parseIntDefault(p.getProperty("sv.nhacCapNhat"), 1) != 0;
+            com.htbb.capnhat.CapNhatClient.datGocTaiCapNhat(p.getProperty("sv.gocTaiCapNhat"));
             TeamServer.batChiSoMayChu = parseIntDefault(p.getProperty("sv.chiSoMayChu"), 1) != 0;
             TeamServer.testCode = p.getProperty("sv.testCode", "").trim().toLowerCase();
             TeamServer.adminAccounts.clear();

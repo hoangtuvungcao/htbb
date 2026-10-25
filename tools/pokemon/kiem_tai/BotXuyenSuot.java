@@ -40,10 +40,10 @@ public class BotXuyenSuot {
         NHOM = b.maIdNhom;
         ID_ARR = b.idArr;
         // mapId -> load tu RealController + Hoenn
-        String rc = new String(Files.readAllBytes(new File(NOI, "server/src/real/RealController.java").toPath()), StandardCharsets.UTF_8);
+        String rc = new String(Files.readAllBytes(BotChucNang.nguon("server/src/real/RealController.java").toPath()), StandardCharsets.UTF_8);
         Matcher m = Pattern.compile("mapList\\.put\\(new Integer\\((\\d+)\\), (?:m = )?new (\\w+)\\((\\d+), ([-\\d]+), ([-\\d]+), ([-\\d]+)").matcher(rc);
         while (m.find()) LOAD.put(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(6)));
-        File fh = new File(NOI, "server/src/com/htbb/pokemon/BanDoHoenn.java");
+        File fh = new File(BotChucNang.GOC, "server/src/com/htbb/pokemon/BanDoHoenn.java");
         if (fh.isFile()) {
             Matcher h = Pattern.compile("them\\((\\d+), \"").matcher(new String(Files.readAllBytes(fh.toPath()), StandardCharsets.UTF_8));
             while (h.find()) { int id = Integer.parseInt(h.group(1)); LOAD.put(id, id); }

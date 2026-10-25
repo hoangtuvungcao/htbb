@@ -416,7 +416,7 @@ final class KichBanHoiQuy2 {
      * chay_hoi_quy.sh CHUP=1 chay no cung cac kiem client khac. Phia may chu: di_bo.toc_do_that_khong_keo_lui.
      */
     static void tocDoClient() {
-        File t = new File(BotChucNang.NOI, "client_pc/test/KiemTocDoGame.java");
+        File t = new File(BotChucNang.GOC, "client_pc/test/KiemTocDoGame.java");
         ket("toc_do.client.kiem_co_trong_cay", t.isFile(), t.isFile() ? "co " + t : "chua co KiemTocDoGame (nhanh sua-slow-motion chua gop)");
     }
 

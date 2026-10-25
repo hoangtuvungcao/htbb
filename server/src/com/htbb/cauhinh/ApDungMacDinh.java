@@ -85,6 +85,10 @@ final class ApDungMacDinh {
             }
         }, "TeamServer (DoS / goi tin / GM)");
 
+        // sv.gocTaiCapNhat: ngoai danh muc (khong co o trang web) - server.ini, hoac dong cau_hinh de doi nong / xoa dong ve ini.
+        CauHinhTrungTam.dangKyNghe(new String[]{com.htbb.capnhat.CapNhatClient.KHOA_GOC_TAI}, com.htbb.capnhat.CapNhatClient.NGHE_GOC_TAI,
+                "CapNhatClient (goc tai)");
+
         CauHinhTrungTam.dangKyNghe(new String[]{"sv.proxyTinCay", "sv.dangNhapIpNguong", "sv.dangNhapIpChoMs"}, new NgheThayDoi() {
             public void khiDoi(final Set<String> k, final CauHinhTrungTam.AnhChup m) {
                 final com.htbb.mang.ProxyTinCay p = com.htbb.mang.ProxyTinCay.dat(m.chuoi("sv.proxyTinCay"));

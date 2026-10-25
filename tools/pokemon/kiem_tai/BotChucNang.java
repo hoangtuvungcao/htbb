@@ -35,6 +35,19 @@ public class BotChucNang {
     static final int BAN = Integer.getInteger("ban", -1);
     static final boolean GM = !"0".equals(System.getProperty("gm", "1"));
     static final String NOI = System.getProperty("noi", System.getProperty("user.home") + "/Downloads/pokemon/htbb");
+    /**
+     * Goc MA NGUON (ban checkout monorepo dang chay bo bot: server/src, du_lieu, client_pc) - khac {@link #NOI} (thu muc
+     * may chu dang chay: server/map, server/cMap, sql/htbb.sql). Staging (/opt/htbb-staging) chi co tai nguyen may chu,
+     * khong co server/src (cong kiem 25/10: NoSuchFileException RealController.java). chay_hoi_quy.sh truyen -Dgoc.
+     */
+    static final String GOC = System.getProperty("goc", NOI);
+
+    /** Tep ma nguon trong {@link #GOC}; thieu -> loi RO RANG (khong phai NoSuchFileException tran). */
+    static java.io.File nguon(String duong) throws java.io.FileNotFoundException {
+        java.io.File f = new java.io.File(GOC, duong);
+        if (!f.isFile()) throw new java.io.FileNotFoundException("thieu ma nguon " + f + " (-Dgoc=<monorepo> - chay_hoi_quy.sh tu dat)");
+        return f;
+    }
     static int soTk = Integer.getInteger("tu", 1);
     static final List<String> KET_QUA = new ArrayList<>();
     static int nPass, nFail, nBo;

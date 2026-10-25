@@ -59,8 +59,9 @@ while IFS= read -r dong || [ -n "$dong" ]; do
     khoa=${dong%%=*}
     gt=${dong#*=}
 
-    if [[ "$gt" =~ ^\$\{([A-Za-z0-9_]+)\}$ ]]; then
+    if [[ "$gt" =~ ^\$\{([A-Za-z0-9_]+)(:-)?\}$ ]]; then
         bien=${BASH_REMATCH[1]}
+        tuy_chon=${BASH_REMATCH[2]}
         tu_env=${!bien-}
         if [ -z "$tu_env" ] && [ -r "$ENV_FILE" ]; then
             # Doc dung MOT khoa, khong source tep (tranh chay ky tu shell trong gia tri).
@@ -72,6 +73,9 @@ while IFS= read -r dong || [ -n "$dong" ]; do
             # Chua dat secret tren GitHub -> giu nguyen cai dang chay. Nho vay lan
             # deploy dau tien sau khi them ban mau nay KHONG lam sap server.
             gt=${DANG_CHAY[$khoa]}
+        elif [ -n "$tuy_chon" ]; then
+            # ${BIEN:-} = khoa TUY CHON (vd sv.gocTaiCapNhat): khong co o dau ca -> de trong, khong loi.
+            gt=""
         else
             THIEU="$THIEU $khoa(\$$bien)"
             gt=""

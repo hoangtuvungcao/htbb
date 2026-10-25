@@ -177,6 +177,10 @@ sv.banToiThieu=0
 sv.banMoiNhat=0
 # 0 = tắt thẻ "Đã có bản mới" (khẩn cấp).
 sv.nhacCapNhat=1
+# Gốc tải tệp cập nhật TRONG GAME (link /tai/... của trang Bản tải game): tên miền nằm sau WAF trả trang thử thách JS
+# (HTTP 403) cho client không phải trình duyệt (bộ cập nhật PC, APK, trình duyệt J2ME) -> đặt http://<IP origin> (nginx
+# default server phục vụ /tai/; client vẫn kiểm SHA-256). Trống = theo sv.website. Trang /download vẫn ở tên miền.
+sv.gocTaiCapNhat=
 # Chờ (giây) trước khi vào lại game sau khi thoát (theo nhân vật). 0 = vào lại ngay.
 sv.reloginWaitSec=0
 # Bật log chẩn đoán hình thú cưỡi cho đúng MỘT tên Pokémon; trống = tắt.

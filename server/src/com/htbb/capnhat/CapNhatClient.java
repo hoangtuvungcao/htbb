@@ -230,9 +230,62 @@ public final class CapNhatClient {
         return (cuoi < 0 ? g : g.substring(0, cuoi)) + u;
     }
 
-    /** Link tep cua quyet dinh ("" = chi co trang tai). */
+    /** "https://a.b:8443/x/y" -> "https://a.b:8443" (chi http / https, co may chu); sai -> "". */
+    public static String nguonGoc(final String goc) {
+        final String g = goc == null ? "" : goc.trim();
+        if (!g.startsWith("https://") && !g.startsWith("http://")) {
+            return "";
+        }
+        final int sc = g.indexOf("://") + 3;
+        int cuoi = g.length();
+        for (int i = sc; i < g.length(); i++) {
+            final char c = g.charAt(i);
+            if (c == '/' || c == '?' || c == '#') {
+                cuoi = i;
+                break;
+            }
+        }
+        final String may = g.substring(sc, cuoi);
+        if (may.isEmpty() || may.indexOf('@') >= 0 || !may.matches("[A-Za-z0-9.:\\[\\]-]+")) {
+            return "";
+        }
+        return g.substring(0, cuoi);
+    }
+
+    /**
+     * Goc tai tep cap nhat trong game (sv.gocTaiCapNhat): ten mien nam sau WAF (Nova) tra trang thu thach JS (HTTP 403)
+     * cho client khong phai trinh duyet (PC updater HttpURLConnection, APK, trinh duyet J2ME cu) - link tep TUONG DOI
+     * (/tai/...) va link tuyet doi CUNG may chu voi website duoc doi sang goc nay (vd http://&lt;IP origin&gt;; tep van kiem
+     * sha256). Trong / sai -> dung website (khong doi gi). Trang tai game (/download) giu ten mien (trinh duyet qua WAF).
+     */
+    public static String gocTai(final String gocTaiCapNhat, final String website) {
+        final String g = nguonGoc(gocTaiCapNhat);
+        return g.isEmpty() ? (website == null ? "" : website.trim()) : g;
+    }
+
+    /**
+     * Link tep: tuong doi -> gocTai; tuyet doi tro ve chinh website (cung scheme + may chu) -> doi sang gocTai; link
+     * may chu khac (CDN...) giu nguyen.
+     */
+    public static String urlTai(final String url, final String gocTaiCapNhat, final String website) {
+        final String gt = gocTai(gocTaiCapNhat, website);
+        final String u = url == null ? "" : url.trim();
+        final String web = nguonGoc(website);
+        if (!nguonGoc(gocTaiCapNhat).isEmpty() && !web.isEmpty() && u.toLowerCase(java.util.Locale.ROOT).startsWith(
+                web.toLowerCase(java.util.Locale.ROOT) + "/")) {
+            return urlTuyetDoi(u.substring(web.length()), gt);
+        }
+        return urlTuyetDoi(u, gt);
+    }
+
+    /** Link tep cua quyet dinh ("" = chi co trang tai); goc = goc tai da tinh ({@link #gocTai}). */
     public static String linkTep(final QuyetDinh q, final String goc) {
         return q.ban == null ? "" : urlTuyetDoi(q.ban.url, goc);
+    }
+
+    /** Link tep theo cau hinh may chu hien tai (sv.gocTaiCapNhat, sv.website). */
+    static String linkTepMayChu(final QuyetDinh q) {
+        return q.ban == null ? "" : urlTai(q.ban.url, server.TeamServer.gocTaiCapNhat, goc());
     }
 
     /** Ten ban moi de hien: phien ban danh muc, hoac "bản <so>". */
@@ -243,13 +296,18 @@ public final class CapNhatClient {
         return q.banMoi > 0 ? "bản " + q.banMoi : "mới";
     }
 
-    /** Goi -115 (client &gt;= 907). */
+    /** Goi -115 (client &gt;= 907); goc = goc tai tep ({@link #gocTai}). */
     public static Message tao(final QuyetDinh q, final String goc, final String trangTai) throws IOException {
+        return tao(q, linkTep(q, goc), trangTai, true);
+    }
+
+    /** Goi -115 voi link tep da tinh san ("" = chi co trang tai). */
+    static Message tao(final QuyetDinh q, final String linkTep, final String trangTai, final boolean daTinh) throws IOException {
         final Message m = new Message(LENH);
         m.dos.writeByte(q.loai);
         m.dos.writeInt(q.banMoi);
         m.dos.writeUTF(q.ban == null ? "" : q.ban.phienBan);
-        m.dos.writeUTF(linkTep(q, goc));
+        m.dos.writeUTF(linkTep == null ? "" : linkTep);
         m.dos.writeUTF(q.ban == null ? "" : q.ban.sha256);
         m.dos.writeUTF(q.ban == null ? "" : q.ban.dungLuong);
         m.dos.writeUTF(q.ban == null ? "" : q.ban.nhatKy);
@@ -261,8 +319,21 @@ public final class CapNhatClient {
 
     /** Link cho hop 37 cua client cu: tep (mot cham tai) neu co, khong thi trang tai game. */
     public static String linkCu(final QuyetDinh q, final String goc, final String trangTai) {
-        final String t = linkTep(q, goc);
-        return t.isEmpty() ? (trangTai == null ? "" : trangTai) : t;
+        return linkCuTuTep(linkTep(q, goc), trangTai);
+    }
+
+    static String linkCuTuTep(final String t, final String trangTai) {
+        return t == null || t.isEmpty() ? (trangTai == null ? "" : trangTai) : t;
+    }
+
+    /** Goi -115 theo cau hinh may chu hien tai (link tep qua sv.gocTaiCapNhat). */
+    public static Message taoMayChu(final QuyetDinh q) throws IOException {
+        return tao(q, linkTepMayChu(q), trangTai(), true);
+    }
+
+    /** Link hop 37 (client cu) theo cau hinh may chu hien tai. */
+    public static String linkCuMayChu(final QuyetDinh q) {
+        return linkCuTuTep(linkTepMayChu(q), trangTai());
     }
 
     /** Chu hop 37 cho client cu (&lt; 907) - LUON kem link tai (client cu khong co nut, chi doc duoc chu). */
@@ -352,7 +423,7 @@ public final class CapNhatClient {
         t.start();
     }
 
-    /** Goc website (link /tai/... tuong doi) va trang tai game cua server nay. */
+    /** Goc website (link /tai/... tuong doi khi chua dat sv.gocTaiCapNhat) va trang tai game cua server nay. */
     static String goc() {
         final String w = server.TeamServer.website;
         return w != null && !w.trim().isEmpty() ? w.trim() : server.TeamServer.linkTaiGame;
@@ -385,9 +456,9 @@ public final class CapNhatClient {
                 + ", ban moi " + q.banMoi + ") user=" + com.htbb.log.Nhat.sach(tenDangNhap));
         try {
             if (q.banClient >= BAN_CO_GOI) {
-                s.sendMessage(tao(q, goc(), trangTai()));
+                s.sendMessage(taoMayChu(q));
             } else {
-                s.sendMessage(real.MessageCreator.createServerAlertMessage(cauCu(q, trangTai()), linkCu(q, goc(), trangTai())));
+                s.sendMessage(real.MessageCreator.createServerAlertMessage(cauCu(q, trangTai()), linkCuMayChu(q)));
             }
         } catch (final Exception ignored) {
         }
@@ -412,7 +483,7 @@ public final class CapNhatClient {
         }
         try {
             if (q.banClient >= BAN_CO_GOI) {
-                s.sendMessage(tao(q, goc(), trangTai()));   // client tu nho "de sau" mot lan/ngay
+                s.sendMessage(taoMayChu(q));   // client tu nho "de sau" mot lan/ngay
                 return;
             }
             final String tk = s.username == null ? "" : s.username.toLowerCase(java.util.Locale.ROOT);
@@ -424,8 +495,35 @@ public final class CapNhatClient {
                 NHAC_CU.clear();
             }
             NHAC_CU.put(tk, homNay);
-            s.sendMessage(real.MessageCreator.createServerAlertMessage(cauCu(q, trangTai()), linkCu(q, goc(), trangTai())));
+            s.sendMessage(real.MessageCreator.createServerAlertMessage(cauCu(q, trangTai()), linkCuMayChu(q)));
         } catch (final Exception ignored) {
         }
+    }
+
+    /**
+     * Ap sv.gocTaiCapNhat (server.ini luc khoi dong, dong cau_hinh luc chay - com.htbb.cauhinh.ApDungMacDinh). Sai (khong
+     * phai http(s)://may) -> bo qua, dung website, ghi canh bao. Tra goc dang dung ("" = theo website).
+     */
+    public static final String KHOA_GOC_TAI = "sv.gocTaiCapNhat";
+
+    /** Nguoi nghe cau hinh trung tam cho {@link #KHOA_GOC_TAI} (ApDungMacDinh dang ky; dong CSDL &gt; server.ini). */
+    public static final com.htbb.cauhinh.NgheThayDoi NGHE_GOC_TAI = new com.htbb.cauhinh.NgheThayDoi() {
+        public void khiDoi(final java.util.Set<String> k, final com.htbb.cauhinh.CauHinhTrungTam.AnhChup m) {
+            datGocTaiCapNhat(m.thanhProperties().getProperty(KHOA_GOC_TAI));
+        }
+    };
+
+    public static String datGocTaiCapNhat(final String v) {
+        final String tho = v == null ? "" : v.trim();
+        final String g = nguonGoc(tho);
+        if (!tho.isEmpty() && g.isEmpty()) {
+            System.out.println("[CAP NHAT] CANH BAO: sv.gocTaiCapNhat=\"" + tho + "\" khong phai http(s)://may - bo qua, link tai theo sv.website");
+        }
+        final String truoc = server.TeamServer.gocTaiCapNhat;
+        server.TeamServer.gocTaiCapNhat = g;
+        if (!g.equals(truoc)) {
+            System.out.println("[CAP NHAT] goc tai tep cap nhat = " + (g.isEmpty() ? "theo sv.website (" + goc() + ")" : g));
+        }
+        return g;
     }
 }

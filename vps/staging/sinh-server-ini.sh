@@ -27,6 +27,13 @@ DICH_LOGIN=$STG_GOC/server/loginServer/server.ini
 GM="admin"
 for i in $(seq 1 40); do GM="$GM,$(printf '%s%03d' "$STG_BOT_TIEN_TO" "$i")"; done
 
+# Goc tai tep cap nhat trong game: GIU dung goc production clients nhan (sv.gocTaiCapNhat, trong = sv.website cua
+# production) - staging doi sv.website sang 127.0.0.1 nhung qa_cap_nhat.tai phai tai DUNG link nguoi choi that nhan
+# (vd ten mien sau WAF -> 403 thi cong kiem phai do). Dong cau_hinh cung khoa (CSDL ban sao) van thang.
+gia_tri_nguon() { grep -E "^[[:space:]]*$1[[:space:]]*=" "$NGUON" | tail -n 1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]+$//' || true; }
+GOC_TAI=$(gia_tri_nguon 'sv\.gocTaiCapNhat')
+[ -n "$GOC_TAI" ] || GOC_TAI=$(gia_tri_nguon 'sv\.website')
+
 MK=$(stg_mat_khau)
 DB_HOST="$STG_DB_HOST:$STG_DB_PORT"
 # khoa=gia tri bi thay (thu tu = thu tu ghi ra).
@@ -61,6 +68,7 @@ DOI=(
     # Bot gui so ban rieng (907/908/915...) - khong chan theo ban toi thieu cua production.
     "sv.banToiThieu=0"
     "sv.website=http://127.0.0.1/"
+    "sv.gocTaiCapNhat=$GOC_TAI"
 )
 
 MOI=$(mktemp)

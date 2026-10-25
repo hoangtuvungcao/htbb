@@ -26,6 +26,7 @@ public final class KiemCapNhatClient {
         kiemNenTang();
         kiemNguong();
         kiemLink();
+        kiemGocTai();
         kiemGoi();
         kiemClientCu();
         kiemNoiVao();
@@ -167,6 +168,117 @@ public final class KiemCapNhatClient {
         Kiem.bang("//host bi tu choi", "", CapNhatClient.urlTuyetDoi("//evil/a.apk", "https://htbb.vd/"));
         Kiem.bang("javascript: bi tu choi", "", CapNhatClient.urlTuyetDoi("javascript:alert(1)", "https://htbb.vd/"));
         Kiem.bang("goc rong -> rong", "", CapNhatClient.urlTuyetDoi("/tai/a.apk", ""));
+    }
+
+    /** Goc tai tep RIENG (sv.gocTaiCapNhat): ten mien sau WAF tra 403 cho client khong phai trinh duyet (25/10/2026). */
+    private static void kiemGocTai() {
+        Kiem.nhom("Cap nhat client - goc tai tep (sv.gocTaiCapNhat, WAF 403)");
+        final String web = "https://htbb.vd/";
+        // khong dat -> nhu cu (website)
+        Kiem.bang("khong dat: /tai theo website", "https://htbb.vd/tai/a.jar", CapNhatClient.urlTai("/tai/a.jar", "", web));
+        Kiem.bang("null: /tai theo website", "https://htbb.vd/tai/a.jar", CapNhatClient.urlTai("/tai/a.jar", null, web));
+        Kiem.bang("khong dat: link tuyet doi website giu nguyen", "https://htbb.vd/tai/a.jar", CapNhatClient.urlTai("https://htbb.vd/tai/a.jar", "", web));
+        // dat goc origin http
+        final String o = "http://10.1.2.3";
+        Kiem.bang("dat: /tai theo goc tai", "http://10.1.2.3/tai/a.jar", CapNhatClient.urlTai("/tai/a.jar", o, web));
+        Kiem.bang("dat co / cuoi + duong dan: chi lay scheme + may", "http://10.1.2.3:8080/tai/a.apk",
+                CapNhatClient.urlTai("/tai/a.apk", "http://10.1.2.3:8080/abc/", web));
+        Kiem.bang("dat: link tuyet doi CUNG website cung doi sang goc tai", "http://10.1.2.3/tai/a.exe",
+                CapNhatClient.urlTai("https://htbb.vd/tai/a.exe", o, web));
+        Kiem.bang("dat: khong phan biet hoa thuong ten mien", "http://10.1.2.3/tai/a.exe",
+                CapNhatClient.urlTai("https://HTBB.vd/tai/a.exe", o, web));
+        Kiem.bang("dat: may chu khac (CDN) giu nguyen", "https://cdn.vd/a.apk", CapNhatClient.urlTai("https://cdn.vd/a.apk", o, web));
+        Kiem.bang("dat: ten mien gia (htbb.vd.evil) khong bi doi", "https://htbb.vd.evil/a.apk",
+                CapNhatClient.urlTai("https://htbb.vd.evil/a.apk", o, web));
+        Kiem.bang("dat: //host van bi tu choi", "", CapNhatClient.urlTai("//evil/a.apk", o, web));
+        // gia tri sai -> bo qua (website)
+        Kiem.bang("sai (khong scheme) -> website", "https://htbb.vd/tai/a.jar", CapNhatClient.urlTai("/tai/a.jar", "10.1.2.3", web));
+        Kiem.bang("sai (ftp) -> website", "https://htbb.vd/tai/a.jar", CapNhatClient.urlTai("/tai/a.jar", "ftp://10.1.2.3", web));
+        Kiem.bang("sai (user@) -> website", "https://htbb.vd/tai/a.jar", CapNhatClient.urlTai("/tai/a.jar", "http://u@10.1.2.3", web));
+        Kiem.bang("sai (khong may) -> website", "https://htbb.vd/tai/a.jar", CapNhatClient.urlTai("/tai/a.jar", "http:///x", web));
+        Kiem.bang("nguonGoc https cong", "https://a.b:8443", CapNhatClient.nguonGoc("https://a.b:8443/x?y"));
+
+        // goi -115 + hop 37 theo cau hinh may chu
+        final String webCu = server.TeamServer.website;
+        final String gocCu = server.TeamServer.gocTaiCapNhat;
+        final String trangCu = server.TeamServer.linkTaiGame;
+        try {
+            server.TeamServer.website = web;
+            server.TeamServer.linkTaiGame = "https://htbb.vd/download";
+            final Map<String, Ban> dm = CapNhatClient.docDanhMuc(DANH_MUC);
+            final QuyetDinh q = qd(905, "jar", 907, 0, true, dm);
+            CapNhatClient.datGocTaiCapNhat("");
+            Kiem.bang("-115 khong dat: link theo website", "https://htbb.vd/tai/HTBB-v907.jar", linkGoi(CapNhatClient.taoMayChu(q)));
+            Kiem.bang("-115 khong dat: trang tai", "https://htbb.vd/download", trangGoi(CapNhatClient.taoMayChu(q)));
+            Kiem.bang("datGocTaiCapNhat tra goc", "http://10.1.2.3", CapNhatClient.datGocTaiCapNhat("http://10.1.2.3/"));
+            Kiem.bang("-115 co goc tai: link tep sang origin", "http://10.1.2.3/tai/HTBB-v907.jar", linkGoi(CapNhatClient.taoMayChu(q)));
+            Kiem.bang("-115 co goc tai: trang tai (trinh duyet) VAN o ten mien", "https://htbb.vd/download", trangGoi(CapNhatClient.taoMayChu(q)));
+            Kiem.bang("hop 37 client cu (J2ME platformRequest): link origin", "http://10.1.2.3/tai/HTBB-v907.jar", CapNhatClient.linkCuMayChu(q));
+            final QuyetDinh an = qd(907, "android", 908, 0, true, dm);
+            Kiem.bang("-115 android link CDN tuyet doi giu nguyen", "https://cdn.vd/HTBB-908.apk", linkGoi(CapNhatClient.taoMayChu(an)));
+            final QuyetDinh rong = qd(905, "jar", 907, 0, true, java.util.Collections.<String, Ban>emptyMap());
+            Kiem.bang("hop 37 khong co tep -> trang tai ten mien", "https://htbb.vd/download", CapNhatClient.linkCuMayChu(rong));
+            Kiem.bang("sai -> bo qua", "", CapNhatClient.datGocTaiCapNhat("khong-phai-url"));
+            Kiem.bang("sai -> -115 ve website", "https://htbb.vd/tai/HTBB-v907.jar", linkGoi(CapNhatClient.taoMayChu(q)));
+
+            // nap lai nong: dong cau_hinh > server.ini, xoa dong -> ve server.ini, khong co ca hai -> website
+            com.htbb.cauhinh.CauHinhTrungTam.xoaNgheChoTest();
+            com.htbb.cauhinh.CauHinhTrungTam.dangKyNghe(new String[]{CapNhatClient.KHOA_GOC_TAI}, CapNhatClient.NGHE_GOC_TAI, "test");
+            final Map<String, String> ini = new java.util.HashMap<String, String>();
+            ini.put(CapNhatClient.KHOA_GOC_TAI, "http://10.9.9.9");
+            com.htbb.cauhinh.CauHinhTrungTam.datChoTest(ini, null, false);
+            CapNhatClient.datGocTaiCapNhat(ini.get(CapNhatClient.KHOA_GOC_TAI)); // luc khoi dong TeamServer doc server.ini
+            Kiem.bang("server.ini: goc tai", "http://10.9.9.9/tai/HTBB-v907.jar", linkGoi(CapNhatClient.taoMayChu(q)));
+            final Map<String, String> db = new java.util.HashMap<String, String>();
+            db.put(CapNhatClient.KHOA_GOC_TAI, "http://10.7.7.7");
+            final java.util.Set<String> doi = com.htbb.cauhinh.CauHinhTrungTam.napLaiChoTest(db, 2L);
+            Kiem.dung("nap lai: khoa doi", doi.contains(CapNhatClient.KHOA_GOC_TAI));
+            Kiem.bang("dong cau_hinh thang server.ini (doi nong)", "http://10.7.7.7/tai/HTBB-v907.jar", linkGoi(CapNhatClient.taoMayChu(q)));
+            com.htbb.cauhinh.CauHinhTrungTam.napLaiChoTest(new java.util.HashMap<String, String>(), 3L);
+            Kiem.bang("xoa dong cau_hinh -> ve server.ini", "http://10.9.9.9/tai/HTBB-v907.jar", linkGoi(CapNhatClient.taoMayChu(q)));
+            com.htbb.cauhinh.CauHinhTrungTam.datChoTest(null, db, false);
+            com.htbb.cauhinh.CauHinhTrungTam.napLaiChoTest(null, 4L);
+            Kiem.bang("khong ini, khong dong -> website", "https://htbb.vd/tai/HTBB-v907.jar", linkGoi(CapNhatClient.taoMayChu(q)));
+            com.htbb.cauhinh.CauHinhTrungTam.xoaNgheChoTest();
+            com.htbb.cauhinh.CauHinhTrungTam.datChoTest(null, null, false);
+
+            final String ad = new String(Files.readAllBytes(Paths.get("src/com/htbb/cauhinh/ApDungMacDinh.java")), StandardCharsets.UTF_8);
+            Kiem.dung("ApDungMacDinh dang ky NGHE_GOC_TAI", ad.contains("CapNhatClient.KHOA_GOC_TAI}, com.htbb.capnhat.CapNhatClient.NGHE_GOC_TAI"));
+            final String ts = new String(Files.readAllBytes(Paths.get("src/server/TeamServer.java")), StandardCharsets.UTF_8);
+            Kiem.dung("TeamServer doc sv.gocTaiCapNhat luc khoi dong", ts.contains("CapNhatClient.datGocTaiCapNhat(p.getProperty(\"sv.gocTaiCapNhat\"))"));
+            final String cn = new String(Files.readAllBytes(Paths.get("src/com/htbb/capnhat/CapNhatClient.java")), StandardCharsets.UTF_8);
+            Kiem.sai("may chu khong con gui link tep theo website truc tiep", cn.contains("tao(q, goc(), trangTai())") || cn.contains("linkCu(q, goc(), trangTai())"));
+            final String tmpl = new String(Files.readAllBytes(Paths.get("../vps/server.ini.tmpl")), StandardCharsets.UTF_8);
+            Kiem.dung("server.ini.tmpl co sv.gocTaiCapNhat (tuy chon tu htbb.env)", tmpl.contains("\nsv.gocTaiCapNhat=${HTBB_GOC_TAI_CAP_NHAT:-}"));
+            Kiem.sai("ma nguon khong ghi cung IP origin", cn.matches("(?s).*https?://\\d+\\.\\d+\\.\\d+\\.\\d+.*"));
+        } catch (final Exception e) {
+            Kiem.dung("goc tai: " + e, false);
+        } finally {
+            server.TeamServer.website = webCu;
+            server.TeamServer.gocTaiCapNhat = gocCu;
+            server.TeamServer.linkTaiGame = trangCu;
+        }
+    }
+
+    private static DataInputStream docGoi(final io.Message m) throws java.io.IOException {
+        final byte[] goi = m.toByteArray();
+        final DataInputStream r = new DataInputStream(new ByteArrayInputStream(goi, 3, goi.length - 3));
+        r.readByte();
+        r.readInt();
+        r.readUTF();
+        return r;
+    }
+
+    private static String linkGoi(final io.Message m) throws java.io.IOException {
+        return docGoi(m).readUTF();
+    }
+
+    private static String trangGoi(final io.Message m) throws java.io.IOException {
+        final DataInputStream r = docGoi(m);
+        for (int i = 0; i < 4; i++) {
+            r.readUTF();
+        }
+        return r.readUTF();
     }
 
     private static void kiemGoi() {

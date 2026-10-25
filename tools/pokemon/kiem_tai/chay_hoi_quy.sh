@@ -15,7 +15,8 @@
 #  Nhom chay doc tu hoi_quy.conf (cung thu muc). Bien:
 #      HOI_QUY_NHOM="a b"   chi chay cac nhom nay        HOI_QUY_BO="c"  bo qua cac nhom nay
 #      HOI_QUY_RA=<thu muc> noi ghi log tung nhom + tong_ket.txt (mac dinh mktemp)
-#      HOI_QUY_NOI=<goc>    thu muc co server/cMap (mac dinh: monorepo chua script nay)
+#      HOI_QUY_NOI=<goc>    thu muc may chu dang chay: server/map, server/cMap, sql/htbb.sql (mac dinh: monorepo chua
+#                           script nay). Ma nguon (server/src, du_lieu, client_pc) LUON doc tu monorepo chua script (-Dgoc)
 #      HOI_QUY_TIEN_TO=kt   tien to tai khoan bot      HTBB_BOT_CP=<classpath>  bot da bien dich san (khong can javac)
 #      HOI_QUY_HE_SO=1      nhan gioi han thoi gian moi nhom (may cham)
 #  Ma thoat: 0 = moi nhom DAT; 1 = co nhom HONG / LOI; 2 = sai doi so / khong bien dich duoc.
@@ -85,7 +86,7 @@ chon() { # nhom co duoc chay?
     return 0
 }
 
-CHUNG=("${DB_OPT[@]}" "-Dnoi=$NOI" -Dtu=1 -Dden=40 -DtuThuong=101 -DdenThuong=199 -Dfile.encoding=UTF-8)
+CHUNG=("${DB_OPT[@]}" "-Dnoi=$NOI" "-Dgoc=$GOC" -Dtu=1 -Dden=40 -DtuThuong=101 -DdenThuong=199 -Dfile.encoding=UTF-8)
 [ -n "${HOI_QUY_LOG_GAME:-}" ] && CHUNG+=("-Dlog=$HOI_QUY_LOG_GAME")
 HONG=0; SO=0
 BD_TONG=$(date +%s)
