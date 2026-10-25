@@ -208,11 +208,33 @@ public final class KichBanNgamTay {
         return m;
     }
 
+    /** Doan thang pixel (ax, ay) -> (bx, by) khong qua o chan (nhu BanHuong.thongDuong, buoc 8 px tren o 16 px). */
+    static boolean thongDuong(BotChucNang.BanDo bd, int ax, int ay, int bx, int by) {
+        if (bd == null) return true;
+        double dx = bx - ax, dy = by - ay, l = Math.sqrt(dx * dx + dy * dy);
+        for (double d = 8; d < l; d += 8) {
+            int x = (int) Math.floor(ax + dx * d / l), y = (int) Math.floor(ay + dy * d / l);
+            if (!bd.diDuoc(x / 16, y / 16)) return false;
+        }
+        return true;
+    }
+
+    /** A vua danh trung Pokemon hoang da (goi danh quai 9 / 106, quai guc 90, EXP 30) tu moc {@code tu}. */
+    static boolean trungQuai(BotChucNang.Bot a, int tu) {
+        for (int i = tu; i < a.su.size(); i++) {
+            int c = a.su.get(i).cmd;
+            if ((c == 9 || c == 106 || c == 90 || c == 30) && a.su.get(i).d != null) return true;
+        }
+        return false;
+    }
+
     /**
      * nt_khoang_cach (bao cao QA #11): A dung yen, B DI BO (lenh 4, khong GM) toi cac o cach A 1..6 o theo 8 huong tren
      * CUNG ban do / CUNG khu (A phai thay B di chuyen - goi 4); A keo ngam thang vao B (-113, chieu 0). Trung khi va chi
      * khi khoang cach &lt;= tam + ban kinh than (BanHuong.BAN_KINH_THAN = 10), tam lay tu bang chieu may chu gui (-113
-     * loai 2) - dung vach ngam client ve. Diem sat bien (lech &lt;= 4 px) chi ghi lai.
+     * loai 2) - dung vach ngam client ve. Diem sat bien (lech &lt;= 4 px) chi ghi lai. Lop co chieu 0 kieu DAN (kieu 0, vd
+     * lop 2 tao moi: tam 80): dan dung o tuong va trung muc tieu DAU TIEN - vi tri ma duong A -> B qua o chan, hoac dan trung
+     * Pokemon hoang da chan giua, la luat dung (khong tinh, ghi "=tuong" / "=quai"). Truoc day hai o nhu vay ra SAI (25/10).
      */
     static void khoangCach() throws Exception {
         chuanBi();
@@ -258,13 +280,25 @@ public final class KichBanNgamTay {
                 if (cho > 0) A.bom((int) cho);
                 double kc = Math.sqrt((double) (v[0] - ax) * (v[0] - ax) + (double) (v[1] - ay) * (v[1] - ay));
                 boolean mong = kc <= tam + 10;
-                int mb = B.moc();
+                // dan (kieu 0, BanHuong.K_DAN): dung o tuong (BanHuong.tamThat) - duong A -> B qua o chan thi khong tinh
+                if (kieu == 0 && !thongDuong(bd, ax, ay, v[0], v[1])) {
+                    boQua++;
+                    ds.append(String.format(" %d/%d:%.0fpx=tuong", k, hi, kc));
+                    continue;
+                }
+                int mb = B.moc(), ma = A.moc();
                 short[] h = huong(new int[]{ax, ay}, v, false);
                 A.gui(-113, (byte) 0, (byte) 0, (short) ax, (short) ay, h[0], h[1]);
                 banCuoi = System.currentTimeMillis();
                 B.bom(1300);
                 int[] t = goi6(B, mb, B.actor);
                 boolean trung = t != null && t[0] == A.actor;
+                // dan trung Pokemon hoang da dung chan giua A va B truoc (muc tieu dau tien, toiDa 1): khong phai sai tam
+                if (kieu == 0 && !trung && trungQuai(A, ma)) {
+                    boQua++;
+                    ds.append(String.format(" %d/%d:%.0fpx=quai", k, hi, kc));
+                    continue;
+                }
                 ds.append(String.format(" %d/%d:%.0fpx=%s", k, hi, kc, trung ? "T" : "-"));
                 if (Math.abs(kc - (tam + 10)) <= 4) sat++;
                 else if (trung == mong) dung++;
@@ -289,22 +323,45 @@ public final class KichBanNgamTay {
      */
     static void anToan() throws Exception {
         chuanBi();
-        // vao lang tu ngoai (dang o lang san thi khong co goi vao vung an toan moi): ra dong co truoc
+        // Chiem Gym dang chay (lich chuan 21h thu 3 / thu 7, hoac gio admin dat san - ban sao prod mang theo sv.gioChiemThanh):
+        // moi ban do cua vung la vung PvP (LuatPkGame.vungPvp: Map.getTown / nwar) -> lang KHONG con an toan, may chu dung luat
+        // khong bao gi. Cong kiem 25/10 lan 2 (va may thu 24/10 21:08) roi dung vao luc do -> hai FAIL nay. Ket thuc chiem Gym
+        // truoc khi kiem (GM over0..2 = MapTown.adminKetThuc; dang chay thi may chu gui -38 khi tat).
+        int mg = A.moc();
+        for (int q = 0; q < 3; q++) A.gm("over" + q, 300);
+        boolean dangChiem = A.cho(x -> x.coLenh(mg, -38), 5000);
+        // vao lang tu ngoai (dang o lang san thi khong co goi vao vung an toan moi): ra dong co, cho may chu xac nhan che do
+        // ngam PvP (dang PK ngoai lang = -113 loai 1 pvp=1) roi moi vao lang
         A.den(1, 30, 30);
-        A.bom(1000);
+        if (!A.cho(x -> cheDoCuoi(x) == 1, 4000)) {
+            coPk(A, 14); // mat co PK (vd thao giua chung) -> deo lai
+            A.cho(x -> cheDoCuoi(x) == 1, 4000);
+        }
+        int truoc = cheDoCuoi(A);
         int m = A.moc();
         A.den(0, 30, 30);
-        A.bom(2500);
+        A.cho(x -> chu(x, m).contains("Khu an toàn, không đánh người được") && cheDoTu(x, m) == 0, 8000);
         String c = chu(A, m);
-        byte[] cd = null;
-        for (int i = A.su.size() - 1; i >= m && cd == null; i--) {
-            BotChucNang.SuKien e = A.su.get(i);
-            if (e.cmd == -113 && e.d != null && e.d.length > 1 && e.d[0] == 1) cd = e.d;
-        }
-        BotChucNang.ket("nt.an_toan.bao", c.contains("Khu an toàn, không đánh người được"), c);
-        BotChucNang.ket("nt.an_toan.tat_ngam", cd != null && cd[1] == 0, cd == null ? "khong co -113 loai 1" : "pvp=" + cd[1]);
+        int cd = cheDoTu(A, m);
+        String ngu = " (truoc khi vao lang pvp=" + truoc + (dangChiem ? ", vua ket thuc chiem Gym" : "") + ")";
+        BotChucNang.ket("nt.an_toan.bao", c.contains("Khu an toàn, không đánh người được"), c + ngu);
+        BotChucNang.ket("nt.an_toan.tat_ngam", cd == 0, (cd < 0 ? "khong co -113 loai 1" : "pvp=" + cd) + ngu);
         A.den(MAP, TX, TY);
         A.bom(1500);
+    }
+
+    /** Che do ngam PvP cuoi cung may chu bao (-113 loai 1): 1 / 0, -1 = chua co. */
+    static int cheDoCuoi(BotChucNang.Bot b) {
+        return cheDoTu(b, 0);
+    }
+
+    /** Nhu tren nhung chi tinh goi tu moc {@code tu}. */
+    static int cheDoTu(BotChucNang.Bot b, int tu) {
+        for (int i = b.su.size() - 1; i >= tu; i--) {
+            BotChucNang.SuKien e = b.su.get(i);
+            if (e.cmd == -113 && e.d != null && e.d.length > 1 && e.d[0] == 1) return e.d[1];
+        }
+        return -1;
     }
 
     static void khoa() throws Exception {

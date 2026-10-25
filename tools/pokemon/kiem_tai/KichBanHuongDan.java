@@ -262,16 +262,35 @@ class KichBanHuongDan {
         return load == 0 || load == 70 || load == 80;
     }
 
-    static int[] diemCau(int load) {
+    /**
+     * Diem cau (o dung cau {x, y}) cua ban do nap {@code load}, theo thu tu uu tien:
+     * 1. bang data_hst_ho_cau trong CSDL game (NGUON may chu dung - BanDoSinhThai.diemCauCua; co ca tren ban sao prod);
+     * 2. du_lieu/diem_cau_ca.csv trong monorepo (-Dgoc) - goi cong kiem staging KHONG kem du_lieu/ (cong kiem 25/10:
+     *    "khong co diem cau o lang 0" du may chu co diem cau), nen chi la duong lui khi chay khong co CSDL.
+     * Rong = khong biet (hanhDong hoi may chu: tha cau sai cho -> "Điểm câu gần nhất: (x,y)").
+     */
+    static List<int[]> diemCau(int load) {
+        List<int[]> ds = new ArrayList<>();
+        for (String l : BotChucNang.sql("SELECT x, y FROM data_hst_ho_cau WHERE map_id = " + load + " ORDER BY ho_id, y, x")) {
+            String[] f = l.trim().split("\\s+");
+            if (f.length == 2 && f[0].matches("\\d+") && f[1].matches("\\d+")) ds.add(new int[]{Integer.parseInt(f[0]), Integer.parseInt(f[1])});
+        }
+        if (!ds.isEmpty()) return ds;
         try {
             for (String l : Files.readAllLines(new File(BotChucNang.GOC, "du_lieu/diem_cau_ca.csv").toPath())) {
                 String[] f = l.split(",");
-                if (f.length >= 8 && f[0].equals(String.valueOf(load))) return new int[]{Integer.parseInt(f[6]), Integer.parseInt(f[7])};
+                if (f.length >= 8 && f[0].equals(String.valueOf(load))) ds.add(new int[]{Integer.parseInt(f[6]), Integer.parseInt(f[7])});
             }
         } catch (Exception e) {
-            // khong co tep
+            // khong co tep (goi cong kiem) - hanhDong hoi may chu
         }
-        return null;
+        return ds;
+    }
+
+    /** Goi y cua may chu khi tha cau xa ho: "Điểm câu gần nhất: (x,y)" -> {x, y}; null = khong co. */
+    static int[] goiYCau(String chu) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("Điểm câu gần nhất: \\((\\d+),(\\d+)\\)").matcher(chu == null ? "" : chu);
+        return m.find() ? new int[]{Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2))} : null;
     }
 
     // ------------------------------------------------------------------ hd_toan_bo
@@ -409,16 +428,31 @@ class KichBanHuongDan {
                 return chinh(b, m, 1) != null ? null : "mac Ruy bang khong tinh: " + chuSau(b, m);
             }
             case 57: { // tha cau o ao lang
-                int[] c = diemCau(b.mapLoad);
                 BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
-                if (c == null || bd == null) return "khong co diem cau o lang " + b.mapLoad;
-                dongBoViTri(b);
-                if (!b.diDuong(bd, c[0], c[1])) return "khong di toi diem cau " + c[0] + "," + c[1];
+                if (bd == null) return "khong doc duoc ban do lang " + b.mapLoad + " (server/cMap)";
+                List<int[]> ds = diemCau(b.mapLoad);
+                if (ds.isEmpty()) { // nhu nguoi choi: tha cau tai cho, may chu chi diem cau gan nhat
+                    dongBoViTri(b);
+                    int mh = b.moc();
+                    b.chat("cauca");
+                    b.bom(1500);
+                    int[] g = goiYCau(chuSau(b, mh));
+                    if (g != null) ds.add(g);
+                    if (chinh(b, m, 1) != null) return null; // dung san canh ao
+                }
+                if (ds.isEmpty()) return "khong co diem cau o lang " + b.mapLoad + " (CSDL data_hst_ho_cau, du_lieu/diem_cau_ca.csv, goi y may chu deu rong)";
+                String toi = null;
+                for (int i = 0; i < ds.size() && i < 4 && toi == null; i++) {
+                    dongBoViTri(b);
+                    if (b.diDuong(bd, ds.get(i)[0], ds.get(i)[1])) toi = ds.get(i)[0] + "," + ds.get(i)[1];
+                }
+                if (toi == null) return "khong di toi diem cau nao cua lang " + b.mapLoad + ": " + ds.size() + " diem, dau " + ds.get(0)[0] + "," + ds.get(0)[1];
+                int mc = b.moc();
                 for (int lan = 0; lan < 3 && chinh(b, m, 1) == null; lan++) {
                     b.chat("cauca");
                     b.bom(1500);
                 }
-                return chinh(b, m, 1) != null ? null : "tha cau khong tinh: " + chuSau(b, m);
+                return chinh(b, m, 1) != null ? null : "tha cau tai " + toi + " khong tinh: " + chuSau(b, mc);
             }
             default:
                 return "buoc hanh dong la (vat " + vat + ")";

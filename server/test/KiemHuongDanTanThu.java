@@ -442,6 +442,7 @@ public final class KiemHuongDanTanThu {
             }
         }
         Kiem.bang("moi buoc: NPC o ca ba lang, loi dung nguoi, muc tieu lam duoc, chu ro", "[]", loi.toString());
+        aoLang(hd, meta);
         Kiem.dung("du hoat dong: noi chuyen, mang do, ha quai, dung thuoc, cong diem, mac do, tha cau",
                 kieuBuoc.containsAll(Arrays.asList("noi_chuyen", "dua_thu", "giet", "dung_thuoc", "hoc_chieu", "nang_cap", "tha_cau")));
         Kiem.dung("ngan sach: xu it (<= 2.000 ca chuoi)", tongXu > 0 && tongXu <= 2000);
@@ -573,5 +574,111 @@ public final class KiemHuongDanTanThu {
         } catch (final java.io.IOException e) {
             Kiem.dung("doc nguon HD.05: " + e, false);
         }
+    }
+
+    /** Bo (map_id, ho_id, so_o, x, y) cua bang data_hst_ho_cau trong mot doan SQL: map_id -> {x, y}. */
+    static Map<Integer, List<int[]>> hoCau(final String sql) {
+        final Map<Integer, List<int[]>> kq = new HashMap<Integer, List<int[]>>();
+        final int a = sql.indexOf("INSERT INTO `data_hst_ho_cau` VALUES");
+        if (a < 0) {
+            return kq;
+        }
+        final String khoi = sql.substring(a, sql.indexOf(";", a));
+        final Matcher m = Pattern.compile("\\((\\d+),(\\d+),(\\d+),(\\d+),(\\d+)\\)").matcher(khoi);
+        while (m.find()) {
+            final int map = Integer.parseInt(m.group(1));
+            if (!kq.containsKey(map)) {
+                kq.put(map, new ArrayList<int[]>());
+            }
+            kq.get(map).add(new int[]{Integer.parseInt(m.group(4)), Integer.parseInt(m.group(5))});
+        }
+        return kq;
+    }
+
+    /**
+     * Buoc tha cau (kieu tha_cau / cau_ca) LAM XONG DUOC o MOI lang khoi dau (0 Pewter, 70 Blackthorn, 80): ca CSDL moi
+     * (phan A) lan CSDL dang chay / ban sao prod (phan B, DROP + CREATE + INSERT moi lan nang cap) deu co diem cau cua lang,
+     * va tu NPC giao buoc di bo (4 huong, o di duoc cua cMap) toi duoc mot diem dung sat ao (HeSinhThaiMenu.thaCau:
+     * hoGan(ho, x, y, 2) >= 0). Cong kiem 25/10 bao "khong co diem cau o lang 0" (loi bot doc du_lieu/ khong co trong goi
+     * cong kiem) - test nay chot phia game: nguoi choi that o lang nao cung tha cau duoc.
+     */
+    static void aoLang(final Map<Integer, String[]> hd, final Map<String, String[]> meta) throws Exception {
+        final Map<Integer, List<int[]>> phanA = hoCau(DayDu.sql());
+        final Map<Integer, List<int[]>> phanB = hoCau(DayDu.nangCap());
+        final List<String> loi = new ArrayList<String>();
+        int soBuoc = 0;
+        int k = 0;
+        for (final String[] r : new TreeMap<Integer, String[]>(hd).values()) {
+            k++;
+            final String ma = String.format("HD.%02d", k);
+            final String[] mt = meta.get(ma);
+            if (mt == null || !("tha_cau".equals(mt[0]) || "cau_ca".equals(mt[0]))) {
+                continue;
+            }
+            soBuoc++;
+            final int npc = Integer.parseInt(r[2]);
+            for (final int l : LANG) {
+                if (!phanA.containsKey(l)) {
+                    loi.add(ma + " lang " + l + ": phan A (CSDL moi) khong co diem cau");
+                }
+                final List<int[]> diem = phanB.get(l);
+                if (diem == null || diem.isEmpty()) {
+                    loi.add(ma + " lang " + l + ": phan B (ban sao prod) khong co diem cau");
+                    continue;
+                }
+                final com.htbb.pokemon.DinhDangBanDo bd = com.htbb.pokemon.DinhDangBanDo.doc(Files.readAllBytes(new File("cMap/" + l).toPath()));
+                final String bo = com.htbb.pokemon.DinhDangBanDo.boTile(l);
+                final boolean[] nuoc = com.htbb.pokemon.BanDoSinhThai.luoiNuoc(bd, bo);
+                final boolean[] dd = com.htbb.pokemon.BanDoSinhThai.luoiDiDuoc(bd, Files.readAllBytes(new File("cMap/" + bo + ".type").toPath()), nuoc);
+                final int[] ho = com.htbb.pokemon.BanDoSinhThai.nhanHo(nuoc, bd.w, bd.h);
+                // di bo tu cac o di duoc quanh NPC giao buoc
+                final boolean[] toi = new boolean[bd.w * bd.h];
+                final java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<Integer>();
+                for (final int[] n : NpcTinhBanDo.cua(l)) {
+                    if (n[2] != npc) {
+                        continue;
+                    }
+                    for (int dy = -2; dy <= 2; dy++) {
+                        for (int dx = -2; dx <= 2; dx++) {
+                            final int x = n[0] + dx, y = n[1] + dy;
+                            if (x >= 0 && y >= 0 && x < bd.w && y < bd.h && dd[y * bd.w + x] && !toi[y * bd.w + x]) {
+                                toi[y * bd.w + x] = true;
+                                q.add(y * bd.w + x);
+                            }
+                        }
+                    }
+                }
+                if (q.isEmpty()) {
+                    loi.add(ma + " lang " + l + ": khong co o di duoc canh NPC " + npc);
+                    continue;
+                }
+                while (!q.isEmpty()) {
+                    final int i = q.poll();
+                    final int x = i % bd.w, y = i / bd.w;
+                    final int[][] huong = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+                    for (final int[] h : huong) {
+                        final int nx = x + h[0], ny = y + h[1];
+                        if (nx >= 0 && ny >= 0 && nx < bd.w && ny < bd.h && dd[ny * bd.w + nx] && !toi[ny * bd.w + nx]) {
+                            toi[ny * bd.w + nx] = true;
+                            q.add(ny * bd.w + nx);
+                        }
+                    }
+                }
+                int duoc = 0;
+                for (final int[] d : diem) {
+                    if (d[0] >= 0 && d[1] >= 0 && d[0] < bd.w && d[1] < bd.h && toi[d[1] * bd.w + d[0]]
+                            && com.htbb.pokemon.BanDoSinhThai.hoGan(ho, bd.w, bd.h, d[0], d[1], 2) >= 0) {
+                        duoc++;
+                    }
+                }
+                if (duoc == 0) {
+                    loi.add(ma + " lang " + l + ": " + diem.size() + " diem cau, khong diem nao di bo toi duoc tu NPC " + npc + " va sat ao");
+                }
+            }
+        }
+        Kiem.bang("huong dan co dung 1 buoc tha cau", 1, soBuoc);
+        Kiem.bang("buoc tha cau lam xong duoc o ca ba lang (diem cau phan A + B, di bo tu NPC toi ao)", "[]", loi.toString());
+        Kiem.dung("he sinh thai tat: buoc tha cau tu tinh xong khi nhan (khong chan nguoi choi)",
+                doc("src/real/HuongDanTanThuGame.java").contains("daDat = !com.htbb.pokemon.HeSinhThai.bat();"));
     }
 }

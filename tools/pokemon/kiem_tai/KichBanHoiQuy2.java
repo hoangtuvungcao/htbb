@@ -299,20 +299,31 @@ final class KichBanHoiQuy2 {
             HoiQuy.duTuoi(c);
             // hai nguoi cung ban do: lang co nhieu ban sao (0 / 301...) -> cung ra dong Pallet (map 1) roi di bo sat nhau
             if (a.mapId != c.mapId) { KichBanGymLang.raPallet(a); KichBanGymLang.raPallet(c); }
-            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(a.mapLoad);
-            KichBanHuongDan.dongBoViTri(a);
-            KichBanHuongDan.dongBoViTri(c);
-            if (a.mapId == c.mapId && bd != null) {
-                int[] o = bd.oGan(c.px / 16 + 1, c.py / 16, 3);
-                if (o != null) a.diDuong(bd, o[0], o[1]);
+            // May chu chi nhan loi moi toi nguoi DANG HIEN canh minh (Char.getCharFromNearChar - cung ban do, cung khu, trong
+            // tam nhin); khong thi bo qua IM LANG (client that chi cho moi nguoi dang thay). Cong kiem 25/10 lan 2: hai bot ra
+            // Pallet tu hai ban sao lang, A di bo khong toi canh B -> "map A 1 B 1 | |". Di bo lai toi khi HAI BEN thay nhau.
+            final BotChucNang.Bot aa = a, cc = c;
+            boolean thay = false;
+            for (int lan = 0; lan < 3 && !thay; lan++) {
+                BotChucNang.BanDo bd = BotChucNang.BanDo.nap(a.mapLoad);
+                KichBanHuongDan.dongBoViTri(a);
+                KichBanHuongDan.dongBoViTri(c);
+                if (a.mapId == c.mapId && bd != null) { // luot chan: A di toi B, luot le: B di toi A
+                    BotChucNang.Bot di = lan % 2 == 0 ? a : c, dich = lan % 2 == 0 ? c : a;
+                    int[] o = bd.oGan(dich.px / 16 + 1, dich.py / 16, 3);
+                    if (o != null) di.diDuong(bd, o[0], o[1]);
+                }
+                a.bom(800);
+                c.bom(800);
+                thay = a.mapId == c.mapId && a.cho(x -> x.nguoi.containsKey(cc.actor) && cc.nguoi.containsKey(aa.actor), 5000);
             }
-            a.bom(800);
-            c.bom(800);
+            ket("giao_dich.thay_nhau", thay, "map A " + a.mapId + " (" + a.px + "," + a.py + ") B " + c.mapId + " (" + c.px + "," + c.py
+                    + "), A thay B " + a.nguoi.containsKey(c.actor) + ", B thay A " + c.nguoi.containsKey(a.actor));
             a.lamMoi();
             c.lamMoi();
             int a0 = a.soThuoc(1), c0 = c.soThuoc(1);
             long xa = a.xu, xc = c.xu;
-            int m = c.moc();
+            int m = c.moc(), ma = a.moc();
             a.gui(66, (byte) 0, (short) c.actor);
             boolean moi = c.cho(x -> x.coLenh(m, 66), 3000);
             c.gui(66, (byte) 1, (short) a.actor);
@@ -330,9 +341,9 @@ final class KichBanHoiQuy2 {
             c.bom(1500);
             a.lamMoi();
             c.lamMoi();
-            ket("giao_dich.moi", moi, "map A " + a.mapId + " B " + c.mapId + " | " + c.chuTu(m) + " | A: " + a.chuTu(m));
+            ket("giao_dich.moi", moi, "map A " + a.mapId + " B " + c.mapId + " | " + c.chuTu(m) + " | A: " + a.chuTu(ma));
             ket("giao_dich.bao_toan_thuoc", a.soThuoc(1) + c.soThuoc(1) == a0 + c0, "A " + a0 + "->" + a.soThuoc(1) + " B " + c0 + "->" + c.soThuoc(1));
-            ket("giao_dich.chuyen_dung", a.soThuoc(1) == a0 - 3 && c.soThuoc(1) == c0 + 3, "A " + a0 + "->" + a.soThuoc(1) + " B " + c0 + "->" + c.soThuoc(1) + " | " + a.chuTu(m));
+            ket("giao_dich.chuyen_dung", a.soThuoc(1) == a0 - 3 && c.soThuoc(1) == c0 + 3, "A " + a0 + "->" + a.soThuoc(1) + " B " + c0 + "->" + c.soThuoc(1) + " | " + a.chuTu(ma));
             ket("giao_dich.xu_khong_doi", a.xu == xa && c.xu == xc, "xu A " + xa + "->" + a.xu + " B " + xc + "->" + c.xu);
             // ngat ket noi giua giao dich: khong mat, khong nhan doi
             a.bom(61000);
