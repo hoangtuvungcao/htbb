@@ -296,7 +296,7 @@ public class KiemChamHud {
         kiem(v != null && v.length > 0, "co nut HUD");
         if (v == null) return;
         String[] can = {"hud-chieu0", "hud-chieu1", "hud-chieu2", "hud-chieu3", "hud-danh", "hud-doi-bo", "hud-ngu-canh",
-            "hud-thuoc-hp", "hud-thuoc-pp", "hud-tu-dong", "hud-chat", "hud-tren-3", "hud-tu-dong-cai-dat", "hud-cai-dat"};
+            "hud-thuoc-hp", "hud-thuoc-pp", "hud-tu-dong", "hud-chat", "hud-tren-3", "hud-cai-dat"};
         for (String c : can) {
             boolean co1 = false;
             for (Object[] n : v) if (c.equals(n[0])) co1 = true;
@@ -442,7 +442,9 @@ public class KiemChamHud {
         int cx = v[0] + v[2] / 2, cy = v[1] + v[3] / 2, r = v[2] / 2;
         final int truoc = game.render.screen.GameScr.indexTabSlot;
         cham(cx - r + 1, cy);
-        kiem(cho(() -> game.render.screen.GameScr.indexTabSlot != truoc), "cham mep vung vien 1/2 (cach tam " + (r - 1) + " px, ngoai hinh ve r 9) -> doi bo");
+        kiem(cho(() -> game.render.screen.GameScr.indexTabSlot != truoc), "cham mep vung nut doi trang (cach tam " + (r - 1) + " px) -> doi bo");
+        ve();
+        kiem(game.pokemon.TrangChieu.nhan().equals(game.render.screen.HudRong.lastDoiTrang), "nut doi trang ghi trang moi " + game.render.screen.HudRong.lastDoiTrang);
         ChupTrongGame.chay(() -> game.render.screen.GameScr.indexTabSlot = 0);
         // phím PC "Đổi bộ chiêu" (R) và phím J2ME 0
         Method nh = htbb.pc.BanPhim.class.getDeclaredMethod("nhanPhim", int.class, int.class, boolean.class);
@@ -508,10 +510,13 @@ public class KiemChamHud {
         String co = KiemChamHud.co + bt;
         dungCanh(false);
         dongTuDong();
-        kiem(chamVung("hud-tu-dong-cai-dat"), co + ": co vung banh rang Tu dong (hud-tu-dong-cai-dat)");
+        // 0.9.21: bánh răng nhỏ cạnh AUTO đã bỏ (trùng hình bánh răng Cài đặt) - nhà chính = Menu › Tự động đánh
+        kiem(vung("hud-tu-dong-cai-dat") == null, co + ": khong con banh rang Tu dong rieng (hud-tu-dong-cai-dat)");
+        ChupTrongGame.chay(() -> game.pokemon.HanhDong.moMenu());
+        kiem(chamVung("menu-Tự động đánh"), co + ": Menu co vien Tu dong danh");
         ngu(300);
         ve();
-        kiem(bangTuDongMo(), co + ": cham banh rang -> bang Tu dong danh mo va con mo sau vai khung");
+        kiem(bangTuDongMo(), co + ": Menu > Tu dong danh -> bang Tu dong danh mo va con mo sau vai khung");
         // 0.9.9: "Trang chiêu dùng khi tự động" (mặc định trang đang dùng), chạm = trang kế, lưu RMS
         Class<?> td = game.render.screen.TuDong.class;
         datTinh(td, "trangChieu", Integer.valueOf(-1));
@@ -963,10 +968,12 @@ public class KiemChamHud {
                     break;
                 }
                 case "Sổ tay huấn luyện": {
+                    // 0.9.21: Sổ tay của Menu không lặp mục có nhà riêng cùng cấp (GameScr.trongSoTayMenu)
+                    java.util.List<String> muon = new java.util.ArrayList<String>();
+                    for (String m : game.render.screen.GameScr.SO_TAY_MUC) if (game.render.screen.GameScr.trongSoTayMenu(m)) muon.add(m);
+                    muon.add(game.render.screen.GameScr.SO_TAY_VE_LANG);
                     kiem("MenuNguCanh".equals(k.hop) && "Sổ tay huấn luyện".equals(k.tieu)
-                            && k.lenh != null && k.lenh.length == game.render.screen.GameScr.SO_TAY_MUC.length + 1
-                            && java.util.Arrays.equals(java.util.Arrays.copyOf(k.lenh, k.lenh.length - 1), game.render.screen.GameScr.SO_TAY_MUC)
-                            && game.render.screen.GameScr.SO_TAY_VE_LANG.equals(k.lenh[k.lenh.length - 1]), nhan + " -> the So tay (" + k + ")");
+                            && k.lenh != null && java.util.Arrays.asList(k.lenh).equals(muon), nhan + " -> the So tay (" + k + ")");
                     xoaGoi();
                     kiem(chamVung("lenh-0"), nhan + ": cham muc 0");
                     Kq k2 = doc();
@@ -1078,7 +1085,7 @@ public class KiemChamHud {
     }
 
     static final String[] NUT_HUD = {"hud-the", "hud-tren-0", "hud-tren-1", "hud-tren-2", "hud-tren-3", "hud-cai-dat", "hud-thoi-tiet",
-        "hud-chat", "hud-tu-dong", "hud-tu-dong-cai-dat", "hud-thuoc-hp", "hud-thuoc-pp", "hud-danh", "hud-chieu0", "hud-chieu1",
+        "hud-chat", "hud-tu-dong", "hud-thuoc-hp", "hud-thuoc-pp", "hud-danh", "hud-chieu0", "hud-chieu1",
         "hud-chieu2", "hud-chieu3", "hud-doi-bo", "hud-ngu-canh", "hud-nem-bong"};
 
     /** Mọi nút HUD + ô Menu ở cỡ đang đặt: không mục tiêu / Ekans + thẻ thời tiết / NPC. */

@@ -13,7 +13,10 @@ public final class HudBoTri {
     public static final int N_DANH = 0, N_C0 = 1, N_C1 = 2, N_C3 = 3, N_C4 = 4, N_DOI_BO = 5, N_MUC_TIEU = 6,
             N_HP = 7, N_PP = 8, N_MENU = 9, N_TU_DONG = 10, N_CHAT = 11, N_THEM = 12, N_CHINH = 13,
             N_CHAT_BONG = 14, N_BONG = 15, N_CAI_DAT = 16, N_TD_CAI = 17, N_MINIMAP = 18, SO_NUT = 19;
-    /** 0.9.9: hàng trên (phải -> trái) Tự động, bánh răng cài đặt Tự động, Cài đặt, Chat, Hành trang, Nhiệm vụ (+ chỗ Menu dự phòng). */
+    /**
+     * Hàng trên (phải -> trái) Tự động, Cài đặt, Chat, Hành trang, Nhiệm vụ (+ chỗ Menu / bóng dự phòng). 0.9.21: bỏ bánh
+     * răng cài đặt Tự động (N_TD_CAI - trùng hình bánh răng Cài đặt ngay cạnh; nhấn giữ nút Tự động / Menu › Tự động đánh).
+     */
     public static final int SO_NUT_TREN = 7;
     public static final String[] TEN = {"danh", "chieu0", "chieu1", "chieu3", "chieu4", "doi_bo", "muc_tieu", "hp", "pp",
         "menu", "tu_dong", "chat", "them", "chinh", "chat_bong", "bong", "cai_dat", "tu_dong_cai_dat", "minimap"};
@@ -43,7 +46,7 @@ public final class HudBoTri {
         float[] o = oNhanBong();
         boolean tot = x - r >= L && x + r <= R && y - r >= T && o[0] >= L && o[2] <= R && o[3] <= B;
         for (int n = 0; tot && n < N_MINIMAP; n++) {
-            if (n == N_BONG) continue;
+            if (n == N_BONG || an(n)) continue;
             float dx = NX[n] - x, dy = NY[n] - y;
             if (Math.sqrt(dx * dx + dy * dy) < NR[n] + r + k || denO(NX[n], NY[n], o) < NR[n] + k) tot = false;
         }
@@ -156,8 +159,9 @@ public final class HudBoTri {
         float yHp = cy + 20 * s1 + gy[2];
         dat(N_HP, xHp, yHp, rHp);
         dat(N_PP, xHp - Math.max(33 * s2, 2 * rHp + k), yHp, rHp);
-        int[] tren = {N_TU_DONG, N_TD_CAI, N_CAI_DAT, N_CHAT, N_THEM, N_CHINH};
+        int[] tren = {N_TU_DONG, N_CAI_DAT, N_CHAT, N_THEM, N_CHINH};
         for (int i = 0; i < tren.length; i++) dat(tren[i], xNutTren(i), yNutTren(), rTren());
+        dat(N_TD_CAI, -1000, -1000, 0);   // 0.9.21: không còn nút (an() - bỏ qua ở đẩy / kiểm)
         float rMn = rMenu();
         dat(N_MENU, (L + R) / 2f, B - rMn - dp(4), rMn);
         float s3 = gs[3] * kd;
@@ -177,7 +181,7 @@ public final class HudBoTri {
                 int m = di[q];
                 kep(m);
                 for (int n = 0; n < N_MINIMAP; n++) {
-                    if (n == m || n == N_MENU) continue;   // Poké Ball đặt SAU vòng đẩy (khe giữa cần điều khiển và cụm)
+                    if (n == m || n == N_MENU || an(n)) continue;   // Poké Ball đặt SAU vòng đẩy (khe giữa cần điều khiển và cụm)
                     float dx = NX[m] - NX[n], dy = NY[m] - NY[n];
                     float can = NR[m] + NR[n] + k;
                     float d2 = dx * dx + dy * dy;
@@ -231,6 +235,11 @@ public final class HudBoTri {
         }
     }
 
+    /** Nút không còn trên HUD (giữ chỉ số cho bố cục lưu cũ): 0.9.21 bánh răng Tự động. */
+    public static boolean an(int n) {
+        return n == N_TD_CAI;
+    }
+
     static void kep(int n) {
         float r = NR[n];
         if (NX[n] < L + r) NX[n] = L + r;
@@ -247,11 +256,13 @@ public final class HudBoTri {
         StringBuffer b = new StringBuffer();
         float rm = rMin() - 0.01f, k = cach() - 0.6f;
         for (int n = 0; n < N_MINIMAP; n++) {
+            if (an(n)) continue;
             if (NR[n] < rm) b.append("NHO ").append(TEN[n]).append(" r=").append(NR[n]).append(" < ").append(rMin()).append('\n');
             if (NX[n] - NR[n] < L - 0.5f || NX[n] + NR[n] > R + 0.5f || NY[n] - NR[n] < T - 0.5f || NY[n] + NR[n] > B + 0.5f) {
                 b.append("NGOAI ").append(TEN[n]).append('\n');
             }
             for (int m = n + 1; m < N_MINIMAP; m++) {
+                if (an(m)) continue;
                 float dx = NX[m] - NX[n], dy = NY[m] - NY[n];
                 float d = (float) Math.sqrt(dx * dx + dy * dy) - NR[n] - NR[m];
                 if (d < k) b.append("SAT ").append(TEN[n]).append(" x ").append(TEN[m]).append(" cach ").append(d).append('\n');
@@ -263,7 +274,7 @@ public final class HudBoTri {
         float[] o = oNhanBong();
         if (o[0] < L - 0.5f || o[2] > R + 0.5f || o[1] < T - 0.5f || o[3] > B + 0.5f) b.append("NGOAI nhan_bong\n");
         for (int n = 0; n < N_MINIMAP; n++) {
-            if (n == N_BONG) continue;
+            if (n == N_BONG || an(n)) continue;
             if (denO(NX[n], NY[n], o) < NR[n] + k) b.append("SAT nhan_bong x ").append(TEN[n]).append('\n');
         }
         if (denO(jx0, jy0, o) < jr) b.append("CAN nhan_bong\n");

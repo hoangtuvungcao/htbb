@@ -243,7 +243,8 @@ public final class Hud implements NenAndroid.LopPhu {
     static final int N_DANH = 0, N_C0 = 1, N_C1 = 2, N_C3 = 3, N_C4 = 4, N_DOI_BO = 5, N_MUC_TIEU = 6,
             N_HP = 7, N_PP = 8, N_MENU = 9, N_TU_DONG = 10, N_CHAT = 11, N_THEM = 12, N_CHINH = 13,
             N_CHAT_BONG = 14, N_BONG = 15, N_CAI_DAT = 16, N_TD_CAI = 17, N_MINIMAP = 18, SO_NUT = 19;
-    static final int SO_NUT_TREN = 7;
+    /** 0.9.21: hàng trên 5 nút (Tự động, Cài đặt, Chat, Hành trang, Nhiệm vụ) + Menu (giữa đáy) = 6 mục mảng tren. */
+    static final int SO_NUT_TREN = 6;
     static final float R_NUT_TREN = 12.5f;
     /** 0.9.7: cỡ thẻ = thẻ chung kiểu NRO game.pokemon.TheNguoiChoi */
     static final int RONG_THE = game.pokemon.TheNguoiChoi.RONG, CAO_THE = game.pokemon.TheNguoiChoi.CAO;
@@ -481,7 +482,7 @@ public final class Hud implements NenAndroid.LopPhu {
     static void ghiKiem(GameScr gs) {
         HdKiem.ghi(2, L, T, L + RONG_THE, T + CAO_THE, "the");
         for (int n = 0; n < SO_NUT; n++) {
-            if (n == N_MINIMAP) continue;
+            if (n == N_MINIMAP || n == N_TD_CAI) continue;
             if (n == N_MUC_TIEU && gs.focusedActor == null && gs.actors.size() <= 1) continue;
             if (n == N_BONG && !hienBong(gs)) continue;
             HdKiem.ghi(2, NX[n] - NR[n], NY[n] - NR[n], NX[n] + NR[n], NY[n] + NR[n], "o:nut" + n);
@@ -755,7 +756,9 @@ public final class Hud implements NenAndroid.LopPhu {
      */
     static void veNutTren(Graphics g, Canvas c) {
         long now = System.currentTimeMillis();
-        int[] tren = {N_MENU, N_TU_DONG, N_TD_CAI, N_CAI_DAT, N_CHAT, N_THEM, N_CHINH};   // 0.9.9: + 2 bánh răng
+        // 0.9.21 (chủ dự án: "cài đặt giống nhau vậy" - hai bánh răng cạnh nhau): bỏ bánh răng Tự động (N_TD_CAI) - cài
+        // đặt Tự động đánh = nhấn giữ nút Tự động / Menu › Tự động đánh; bánh răng còn lại = Cài đặt chung
+        int[] tren = {N_MENU, N_TU_DONG, N_CAI_DAT, N_CHAT, N_THEM, N_CHINH};
         boolean tuDong = HdCau.tuDongDang();
         for (int k = 0; k < SO_NUT_TREN; k++) {
             int n = tren[k];
@@ -818,7 +821,7 @@ public final class Hud implements NenAndroid.LopPhu {
                 : n == N_DOI_BO ? game.pokemon.BieuTuong.DOI_BO : n == N_CHAT || n == N_CHAT_BONG ? game.pokemon.BieuTuong.CHAT
                 : n == N_THEM ? game.pokemon.BieuTuong.TUI : n == N_CHINH ? game.pokemon.BieuTuong.NHIEM_VU
                 : n == N_MENU ? game.pokemon.BieuTuong.POKEBALL
-                : n == N_CAI_DAT || n == N_TD_CAI ? game.pokemon.BieuTuong.CAI_DAT : -1;
+                : n == N_CAI_DAT ? game.pokemon.BieuTuong.CAI_DAT : -1;
         if (bt >= 0 && gVe != null) {
             int s = Math.max(16, Math.round(r * 1.3f) / 16 * 16);
             Graphics g = gVe;
@@ -992,12 +995,16 @@ public final class Hud implements NenAndroid.LopPhu {
                 if (huy) chu(c, "Huỷ", NX[n], NY[n] - NR[n] - 7, 8f, 0xFFFFFFFF, 0xC0000000, 2);
             }
         }
-        veNutNho(c, N_DOI_BO, now);
-        // 2 chấm bộ ô đang dùng cạnh nút đổi bộ
-        int soTrang = game.pokemon.TrangChieu.so;   // 0.9.8: 2 hoặc 3 trang chiêu
-        for (int k = 0; k < soTrang; k++) {
-            P.setColor(k == GameScr.indexTabSlot ? 0xFFF2C54E : 0x80A88A66);
-            c.drawCircle(NX[N_DOI_BO] - 3 * (soTrang - 1) + k * 6, NY[N_DOI_BO] + NR[N_DOI_BO] + 4, 1.6f, P);
+        // 0.9.21 (chủ dự án: "nút xoay skill 1-2-3 khó nhìn" - đĩa xám + 2-3 chấm 1,6 px): khối gỗ như nút HUD khác + mũi
+        // tên xoay + nhãn trang ĐANG DÙNG "1/3" - cùng hàm vẽ với HUD PC (HudRong.veDoiTrang)
+        if (gVe != null) {
+            int tx = gVe.getTranslateX(), ty = gVe.getTranslateY();
+            gVe.translate(-tx, -ty);
+            game.render.screen.HudRong.veDoiTrang(gVe, Math.round(NX[N_DOI_BO]), Math.round(NY[N_DOI_BO]),
+                    Math.round(NR[N_DOI_BO] * 0.82f), NPTR[N_DOI_BO] >= 0);
+            gVe.translate(tx, ty);
+        } else {
+            veNutNho(c, N_DOI_BO, now);
         }
         if (gs.focusedActor != null || gs.actors.size() > 1) veNutNho(c, N_MUC_TIEU, now);
         veBinh(g, c, N_HP, mc, now, true);
@@ -1732,7 +1739,7 @@ public final class Hud implements NenAndroid.LopPhu {
         float dTot = 1e9f;
         GameScr gs = game.render.Canvas.gameScr;
         for (int n = 0; n < SO_NUT; n++) {
-            if (n == N_MINIMAP) continue;
+            if (n == N_MINIMAP || n == N_TD_CAI) continue;   // 0.9.21: bánh răng Tự động đã bỏ
             if (n == N_MUC_TIEU && gs != null && gs.focusedActor == null && gs.actors.size() <= 1) continue;
             if (n == N_BONG && !hienBong(gs)) continue;
             float dx = x - NX[n], dy = y - NY[n];
@@ -1888,17 +1895,12 @@ public final class Hud implements NenAndroid.LopPhu {
                         NenAndroid.phimNgay(0, 35);
                         NenAndroid.phimNgay(2, 35);
                     }
+                } else {
+                    game.render.screen.HudRong.goiYGiuAuto();   // 0.9.21: bánh răng Tự động đã bỏ - gợi ý nhấn giữ (một lần)
                 }
                 break;
             case N_CHAT:
                 HdCau.moChat();
-                break;
-            case N_TD_CAI:
-                // 0.9.9: bánh răng cạnh nút Tự động = bảng cài đặt Tự động đánh (không cần nhấn giữ)
-                if (!HdCau.moTuDong()) {
-                    NenAndroid.phimNgay(0, 35);
-                    NenAndroid.phimNgay(2, 35);
-                }
                 break;
             case N_CAI_DAT:
                 moCaiDat();   // 0.9.9: Cài đặt ngay trên HUD (trước chỉ ở Menu)

@@ -309,10 +309,10 @@ public final class LuoiTui {
 
     /** Nhãn ngắn của bộ lọc (chip hẹp). */
     public static final String[] LOC_NGAN = {"Tất cả", "Đồ", "Thuốc", "N.liệu", "Khác"};
-    /** Icon PNG từng bộ lọc (chip chỉ icon khi bảng rất hẹp). */
+    /** Icon PNG từng bộ lọc (chỉ đi KÈM chữ đủ, không bao giờ chip chỉ icon). */
     static final int[] ICON_LOC = {BieuTuong.TUI, BieuTuong.AO, BieuTuong.THUOC, BieuTuong.NGUYEN_LIEU, BieuTuong.HOP_DO};
 
-    /** Hình học lần vẽ gọn gần nhất (kiểm thử): {x, y, w, h} hàng chip lọc / lưới / hàng ví, số cột, số hàng thấy đủ, mức nhãn chip. */
+    /** Hình học lần vẽ gọn gần nhất (kiểm thử): {x, y, w, h} hàng chip lọc / lưới / hàng ví, số cột, số hàng thấy đủ, mức nhãn chip (mucChip). */
     public static final int[] GON_CHIP = new int[4], GON_LUOI = new int[4], GON_VI = new int[4];
     public static int gonCot, gonHang, gonMucNhan;
     /** Cao đầu bảng gọn (hàng chip / hàng lùi) lần vẽ gần nhất - màn đặt nút lùi đúng cỡ. */
@@ -337,7 +337,8 @@ public final class LuoiTui {
         int k = Bang.cach();
         int trong = w - 10;
         int cot = Math.max(1, (trong - 10 + k) / (s + k));
-        return 4 + caoChipGon() + k + k + viGon(cot * (s + k) - k + 10)[0] + 4;
+        int wNhip = cot * (s + k) - k + 10;
+        return 4 + caoKhoiChip(wNhip) + k + k + viGon(wNhip)[0] + 4;
     }
 
     /**
@@ -365,123 +366,161 @@ public final class LuoiTui {
         return new int[]{ViTien.cao() * soDVi + (soDVi - 1) * k, coDem ? wDem : 0};
     }
 
-    /** Bề ngang hàng chip ở mức nhãn muc (0 đủ chữ, 1 chữ ngắn, 2 icon + chữ mục chọn, 3 chỉ icon). */
-    static int rongChip(int muc, int i, int chon, int hc) {
-        int ic = coIconChip(hc);
+    /**
+     * 0.9.21 (chủ dự án: "chọn đồ trong phần hành trang cái có icon ?" - 0.9.18-0.9.20 chip chỉ icon, chỉ mục chọn có chữ,
+     * chọn mục chữ dài thì cả hàng đổi sang kiểu lật trang "<"): MỘT kiểu chip lọc, MỌI chip luôn có chữ, mức nhãn chọn theo
+     * bề ngang bảng KHÔNG theo mục đang chọn (chạm chip không làm hàng đổi dạng):
+     *   0 icon + chữ đủ ("Trang bị"), 1 chữ đủ, 2 chữ ngắn ("Đồ", "N.liệu"), 3 HAI hàng chip chữ ngắn (3 + 2) khi một hàng không
+     *   đủ chỗ cho 5 chip có chữ đủ cỡ chạm (điện thoại mật độ cao), 4 bảng quá hẹp cả cho hai hàng (J2ME 320x240): MỘT chip
+     *   chọn "Lọc: Thuốc ▾" - chạm mở danh sách 5 bộ lọc có tên.
+     * Bề ngang một chip ở mức muc (không phụ thuộc mục chọn).
+     */
+    static int rongChip(int muc, int i, int hc) {
         int toiThieu = Math.max(VungCham.MIN, hc);
         if (muc == 0) {
-            return Math.max(toiThieu, ChuDe.rong(LOC[i], ChuDe.NHAN) + 14);
+            return Math.max(toiThieu, coIconChip(hc) + 4 + ChuDe.rong(LOC[i], ChuDe.NHAN) + 14);
         }
-        if (muc == 1) {
-            return Math.max(toiThieu, ChuDe.rong(LOC_NGAN[i], ChuDe.NHAN) + 12);
-        }
-        if (muc == 2 && i == chon) {
-            return Math.max(toiThieu, ic + 4 + ChuDe.rong(LOC_NGAN[i], ChuDe.NHAN) + 12);
-        }
-        return Math.max(toiThieu, ic + 8);
+        return Math.max(toiThieu, ChuDe.rong(muc == 1 ? LOC[i] : LOC_NGAN[i], ChuDe.NHAN) + 12);
     }
 
     static int coIconChip(int hc) {
         return 16 * Math.max(1, (hc - 4) / 24);
     }
 
-    /** Trang đầu của hàng chip khi phải lật trang (bảng quá hẹp cho 5 chip đủ cỡ chạm - điện thoại 16:9 dpi cao). */
-    static int trangChip;
-
-    /** Chữ nút lật trang chip: phông ảnh J2ME không có "‹ ›". */
-    static String muiTen(boolean phai) {
-        return ChuUI.bo != null ? (phai ? "›" : "‹") : (phai ? ">" : "<");
-    }
-
-    static int rongMuiTen(int hc) {
-        return Math.max(Math.max(VungCham.MIN, hc), ChuDe.rong(muiTen(true), ChuDe.NHAN) + 14);
-    }
-
-    /**
-     * Hàng chip lọc MỘT hàng trong (x, y, w, hc): chọn mức nhãn dài nhất còn vừa (đủ chữ -> chữ ngắn -> icon + chữ mục
-     * chọn -> chỉ icon), phần dư chia đều để hàng phủ kín bề ngang (mép thẳng với lưới). Vùng chạm "loc-i".
-     */
-    static void hangChipGon(Graphics g, int x, int y, int w, int hc, int chon, final Object[] viec) {
+    /** Mức nhãn hàng chip lọc cho bề ngang w (0..2 = cả 5 chip trên một hàng, 3 = hai hàng, 4 = chip chọn). */
+    static int mucChip(int w, int hc) {
         int k = Bang.cach();
         int n = LOC.length;
-        int muc = 0;
-        int tong = 0;
-        for (; muc < 3; muc++) {
-            tong = (n - 1) * k;
+        for (int muc = 0; muc < 3; muc++) {
+            int tong = (n - 1) * k;
             for (int i = 0; i < n; i++) {
-                tong += rongChip(muc, i, chon, hc);
+                tong += rongChip(muc, i, hc);
             }
             if (tong <= w) {
-                break;
+                return muc;
             }
         }
-        int dau = 0, cuoi = n;
-        if (muc >= 3) {
-            // không vừa cả icon: LẬT TRANG - chip chữ ngắn đủ cỡ chạm + nút "<" / ">" (không xuống dòng, không chồng)
-            muc = 1;
-            int wm = rongMuiTen(hc);
-            if (chon >= 0 && chon < trangChip) {
-                trangChip = chon;
+        for (int h = 0; h < 2; h++) {
+            int tong = (HANG2[h + 1] - HANG2[h] - 1) * k;
+            for (int i = HANG2[h]; i < HANG2[h + 1]; i++) {
+                tong += rongChip2(i, hc);
             }
-            trangChip = Math.max(0, Math.min(n - 1, trangChip));
-            while (true) {
-                dau = trangChip;
-                int con = w - (dau > 0 ? wm + k : 0);
-                cuoi = dau;
-                while (cuoi < n) {
-                    int wc = rongChip(1, cuoi, chon, hc);
-                    int canPhai = cuoi + 1 < n ? wm + k : 0;
-                    if (wc + (cuoi > dau ? k : 0) + canPhai > con && cuoi > dau) {
-                        break;
-                    }
-                    con -= wc + (cuoi > dau ? k : 0);
-                    cuoi++;
-                }
-                if (chon < cuoi || chon < 0 || trangChip >= n - 1) {
-                    break;
-                }
-                trangChip++;
-            }
-            tong = (dau > 0 ? wm + k : 0) + (cuoi < n ? wm + k : 0) - k;
-            for (int i = dau; i < cuoi; i++) {
-                tong += rongChip(1, i, chon, hc) + k;
+            if (tong > w) {
+                return 4;
             }
         }
-        gonMucNhan = dau > 0 || cuoi < n ? 4 : muc;
-        int soMuc = (cuoi - dau) + (dau > 0 ? 1 : 0) + (cuoi < n ? 1 : 0);
+        return 3;
+    }
+
+    /** Hai hàng chip (mức 3): chip [HANG2[h], HANG2[h + 1]) ở hàng h. */
+    static final int[] HANG2 = {0, 3, 5};
+
+    /** Bề ngang chip ở mức 3 (chữ ngắn, đệm hẹp hơn). */
+    static int rongChip2(int i, int hc) {
+        return Math.max(Math.max(VungCham.MIN, hc), ChuDe.rong(LOC_NGAN[i], ChuDe.NHAN) + 8);
+    }
+
+    /** Cao khối chip lọc gọn ở bề ngang w (một hoặc hai hàng). */
+    public static int caoKhoiChip(int w) {
+        int hc = caoChipGon();
+        return mucChip(w, hc) == 3 ? 2 * hc + Bang.cach() : hc;
+    }
+
+    /** Chữ nút mở danh sách lọc: phông ảnh J2ME không có "▾" -> ">" như nút "Ngư phủ ... >". */
+    static String muiXuong() {
+        return ChuUI.bo != null ? " ▾" : " >";
+    }
+
+    /** Nhãn chip chọn (mức 3): "Lọc: Nguyên liệu ▾", bảng hẹp thì chữ ngắn / bỏ "Lọc:" (luôn còn tên bộ lọc). */
+    static String nhanChipChon(int chon, int w) {
+        int c = chon < 0 || chon >= LOC.length ? 0 : chon;
+        String[] thu = {"Lọc: " + LOC[c] + muiXuong(), "Lọc: " + LOC_NGAN[c] + muiXuong(), LOC[c] + muiXuong(), LOC_NGAN[c] + muiXuong()};
+        for (int i = 0; i < thu.length; i++) {
+            if (ChuDe.rong(thu[i], ChuDe.NHAN) + 12 <= w) {
+                return thu[i];
+            }
+        }
+        return LOC_NGAN[c];
+    }
+
+    /** Kiểm thử: nhãn mỗi chip lần vẽ gần nhất (mức 3: một phần tử = nhãn chip chọn). */
+    public static String[] gonNhanChip = new String[0];
+
+    /**
+     * Hàng chip lọc MỘT hàng trong (x, y, w, hc): mức nhãn {@link #mucChip} (theo bề ngang), phần dư chia đều để hàng phủ kín
+     * bề ngang (mép thẳng với lưới). Vùng chạm "loc-i"; mức 3: một chip "loc-chon" mở danh sách.
+     */
+    static void hangChipGon(Graphics g, int x, int y, int w, int hc, final int chon, final Object[] viec) {
+        int k = Bang.cach();
+        int n = LOC.length;
+        int muc = mucChip(w, hc);
+        gonMucNhan = muc;
+        if (muc == 3) {
+            // hai hàng chữ ngắn (3 + 2), mỗi hàng phủ kín bề ngang
+            String[] nhan = new String[n];
+            for (int h = 0; h < 2; h++) {
+                int a = HANG2[h], b = HANG2[h + 1], m = b - a;
+                int tong = (m - 1) * k;
+                for (int i = a; i < b; i++) {
+                    tong += rongChip2(i, hc);
+                }
+                int du = Math.max(0, w - tong), xx = x, yh = y + h * (hc + k);
+                for (int i = a; i < b; i++) {
+                    int wc = i == b - 1 ? x + w - xx : rongChip2(i, hc) + du / m + (i - a < du % m ? 1 : 0);
+                    nhan[i] = LOC_NGAN[i];
+                    veChip(g, xx, yh, wc, hc, nhan[i], -1, i == chon, viec == null ? null : viec[i], Bang.tenTab("loc-", i));
+                    xx += wc + k;
+                }
+            }
+            gonNhanChip = nhan;
+            return;
+        }
+        if (muc >= 4) {
+            String nhan = nhanChipChon(chon, w);
+            gonNhanChip = new String[]{nhan};
+            veChip(g, x, y, w, hc, nhan, -1, true, viec == null ? null : new game.model.IAction() {
+                public void perform() {
+                    moDanhSachLoc(chon, viec);
+                }
+            }, "loc-chon");
+            return;
+        }
+        int tong = (n - 1) * k;
+        for (int i = 0; i < n; i++) {
+            tong += rongChip(muc, i, hc);
+        }
         int du = Math.max(0, w - tong);
         int xx = x;
-        int ic = coIconChip(hc);
-        int thu = 0;
-        if (dau > 0) {
-            final int lui = dau;
-            int wc = rongMuiTen(hc) + du / soMuc + (thu < du % soMuc ? 1 : 0);
-            veChip(g, xx, y, wc, hc, muiTen(false), -1, false, new game.model.IAction() {
-                public void perform() {
-                    trangChip = Math.max(0, lui - 1);
-                }
-            }, "loc-truoc");
-            xx += wc + k;
-            thu++;
-        }
-        for (int i = dau; i < cuoi; i++) {
-            int wc = rongChip(muc, i, chon, hc) + du / soMuc + (thu < du % soMuc ? 1 : 0);
-            if (i == cuoi - 1 && cuoi == n) {
+        String[] nhan = new String[n];
+        for (int i = 0; i < n; i++) {
+            int wc = rongChip(muc, i, hc) + du / n + (i < du % n ? 1 : 0);
+            if (i == n - 1) {
                 wc = Math.max(wc, x + w - xx);
             }
-            boolean c = i == chon;
-            String chu = muc == 0 ? LOC[i] : muc == 1 || (muc == 2 && c) ? LOC_NGAN[i] : null;
-            veChip(g, xx, y, wc, hc, chu, muc >= 2 ? ICON_LOC[i] : -1, c, viec == null ? null : viec[i], Bang.tenTab("loc-", i));
+            nhan[i] = muc <= 1 ? LOC[i] : LOC_NGAN[i];
+            veChip(g, xx, y, wc, hc, nhan[i], muc == 0 ? ICON_LOC[i] : -1, i == chon, viec == null ? null : viec[i], Bang.tenTab("loc-", i));
             xx += wc + k;
-            thu++;
         }
-        if (cuoi < n) {
-            final int toi = cuoi;
-            veChip(g, xx, y, Math.max(rongMuiTen(hc), x + w - xx), hc, muiTen(true), -1, false, new game.model.IAction() {
+        gonNhanChip = nhan;
+    }
+
+    /** Danh sách 5 bộ lọc có tên (chip chọn mức 3): thẻ chạm / menu phím J2ME. */
+    static void moDanhSachLoc(int chon, final Object[] viec) {
+        java.util.Vector v = new java.util.Vector();
+        for (int i = 0; i < LOC.length; i++) {
+            final Object vi = viec[i];
+            v.addElement(new game.model.Command(i == chon ? LOC[i] + " (đang xem)" : LOC[i], new game.model.IAction() {
                 public void perform() {
-                    trangChip = toi;
+                    if (vi instanceof game.model.IAction) {
+                        ((game.model.IAction) vi).perform();
+                    }
                 }
-            }, "loc-sau");
+            }));
+        }
+        if (MenuNguCanh.bat()) {
+            MenuNguCanh.mo(v, "Lọc hành trang");
+        } else {
+            game.render.Canvas.menu.startAt(v, 3);
         }
     }
 
@@ -534,14 +573,16 @@ public final class LuoiTui {
         int hc = caoChipGon();
         int yy = y + 4;
         gonCaoDau = hc;
+        int hk = hc;
         if (viecLoc != null) {
             hangChipGon(g, xl, yy, wNhip, hc, loc, viecLoc);
+            hk = caoKhoiChip(wNhip);   // 0.9.21: hai hàng chip khi hẹp
         }
         GON_CHIP[0] = xl;
         GON_CHIP[1] = yy;
         GON_CHIP[2] = wNhip;
-        GON_CHIP[3] = hc;
-        yy += hc + k;
+        GON_CHIP[3] = hk;
+        yy += hk + k;
         int suc = TrangThaiNguoiChoi.sucChua(m);
         String dem = soDung() + "/" + suc;
         int[] vi = viGon(wNhip);

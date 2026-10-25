@@ -492,6 +492,7 @@ public class ChupTrongGame {
                     kiemPhuKin(anh, ten + " " + TEN_COV[c]);
                     kiemNhanTheGioi(ten + " " + TEN_COV[c]);
                     if (game.render.screen.HudRong.bat()) kiemKheChieu(ten + " " + TEN_COV[c]);
+                    if (game.render.screen.HudRong.bat()) kiemIconHud(ten + " " + TEN_COV[c]);
                 }
                 ImageIO.write(anh, "png", new File(ra, ten + "_" + TEN_COV[c] + ".png"));
                 // 0.9.7 quy tắc chủ dự án: mọi icon là ẢNH PNG - không icon nào vẽ bằng hình (vector / cung / nét)
@@ -545,6 +546,7 @@ public class ChupTrongGame {
                 + DEM_GIUA[3] + "), lech toi da " + lechGiuaMax + " px");
         for (java.util.Map.Entry<String, String> e : DS_THAY.entrySet()) if (e.getKey().indexOf(" dt") >= 0) System.out.println("DS " + e.getKey() + ": " + e.getValue());
         for (java.util.Map.Entry<String, String> e : HQ_DO.entrySet()) System.out.println("HQ " + e.getKey() + ": " + e.getValue());
+        System.out.println("CHIP LOC (0 icon+chu, 1 chu, 2 chu ngan, 3 hai hang, 4 chip chon): " + MUC_CHIP);
         System.out.println("DANH HIEU: " + DEM_DH[0] + " lan ve ten that (ten x man x co), " + DEM_DH[1] + " lan chup ten rong nhat (+ bo cuc gon)");
         System.out.println("HUAN LUYEN: che do " + nhanHL() + ", " + DEM_HL[0] + " man co nut/muc da kiem");
         System.out.println("ICON DO: " + DEM_ICON_DO[0] + " man do nhan vat da kiem (may chu anh " + MAY_CHU + ")");
@@ -2215,6 +2217,46 @@ public class ChupTrongGame {
     }
 
     /** 0.9.7: cụm chiêu HUD PC: khe giữa các ô vuông kề nhau trên cung BẰNG NHAU (sai <= 1 px). */
+    /**
+     * 0.9.21 (chủ dự án: hai bánh răng giống hệt nhau cạnh nhau trên HUD; "nút xoay skill 1-2-3 khó nhìn"): hai nút HUD khác
+     * nhau không vẽ cùng một icon; nút đổi trang chiêu (khi có trang 2) vẽ nhãn trang đang dùng "i/n" trong nút.
+     */
+    static void kiemIconHud(String nhan) throws Exception {
+        final Object[][][] ra = new Object[1][][];
+        chay(new Runnable() {
+            public void run() {
+                ra[0] = game.render.screen.HudRong.cacNutCham(game.render.Canvas.gameScr);
+            }
+        });
+        java.util.Map<String, String> icon = new java.util.HashMap<String, String>();
+        int soNut = 0;
+        for (Object[] n : ra[0]) {
+            String ten = (String) n[0];
+            int[] h = (int[]) n[2];
+            if (h.length != 3 || ten.startsWith("hud-chieu") || ten.equals("hud-danh")) continue;   // ô chiêu: ảnh chiêu
+            soNut++;
+            java.util.Set<String> o = new java.util.HashSet<String>();
+            for (int i = 0; i < game.pokemon.GhiChu.soBieu; i++) {
+                String b = game.pokemon.GhiChu.BS[i];
+                if (b == null || !(b.startsWith("icon-") || b.startsWith("bieu-tuong-"))) continue;
+                int cx = game.pokemon.GhiChu.BX[i] + game.pokemon.GhiChu.BW[i] / 2, cy = game.pokemon.GhiChu.BY[i] + game.pokemon.GhiChu.BH[i] / 2;
+                if ((cx - h[0]) * (cx - h[0]) + (cy - h[1]) * (cy - h[1]) <= h[2] * h[2]) o.add(b.substring(b.lastIndexOf('-') + 1));
+            }
+            for (String id : o) {
+                String cu = icon.put(id, ten);
+                kiem(cu == null, nhan + " HUD: hai nut cung icon " + id + " (" + cu + ", " + ten + ")");
+            }
+        }
+        kiem(soNut >= 4, nhan + " HUD: kiem icon " + soNut + " nut");
+        if (game.pokemon.ThanhNhanh.coBo2()) {
+            String tr = game.pokemon.TrangChieu.nhan();
+            int[] v = vungTen("hud-doi-bo");
+            int[] o = v == null ? null : new int[]{v[0] - 4, v[1] - 4, v[2] + 8, v[3] + 8};
+            kiem(tr.equals(game.render.screen.HudRong.lastDoiTrang) && o != null && coChuTrong(tr, o), nhan + " nut doi trang chieu khong ghi trang '"
+                    + tr + "' (ve '" + game.render.screen.HudRong.lastDoiTrang + "')");
+        }
+    }
+
     static void kiemKheChieu(String nhan) {
         int h = 15;   // nửa cạnh ô vuông chiêu (4/5 r + viền)
         int[] khe = new int[3];
@@ -2381,6 +2423,19 @@ public class ChupTrongGame {
         }
     }
 
+    /** Mức chip lọc hành trang theo cỡ (in cuối). */
+    static final java.util.TreeMap<String, Integer> MUC_CHIP = new java.util.TreeMap<String, Integer>();
+
+    /** Chữ t đã vẽ (GhiChu) có tâm trong hình v {x, y, w, h}. */
+    static boolean coChuTrong(String t, int[] v) {
+        for (int j = 0; j < game.pokemon.GhiChu.soChu; j++) {
+            if (!t.equals(game.pokemon.GhiChu.CS[j])) continue;
+            int cx = game.pokemon.GhiChu.CX[j] + game.pokemon.GhiChu.CW[j] / 2, cy = game.pokemon.GhiChu.CY[j] + game.pokemon.GhiChu.CH[j] / 2;
+            if (cx >= v[0] && cx < v[0] + v[2] && cy >= v[1] && cy < v[1] + v[3]) return true;
+        }
+        return false;
+    }
+
     static boolean coVung(String t) {
         for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
             String n = game.pokemon.VungCham.ten(i);
@@ -2404,23 +2459,63 @@ public class ChupTrongGame {
      * 12 ô trang bị cùng cạnh ô hành trang, thẳng cột / hàng đều nhịp, chip Tiềm năng ở hàng đầu (trên ô), viên Danh hiệu
      * dưới ô, đủ tên.
      */
-    static void kiemTrangBiGon(String ten, String nhan, int dpi) {
+    static void kiemTrangBiGon(String ten, String nhan, int dpi) throws Exception {
         if (!(game.render.Canvas.currentScreen instanceof game.pokemon.ManNhanVat) || game.render.Canvas.currentDialog != null) return;
-        // chip lọc một hàng
+        // chip lọc một hàng - 0.9.21 (chủ dự án: "chọn đồ trong phần hành trang cái có icon ?"): MỌI chip có chữ (không chip
+        // chỉ icon), không kiểu lật trang "<" / ">", mức nhãn không đổi theo mục chọn; bảng hẹp = một chip chọn "Lọc: ..."
         if (coVung("loc-")) {
             int y0 = Integer.MIN_VALUE, h0 = -1, so = 0;
-            boolean mot = true, lat = false;
+            boolean mot = true, lat = false, chonMot = false;
+            java.util.Set<Integer> hangY = new java.util.HashSet<Integer>();
             for (int i = 0; i < game.pokemon.VungCham.dem(); i++) {
                 String n = game.pokemon.VungCham.ten(i);
                 if (n == null || !n.startsWith("loc-")) continue;
                 int[] v = game.pokemon.VungCham.vungVe(i);
                 if (y0 == Integer.MIN_VALUE) { y0 = v[1]; h0 = v[3]; }
-                mot &= v[1] == y0 && v[3] == h0;
+                hangY.add(v[1]);
+                mot &= v[3] == h0;
                 if (n.equals("loc-truoc") || n.equals("loc-sau")) lat = true;
-                else so++;
+                else if (n.equals("loc-chon")) chonMot = true;
+                else {
+                    so++;
+                    // chữ của chip nằm trong vùng chip
+                    String muon = game.pokemon.LuoiTui.gonNhanChip.length == 5 ? game.pokemon.LuoiTui.gonNhanChip[Integer.parseInt(n.substring(4))] : "?";
+                    kiem(coChuTrong(muon, v), nhan + " chip " + n + " khong co chu '" + muon + "' (chip chi icon)");
+                }
             }
-            kiem(mot, nhan + " chip loc khong cung mot hang");
-            kiem(so == 5 || lat && so >= 1, nhan + " chip loc thieu bo loc (" + so + ", lat trang " + lat + ")");
+            // một hàng; mức 3 (điện thoại hẹp) = đúng hai hàng 3 + 2
+            kiem(mot && hangY.size() == (game.pokemon.LuoiTui.gonMucNhan == 3 ? 2 : 1), nhan + " chip loc " + hangY.size() + " hang (muc "
+                    + game.pokemon.LuoiTui.gonMucNhan + ")");
+            MUC_CHIP.put(nhan.substring(nhan.lastIndexOf(' ') + 1), game.pokemon.LuoiTui.gonMucNhan);
+            kiem(!lat, nhan + " chip loc con kieu lat trang < / >");
+            kiem(so == 5 && !chonMot || so == 0 && chonMot, nhan + " chip loc: du 5 chip co chu hoac 1 chip chon (" + so + ", chon " + chonMot + ")");
+            if (chonMot) {
+                int[] v = vungTen("loc-chon");
+                String nh = game.pokemon.LuoiTui.gonNhanChip.length == 1 ? game.pokemon.LuoiTui.gonNhanChip[0] : "?";
+                boolean coTen = false;
+                for (String t : game.pokemon.LuoiTui.LOC) coTen |= nh.contains(t);
+                for (String t : game.pokemon.LuoiTui.LOC_NGAN) coTen |= nh.contains(t);
+                kiem(coTen && v != null && coChuTrong(nh, v), nhan + " chip chon khong ghi ten bo loc: '" + nh + "'");
+                // chạm chip chọn -> danh sách đủ 5 bộ lọc có tên (thẻ chạm / menu phím J2ME)
+                final String[][] ds = new String[1][];
+                chay(new Runnable() {
+                    public void run() {
+                        chamVung("loc-chon");
+                        if (game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh) {
+                            ds[0] = game.pokemon.MenuNguCanh.cacLenh();
+                        } else if (game.render.Canvas.menu.showMenu && game.render.Canvas.menu.menuItems != null) {
+                            java.util.Vector mi = game.render.Canvas.menu.menuItems;
+                            ds[0] = new String[mi.size()];
+                            for (int i = 0; i < mi.size(); i++) ds[0][i] = ((game.model.Command) mi.elementAt(i)).caption;
+                        }
+                        game.render.Canvas.endDlg();
+                        game.render.Canvas.menu.showMenu = false;
+                    }
+                });
+                boolean du = ds[0] != null && ds[0].length == 5;
+                for (int i = 0; du && i < 5; i++) du = ds[0][i].startsWith(game.pokemon.LuoiTui.LOC[i]);
+                kiem(du, nhan + " cham chip chon -> danh sach 5 bo loc co ten: " + (ds[0] == null ? null : java.util.Arrays.toString(ds[0])));
+            }
             int[] g = game.pokemon.LuoiTui.GON_CHIP;
             kiem(h0 <= Math.max(game.pokemon.VungCham.MIN, 24), nhan + " chip loc qua cao " + h0);
         }
@@ -2939,26 +3034,85 @@ public class ChupTrongGame {
             });
             kiem(r[0] != null && r[0][0] == -527 && r[0][1] == 0 && r[0][2] == 8, "Menu > Nhiem vu cua toi gui -527/0/8: "
                     + java.util.Arrays.toString(r[0]));
-            // chạm: Sổ tay -> MenuNguCanh đủ mục, chọn mục i -> -527/0/i
-            for (int i = 0; i <= Math.min(may.size(), game.render.screen.GameScr.SO_TAY_MUC.length); i++) {   // + dòng Về làng (11)
-                final int muc = i;
+            // chạm: Sổ tay -> MenuNguCanh; 0.9.21 (chủ dự án: "nhiều đường đi vào làm spam menu"): Sổ tay của Menu cá nhân KHÔNG
+            // lặp mục đã có nhà riêng cùng cấp (Nhiệm vụ của tôi = ô Menu, hoạt động Sự kiện = ô Sự kiện); mỗi hàng gửi
+            // -527/0/<chỉ số máy chủ của đúng mục đó>; mọi mục gốc máy chủ vẫn tới được (Sổ tay ∪ Sự kiện ∪ Nhiệm vụ của tôi)
+            final java.util.Vector[] hang = new java.util.Vector[1];
+            chay(new Runnable() {
+                public void run() {
+                    game.render.screen.GameScr.moSoTay();
+                    try {
+                        java.lang.reflect.Field f = game.pokemon.MenuNguCanh.class.getDeclaredField("lenh");
+                        f.setAccessible(true);
+                        hang[0] = (java.util.Vector) ((java.util.Vector) f.get(game.pokemon.MenuNguCanh.gI())).clone();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            java.util.List<String> tenSoTay = new java.util.ArrayList<String>();
+            for (int i = 0; hang[0] != null && i < hang[0].size(); i++) tenSoTay.add(((game.model.Command) hang[0].elementAt(i)).caption);
+            kiem(!tenSoTay.contains("Nhiệm vụ của tôi"), "So tay (Menu) khong lap 'Nhiem vu cua toi' (o rieng Menu): " + tenSoTay);
+            for (String x : game.render.screen.GameScr.SU_KIEN_MUC) {
+                kiem(!tenSoTay.contains(x), "So tay (Menu) khong lap '" + x + "' (the Su kien): " + tenSoTay);
+            }
+            java.util.Set<String> toi = new java.util.HashSet<String>(tenSoTay);
+            toi.addAll(java.util.Arrays.asList(game.render.screen.GameScr.SU_KIEN_MUC));
+            toi.add("Nhiệm vụ của tôi");
+            for (String x : may) kiem(toi.contains(x), "muc So tay may chu '" + x + "' khong toi duoc tu Menu (So tay / Su kien / Nhiem vu cua toi)");
+            kiem(tenSoTay.contains(game.render.screen.GameScr.SO_TAY_VE_LANG) && tenSoTay.contains("Thách đấu Gym"),
+                    "So tay (Menu) con Ve lang + Thach dau Gym (DuongMenu 'So tay huan luyen -> Thach dau Gym'): " + tenSoTay);
+            for (int i = 0; i < tenSoTay.size(); i++) {
+                final int j = i;
+                final String t = tenSoTay.get(i);
+                final int muon = t.equals(game.render.screen.GameScr.SO_TAY_VE_LANG) ? game.render.screen.GameScr.MUC_VE_LANG
+                        : game.render.screen.GameScr.mucSoTay(t);
                 chay(new Runnable() {
                     public void run() {
                         goiMenu = null;
-                        game.render.screen.GameScr.moSoTay();
-                        try {
-                            java.lang.reflect.Field f = game.pokemon.MenuNguCanh.class.getDeclaredField("lenh");
-                            f.setAccessible(true);
-                            java.util.Vector v = (java.util.Vector) f.get(game.pokemon.MenuNguCanh.gI());
-                            ((game.model.Command) v.elementAt(muc)).action.perform();
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
+                        ((game.model.Command) hang[0].elementAt(j)).action.perform();
                         r[0] = goiMenu;
                     }
                 });
-                kiem(r[0] != null && r[0][0] == -527 && r[0][1] == 0 && r[0][2] == i, "So tay muc " + i + " gui " + java.util.Arrays.toString(r[0]));
+                kiem(muon >= 0 && r[0] != null && r[0][0] == -527 && r[0][1] == 0 && r[0][2] == muon, "So tay hang '" + t + "' gui "
+                        + java.util.Arrays.toString(r[0]) + " (muon -527/0/" + muon + ")");
             }
+            // phím (menu chữ J2ME, không có Menu cá nhân): hàng Nhiệm vụ có Sự kiện (Sổ tay không còn lặp hoạt động sự kiện)
+            final Object[] suKien = new Object[2];
+            chay(new Runnable() {
+                public void run() {
+                    game.pokemon.MenuNguCanh.gI();
+                    game.render.Canvas.gameScr.switchToMe();
+                    game.pokemon.HanhDong.moMenuChinh();
+                    moHangNhiemVuChu();
+                    try {
+                        Object pm = game.render.Canvas.currentScreen;
+                        java.lang.reflect.Field fn = pm.getClass().getDeclaredField("name");
+                        fn.setAccessible(true);
+                        String[] h4 = ((String[][]) fn.get(pm))[4];
+                        suKien[0] = java.util.Arrays.asList(h4).toString();
+                        int iSk = java.util.Arrays.asList(h4).indexOf("Sự kiện") - 1;
+                        java.lang.reflect.Field sel = pm.getClass().getDeclaredField("selected");
+                        sel.setAccessible(true);
+                        sel.setInt(pm, iSk);
+                        java.lang.reflect.Method ds = pm.getClass().getDeclaredMethod("doSelect");
+                        ds.setAccessible(true);
+                        ds.invoke(pm);
+                        suKien[1] = game.pokemon.MenuNguCanh.tieuDe();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            kiem(String.valueOf(suKien[0]).contains("Sự kiện") && "Sự kiện".equals(suKien[1]), "Menu chu > Nhiem vu > Su kien mo the Su kien: "
+                    + suKien[0] + " -> " + suKien[1]);
+            chay(new Runnable() {
+                public void run() {
+                    game.render.Canvas.endDlg();
+                    game.render.Canvas.menu.showMenu = false;
+                    game.render.Canvas.gameScr.switchToMe();
+                }
+            });
             // phím (menu chữ J2ME): hàng Nhiệm vụ -> mục 1 Nhiệm vụ của tôi
             chay(new Runnable() {
                 public void run() {

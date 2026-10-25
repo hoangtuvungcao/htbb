@@ -44,7 +44,7 @@ public final class KiemCoCham {
                 // in kích thước thật của nút nhỏ nhất (dp) cho người đọc
                 if (s == 0) {
                     float nho = 1e9f;
-                    for (int n = 0; n < HudBoTri.N_MINIMAP; n++) nho = Math.min(nho, 2 * HudBoTri.NR[n] / dpL);
+                    for (int n = 0; n < HudBoTri.N_MINIMAP; n++) if (!HudBoTri.an(n)) nho = Math.min(nho, 2 * HudBoTri.NR[n] / dpL);
                     System.out.println(ten + ": nut nho nhat " + Math.round(nho) + " dp");
                 }
             }
