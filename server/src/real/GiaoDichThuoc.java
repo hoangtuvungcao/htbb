@@ -29,6 +29,16 @@ package real;
 public final class GiaoDichThuoc {
 
     /** Mot o thuoc binh thuong toi da 999 (giong luc nhat, luc bo vao giao dich). */
+    /**
+     * RUT do khoi ban giao dich (goi 66/2 kieu 2) chi duoc khi CA HAI ben chua khoa. Truoc 25/10/2026 may chu chi kiem
+     * ben dang rut: B khoa + xac nhan voi 10 binh A dua, A rut ra, bo lai 1 roi khoa + xac nhan -> giao dich xong, B mat
+     * do ma chi nhan 1 binh (bot bat_thuong / bt_gd.doi_sau_khi_khoa). BO THEM do sau khi doi phuong khoa van duoc (chi
+     * lam doi phuong nhan nhieu hon - luong binh thuong: mot ben khoa truoc, ben kia con dang bo do).
+     */
+    public static boolean rutDoDuoc(final boolean minhDaKhoa, final boolean doiPhuongDaKhoa, final boolean doiPhuongDaXacNhan) {
+        return !minhDaKhoa && !doiPhuongDaKhoa && !doiPhuongDaXacNhan;
+    }
+
     public static final int TOI_DA_MOT_O = 999;
 
     public static final int HOP_LE = 0;
