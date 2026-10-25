@@ -85,6 +85,7 @@ final class KichBanCap140 {
     }
 
     static final int CAP_DICH = Integer.getInteger("capDich", 40);
+    static volatile int SO_NGUOI_CHOI = 0;
     static final double GIO = Double.parseDouble(System.getProperty("gioCap140", "10"));
     static final File CP = new File(System.getProperty("cp", System.getProperty("java.io.tmpdir") + "/cap140"));
     /** Phut danh quai / "ngay" truoc khi cho sang ngay moi (nang luong 100% = 90 phut). */
@@ -154,6 +155,7 @@ final class KichBanCap140 {
         BotXuyenSuot.dieuPhoi = dp;
         List<NguoiChoi> ds = new ArrayList<>();
         for (String n : System.getProperty("nhanh", "lam,bo").split(",")) ds.add(new NguoiChoi(n.trim()));
+        SO_NGUOI_CHOI = ds.size();
         List<Thread> th = new ArrayList<>();
         for (NguoiChoi p : ds) {
             Thread t = new Thread(() -> {
@@ -205,7 +207,7 @@ final class KichBanCap140 {
         final Set<Integer> chinhDaXong = new TreeSet<>();
         final Set<Integer> phuDaXong = new TreeSet<>();
         String trangThai = "";
-        boolean coBong;
+        boolean coBong, daGiaoDich;
         int soBat;
         final Map<String, String> tinhNangKq = new LinkedHashMap<>();
         final Set<Integer> mocTinhNang = new TreeSet<>();
@@ -243,6 +245,7 @@ final class KichBanCap140 {
                 else if (l.startsWith("chinh=")) for (String x : l.substring(6).split(",")) if (!x.isEmpty()) chinhDaXong.add(Integer.parseInt(x));
                 else if (l.startsWith("phu=")) for (String y : l.substring(4).split(",")) if (!y.isEmpty()) phuDaXong.add(Integer.parseInt(y));
                 else if (l.startsWith("ket=")) ketChi.add(l.substring(4));
+                else if (l.startsWith("gd=")) daGiaoDich = l.endsWith("1");
                 else if (l.startsWith("moc=")) for (String z : l.substring(4).split(",")) if (!z.isEmpty()) mocTinhNang.add(Integer.parseInt(z));
                 else if (l.startsWith("tn=")) { String[] f = l.substring(3).split("\t", 2); if (f.length == 2) tinhNangKq.put(f[0], f[1]); }
                 else if (l.startsWith("so=")) {
@@ -263,6 +266,7 @@ final class KichBanCap140 {
             s.append("chinh=").append(chinhDaXong.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             s.append("phu=").append(phuDaXong.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             for (String t : dongThoiGian) s.append("tg=").append(t).append('\n');
+            s.append("gd=").append(daGiaoDich ? 1 : 0).append('\n');
             s.append("moc=").append(mocTinhNang.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             for (Map.Entry<String, String> e : tinhNangKq.entrySet()) s.append("tn=").append(e.getKey().replace('\t', ' ').replace('\n', ' ')).append('\t').append(e.getValue().replace('\n', ' ')).append('\n');
             for (String t : ketChi) s.append("ket=").append(t.replace('\n', ' ')).append('\n');

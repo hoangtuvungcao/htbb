@@ -18787,4 +18787,10 @@ public class Map implements Runnable {
 
         player.sendMessage(MessageCreator.createMsgInputText(-32019, 0, "Nhập " + player.diachi + " để xác nhận", 0));
     }
+
+    /** Chu bao khi chon khu ma dung xa bien "Khu N" (Map.pRegion, o). */
+    public static String xaBienKhu(final short[] pRegion) {
+        return pRegion == null || pRegion.length < 2 ? "Hãy đến gần biển Khu để chuyển khu."
+                : "Hãy đến gần biển Khu (ô " + pRegion[0] + "," + pRegion[1] + ") để chuyển khu.";
+    }
 }
