@@ -945,7 +945,7 @@ hud-tren-1
 hud-tren-2
 hud-tren-3
 hud-tu-dong
-hud-tu-dong-cai-dat
+hud-tu-dong-cai-dat = thay bang: giu nut AUTO (nhan giu) / Menu > Tu dong danh - 0.9.21 bo banh rang Tu dong trung icon Cai dat
 
 [chuoi] client_jar/src/game/pokemon/ManMenu.java
 Cài đặt
@@ -986,9 +986,9 @@ xuong
 [ma] client_jar/src/game/render/screen/HudRong.java
 "hud-cai-dat"
 "hud-tu-dong"
-"hud-tu-dong-cai-dat"
+"hud-tu-dong-cai-dat" = thay bang: giu nut AUTO (nhan giu) / Menu > Tu dong danh - 0.9.21 bo banh rang Tu dong trung icon Cai dat
 BangTuDong.mo();   // nhấn giữ viên AUTO = cài đặt
-case 31:
+case 31: = thay bang: giu nut AUTO (nhan giu) / Menu > Tu dong danh - 0.9.21 bo banh rang Tu dong trung icon Cai dat
 moCaiDat();   // 0.9.9: nút Cài đặt hàng trên
 
 [ma] client_jar/src/game/pokemon/ManMenu.java
@@ -1018,11 +1018,11 @@ Nen.menuNhanhVe(graphics)
 [ma] client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/Hud.java
 HdCau.moTuDong()
 case N_CAI_DAT:
-case N_TD_CAI:
+case N_TD_CAI: = thay bang: giu nut AUTO (nhan giu) / Menu > Tu dong danh - 0.9.21 bo banh rang Tu dong trung icon Cai dat
 case N_TU_DONG:
 
 [ma] client_apk/pokemon/src/main/java/com/htbb/pokemon/hd/HudBoTri.java
-int[] tren = {N_TU_DONG, N_TD_CAI, N_CAI_DAT,
+int[] tren = {N_TU_DONG, N_TD_CAI, N_CAI_DAT, = thay bang: 0.9.21 hang tren bo N_TD_CAI (gop vao Cai dat / giu AUTO)
 
 [ma] client_apk/pokemon/src/main/java/game/render/screen/HdCau.java
 Class.forName("game.render.screen.BangTuDong")
