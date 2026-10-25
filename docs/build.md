@@ -244,6 +244,27 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.20 (`BAN=920`: tab Trang bị trên điện thoại mật độ cao, cập nhật trong game cài thẳng bản mới)
+
+Client `PHIEN_BAN=0.9.20-opentest` (`BAN = 0*10000 + 9*100 + 20`; `MIDlet-Version` 0.9.20) trên main a58d2f87, chạy với
+mọi máy chủ 0.9.15+. `htbb-server.jar` của main (50e78c5b) - qua cổng staging trước khi lên production.
+
+1. Lỗi chủ dự án (APK 0.9.19, điện thoại 1080p): tab Trang bị MẤT lưới hành trang. APK đặt cỡ chạm 44 dp theo
+   `DisplayMetrics.density` thật (mật độ 3 trên 1920x1080 -> 44 px logic trên 640x360), nội dung tab chỉ ~466x239 ->
+   `ManNhanVat.boCuc` rơi xuống xếp dọc, lưới 0-1 hàng, ví đè hàng chip lọc. Sửa (fc7e8e6b): bố cục đếm hàng lưới theo ví
+   xuống dòng thật, xếp dọc chỉ khi lưới dưới vẫn >= 3 hàng; không vừa thì tấm Nhân vật dùng đầu gọn (`Bang.dauGon`: tab
+   + X một hàng), rồi cỡ chạm gọn 36..24 dp chỉ trong tab (`ManNhanVat.minGon`), cuối cùng `boCucEp` (không xếp dọc
+   trên màn ngang); `LuoiTui.veGon` ví không bao giờ đè chip / lưới; `ViTien` xuống dòng thay vì vùng chạm < cỡ chạm.
+   `ChupTrongGame` thêm 14 máy Android thật (`CO_APK`: phép đổi của APK, density, vùng an toàn) và 5 cỡ J2ME
+   (`CO_J2ME` 240x320, 320x240, 400x240, 360x640, 640x360 với `-Dchup.j2me`; `KiemChamHud -Dchup.j2me` cũng vậy).
+2. Cập nhật trong game cài thẳng bản mới (không vào web): thẻ cập nhật ghi cách cài theo nền tảng (PC tự cài + mở lại;
+   APK: Android luôn hỏi, bấm "Cài đặt"; J2ME: link .jar + "nạp file .jar mới" ở giả lập, thẻ giữ sau khi mở link); APK
+   quay lại từ trang "Cho phép từ nguồn này" thì tự mở trình cài (`CapNhatApk.khiQuayLai`). `KiemCapNhat.kiemDauCuoi`:
+   gói -115 (link gốc tải http `sv.gocTaiCapNhat`) -> `CapNhatPc` thật -> tải HTTP cục bộ -> SHA-256 -> bộ cài /SILENT +
+   đóng game, không mở trình duyệt; SHA lệch -> không chạy.
+3. Máy chủ (50e78c5b): chiếm Gym chỉ hạn chế trong Gym (bản đồ 201 + bản sao + cửa hàng trong Gym); cổng sai ô từ chối +
+   nạp lại bản đồ, chỉ kick khi > 10 lần / 30 giây (`DemCongSaiO`); đăng ký bị chặn theo MÁY có câu báo riêng.
+
 ### Bản 0.9.19 (`BAN=919`: J2ME Bản thân › "Huấn luyện" ở chế độ Điểm huấn luyện, tên Danh hiệu dài xuống 2-3 dòng)
 
 Client (không gói mới) `PHIEN_BAN=0.9.19-opentest` (`BAN = 0*10000 + 9*100 + 19`; `MIDlet-Version` 0.9.19) trên main
