@@ -353,7 +353,8 @@ final class BangTuDong {
         }
         String d2 = TuDong.dang ? "Đang chạy: " + TuDong.trangThai : TuDong.thongBao;
         if (d2 == null || d2.length() == 0) {
-            d2 = "Chỉ khi online - EXP theo năng lượng";
+            // 0.9.20: xen kẽ gợi ý chiêu bổ trợ (4 giây mỗi câu)
+            d2 = System.currentTimeMillis() / 4000L % 2L == 0L ? "Chỉ khi online - EXP theo năng lượng" : game.pokemon.TuBuff.GOI_Y;
         }
         int yChu = y0 + 24;
         Font.borderFont.drawString(g, GiaoDien.catChu(Font.borderFont, d1, w - 12), x0 + w / 2, yChu, Font.CENTER);
@@ -523,6 +524,16 @@ final class BangTuDong {
         int hc = caoChieu();
         game.pokemon.Bang.the(g, x, yc, w1, hc);
         game.pokemon.ChuDe.chu(g, "Thứ tự chiêu", x + 10, yc + 4, game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 0);
+        {
+            // 0.9.20: gợi ý chiêu bổ trợ ở trang chiêu (cùng hàng tiêu đề, canh phải, cắt theo chỗ trống)
+            int xg = x + 10 + game.pokemon.ChuDe.rong("Thứ tự chiêu", game.pokemon.ChuDe.NHAN) + 10;
+            int wg = x + w1 - 10 - xg;
+            if (wg > 40) {
+                String gy = game.pokemon.ChuDe.cat(game.pokemon.TuBuff.GOI_Y_NGAN, game.pokemon.ChuDe.PHU, wg);
+                game.pokemon.ChuDe.chu(g, gy, x + w1 - 10, yc + 4 + (game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN)
+                        - game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU)) / 2, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 1);
+            }
+        }
         int rc = rChieu();
         int buoc = (w1 - 20) / 4;
         int cy = yc + 8 + game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN) + rc;

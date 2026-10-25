@@ -77,7 +77,7 @@ public final class TuDong {
     static long lucChoBat;
     private static int neoX, neoY, neoMap = -1;
     private static Actor mucTieu, monNhat;
-    private static long lucDanh, lucBinh, lucNhip, lucNhuong, lucKet, lucDoi;
+    private static long lucDanh, lucBinh, lucNhip, lucNhuong, lucKet, lucDoi, lucBoTro;
     private static int ketX, ketY, lanKet;
     private static boolean giuPhim, hoiPhuc;
     static String trangThai = "";
@@ -391,6 +391,14 @@ public final class TuDong {
         if (l < lucNhuong) {
             trangThai = "chờ bạn";
             return;
+        }
+        if (l >= lucBoTro) {
+            // 0.9.20 (chủ game: "kỹ năng phụ trợ gắn vào các ô auto cho nó hoạt động"): chiêu bổ trợ trên trang chiêu tự
+            // động dùng -> dùng cho bản thân khi hiệu ứng của nó hết (game.pokemon.TuBuff); chiêu đánh vẫn đánh bình thường
+            lucBoTro = l + 1000L;
+            if (!mc.beStune) {
+                gs.tuDungBoTro(trangDung(), -1, game.pokemon.TuBuff.PHIM_TRANG);
+            }
         }
         if ((svCo & CO_KE_HOACH) != 0) {
             theoKeHoach(gs, mc, l);
