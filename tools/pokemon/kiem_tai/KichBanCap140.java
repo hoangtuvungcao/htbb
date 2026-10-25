@@ -636,6 +636,10 @@ final class KichBanCap140 {
             String tenBd = tenBanDoTrong(chu);
             if (daGhiChu.add(q.id * 10 + q.ms)) ghi("muc tieu #" + q.id + "/" + q.ms + " '" + q.ten + "' t" + q.loai + ": " + chu + " -> ban do '" + tenBd + "'");
             if (q.loai == 1) return "";
+            if (q.loai == 3 && !Pattern.compile("ô (\\d+)[,;] ?(\\d+)").matcher(chu).find()) {
+                String hd = buocHanhDong(q, chu, tenBd);
+                if (hd != null) return hd.equals("-") ? null : hd;
+            }
             if (q.loai == 3) {
                 Matcher mo = Pattern.compile("ô (\\d+)[,;] ?(\\d+)").matcher(chu);
                 if (!mo.find()) {
@@ -719,6 +723,76 @@ final class KichBanCap140 {
                 return null;
             }
             return "";
+        }
+
+        final Map<Integer, Integer> lanHanhDong = new HashMap<>();
+
+        /**
+         * Buoc noi chuyen co hanh dong kiem that (nhanh sua-buoc-hanh-dong, kiem_hanh_dong=1): chu muc tieu
+         * "Mặc 1 món trang bị" / "Nâng 1 món trang bị lên +2 ở chỗ Machamp" / "Hạ 1 Skorupi vào ban đêm (19:00–5:59) ở Saffron"
+         * / "Hạ 26 Gloom trong 8 phút ở Fuchsia". null = khong phai buoc hanh dong; "-" = da lam; chuoi khac = ly do ket.
+         */
+        String buocHanhDong(KichBanTienDoNhiemVu.Dong q, String chu, String tenBd) throws Exception {
+            int lan = lanHanhDong.merge(q.id * 10 + q.ms, 1, Integer::sum);
+            if (chu.contains("Mặc 1 món") || chu.contains("Mặc ") && chu.contains("trang bị") && !chu.contains("bậc")) {
+                b.lamMoi();
+                int[] d = b.doDung.isEmpty() ? null : b.doDung.get(0);
+                if (d == null && !b.dangMac.isEmpty()) {
+                    int id = b.dangMac.get(0); // thao ra roi mac lai (chu: "Tháo ra mặc lại một món cũng được tính")
+                    b.gui(30, (short) id); b.bom(800); b.lamMoi();
+                    d = b.timDo(x -> x[0] == id);
+                }
+                if (d == null) return "khong co mon nao de mac";
+                int m = b.moc();
+                b.gui(29, (short) d[0]);
+                b.bom(1200);
+                ghi("hanh dong '" + q.ten + "': mac tpl " + d[1] + " -> " + b.chuTu(m));
+                return lan > 4 ? "mac do khong tinh: " + b.chuTu(m) : "-";
+            }
+            Matcher mn = Pattern.compile("Nâng 1 món trang bị lên \\+(\\d+)").matcher(chu);
+            if (mn.find()) {
+                if (lan > 12) return "nang cap khong xong sau 12 lan: " + chu;
+                KichBanCap140TinhNang.veLangDiBo(this);
+                String l = KichBanHuongDan.toiNpc(b, 2);
+                if (l != null) return "khong toi Machamp: " + l;
+                b.lamMoi();
+                if (b.dangMac.isEmpty()) return "khong mac mon nao de nang";
+                String t = KichBanDS3.moNangCap(b, b.dangMac.get(0), false);
+                ghi("hanh dong '" + q.ten + "': nang cap -> " + t);
+                if (t.contains("het da")) {
+                    loi("buoc '" + q.ten + "' #" + q.id + " can nang +" + mn.group(1) + " nhung khong co da luyen kim (nguoi choi cap " + b.lv + " lay o dau?)");
+                    return "het da luyen kim de nang cap";
+                }
+                return "-";
+            }
+            Matcher mh = Pattern.compile("Hạ (\\d+) ([^(]+?) (?:vào|lúc|trong|ở)").matcher(chu);
+            if (mh.find() && !chu.contains("Pokémon hoang dã")) {
+                String tenQ = mh.group(2).trim();
+                int load = tenBd == null ? -1 : LOAD_THEO_TEN.getOrDefault(tenBd, -1);
+                int tpl = quaiTheoTen(tenQ, load);
+                if (tpl < 0) return "khong biet quai '" + tenQ + "'";
+                int dich = tenBd == null ? -1 : mapTheoTen(b.mapId, tenBd);
+                if (dich < 0) { Set<Integer> co = BotXuyenSuot.QUAI_MAP.get(tpl); if (co != null) for (int x : co) { if (BotXuyenSuot.duong(b.mapId, x) != null) { dich = x; break; } } }
+                if (dich < 0) return "khong co ban do co " + tenQ;
+                if (!toi(dich)) { hop95(0); nhanCuaAiNeuKhoa(); return "khong toi duoc " + tenBd; }
+                int can = Integer.parseInt(mh.group(1));
+                boolean khungGio = Pattern.compile("\\(\\d+:\\d+").matcher(chu).find();
+                int ha = danh(tpl, Math.max(1, can), (can > 1 ? 7 : 2) * 60000L);
+                ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")");
+                if (khungGio && lan % 2 == 0) choGio("'" + q.ten + "' can dung khung gio: " + chu);
+                if (lan > 14) return "ha " + tenQ + " " + lan + " lan van khong xong: " + chu;
+                return "-";
+            }
+            return null;
+        }
+
+        /** Khung gio trong game (ngay/dem): cho 3 gio ao (may thu: tua). */
+        void choGio(String ly) {
+            if (System.currentTimeMillis() - lanTuaCuoi < 25000) return;
+            lanTuaCuoi = System.currentTimeMillis();
+            long truoc = BotXuyenSuot.lanTuaCuoi;
+            BotXuyenSuot.tua("3h", nhanh + ": " + ly);
+            if (BotXuyenSuot.lanTuaCuoi != truoc) ghi("CHO 3 GIO (tua 3h) vi " + ly);
         }
 
         /** Ban do khoa: nhan cua ai qua Quay doi thuong -> Nhiem vu cua toi -> Thu thach cua ai (neu hop 95 khong hien). */
