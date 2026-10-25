@@ -267,6 +267,10 @@ public final class KiemGymMotTran {
 
             // ---- 2. nguoi khac khong danh duoc boss Gym cua minh (trong lang), van thay (khong an)
             sai("boss Gym cua nguoi khac: khong phai Gym cua minh", BossLauDai.laGymCua(boss, khac));
+            // bot-cap1-40: nguoi dung canh (hut mau / than thu / chieu dien rong) tung ket lieu boss Gym cua nguoi khac va an EXP
+            dung("bot-cap1-40: nguoi khac -> laGymNguoiKhac (chan moi duong danh)", BossLauDai.laGymNguoiKhac(boss, khac));
+            sai("bot-cap1-40: chu tran -> khong bi chan", BossLauDai.laGymNguoiKhac(boss, p));
+            sai("bot-cap1-40: quai thuong -> khong bi chan", BossLauDai.laGymNguoiKhac(new Monster((byte) 0), khac));
 
             // ---- 3. thang: go ngay cho moi nguoi, buoc nhiem vu + huy hieu mot lan, khong hoi sinh
             final int tuKhac = khac.goi.size();

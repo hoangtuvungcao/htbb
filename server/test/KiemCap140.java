@@ -11,6 +11,9 @@ public final class KiemCap140 {
         Kiem.nhom("bot-cap1-40: loi tim ra khi choi tu nhien cap 1 -> 40");
         demDangLam();
         huyChinhDungId();
+        Kiem.bang("chon khu khi xa bien khu: bao cach lam (truoc: im lang)", "Hãy đến gần biển Khu (ô 12,34) để chuyển khu.",
+                real.Map.xaBienKhu(new short[]{12, 34}));
+        Kiem.bang("ban do khong co bien khu: van bao", "Hãy đến gần biển Khu để chuyển khu.", real.Map.xaBienKhu(null));
     }
 
     /**

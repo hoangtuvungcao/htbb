@@ -1453,6 +1453,10 @@ class MapDoMenu {
                             break;
                         }
 
+                        // bot-cap1-40 (25/10/2026): truoc day "return" im lang - go "khu" o dau cung mo duoc menu Khu 1..N
+                        // nhung chon khu khi o xa bien khu thi khong co gi xay ra.
+                        player.timeNextRegion = last; // khong tinh hoi chieu cho lan bi tu choi
+                        player.sendMessage(MessageCreator.createServerAlertMessage(Map.xaBienKhu(map.pRegion), ""));
                         return;
                     }
 
@@ -4894,5 +4898,6 @@ class MapDoMenu {
             var46.printStackTrace();
         }
     }
+
 
 }

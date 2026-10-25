@@ -279,6 +279,121 @@ final class KichBanCap140TinhNang {
         return false;
     }
 
+
+    // ------------------------------------------------------------------ Danh hieu
+    static void danhHieu(KichBanCap140.NguoiChoi p) throws Exception {
+        BotChucNang.Bot b = p.b;
+        int m = b.moc();
+        b.gui(KichBanDanhHieu.KHACH, (byte) 0);
+        b.bom(1500);
+        List<KichBanDanhHieu.Dong> ds = KichBanDanhHieu.bang(b, m);
+        if (ds == null) { KichBanCap140.loi("Danh hieu: xin bang (-111 0) khong nhan -110: " + b.chuTu(m)); return; }
+        KichBanDanhHieu.Dong co = null;
+        int soCo = 0;
+        for (KichBanDanhHieu.Dong d : ds) if (d.trangThai >= 1) { soCo++; if (co == null || d.trangThai == 1) co = d; }
+        p.tinhNang("Danh hiệu → bảng", ds.size() + " danh hieu, da co " + soCo);
+        if (co == null) return;
+        int m2 = b.moc();
+        b.gui(KichBanDanhHieu.KHACH, (byte) 1, (short) co.id);
+        b.bom(1500);
+        int[] n = KichBanDanhHieu.nhan(b, m2, b.actor);
+        sauHanhDong(p, "đeo danh hiệu");
+        boolean ok = n != null && n[0] == co.id;
+        p.tinhNang("Danh hiệu → đeo '" + co.ten + "'", ok ? "OK" : "HONG " + KichBanDanhHieu.toast(b, m2));
+        if (!ok) KichBanCap140.loi("deo danh hieu '" + co.ten + "' (" + co.id + ") khong nhan -110 cho minh: " + KichBanDanhHieu.toast(b, m2));
+    }
+
+    // ------------------------------------------------------------------ Doi khu
+    static void doiKhu(KichBanCap140.NguoiChoi p) throws Exception {
+        BotChucNang.Bot b = p.b;
+        if (KichBanDS.laLang(b.mapId) && !KichBanGymLang.raPallet(b)) return;
+        int m = b.moc();
+        b.chat("khu");
+        int n = b.doiMenu(m, -34, 0, 2500);
+        if (n <= 0) { p.tinhNang("Đổi khu (gõ 'khu') map " + b.mapId, "khong co menu khu: " + b.chuTu(m)); return; }
+        int truoc = b.mapId;
+        int m2 = b.moc();
+        b.menu(-34, 0, n > 1 ? 1 : 0);
+        String t = phanHoi(b, m2);
+        if (b.coLenh(m2, 12)) { b.gui(12, (short) -500, (short) 0, (short) 0); b.bom(800); b.px = b.tx * 16 + 8; b.py = b.ty * 16 + 8; }
+        sauHanhDong(p, "đổi khu");
+        p.tinhNang("Đổi khu → Khu 2 (map " + truoc + ", " + n + " khu)", t.isEmpty() ? "KHONG PHAN HOI" : t);
+        if (t.isEmpty()) KichBanCap140.loi("chon Khu 2 (map " + truoc + ") khong phan hoi gi (khong doi khu, khong bao ly do)");
+    }
+
+    // ------------------------------------------------------------------ hai nguoi choi gap nhau: giao dich
+    static final java.util.concurrent.CyclicBarrier GAP = new java.util.concurrent.CyclicBarrier(2);
+    static volatile KichBanCap140.NguoiChoi[] CAP_GAP = new KichBanCap140.NguoiChoi[2];
+
+    static boolean cho(String buoc) {
+        try {
+            GAP.await(4, java.util.concurrent.TimeUnit.MINUTES);
+            return true;
+        } catch (Exception e) {
+            GAP.reset();
+            return false;
+        }
+    }
+
+    static void giaoDich(KichBanCap140.NguoiChoi p) throws Exception {
+        BotChucNang.Bot b = p.b;
+        boolean laA = p.nhanh.equals("lam");
+        CAP_GAP[laA ? 0 : 1] = p;
+        if (!cho("hen")) { p.daGiaoDich = false; p.tinhNang("Giao dịch 2 người", "nguoi kia khong toi diem hen trong 4 phut (thu lai o moc sau)"); return; }
+        KichBanCap140.NguoiChoi o = CAP_GAP[laA ? 1 : 0];
+        veLangDiBo(p);
+        if (b.mapId != 0) { // ve dung lang goc 0 (ban sao 301 la khu khac)
+            p.toi(0);
+        }
+        KichBanGymLang.raPallet(b);
+        cho("ra pallet");
+        if (laA && o.b != null && b.mapId == o.b.mapId) {
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+            KichBanHuongDan.dongBoViTri(b);
+            int[] dich = bd == null ? null : bd.oGan(o.b.px / 16 + 1, o.b.py / 16, 3);
+            if (dich != null) b.diDuong(bd, dich[0], dich[1]);
+        }
+        b.bom(1500);
+        cho("gan");
+        boolean cungMap = o.b != null && b.mapId == o.b.mapId;
+        if (laA) {
+            int a0 = b.soThuoc(1) + b.soThuoc(2);
+            int m = b.moc();
+            if (cungMap) b.gui(66, (byte) 0, (short) o.b.actor);
+            b.bom(2000);
+            p.tinhNang("Giao dịch → mời " + o.user + " (cùng map " + cungMap + ", map " + b.mapId + "/" + (o.b == null ? -1 : o.b.mapId) + ")", phanHoi(b, m));
+            sauHanhDong(p, "moi giao dich");
+        }
+        cho("moi");
+        if (!laA && cungMap) {
+            int m = b.moc();
+            b.gui(66, (byte) 1, (short) o.b.actor);
+            b.bom(1500);
+            p.tinhNang("Giao dịch → nhận lời mời của " + o.user, phanHoi(b, m));
+        }
+        cho("nhan");
+        if (laA && cungMap) {
+            int m = b.moc();
+            int loai = b.soThuoc(2) > 0 ? 2 : 1;
+            int t0 = b.soThuoc(loai), t1 = o.b.soThuoc(loai);
+            b.gui(66, (byte) 2, (byte) 1, (byte) loai, (short) 1);
+            b.bom(600);
+            b.gui(66, (byte) 4, (short) 0);
+            o.b.gui(66, (byte) 4, (short) 0);
+            b.bom(800);
+            b.gui(66, (byte) 5);
+            o.b.gui(66, (byte) 5);
+            b.bom(1500);
+            b.lamMoi();
+            o.b.lamMoi();
+            String kq = "thuoc " + loai + ": A " + t0 + "->" + b.soThuoc(loai) + " B " + t1 + "->" + o.b.soThuoc(loai) + " | " + b.chuTu(m);
+            p.tinhNang("Giao dịch → 1 bình thuốc " + loai, kq);
+            if (b.soThuoc(loai) + o.b.soThuoc(loai) != t0 + t1) KichBanCap140.loi("giao dich thuoc khong bao toan: " + kq);
+            sauHanhDong(p, "giao dich");
+        }
+        cho("xong");
+    }
+
     // ------------------------------------------------------------------ vong tinh nang o moc cap
     static void chay(KichBanCap140.NguoiChoi p) throws Exception {
         BotChucNang.Bot b = p.b;
@@ -289,6 +404,9 @@ final class KichBanCap140TinhNang {
         veLang(p);
         if (b.xu > 4000) veDichChuyen(p);
         if (!p.coBong && b.xu > 3000) p.coBong = muaBong(p);
+        danhHieu(p);
+        doiKhu(p);
+        if (b.lv >= 20 && !p.daGiaoDich && KichBanCap140.SO_NGUOI_CHOI == 2) { p.daGiaoDich = true; giaoDich(p); }
         p.thoatGiuNguyen();
         p.vao(); // luu + vao lai sau vong tinh nang
     }

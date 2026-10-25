@@ -975,6 +975,32 @@ public final class DatabaseLauDai {
                 + " ORDER BY ma, stt", 8);
     }
 
+    /**
+     * real.HanhDongNhiemVuGame: buoc noi chuyen (-64 type 3) co muc tieu hanh dong that - dong data_nhiem_vu_noi_dung co
+     * {@code kiem_hanh_dong=1} trong dieu_kien (khoi sua_buoc_hanh_dong.sql) ghep kieu / muc tieu / so luong cua
+     * data_quest_lau_dai (doc rieng, ghep trong Java). Rong neu chua chay khoi SQL (khi do moi buoc giu nhu cu).
+     */
+    public static java.util.Map<String, com.htbb.pokemon.BuocHanhDong> napBuocHanhDong() {
+        final java.util.Map<String, String> dk = new java.util.HashMap<String, String>();
+        for (final Object[] d : docBang("SELECT ma, dieu_kien FROM data_nhiem_vu_noi_dung WHERE dieu_kien LIKE '%"
+                + com.htbb.pokemon.BuocHanhDong.DAU + "=1%'", 2)) {
+            dk.put(s(d[0]), s(d[1]));
+        }
+        final java.util.Map<String, com.htbb.pokemon.BuocHanhDong> m = new java.util.HashMap<String, com.htbb.pokemon.BuocHanhDong>();
+        if (dk.isEmpty()) {
+            return m;
+        }
+        for (final Object[] d : docBang("SELECT ma, kieu_muc_tieu, muc_tieu_id, so_luong FROM data_quest_lau_dai"
+                + " WHERE loai IN ('chinh', 'phu')", 4)) {
+            final String ma = s(d[0]);
+            final com.htbb.pokemon.BuocHanhDong b = com.htbb.pokemon.BuocHanhDong.tao(ma, s(d[1]), s(d[2]), so(d[3]), dk.get(ma));
+            if (b != null) {
+                m.put(ma, b);
+            }
+        }
+        return m;
+    }
+
     public static int ghiCong(final String sql, final Object... thamSo) {
         return ghi(sql, thamSo);
     }

@@ -12993,6 +12993,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         KhuVucNhiemVuGame.baoChuaToi(this, info);
                         return;
                     }
+                    if (HanhDongNhiemVuGame.chuaXong(this.mainQuest, info)) {
+                        // sua-buoc-hanh-dong: buoc noi chuyen co muc tieu that (mac do / nang cap +N / quan sat theo gio / ha quai tinh
+                        // gio) - nghe NPC = nhan buoc; chi xong khi lam viec do sau khi nhan (HanhDongNhiemVuGame tu tra)
+                        if (this.mainQuest.state_quest == NewCharQuest.UN_RECEIVE) {
+                            this.mainQuest.state_quest = NewCharQuest.WORKING;
+                        }
+                        MessageCreator.createMsgCharQuest(this, 0);
+                        MessageCreator.createMsgCharQuest(this, 2);
+                        HanhDongNhiemVuGame.baoChuaXong(this, this.mainQuest, info);
+                        Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
+                        return;
+                    }
                     final String khongTra = MucTieuNhiemVuGame.kemMucTieu(this, info, this.mainQuest,
                             lyDoKhongTra(this.mainQuest.state_quest, info.type, info.name));
                     if (khongTra != null) {
@@ -13147,6 +13159,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     MessageCreator.createMsgCharQuest(this, 0);
                     MessageCreator.createMsgCharQuest(this, 2);
                     KhuVucNhiemVuGame.baoChuaToi(this, info);
+                    return;
+                }
+                if (HanhDongNhiemVuGame.chuaXong(this.subQuest, info)) {
+                    // sua-buoc-hanh-dong: buoc phu noi chuyen co muc tieu that - da nhan (o tren), xong khi lam viec do
+                    MessageCreator.createMsgCharQuest(this, 0);
+                    MessageCreator.createMsgCharQuest(this, 2);
+                    HanhDongNhiemVuGame.baoChuaXong(this, this.subQuest, info);
+                    Database.instance.saveCharQuest(this.charDBID, this.getInfoQuestSave());
                     return;
                 }
                 final String khongTraPhu = MucTieuNhiemVuGame.kemMucTieu(this, info, this.subQuest,

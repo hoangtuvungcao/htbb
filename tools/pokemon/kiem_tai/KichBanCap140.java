@@ -85,6 +85,7 @@ final class KichBanCap140 {
     }
 
     static final int CAP_DICH = Integer.getInteger("capDich", 40);
+    static volatile int SO_NGUOI_CHOI = 0;
     static final double GIO = Double.parseDouble(System.getProperty("gioCap140", "10"));
     static final File CP = new File(System.getProperty("cp", System.getProperty("java.io.tmpdir") + "/cap140"));
     /** Phut danh quai / "ngay" truoc khi cho sang ngay moi (nang luong 100% = 90 phut). */
@@ -154,6 +155,7 @@ final class KichBanCap140 {
         BotXuyenSuot.dieuPhoi = dp;
         List<NguoiChoi> ds = new ArrayList<>();
         for (String n : System.getProperty("nhanh", "lam,bo").split(",")) ds.add(new NguoiChoi(n.trim()));
+        SO_NGUOI_CHOI = ds.size();
         List<Thread> th = new ArrayList<>();
         for (NguoiChoi p : ds) {
             Thread t = new Thread(() -> {
@@ -205,7 +207,7 @@ final class KichBanCap140 {
         final Set<Integer> chinhDaXong = new TreeSet<>();
         final Set<Integer> phuDaXong = new TreeSet<>();
         String trangThai = "";
-        boolean coBong;
+        boolean coBong, daGiaoDich;
         int soBat;
         final Map<String, String> tinhNangKq = new LinkedHashMap<>();
         final Set<Integer> mocTinhNang = new TreeSet<>();
@@ -243,6 +245,7 @@ final class KichBanCap140 {
                 else if (l.startsWith("chinh=")) for (String x : l.substring(6).split(",")) if (!x.isEmpty()) chinhDaXong.add(Integer.parseInt(x));
                 else if (l.startsWith("phu=")) for (String y : l.substring(4).split(",")) if (!y.isEmpty()) phuDaXong.add(Integer.parseInt(y));
                 else if (l.startsWith("ket=")) ketChi.add(l.substring(4));
+                else if (l.startsWith("gd=")) daGiaoDich = l.endsWith("1");
                 else if (l.startsWith("moc=")) for (String z : l.substring(4).split(",")) if (!z.isEmpty()) mocTinhNang.add(Integer.parseInt(z));
                 else if (l.startsWith("tn=")) { String[] f = l.substring(3).split("\t", 2); if (f.length == 2) tinhNangKq.put(f[0], f[1]); }
                 else if (l.startsWith("so=")) {
@@ -263,6 +266,7 @@ final class KichBanCap140 {
             s.append("chinh=").append(chinhDaXong.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             s.append("phu=").append(phuDaXong.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             for (String t : dongThoiGian) s.append("tg=").append(t).append('\n');
+            s.append("gd=").append(daGiaoDich ? 1 : 0).append('\n');
             s.append("moc=").append(mocTinhNang.toString().replaceAll("[\\[\\] ]", "")).append('\n');
             for (Map.Entry<String, String> e : tinhNangKq.entrySet()) s.append("tn=").append(e.getKey().replace('\t', ' ').replace('\n', ' ')).append('\t').append(e.getValue().replace('\n', ' ')).append('\n');
             for (String t : ketChi) s.append("ket=").append(t.replace('\n', ' ')).append('\n');
@@ -442,6 +446,7 @@ final class KichBanCap140 {
             if (System.currentTimeMillis() - lanVaoLai > 30 * 60000L) { vaoLaiCheckpoint(); return; }
             for (int moc : new int[]{5, 10, 15, 20, 25, 30, 35, 40}) {
                 if (b.lv >= moc && mocTinhNang.add(moc)) {
+                    luuCp();
                     if (moc < 40 && b.lv >= moc + 5) continue; // nhay qua nhieu moc cung luc: chi chay moc cao nhat
                     KichBanCap140TinhNang.chay(this);
                     return;
@@ -500,11 +505,17 @@ final class KichBanCap140 {
         int moc95 = 0;
 
         void hop95(int tu) throws IOException {
+            hop95(tu, false);
+        }
+
+        /** Hop 95: Dong y (nhan cua ai / xem tien do). "Thách đấu Trưởng Gym … ngay?" chi Dong y khi dang di danh Gym. */
+        void hop95(int tu, boolean nhanGym) throws IOException {
             for (int i = Math.max(tu, moc95); i < b.su.size(); i++) {
                 BotChucNang.SuKien e = b.su.get(i);
                 if (e.cmd == -32 && e.so != null && e.so[1] == 95) {
-                    ghi("hop 95: " + e.chu.replace('\n', ' '));
-                    b.gui(-32, (short) e.so[0], (byte) 95, "", (byte) 1);
+                    boolean gym = e.chu.contains("Thách đấu Trưởng Gym") && e.chu.contains("ngay?");
+                    ghi("hop 95" + (gym && !nhanGym ? " (Gym: de sau)" : "") + ": " + e.chu.replace('\n', ' '));
+                    b.gui(-32, (short) e.so[0], (byte) 95, "", (byte) (gym && !nhanGym ? 0 : 1));
                     b.bom(1200);
                 }
             }
@@ -599,6 +610,36 @@ final class KichBanCap140 {
         }
 
         final Set<Integer> daGhiChu = new HashSet<>();
+        /** Ban do luyen da bi chan (khoa cap / cua ai) o cap hien tai - mapLuyen bo qua; xoa khi len cap. */
+        final Set<Integer> mapKhoa = new HashSet<>();
+        int capMapKhoa;
+
+        @Override
+        int mapLuyen() {
+            if (capMapKhoa != b.lv) { mapKhoa.clear(); capMapKhoa = b.lv; }
+            int tot = -1, diem = Integer.MAX_VALUE;
+            for (int mid : BotXuyenSuot.MAP_THU) {
+                Integer l = BotXuyenSuot.LOAD.get(mid);
+                if (l == null || KichBanDS2.laOffline(mid) || mapKhoa.contains(mid)) continue;
+                for (int t : BotXuyenSuot.luoiQuai(l)) {
+                    Integer c = BotXuyenSuot.CAP_QUAI.get(t);
+                    if (c == null || c - b.lv < -3 || c - b.lv > 3) continue;
+                    List<int[]> d = BotXuyenSuot.duong(b.mapId, mid);
+                    if (d == null) continue;
+                    int sc = d.size() * 2 + Math.abs(c - b.lv);
+                    if (sc < diem) { diem = sc; tot = mid; }
+                }
+            }
+            return tot;
+        }
+
+        @Override
+        void luyen(int phut) throws Exception {
+            int mid = mapLuyen();
+            if (mid < 0) { ketLai("khong con ban do luyen mo cho cap " + b.lv + " (da khoa: " + mapKhoa + ")"); b.bom(5000); return; }
+            if (!toi(mid)) { mapKhoa.add(mid); hop95(0); return; }
+            danh(-1, 40, phut * 60000L);
+        }
         final Map<Integer, Integer> lanToiDich = new HashMap<>();
 
         /**
@@ -632,6 +673,10 @@ final class KichBanCap140 {
             String tenBd = tenBanDoTrong(chu);
             if (daGhiChu.add(q.id * 10 + q.ms)) ghi("muc tieu #" + q.id + "/" + q.ms + " '" + q.ten + "' t" + q.loai + ": " + chu + " -> ban do '" + tenBd + "'");
             if (q.loai == 1) return "";
+            if (q.loai == 3 && !Pattern.compile("ô (\\d+)[,;] ?(\\d+)").matcher(chu).find()) {
+                String hd = buocHanhDong(q, chu, tenBd);
+                if (hd != null) return hd.equals("-") ? null : hd;
+            }
             if (q.loai == 3) {
                 Matcher mo = Pattern.compile("ô (\\d+)[,;] ?(\\d+)").matcher(chu);
                 if (!mo.find()) {
@@ -660,9 +705,21 @@ final class KichBanCap140 {
                 return null;
             }
             if (q.loai == 4) {
+                // "chênh không quá N cấp": quai ban do ghi trong chu (neu co) co the da thap hon cap minh > N -> khong tinh.
+                // Nguoi choi doc chu "chênh không quá 5 cấp" -> tim ban do quai ngang cap (mapLuyen: lech <= 3).
+                Matcher mc = Pattern.compile("chênh không quá (\\d+) cấp").matcher(chu);
+                int lech = mc.find() ? Integer.parseInt(mc.group(1)) : 5;
                 int dich = tenBd == null ? -1 : mapTheoTen(b.mapId, tenBd);
-                if (dich >= 0 && !toi(dich)) return "khong toi duoc " + tenBd;
-                int ha = danh(-1, 10, 3 * 60000L);
+                if (dich >= 0) {
+                    boolean coNgangCap = false;
+                    for (int t : BotXuyenSuot.luoiQuai(BotXuyenSuot.LOAD.getOrDefault(dich, -1))) { Integer c = BotXuyenSuot.CAP_QUAI.get(t); if (c != null && Math.abs(c - b.lv) <= lech) coNgangCap = true; }
+                    if (!coNgangCap) { chuNv("'" + q.ten + "': chu ghi " + tenBd + " nhung quai o do lech > " + lech + " cap voi cap " + b.lv + " (khong tinh)"); dich = -1; }
+                }
+                if (dich < 0) dich = mapLuyen();
+                if (dich >= 0 && !toi(dich)) { mapKhoa.add(dich); hop95(0); return "khong toi duoc ban do luyen " + dich + " (thu ban do khac)"; }
+                lechDuoi = lech;
+                int ha;
+                try { ha = danh(-1, 10, 3 * 60000L); } finally { lechDuoi = 999; }
                 ghi("'" + q.ten + "' ha lech cap " + ha);
                 return ha > 0 ? null : "khong ha duoc quai nao o " + b.mapId;
             }
@@ -705,6 +762,76 @@ final class KichBanCap140 {
             return "";
         }
 
+        final Map<Integer, Integer> lanHanhDong = new HashMap<>();
+
+        /**
+         * Buoc noi chuyen co hanh dong kiem that (nhanh sua-buoc-hanh-dong, kiem_hanh_dong=1): chu muc tieu
+         * "Mặc 1 món trang bị" / "Nâng 1 món trang bị lên +2 ở chỗ Machamp" / "Hạ 1 Skorupi vào ban đêm (19:00–5:59) ở Saffron"
+         * / "Hạ 26 Gloom trong 8 phút ở Fuchsia". null = khong phai buoc hanh dong; "-" = da lam; chuoi khac = ly do ket.
+         */
+        String buocHanhDong(KichBanTienDoNhiemVu.Dong q, String chu, String tenBd) throws Exception {
+            int lan = lanHanhDong.merge(q.id * 10 + q.ms, 1, Integer::sum);
+            if (chu.contains("Mặc 1 món") || chu.contains("Mặc ") && chu.contains("trang bị") && !chu.contains("bậc")) {
+                b.lamMoi();
+                int[] d = b.doDung.isEmpty() ? null : b.doDung.get(0);
+                if (d == null && !b.dangMac.isEmpty()) {
+                    int id = b.dangMac.get(0); // thao ra roi mac lai (chu: "Tháo ra mặc lại một món cũng được tính")
+                    b.gui(30, (short) id); b.bom(800); b.lamMoi();
+                    d = b.timDo(x -> x[0] == id);
+                }
+                if (d == null) return "khong co mon nao de mac";
+                int m = b.moc();
+                b.gui(29, (short) d[0]);
+                b.bom(1200);
+                ghi("hanh dong '" + q.ten + "': mac tpl " + d[1] + " -> " + b.chuTu(m));
+                return lan > 4 ? "mac do khong tinh: " + b.chuTu(m) : "-";
+            }
+            Matcher mn = Pattern.compile("Nâng 1 món trang bị lên \\+(\\d+)").matcher(chu);
+            if (mn.find()) {
+                if (lan > 12) return "nang cap khong xong sau 12 lan: " + chu;
+                KichBanCap140TinhNang.veLangDiBo(this);
+                String l = KichBanHuongDan.toiNpc(b, 2);
+                if (l != null) return "khong toi Machamp: " + l;
+                b.lamMoi();
+                if (b.dangMac.isEmpty()) return "khong mac mon nao de nang";
+                String t = KichBanDS3.moNangCap(b, b.dangMac.get(0), false);
+                ghi("hanh dong '" + q.ten + "': nang cap -> " + t);
+                if (t.contains("het da")) {
+                    loi("buoc '" + q.ten + "' #" + q.id + " can nang +" + mn.group(1) + " nhung khong co da luyen kim (nguoi choi cap " + b.lv + " lay o dau?)");
+                    return "het da luyen kim de nang cap";
+                }
+                return "-";
+            }
+            Matcher mh = Pattern.compile("Hạ (\\d+) ([^(]+?) (?:vào|lúc|trong|ở)").matcher(chu);
+            if (mh.find() && !chu.contains("Pokémon hoang dã")) {
+                String tenQ = mh.group(2).trim();
+                int load = tenBd == null ? -1 : LOAD_THEO_TEN.getOrDefault(tenBd, -1);
+                int tpl = quaiTheoTen(tenQ, load);
+                if (tpl < 0) return "khong biet quai '" + tenQ + "'";
+                int dich = tenBd == null ? -1 : mapTheoTen(b.mapId, tenBd);
+                if (dich < 0) { Set<Integer> co = BotXuyenSuot.QUAI_MAP.get(tpl); if (co != null) for (int x : co) { if (BotXuyenSuot.duong(b.mapId, x) != null) { dich = x; break; } } }
+                if (dich < 0) return "khong co ban do co " + tenQ;
+                if (!toi(dich)) { hop95(0); nhanCuaAiNeuKhoa(); return "khong toi duoc " + tenBd; }
+                int can = Integer.parseInt(mh.group(1));
+                boolean khungGio = Pattern.compile("\\(\\d+:\\d+").matcher(chu).find();
+                int ha = danh(tpl, Math.max(1, can), (can > 1 ? 7 : 2) * 60000L);
+                ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")");
+                if (khungGio && lan % 2 == 0) choGio("'" + q.ten + "' can dung khung gio: " + chu);
+                if (lan > 14) return "ha " + tenQ + " " + lan + " lan van khong xong: " + chu;
+                return "-";
+            }
+            return null;
+        }
+
+        /** Khung gio trong game (ngay/dem): cho 3 gio ao (may thu: tua). */
+        void choGio(String ly) {
+            if (System.currentTimeMillis() - lanTuaCuoi < 25000) return;
+            lanTuaCuoi = System.currentTimeMillis();
+            long truoc = BotXuyenSuot.lanTuaCuoi;
+            BotXuyenSuot.tua("3h", nhanh + ": " + ly);
+            if (BotXuyenSuot.lanTuaCuoi != truoc) ghi("CHO 3 GIO (tua 3h) vi " + ly);
+        }
+
         /** Ban do khoa: nhan cua ai qua Quay doi thuong -> Nhiem vu cua toi -> Thu thach cua ai (neu hop 95 khong hien). */
         long lanNhanCuaAi;
 
@@ -730,10 +857,15 @@ final class KichBanCap140 {
 
         // ---------------------------------------------------------------- Gym cua ai
         final Map<String, Integer> gymThuCap = new HashMap<>();
+        final Map<String, Long> gymThuLuc = new HashMap<>();
 
         String gymCuaAi(KichBanTienDoNhiemVu.Dong q, String chu) throws Exception {
-            if (b.lv < gymThuCap.getOrDefault(q.ten, 0) + 2) { luyen(4); return null; }
+            // thua thi luyen them 2 cap hoac (khong con cho luyen ngang cap) thu lai sau 15 phut, mua thuoc tot hon
+            if (b.lv < gymThuCap.getOrDefault(q.ten, 0) + 2 && System.currentTimeMillis() - gymThuLuc.getOrDefault(q.ten, 0L) < 15 * 60000L) { luyen(4); return null; }
             gymThuCap.put(q.ten, b.lv);
+            gymThuLuc.put(q.ten, System.currentTimeMillis());
+            lanMuaThuoc = 0;
+            muaThuoc();
             if (KichBanDS.laLang(b.mapId) || KichBanDS2.laOffline(b.mapId)) { int ml = mapLuyen(); if (ml >= 0) toi(ml); }
             KichBanDS.timQuai(b, 0, 260);
             Set<Integer> cu = new HashSet<>(b.quai.keySet());
@@ -745,13 +877,27 @@ final class KichBanCap140 {
             int m2 = b.moc();
             b.menu(-90, 0, i);
             b.bom(1500);
-            hop95(m2);
-            String t = b.doiChu(m2, 3000, "xuất hiện", "cấp", "tuần", "đã");
+            hop95(m2, true);
+            String t = b.doiChu(m2, 3000, "xuất hiện", "cấp", "tuần", "đã", "đang thách đấu");
             ghi("Gym cua ai: " + t);
             Integer boss = KichBanDS.quaiMoi(b, cu, 8000);
+            // nhieu boss Gym cung ban do (nguoi khac cung thach dau): boss CUA MINH hien ngay canh minh -> chon con moi gan nhat
+            int gan = Integer.MAX_VALUE;
+            for (Map.Entry<Integer, int[]> e : b.quai.entrySet()) {
+                int[] qq = e.getValue();
+                if (cu.contains(e.getKey()) || qq[4] < 2000 || qq[2] <= 0) continue;
+                int d = Math.abs(qq[0] - b.px) + Math.abs(qq[1] - b.py);
+                if (d < gan) { gan = d; boss = e.getKey(); }
+            }
+            if (boss == null && b.chuTu(m2).contains("đang thách đấu")) {
+                // tran cu con (boss dung o cho cu): quai maxhp lon nhat dang biet
+                int mx = 0;
+                for (Map.Entry<Integer, int[]> e : b.quai.entrySet()) if (e.getValue()[4] > mx && e.getValue()[2] > 0) { mx = e.getValue()[4]; boss = e.getKey(); }
+                if (mx < 2000) { boss = null; b.bom(30000); return "dang co tran Gym cu (boss o cho khac) - cho het 10 phut"; }
+            }
             if (boss == null) return "khong thay boss Gym: " + b.chuTu(m2);
             long t0 = System.currentTimeMillis();
-            int don = KichBanHoiQuy2.haQuaiDiBo(b, boss, 2600);
+            int don = danhBoss(boss, q.ten);
             String kq = b.doiChu(m2, 3000, "Chiến thắng", "thua", "hết giờ", "Hết giờ");
             boolean thang = kq != null && kq.contains("Chiến thắng");
             ghi("Gym '" + q.ten + "' cap " + b.lv + ": " + (thang ? "THANG" : "thua") + " " + don + " don " + (System.currentTimeMillis() - t0) / 1000 + "s | " + kq);
@@ -762,11 +908,55 @@ final class KichBanCap140 {
             return null;
         }
 
+        /**
+         * Danh boss Gym nhu nguoi choi: lai gan, danh lien tuc (lenh 9, xoay chieu), uong thuoc tot nhat khi HP < 50%. Ghi
+         * HP boss / minh moi 60 giay (do sat thuong / giay de biet thua vi thieu suc hay vi bot). Tra so don, -1 = khong ha.
+         */
+        int danhBoss(int boss, String ten) throws IOException {
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+            KichBanHuongDan.dongBoViTri(b);
+            long bd0 = System.currentTimeMillis(), moc = bd0;
+            int hp0 = -1;
+            for (int lan = 1; lan <= 3000 && System.currentTimeMillis() - bd0 < 620000L; lan++) {
+                int[] q = b.quai.get(boss);
+                if (q != null && bd != null && (Math.abs(q[0] - b.px) > 40 || Math.abs(q[1] - b.py) > 40) && lan % 5 == 1) {
+                    int[] o = bd.oGan(q[0] / 16, q[1] / 16, 2);
+                    if (o != null) b.diDuong(bd, o[0], o[1]);
+                }
+                b.gui(9, (short) boss, (byte) KichBanGymLang.chieuCo(b, lan));
+                b.bom(280);
+                if (lan % 10 == 0) {
+                    b.gui(7, (short) boss);
+                    b.lamMoi();
+                    q = b.quai.get(boss);
+                    if (q != null && hp0 < 0 && q[2] > 0) hp0 = q[2];
+                    if (q == null || q[2] == 0) return lan;
+                    if (b.hp > 0 && b.hp < b.maxhp / 2) for (int t : new int[]{3, 2, 1}) if (b.soThuoc(t) > 0) { b.gui(22, (byte) t); b.bom(200); break; }
+                    if (System.currentTimeMillis() - moc > 60000L) {
+                        moc = System.currentTimeMillis();
+                        long giay = (moc - bd0) / 1000;
+                        ghi("Gym " + ten + " " + giay + "s: boss " + q[2] + "/" + q[4] + " (" + (hp0 > 0 ? (hp0 - q[2]) / Math.max(1, giay) : 0) + " sat thuong/giay), minh "
+                                + b.hp + "/" + b.maxhp + ", thuoc " + b.soThuoc(1) + "/" + b.soThuoc(2) + "/" + b.soThuoc(3));
+                    }
+                    if (b.hp <= 0) {
+                        long giay = (System.currentTimeMillis() - bd0) / 1000;
+                        loi("Gym " + ten + ": guc o cap " + b.lv + " sau " + giay + "s, boss con " + q[2] + "/" + q[4] + " (" + (hp0 > 0 ? (hp0 - q[2]) / Math.max(1, giay) : 0)
+                                + " st/giay; can " + q[4] / 600 + " st/giay de ha trong 10 phut); do: vu khi shop, xu " + b.xu);
+                        return -1;
+                    }
+                }
+                if (b.dut) return -1;
+            }
+            return -1;
+        }
+
         // ---------------------------------------------------------------- mac do roi tot hon
+        final Set<Integer> daMac = new HashSet<>();
+
         void macDoTot() throws IOException {
             // do trong tui co cap <= cap minh: mac (may chu tu doi cho cung o); chi mac khi cap do cao hon do dang mac cung tpl nhom
             for (int[] d : new ArrayList<>(b.doDung)) {
-                if (d.length < 4 || d[3] > b.lv || d[3] <= 0) continue;
+                if (d.length < 4 || d[3] > b.lv || d[3] <= 0 || !daMac.add(d[1] * 1000 + d[3])) continue; // moi loai (tpl, cap) mac MOT lan
                 int m = b.moc();
                 b.gui(29, (short) d[0]);
                 b.bom(500);

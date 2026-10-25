@@ -265,6 +265,8 @@ public class BotXuyenSuot {
         final List<int[]> mucTieu = new ArrayList<>(); // {template, da, tong} hoac {-1, da, tong} (type 4)
         final Set<Integer> daToi = new HashSet<>();
         boolean xong;
+        /** danh(-1): chi danh quai cap >= cap minh - lechDuoi (nhiem vu "chenh khong qua N cap"); mac dinh khong gioi han. */
+        int lechDuoi = 999;
 
         Dong(int lop, String user, long hetGio) {
             this.lop = lop;
@@ -471,7 +473,7 @@ public class BotXuyenSuot {
                 for (int id : ds) {
                     int[] q = b.quai.get(id);
                     if (q == null || q[2] <= 0) continue;
-                    if (t < 0 && q[3] > b.lv + 4) continue;
+                    if (t < 0 && (q[3] > b.lv + 4 || q[3] < b.lv - lechDuoi)) continue;
                     double kc = Math.hypot(q[0] - b.px, q[1] - b.py);
                     if (kc < tot) { tot = kc; chon = id; }
                 }
@@ -481,7 +483,7 @@ public class BotXuyenSuot {
                     double kc = 1e18;
                     for (int[] o : oQuai(b.mapLoad)) {
                         if (t >= 0 && o[1] != t) continue;
-                        if (t < 0) { Integer c = CAP_QUAI.get(o[1]); if (c == null || c > b.lv + 4) continue; }
+                        if (t < 0) { Integer c = CAP_QUAI.get(o[1]); if (c == null || c > b.lv + 4 || c < b.lv - lechDuoi) continue; }
                         if (daToi.contains(o[2] / 8 * 1000 + o[3] / 8)) continue;
                         double d = Math.hypot(o[2] - b.px / 16, o[3] - b.py / 16);
                         if (d < kc) { kc = d; toi = o; }

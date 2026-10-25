@@ -128,8 +128,8 @@ public final class KhuVucNhiemVuGame {
         if (info == null) {
             return 0;
         }
-        if (cua(info) == null) {
-            return info.idNpcRes;
+        if (cua(info) == null && HanhDongNhiemVuGame.mau(info) == null) {
+            return info.idNpcRes; // sua-buoc-hanh-dong: buoc hanh dong that cung luat NPC nhu buoc dia diem
         }
         if (nhom == 2) {
             return -1;

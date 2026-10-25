@@ -100,6 +100,11 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
       cửa hàng lượng = món tủ đồ cùng mã; tên chỉ đổi ở dòng còn tên mặc định cũ), chuỗi phụ "Nói chuyện với X ở Y" theo nơi
       NPC đứng thật (173 dòng → "ở làng" / nơi xa), chữ "X ở A ở B", bước chuỗi chính ghi bản đồ khoá cao hơn cấp bước, chữ
       Sổ tay (`data_nhiem_vu_noi_dung.muc_tieu_text`) = chữ bước thật của chuỗi chính (gồm Gym "(đấu ở X)").
+12. `sua_buoc_hanh_dong.sql` (25/10/2026, bot chơi thật cấp 1-40 báo): 140 bước nói chuyện (-64 type 3) hứa hành động mà
+    nghe NPC là xong. 47 bước có hệ thống thật và làm được ở cấp bước (mặc đồ, nâng +N ở chỗ Machamp, hạ 1 con loài X
+    theo khung giờ, hạ N con trong X phút) được đánh dấu `kiem_hanh_dong=1` trong `data_nhiem_vu_noi_dung.dieu_kien`
+    (`real.HanhDongNhiemVuGame` kiểm thật, chữ ghi đúng bản đồ quái sinh); 93 bước còn lại chỉ viết lại chữ thành
+    "Nói chuyện với X ở Y" + lời thoại kể việc diễn ra trong hội thoại. Thưởng giữ nguyên. `server/test/KiemBuocHanhDong`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong
