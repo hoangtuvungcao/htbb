@@ -160,6 +160,11 @@ public final class HoiQuy {
     static BotChucNang.Bot nguoiChoiMoi(String tienTo, int lop, int vung) throws Exception {
         String ten = tenMoi(tienTo);
         String[] k = dangKy(ten, "hq-may-" + ten);
+        // ten ghep ngau nhien co the dinh tu cam (vd "xxx") -> bo loc ten tu choi dung luat: thu ten ke tiep
+        for (int lan = 0; lan < 5 && k[1] != null && k[1].contains("tenTuCam"); lan++) {
+            ten = tenMoi(tienTo);
+            k = dangKy(ten, "hq-may-" + ten);
+        }
         if (k[1] != null) throw new IllegalStateException("dang ky " + ten + ": " + k[1]);
         if (KICH_HOAT) kichHoat(ten);
         BotChucNang.Bot b = new BotChucNang.Bot(ten);

@@ -102,6 +102,9 @@ public class doBuySpecialItem {
                 try {
                     int id = msg.dis.readUnsignedByte();
                     ShopTemplate item = getShopTemplate(id);
+                    if (item == null) {
+                        return;   // id shop khong ton tai (goi tin sai / client cu): bo qua, khong NPE ra log
+                    }
                     MON_DANG_MUA.set(item);
                     if (player.isFullInventory()) {
                         try {
