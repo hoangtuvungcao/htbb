@@ -634,9 +634,29 @@ final class KichBanCap140 {
             return tot;
         }
 
+        /**
+         * Bai luyen CAO NHAT di toi duoc (chua bi chan o cap nay): quai cao nhat <= cap minh + 4. Dung khi da vuot moi bai
+         * ngang cap (nhiem vu "chênh không quá 5 cấp (hoặc ở bãi luyện cao nhất bạn đã mở)", luyen khi khong con bai ngang cap).
+         */
+        int mapCaoNhat() {
+            int tot = -1, capTot = -1, dsTot = Integer.MAX_VALUE;
+            for (int mid : BotXuyenSuot.MAP_THU) {
+                Integer l = BotXuyenSuot.LOAD.get(mid);
+                if (l == null || KichBanDS2.laOffline(mid) || mapKhoa.contains(mid)) continue;
+                int top = -1;
+                for (int t : BotXuyenSuot.luoiQuai(l)) { Integer c = BotXuyenSuot.CAP_QUAI.get(t); if (c != null && c <= b.lv + 4) top = Math.max(top, c); }
+                if (top < 0) continue;
+                List<int[]> d = BotXuyenSuot.duong(b.mapId, mid);
+                if (d == null) continue;
+                if (top > capTot || top == capTot && d.size() < dsTot) { tot = mid; capTot = top; dsTot = d.size(); }
+            }
+            return tot;
+        }
+
         @Override
         void luyen(int phut) throws Exception {
             int mid = mapLuyen();
+            if (mid < 0) mid = mapCaoNhat(); // da vuot moi bai ngang cap: luyen o bai cao nhat da mo
             if (mid < 0) { ketLai("khong con ban do luyen mo cho cap " + b.lv + " (da khoa: " + mapKhoa + ")"); b.bom(5000); return; }
             if (!toi(mid)) { mapKhoa.add(mid); hop95(0); return; }
             danh(-1, 40, phut * 60000L);
@@ -717,8 +737,11 @@ final class KichBanCap140 {
                     if (!coNgangCap) { chuNv("'" + q.ten + "': chu ghi " + tenBd + " nhung quai o do lech > " + lech + " cap voi cap " + b.lv + " (khong tinh)"); dich = -1; }
                 }
                 if (dich < 0) dich = mapLuyen();
+                // chu moi: "(hoặc ở bãi luyện cao nhất bạn đã mở)" -> khong con bai ngang cap thi ra bai cao nhat, danh moi quai
+                boolean baiCao = false;
+                if (dich < 0 && chu.contains("bãi luyện cao nhất")) { dich = mapCaoNhat(); baiCao = dich >= 0; }
                 if (dich >= 0 && !toi(dich)) { mapKhoa.add(dich); hop95(0); return "khong toi duoc ban do luyen " + dich + " (thu ban do khac)"; }
-                lechDuoi = lech;
+                lechDuoi = baiCao ? 999 : lech;
                 int ha;
                 try { ha = danh(-1, 10, 3 * 60000L); } finally { lechDuoi = 999; }
                 ghi("'" + q.ten + "' ha lech cap " + ha);

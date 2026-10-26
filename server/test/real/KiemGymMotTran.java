@@ -280,6 +280,11 @@ public final class KiemGymMotTran {
             dung("thang: goi 90 boss toi nguoi khac trong khu", khac.coChet(boss.id, tuKhac));
             dung("thang: goi 90 boss toi chu", p.coChet(boss.id, tuChu));
             dung("thang: huy hieu Gym 1", GymLauDai.coHuyHieu(h, 1));
+            // can bang cap (26/10/2026): EXP ket lieu boss Gym theo cap - truoc 1.000.000 phang (cap 27 -> 29)
+            BAO.bang("thang: boss giu so Gym sau khiChet (Monster.gymStt)", Integer.valueOf(1), Integer.valueOf(boss.gymStt));
+            BAO.bang("thang: EXP ket lieu boss Gym = min(1 cap, 1.000.000) x lech cap (nguoi 30 / boss 12: 5%)",
+                    Long.valueOf(Math.min(1000000L, LevelDetail.expRequire[30]) * 5L / 100L), Long.valueOf(ExpLauDai.expHaBoss(p, boss)));
+            BAO.bang("quai thuong (khong Gym): EXP boss giu ban cu", Long.valueOf(1000000L), Long.valueOf(ExpLauDai.expHaBoss(p, new Monster((byte) 0))));
             BAO.bang("thang: buoc ha_gym CA-03.2 xong (cho nhan thuong)", Long.valueOf(1L), Long.valueOf(t.get("CA-03.2")[1]));
             dung("thang: thong bao nhan thuong o moi noi + ve lang nhanh",
                     p.chu(tuChu).contains("Nhiệm vụ của tôi → Đang làm") && p.chu(tuChu).contains("Dây thoát hiểm") && p.chu(tuChu).contains("Vé dịch chuyển"));

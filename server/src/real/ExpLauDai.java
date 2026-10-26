@@ -171,6 +171,36 @@ public final class ExpLauDai {
         return (int) ((long) xp * CapDoLauDai.heSoLechCap(p.lvDetail.lv - mt.getLevel()) / 100L);
     }
 
+    // ------------------------------------------------------------------ EXP ket lieu boss
+
+    /** EXP phang ban cu khi ket lieu MOI boss (Monster.onDropItem, "Monster1"). Boss khong phai Gym giu nguyen. */
+    public static final long EXP_BOSS_CU = 1000000L;
+
+    /**
+     * EXP ket lieu boss (Monster.onDropItem). Ban cu: 1.000.000 phang cho moi boss - boss Gym cap 12 day nguoi cap 27 len
+     * 29 (bot-cap1-40 25/10/2026). Bat co + boss Gym ({@link Monster#gymStt}): {@link #expThangGym}. Con lai giu ban cu.
+     */
+    public static long expHaBoss(final Char p, final Monster m) {
+        if (!LauDai.bat() || p == null || m == null || m.gymStt <= 0) {
+            return EXP_BOSS_CU;
+        }
+        final int lv = p.lvDetail.lv;
+        final long motCap = lv > 0 && lv < LevelDetail.expRequire.length ? LevelDetail.expRequire[lv] : 0L;
+        return expThangGym(lv, m.level, motCap);
+    }
+
+    /**
+     * EXP thang Gym theo cap (quyet dinh chu game 26/10/2026): tran = EXP mot cap cua nguoi thang ({@code expMotCap}, bang
+     * EXP dang chay) va khong qua {@link #EXP_BOSS_CU}; nguoi CAO hon cap boss nhan it di theo he so lech cap danh quai
+     * ({@link CapDoLauDai#heSoLechCap}: chenh <= 3 du, 4-6 80%, 7-9 50%, 10-14 20%, >= 15 5%); thap hon / bang cap boss
+     * nhan du tran (khong thuong them).
+     */
+    public static long expThangGym(final int capNguoi, final int capBoss, final long expMotCap) {
+        final long tran = Math.min(EXP_BOSS_CU, Math.max(0L, expMotCap));
+        final int he = Math.min(100, CapDoLauDai.heSoLechCap(capNguoi - capBoss));
+        return Math.max(1L, tran * he / 100L);
+    }
+
     // ------------------------------------------------------------------ len cap / tran
 
     /**

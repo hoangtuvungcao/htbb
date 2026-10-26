@@ -54,7 +54,7 @@ public final class MucTieuNhiemVu {
         final String g = goc == null ? "" : goc.trim();
         if (kieu == GIET_CAP) {
             final int n = ds != null && ds.length > 0 ? ds[0].can : 0;
-            return "Hạ " + (n > 0 ? n + " " : "") + "Pokémon hoang dã chênh không quá " + chenhCap + " cấp";
+            return "Hạ " + (n > 0 ? n + " " : "") + "Pokémon hoang dã chênh không quá " + chenhCap + " cấp" + ChenhCapNhiemVu.DUOI_CHU;
         }
         if (ds == null || ds.length == 0 || kieu != GIET && kieu != THU) {
             return g;
@@ -78,7 +78,7 @@ public final class MucTieuNhiemVu {
     /** Duoi ten ngan (client &lt; 915 chi hien ten + loai + x/N): "Weedle ở Lavender", "Gói hàng (Litwick, Cerulean)". */
     public static String ngan(final int kieu, final Muc[] ds, final int chenhCap) {
         if (kieu == GIET_CAP) {
-            return "quái chênh tối đa " + chenhCap + " cấp";
+            return "quái ±" + chenhCap + " cấp/bãi cao nhất đã mở";
         }
         if (ds == null || ds.length == 0) {
             return "";

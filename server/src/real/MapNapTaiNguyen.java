@@ -1390,6 +1390,8 @@ class MapNapTaiNguyen {
                         if (map.mapId == 17 && value > 81) {
                             value += 3;
                         }
+                        // nhiem vu "chenh <= N cap": cap quai thuong cao nhat cua ban do (ChenhCapNhiemVuGame)
+                        ChenhCapNhiemVuGame.ghiQuai(map.mapId, (MonsterTemplate) Map.monsterTemplates.get(value));
  
                         
                         // Normal monster loading logic

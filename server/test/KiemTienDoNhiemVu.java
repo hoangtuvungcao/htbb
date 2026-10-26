@@ -56,7 +56,7 @@ final class KiemTienDoNhiemVu {
         Kiem.bang("thu thap: ngan", "Gói hàng (Litwick, Cerulean)", MucTieuNhiemVu.ngan(MucTieuNhiemVu.THU, goi, 0));
         Kiem.bang("noi chuyen: dung scontent", "Nói chuyện với Kecleon ở Pewter",
                 MucTieuNhiemVu.muc(MucTieuNhiemVu.NOI, new MucTieuNhiemVu.Muc[0], 0, 5, "Nói chuyện với Kecleon ở Pewter"));
-        Kiem.bang("giet theo cap", "Hạ 25 Pokémon hoang dã chênh không quá 5 cấp",
+        Kiem.bang("giet theo cap", "Hạ 25 Pokémon hoang dã chênh không quá 5 cấp (hoặc ở bãi luyện cao nhất bạn đã mở)",
                 MucTieuNhiemVu.muc(MucTieuNhiemVu.GIET_CAP, new MucTieuNhiemVu.Muc[]{new MucTieuNhiemVu.Muc("", 25, null, "")}, 5, 10, ""));
         Kiem.bang("khong ban do: khong ghi ' ở'", "Hạ 3 Skorupi", MucTieuNhiemVu.muc(MucTieuNhiemVu.GIET,
                 new MucTieuNhiemVu.Muc[]{new MucTieuNhiemVu.Muc("Skorupi", 3, null, "")}, 0, 1, ""));

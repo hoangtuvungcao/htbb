@@ -322,6 +322,7 @@ public final class Kiem {
         }
         KiemCap140.chay();
         KiemBuocHanhDong.chay(); // sua-buoc-hanh-dong: buoc noi chuyen hua hanh dong -> kiem that hoac chu that (khoi sua_buoc_hanh_dong.sql)
+        KiemCanBangCap.chay(); // can bang cap 15-45: duong quai / gia do cua hang, #29 luon lam duoc, EXP thang Gym theo cap
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

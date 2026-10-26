@@ -257,6 +257,7 @@ public final class BossLauDai {
         final TrangThai t = new TrangThai(false);
         t.gym = stt;
         t.chuGym = chu.charDBID;
+        m.gymStt = stt;
         t.hetGioGym = com.htbb.pokemon.DongHo.bay() + ms;
         BOSS.put(m, t);
     }

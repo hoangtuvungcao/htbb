@@ -12760,7 +12760,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             this.sendMessage(MessageCreator.createServerAlertMessage("Xong nhiệm vụ " + info.name + " · hãy đi trả", ""));
                         }
                     } else if (info.type == 4 && iskillMons) {
-                        if (Map.abs(this.lvDetail.lv - lv) <= info.deltaLv) {
+                        // chenh <= N cap HOAC quai o bai luyen cao nhat da mo (ChenhCapNhiemVu, quyet dinh 26/10/2026)
+                        if (ChenhCapNhiemVuGame.tinh(this, lv, info.deltaLv)) {
                             final short[] totalMonsKill2 = info.getTotalMonsterKill();
                             for (int k = 0; k < q.monsterKilled.length; ++k) {
                                 if (q.monsterKilled[k] < totalMonsKill2[k]) {

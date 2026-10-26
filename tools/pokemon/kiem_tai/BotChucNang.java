@@ -76,6 +76,7 @@ public class BotChucNang {
         String ten = "", tenMap = "";
         int[] chieu = new int[0];
         long xu = -1;
+        int tanCong, thuVl, thuPt; // goi 3 (do suc: KichBanDoSuc)
         int luong = -1, lk = -1;
         boolean coBanDo;
         final Map<Integer, Integer> thuoc = new TreeMap<>();
@@ -422,7 +423,7 @@ public class BotChucNang {
                         maxhp = r.readInt();
                         mp = r.readInt(); maxmp = r.readInt();
                         r.readByte(); r.readByte();
-                        r.readInt(); r.readInt(); r.readInt();
+                        tanCong = r.readInt(); thuVl = r.readInt(); thuPt = r.readInt();
                         r.readShort(); r.readShort(); r.readShort();
                         r.readByte();
                         lv = r.readUnsignedByte();
