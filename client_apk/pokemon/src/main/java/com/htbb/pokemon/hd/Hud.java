@@ -983,17 +983,26 @@ public final class Hud implements NenAndroid.LopPhu {
             veO(g, c, qs, mc, x, y, r, now, false);
         }
         // 0.9.8 ngắm tay: vòng quanh nút đang kéo (đỏ + "Huỷ" khi kéo về nút)
-        if (game.pokemon.NgamTay.dangGiu()) {
-            boolean huy = game.pokemon.NgamTay.vungHuy();
-            int[] cum = {N_DANH, N_C0, N_C1, N_C3, N_C4};
-            for (int k = 0; k < cum.length; k++) {
-                int n = cum[k];
-                if (!NGAM[n]) continue;
-                PV.setColor(huy ? 0xFF000000 | game.pokemon.ChuDe.DO : 0xFF000000 | game.pokemon.ChuDe.CHINH_SANG);
-                PV.setStrokeWidth(2.2f);
-                c.drawCircle(NX[n], NY[n], NR[n] + 4, PV);
-                if (huy) chu(c, "Huỷ", NX[n], NY[n] - NR[n] - 7, 8f, 0xFFFFFFFF, 0xC0000000, 2);
-            }
+        // 0.9.22: + cần ngắm như game MOBA: vòng tầm kéo mờ + NÚM theo ngón 1:1 (giữ độ lệch lúc nhấn, toạ độ chạm mới
+        // nhất của luồng sự kiện - không đợi nhịp logic), đỏ ở vùng huỷ
+        int[] can = game.pokemon.NgamTay.dangGiu() ? game.pokemon.NgamTay.can() : null;
+        if (can != null) {
+            boolean huy = can[5] == 1;
+            int mau = 0xFF000000 | (huy ? game.pokemon.ChuDe.DO : game.pokemon.ChuDe.CHINH_SANG);
+            P.setColor(0x38000000 | (mau & 0xFFFFFF));
+            c.drawCircle(can[0], can[1], can[2], P);
+            PV.setColor(mau);
+            PV.setStrokeWidth(2.2f);
+            c.drawCircle(can[0], can[1], can[2], PV);
+            float rk = Math.max(7f, can[2] * 0.36f);
+            P.setColor(0x60000000);
+            c.drawCircle(can[3] + 1.5f, can[4] + 2f, rk, P);
+            P.setColor(mau);
+            c.drawCircle(can[3], can[4], rk, P);
+            PV.setColor(0xFFFFFFFF);
+            PV.setStrokeWidth(1.6f);
+            c.drawCircle(can[3], can[4], rk, PV);
+            if (huy) chu(c, "Huỷ", can[0], can[1] - can[2] - 7, 8f, 0xFFFFFFFF, 0xC0000000, 2);
         }
         // 0.9.21 (chủ dự án: "nút xoay skill 1-2-3 khó nhìn" - đĩa xám + 2-3 chấm 1,6 px): khối gỗ như nút HUD khác + mũi
         // tên xoay + nhãn trang ĐANG DÙNG "1/3" - cùng hàm vẽ với HUD PC (HudRong.veDoiTrang)
@@ -1549,6 +1558,14 @@ public final class Hud implements NenAndroid.LopPhu {
             return;
         }
         if (a == MotionEvent.ACTION_CANCEL) {
+            // 0.9.22: hệ thống huỷ cử chỉ (vuốt cạnh, cuộc gọi, đa điểm bị lấy) = HUỶ, không phải thả: không bắn phát ngắm,
+            // không thả chiêu đang kéo vào ô (trước: coi như thả -> bắn / gán ngoài ý muốn)
+            NenAndroid.luong().them(new Runnable() {
+                public void run() {
+                    game.pokemon.NgamTay.huy();
+                    game.pokemon.KeoChieu.huy();
+                }
+            });
             for (int i = 0; i < e.getPointerCount(); i++) {
                 gui(2, e.getPointerId(i) & 15, NenAndroid.logicX(e.getX(i)), NenAndroid.logicY(e.getY(i)));
             }
@@ -1814,7 +1831,7 @@ public final class Hud implements NenAndroid.LopPhu {
                 if (MO_BANG[n]) return;
             }
         }
-        if (ma >= 49 && ma <= 57 && o >= 0 && batDauNgam(n, ma - 48, o)) {
+        if (ma >= 49 && ma <= 57 && o >= 0 && batDauNgam(n, ma - 48, o, id)) {
             return;   // 0.9.8 ngắm tay: nhấn = bắt đầu kéo, không đánh ngay
         }
         if (ma != 0) {
@@ -1834,7 +1851,7 @@ public final class Hud implements NenAndroid.LopPhu {
     }
 
     /** Nhấn nút chiêu khi đang ngắm tay (PvP / Ngắm thủ công): ô là chiêu tấn công -> bắt đầu kéo. */
-    static boolean batDauNgam(int n, int phim, int o) {
+    static boolean batDauNgam(int n, int phim, int o, int id) {
         if (!game.pokemon.NgamTay.dangNgam() || MainChar.quickSlot == null) {
             return false;
         }
@@ -1847,7 +1864,8 @@ public final class Hud implements NenAndroid.LopPhu {
             return false;
         }
         NGAM[n] = true;
-        game.pokemon.NgamTay.batDauKeo(phim, (int) NX[n], (int) NY[n], (int) NR[n]);
+        // 0.9.22: điểm nhấn thật (khoảng kéo tính từ đây - nhấn lệch mép nút không làm vạch ngắm nhảy hướng)
+        game.pokemon.NgamTay.batDauKeo(phim, (int) NX[n], (int) NY[n], (int) NR[n], Math.round(PTR_X0[id]), Math.round(PTR_Y0[id]));
         return true;
     }
 

@@ -122,6 +122,9 @@ public class HtbbActivity extends Activity {
             NenAndroid.anHien(false);
             NenAndroid.luong().them(new Runnable() {
                 public void run() {
+                    // 0.9.22: rời app giữa lúc kéo ngắm / kéo chiêu vào ô = huỷ (không bắn / không gán khi quay lại)
+                    game.pokemon.NgamTay.huy();
+                    game.pokemon.KeoChieu.huy();
                     MIDlet.tamDung(midlet);
                 }
             });

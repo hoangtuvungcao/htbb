@@ -2458,7 +2458,18 @@ public final class ManNhanVat extends Screen {
         game.render.Canvas.menu.startAt(v, 3);
     }
 
+    /**
+     * 0.9.22: tab Kỹ năng + KÉO THẢ chiêu vào ô nhanh (KeoChieu): kéo ô -> ô = đổi chỗ, kéo hình chiêu (hoặc nhấn giữ hàng)
+     * -> ô = gán; chạm như cũ.
+     */
     private void veKyNang(Graphics g, int x, int y, int w, int h) {
+        MainChar m0 = mc();
+        KeoChieu.khung(m0 == null ? 0 : m0.clazz, this.ds);
+        veKyNangNoi(g, x, y, w, h);
+        KeoChieu.ve(g);
+    }
+
+    private void veKyNangNoi(Graphics g, int x, int y, int w, int h) {
         final MainChar m = mc();
         int k = Bang.cach();
         final int lop = m.clazz;
@@ -2485,9 +2496,14 @@ public final class ManNhanVat extends Screen {
             } catch (Throwable e) {
                 qs = null;
             }
-            boolean coChieu = qs != null && qs.quickslotType == game.model.QuickSlot.TYPE_SKILL;
-            boolean coThuoc = qs != null && qs.quickslotType == game.model.QuickSlot.TYPE_POTION;
-            Bang.oDo(g, xi, y + 6, sO, coChieu || coThuoc, false, new IAction() {
+            boolean an = KeoChieu.anO(i);   // 0.9.22: nội dung đang được kéo đi / bóng đang trượt về ô này
+            boolean coChieu = !an && qs != null && qs.quickslotType == game.model.QuickSlot.TYPE_SKILL;
+            boolean coThuoc = !an && qs != null && qs.quickslotType == game.model.QuickSlot.TYPE_POTION;
+            KeoChieu.dichO(g, i, xi, y + 6, sO);
+            if (qs != null && qs.quickslotType >= 0) {
+                KeoChieu.nguonO(g, i, xi, y + 6, sO);   // cả lúc đang ẩn (bóng trượt về): nhấn ngay sau vẫn nhấc được
+            }
+            Bang.oDo(g, xi, y + 6, sO, coChieu || coThuoc, KeoChieu.sang(i), new IAction() {
                 public void perform() {
                     ChonChieuNhanh.moO(oo);
                 }
@@ -2655,7 +2671,10 @@ public final class ManNhanVat extends Screen {
                     int cap = capChieu(i);
                     int s = h - 6;
                     int he = HocChieu.heChieu(lop, i);
-                    KieuO.oChieuSk(g, xr + 3, y + 3, s, s, lop, i, cap <= 0);
+                    if (cap > 0) {
+                        KeoChieu.nguonChieu(g, i, xr + 3, y + 3, s, xr, y, wc, h);   // 0.9.22: kéo hình / giữ hàng -> ô nhanh
+                    }
+                    KieuO.oChieuSk(g, xr + 3, y + 3, s, s, lop, i, cap <= 0 || KeoChieu.nguonDangKeo(KeoChieu.CHIEU, i));
                     // trạng thái canh phải: Cấp n | Học: 1 điểm (xanh) | Cần cấp n | Học ở NPC (giá)
                     String tt;
                     int mau;
