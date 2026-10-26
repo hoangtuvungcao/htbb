@@ -301,6 +301,7 @@ final class KichBanCap140 {
             capTruoc = b.lv;
             ptTruoc = b.pt;
             lanVaoLai = System.currentTimeMillis();
+            congDiem(); // diem huan luyen con du (vao lai / lan dau che do huan luyen)
             ghi("vao game map " + b.mapId + " (" + b.tenMap + ") xu " + b.xu);
         }
 
@@ -950,18 +951,51 @@ final class KichBanCap140 {
             return -1;
         }
 
+        /**
+         * Diem huan luyen (client 0.9.8+ nut "Huấn luyện", goi -122): phan 1 diem moi lan, xoay Tấn công / HP / Phòng thủ,
+         * toi khi may chu tu choi (het diem / tran dong). Thay lenh cong tiem nang cu (34) ma che do huan luyen bo qua.
+         */
+        @Override
+        void congDiem() throws IOException {
+            int[] thuTu = {1, 0, 2};
+            int daCong = 0;
+            for (int lan = 0; lan < 60; lan++) {
+                int m = b.moc();
+                b.gui(-122, (byte) 1, (byte) 1, (byte) thuTu[lan % 3], (short) 1);
+                b.bom(250);
+                String t = b.chuTu(m);
+                if (t.contains("DUNG LOI") || t.contains("không") || t.contains("Không") || t.contains("Hết")) {
+                    if (daCong == 0 && lan == 0 && !t.contains("đủ") && !t.contains("điểm")) ghi("huan luyen: " + t);
+                    break;
+                }
+                daCong++;
+            }
+            for (int o = 0; o < 4; o++) { b.gui(36, (byte) o); b.bom(120); } // diem ky nang (chieu)
+            if (daCong > 0) ghi("phan " + daCong + " diem huan luyen (Tấn công/HP/Phòng thủ)");
+            b.lamMoi();
+        }
+
         // ---------------------------------------------------------------- mac do roi tot hon
-        final Set<Integer> daMac = new HashSet<>();
+        /** o trang bi (khoa gan dung) -> cap mon da mac: vu khi theo dong (tpl 79.. moi lop 7 bac), mon khac theo tpl. */
+        final Map<Integer, Integer> capDaMac = new HashMap<>();
+
+        static int oDo(int tpl) {
+            return tpl >= 79 && tpl < 79 + 7 * 5 ? -1 - (tpl - 79) / 7 : tpl;
+        }
 
         void macDoTot() throws IOException {
-            // do trong tui co cap <= cap minh: mac (may chu tu doi cho cung o); chi mac khi cap do cao hon do dang mac cung tpl nhom
-            for (int[] d : new ArrayList<>(b.doDung)) {
-                if (d.length < 4 || d[3] > b.lv || d[3] <= 0 || !daMac.add(d[1] * 1000 + d[3])) continue; // moi loai (tpl, cap) mac MOT lan
+            List<int[]> ds = new ArrayList<>(b.doDung);
+            ds.sort((x, y) -> Integer.compare(y.length > 3 ? y[3] : 0, x.length > 3 ? x[3] : 0));
+            for (int[] d : ds) {
+                if (d.length < 4 || d[3] > b.lv || d[3] <= 0) continue;
+                int o = oDo(d[1]);
+                if (capDaMac.getOrDefault(o, 0) >= d[3]) continue; // chi mac mon cap CAO HON mon da mac cung o
                 int m = b.moc();
                 b.gui(29, (short) d[0]);
                 b.bom(500);
                 String t = b.chuTu(m);
-                if (!t.isEmpty() && !t.contains("không")) ghi("mac do tpl " + d[1] + " cap " + d[3] + ": " + t);
+                capDaMac.put(o, d[3]);
+                if (!t.isEmpty()) ghi("mac do tpl " + d[1] + " cap " + d[3] + ": " + t);
             }
         }
 
