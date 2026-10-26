@@ -3921,6 +3921,7 @@ public class GameScr extends Screen {
                 game.pokemon.PhongRieng.ve(g);   // pokemon 0.9.7: thẻ phòng riêng (phó bản / trận cúp), gói -112
                 game.pokemon.ThoiTiet.veHud(g);   // pokemon 0.9.7: đĩa thời tiết + thẻ gợi ý
                 game.pokemon.TheNhiemVu.ve(g, this);   // 0.9.8: thẻ mục tiêu tân thủ + mũi tên chỉ hướng NPC
+                game.pokemon.NgamTay.veNut(g);   // 0.9.22: cần ngắm + núm theo ngón trên nút chiêu đang kéo
             }
         } catch (Exception e8) {
             e8.printStackTrace();

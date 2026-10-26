@@ -750,7 +750,16 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         py = y;
     }
 
+    /**
+     * 0.9.22: điểm NHẤN của cú chạm gần nhất (không ai ghi đè - pxLast bị Cuon / VungCham đặt lại) + số lần nhấn (phân biệt
+     * cú nhấn mới) - game.pokemon.KeoChieu.
+     */
+    public static int xNhan, yNhan, soNhan;
+
     protected void pointerPressed(int x, int y) {
+        xNhan = x;
+        yNhan = y;
+        soNhan++;
         dangGiu = true;
         isPointerDown = true;
         isPointerDownNj = true;

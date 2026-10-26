@@ -54,6 +54,13 @@ public final class Cuon {
 
     /** Mỗi khung: theo ngón khi đang kéo nội dung, theo núm khi kéo thanh cuộn, quán tính khi đã thả. */
     public void capNhat() {
+        if (KeoChieu.chanCuon()) {
+            // 0.9.22: đang nắm / kéo chiêu (KeoChieu): danh sách đứng yên, không quán tính
+            this.keo = false;
+            this.v = 0;
+            kep();
+            return;
+        }
         if (this.keoNum) {
             // kéo núm: theo dangGiu (bảng có thể xoá isPointerDown mỗi nhịp) - núm đi theo con trỏ, CÙNG chiều
             if (Canvas.dangGiu || Canvas.isPointerDown) {
