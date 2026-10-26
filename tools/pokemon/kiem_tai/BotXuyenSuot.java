@@ -671,16 +671,56 @@ public class BotXuyenSuot {
             return t;
         }
 
+        /**
+         * Quai roi vat {@code vat} cua nhiem vu thu thap {@code idNv} (data_quest_moi: idItemget / idMonskill CSV cung vi tri;
+         * {@code k} = vi tri muc tieu trong goi -64). -1 = khong co quai roi (buoc hanh dong) / khong doc duoc.
+         */
+        static int quaiRoiVat(int idNv, int vat, int k) {
+            String d = BotChucNang.sql1("SELECT idItemget, idMonskill FROM data_quest_moi WHERE id = " + idNv);
+            if (d == null || d.startsWith("LOI SQL")) return -1;
+            String[] f = d.split("\t");
+            if (f.length < 2) return -1;
+            String[] vp = f[0].split(","), qu = f[1].split(",");
+            int vt = -1;
+            for (int i = 0; i < vp.length; i++) if (vp[i].trim().equals(String.valueOf(vat))) { vt = i; break; }
+            if (vt < 0) vt = k;
+            if (vt < 0 || vt >= qu.length) return -1;
+            try {
+                int q = Integer.parseInt(qu[vt].trim());
+                return q >= 0 && q < 32000 && TEN_QUAI.containsKey(q) ? q : -1;
+            } catch (NumberFormatException e) {
+                return -1;
+            }
+        }
+
         /** Lam muc tieu nhiem vu chinh dang co. Tra ve false neu khong co gi de lam. */
         boolean lamNvChinh() throws Exception {
             if (nvChinhType == 3 || nvChinhType == 1) return false; // noi chuyen / giao: tra ngay o buoc tra
             if (mucTieu.isEmpty()) return false;
-            for (int[] mt : mucTieu) {
+            for (int k = 0; k < mucTieu.size(); k++) {
+                int[] mt = mucTieu.get(k);
                 if (mt[1] >= mt[2]) continue;
                 int t = mt[0];
                 if (t < 0) { // ha quai lech cap
                     luyen(4);
                     return true;
+                }
+                if (nvChinhType == 2) {
+                    // Nhiem vu THU THAP (type 2): goi -64 gui {VAT PHAM, co, can} - KHONG phai id quai (MessageCreator
+                    // createMsgCharQuest). Cong kiem 25/10/2026: bot coi vat 53 (dau tap "Dùng 1 bình thuốc" cua huong dan)
+                    // la quai 53 -> "khong co duong toi map co quai 53". Quai roi vat = data_quest_moi.idMonskill (cung vi tri
+                    // voi idItemget); khong co quai (32000) = buoc HANH DONG cua huong dan tan thu (dung thuoc / cong diem /
+                    // mac do / tha cau) -> lam nhu nguoi choi (KichBanHuongDan.hanhDong).
+                    int quai = quaiRoiVat(nvChinhId, t, k);
+                    if (quai < 0) {
+                        int m = b.moc();
+                        String l = KichBanHuongDan.hanhDong(b, t, m);
+                        if (l != null) { ketLyDo("nhiem vu '" + nvChinh + "' (vat " + t + ", khong quai roi): " + l); return false; }
+                        ghi("nv '" + nvChinh + "' buoc hanh dong vat " + t + " xong");
+                        lanTienTrien = System.currentTimeMillis();
+                        return true;
+                    }
+                    t = quai;
                 }
                 Set<Integer> maps = QUAI_MAP.get(t);
                 if (maps == null || maps.isEmpty()) { ketLyDo("nhiem vu '" + nvChinh + "': quai " + t + " (" + TEN_QUAI.get(t) + ") khong co tren map nao"); return false; }

@@ -133,7 +133,19 @@ class KichBanDS4 {
                 a.gm("slv " + t1.ten + " 25 0", 800);
                 a.gm("mc " + t1.ten, 1500);
                 c.gm("mc " + t1.ten, 1500);
-                t1.bom(500);
+                // Lang (map 0 / 301..304 / 70 / 1701..1704): Map.move2Map dat nguoi vao lang o 1 trong 4 diem NGAU NHIEN
+                // (LangKhoiDau.viTri) ke ca GM "mc" -> GM co the dap cach t1 ~30 o, ngoai tam nhin -> chat ban do khong toi
+                // (cong kiem 25/10: "B thay 'spam 0'=false" - loi kich ban, khong phai loi chat). Di bo toi canh t1 roi DOI
+                // c thay t1 (nearChars) truoc khi spam.
+                KichBanDS.BanDoDiToi.toi(c, new int[]{t1.px, t1.py});
+                KichBanDS.BanDoDiToi.toi(a, new int[]{t1.px, t1.py});
+                boolean thay = c.cho(x -> x.nguoi.containsKey(t1.actor), 5000);
+                t1.bom(1200);
+                if (!thay) {
+                    ket("chat.chong_spam", false, "khong dua duoc B toi canh " + t1.ten + " (map " + t1.mapId + " " + t1.px / 16 + "," + t1.py / 16
+                            + ", B o " + c.mapId + " " + c.px / 16 + "," + c.py / 16 + ")");
+                    return;
+                }
                 for (int i = 0; i < 7; i++) { t1.chat("spam " + i); t1.bom(150); }
                 m = c.moc();
                 t1.bom(500);

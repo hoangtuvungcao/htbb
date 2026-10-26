@@ -177,10 +177,98 @@ public class KichBanQaToanGame {
             String url = chu[1], sha = chu[2];
             if (url.isEmpty()) { BotChucNang.ket(ten, null, "-115 khong co link tep (chi trang tai " + chu[3] + ")"); continue; }
             if (sha.isEmpty()) { BotChucNang.ket(ten, null, url + ": danh muc khong ghi sha256 -> client chi mo trinh duyet, khong tu tai"); continue; }
+            // Doi chieu voi tep THAT tren may (thu muc web /tai/ = HTBB_TAI_GAME_DIR, VPS: /opt/htbb/downloads + SHA256SUMS.txt).
+            // Cong kiem 25/10: CSDL staging chep tu ban sao luu prod CU van quang cao 0.9.18 trong khi thu muc chi con 0.9.20
+            // -> 404. Danh muc CU (ban < ban hien hanh trong SHA256SUMS) = loi MOI TRUONG: bao ro + kiem tep ban hien hanh qua
+            // cung duong. Danh muc quang cao ban hien hanh (hoac moi hon) ma tep thieu / sha khac = loi THAT (FAIL nhu cu).
+            String tep = tenTep(url);
+            Map<String, String> sums = sumsTai();
+            if (sums != null && tep != null && !sums.containsKey(tep)) {
+                String banQc = banTrongTen(tep), banHh = banMoiNhat(sums.keySet());
+                if (banQc != null && banHh != null && soSanhBan(banQc, banHh) < 0) {
+                    BotChucNang.ket(ten, null, "CANH BAO MOI TRUONG: danh muc tai game (web_cai_dat.taiGame) cua CSDL nay CU - quang cao "
+                            + banQc + " (" + tep + ") nhung " + THU_MUC_TAI + " chi co ban hien hanh " + banHh
+                            + " (CSDL staging lay tu ban sao luu prod cu? lay ban sao luu moi / cap nhat danh muc tren web admin)");
+                    String tepHh = tep.replace(banQc, banHh);
+                    if (sums.containsKey(tepHh)) {
+                        String[] g2 = {""};
+                        Boolean ok2 = kiemTai(url.substring(0, url.lastIndexOf('/') + 1) + tepHh, sums.get(tepHh), g2);
+                        BotChucNang.ket(ten + ".hien_hanh", ok2, "tep ban hien hanh (SHA256SUMS) qua cung duong tai: " + g2[0]);
+                    } else {
+                        BotChucNang.ket(ten + ".hien_hanh", false, "khong co tep " + tepHh + " (ban hien hanh " + banHh + ") trong " + THU_MUC_TAI);
+                    }
+                    continue;
+                }
+            }
             String[] ghi = {""};
             Boolean ok = kiemTai(url, sha, ghi);
+            if (sums != null && tep != null) {
+                String s2 = sums.get(tep);
+                if (s2 == null) {
+                    ok = false;
+                    ghi[0] += " | danh muc quang cao " + tep + " nhung tep KHONG co trong " + THU_MUC_TAI + "/SHA256SUMS (ban hien hanh "
+                            + banMoiNhat(sums.keySet()) + ")";
+                } else if (!s2.equalsIgnoreCase(sha)) {
+                    ok = false;
+                    ghi[0] += " | sha256 trong -115 (" + sha + ") khac SHA256SUMS (" + s2 + ")";
+                }
+            }
             BotChucNang.ket(ten, ok, ghi[0]);
         }
+    }
+
+    /** Thu muc tep tai game cua web (/tai/&lt;ten&gt;): -DthuMucTai, mac dinh /opt/htbb/downloads (VPS). Khong co = bo doi chieu. */
+    static final String THU_MUC_TAI = System.getProperty("thuMucTai", "/opt/htbb/downloads");
+
+    /** SHA256SUMS(.txt) trong {@link #THU_MUC_TAI}: ten tep -&gt; sha256; null neu khong doc duoc (vd may thu). */
+    static Map<String, String> sumsTai() {
+        for (String ten : new String[]{"SHA256SUMS.txt", "SHA256SUMS"}) {
+            java.io.File f = new java.io.File(THU_MUC_TAI, ten);
+            if (!f.isFile()) continue;
+            try {
+                Map<String, String> m = new LinkedHashMap<>();
+                for (String d : java.nio.file.Files.readAllLines(f.toPath(), java.nio.charset.StandardCharsets.UTF_8)) {
+                    String[] p = d.trim().split("\\s+", 2);
+                    if (p.length == 2 && p[0].matches("[0-9a-fA-F]{64}")) m.put(p[1].replaceFirst("^\\*", "").trim(), p[0]);
+                }
+                return m.isEmpty() ? null : m;
+            } catch (java.io.IOException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /** Ten tep cuoi URL (bo ?query), null neu khong co. */
+    static String tenTep(String url) {
+        String u = url.replaceFirst("[?#].*$", "");
+        int i = u.lastIndexOf('/');
+        return i < 0 || i == u.length() - 1 ? null : u.substring(i + 1);
+    }
+
+    /** Ban dang a.b.c trong ten tep, null neu khong co. */
+    static String banTrongTen(String ten) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d+\\.\\d+\\.\\d+)").matcher(ten);
+        return m.find() ? m.group(1) : null;
+    }
+
+    /** Ban lon nhat trong cac ten tep (SHA256SUMS), null neu khong co. */
+    static String banMoiNhat(Collection<String> tep) {
+        String max = null;
+        for (String t : tep) {
+            String b = banTrongTen(t);
+            if (b != null && (max == null || soSanhBan(b, max) > 0)) max = b;
+        }
+        return max;
+    }
+
+    static int soSanhBan(String a, String b) {
+        String[] x = a.split("\\."), y = b.split("\\.");
+        for (int i = 0; i < Math.max(x.length, y.length); i++) {
+            int u = i < x.length ? Integer.parseInt(x[i]) : 0, v = i < y.length ? Integer.parseInt(y[i]) : 0;
+            if (u != v) return Integer.compare(u, v);
+        }
+        return 0;
     }
 
     /** Tai {@code url} nhu bo cap nhat: true = 200 + sha256 khop, null = BO QUA (khong co mang); ghi[0] = chi tiet. */

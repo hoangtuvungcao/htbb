@@ -55,6 +55,11 @@ DOI=(
     "db.name1=$STG_DB"
     "db.user1=$STG_DB_USER"
     "db.password1=$MK"
+    # Pool NHO: ConnPool mo san du so ket noi luc khoi dong; chep 100+30+30+1 cua production = vuot max_connections cua
+    # MariaDB dung chung (cong kiem 25/10/2026: ERROR 1040). Xem STG_DB_* trong chung.sh.
+    "db.maxco=$STG_DB_MAXCO"
+    "db.maxNap=$STG_DB_MAXNAP"
+    "db.maxco1=1"
     "sv.pathLog=$STG_GOC/logs/"
     "sv.dangKyCsdlTaiKhoan=$STG_DB_TK"
     "sv.adminAccounts=$GM"
@@ -91,6 +96,11 @@ TRUNG=$(grep -vE '^[[:space:]]*#' "$MOI" | grep -oE '^[^=]+=' | sed -E 's/=$//; 
 if grep -vE '^[[:space:]]*#' "$MOI" | grep -qE '^db\.(name|nameNap|name1)=(htbb_db|account)$|^sv\.port=19129$|^sv\.portlogin=8023$|^sv\.pathLog=/opt/htbb/'; then
     loi "ban sinh con tro toi production - DUNG"
 fi
+# Chot ket noi: tong pool mo san (maxco + 2*maxNap + maxco1) phai nam duoi tran user staging, chua cho bot + login.
+POOL=$(( $(grep -E '^db\.maxco=' "$MOI" | tail -n 1 | cut -d= -f2) + 2 * $(grep -E '^db\.maxNap=' "$MOI" | tail -n 1 | cut -d= -f2) \
+         + $(grep -E '^db\.maxco1=' "$MOI" | tail -n 1 | cut -d= -f2) ))
+[ "$POOL" -le $(( STG_DB_MAX_USER_CONN - 10 )) ] \
+    || loi "pool CSDL staging $POOL ket noi >= tran user $STG_DB_MAX_USER_CONN - 10 (STG_DB_MAXCO / STG_DB_MAXNAP qua lon)"
 
 {
     echo "# SINH TU DONG boi vps/staging/sinh-server-ini.sh - login server STAGING."

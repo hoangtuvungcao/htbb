@@ -25,6 +25,32 @@ import java.util.regex.*;
 final class BatBien {
 
     static final List<String> VI_PHAM = Collections.synchronizedList(new ArrayList<>());
+    /** Vi pham TIEN_MAT (xu) cho tra nguon: chi so VI_PHAM -&gt; {ten nhan vat, xu truoc, xu sau}. */
+    static final Map<Integer, Object[]> TRU_XU = new HashMap<>();
+
+    /**
+     * Ghi them NGUON cua moi lan mat xu khong ro ly do: may chu ghi moi subXu vao tob_log_all_item (aclog truxu,
+     * "&lt;truoc&gt; - &lt;n&gt; = &lt;sau&gt; tu vi tri &lt;noi tru&gt;", Char.subXu). Cong kiem 25/10/2026: "xu 6190 -&gt; 6179 khong co
+     * hanh dong tieu" khong biet duong nao tru - nay vi pham ghi luon noi tru (hoac "KHONG co dong truxu" = xu doi khong qua
+     * subXu: loi may chu that).
+     */
+    static void boSungNguonTruXu(int tu) {
+        if (BotChucNang.DB.isEmpty()) return;
+        try { Thread.sleep(1500); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        synchronized (VI_PHAM) {
+            for (Map.Entry<Integer, Object[]> e : TRU_XU.entrySet()) {
+                int i = e.getKey();
+                if (i < tu || i >= VI_PHAM.size() || VI_PHAM.get(i).contains("[nguon")) continue;
+                Object[] v = e.getValue();
+                String ten = String.valueOf(v[0]).replace("'", "");
+                List<String> l = BotChucNang.sql("SELECT aclog, info FROM tob_log_all_item WHERE charname = '" + ten
+                        + "' AND aclog IN ('truxu', 'truthieu') AND timelog > NOW() - INTERVAL 2 HOUR AND info LIKE '" + v[1]
+                        + " - %' ORDER BY timelog DESC LIMIT 3");
+                VI_PHAM.set(i, VI_PHAM.get(i) + " [nguon tob_log_all_item: " + (l.isEmpty() ? "KHONG co dong truxu tu " + v[1]
+                        + " - xu doi khong qua Char.subXu" : String.join(" | ", l)) + "]");
+            }
+        }
+    }
     static final Map<BotChucNang.Bot, BatBien> CUA = Collections.synchronizedMap(new WeakHashMap<>());
     /** Tat ca chu "A → B" da thay (de bao cao). */
     static final Set<String> DUONG_DA_KIEM = Collections.synchronizedSet(new TreeSet<>());
@@ -91,9 +117,24 @@ final class BatBien {
                 if (cmd == 12 || cmd == 31 || cmd == -30 || cmd == -32 || cmd == 82) choPhep("dich_chuyen", 8000);
             } else if (cmd == 12) {
                 choPhep("dich_chuyen", 8000);
+            } else if (cmd == 27 && laLenhChatTieu(d)) {
+                // Lenh chat cua he sinh thai co phi (HeSinhThaiGame.khiChat): "cauca" tru moi cau = 2 phan nghin thu nhap 1 gio
+                // (HeSinhThaiMenu.thaCau, "he sinh thai moi cau"), "dao" tru xeng... Cong kiem 25/10/2026: buoc huong dan
+                // "Thả câu ở ao làng" o lang (map 0) -> "xu 6190 -> 6179 khong co hanh dong tieu" = phi moi cau HOP LE.
+                choPhep("tien", 6000);
             }
         } catch (RuntimeException ignored) {
         }
+    }
+
+    /** Lenh chat (lenh 27, UTF) la lenh he sinh thai co the tieu xu: cauca / keocan / dao / dua / hst ... */
+    static boolean laLenhChatTieu(byte[] d) {
+        try {
+            String t = new DataInputStream(new ByteArrayInputStream(d)).readUTF().trim().toLowerCase();
+            for (String l : new String[]{"cauca", "cauca2", "keocan", "dao", "khaoco", "dua", "duapokemon", "hst", "hesinhthai", "sinhthai"}) if (t.equals(l) || t.startsWith(l + " ")) return true;
+        } catch (IOException ignored) {
+        }
+        return false;
     }
 
     // ------------------------------------------------------------------ goi den
@@ -178,7 +219,10 @@ final class BatBien {
         long xuMoi = b.xu;
         int luongMoi = b.luong, lkMoi = b.lk;
         if (xuMoi < 0 && xu >= 0 || luongMoi < -1 || lkMoi < -1) viPham("TIEN_AM", "xu " + xuMoi + " luong " + luongMoi + " lk " + lkMoi);
-        if (xu >= 0 && xuMoi >= 0 && xuMoi < xu && !duocPhep("tien")) viPham("TIEN_MAT", "xu " + xu + " -> " + xuMoi + " khong co hanh dong tieu");
+        if (xu >= 0 && xuMoi >= 0 && xuMoi < xu && !duocPhep("tien")) {
+            viPham("TIEN_MAT", "xu " + xu + " -> " + xuMoi + " khong co hanh dong tieu");
+            synchronized (VI_PHAM) { TRU_XU.put(VI_PHAM.size() - 1, new Object[]{b.ten, xu, xuMoi}); }
+        }
         if (luong >= 0 && luongMoi >= 0 && luongMoi > luong && !duocPhep("luong")) viPham("LUONG_TU_TANG", "luong " + luong + " -> " + luongMoi);
         if (luong >= 0 && luongMoi >= 0 && luongMoi < luong && !duocPhep("tien")) viPham("TIEN_MAT", "luong " + luong + " -> " + luongMoi + " khong co hanh dong tieu");
         if (lk >= 0 && lkMoi >= 0 && lkMoi < lk && !duocPhep("tien")) viPham("TIEN_MAT", "luong khoa " + lk + " -> " + lkMoi + " khong co hanh dong tieu");

@@ -87,11 +87,34 @@ if [ ${#HONG[@]} -eq 0 ]; then
     for f in "$NK_DIR"/may_chu-*.log; do [ -e "$f" ] && MOC_NK["$f"]=$(stat -c %s "$f"); done
     sleep "${STG_CHO_AM:-20}"   # cho may chu nap xong du lieu nen (luong khoi dong)
     stg_tao_cnf "$CNF"
-    HOI_QUY_RA="$KQ/bot" HOI_QUY_NOI="$STG_GOC" HOI_QUY_LOG_GAME="$LOG_GAME" HOI_QUY_TIEN_TO="$STG_BOT_TIEN_TO" \
+    # Canh gac ket noi CSDL (MariaDB dung chung voi production): moi STG_NHIP_KET_NOI giay doc Threads_connected; hai lan
+    # lien tiep con < STG_DB_DU_TRU cho trong -> DUNG bot + tat game staging (tra ket noi cho production), cong kiem HONG.
+    KN_LOG="$KQ/ket_noi_csdl.txt"; : > "$KN_LOG"
+    KN_DINH=0; KN_GAN=0; KN_DUNG=0
+    setsid env HOI_QUY_RA="$KQ/bot" HOI_QUY_NOI="$STG_GOC" HOI_QUY_LOG_GAME="$LOG_GAME" HOI_QUY_TIEN_TO="$STG_BOT_TIEN_TO" \
         HOI_QUY_NHOM="$NHOM" \
         bash "${HOI_QUY_LENH:-$REPO_SCRIPT/tools/pokemon/kiem_tai/chay_hoi_quy.sh}" 127.0.0.1 "$STG_CONG_GAME" "$STG_CONG_LOGIN" \
-            "cnf=$CNF,db=$STG_DB,dbtk=$STG_DB_TK"
+            "cnf=$CNF,db=$STG_DB,dbtk=$STG_DB_TK" &
+    PID_HQ=$!
+    while kill -0 "$PID_HQ" 2>/dev/null; do
+        sleep "${STG_NHIP_KET_NOI:-10}"
+        kill -0 "$PID_HQ" 2>/dev/null || break
+        read -r KN_D KN_T KN_S < <(ket_noi_csdl)
+        echo "$(date '+%T') Threads_connected=$KN_D max_connections=$KN_T staging=$KN_S" >> "$KN_LOG"
+        [ "${KN_D:-0}" -gt "$KN_DINH" ] && KN_DINH=$KN_D
+        if ket_noi_con_du >> "$KN_LOG"; then KN_GAN=0; else KN_GAN=$((KN_GAN + 1)); fi
+        if [ "$KN_GAN" -ge 2 ]; then
+            echo "   DUNG BOT: MariaDB gan het ket noi (Threads_connected=$KN_D / $KN_T, staging $KN_S) - tat staging de nhuong production"
+            kill -TERM -- -"$PID_HQ" 2>/dev/null; sleep 5; kill -KILL -- -"$PID_HQ" 2>/dev/null
+            "$SYSTEMCTL" stop "$STG_UNIT_GAME" 2>/dev/null || true
+            KN_DUNG=1
+            break
+        fi
+    done
+    wait "$PID_HQ"
     MA=$?
+    echo "   ket noi CSDL: dinh Threads_connected=$KN_DINH (nhat ky $KN_LOG)"
+    [ "$KN_DUNG" = 0 ] || HONG+=("csdl_gan_het_ket_noi")
     [ "$MA" = 0 ] || HONG+=("bot_hoi_quy(ma=$MA)")
 
     # ---- 3. con song ----

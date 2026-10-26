@@ -269,20 +269,26 @@ class KichBanTienDoNhiemVu {
             // ---- Goi hang tu Litwick o Cerulean
             b.den(4, 50, 50);
             int m7 = b.moc();
-            for (int lan = 0; lan < 14; lan++) {   // roi Goi hang la ngau nhien: may cham thi can nhieu luot hon
-                haMau(b, 6, 10, true);
+            // Goi hang roi NGAU NHIEN (Monster: 15% moi lan ha + may man): ky vong ~33 lan ha cho 5 goi. Ha toi khi xong, toi
+            // da 14 luot x 10 con hoac 6 phut (cong kiem 25/10: 6 luot -> 4/5 = xui, khong phai loi) - P(chua du 5 sau 140 lan
+            // ha) ~ 1e-9; ghi so lan ha de phan biet "xui" voi "khong roi / khong nhat duoc".
+            long hetGio = System.currentTimeMillis() + 6 * 60000L;
+            int haGoi = 0;
+            for (int lan = 0; lan < 14 && System.currentTimeMillis() < hetGio; lan++) {
+                haGoi += haMau(b, 6, 10, true);
                 Dong cx = tim(ds(b, m7, 1), 0);
                 if (cx != null) break;
             }
             Dong chinhXong = tim(ds(b, m7, 1), 0);
-            ket("tdnv_goi_hang." + tt + ".xong_5", chinhXong != null && chinhXong.id == c, "xong " + ds(b, m7, 1) + " dang " + ds(b, m7, 2));
+            ket("tdnv_goi_hang." + tt + ".xong_5", chinhXong != null && chinhXong.id == c, "ha " + haGoi + " Litwick, xong " + ds(b, m7, 1) + " dang " + ds(b, m7, 2));
             b.den(0, 30, 30);
             long xu1 = b.xu;
             int m8 = b.moc();
             b.gui(-64, (byte) 1, (short) c, (byte) 0);
             b.bom(1500);
             b.lamMoi();
-            ket("tdnv_goi_hang." + tt + ".tra", b.xu > xu1, "xu " + xu1 + " -> " + b.xu + " | " + b.chuTu(m8));
+            // cong kiem 25/10/2026: chua du 5 Goi hang ma ".tra" van PASS (xu tang vi nhat xu roi) - phai co tra that
+            ket("tdnv_goi_hang." + tt + ".tra", b.xu > xu1 && !b.chuTu(m8).contains("Chưa xong"), "xu " + xu1 + " -> " + b.xu + " | " + b.chuTu(m8));
 
             // ---- "Nhiệm vụ của tôi" o quay doi thuong
             int m9 = b.moc();
