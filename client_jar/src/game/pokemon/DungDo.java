@@ -550,7 +550,9 @@ public final class DungDo {
 
     static int caoThe(Tin t, int rongToiDa, boolean theGioi) {
         int vai = t.phu != null ? ChuDe.NHAN : ChuDe.THUONG;
-        int wChu = rongToiDa - 40;
+        // 0.9.22: bề ngang ngắt dòng = đúng phần chữ veThe vẽ được (đĩa hình <= 34 + lề 22; trước: - 40 -> dòng đầu dài
+        // hơn chỗ vẽ, bị cắt ".." và MẤT chữ: "...rồi qu.. / lại nhé!")
+        int wChu = rongToiDa - 34 - 22;
         if (t.dong == null || t.rongNgat != rongToiDa) {
             t.dong = ChuDe.ngat(t.chinh, vai, wChu, 3);
             t.rongNgat = rongToiDa;
@@ -704,7 +706,7 @@ public final class DungDo {
         String nhan = boss ? "BOSS" : vui ? "TIN NỔI BẬT" : "TOÀN MÁY CHỦ";
         int ic = boss ? BieuTuong.HUY_HIEU : BieuTuong.SU_KIEN;
         int rongToiDa = Math.max(200, Math.min(ChuDe.dt() ? 460 : 420, Canvas.w - 2 * 140));
-        int wChu = rongToiDa - 52;
+        int wChu = rongToiDa - 54;   // 0.9.22: = chỗ chữ vẽ được (ô icon <= 30 + lề 24)
         if (t.dong == null || t.rongNgat != rongToiDa) {
             t.dong = ChuDe.ngat(t.chinh, ChuDe.THUONG, wChu, 2);
             t.rongNgat = rongToiDa;
@@ -719,7 +721,7 @@ public final class DungDo {
         if (t.phu != null) {
             rong = Math.max(rong, ChuDe.rong(t.phu, ChuDe.PHU));
         }
-        rong = Math.min(rongToiDa, rong + 52);
+        rong = Math.min(rongToiDa, rong + 54);
         int x = Canvas.hw - rong / 2;
         long tuoi = now - t.luc;
         int yy = y - (int) (tuoi < 220 ? (220 - tuoi) / 10 : 0);

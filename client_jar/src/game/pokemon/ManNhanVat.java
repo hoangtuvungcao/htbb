@@ -606,6 +606,18 @@ public final class ManNhanVat extends Screen {
         }
         if (bc[0] == KHONG_VUA && !ChuDe.dt()) {
             bc = boCucEp(w, h, hP);
+            // 0.9.22 (J2ME 320x240 - Nokia E72): bố cục ép hẹp hơn -> tên danh hiệu dài cần thêm dòng; trước đây hàng
+            // Danh hiệu vẫn cao một dòng, viên hai dòng tràn hàng và vẽ rỗng. Đo lại theo bề ngang ép.
+            for (int lan = 0; lan < 3; lan++) {
+                int lwEp = 2 * (bc[2] * bc[1] + (bc[2] - 1) * k) + 2 * k + bc[4];
+                int n = ManDanhHieu.soDongVien(chuDh, lwEp - 4);
+                if (n <= soDong) {
+                    break;
+                }
+                soDong = n;
+                hP = caoHangDh(n);
+                bc = boCucEp(w, h, hP);
+            }
         }
         return new int[]{bc[0], bc[1], bc[2], bc[3], bc[4], hP};
     }

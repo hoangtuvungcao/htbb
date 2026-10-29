@@ -217,13 +217,85 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         });
     }
 
-    public static void loadSize() {
-        w = instance.getWidth();
-        h = instance.getHeight();
+    /**
+     * 0.9.22 (giả lập Android J2ME Loader / CoffeeCat, màn ảo đặt 1280x720, 1920x1080, 720x1280...): cỡ THẬT của Canvas
+     * (getWidth / getHeight) và hệ số phóng nguyên {@link #heSo}. Màn ảo cạnh ngắn &gt;= 684 thì game vẽ ở màn LOGIC
+     * w = thatW / heSo, h = thatH / heSo (cạnh ngắn ~360 - cùng bố cục / cỡ chữ / cỡ nút như 640x360) vào ảnh đệm rồi phóng
+     * nguyên heSo lần (drawRGB theo dải) - không thì 1280x720 x1: chữ / HUD / nút chỉ còn nửa cỡ trên cùng màn điện thoại.
+     * Máy J2ME thật (E72 320x240...) và bản PC / APK (getWidth = màn logic) luôn heSo = 1: vẽ thẳng như cũ.
+     */
+    public static int thatW, thatH;
+    public static int heSo = 1;
+    /** Cạnh ngắn logic mục tiêu khi phóng (px) - 360 = cỡ của bản PC / 640x360. */
+    static final int CANH_LOGIC = 360;
+    /** Hệ số tối đa (màn ảo 4K 3840x2160 -> 4 = 960x540 logic). */
+    static final int HE_SO_TOI_DA = 4;
+    /** Số hàng logic mỗi dải khi phóng (mảng nguồn / đích nhỏ, không cấp phát mỗi khung). */
+    static final int DAI = 8;
+    private static Image anhPhong;
+    private static int[] dongNguon, dongDich;
+
+    /**
+     * Hệ số phóng cho màn thật W x H: cạnh ngắn / 360 làm tròn xuống với dư 36 px (cạnh ngắn &gt;= 684 -> 2: màn ảo
+     * 1280x700 hay bị trừ thanh hệ thống vẫn phóng; logic cạnh ngắn &gt;= 342), kẹp 1..4. Cạnh ngắn &lt; 684 -> 1.
+     */
+    public static int chonHeSo(int W, int H) {
+        int ngan = W < H ? W : H;
+        int k = (ngan + CANH_LOGIC / 10) / CANH_LOGIC;
+        if (k < 1) {
+            k = 1;
+        }
+        if (k > HE_SO_TOI_DA) {
+            k = HE_SO_TOI_DA;
+        }
+        return k;
     }
+
+    public static void loadSize() {
+        thatW = instance.getWidth();
+        thatH = instance.getHeight();
+        heSo = chonHeSo(thatW, thatH);
+        w = thatW / heSo;
+        h = thatH / heSo;
+        if (heSo == 1) {
+            anhPhong = null;   // về x1 (xoay / đổi cỡ màn ảo): bỏ ảnh đệm cũ
+            dongNguon = null;
+            dongDich = null;
+        }
+    }
+
+    /** Toạ độ chạm thật -> logic (heSo = 1: giữ nguyên). */
+    static int chamX(int x) {
+        if (heSo <= 1) {
+            return x;
+        }
+        x /= heSo;
+        return x < 0 ? 0 : x >= w ? w - 1 : x;
+    }
+
+    static int chamY(int y) {
+        if (heSo <= 1) {
+            return y;
+        }
+        y /= heSo;
+        return y < 0 ? 0 : y >= h ? h - 1 : y;
+    }
+
+    /**
+     * 0.9.22: cỡ chạm tối thiểu (VungCham.MIN, px logic) của máy J2ME CẢM ỨNG màn ngang (giả lập Android 640x360 /
+     * 1280x720...: HudRong) = như bản PC 1280x720 (16 px logic = ~5 mm khi giả lập phóng màn lên điện thoại) - nút nhỏ
+     * (viên "1/2", thuốc HP / PP, chip) nới vùng chạm. Bản PC / APK tự đặt MIN theo dpi trước sizeChanged (khác 0) -> giữ.
+     */
+    static final int MIN_CHAM_J2ME = 16;
+    private static boolean minRieng;
 
     public void sizeChanged(int w0, int h0) {
         loadSize();
+        if (game.pokemon.VungCham.MIN == 0 || minRieng) {
+            int m = hasPointerEvents() && w >= 400 && h >= 240 ? MIN_CHAM_J2ME : 0;
+            minRieng = m > 0;
+            game.pokemon.VungCham.MIN = m;
+        }
         if (hasPointerEvents()) {
             if (Main.ImgBpa == null) {
                 FilePack.init("/main.sh");
@@ -770,6 +842,8 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     protected void pointerDragged(int x, int y) {
+        x = chamX(x);
+        y = chamY(y);
         px = x;
         py = y;
     }
@@ -781,6 +855,8 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     public static int xNhan, yNhan, soNhan;
 
     protected void pointerPressed(int x, int y) {
+        x = chamX(x);
+        y = chamY(y);
         xNhan = x;
         yNhan = y;
         soNhan++;
@@ -794,6 +870,8 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     protected void pointerReleased(int x, int y) {
+        x = chamX(x);
+        y = chamY(y);
         dangGiu = false;
         isPointerDown = false;
         isPointerClick = true;
@@ -825,6 +903,72 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
     }
 
     protected void paint(Graphics g) {
+        if (heSo > 1) {
+            try {
+                vePhong(g);
+                return;
+            } catch (Throwable e) {
+                // hết bộ nhớ cho ảnh đệm / lỗi phóng: vẽ thẳng x1 (vẫn chơi được, chỉ nhỏ)
+                anhPhong = null;
+                dongNguon = null;
+                dongDich = null;
+                game.pokemon.KhoiDong.loi("ve phong x" + heSo, e);
+            }
+        }
+        ve1(g);
+    }
+
+    /**
+     * Màn ảo to (heSo &gt; 1): vẽ một khung vào ảnh đệm w x h (logic) rồi phóng nguyên heSo lần lên g theo dải DAI hàng
+     * (getRGB / drawRGB đúng đặc tả MIDP 2.0: vùng trong ảnh, mảng đủ cỡ). Phần lẻ thatW - w * heSo (&lt; heSo px) tô đen.
+     */
+    private void vePhong(Graphics g) {
+        int k = heSo, lw = w, lh = h;
+        Image anh = anhPhong;
+        if (anh == null || anh.getWidth() != lw || anh.getHeight() != lh) {
+            anhPhong = null;
+            anh = Image.createImage(lw, lh);
+            anhPhong = anh;
+        }
+        Graphics ga = anh.getGraphics();
+        ve1(ga);
+        int dw = lw * k;
+        if (dongNguon == null || dongNguon.length != lw * DAI) {
+            dongNguon = new int[lw * DAI];
+        }
+        if (dongDich == null || dongDich.length != dw * k * DAI) {
+            dongDich = new int[dw * k * DAI];
+        }
+        int[] src = dongNguon, dst = dongDich;
+        g.translate(-g.getTranslateX(), -g.getTranslateY());
+        g.setClip(0, 0, thatW, thatH);
+        for (int y0 = 0; y0 < lh; y0 += DAI) {
+            int n = lh - y0 < DAI ? lh - y0 : DAI;
+            anh.getRGB(src, 0, lw, 0, y0, lw, n);
+            for (int r = 0; r < n; r++) {
+                int s0 = r * lw, d0 = r * k * dw, d = d0;
+                for (int x = 0; x < lw; x++) {
+                    int c = src[s0 + x];
+                    for (int i = 0; i < k; i++) {
+                        dst[d++] = c;
+                    }
+                }
+                for (int i = 1; i < k; i++) {
+                    System.arraycopy(dst, d0, dst, d0 + i * dw, dw);
+                }
+            }
+            g.drawRGB(dst, 0, dw, 0, y0 * k, dw, n * k, false);
+        }
+        g.setColor(0);
+        if (thatW > dw) {
+            g.fillRect(dw, 0, thatW - dw, thatH);
+        }
+        if (thatH > lh * k) {
+            g.fillRect(0, lh * k, thatW, thatH - lh * k);
+        }
+    }
+
+    private void ve1(Graphics g) {
         game.render.screen.Font.nenSang = false;
         try {
             game.pokemon.NhipVe.dauKhung();

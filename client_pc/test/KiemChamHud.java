@@ -70,7 +70,9 @@ public class KiemChamHud {
         try {
             Method m = game.render.Canvas.class.getDeclaredMethod(ten, int.class, int.class);
             m.setAccessible(true);
-            m.invoke(game.render.Canvas.instance, x, y);
+            // 0.9.22: màn ảo phóng (Canvas.heSo > 1, giả lập 1280x720...): ngón chạm ở toạ độ THẬT = giữa điểm ảnh logic x heSo
+            int k = game.render.Canvas.heSo;
+            m.invoke(game.render.Canvas.instance, x * k + k / 2, y * k + k / 2);
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -1146,6 +1148,78 @@ public class KiemChamHud {
         ChupTrongGame.chay(() -> game.pokemon.ThoiTiet.moThe = false);
     }
 
+    /**
+     * 0.9.22 XOAY MÀN LÚC ĐANG CHƠI (giả lập Android J2ME Loader / CoffeeCat: màn ảo "tự theo máy" đổi cỡ khi xoay, hoặc
+     * người chơi đổi cỡ màn ảo): 360x640 -> 640x360 -> 1280x720 -> 720x1280 -> 1920x1080 -> 854x480 -> 640x360 không khởi
+     * động lại. Mỗi cỡ: Canvas.sizeChanged như máy; hệ số phóng / màn logic đúng (Canvas.chonHeSo), HudRong đúng màn ngang,
+     * khung vẽ phủ kín (không lỗ ảnh đệm cũ), vùng chạm trong màn logic, chạm THẬT (toạ độ x heSo) thẻ người chơi -> màn
+     * Nhân vật, nút Menu HUD -> Menu; màn Nhân vật để MỞ qua lần xoay kế (bảng đang mở lúc xoay phải bố cục lại); không lỗi
+     * vẽ / nhịp (GiamSat / KhoiDong). Ảnh xoay_*.png. Chạy khi -Dkiem.xoay=1 hoặc -Dchup.coJ2me.
+     */
+    static void kiemXoay(java.io.File ra) throws Exception {
+        final int[][] B = {{360, 640}, {640, 360}, {1280, 720}, {720, 1280}, {1920, 1080}, {854, 480}, {640, 360}};
+        int loi0 = game.pokemon.GiamSat.soLoi, loiKd0 = game.pokemon.KhoiDong.soLoi;
+        game.pokemon.VungCham.MIN = 0;
+        ChupTrongGame.datCoJ2me(B[0][0], B[0][1]);
+        ChupTrongGame.chay(() -> game.render.Canvas.instance.sizeChanged(NenPc.rong, NenPc.cao));
+        dungCanh(true);
+        for (int i = 0; i < B.length; i++) {
+            final int W = B[i][0], H = B[i][1];
+            co = "xoay" + i + "_" + W + "x" + H;
+            boolean dangMoNv = game.render.Canvas.currentScreen instanceof game.pokemon.ManNhanVat;
+            ChupTrongGame.datCoJ2me(W, H);
+            ChupTrongGame.chay(() -> game.render.Canvas.instance.sizeChanged(W, H));
+            ngu(120);
+            int k = game.render.Canvas.chonHeSo(W, H);
+            kiem(game.render.Canvas.heSo == k && game.render.Canvas.w == W / k && game.render.Canvas.h == H / k,
+                    "he so / man logic: heSo " + game.render.Canvas.heSo + " (mong " + k + "), " + game.render.Canvas.w + "x" + game.render.Canvas.h);
+            kiem(game.render.Canvas.thatW == W && game.render.Canvas.thatH == H, "co that " + game.render.Canvas.thatW + "x" + game.render.Canvas.thatH);
+            boolean ngang = W / k >= 400 && H / k >= 240;
+            kiem(game.render.screen.HudRong.bat() == ngang, "HudRong " + (ngang ? "bat" : "tat") + " o man logic " + (W / k) + "x" + (H / k));
+            kiem(game.pokemon.VungCham.MIN == (ngang ? 16 : 0), "co cham toi thieu J2ME " + game.pokemon.VungCham.MIN + " (mong " + (ngang ? 16 : 0) + ")");
+            if (dangMoNv) {
+                // bảng Nhân vật đang mở lúc xoay: vẽ lại trọn ở cỡ mới, vẫn là màn Nhân vật
+                java.awt.image.BufferedImage a0 = ChupTrongGame.ve(W, H);
+                kiem(game.render.Canvas.currentScreen instanceof game.pokemon.ManNhanVat, "man Nhan vat van mo sau khi xoay");
+                ChupTrongGame.kiemPhuKin(a0, co + " man Nhan vat sau xoay");
+                javax.imageio.ImageIO.write(a0, "png", new java.io.File(ra, co + "_nhan_vat_sau_xoay.png"));
+            }
+            sach(null, false);
+            ngu(150);
+            java.awt.image.BufferedImage anh = ChupTrongGame.ve(W, H);
+            ChupTrongGame.kiemPhuKin(anh, co + " the gioi");
+            javax.imageio.ImageIO.write(anh, "png", new java.io.File(ra, co + "_the_gioi.png"));
+            int lw = game.render.Canvas.w, lh = game.render.Canvas.h, ngoai = 0;
+            for (int v = 0; v < game.pokemon.VungCham.dem(); v++) {
+                int[] r = game.pokemon.VungCham.vungVe(v);
+                if (r[0] < -1 || r[1] < -1 || r[0] + r[2] > lw + 1 || r[1] + r[3] > lh + 1) {
+                    ngoai++;
+                    System.out.println("  vung ngoai man [" + co + "]: " + game.pokemon.VungCham.ten(v) + " " + java.util.Arrays.toString(r));
+                }
+            }
+            kiem(ngoai == 0, "vung cham trong man logic (" + ngoai + " vung ngoai)");
+            if (ngang) {
+                kiem(moMenuHud(null, false), "cham nut Menu HUD (toa do that x" + k + ") -> Menu");
+                javax.imageio.ImageIO.write(ChupTrongGame.ve(W, H), "png", new java.io.File(ra, co + "_menu.png"));
+                sach(null, false);
+            }
+            // thẻ người chơi trái trên (cả HudRong và HUD màn nhỏ) -> màn Nhân vật; để mở qua lần xoay kế
+            ngu(150);
+            cham(30, 18);
+            boolean mo = cho(() -> game.render.Canvas.currentScreen instanceof game.pokemon.ManNhanVat);
+            kiem(mo, "cham the nguoi choi -> man Nhan vat");
+            if (mo) {
+                java.awt.image.BufferedImage a1 = ChupTrongGame.ve(W, H);
+                ChupTrongGame.kiemPhuKin(a1, co + " man Nhan vat");
+                javax.imageio.ImageIO.write(a1, "png", new java.io.File(ra, co + "_nhan_vat.png"));
+            }
+        }
+        co = "xoay";
+        sach(null, false);
+        kiem(game.pokemon.GiamSat.soLoi == loi0 && game.pokemon.KhoiDong.soLoi == loiKd0, "khong loi ve / nhip khi xoay (GiamSat "
+                + (game.pokemon.GiamSat.soLoi - loi0) + ", KhoiDong " + (game.pokemon.KhoiDong.soLoi - loiKd0) + ")");
+    }
+
     public static void main(String[] a) throws Exception {
         System.setProperty("java.awt.headless", "true");
         java.io.File ra = new java.io.File(a.length > 0 ? a[0] : "kiem_cham_hud");
@@ -1219,7 +1293,8 @@ public class KiemChamHud {
             ChupTrongGame.chay(() -> game.render.Canvas.instance.sizeChanged(NenPc.rong, NenPc.cao));
             float s = NenPc.hienW / (float) NenPc.rong;
             // PC: 32 px thật; điện thoại: HudRong chỉ chạy trên J2ME (không nới cỡ chạm)
-            int min = dpi != 0 ? 0 : (int) Math.ceil(32 / s);
+            // 0.9.22: J2ME cảm ứng màn ngang: cỡ chạm do Canvas.sizeChanged đặt (MIN_CHAM_J2ME), màn dọc / nhỏ 0
+            int min = laJ2 ? game.pokemon.VungCham.MIN : dpi != 0 ? 0 : (int) Math.ceil(32 / s);
             game.pokemon.VungCham.MIN = min;
             dungCanh(false);
             kiemBoCuc(min);
@@ -1235,6 +1310,9 @@ public class KiemChamHud {
             if (System.getProperty("kiem.dich") == null || !"0".equals(System.getProperty("kiem.dich"))) {
                 kiemDichNut();
             }
+        }
+        if (System.getProperty("kiem.xoay") != null || j2) {
+            kiemXoay(ra);
         }
         // bảng đích (xem bằng mắt / báo cáo): nút | cảnh -> kết quả, cỡ cuối cùng đã chạy
         java.io.PrintWriter pw = new java.io.PrintWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(new java.io.File(ra, "dich_nut.txt")), "UTF-8"));

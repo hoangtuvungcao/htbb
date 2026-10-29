@@ -5,4 +5,5 @@ MIDlet-1: Huyen Thoai Bao Boi,/icon.png,game.GameMidlet
 MicroEdition-Configuration: CLDC-1.1
 MIDlet-Name: Huyen Thoai Bao Boi
 MicroEdition-Profile: MIDP-2.0
+MIDlet-Touch-Support: True
 

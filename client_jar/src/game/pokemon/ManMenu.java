@@ -224,7 +224,24 @@ public final class ManMenu extends Screen {
     static final int[] GOC = {166, 128, 90, 52, 14};
 
     static int rNut() {
-        return Math.max(VungCham.MIN / 2 + 1, ChuDe.dt() ? 25 : 21);
+        // 0.9.22: màn nhỏ (J2ME cảm ứng 240x320 / 320x240 - mặc định J2ME Loader): nút cung nhỏ hơn để vòng cung + hàng
+        // viên phụ vừa màn (trước: nút 166 / 14 độ tràn mép trái / phải 240x320, nút giữa đè hàng viên phụ 320x240)
+        int r = Math.min(Canvas.w, Canvas.h) < 300 ? 17 : ChuDe.dt() ? 25 : 21;
+        return Math.max(VungCham.MIN / 2 + 1, r);
+    }
+
+    /**
+     * 0.9.22: bán kính NGANG của vòng cung - nút ngoài cùng (góc 166 / 14) và nhãn dưới nó trọn trong màn (màn hẹp
+     * 240x320: cung dẹt ngang; khoảng dọc giữa các nút giữ nguyên nên nhãn không chạm nút kế bên).
+     */
+    static int banKinhNgang(int R, int r) {
+        int bien = r;
+        int[] ngoai = {CHINH[0], CHINH[CHINH.length - 1]};
+        for (int q = 0; q < ngoai.length; q++) {
+            bien = Math.max(bien, (ChuDe.rong(TEN[ngoai[q]], ChuDe.SO) + 4) / 2);
+        }
+        int rx = (Canvas.hw - bien - 2) * 1024 / Math.max(1, cos(GOC[GOC.length - 1]));
+        return Math.max(r, Math.min(R, rx));
     }
 
     /** Tâm Poké Ball / nút đóng (= nút Menu giữa đáy HUD). */
@@ -284,13 +301,13 @@ public final class ManMenu extends Screen {
         };
         VungCham.them(g, 0, 0, Canvas.w, Canvas.h, dong, "nen-ngoai");
         int cx = Canvas.hw, cy = yBong();
-        int r = rNut(), R = banKinhCung();
+        int r = rNut(), R = banKinhCung(), Rn = banKinhNgang(R, r);
         // hiệu ứng mở: vòng cung bung ra từ Poké Ball (140 ms)
-        int Rv = R * (70 + t * 30 / 140) / 100;
+        int Rv = R * (70 + t * 30 / 140) / 100, Rnv = Rn * (70 + t * 30 / 140) / 100;
         for (int q = 0; q < CHINH.length; q++) {
             final int i = CHINH[q];
             int a = GOC[q];
-            int x = cx + cos(a) * Rv / 1024, y = cy - sin(a) * Rv / 1024;
+            int x = cx + cos(a) * Rnv / 1024, y = cy - sin(a) * Rv / 1024;
             nutTo(g, x, y, r, i, t >= 140, new IAction() {
                 public void perform() {
                     ManMenu.lam(i);
