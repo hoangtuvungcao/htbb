@@ -31759,54 +31759,56 @@ UPDATE `data_item` SET `price` = 171000 WHERE `id` = 213 AND `price` = 310000;
 --  CHI SO QUAI CAP 13-59 THEO SUC NGUOI CHOI DO CUA HANG (26/10/2026, bot choi that cap 1-40: tu cap 20 guc lien tuc,
 --  quyet dinh chu game "Tự cân chỉnh"). Chi so quai CHAY THAT la data_monster_lau_dai (sv.lau_dai=1); bang cu duoc thiet
 --  ke theo nguoi choi do bac cap +6: thu quai = ~0,6 x tan cong nguoi choi do cua hang dung bac -> sat thuong moi don
---  (tan cong - thu) rat nhay voi do: lech mot bac vu khi (khong mua kip) la thoi gian ha quai x1,5..2,6, guc lien tuc.
---  Hai chinh sua (chi quai thuong isuse = 1; boss Gym / the gioi / quai cap >= 60 giu nguyen):
---   1. THU: giam dan 0 -> 25% tu cap 12 toi 22, giu 25% toi cap 45, tra dan ve 0 o cap 60 (khong tao gai moi: thu van
---      tang deu moi cap). Nguoi choi do dung bac ha quai nhanh hon ~25%, nguoi cham mot bac khong con bi x2.
---   2. BAC THANG CAP 31: HP x1,29 va tan cong x1,21 trong mot cap (30 -> 31, muc TTK 4 -> 5 giay). Noi suy thang HP / tan
---      cong cap 31..39 giua cap 30 va cap 40 (cap 30, 40 giu nguyen) -> moi cap +4..6%.
+--  (tan cong - thu) rat nhay voi do: lech mot bac vu khi (khong mua kip) la thoi gian ha quai x1,5..2,6, guc lien tuc
+--  (bai quai day nhu Fuchsia: 3-4 con cung danh).
+--  Ba chinh sua (chi quai thuong isuse = 1; boss Gym / the gioi / quai cap >= 60 giu nguyen), muc giam theo cap: 0 o cap
+--  <= 12, tang dan toi cap 22, giu toi cap 45, tra dan ve 0 o cap 60 (khong tao gai moi: chi so van tang deu moi cap):
+--   1. THU giam toi 25%: nguoi choi do dung bac ha quai nhanh hon ~25%, nguoi cham mot bac khong con bi x2.
+--   2. TAN CONG giam toi 15%: bot thuoc / guc khi bi nhieu con danh cung luc.
+--   3. BAC THANG CAP 31: HP x1,29 va tan cong x1,21 trong mot cap (30 -> 31, muc TTK 4 -> 5 giay). Noi suy thang HP / tan
+--      cong cap 31..39 giua cap 30 va cap 40 (truoc khi giam o muc 2) -> moi cap +4..6%.
 --  HP cap <= 30 va >= 40, EXP, xu roi giu nguyen. Chay lai duoc: UPDATE theo id + 3 GIA TRI CU. Doi xong khoi dong lai
 --  server game. Kiem: server/test/KiemCanBangCap (KiemCanBangCapQuai).
 -- ==================================================================================
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2000, `attack` = 453, `defent` = 108 WHERE `id` = 13 AND `maxhp` = 2000 AND `attack` = 453 AND `defent` = 111;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2000, `attack` = 453, `defent` = 108 WHERE `id` = 17 AND `maxhp` = 2000 AND `attack` = 453 AND `defent` = 111;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2130, `attack` = 468, `defent` = 112 WHERE `id` = 15 AND `maxhp` = 2130 AND `attack` = 468 AND `defent` = 118;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2250, `attack` = 483, `defent` = 117 WHERE `id` = 16 AND `maxhp` = 2250 AND `attack` = 483 AND `defent` = 126;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2250, `attack` = 483, `defent` = 117 WHERE `id` = 21 AND `maxhp` = 2250 AND `attack` = 483 AND `defent` = 126;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2380, `attack` = 498, `defent` = 120 WHERE `id` = 19 AND `maxhp` = 2380 AND `attack` = 498 AND `defent` = 133;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2510, `attack` = 513, `defent` = 122 WHERE `id` = 20 AND `maxhp` = 2510 AND `attack` = 513 AND `defent` = 140;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2640, `attack` = 527, `defent` = 125 WHERE `id` = 14 AND `maxhp` = 2640 AND `attack` = 527 AND `defent` = 147;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2640, `attack` = 527, `defent` = 125 WHERE `id` = 24 AND `maxhp` = 2640 AND `attack` = 527 AND `defent` = 147;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 2910, `attack` = 557, `defent` = 129 WHERE `id` = 28 AND `maxhp` = 2910 AND `attack` = 557 AND `defent` = 161;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 3030, `attack` = 572, `defent` = 131 WHERE `id` = 26 AND `maxhp` = 3030 AND `attack` = 572 AND `defent` = 169;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 3160, `attack` = 587, `defent` = 132 WHERE `id` = 25 AND `maxhp` = 3160 AND `attack` = 587 AND `defent` = 176;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 3420, `attack` = 617, `defent` = 142 WHERE `id` = 18 AND `maxhp` = 3420 AND `attack` = 617 AND `defent` = 190;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 3420, `attack` = 617, `defent` = 142 WHERE `id` = 27 AND `maxhp` = 3420 AND `attack` = 617 AND `defent` = 190;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 3680, `attack` = 647, `defent` = 153 WHERE `id` = 29 AND `maxhp` = 3680 AND `attack` = 647 AND `defent` = 204;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 3800, `attack` = 662, `defent` = 159 WHERE `id` = 30 AND `maxhp` = 3800 AND `attack` = 662 AND `defent` = 212;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 4190, `attack` = 707, `defent` = 175 WHERE `id` = 22 AND `maxhp` = 4190 AND `attack` = 707 AND `defent` = 233;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 4460, `attack` = 738, `defent` = 180 WHERE `id` = 23 AND `maxhp` = 5400 AND `attack` = 859 AND `defent` = 240;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 4720, `attack` = 769, `defent` = 185 WHERE `id` = 32 AND `maxhp` = 5570 AND `attack` = 877 AND `defent` = 247;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 4990, `attack` = 800, `defent` = 191 WHERE `id` = 31 AND `maxhp` = 5720 AND `attack` = 894 AND `defent` = 255;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 5250, `attack` = 831, `defent` = 196 WHERE `id` = 33 AND `maxhp` = 5880 AND `attack` = 912 AND `defent` = 262;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 5520, `attack` = 862, `defent` = 202 WHERE `id` = 34 AND `maxhp` = 6050 AND `attack` = 929 AND `defent` = 269;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 5790, `attack` = 892, `defent` = 207 WHERE `id` = 35 AND `maxhp` = 6210 AND `attack` = 946 AND `defent` = 276;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 6050, `attack` = 923, `defent` = 212 WHERE `id` = 55 AND `maxhp` = 6370 AND `attack` = 964 AND `defent` = 283;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 6320, `attack` = 954, `defent` = 218 WHERE `id` = 40 AND `maxhp` = 6520 AND `attack` = 981 AND `defent` = 291;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 6580, `attack` = 985, `defent` = 224 WHERE `id` = 45 AND `maxhp` = 6690 AND `attack` = 999 AND `defent` = 298;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 6850, `attack` = 1016, `defent` = 229 WHERE `id` = 63 AND `maxhp` = 6850 AND `attack` = 1016 AND `defent` = 305;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 7010, `attack` = 1033, `defent` = 234 WHERE `id` = 71 AND `maxhp` = 7010 AND `attack` = 1033 AND `defent` = 312;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 7180, `attack` = 1051, `defent` = 239 WHERE `id` = 68 AND `maxhp` = 7180 AND `attack` = 1051 AND `defent` = 319;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 7340, `attack` = 1068, `defent` = 244 WHERE `id` = 42 AND `maxhp` = 7340 AND `attack` = 1068 AND `defent` = 326;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 7490, `attack` = 1086, `defent` = 250 WHERE `id` = 50 AND `maxhp` = 7490 AND `attack` = 1086 AND `defent` = 334;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 7650, `attack` = 1103, `defent` = 256 WHERE `id` = 57 AND `maxhp` = 7650 AND `attack` = 1103 AND `defent` = 341;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 7820, `attack` = 1120, `defent` = 267 WHERE `id` = 52 AND `maxhp` = 7820 AND `attack` = 1120 AND `defent` = 348;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 7980, `attack` = 1138, `defent` = 278 WHERE `id` = 59 AND `maxhp` = 7980 AND `attack` = 1138 AND `defent` = 355;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 8140, `attack` = 1155, `defent` = 290 WHERE `id` = 47 AND `maxhp` = 8140 AND `attack` = 1155 AND `defent` = 362;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 8310, `attack` = 1173, `defent` = 301 WHERE `id` = 41 AND `maxhp` = 8310 AND `attack` = 1173 AND `defent` = 369;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 8460, `attack` = 1190, `defent` = 314 WHERE `id` = 62 AND `maxhp` = 8460 AND `attack` = 1190 AND `defent` = 377;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 8620, `attack` = 1207, `defent` = 326 WHERE `id` = 44 AND `maxhp` = 8620 AND `attack` = 1207 AND `defent` = 384;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 8780, `attack` = 1225, `defent` = 339 WHERE `id` = 80 AND `maxhp` = 8780 AND `attack` = 1225 AND `defent` = 391;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 9110, `attack` = 1260, `defent` = 364 WHERE `id` = 74 AND `maxhp` = 9110 AND `attack` = 1260 AND `defent` = 405;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 9430, `attack` = 1294, `defent` = 392 WHERE `id` = 76 AND `maxhp` = 9430 AND `attack` = 1294 AND `defent` = 420;
-UPDATE `data_monster_lau_dai` SET `maxhp` = 9750, `attack` = 1329, `defent` = 420 WHERE `id` = 65 AND `maxhp` = 9750 AND `attack` = 1329 AND `defent` = 434;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2000, `attack` = 446, `defent` = 108 WHERE `id` = 13 AND `maxhp` = 2000 AND `attack` = 453 AND `defent` = 111;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2000, `attack` = 446, `defent` = 108 WHERE `id` = 17 AND `maxhp` = 2000 AND `attack` = 453 AND `defent` = 111;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2130, `attack` = 454, `defent` = 112 WHERE `id` = 15 AND `maxhp` = 2130 AND `attack` = 468 AND `defent` = 118;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2250, `attack` = 461, `defent` = 117 WHERE `id` = 16 AND `maxhp` = 2250 AND `attack` = 483 AND `defent` = 126;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2250, `attack` = 461, `defent` = 117 WHERE `id` = 21 AND `maxhp` = 2250 AND `attack` = 483 AND `defent` = 126;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2380, `attack` = 468, `defent` = 120 WHERE `id` = 19 AND `maxhp` = 2380 AND `attack` = 498 AND `defent` = 133;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2510, `attack` = 475, `defent` = 122 WHERE `id` = 20 AND `maxhp` = 2510 AND `attack` = 513 AND `defent` = 140;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2640, `attack` = 480, `defent` = 125 WHERE `id` = 14 AND `maxhp` = 2640 AND `attack` = 527 AND `defent` = 147;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2640, `attack` = 480, `defent` = 125 WHERE `id` = 24 AND `maxhp` = 2640 AND `attack` = 527 AND `defent` = 147;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 2910, `attack` = 490, `defent` = 129 WHERE `id` = 28 AND `maxhp` = 2910 AND `attack` = 557 AND `defent` = 161;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 3030, `attack` = 495, `defent` = 131 WHERE `id` = 26 AND `maxhp` = 3030 AND `attack` = 572 AND `defent` = 169;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 3160, `attack` = 499, `defent` = 132 WHERE `id` = 25 AND `maxhp` = 3160 AND `attack` = 587 AND `defent` = 176;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 3420, `attack` = 524, `defent` = 142 WHERE `id` = 18 AND `maxhp` = 3420 AND `attack` = 617 AND `defent` = 190;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 3420, `attack` = 524, `defent` = 142 WHERE `id` = 27 AND `maxhp` = 3420 AND `attack` = 617 AND `defent` = 190;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 3680, `attack` = 550, `defent` = 153 WHERE `id` = 29 AND `maxhp` = 3680 AND `attack` = 647 AND `defent` = 204;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 3800, `attack` = 563, `defent` = 159 WHERE `id` = 30 AND `maxhp` = 3800 AND `attack` = 662 AND `defent` = 212;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 4190, `attack` = 601, `defent` = 175 WHERE `id` = 22 AND `maxhp` = 4190 AND `attack` = 707 AND `defent` = 233;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 4460, `attack` = 627, `defent` = 180 WHERE `id` = 23 AND `maxhp` = 5400 AND `attack` = 859 AND `defent` = 240;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 4720, `attack` = 654, `defent` = 185 WHERE `id` = 32 AND `maxhp` = 5570 AND `attack` = 877 AND `defent` = 247;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 4990, `attack` = 680, `defent` = 191 WHERE `id` = 31 AND `maxhp` = 5720 AND `attack` = 894 AND `defent` = 255;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 5250, `attack` = 706, `defent` = 196 WHERE `id` = 33 AND `maxhp` = 5880 AND `attack` = 912 AND `defent` = 262;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 5520, `attack` = 733, `defent` = 202 WHERE `id` = 34 AND `maxhp` = 6050 AND `attack` = 929 AND `defent` = 269;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 5790, `attack` = 758, `defent` = 207 WHERE `id` = 35 AND `maxhp` = 6210 AND `attack` = 946 AND `defent` = 276;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 6050, `attack` = 785, `defent` = 212 WHERE `id` = 55 AND `maxhp` = 6370 AND `attack` = 964 AND `defent` = 283;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 6320, `attack` = 811, `defent` = 218 WHERE `id` = 40 AND `maxhp` = 6520 AND `attack` = 981 AND `defent` = 291;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 6580, `attack` = 837, `defent` = 224 WHERE `id` = 45 AND `maxhp` = 6690 AND `attack` = 999 AND `defent` = 298;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 6850, `attack` = 864, `defent` = 229 WHERE `id` = 63 AND `maxhp` = 6850 AND `attack` = 1016 AND `defent` = 305;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 7010, `attack` = 878, `defent` = 234 WHERE `id` = 71 AND `maxhp` = 7010 AND `attack` = 1033 AND `defent` = 312;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 7180, `attack` = 893, `defent` = 239 WHERE `id` = 68 AND `maxhp` = 7180 AND `attack` = 1051 AND `defent` = 319;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 7340, `attack` = 908, `defent` = 244 WHERE `id` = 42 AND `maxhp` = 7340 AND `attack` = 1068 AND `defent` = 326;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 7490, `attack` = 923, `defent` = 250 WHERE `id` = 50 AND `maxhp` = 7490 AND `attack` = 1086 AND `defent` = 334;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 7650, `attack` = 938, `defent` = 256 WHERE `id` = 57 AND `maxhp` = 7650 AND `attack` = 1103 AND `defent` = 341;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 7820, `attack` = 963, `defent` = 267 WHERE `id` = 52 AND `maxhp` = 7820 AND `attack` = 1120 AND `defent` = 348;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 7980, `attack` = 990, `defent` = 278 WHERE `id` = 59 AND `maxhp` = 7980 AND `attack` = 1138 AND `defent` = 355;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 8140, `attack` = 1016, `defent` = 290 WHERE `id` = 47 AND `maxhp` = 8140 AND `attack` = 1155 AND `defent` = 362;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 8310, `attack` = 1044, `defent` = 301 WHERE `id` = 41 AND `maxhp` = 8310 AND `attack` = 1173 AND `defent` = 369;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 8460, `attack` = 1071, `defent` = 314 WHERE `id` = 62 AND `maxhp` = 8460 AND `attack` = 1190 AND `defent` = 377;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 8620, `attack` = 1098, `defent` = 326 WHERE `id` = 44 AND `maxhp` = 8620 AND `attack` = 1207 AND `defent` = 384;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 8780, `attack` = 1127, `defent` = 339 WHERE `id` = 80 AND `maxhp` = 8780 AND `attack` = 1225 AND `defent` = 391;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 9110, `attack` = 1184, `defent` = 364 WHERE `id` = 74 AND `maxhp` = 9110 AND `attack` = 1260 AND `defent` = 405;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 9430, `attack` = 1242, `defent` = 392 WHERE `id` = 76 AND `maxhp` = 9430 AND `attack` = 1294 AND `defent` = 420;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 9750, `attack` = 1302, `defent` = 420 WHERE `id` = 65 AND `maxhp` = 9750 AND `attack` = 1329 AND `defent` = 434;

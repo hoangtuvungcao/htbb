@@ -112,8 +112,9 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
       (`ChenhCapNhiemVu`): quái chênh ≤ N cấp **hoặc** hạ ở bãi luyện cao nhất người chơi đang vào được;
     - `sua_gia_do_cua_hang.sql`: đồ cửa hàng NPC (`data_item` id 3..213) chỉ giảm giá: vũ khí ≤ 2 giờ thu nhập, giáp / phụ
       kiện ≤ 1,5 giờ thu nhập ở cấp món (vũ khí cấp 16 / 21 / 26 / 31: 30k / 45k / 60k / 80k → 14,9k / 18,6k / 23,5k / 28,8k);
-    - `sua_can_bang_cap.sql`: `data_monster_lau_dai` quái thường cấp 13-59: thủ giảm dần tới 25% (cấp 22-45) rồi trả dần về
-      0 ở cấp 60, HP / tấn công cấp 31-39 nội suy giữa cấp 30 và 40 (bỏ bậc thang cấp 31: HP ×1,29 trong một cấp).
+    - `sua_can_bang_cap.sql`: `data_monster_lau_dai` quái thường cấp 13-59: thủ giảm dần tới 25% và tấn công tới 15% (cấp
+      22-45) rồi trả dần về 0 ở cấp 60, HP / tấn công cấp 31-39 nội suy giữa cấp 30 và 40 (bỏ bậc thang cấp 31: HP ×1,29
+      trong một cấp).
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

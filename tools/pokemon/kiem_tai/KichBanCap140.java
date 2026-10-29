@@ -296,6 +296,7 @@ final class KichBanCap140 {
             }
             if (b == null || b.dut) throw cuoi == null ? new IllegalStateException("khong vao lai duoc " + user) : cuoi;
             HoiQuy.napTheGioi(b);
+            ngheDon(); // don quai trung minh: in khi guc
             KichBanHuongDan.roiSan(b);
             b.lamMoi();
             capTruoc = b.lv;
