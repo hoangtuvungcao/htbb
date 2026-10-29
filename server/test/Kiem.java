@@ -166,6 +166,7 @@ public final class Kiem {
         KiemChiemVatRoi.chay();
         KiemDocThu.chay();
         KiemGiaoDichRutDo.chay();
+        KiemTruTruocTrao.chay(); // 29/10/2026 ma-tran-bot: cho / quy doi / ghep ngoc / che tao / nang cap cu tru TRUOC trao; ban thu NPC; kho do
         KiemKetBan.chay();
         KiemGiftcodeDoCamTayBaoVat.chay();
         KiemGiftcodeRuyBangHoenn.chay();

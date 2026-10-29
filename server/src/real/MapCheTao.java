@@ -436,95 +436,53 @@ class MapCheTao {
                     return;
                 }
 
-                byte option = message.dis.readByte();
-                // CHI tru 5000 xu khi ham con thuc su thanh cong (tra ve true). Truoc day
-                // luon subXu ngay sau khi goi, ke ca khi ham con return som vi thieu
-                // nguyen lieu/item khong hop le/goi tin sai - nguoi choi bi bao mon xu
-                // lien tuc ma khong nhan duoc ket qua gi, giong loi da vá o nhanh tao do moi
-                // (xem chu thich "CHI tru xu khi that su nhan duoc do" ben duoi).
-                if (option == 1) {
-                    if (map.doUserUpLevelItem(player, message)) {
-                        player.subXu(5000L, true, "map 17");
-                        NhiemVuEngine.suKien(player, "che_tao", "", 1); // GD2b (tat co: khong lam gi)
-                    }
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    return;
-                }
-
-                if (option == 2) {
-                    if (map.doUserUpLevelItemSpecial(player, message)) {
-                        player.subXu(5000L, true, "map 18");
-                        NhiemVuEngine.suKien(player, "che_tao", "", 1);
-                    }
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    return;
-                }
-
-                if (option == 3) {
-                    if (doUserLockItem(map, player, message)) {
-                        player.subXu(5000L, true, "map 19");
-                    }
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    return;
-                }
-
-                if (option == 4) {
-                    if (doUserRepairAtt(map, player, message)) {
-                        player.subXu(5000L, true, "map 20");
-                    }
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    return;
-                }
-
-                if (option == 5) {
-                    if (doUserMakeSeal(map, player, message)) {
-                        player.subXu(5000L, true, "map 21");
-                    }
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    return;
-                }
-
-                if (option == 6) {
-                    if (map.doChangeLevelSkill(player, message)) {
-                        player.subXu(5000L, true, "map 22");
-                    }
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    return;
-                }
-
+                final byte option = message.dis.readByte();
+                // 29/10/2026 (ma-tran-bot "Lo hong uu tien" #5): TRU 5000 XU TRUOC (kiem-va-tru mot buoc), lam, roi HOAN
+                // neu ham con that bai / nem ngoai le (TruTruocTrao.voiPhi). Ban cu goi ham con (trao ket qua) ROI moi
+                // subXu - subXu chan ve 0, nen tieu xu o luong khac giua hai buoc = che tao mien phi. Van giu: CHI mat
+                // xu khi ham con that su thanh cong (truoc day tru ca khi thieu nguyen lieu / tui day / goi sai).
                 if (option >= 10) {
                     map.doSendInfoMaterial2Client(player, message, option % 10);
                     return;
                 }
-
-                if (player.infoItemCreate == null) {
-                    return;
+                if (option < 1 || option > 6) {
+                    if (player.infoItemCreate == null) {
+                        return;
+                    }
                 }
-
-                final Item vuaTao = map.doCreateNewItem(
-                        player,
-                        message,
-                        player.infoItemCreate.idTemplate,
-                        player.infoItemCreate.gender,
-                        player.infoItemCreate.charClass,
-                        player.infoItemCreate.typeItem,
-                        player.infoItemCreate.level,
-                        player.infoItemCreate.magic_physic,
-                        0,
-                        0,
-                        null,
-                        false
-                );
-                // CHI tru xu khi that su nhan duoc do. doCreateNewItem tra ve null khi
-                // hanh trang day, thieu nguyen lieu, hoac goi tin khong hop le - ban cu
-                // van tru 5000 xu o ca ba truong hop do. Nguoi de auto tao do voi hanh
-                // trang day bi bao mon xu lien tuc ma khong nhan duoc gi va khong co
-                // cach nao biet.
-                if (vuaTao == null) {
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    return;
+                final String viTri = option >= 1 && option <= 6 ? "map " + (16 + option) : "map 23";
+                final TruTruocTrao.KetQua kq = TruTruocTrao.voiPhi(player, 5000L, viTri, () -> {
+                    switch (option) {
+                        case 1: return map.doUserUpLevelItem(player, message);
+                        case 2: return map.doUserUpLevelItemSpecial(player, message);
+                        case 3: return doUserLockItem(map, player, message);
+                        case 4: return doUserRepairAtt(map, player, message);
+                        case 5: return doUserMakeSeal(map, player, message);
+                        case 6: return map.doChangeLevelSkill(player, message);
+                        default:
+                            // CHI tru xu khi that su nhan duoc do. doCreateNewItem tra ve null khi hanh trang day,
+                            // thieu nguyen lieu, hoac goi tin khong hop le.
+                            return map.doCreateNewItem(
+                                    player,
+                                    message,
+                                    player.infoItemCreate.idTemplate,
+                                    player.infoItemCreate.gender,
+                                    player.infoItemCreate.charClass,
+                                    player.infoItemCreate.typeItem,
+                                    player.infoItemCreate.level,
+                                    player.infoItemCreate.magic_physic,
+                                    0,
+                                    0,
+                                    null,
+                                    false
+                            ) != null;
+                    }
+                });
+                if (kq == TruTruocTrao.KetQua.THIEU_XU) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có ít nhất 5000xu trong hành trang.", ""));
+                } else if (kq == TruTruocTrao.KetQua.XONG && (option == 1 || option == 2)) {
+                    NhiemVuEngine.suKien(player, "che_tao", "", 1); // GD2b (tat co: khong lam gi)
                 }
-                player.subXu(5000L, true, "map 23");
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             } catch (Exception var4) {
                 var4.printStackTrace();

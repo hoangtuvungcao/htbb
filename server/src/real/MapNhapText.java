@@ -456,14 +456,8 @@ class MapNhapText {
                         return;
                     }
 
-                    Pet pet = null;
-
-                    for (int i = 0; i < player.pet.size(); i++) {
-                        pet = (Pet) player.pet.get(i);
-                        if (pet.id == player.idPetTang) {
-                            break;
-                        }
-                    }
+                    // 29/10/2026: dung con da chon (vong lap cu tra con CUOI danh sach khi khong thay).
+                    Pet pet = QuanLyThuGame.timPet(player, player.idPetTang);
 
                     if (pet != null && pet.canTrade()) {
                         if (idMenu == 0) {

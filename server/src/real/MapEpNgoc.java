@@ -596,6 +596,86 @@ class MapEpNgoc {
         }
     }
 
+    /**
+     * Nhanh nang cap cu (LauDai tat): ngoc trong o (gemItemImbue) con du trong tui theo kieu typeGemImbue khong
+     * (0 thuong, tru phan dang ban cho; 1 khoa; khac: khoa truoc roi thuong). Moi vien trong o can 1.
+     */
+    static boolean duNgocNangCapCu(Char player) {
+        final int[] ids = new int[player.gemItemImbue.size()];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = ((GemItem) player.gemItemImbue.elementAt(i)).idGemTemplate;
+        }
+        return duNgoc(player.listGemitem, player.listGemitemSell, player.listGemitemLock, ids, player.typeGemImbue);
+    }
+
+    /** Thuan (kiem duoc o server/test): moi id trong {@code ids} can 1 vien. */
+    static boolean duNgoc(final int[] thuong, final int[] dangBan, final int[] khoa, final int[] ids, final int kieu) {
+        final java.util.HashMap<Integer, Integer> can = new java.util.HashMap<Integer, Integer>();
+        for (final int id : ids) {
+            if (id < 0 || id >= thuong.length || id >= khoa.length) {
+                return false;
+            }
+            can.merge(Integer.valueOf(id), Integer.valueOf(1), Integer::sum);
+        }
+        for (final java.util.Map.Entry<Integer, Integer> e : can.entrySet()) {
+            final int id = e.getKey().intValue();
+            final int n = e.getValue().intValue();
+            final int th = thuong[id] - (dangBan != null && id < dangBan.length ? Math.max(0, dangBan[id]) : 0);
+            final int co = kieu == 0 ? th : kieu == 1 ? khoa[id] : khoa[id] + th;
+            if (co < n) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Tru ngoc trong o (nhanh cu) - goi SAU duNgocNangCapCu, duoi synchronized (player). @return co dung LKD khoa dac biet. */
+    static boolean truNgocNangCapCu(Char player) {
+        boolean isLock = false;
+
+        for (int ix = 0; ix < player.gemItemImbue.size(); ix++) {
+            GemItem gem = (GemItem) player.gemItemImbue.elementAt(ix);
+            if (player.typeGemImbue == 0) {
+                if (player.listGemitem[gem.idGemTemplate] > 0) {
+                    player.listGemitem[gem.idGemTemplate]--;
+                }
+
+                player.allGemUse[gem.idGemTemplate]++;
+            } else if (player.typeGemImbue == 1) {
+                if (player.listGemitemLock[gem.idGemTemplate] > 0) {
+                    player.listGemitemLock[gem.idGemTemplate]--;
+                }
+
+                if (isSpesialLkd(gem.idGemTemplate)) {
+                    isLock = true;
+                }
+
+                player.allGemUseLock[gem.idGemTemplate]++;
+            } else {
+                // Bao gom ca typeGemImbue == 2 VA moi gia tri la khac.
+                // Truoc day day la "else if (== 2)" khong co nhanh mac
+                // dinh: gia tri la thi khong tru vien nao -> ep mien phi.
+                if (player.listGemitemLock[gem.idGemTemplate] > 0) {
+                    player.listGemitemLock[gem.idGemTemplate]--;
+                    if (isSpesialLkd(gem.idGemTemplate)) {
+                        isLock = true;
+                    }
+
+                    player.allGemUseLock[gem.idGemTemplate]++;
+                } else if (player.listGemitem[gem.idGemTemplate] > 0) {
+                    player.listGemitem[gem.idGemTemplate]--;
+                    player.allGemUse[gem.idGemTemplate]++;
+                }
+            }
+
+            if (player.listGemitem[gem.idGemTemplate] <= 0 && player.listGemitemLock[gem.idGemTemplate] <= 0) {
+                player.removeItemOutVector(gem.realId, player.gemItem);
+            }
+        }
+
+        return isLock;
+    }
+
     static void doFinishImbue(Map map, Char player, int ok) {
         if (NpcTinhBanDo.oNoiDichVu(player, NpcTinhBanDo.NPC_THO_REN)) {
             int prizeImbue = 5000;
@@ -657,6 +737,20 @@ class MapEpNgoc {
                         // GD2 1.2: truoc day tru 5.000 xu TRUOC khi kiem tra co luyen kim duoc
                         // (va ca khi item == null) - thieu da van mat tien. Gio kiem xong moi tru,
                         // kiem-va-tru trong Char.KHOA_TIEN (truXuNeuDu).
+                        // 29/10/2026 (ma-tran-bot #4, nhanh cu khi LauDai tat): DEM LAI ngoc trong o (76) con du khong -
+                        // nguoi choi ban (78) / vut (-23) ngoc sau khi them vao o thi ban cu van tung xuc xac, buoc tru
+                        // ngoc "if (> 0) --" lang le bo qua = nang cap mien phi. Kiem ngoc -> tru xu -> tru ngoc -> moi
+                        // tung xuc xac, ca khoi duoi synchronized (player) (chung khoa voi Char.truGemNeuDu).
+                        synchronized (player) {
+                        if (item.plus >= 15 || !player.iItems.contains(item)) {
+                            return;
+                        }
+                        if (!duNgocNangCapCu(player)) {
+                            player.gemItemImbue.removeAllElements();
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu trong ô nâng cấp", ""));
+                            player.sendMessage(MessageCreator.createCharGemItem(player));
+                            return;
+                        }
                         if (!player.truXuNeuDu((long) prizeImbue, true, "map 72")) {
                             try {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Hết tiền", ""));
@@ -664,6 +758,7 @@ class MapEpNgoc {
                             }
                             return;
                         }
+                        final boolean isLock = truNgocNangCapCu(player);
 
                         if (item.plus < 15) {
                             int pcInsu = random(100);
@@ -718,48 +813,6 @@ class MapEpNgoc {
                                 }
                             }
 
-                            boolean isLock = false;
-
-                            for (int ix = 0; ix < player.gemItemImbue.size(); ix++) {
-                                GemItem gem = (GemItem) player.gemItemImbue.elementAt(ix);
-                                if (player.typeGemImbue == 0) {
-                                    if (player.listGemitem[gem.idGemTemplate] > 0) {
-                                        player.listGemitem[gem.idGemTemplate]--;
-                                    }
-
-                                    player.allGemUse[gem.idGemTemplate]++;
-                                } else if (player.typeGemImbue == 1) {
-                                    if (player.listGemitemLock[gem.idGemTemplate] > 0) {
-                                        player.listGemitemLock[gem.idGemTemplate]--;
-                                    }
-
-                                    if (isSpesialLkd(gem.idGemTemplate)) {
-                                        isLock = true;
-                                    }
-
-                                    player.allGemUseLock[gem.idGemTemplate]++;
-                                } else {
-                                    // Bao gom ca typeGemImbue == 2 VA moi gia tri la khac.
-                                    // Truoc day day la "else if (== 2)" khong co nhanh mac
-                                    // dinh: gia tri la thi khong tru vien nao -> ep mien phi.
-                                    if (player.listGemitemLock[gem.idGemTemplate] > 0) {
-                                        player.listGemitemLock[gem.idGemTemplate]--;
-                                        if (isSpesialLkd(gem.idGemTemplate)) {
-                                            isLock = true;
-                                        }
-
-                                        player.allGemUseLock[gem.idGemTemplate]++;
-                                    } else if (player.listGemitem[gem.idGemTemplate] > 0) {
-                                        player.listGemitem[gem.idGemTemplate]--;
-                                        player.allGemUse[gem.idGemTemplate]++;
-                                    }
-                                }
-
-                                if (player.listGemitem[gem.idGemTemplate] <= 0 && player.listGemitemLock[gem.idGemTemplate] <= 0) {
-                                    player.removeItemOutVector(gem.realId, player.gemItem);
-                                }
-                            }
-
                             if (isLock) {
                                 item.khoaVinhVien(); // [khoa-khi-mac]
                                 Database.instance
@@ -774,6 +827,7 @@ class MapEpNgoc {
                             player.sendMessage(MessageCreator.createCharGemItem(player));
                         }
 
+                        }
                         try {
                             if (r.nextInt(10000) < 5) {
                                 doCreateBookSkillPet(player, 0);
@@ -854,6 +908,10 @@ class MapEpNgoc {
                 m.dos.writeShort(prize);
                 player.sendMessage(m);
             } else if (ok == 1) {
+                // 29/10/2026 (ma-tran-bot "Lo hong uu tien" #5): kiem ngoc + TRU XU TRUOC roi moi tung xuc xac / trao
+                // ket qua, ca khoi duoi synchronized (player) (chung khoa voi Char.truGemNeuDu). Ban cu trao vien moi
+                // roi moi subXu (chan ve 0) o cuoi ham - mot lenh tieu xu khac xen vao giua = hop thanh mien phi.
+                synchronized (player) {
                 int len = message.dis.readByte();
                 Vector<GemItem> gem = new Vector();
                 if (player.getxu() < (long) prize) {
@@ -919,6 +977,12 @@ class MapEpNgoc {
                     return;
                 }
 
+                if (!player.truXuNeuDu((long) prize, true, "map 76")) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
+                    player.sendMessage(MessageCreator.createCharGemItem(player));
+                    return;
+                }
+
                 byte[] percent = new byte[]{10, 20, 100};
                 // GD2 1.4: "<=" cho ti le that 11%/21% (thay vi 10%/20%). Xem epNgocThanhCong.
                 if (epNgocThanhCong(r.nextInt(100), gem.size())) {
@@ -976,9 +1040,10 @@ class MapEpNgoc {
                     player.sendMessage(m);
                 }
 
-                player.subXu((long) prize, true, "map 76");
+                // (xu da tru o tren bang truXuNeuDu, truoc khi trao)
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                }
             }
         } catch (Exception var11) {
         }

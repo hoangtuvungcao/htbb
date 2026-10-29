@@ -196,7 +196,7 @@ public final class KiemChongClone {
         Kiem.dung("ky gui: mua kiem hai ben + cung may", kg.contains("ChongClone.chanChuyen(player, p, player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI"));
         Kiem.dung("ky gui: mua ghi nhat ky", kg.contains("ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_KY_GUI"));
         final int viTriCong = kg.indexOf("ChongClone.chanChuyen(player, p, player");
-        final int viTriTru = kg.indexOf("player.subXu(player.sellerInfo.priceSell");
+        final int viTriTru = kg.indexOf("TruTruocTrao.truNguoiMuaCho(player, gia)"); // 29/10/2026: tru nguoi mua truoc khi trao
         Kiem.dung("ky gui: cong chay TRUOC khi tru xu", viTriCong > 0 && viTriTru > viTriCong);
 
         final String map = doc("src/real/Map.java");
