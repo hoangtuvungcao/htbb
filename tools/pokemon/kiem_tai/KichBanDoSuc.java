@@ -98,6 +98,11 @@ final class KichBanDoSuc {
                     if (du != null) sb.append(' ').append(mid).append('/').append(l);
                 }
                 for (int lang : new int[]{0, 70, 80, 301, 1701, 1901}) sb.append(" ->lang").append(lang).append(BotXuyenSuot.duong(tu, lang) == null ? ":khong" : ":co");
+                for (String dich : System.getProperty("doSucDuongToi", "").split(",")) {
+                    if (dich.isEmpty()) continue;
+                    List<int[]> du = BotXuyenSuot.duong(tu, Integer.parseInt(dich.trim()));
+                    sb.append(" ->").append(dich).append(du == null ? ":khong" : ":co(" + du.size() + " cong)");
+                }
                 System.out.println(sb);
             }
             return;

@@ -834,6 +834,41 @@ final class KichBanCap140 {
          */
         String buocHanhDong(KichBanTienDoNhiemVu.Dong q, String chu, String tenBd) throws Exception {
             int lan = lanHanhDong.merge(q.id * 10 + q.ms, 1, Integer::sum);
+            // buoc dia diem khong co cong di bo (Bao tang Pewter, Duong Victory, Nui Silver...): chu goi y "nhờ Arcanine gác
+            // cổng (hãy tới X)" - nguoi choi ve lang, noi chuyen Arcanine (NPC loai 4), chon "Đến X". Truoc 29/10/2026 bot
+            // ket o #36 'Bảo tàng thiên thạch' (ca 5 dong, cap 26-31).
+            Matcher ma = Pattern.compile("Arcanine gác cổng[^(]*\\(hãy tới ([^)]+)\\)").matcher(chu);
+            if (ma.find()) {
+                if (lan > 6) return "Arcanine khong dua toi " + ma.group(1) + " sau 6 lan";
+                String noi = ma.group(1).trim();
+                KichBanCap140TinhNang.veLangDiBo(this);
+                String l = KichBanHuongDan.toiNpc(b, 4);
+                if (l != null) return "khong toi Arcanine gac cong: " + l;
+                int m = b.moc();
+                b.gui(23, (byte) 4);
+                if (b.doiMenu(m, 4, 0, 3000) <= 0) return "Arcanine khong mo menu: " + b.chuTu(m);
+                int i = b.timMuc(noi);
+                if (i < 0) return "menu Arcanine khong co '" + noi + "': " + b.menuChu;
+                int m2 = b.moc();
+                int truoc = b.mapId;
+                b.menu(4, 0, i);
+                b.cho(x -> x.coLenh(m2, 12), 6000);
+                if (b.coLenh(m2, 12)) { b.gui(12, (short) -500, (short) 0, (short) 0); b.bom(1500); }
+                b.px = b.tx * 16 + 8;
+                b.py = b.ty * 16 + 8;
+                ghi("hanh dong '" + q.ten + "': Arcanine -> " + noi + " map " + truoc + " -> " + b.mapId + " | " + b.chuTu(m2));
+                // buoc dia diem xet khi DI CHUYEN (KhuVucNhiemVuGame.khiDiChuyen): buoc vai o nhu nguoi choi vua vao
+                BotChucNang.BanDo bdo = BotChucNang.BanDo.nap(b.mapLoad);
+                if (bdo != null) {
+                    KichBanHuongDan.dongBoViTri(b);
+                    for (int k = 0; k < 3; k++) {
+                        int[] o = bdo.oGan(b.px / 16 + (k % 2 == 0 ? 2 : -2), b.py / 16 + 1, 3);
+                        if (o != null) b.diDuong(bdo, o[0], o[1]);
+                    }
+                }
+                b.bom(2000);
+                return "-";
+            }
             if (chu.contains("Mặc 1 món") || chu.contains("Mặc ") && chu.contains("trang bị") && !chu.contains("bậc")) {
                 b.lamMoi();
                 int[] d = b.doDung.isEmpty() ? null : b.doDung.get(0);

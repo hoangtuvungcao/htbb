@@ -10,6 +10,10 @@ public final class NpcDichVuKiem {
         return NpcDichVu.LOI_DI;
     }
 
+    public static int[] oDen(final int[] d) {
+        return NpcDichVu.oDen(d);
+    }
+
     public static int soLoi(final int tuLoad) {
         return NpcDichVu.loiDi(tuLoad).size();
     }

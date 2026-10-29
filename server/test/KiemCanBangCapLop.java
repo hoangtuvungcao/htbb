@@ -32,6 +32,11 @@ public final class KiemCanBangCapLop {
         gymHe();
         baoHiemRoi();
         try {
+            arcanine();
+        } catch (final Exception e) {
+            Kiem.bang("Arcanine khong nem loi", "", String.valueOf(e));
+        }
+        try {
             nguon();
         } catch (final Exception e) {
             Kiem.bang("doc nguon Monster / BossLauDai", "", String.valueOf(e));
@@ -134,6 +139,28 @@ public final class KiemCanBangCapLop {
         Kiem.bang("sau: moi Gym x moi dong danh hieu dung >= x0,7", "[]", conChan.toString());
         Kiem.dung("truoc tran co cap khac he > x1,25 (" + truoc + ")", truoc.contains("2/0:150") && truoc.contains("3/3:150"));
         Kiem.bang("sau tran: moi Gym x moi dong <= x1,25", "[]", qua.toString());
+    }
+
+    /**
+     * Arcanine gac cong (real.NpcDichVu.LOI_DI): o xuat hien nam TRONG ban do dich (cMap rong x cao). Choi 5 dong 30/10/2026:
+     * moi dong ket o #36 'Bảo tàng thiên thạch' - Arcanine dua toi o (88, 168) cua Bao tang 11 x 16 (truyen pixel).
+     */
+    static void arcanine() throws Exception {
+        final List<String> ngoai = new ArrayList<String>();
+        int n = 0;
+        for (final int[] d : real.NpcDichVuKiem.loiDi()) {
+            final byte[] b = java.nio.file.Files.readAllBytes(new java.io.File("cMap/" + d[0]).toPath());
+            final int w = b[0] & 255, h = b[1] & 255;
+            final int[] o = real.NpcDichVuKiem.oDen(d);
+            n++;
+            if (o[0] < 0 || o[1] < 0 || o[0] >= w || o[1] >= h) {
+                ngoai.add(d[0] + ":" + o[0] + "," + o[1] + " (ban do " + w + "x" + h + ")");
+            }
+        }
+        Kiem.dung("Arcanine: du 4 loi di (" + n + ")", n >= 4);
+        Kiem.bang("Arcanine: o xuat hien trong ban do dich", "[]", ngoai.toString());
+        final String s = new String(java.nio.file.Files.readAllBytes(new java.io.File("src/real/NpcDichVu.java").toPath()), "UTF-8");
+        Kiem.dung("Arcanine: move2Map nhan O (khong con d * 16 + 8)", !s.contains("d[1] * 16 + 8") && s.contains("p.map.move2Map(p, o[0], o[1], d[0], p.inCountry)"));
     }
 
     /** Bao hiem xui vat nhiem vu kieu 2 (BaoHiemRoiNhiemVu). */
