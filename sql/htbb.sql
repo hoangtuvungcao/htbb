@@ -31952,7 +31952,8 @@ UPDATE `data_noi_dung_gym` SET `tan_cong` = 1820, `phong_thu` = 453 WHERE `stt` 
 --  cap 1-40). Lan 1 chi do bang hai bot dong Lua -> guc don o Fuchsia / Cinnabar / Gym Cerulean (Nuoc danh Lua x1,5).
 --  Phan MAY CHU (khong o khoi nay, co khoa cau_hinh de chinh / tat, 0 = tat):
 --    quai.xam_cap (4)    quai thap hon nguoi choi >= 4 cap khong tu lao vao (van danh tra khi bi danh)
---    quai.toi_da_vay (3) toi da 3 quai chua bi danh cung danh mot nguoi (truoc: moi quai trong 120 px "fp" cung vao)
+--    quai.toi_da_vay (2) toi da 2 quai chua bi danh cung danh mot nguoi (truoc: moi quai trong 120 px "fp" cung vao;
+--                        do voi 3: 3 Croconaw ~1.500 sat thuong / giay vao dong Lua cap 22-24, guc truoc khi ha xong 1 con)
 --    gym.he_toi_da (125) don truong Gym khac he (x1,5 / x2) ha ve x1,25 - khac he van thiet, khong chan cung
 --    gym.so_de (1)       Gym 1 dau 1 goi 1 de moi pha (truoc 2)
 --    gym.he_ra_toi_thieu (70) dong khong co chieu danh nao qua x0,7 vao he boss (Dien gap Golem / Seismitoad he Dat x0,3)

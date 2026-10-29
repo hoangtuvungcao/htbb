@@ -14,7 +14,7 @@ import java.util.TreeMap;
  * (class 0..4 = Charmander / Bulbasaur / Eevee / Squirtle / Pichu) o Gym va bai cua ai bang bot KichBanDoSuc, choi 5 dong
  * cap 1-40 bang KichBanCap140.
  * <ol>
- *   <li>Quai chu dong (com.htbb.pokemon.ChuDongQuai): quai xam (thap hon >= 4 cap) khong tu lao vao, toi da 3 quai chua
+ *   <li>Quai chu dong (com.htbb.pokemon.ChuDongQuai): quai xam (thap hon >= 4 cap) khong tu lao vao, toi da 2 quai chua
  *       bi danh cung danh mot nguoi, quai bi danh luon danh tra.</li>
  *   <li>Truong Gym: khac he vao nguoi choi tran x1,25 (GiaiDoanBoss.giamKhacHeGym) - MOI dong x MOI Gym (he theo loai cua
  *       dong o cap Gym) <= x1,25; truoc co cap (Gyarados -> dong Lua, Luxray -> dong Nuoc...) x1,5. Chieu nguoi choi vao
@@ -45,7 +45,7 @@ public final class KiemCanBangCapLop {
 
     static void chuDong() {
         final int x = ChuDongQuai.XAM_CAP_MAC_DINH, v = ChuDongQuai.TOI_DA_VAY_MAC_DINH;
-        Kiem.bang("mac dinh quai.xam_cap / quai.toi_da_vay", "4/3", x + "/" + v);
+        Kiem.bang("mac dinh quai.xam_cap / quai.toi_da_vay", "4/2", x + "/" + v);
         // Combusken cap 18 / Butterfree cap 18 voi nguoi cap 24-26 (guc tren duong qua Celadon / Saffron / Fuchsia)
         Kiem.dung("quai thap hon 4 cap la quai xam (16 vs 20)", ChuDongQuai.xam(16, 20, x));
         Kiem.dung("quai thap hon 3 cap khong xam (17 vs 20)", !ChuDongQuai.xam(17, 20, x));
@@ -53,8 +53,8 @@ public final class KiemCanBangCapLop {
         Kiem.dung("nguong 0 = tat luat xam", !ChuDongQuai.xam(1, 99, 0));
         Kiem.dung("quai xam chua bi danh: khong tu lao vao", !ChuDongQuai.duocDanh(18, 26, false, 0, x, v));
         Kiem.dung("quai xam BI DANH thi danh tra", ChuDongQuai.duocDanh(18, 26, true, 9, x, v));
-        Kiem.dung("ngang cap, 2 quai khac dang danh: con thu 3 duoc danh", ChuDongQuai.duocDanh(26, 26, false, 2, x, v));
-        Kiem.dung("ngang cap, 3 quai khac dang danh: con thu 4 cho", !ChuDongQuai.duocDanh(26, 26, false, 3, x, v));
+        Kiem.dung("ngang cap, 1 quai khac dang danh: con thu 2 duoc danh", ChuDongQuai.duocDanh(26, 26, false, 1, x, v));
+        Kiem.dung("ngang cap, 2 quai khac dang danh: con thu 3 cho", !ChuDongQuai.duocDanh(26, 26, false, 2, x, v));
         Kiem.dung("quai bi danh khong tinh tran vay", ChuDongQuai.duocDanh(26, 26, true, 5, x, v));
         Kiem.dung("toi_da_vay 0 = tat", ChuDongQuai.duocDanh(26, 26, false, 50, x, 0));
     }

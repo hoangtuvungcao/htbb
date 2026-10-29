@@ -13,12 +13,13 @@ package com.htbb.pokemon;
  *       {@code toiDaVay}+1 tro di dung cho (giu muc tieu, khong danh) toi khi bot con. Quai da bi nguoi do danh (mat mau)
  *       luon danh tra. Truoc day "fp" (Region / MapVongLap) gan MOI quai trong 120 px vao nguoi dang bi danh.</li>
  * </ul>
- * Khoa cau_hinh (0 = tat luat): {@code quai.xam_cap} (mac dinh 4), {@code quai.toi_da_vay} (mac dinh 3).
+ * Khoa cau_hinh (0 = tat luat): {@code quai.xam_cap} (mac dinh 4), {@code quai.toi_da_vay} (mac dinh 2; do suc Cinnabar voi
+ * 3: ba Croconaw cung danh dong Lua cap 22-24 ~1.500 sat thuong / giay, guc truoc khi ha xong mot con).
  */
 public final class ChuDongQuai {
 
     public static final int XAM_CAP_MAC_DINH = 4;
-    public static final int TOI_DA_VAY_MAC_DINH = 3;
+    public static final int TOI_DA_VAY_MAC_DINH = 2;
     /** Mot quai "dang danh" nguoi choi neu da ra don trong khoang nay (ms). */
     public static final long CUA_SO_VAY_MS = 3500L;
 

@@ -278,7 +278,7 @@ PvP      = sát thương × 0,30, TRẦN 8% HP tối đa của mục tiêu mỗi
 - Thời tiết (khi bật hệ sinh thái): chiêu hợp trời ±10% (mục 7.1), chỉ áp đòn của người chơi.
 - Sau mọi lớp giảm phía bị đánh, đòn còn ít nhất 40% (sàn chống bất tử, mục 4.5).
 - Quái chủ động (`com.htbb.pokemon.ChuDongQuai`, cân bằng 29/10/2026): quái thấp hơn người chơi từ 4 cấp không tự lao vào
-  (`quai.xam_cap`); cùng lúc tối đa 3 quái chưa bị đánh được đánh một người (`quai.toi_da_vay`) - quái đã mất máu luôn đánh
+  (`quai.xam_cap`); cùng lúc tối đa 2 quái chưa bị đánh được đánh một người (`quai.toi_da_vay`) - quái đã mất máu luôn đánh
   trả. Trước đó mọi quái trong 120 px tự vào khi người chơi đang bị đánh (4–6 con trong 1–2 giây).
 - TTK mục tiêu: quái thường hạ người ~12–15 đòn; quái tinh anh ~20 giây; boss Gym 90–120 giây đánh một mình đúng cấp;
   boss thế giới 8–12 phút với 20 người; PvP cùng cấp cùng đồ 10–14 giây.
