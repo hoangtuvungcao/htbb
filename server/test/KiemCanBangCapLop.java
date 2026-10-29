@@ -236,7 +236,7 @@ public final class KiemCanBangCapLop {
         for (final Integer n : lan1) {
             sai += n.intValue() == 1 ? 0 : 1;
         }
-        Kiem.bang("khoi sua_can_bang_lop.sql: 9 lenh, moi lenh khop dung mot dong", "9/0", lan1.size() + "/" + sai);
+        Kiem.bang("khoi sua_can_bang_lop.sql: 17 lenh, moi lenh khop dung mot dong", "17/0", lan1.size() + "/" + sai);
         int lai = 0;
         for (final Integer n : KiemMucTieuNhiemVu.ap(khoi, bang)) {
             lai += n.intValue();
@@ -269,6 +269,24 @@ public final class KiemCanBangCapLop {
             lv.put(d.get("id"), d.get("level"));
         }
         Kiem.bang("Croconaw / Croagunk cap (data_monster)", "24/25", lv.get("29") + "/" + lv.get("30"));
+        Kiem.bang("Crawdaunt / Farfetch'd cap (CA-06.1 cap 33 / CA-07.1 cap 37)", "34/37", lv.get("35") + "/" + lv.get("45"));
+        // muc tieu cua ai giet: quai muc tieu khong cao hon cap toi thieu cua buoc qua 2 cap (cong thuc cu +70 / cap chenh)
+        final Map<String, String> capTen = new HashMap<String, String>();
+        for (final Map<String, String> d : mau) {
+            capTen.put(d.get("name"), d.get("level"));
+        }
+        final List<String> qua = new ArrayList<String>();
+        for (final Map<String, String> q : KiemMucTieuNhiemVu.dongThuong("data_quest_lau_dai")) {
+            if (!"cua_ai".equals(q.get("loai")) || !"giet".equals(q.get("kieu_muc_tieu"))) {
+                continue;
+            }
+            final String c = capTen.get(q.get("muc_tieu_ten"));
+            final int caps = Integer.parseInt(q.get("cap_toi_thieu"));
+            if (c != null && caps < 40 && Integer.parseInt(c) > caps + 2) {
+                qua.add(q.get("ma") + ":" + q.get("muc_tieu_ten") + " " + c + ">" + caps);
+            }
+        }
+        Kiem.bang("cua ai giet cap < 40: quai muc tieu <= cap buoc + 2", "[]", qua.toString());
         final Map<String, Map<String, String>> ld = new HashMap<String, Map<String, String>>();
         for (final Map<String, String> d : quai) {
             ld.put(d.get("id"), d);

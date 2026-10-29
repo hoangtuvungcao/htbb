@@ -1265,6 +1265,19 @@ final class KichBanCap140 {
                 }
                 vuKhiMac = tplVk; // khong mua duoc (het hang): khong thu lai cung bac
             }
+            // don hanh trang nhu nguoi choi: ban do cu (cap <= cap minh - 6) - tui day thi mua thuoc moi loai cung bi chan
+            // (moi loai thuoc chiem mot o; choi 5 dong 30/10: "Không mua được ... hành trang đầy" khi co 32.000 xu)
+            {
+                int ban = 0;
+                long xb = b.xu;
+                for (int[] x : new ArrayList<>(b.doDung)) {
+                    if (ban >= 20 || x.length < 4 || x[3] <= 0 || x[3] > b.lv - 6 || x[4] != 0) continue;
+                    b.gui(28, (short) x[0]);
+                    b.bom(250);
+                    ban++;
+                }
+                if (ban > 0) { b.lamMoi(); ghi("ban " + ban + " mon cu (xu " + xb + " -> " + b.xu + ", tui con " + b.doDung.size() + ")"); }
+            }
             loai = loaiThuoc(); // sau khi mua vu khi
             if (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3) < MUC) {
                 int sl = (int) Math.min(MUC - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3)), b.xu * 6 / 10 / GIA_THUOC[loai]);

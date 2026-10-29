@@ -31982,6 +31982,20 @@ UPDATE `data_monster` SET `level` = 24 WHERE `id` = 29 AND `level` = 26;
 UPDATE `data_monster` SET `level` = 25 WHERE `id` = 30 AND `level` = 27;
 UPDATE `data_monster_lau_dai` SET `cap` = 24, `maxhp` = 3420, `attack` = 524, `defent` = 142, `rcvxp` = 1239, `rcvgold` = 107 WHERE `id` = 29 AND `cap` = 26 AND `maxhp` = 3680 AND `attack` = 550 AND `defent` = 153 AND `rcvxp` = 1453 AND `rcvgold` = 120;
 UPDATE `data_monster_lau_dai` SET `cap` = 25, `maxhp` = 3550, `attack` = 537, `defent` = 148, `rcvxp` = 1346, `rcvgold` = 113 WHERE `id` = 30 AND `cap` = 27 AND `maxhp` = 3800 AND `attack` = 563 AND `defent` = 159 AND `rcvxp` = 1574 AND `rcvgold` = 123;
+-- 4. (30/10/2026, choi 5 dong toi het nhiem vu) cung luat voi muc 3 cho hai cua ai ke tiep: CA-06.1 (cap 33) "50 Crawdaunt
+--    ở Rừng Viridian" - Crawdaunt cap 36 (+3; 4-8 lan guc / gio / dong o Rung Viridian cap 33-34); CA-07.1 (cap 37) "50
+--    Farfetch'd ở Núi Mặt Trăng" - Farfetch'd cap 39 (+2). Ha ve cap 34 (= Tauros) / cap 37 (= Duskull), chi so + thuong
+--    theo cap moi.
+UPDATE `data_monster` SET `level` = 34 WHERE `id` = 35 AND `level` = 36;
+UPDATE `data_monster` SET `level` = 37 WHERE `id` = 45 AND `level` = 39;
+UPDATE `data_monster_lau_dai` SET `cap` = 34, `maxhp` = 5250, `attack` = 706, `defent` = 196, `rcvxp` = 2665, `rcvgold` = 177 WHERE `id` = 35 AND `cap` = 36 AND `maxhp` = 5790 AND `attack` = 758 AND `defent` = 207 AND `rcvxp` = 3077 AND `rcvgold` = 193;
+UPDATE `data_monster_lau_dai` SET `cap` = 37, `maxhp` = 6050, `attack` = 785, `defent` = 212, `rcvxp` = 3306, `rcvgold` = 203 WHERE `id` = 45 AND `cap` = 39 AND `maxhp` = 6580 AND `attack` = 837 AND `defent` = 224 AND `rcvxp` = 3816 AND `rcvgold` = 223;
+--    Cung luat (quai muc tieu cua ai giet <= cap buoc + 2) cho CA-03.1 (cap 10) Quagsire cap 13 -> 12 (= Vulpix) va CA-04.1
+--    (cap 17) Growlithe cap 20 -> 19 (noi suy cap 18..20).
+UPDATE `data_monster` SET `level` = 12 WHERE `id` = 13 AND `level` = 13;
+UPDATE `data_monster` SET `level` = 19 WHERE `id` = 28 AND `level` = 20;
+UPDATE `data_monster_lau_dai` SET `cap` = 12, `maxhp` = 1870, `attack` = 438, `defent` = 104, `rcvxp` = 374, `rcvgold` = 60 WHERE `id` = 13 AND `cap` = 13 AND `maxhp` = 2000 AND `attack` = 446 AND `defent` = 108 AND `rcvxp` = 417 AND `rcvgold` = 63;
+UPDATE `data_monster_lau_dai` SET `cap` = 19, `maxhp` = 2775, `attack` = 485, `defent` = 127, `rcvxp` = 811, `rcvgold` = 85 WHERE `id` = 28 AND `cap` = 20 AND `maxhp` = 2910 AND `attack` = 490 AND `defent` = 129 AND `rcvxp` = 900 AND `rcvgold` = 90;
 UPDATE `data_monster_lau_dai` SET `maxhp` = 10870 WHERE `id` = 60 AND `maxhp` = 12470;
 UPDATE `data_monster_lau_dai` SET `maxhp` = 11660 WHERE `id` = 77 AND `maxhp` = 12860;
 UPDATE `data_monster_lau_dai` SET `maxhp` = 12450 WHERE `id` = 81 AND `maxhp` = 13260;
