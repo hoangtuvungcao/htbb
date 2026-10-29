@@ -138,13 +138,22 @@ public class InputDlg extends Dialog {
         int nhNut = game.pokemon.HopThongBao.caoNut();
         int ww = Math.min(Canvas.w - 24, game.pokemon.ChuDe.dt() ? 340 : 260);
         game.pokemon.HopThongBao.datHuyHieu(game.pokemon.BieuTuong.CUA_HANG, game.pokemon.ChuDe.CHINH, true);
-        int[] kh = game.pokemon.HopThongBao.khung(g, ww, nh + k + nh + k + nhNut + game.pokemon.HopThongBao.pad(), this.title, this.backAction, false);
+        // màn thấp + cỡ chạm lớn (APK mật độ cao: 640x360 logic, nút 52 px): không đủ cao cho hàng chọn nhanh riêng -> GỌN:
+        // một hàng [-] [số] [+] [Tối đa] (bỏ 1 / 5 / 10), hàng nút đáy không đè hàng nào
+        int pad = game.pokemon.HopThongBao.pad();
+        boolean gon = game.pokemon.HopThongBao.caoDauA() + nh + k + nh + k + nhNut + pad + pad
+                > game.pokemon.HopThongBao.caoToiDa() - game.pokemon.HopThongBao.dkHuy() / 2;
+        int[] kh = game.pokemon.HopThongBao.khung(g, ww, gon ? nh + k + nhNut + pad : nh + k + nh + k + nhNut + pad, this.title,
+                this.backAction, false);
         int x = kh[5] - 10, y = kh[1];
         ww = kh[6] + 20;
         int yy = kh[4];
-        // [-] [ô số] [+]
+        final int[] nhanh = {1, 5, 10, -1};
+        int wTat = gon ? Math.max(game.pokemon.VungCham.MIN, game.pokemon.ChuDe.rong("Tối đa", game.pokemon.ChuDe.SO) + 20) : 0;
+        int xCong = x + ww - 10 - nh - (gon ? wTat + k : 0);
+        // [-] [ô số] [+] (gọn: + [Tối đa])
         this.tfInput.x = x + 10 + nh + k;
-        this.tfInput.width = ww - 20 - 2 * (nh + k);
+        this.tfInput.width = xCong - k - this.tfInput.x;
         this.tfInput.height = nh;
         this.tfInput.y = yy;
         game.pokemon.Bang.nut(g, x + 10, yy, nh, nh, "", game.pokemon.Bang.TRUNG, new IAction() {
@@ -152,7 +161,7 @@ public class InputDlg extends Dialog {
                 InputDlg.this.datSo(InputDlg.this.giaTri() - 1);
             }
         }, "so-tru");
-        game.pokemon.Bang.nut(g, x + ww - 10 - nh, yy, nh, nh, "", game.pokemon.Bang.TRUNG, new IAction() {
+        game.pokemon.Bang.nut(g, xCong, yy, nh, nh, "", game.pokemon.Bang.TRUNG, new IAction() {
             public void perform() {
                 InputDlg.this.datSo(InputDlg.this.giaTri() + 1);
             }
@@ -160,16 +169,23 @@ public class InputDlg extends Dialog {
         g.setColor(game.pokemon.ChuDe.CHU);
         int a = nh / 4, cy = yy + nh / 2;
         g.fillRect(x + 10 + nh / 2 - a, cy - 1, 2 * a, 3);
-        int cxp = x + ww - 10 - nh / 2;
+        int cxp = xCong + nh / 2;
         g.fillRect(cxp - a, cy - 1, 2 * a, 3);
         g.fillRect(cxp - 1, cy - a, 3, 2 * a);
+        if (gon) {
+            final int v = toiDa();
+            game.pokemon.Bang.nut(g, x + ww - 10 - wTat, yy, wTat, nh, "Tối đa", game.pokemon.Bang.TRUNG, new IAction() {
+                public void perform() {
+                    InputDlg.this.datSo(v);
+                }
+            }, "so-nhanh-3");
+        }
         this.tfInput.paint(g);
         g.setClip(0, 0, Canvas.w, Canvas.h);
         yy += nh + k;
         // chọn nhanh + Tối đa (soToiDa: nơi gọi đặt theo tiền / chỗ trống; không đặt = theo số chữ số)
-        final int[] nhanh = {1, 5, 10, -1};
         int wc = (ww - 20 - 3 * k) / 4;
-        for (int i = 0; i < nhanh.length; i++) {
+        for (int i = 0; !gon && i < nhanh.length; i++) {
             final int v = nhanh[i] < 0 ? toiDa() : Math.min(nhanh[i], toiDa());
             game.pokemon.Bang.nut(g, x + 10 + i * (wc + k), yy, wc, nh, nhanh[i] < 0 ? "Tối đa" : String.valueOf(v),
                     game.pokemon.Bang.TRUNG, new IAction() {

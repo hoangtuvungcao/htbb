@@ -432,7 +432,7 @@ public final class ManTuDo {
         Bang.hang(g, x, y, w, rh, i, dangThu, null, null);
         final String nut = chuNut(m);
         int hn = Math.max(VungCham.MIN, Math.min(rh - 8, Bang.co(26)));
-        int wn = nut == null ? 0 : Math.min(w * 2 / 5, ChuDe.rong(nut, ChuDe.NHAN) + 22);
+        int wn = nut == null ? 0 : Math.min(w * 2 / 5, Math.max(VungCham.MIN, ChuDe.rong(nut, ChuDe.NHAN) + 22));
         // chạm phần trái (không gồm nút) = thử
         Bang.dangKy(g, x, y, nut == null ? w : w - wn - 6 - Bang.cach() - 2, rh, new IAction() {
             public void perform() {

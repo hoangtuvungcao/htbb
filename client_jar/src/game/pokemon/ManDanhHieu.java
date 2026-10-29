@@ -109,7 +109,7 @@ public final class ManDanhHieu extends ManBang {
         if (deo == null) {
             ChuDe.chuGiua(g, "Chưa đeo danh hiệu nào", xx, yy, hd, ChuDe.NHAN, ChuDe.CHU_NHAT, 0);
         } else {
-            int wTh = ChuDe.rong("Tháo", ChuDe.NHAN) + 24;
+            int wTh = Math.max(VungCham.MIN, ChuDe.rong("Tháo", ChuDe.NHAN) + 24);
             int wv = vien(g, xx, yy + (hd - hVien()) / 2, deo.ten, deo.doHiem, deo.hinh, w - (xx - x) - wTh - 16);
             if (deo.chiSo != null && deo.chiSo.length() > 0) {
                 ChuDe.chuGiua(g, ChuDe.cat(deo.chiSo, ChuDe.PHU, w - (xx - x) - wv - wTh - 24), xx + wv + 6, yy, hd, ChuDe.PHU,
@@ -152,7 +152,7 @@ public final class ManDanhHieu extends ManBang {
         int wPhai = 0;
         if (d.co()) {
             String chu = d.deo() ? "Đang đeo" : "Đeo";
-            int wn = ChuDe.rong(chu, ChuDe.NHAN) + 24;
+            int wn = Math.max(VungCham.MIN, ChuDe.rong(chu, ChuDe.NHAN) + 24);
             int hn = Math.min(h - 6, Bang.co(24));
             if (d.deo()) {
                 GiaoDien.khoi(g, x + w - 8 - wn, y + (h - hn) / 2, wn, hn, hn / 2, ChuDe.CHINH_NHAT);

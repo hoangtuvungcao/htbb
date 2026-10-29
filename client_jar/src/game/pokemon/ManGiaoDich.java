@@ -121,6 +121,13 @@ public final class ManGiaoDich extends Screen {
         int nh = Bang.caoHang();
         int hO = h - nh - k;
         int wb = (wl - k) / 2;
+        // 0.9.22 (APK mật độ cao): lưới chỉ dùng cot x ô - phần dư của hai bên trả cho cột Hành trang (tên đồ không bị cắt)
+        int[] cs = cotO(wb, hO - 13 - Font.blackFont.getHeight());
+        int wCan = 12 + cs[0] * cs[1] + (cs[0] - 1) * k + 4;
+        if (wCan < wb) {
+            wb = wCan;
+            wl = 2 * wb + k;
+        }
         veO(g, x, y, wb, hO, "Bạn đưa", mc().tItems, true);
         veO(g, x + wb + k, y, wl - wb - k, hO, "Bạn nhận", mc().rItems, false);
         // nút
@@ -226,17 +233,13 @@ public final class ManGiaoDich extends Screen {
         });
     }
 
-    /** Ô đồ một bên: 4 cột x 3 hàng (bảng hẹp: 3 x 4). */
-    void veO(Graphics g, int x, int y, int w, int h, String tieuDe, Vector ds, final boolean cuaMinh) {
-        Bang.the(g, x, y, w, h);
-        Font.blackFont.drawString(g, tieuDe, x + 8, y + 5, 0);
+    /** {số cột, cạnh ô} lưới 12 ô của một bên rộng w, cao hl cho lưới: 4 cột x 3 hàng (bảng hẹp: 3 x 4, rồi 2 cột). */
+    static int[] cotO(int w, int hl) {
         int k = Bang.cach();
-        int y0 = y + 9 + Font.blackFont.getHeight();
-        // 4 cột x 3 hàng; bảng hẹp (ô nhỏ hơn cỡ chạm tối thiểu) -> 3 cột x 4 hàng nếu đủ cao
         int cot = 4;
         int s = Math.min(Bang.co(30), (w - 12 - 3 * k) / 4);
         if (s < VungCham.MIN) {
-            int s3 = Math.min(Bang.co(30), Math.min((w - 12 - 2 * k) / 3, (y + h - 4 - y0 - 3 * k) / 4));
+            int s3 = Math.min(Bang.co(30), Math.min((w - 12 - 2 * k) / 3, (hl - 3 * k) / 4));
             if (s3 > s) {
                 cot = 3;
                 s = s3;
@@ -250,6 +253,17 @@ public final class ManGiaoDich extends Screen {
                 s = s2;
             }
         }
+        return new int[]{cot, s};
+    }
+
+    /** Ô đồ một bên: 4 cột x 3 hàng (bảng hẹp: 3 x 4). */
+    void veO(Graphics g, int x, int y, int w, int h, String tieuDe, Vector ds, final boolean cuaMinh) {
+        Bang.the(g, x, y, w, h);
+        Font.blackFont.drawString(g, tieuDe, x + 8, y + 5, 0);
+        int k = Bang.cach();
+        int y0 = y + 9 + Font.blackFont.getHeight();
+        int[] cs = cotO(w, y + h - 4 - y0);
+        int cot = cs[0], s = cs[1];
         for (int i = 0; i < 12; i++) {
             int xi = x + 6 + (i % cot) * (s + k), yi = y0 + (i / cot) * (s + k);
             if (yi + s > y + h - 4) {

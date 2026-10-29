@@ -544,10 +544,14 @@ public final class ManCuaHang extends Screen {
         // tiền đang có + bảng cũ
         int hd = Bang.co(26);
         // xu, lượng (+ lượng khoá ở cửa hàng đặc biệt: có dòng trả bằng lượng khoá); hẹp thì xuống dòng
-        int yl = veVi(g, x + 6, y + 4, w - 12, hd, this.kieu == DAC_BIET) + k;
-        // 0.9.5: bỏ nút "Bảng cũ" - màn mới đã có Mua / Bán (một lối vào mỗi việc)
+        boolean khoa = this.kieu == DAC_BIET;
+        int wCon = w - 12, wVi = rongVi(hd, khoa, wCon), hc = Bang.co(22);
+        int rh = caoHangDs();
         String[] ch = chips();
-        if (ch != null) {
+        int yl;
+        if (ch == null) {
+            yl = veVi(g, x + 6, y + 4, wCon, hd, khoa) + k;
+        } else {
             Object[] vl = new Object[ch.length];
             for (int i = 0; i < ch.length; i++) {
                 final int li = i;
@@ -559,7 +563,28 @@ public final class ManCuaHang extends Screen {
                     }
                 };
             }
-            yl += Bang.hangChip(g, x + 6, yl, w - 12, ch, this.loc, vl) + k;
+            int wCh = Bang.rongHangChip(ch);
+            int wChon = Bang.rongChipChon(Bang.nhanChipChon(ch[Math.max(0, Math.min(ch.length - 1, this.loc))], wCon));
+            int yVi = y + 4, hVi = Math.max(hd, hc);
+            if (wVi <= wCon && wVi + 2 * k + wCh <= wCon) {
+                // ví + MỌI chip một hàng (màn rộng / APK: không tốn thêm hàng - danh sách thấy nhiều món hơn)
+                veVi(g, x + 6, yVi + (hVi - hd) / 2, wCon, hd, khoa);
+                Bang.hangChip(g, x + 6 + wCon - wCh, yVi + (hVi - hc) / 2, wCh, ch, this.loc, vl);
+                yl = yVi + hVi + k;
+            } else {
+                int y2 = veVi(g, x + 6, yVi, wCon, hd, khoa) + k;
+                int conLai = y + h - 4 - y2 - Bang.soHangChip(ch, wCon) * (hc + k);
+                if (conLai >= 3 * rh) {
+                    yl = y2 + Bang.hangChip(g, x + 6, y2, wCon, ch, this.loc, vl) + k;
+                } else if (wVi <= wCon && wVi + 2 * k + wChon <= wCon) {
+                    // chip nhiều hàng chiếm chỗ danh sách: MỘT chip "Lọc: ... ▾" cạnh ví
+                    Bang.chipChon(g, x + 6 + wCon - wChon, yVi + (hVi - hc) / 2, wCon, ch, this.loc, vl, "Lọc cửa hàng", "chip-chon");
+                    yl = yVi + hVi + k;
+                } else {
+                    Bang.chipChon(g, x + 6, y2, wCon, ch, this.loc, vl, "Lọc cửa hàng", "chip-chon");
+                    yl = y2 + hc + k;
+                }
+            }
         }
         final Vector v = dsHang();
         int hl = y + h - 4 - yl;
@@ -570,7 +595,6 @@ public final class ManCuaHang extends Screen {
         }
         // hàng gọn hơn (vẫn >= cỡ chạm tối thiểu) để thấy nhiều món hơn
         // 0.9.7: hàng đủ cao cho 2 dòng (tên + dòng phụ) đo theo font thật - dòng phụ không tràn khung hàng
-        int rh = Math.max(Math.max(VungCham.MIN + 2, Bang.caoHang() * 5 / 6), 2 + Font.blackFont.getHeight() + 1 + Font.arialFont.getHeight() + 3);
         Bang.danhSach(g, this.ds, x + 4, yl, w - 8, hl, v.size(), rh, new Bang.Hang() {
             public void ve(Graphics g, int i, int x, int y, int w, int h) {
                 final Object o = v.elementAt(i);
@@ -583,6 +607,22 @@ public final class ManCuaHang extends Screen {
                 veHang(g, o, x, y, w, h);
             }
         });
+    }
+
+    /** Cao hàng danh sách: gọn hơn (vẫn >= cỡ chạm) để thấy nhiều món; đủ 2 dòng (tên + dòng phụ) theo font thật. */
+    static int caoHangDs() {
+        return Math.max(Math.max(VungCham.MIN + 2, Bang.caoHang() * 5 / 6), 2 + Font.blackFont.getHeight() + 1 + Font.arialFont.getHeight() + 3);
+    }
+
+    /** Bề ngang hàng ví một dòng (như veVi); > w = veVi xuống dòng. */
+    static int rongVi(int h, boolean coKhoa, int w) {
+        int k = Bang.cach();
+        int[] loai = coKhoa ? new int[]{TienTe.XU, TienTe.LUONG, TienTe.LUONG_KHOA} : new int[]{TienTe.XU, TienTe.LUONG};
+        int t = 0;
+        for (int i = 0; i < loai.length; i++) {
+            t += TienTe.rongPill(loai[i], TienShop.dangCo(mc(), loai[i]), h, Font.blackFont) + (i > 0 ? k : 0);
+        }
+        return t;
     }
 
     /**
