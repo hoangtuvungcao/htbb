@@ -206,6 +206,31 @@ public class BotXuyenSuot {
         return ha >= 0 && ha == hang(b2);
     }
 
+    /**
+     * Ban do vua tu choi cho qua (khoa cap / cua ai, "khong cho qua") -> luc ghi; duong() tranh di XUYEN qua chung 30 phut
+     * (truoc 30/10/2026 duong ngan nhat toi New Bark / Rung Viridian di qua Duong Victory 118 khoa cap 69: ket mai mai).
+     */
+    static final Map<Integer, Long> MAP_CHAN = new ConcurrentHashMap<>();
+
+    static boolean dangChan(int map) {
+        Long t = MAP_CHAN.get(map);
+        return t != null && System.currentTimeMillis() - t < 30 * 60000L;
+    }
+
+    /**
+     * Uoc luong duong de CHON ban do (khong dung de di): duong cong, hoac Arcanine "Đến New Bark" (+6 buoc) roi di bo trong
+     * cum Johto 10/11/13/14/15 - Dong.toi tu dung Arcanine khi can.
+     */
+    static List<int[]> duongUocTinh(int tu, int den) {
+        List<int[]> d = duong(tu, den);
+        if (d != null || dangChan(10)) return d;
+        List<int[]> j = duong(10, den);
+        if (j == null) return null;
+        List<int[]> r = new ArrayList<>(j);
+        for (int i = 0; i < 6; i++) r.add(0, new int[]{-1, 10, 0, 0});
+        return r;
+    }
+
     /** Duong qua cong ngan nhat (BFS so map) toi den HOAC mot ban sao cua den. {gate, dich, x, y} hoac null. */
     static List<int[]> duong(int tu, int den) {
         if (cungBanDo(tu, den)) return new ArrayList<>();
@@ -217,6 +242,7 @@ public class BotXuyenSuot {
             int c = q.poll();
             for (int[] e : canh(c)) {
                 if (truoc.containsKey(e[1])) continue;
+                if (!cungBanDo(e[1], den) && dangChan(e[1])) continue; // khong di xuyen ban do dang khoa
                 truoc.put(e[1], new int[]{c, e[0], e[1], e[2], e[3]});
                 if (cungBanDo(e[1], den)) {
                     LinkedList<int[]> r = new LinkedList<>();
@@ -569,11 +595,41 @@ public class BotXuyenSuot {
             }
         }
 
+        /**
+         * Arcanine gac cong (NPC loai 4, o lang): "Đến {noi}". Ve lang gan nhat co duong truoc. true = da toi ban do khac.
+         */
+        boolean quaArcanine(String noi) throws Exception {
+            if (!KichBanDS.laLang(b.mapId)) {
+                int tot = -1, ds = 999;
+                for (int c : new int[]{0, 301, 70, 80, 1701, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
+                if (tot < 0 || !toi(tot)) return false;
+            }
+            if (KichBanHuongDan.toiNpc(b, 4) != null) return false;
+            int m = b.moc();
+            b.gui(23, (byte) 4);
+            if (b.doiMenu(m, 4, 0, 3000) <= 0) return false;
+            int i = b.timMuc(noi);
+            if (i < 0) { ghi("Arcanine khong co '" + noi + "': " + b.menuChu); return false; }
+            int m2 = b.moc(), truoc = b.mapId;
+            b.menu(4, 0, i);
+            b.cho(x -> x.coLenh(m2, 12), 6000);
+            if (b.coLenh(m2, 12)) { b.gui(12, (short) -500, (short) 0, (short) 0); b.bom(1500); }
+            b.px = b.tx * 16 + 8;
+            b.py = b.ty * 16 + 8;
+            ghi("Arcanine -> " + noi + ": map " + truoc + " -> " + b.mapId + " | " + b.chuTu(m2));
+            return b.mapId != truoc;
+        }
+
         // ---------------------------------------------------------------- di chuyen giua cac map
         boolean toi(int dich) throws Exception {
             if (cungBanDo(b.mapId, dich)) return true;
             int tu = b.mapId;
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
+            // cum Johto 10/11/13/14/15 khong di bo toi duoc truoc cap 69 (chi qua 118 / 23 / 24): Arcanine "Đến New Bark"
+            if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {
+                if (quaArcanine("New Bark")) tu = b.mapId;
+                else MAP_CHAN.put(10, System.currentTimeMillis());
+            }
             List<int[]> d = duong(tu, dich);
             if (d == null) { ketLyDo("khong co duong tu map " + tu + " toi " + dich); return false; }
             for (int[] e : d) {
@@ -602,6 +658,7 @@ public class BotXuyenSuot {
                 uongThuoc();
                 if (b.mapId == truoc) {
                     String t = b.chuTu(m);
+                    MAP_CHAN.put(e[1], System.currentTimeMillis());
                     ketLyDo("cong " + truoc + "->" + e[1] + " khong cho qua: " + (t.length() > 160 ? t.substring(0, 160) : t));
                     return false;
                 }

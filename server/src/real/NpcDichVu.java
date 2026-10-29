@@ -28,8 +28,13 @@ public final class NpcDichVu {
      */
     public static final int NPC_ARCANINE = 4;
     /** {ban do, o x, o y} diem den cua tung loi di (o di duoc, ngay duoi Arcanine ben kia; 100 = giua nha). */
-    static final int[][] LOI_DI = {{100, 5, 10}, {118, 43, 24}, {41, 30, 15}, {42, 34, 43}};
-    static final String[] TEN_LOI_DI = {"Bảo tàng Pewter", "Đường Victory", "Chân núi Silver", "Núi Silver"};
+    /**
+     * 30/10/2026 them New Bark (10, o den cua cong tu Rung Viridian): cum Johto 10 / 11 / 13 / 14 / 15 (mo o cap 27-40 theo
+     * cua ai CA-05..CA-07) chi noi voi Kanto qua cong 118 / 23 / 24 (khoa cap 69-73) - nguoi choi cap 27-68 KHONG di bo toi
+     * duoc (choi 5 dong ket o "Cửa ải: 50 Crawdaunt ở Rừng Viridian"). Khoa ban do (cap 27 + CA-05.3) van ap qua diLoi.
+     */
+    static final int[][] LOI_DI = {{100, 5, 10}, {118, 43, 24}, {41, 30, 15}, {42, 34, 43}, {10, 97, 2}};
+    static final String[] TEN_LOI_DI = {"Bảo tàng Pewter", "Đường Victory", "Chân núi Silver", "Núi Silver", "New Bark"};
     /** Kangaskhan thu kho (trong nha / thi tran): menu "Mo kho do" + "Mo rong hanh trang" (real.MoRongTuiGame). */
     public static final int NPC_KANGASKHAN = 9, NPC_KANGASKHAN_2 = 30;
     /** Gia mot chuyen bay Pidgeot (xu, truoc giam theo thu nhap BaiLuyenTap.giaDichChuyen) - bang tuyen bay cu 500..750. */

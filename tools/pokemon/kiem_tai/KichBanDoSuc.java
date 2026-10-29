@@ -89,6 +89,12 @@ final class KichBanDoSuc {
         HoiQuy.napTheGioi(g);
         BotXuyenSuot.napTheGioi(g);
         if (Boolean.getBoolean("doSucDuong")) { // chan doan: ban do co quai di bo toi duoc tu moi lang
+            for (String c : System.getProperty("doSucCanh", "").split(",")) {
+                if (c.isEmpty()) continue;
+                StringBuilder sb = new StringBuilder("  canh " + c + " (load " + BotXuyenSuot.LOAD.get(Integer.parseInt(c.trim())) + "):");
+                for (int[] e : BotXuyenSuot.canh(Integer.parseInt(c.trim()))) sb.append(' ').append(e[1]);
+                System.out.println(sb);
+            }
             for (int tu : new int[]{0, 70, 80, 301, 1701, 1901}) {
                 StringBuilder sb = new StringBuilder("  tu " + tu + ":");
                 for (int mid : BotXuyenSuot.MAP_THU) {
@@ -101,7 +107,9 @@ final class KichBanDoSuc {
                 for (String dich : System.getProperty("doSucDuongToi", "").split(",")) {
                     if (dich.isEmpty()) continue;
                     List<int[]> du = BotXuyenSuot.duong(tu, Integer.parseInt(dich.trim()));
-                    sb.append(" ->").append(dich).append(du == null ? ":khong" : ":co(" + du.size() + " cong)");
+                    StringBuilder qua = new StringBuilder();
+                    if (du != null) for (int[] e : du) qua.append(e[1]).append(' ');
+                    sb.append(" ->").append(dich).append(du == null ? ":khong" : ":co(" + qua.toString().trim() + ")");
                 }
                 System.out.println(sb);
             }

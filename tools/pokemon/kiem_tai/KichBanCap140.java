@@ -115,7 +115,7 @@ final class KichBanCap140 {
         for (int mid : BotXuyenSuot.MAP_THU) {
             Integer l = BotXuyenSuot.LOAD.get(mid);
             if (l == null || !l.equals(load)) continue;
-            List<int[]> d = BotXuyenSuot.duong(tu, mid);
+            List<int[]> d = BotXuyenSuot.duongUocTinh(tu, mid);
             if (d != null && d.size() < ds) { ds = d.size(); tot = mid; }
         }
         return tot;
@@ -670,7 +670,7 @@ final class KichBanCap140 {
                 for (int t : BotXuyenSuot.luoiQuai(l)) {
                     Integer c = BotXuyenSuot.CAP_QUAI.get(t);
                     if (c == null || c - b.lv < -3 || c - b.lv > 3) continue;
-                    List<int[]> d = BotXuyenSuot.duong(b.mapId, mid);
+                    List<int[]> d = BotXuyenSuot.duongUocTinh(b.mapId, mid);
                     if (d == null) continue;
                     int sc = d.size() * 2 + Math.abs(c - b.lv);
                     if (sc < diem) { diem = sc; tot = mid; }
@@ -691,7 +691,7 @@ final class KichBanCap140 {
                 int top = -1;
                 for (int t : BotXuyenSuot.luoiQuai(l)) { Integer c = BotXuyenSuot.CAP_QUAI.get(t); if (c != null && c <= b.lv + 4) top = Math.max(top, c); }
                 if (top < 0) continue;
-                List<int[]> d = BotXuyenSuot.duong(b.mapId, mid);
+                List<int[]> d = BotXuyenSuot.duongUocTinh(b.mapId, mid);
                 if (d == null) continue;
                 if (top > capTot || top == capTot && d.size() < dsTot) { tot = mid; capTot = top; dsTot = d.size(); }
             }
@@ -812,7 +812,7 @@ final class KichBanCap140 {
                     chuNv("'" + q.ten + "': " + HoiQuy.TEN_QUAI.get(tpl) + " ghi o " + tenBd + " nhung khong sinh o do");
                 if (dich < 0 && co != null) {
                     int ds = Integer.MAX_VALUE;
-                    for (int mid : co) { List<int[]> d = BotXuyenSuot.duong(b.mapId, mid); if (d != null && d.size() < ds) { ds = d.size(); dich = mid; } }
+                    for (int mid : co) { List<int[]> d = BotXuyenSuot.duongUocTinh(b.mapId, mid); if (d != null && d.size() < ds) { ds = d.size(); dich = mid; } }
                 }
                 if (dich < 0) return "khong biet ban do cua quai " + tpl + " (" + HoiQuy.TEN_QUAI.get(tpl) + ")";
                 Integer cq = BotXuyenSuot.CAP_QUAI.get(tpl);
@@ -843,6 +843,25 @@ final class KichBanCap140 {
             // buoc dia diem khong co cong di bo (Bao tang Pewter, Duong Victory, Nui Silver...): chu goi y "nhờ Arcanine gác
             // cổng (hãy tới X)" - nguoi choi ve lang, noi chuyen Arcanine (NPC loai 4), chon "Đến X". Truoc 29/10/2026 bot
             // ket o #36 'Bảo tàng thiên thạch' (ca 5 dong, cap 26-31).
+            // buoc "Đến X ... (hãy tới X)" khong co o: ca ban do la vung dich (data_nhiem_vu_khu_vuc 0..255) - toi X, buoc vai o
+            Matcher mt = Pattern.compile("\\(hãy tới ([^)]+)\\)").matcher(chu);
+            if (!chu.contains("Arcanine") && mt.find() && LOAD_THEO_TEN.containsKey(mt.group(1).trim())) {
+                if (lan > 6) return "toi " + mt.group(1) + " 6 lan van chua xong";
+                int dich = mapTheoTen(b.mapId, mt.group(1).trim());
+                if (dich < 0) return "khong co duong toi " + mt.group(1);
+                if (!toi(dich)) return "khong toi duoc " + mt.group(1);
+                BotChucNang.BanDo bdo = BotChucNang.BanDo.nap(b.mapLoad);
+                if (bdo != null) {
+                    KichBanHuongDan.dongBoViTri(b);
+                    for (int k = 0; k < 3; k++) {
+                        int[] o = bdo.oGan(b.px / 16 + (k % 2 == 0 ? 2 : -2), b.py / 16 + 1, 3);
+                        if (o != null) b.diDuong(bdo, o[0], o[1]);
+                    }
+                }
+                ghi("hanh dong '" + q.ten + "': toi " + mt.group(1) + " (map " + b.mapId + ")");
+                b.bom(1500);
+                return "-";
+            }
             Matcher ma = Pattern.compile("Arcanine gác cổng[^(]*\\(hãy tới ([^)]+)\\)").matcher(chu);
             if (ma.find()) {
                 if (lan > 6) return "Arcanine khong dua toi " + ma.group(1) + " sau 6 lan";
