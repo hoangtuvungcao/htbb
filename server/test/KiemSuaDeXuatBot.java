@@ -182,6 +182,11 @@ final class KiemSuaDeXuatBot {
         final String ham = iHam > 0 ? xl.substring(iHam, xl.indexOf("static void doChangeMap(", iHam)) : "";
         Kiem.dung("congSaiO: kick chi khi sai.kick", ham.indexOf("if (!sai.kick)") > 0 && ham.indexOf("if (!sai.kick)") < ham.indexOf("kickPlayer"));
         Kiem.dung("congSaiO: log [CONG_SAI_O] co gioi han", ham.contains("\"CONG_SAI_O\"") && ham.contains("if (sai.ghiLog)"));
+        // cong kiem 29/10/2026 (cot_truyen): tu choi khong im lang - bao ly do cho nguoi choi truoc khi nap lai
+        final int iKhongKick = ham.indexOf("if (!sai.kick)");
+        Kiem.dung("congSaiO: tu choi (khong kick) bao ly do lyDoCongSaiO", iKhongKick > 0
+                && ham.indexOf("ThongBao.rieng(player, lyDoCongSaiO(player, toMapID))", iKhongKick) > iKhongKick
+                && ham.indexOf("ThongBao.rieng(player, lyDoCongSaiO(player, toMapID))", iKhongKick) < ham.indexOf("return false;", iKhongKick));
         final String ld = doc("src/real/MapLienDau.java");
         Kiem.sai("MapLienDau: het kick ngay 'mapliendau 5/6'", ld.contains("\"mapliendau 5\"") || ld.contains("\"mapliendau 6\""));
         Kiem.dung("MapLienDau: dung chung congSaiO", ld.contains("MapXuLyLenh.congSaiO(this, player, toMapID, toTX, toTY"));

@@ -390,6 +390,37 @@ public final class KiemGymMotTran {
             BAO.bang("don xong: bang quai Pewter khong con quai trieu hoi", Integer.valueOf(0),
                     Integer.valueOf((int) pewter.monsters.get(0).values().stream().filter(q -> q.khongHoiSinh).count()));
 
+            // ---- 7b. cong kiem 29/10/2026 (cot_truyen): don ket lieu (MapDanhNhau goi 17 ...) goi BossLauDai.sauDon SAU
+            // onDropItem -> khiChet. Truoc: sauDon tao lai trang thai boss MOI (gym 0) cho boss da guc -> pha 3 -> goiDe ->
+            // de mo coi o lai Pewter mai mai, danh guc nguoi choi cap 4 di ngang (bi tu choi o cong 0->1, khong biet vi sao).
+            final boolean[] m7 = {false};
+            final Monster boss7 = BossLauDai.moGym(p, 1, tpl, 12, 5000, 10, 10, 600000L, m7);
+            dung("7b: moGym tao boss moi", m7[0] && boss7 != null);
+            boss7.hp = 0;
+            BossLauDai.khiChet(boss7); // Monster.onDropItem (don ket lieu)
+            BossLauDai.sauDon(p, boss7, 4000); // MapDanhNhau.doAttackMonster: goi 17 sau onDropItem
+            BossLauDai.sauDon(khac, boss7, 4000); // nguoi khac (than thu / chieu lan) cung luc
+            final long deMoCoi = pewter.monsters.get(0).values().stream().filter(q -> q != boss7 && q.khongHoiSinh && !q.isDead).count();
+            BAO.bang("7b: sauDon sau khi boss Gym guc: khong goi de mo coi", Long.valueOf(0L), Long.valueOf(deMoCoi));
+            final Monster bossSong = BossLauDai.moGym(p, 1, tpl, 12, 5000, 10, 10, 600000L, m7);
+            final int deTruoc = (int) pewter.monsters.get(0).values().stream().filter(q -> q.khongHoiSinh && !q.isDead).count();
+            BossLauDai.goiDe(bossSong, 1);
+            final int deSau = (int) pewter.monsters.get(0).values().stream().filter(q -> q.khongHoiSinh && !q.isDead).count();
+            dung("7b: boss con song van goi de (pha moi)", deSau > deTruoc);
+            BossLauDai.huyGymCua(p, false);
+            bossSong.hp = 0;
+            final int deTruoc2 = (int) pewter.monsters.get(0).values().stream().filter(q -> q.khongHoiSinh && !q.isDead).count();
+            BossLauDai.goiDe(bossSong, 3);
+            BAO.bang("7b: goiDe cho boss da guc / da go: khong goi", Integer.valueOf(deTruoc2),
+                    Integer.valueOf((int) pewter.monsters.get(0).values().stream().filter(q -> q.khongHoiSinh && !q.isDead).count()));
+            donHang(pewter);
+            // nguoi choi bi tu choi o cong (MapXuLyLenh.congSaiO): luon co cau bao ly do (truoc: nap lai im lang)
+            p.hp = 0;
+            dung("7b: cong sai o khi guc: bao hoi sinh", MapXuLyLenh.lyDoCongSaiO(p, 1).contains("bị hạ gục"));
+            p.hp = 100;
+            final String lyCong = MapXuLyLenh.lyDoCongSaiO(p, 1);
+            dung("7b: cong sai o khi song: bao di sat cong", lyCong.startsWith("Không qua cổng được") && lyCong.contains("đi sát vào cổng"));
+
             // ---- 8. ban do dac biet: khong trieu hoi
             final Map ld = new MapTown(); // Cao nguyen 201: duoc
             dung("Cao nguyen (MapTown) trieu hoi duoc", GymLauDai.banDoDuocTrieu(ld));

@@ -99,7 +99,14 @@ public final class BossLauDai {
             return dam;
         }
         try {
-            final TrangThai t = lay(mt, true);
+            // Don ket lieu: MapDanhNhau / MapLienDau / MapClan / MapTown / RegionVantienTran goi sauDon SAU onDropItem
+            // (khiChet da go boss + de, xoa BOSS). Truoc 29/10/2026 lay(mt, true) tao lai trang thai MOI (gym 0) cho boss da
+            // guc -> pha 1 -> 3 -> goiDe: de mo coi o lai lang mai mai (khong ai don: donGym bo qua gym 0), danh nguoi
+            // choi moi di ngang (cong kiem cot_truyen: bot cap 4 guc o Pewter 27,46 -> "cong 0->1 khong cho qua").
+            final TrangThai t = lay(mt, !daGuc(mt));
+            if (t == null) {
+                return dam;
+            }
             if (t.gym > 0 && t.chuGym != p.charDBID) {
                 return 0; // Gym 1 dau 1: nguoi khac danh khong tinh, khong gay sat thuong
             }
@@ -134,8 +141,16 @@ public final class BossLauDai {
         p.sendToNearPlayer(m);
     }
 
+    /** Boss da guc / da go (hp 0 hoac isDead): khong mo trang thai moi, khong goi de. */
+    static boolean daGuc(final Monster m) {
+        return m == null || m.isDead || m.hp <= 0;
+    }
+
     /** Goi de (2..6) quanh boss - MonsterSumon (tu bien mat, khong hoi sinh). */
     static void goiDe(final Monster boss, final int soNguoi) {
+        if (daGuc(boss)) {
+            return; // boss da guc: de se khong bao gio duoc go cung boss (mo coi)
+        }
         try {
             final Map map = boss.map;
             final MonsterTemplate t = Map.monsterTemplates.get(Integer.valueOf(LauDai.so("boss.de.mau", 2)));
