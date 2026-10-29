@@ -224,6 +224,8 @@ public class Session extends Thread {
                 DemGoiTin.ghiVao(this.charname, message.command);
                 try {
                     this.messageHandler.processMessage(this, message);
+                } catch (java.io.EOFException var10) {
+                    real.GoiTinCut.dem(this.charname, message.command);   // goi cut ngan: bo goi, khong phai loi may chu
                 } catch (Exception var10) {
                     server.ChiSoMayChu.LOI_XU_LY.incrementAndGet();
                     // Truoc day nuot im lang: loi xu ly goi khong de lai dau vet nao. Nhat chi

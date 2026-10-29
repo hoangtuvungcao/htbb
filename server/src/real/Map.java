@@ -7504,7 +7504,12 @@ public class Map implements Runnable {
 
     // Than method (430 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public void processMessage(Char player, Message message) throws IOException {
-        MapXuLyLenh.processMessage(this, player,message);
+        try {
+            MapXuLyLenh.processMessage(this, player,message);
+        } catch (java.io.EOFException e) {
+            // goi tin cut ngan (client sai / gui bay): bo goi, khong ghi stack ra log loi
+            GoiTinCut.dem(player, message);
+        }
     }
     // Cai Tao Cai Trang: danh sach bo thoi trang vinh vien cai tao duoc (bo dang mac dung
     // dau, roi hanh trang). Luat, nhom, gia: xem real/CaiTaoCaiTrang.

@@ -1454,6 +1454,9 @@ public class OfflineMap extends Map {
 
             for (int i = 0; i < var15; i++) {
                short id = msg.dis.readShort();
+               if (id < 0 || id >= gemTemplate.length || gemTemplate[id] == null) {
+                  continue;   // id ngoc sai (goi tin sai): bo qua
+               }
                GemTemplate g = gemTemplate[id];
                if (g.typeMoney == 0
                      && (long)(g.getPrice(isSale) + (maptrongthanh ? taxOfClan[player.inCountry] * g.getPrice(isSale) / 100 : 0)) > player.getxu()
