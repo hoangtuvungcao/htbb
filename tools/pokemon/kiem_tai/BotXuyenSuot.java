@@ -482,8 +482,20 @@ public class BotXuyenSuot {
             return sb.toString();
         }
 
+        /** Luc guc gan day (ms) - KichBanCap140: guc lien tiep thi luyen bai an toan / tiet kiem mua vu khi. */
+        final java.util.ArrayDeque<Long> lucGuc = new java.util.ArrayDeque<>();
+
+        int gucGanDay(long ms) {
+            long bay = System.currentTimeMillis();
+            int n = 0;
+            for (long t : lucGuc) if (bay - t < ms) n++;
+            return n;
+        }
+
         void hoiSinh() throws Exception {
             soChet++;
+            lucGuc.addLast(System.currentTimeMillis());
+            while (lucGuc.size() > 10) lucGuc.removeFirst();
             ghi("chet -> ve lang | maxhp " + b.maxhp + " | don cuoi: " + tomTatDon());
             int m = b.moc();
             b.gui(31, new byte[0]);

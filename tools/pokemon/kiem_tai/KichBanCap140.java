@@ -498,6 +498,14 @@ final class KichBanCap140 {
                     return;
                 }
             }
+            // guc >= 3 lan / 20 phut: nhu nguoi choi - luyen o bai ngang cap 15 phut (kiem xu mua vu khi / len cap) roi quay lai
+            if (gucGanDay(20 * 60000L) >= 3 && System.currentTimeMillis() - lanLuyenAnToan > 25 * 60000L) {
+                lanLuyenAnToan = System.currentTimeMillis();
+                ghi("guc " + gucGanDay(20 * 60000L) + " lan / 20 phut -> luyen bai ngang cap 15 phut");
+                muaThuoc();
+                luyen(15);
+                return;
+            }
             hop95(0);
             docNv();
             if (traXong()) return;
@@ -1186,7 +1194,7 @@ final class KichBanCap140 {
             return ha;
         }
 
-        long lanMuaThuoc;
+        long lanMuaThuoc, lanLuyenAnToan;
         int vuKhiMac = -1;
         static final int[] GIA_THUOC = {0, 100, 500, 800};
 
@@ -1198,7 +1206,7 @@ final class KichBanCap140 {
          *   3. giap / phu kien bac cap (moi o mot mon, re truoc) bang tien thua sau khi giu du tru + tiet kiem vu khi bac sau.
          * Ve tiem khi con < DU_TRU binh hoac co mon moi de mua (cach nhau >= 3 phut).
          */
-        static final int DU_TRU = 8, MUC = 20;
+        static final int DU_TRU = 6, MUC = 12;
         /** Xu giu lai khi mua vu khi (~5 binh 1000 HP): nguoi that mua vu khi ngay khi du tien, con lai mua thuoc. */
         static final long DU_TRU_XU = 4000;
         final Map<Integer, Integer> giapMac = new HashMap<>(); // type -> cap mon da mac (mua o tiem)
@@ -1279,8 +1287,11 @@ final class KichBanCap140 {
                 if (ban > 0) { b.lamMoi(); ghi("ban " + ban + " mon cu (xu " + xb + " -> " + b.xu + ", tui con " + b.doDung.size() + ")"); }
             }
             loai = loaiThuoc(); // sau khi mua vu khi
-            if (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3) < MUC) {
-                int sl = (int) Math.min(MUC - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3)), b.xu * 6 / 10 / GIA_THUOC[loai]);
+            // vu khi chua dung bac cap: chi giu du tru thuoc, de danh xu mua vu khi (nguoi choi uu tien vu khi; bot cu mua 20
+            // binh 800 xu moi lan, o cap 33 van cam vu khi cap 16 va guc moi 5 phut o Rung Viridian)
+            int mucThuoc = tplVk != vuKhiMac ? DU_TRU : MUC;
+            if (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3) < mucThuoc) {
+                int sl = (int) Math.min(mucThuoc - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3)), b.xu * 6 / 10 / GIA_THUOC[loai]);
                 if (sl > 0) {
                     int t0 = b.soThuoc(loai);
                     int m = b.moc();
