@@ -480,6 +480,12 @@ final class KichBanCap140 {
         void vong() throws Exception {
             BotXuyenSuot.quetLog();
             b.lamMoi();
+            // trong nha / khu khong co cong di bo (Bao tang 100 sau Arcanine): ra cua nhu nguoi choi truoc khi tim duong
+            if (b.mapId >= 0 && !BotXuyenSuot.LOAD.containsKey(b.mapId)) {
+                int truoc = b.mapId;
+                KichBanDS2.raNgoai(b);
+                if (b.mapId != truoc) ghi("ra khoi map " + truoc + " -> " + b.mapId);
+            }
             kiem();
             ghiCap();
             if (b.su.size() > 20000) b.su.subList(0, 15000).clear(); // gioi han bo nho (moc cu khong con dung)
