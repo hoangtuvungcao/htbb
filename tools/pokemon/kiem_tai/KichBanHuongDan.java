@@ -481,11 +481,26 @@ class KichBanHuongDan {
         }
     }
 
+    /** Do dai log luc lop nap (dau kich ban): chi xet dong MOI, khong dinh loi cu cua lan chay / nhom truoc. */
+    static final long LOG_DAU = doDaiLog();
+
+    static long doDaiLog() {
+        String log = System.getProperty("log");
+        return log == null ? 0L : new File(log).length();
+    }
+
     static void logSach() {
         String log = System.getProperty("log");
         if (log == null) return;
         try {
-            List<String> l = Files.readAllLines(new File(log).toPath());
+            List<String> l;
+            try (java.io.RandomAccessFile r = new java.io.RandomAccessFile(log, "r")) {
+                long tu = LOG_DAU <= r.length() ? LOG_DAU : 0L;
+                byte[] b = new byte[(int) (r.length() - tu)];
+                r.seek(tu);
+                r.readFully(b);
+                l = java.util.Arrays.asList(new String(b, java.nio.charset.StandardCharsets.UTF_8).split("\n"));
+            }
             String loi = "";
             for (String s : l) if (s.contains("HuongDanTanThu") || (s.contains("Exception") && s.contains("real."))) loi += s + " / ";
             ket("hd.log_khong_loi", loi.isEmpty(), loi.length() > 400 ? loi.substring(0, 400) : loi);
