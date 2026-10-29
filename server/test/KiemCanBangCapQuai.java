@@ -95,6 +95,9 @@ public final class KiemCanBangCapQuai {
         final String khoi = DayDu.phanNangCap("sua_can_bang_cap.sql");
         final Map<String, List<Map<String, String>>> bang = new HashMap<String, List<Map<String, String>>>();
         bang.put("data_monster_lau_dai", moi);
+        final List<Map<String, String>> gymGoc = KiemMucTieuNhiemVu.dongThuong("data_noi_dung_gym");
+        final List<Map<String, String>> gym = KiemMucTieuNhiemVu.sao(gymGoc);
+        bang.put("data_noi_dung_gym", gym);
         final List<Integer> lan1 = KiemMucTieuNhiemVu.ap(khoi, bang);
         int sai = 0;
         for (final Integer n : lan1) {
@@ -137,6 +140,24 @@ public final class KiemCanBangCapQuai {
             }
         }
         Kiem.bang("quai cap >= 60 giu nguyen", Integer.valueOf(0), Integer.valueOf(doiNgoai));
+        // truong Gym: cung muc giam, Pewter (12) va Gym cap >= 60 giu nguyen, HP giu nguyen, tan cong / thu tang theo cap
+        final List<String> loiGym = new ArrayList<String>();
+        int truocTc = 0, truocTh = 0;
+        for (int i = 0; i < gym.size(); i++) {
+            final Map<String, String> g0 = gymGoc.get(i), g1 = gym.get(i);
+            final int cap = Integer.parseInt(g1.get("cap"));
+            final boolean doi = !g0.equals(g1);
+            if (doi != (cap > 12 && cap < 60) || !g0.get("hp").equals(g1.get("hp"))) {
+                loiGym.add(g1.get("stt"));
+            }
+            final int tc = Integer.parseInt(g1.get("tan_cong")), th = Integer.parseInt(g1.get("phong_thu"));
+            if (tc < truocTc || th < truocTh) {
+                loiGym.add(g1.get("stt") + " giam");
+            }
+            truocTc = tc;
+            truocTh = th;
+        }
+        Kiem.bang("truong Gym cap 13..59 giam tan cong / thu, HP giu, khong giam theo cap", "[]", loiGym.toString());
 
         // ---- gia do cua hang
         final List<Map<String, String>> item = KiemMucTieuNhiemVu.sao(KiemMucTieuNhiemVu.dongThuong("data_item"));

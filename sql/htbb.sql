@@ -31767,6 +31767,8 @@ UPDATE `data_item` SET `price` = 171000 WHERE `id` = 213 AND `price` = 310000;
 --   2. TAN CONG giam toi 15%: bot thuoc / guc khi bi nhieu con danh cung luc.
 --   3. BAC THANG CAP 31: HP x1,29 va tan cong x1,21 trong mot cap (30 -> 31, muc TTK 4 -> 5 giay). Noi suy thang HP / tan
 --      cong cap 31..39 giua cap 30 va cap 40 (truoc khi giam o muc 2) -> moi cap +4..6%.
+--   4. TRUONG GYM cap 13-59 (data_noi_dung_gym, stt 2..10): cung muc giam tan cong / thu (bot: Gyarados Cerulean cap 19 ha
+--      nguoi cap 24 trong ~50 giay, muc tieu thiet ke 90-120 giay danh mot minh dung cap). HP / TTK / thuong giu nguyen.
 --  HP cap <= 30 va >= 40, EXP, xu roi giu nguyen. Chay lai duoc: UPDATE theo id + 3 GIA TRI CU. Doi xong khoi dong lai
 --  server game. Kiem: server/test/KiemCanBangCap (KiemCanBangCapQuai).
 -- ==================================================================================
@@ -31812,3 +31814,12 @@ UPDATE `data_monster_lau_dai` SET `maxhp` = 8780, `attack` = 1127, `defent` = 33
 UPDATE `data_monster_lau_dai` SET `maxhp` = 9110, `attack` = 1184, `defent` = 364 WHERE `id` = 74 AND `maxhp` = 9110 AND `attack` = 1260 AND `defent` = 405;
 UPDATE `data_monster_lau_dai` SET `maxhp` = 9430, `attack` = 1242, `defent` = 392 WHERE `id` = 76 AND `maxhp` = 9430 AND `attack` = 1294 AND `defent` = 420;
 UPDATE `data_monster_lau_dai` SET `maxhp` = 9750, `attack` = 1302, `defent` = 420 WHERE `id` = 65 AND `maxhp` = 9750 AND `attack` = 1329 AND `defent` = 434;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 728, `phong_thu` = 153 WHERE `stt` = 2 AND `tan_cong` = 813 AND `phong_thu` = 185;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 768, `phong_thu` = 165 WHERE `stt` = 3 AND `tan_cong` = 903 AND `phong_thu` = 220;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 1185, `phong_thu` = 242 WHERE `stt` = 4 AND `tan_cong` = 1394 AND `phong_thu` = 323;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 1251, `phong_thu` = 262 WHERE `stt` = 5 AND `tan_cong` = 1472 AND `phong_thu` = 349;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 1318, `phong_thu` = 280 WHERE `stt` = 6 AND `tan_cong` = 1550 AND `phong_thu` = 374;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 1445, `phong_thu` = 320 WHERE `stt` = 7 AND `tan_cong` = 1680 AND `phong_thu` = 418;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 1524, `phong_thu` = 347 WHERE `stt` = 8 AND `tan_cong` = 1732 AND `phong_thu` = 434;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 1733, `phong_thu` = 422 WHERE `stt` = 9 AND `tan_cong` = 1863 AND `phong_thu` = 478;
+UPDATE `data_noi_dung_gym` SET `tan_cong` = 1820, `phong_thu` = 453 WHERE `stt` = 10 AND `tan_cong` = 1916 AND `phong_thu` = 494;

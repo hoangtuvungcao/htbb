@@ -416,6 +416,24 @@ public class BotXuyenSuot {
             b.gui(12, (short) -500, (short) 0, (short) 0);
             b.bom(800);
             b.lamMoi();
+            hoiMau("sau khi ve lang");
+        }
+
+        /**
+         * Nguoi choi binh thuong: ve lang voi it mau thi uong thuoc truoc khi ra ngoai (truoc day bot ra ngay voi ~5% HP, guc
+         * lien tiep o cung buoc - bao cao can bang cap 26/10/2026). Toi da 8 binh, dung khi >= 70% HP / het thuoc.
+         */
+        void hoiMau(String vi) throws IOException {
+            int uong = 0, hp0 = b.hp;
+            for (int lan = 0; lan < 8 && b.hp > 0 && b.hp < b.maxhp * 7 / 10; lan++) {
+                int t = b.soThuoc(3) > 0 ? 3 : b.soThuoc(2) > 0 ? 2 : b.soThuoc(1) > 0 ? 1 : -1;
+                if (t < 0) break;
+                b.gui(22, (byte) t);
+                b.bom(700);
+                b.lamMoi();
+                uong++;
+            }
+            if (uong > 0) ghi("hoi mau " + vi + ": " + uong + " binh, HP " + hp0 + " -> " + b.hp + "/" + b.maxhp);
         }
 
         long thuocLanCuoi = 0;

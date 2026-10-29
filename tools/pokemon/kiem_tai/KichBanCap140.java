@@ -892,6 +892,8 @@ final class KichBanCap140 {
             lanMuaThuoc = 0;
             muaThuoc();
             if (KichBanDS.laLang(b.mapId) || KichBanDS2.laOffline(b.mapId)) { int ml = mapLuyen(); if (ml >= 0) toi(ml); }
+            b.lamMoi();
+            hoiMau("truoc tran Gym"); // khong vao tran 1 dau 1 khi con it mau
             KichBanDS.timQuai(b, 0, 260);
             Set<Integer> cu = new HashSet<>(b.quai.keySet());
             int m = b.moc();
