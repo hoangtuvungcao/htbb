@@ -495,9 +495,12 @@ public class BotXuyenSuot {
 
         int soHoiChansey;
 
-        /** Het thuoc giua bai, HP < 30%: ve lang hoi o Chansey (nhu nguoi choi) thay vi danh toi guc. */
+        /**
+         * Het thuoc tot (binh 300 / 1000 HP) giua bai, HP < 50%: ve lang hoi o Chansey (nhu nguoi choi) thay vi danh toi guc.
+         * 30% thi guc tren duong ra (dong Co o Cinnabar 29-30/10: "het thuoc -> ve lang" roi guc sau 10 giay).
+         */
         boolean veHoiNeuCan() throws Exception {
-            if (b.hp <= 0 || b.hp >= b.maxhp * 3 / 10 || b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3) > 0) return false;
+            if (b.hp <= 0 || b.hp >= b.maxhp / 2 || b.soThuoc(2) + b.soThuoc(3) > 0 || b.soThuoc(1) * 80 > b.maxhp / 4) return false;
             int tot = -1, ds = 999;
             for (int c : new int[]{70, 0, 80, 1701, 301, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
             if (tot < 0) return false;
