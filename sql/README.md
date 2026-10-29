@@ -105,6 +105,12 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
     theo khung giờ, hạ N con trong X phút) được đánh dấu `kiem_hanh_dong=1` trong `data_nhiem_vu_noi_dung.dieu_kien`
     (`real.HanhDongNhiemVuGame` kiểm thật, chữ ghi đúng bản đồ quái sinh); 93 bước còn lại chỉ viết lại chữ thành
     "Nói chuyện với X ở Y" + lời thoại kể việc diễn ra trong hội thoại. Thưởng giữ nguyên. `server/test/KiemBuocHanhDong`.
+13. `sua_tim_nhiem_vu.sql` (29/10/2026, người chơi báo): chữ chuỗi chính C01.5 / C02.4 ghi đúng hướng (đồng cỏ Pallet là
+    cổng phía Đông làng, chỗ cỏ cháy góc trên bên phải; trước ghi "phía bắc"); C05.2 "Bảo tàng thiên thạch" tính cả ngôi nhà
+    có cửa thật (102 / 72 / 82, Kecleon đứng trước cửa) thay vì chỉ nhà 100 không có cửa (chỉ Arcanine dẫn), chữ nói rõ
+    đường đi; 3 mục Hướng dẫn tân thủ (`npc.18_diem_nhiem_vu`, `npc.19_trung`, `npc.20_vuon`) đúng nhãn menu Hệ sinh thái;
+    Vé tàu (`data_potion` 20) 15.000 → 5.000 xu (`UPDATE … AND price = 15000`). Điểm đích bước địa điểm (dấu sao vàng,
+    nút "Đi tới dấu sao") do máy chủ gửi ở đuôi thứ hai gói -64. `server/test/KiemTimDiemNhiemVu`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

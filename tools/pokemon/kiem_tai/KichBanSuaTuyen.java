@@ -6,6 +6,11 @@
  *  st_dia_diem     (GM thu, cap 20) buoc dia diem C01.5 (Chansey: "ra dung cho ngoi sao roi", Pallet o 53,19): nghe NPC -> dang lam, KHONG
  *                  sang buoc; sang Pallet nhung chua toi -> van dang lam (co chi duong); di bo toi o 53,19 -> xong, sang
  *                  buoc sau, co thuong, luu CSDL.
+ *  st_tim_diem     (bao loi 29/10/2026, nguoi choi THUONG - tai khoan moi, khong GM; GM chi slv nhan vat do len 15):
+ *                  C01.5 "Nơi ngôi sao rơi": goi -64 dang lam co duoi diem dich (Pallet 53,19, ban kinh 3) + muc tieu ghi
+ *                  "góc trên bên phải"; ra Pallet, di bo toi o di duoc gan tam diem dich NHU NUT "Đi tới dấu sao" -> xong.
+ *                  C05.2 "Bảo tàng thiên thạch" (nha Pewter): nghe Xatu -> dang lam; di bo vao ngoi nha co cua (102,
+ *                  Kecleon dung truoc cua) -> xong (truoc: chi nha 100 khong cua moi tinh).
  * Du 10 buoc huong dan theo vung: KichBanHuongDan hd_toan_bo (Kanto) / hd_toan_bo_johto. Can -Ddb, -Ddbport, -Dnoi.
  */
 class KichBanSuaTuyen {
@@ -18,6 +23,7 @@ class KichBanSuaTuyen {
         BotChucNang.dk("st_lang_vung", false, KichBanSuaTuyen::langVung);
         BotChucNang.dk("st_lang_cu", false, KichBanSuaTuyen::langCu);
         BotChucNang.dk("st_dia_diem", false, KichBanSuaTuyen::diaDiem);
+        BotChucNang.dk("st_tim_diem", false, KichBanSuaTuyen::timDiem);
     }
 
     /** Co chu chua {@code s} trong cac goi tu moc {@code m}. */
@@ -193,6 +199,127 @@ class KichBanSuaTuyen {
             ket("st.dd.loi_ket", coChu(b, m4, "vòng cỏ cháy xém"), KichBanHuongDan.chuSau(b, m4));
             b.lamMoi();
             ket("st.dd.co_thuong", b.xu > xu0, "xu " + xu0 + " -> " + b.xu);
+        } finally {
+            b.close();
+        }
+        KichBanHuongDan.logSach();
+    }
+
+    static final int C05_2 = 36; // chi so chuoi chinh cua data_quest_moi 1027 (Bao tang thien thach)
+
+    /** Dat tien do chuoi chinh (nhan vat da thoat, doi lan luu luc thoat xong). */
+    static String datTienDo(int id, int buoc) throws Exception {
+        String f = null;
+        Thread.sleep(6000);
+        for (int lan = 0; lan < 6; lan++) {
+            BotChucNang.sql("UPDATE tob_char_quest SET isfinish='" + buoc + ",0,0', itemget='0', monskilled='0' WHERE id_char=" + id);
+            Thread.sleep(4000);
+            f = BotChucNang.sql1("SELECT isfinish FROM tob_char_quest WHERE id_char=" + id);
+            if (f != null && f.startsWith(buoc + ",0")) break;
+        }
+        return f;
+    }
+
+    static BotChucNang.Bot vaoLai(String u) throws Exception {
+        BotChucNang.Bot b = new BotChucNang.Bot(u);
+        String l = b.dangNhap("123456");
+        if (l == null) l = b.vaoGame(0, 0);
+        if (l != null) {
+            b.close();
+            throw new IllegalStateException(l);
+        }
+        b.bom(1500);
+        return b;
+    }
+
+    static void timDiem() throws Exception {
+        String u, ten;
+        int id;
+        try (BotChucNang.Bot b = KichBanHuongDan.botMoiTinh("td", 0)) {
+            KichBanHuongDan.roiSan(b);
+            u = b.user;
+            ten = b.ten;
+            id = b.charDb;
+            // GM CHI dung canh: nang nhan vat thuong len cap 15 (nguoi choi that ket o buoc nay cap 14-22)
+            try (BotChucNang.Bot gm = BotChucNang.botMoi(0)) {
+                gm.gm("slv " + ten + " 15 0", 1500);
+            }
+            b.bom(1000);
+        }
+        String gmTk = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa='sv.adminAccounts'");
+        ket("st.td.nhan_vat_thuong", gmTk != null && !("," + gmTk + ",").contains("," + u + ","), u + " khong trong sv.adminAccounts");
+        String f = datTienDo(id, C01_5);
+        ket("st.td.dat_tien_do", f != null && f.startsWith(C01_5 + ",0"), f);
+        BotChucNang.Bot b = vaoLai(u);
+        try {
+            ket("st.td.cap", b.lv >= 15, "cap " + b.lv);
+            KichBanHuongDan.Nv q = KichBanHuongDan.chinh(b, 0, 0);
+            ket("st.td.co_the_nhan", q != null && q.id == C01_5, String.valueOf(q));
+            if (q == null) return;
+            if (!KichBanHuongDan.laLang(b.mapLoad)) KichBanHuongDan.quaCong(b, 0);
+            String toi = KichBanHuongDan.toiNpc(b, q.npc);
+            ket("st.td.toi_chansey", toi == null, toi == null ? "NPC " + q.npc : toi);
+            int m = b.moc();
+            KichBanHuongDan.gui64(b, 1, q.id);
+            b.bom(1500);
+            KichBanHuongDan.Nv dang = KichBanHuongDan.chinh(b, m, 2);
+            ket("st.td.dang_lam", dang != null && dang.id == C01_5, String.valueOf(dang));
+            if (dang == null) return;
+            ket("st.td.duoi_diem_dich", dang.dich != null && dang.dich[0] == 1 && dang.dich[1] == 53 && dang.dich[2] == 19 && dang.dich[3] >= 2 && dang.dich[4] >= 2,
+                    (dang.dich == null ? "null" : java.util.Arrays.toString(dang.dich)) + " " + dang.noiDich);
+            ket("st.td.muc_tieu_bang_loi", dang.mucTieu.contains("góc trên bên phải") && dang.mucTieu.contains("Pallet"), dang.mucTieu);
+            ket("st.td.bao_luc_nhan", coChu(b, m, "Đi tới dấu sao"), KichBanHuongDan.chuSau(b, m));
+            boolean qua = KichBanHuongDan.quaCong(b, 0);
+            ket("st.td.ra_pallet", qua && b.mapLoad == 1, "map " + b.mapId + " nap " + b.mapLoad);
+            // nhu client: o di duoc gan tam nhat trong vung (DiemNhiemVu.diToi) roi tim duong
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+            KichBanHuongDan.dongBoViTri(b);
+            int[] d = dang.dich == null ? new int[]{53, 19, 0, 3, 3, 0} : new int[]{dang.dich[1], dang.dich[2], 0, dang.dich[3], dang.dich[4]};
+            int[] o = bd == null ? null : bd.oGan(d[0], d[1], Math.max(d[3], d[4]));
+            boolean di = o != null && diCoHoiMau(b, bd, o[0], o[1]);
+            b.bom(1500);
+            for (int lan = 0; lan < 8; lan++) {
+                String x = BotChucNang.sql1("SELECT isfinish FROM tob_char_quest WHERE id_char=" + id);
+                if (x != null && !x.startsWith(C01_5 + ",")) break;
+                if (o != null) b.diToi(o[0] * 16 + 8, o[1] * 16 + 8);
+                b.bom(1200);
+            }
+            String isf = BotChucNang.sql1("SELECT isfinish FROM tob_char_quest WHERE id_char=" + id);
+            ket("st.td.di_toi_dau_sao_xong", di && isf != null && isf.startsWith((C01_5 + 1) + ","), "o " + b.px / 16 + "," + b.py / 16 + " isfinish " + isf);
+        } finally {
+            b.close();
+        }
+        // ---- C05.2 nha Pewter: di bo vao nha co cua
+        f = datTienDo(id, C05_2);
+        ket("st.td.pewter.dat_tien_do", f != null && f.startsWith(C05_2 + ",0"), f);
+        b = vaoLai(u);
+        try {
+            if (!KichBanHuongDan.laLang(b.mapLoad)) {
+                KichBanDS2.raNgoai(b);
+                if (!KichBanHuongDan.laLang(b.mapLoad)) KichBanHuongDan.quaCong(b, 0);
+            }
+            ket("st.td.pewter.o_lang", b.mapLoad == 0, "nap " + b.mapLoad);
+            KichBanHuongDan.Nv q = KichBanHuongDan.chinh(b, 0, 0);
+            ket("st.td.pewter.co_the_nhan", q != null && q.id == C05_2, String.valueOf(q));
+            if (q == null) return;
+            String toi = KichBanHuongDan.toiNpc(b, q.npc);
+            ket("st.td.pewter.toi_xatu", toi == null, toi == null ? "NPC " + q.npc : toi);
+            int m = b.moc();
+            KichBanHuongDan.gui64(b, 1, q.id);
+            b.bom(1500);
+            KichBanHuongDan.Nv dang = KichBanHuongDan.chinh(b, m, 2);
+            ket("st.td.pewter.dang_lam", dang != null && dang.id == C05_2 && dang.mucTieu.contains("Kecleon"), dang == null ? "null" : dang + " " + dang.mucTieu);
+            boolean vao = KichBanDS2.vaoNha(b, 102);
+            ket("st.td.pewter.vao_nha_102", vao && b.mapId == 102, "map " + b.mapId);
+            KichBanHuongDan.dongBoViTri(b);
+            String isf = null;
+            for (int lan = 0; lan < 6; lan++) {
+                b.diToi(b.px + (lan % 2 == 0 ? 16 : -16), b.py); // vai buoc trong nha (kiem vung luc di chuyen)
+                b.bom(1000);
+                isf = BotChucNang.sql1("SELECT isfinish FROM tob_char_quest WHERE id_char=" + id);
+                if (isf != null && !isf.startsWith(C05_2 + ",")) break;
+            }
+            ket("st.td.pewter.vao_nha_xong", isf != null && isf.startsWith((C05_2 + 1) + ","), "isfinish " + isf + " | " + KichBanHuongDan.chuSau(b, m));
         } finally {
             b.close();
         }

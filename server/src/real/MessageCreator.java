@@ -2942,6 +2942,8 @@ public class MessageCreator {
         final boolean moi = MucTieuNhiemVuGame.clientMoi(p);
         final MucTieuNhiemVuGame.DongCuaAi cuaAi = type == 0 ? null : MucTieuNhiemVuGame.cuaAiTrongSo(p, type);
         final java.util.List<String[]> duoi = new java.util.ArrayList<String[]>();
+        final java.util.List<int[]> dich = new java.util.ArrayList<int[]>();
+        final java.util.List<String> tenDich = new java.util.ArrayList<String>();
         final Message m = new Message(-64);
         try {
             m.dos.writeByte(type);
@@ -2951,6 +2953,9 @@ public class MessageCreator {
                 final InfoQuestTemplate info = q.getTemplate();
                 final MucTieuNhiemVuGame.KetQua mt = MucTieuNhiemVuGame.cua(p, info, type);
                 duoi.add(new String[]{mt.muc, mt.tra, mt.khoa, String.valueOf(mt.co)});
+                final int[] dd = type == 2 ? KhuVucNhiemVuGame.dich(p, q, info) : null;
+                dich.add(dd);
+                tenDich.add(dd == null ? "" : KhuVucNhiemVuGame.tenDich(p, info));
                 m.dos.writeShort(q.id_quest);
                 m.dos.writeByte(info.main_sub);
                 // client cu chi hien ten + loai + x/N o hang: noi muc tieu ngan vao ten ("Chứng tỏ sức mạnh · Weedle ở Lavender")
@@ -3024,6 +3029,24 @@ public class MessageCreator {
                     m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(d[1]));
                     m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(d[2]));
                     m.dos.writeByte(Integer.parseInt(d[3]));
+                }
+                // duoi THU HAI (bao loi 29/10/2026, client >= 0.9.23 doc; client cu dung doc sau duoi thu nhat nen bo qua):
+                // n, n x (short ban do nap (-1 = khong co diem), short o x, short o y, u8 nua rong, u8 nua cao, u8 ca ban do,
+                // UTF ten noi) - diem dich buoc dia diem dang lam: dau ★ / mui ten / nut "Đi tới dấu sao".
+                if (cuaAi != null) {
+                    dich.add(null);
+                    tenDich.add("");
+                }
+                m.dos.writeByte(dich.size());
+                for (int i = 0; i < dich.size(); i++) {
+                    final int[] d = dich.get(i);
+                    m.dos.writeShort(d == null ? -1 : d[0]);
+                    m.dos.writeShort(d == null ? 0 : d[1]);
+                    m.dos.writeShort(d == null ? 0 : d[2]);
+                    m.dos.writeByte(d == null ? 0 : Math.min(255, d[3]));
+                    m.dos.writeByte(d == null ? 0 : Math.min(255, d[4]));
+                    m.dos.writeByte(d == null ? 0 : d[5]);
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(tenDich.get(i)));
                 }
             }
         } catch (final Exception e) {

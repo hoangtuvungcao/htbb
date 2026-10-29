@@ -109,6 +109,7 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   hình, kết quả câu cá hiện lúc kéo cần (không hộp chặn), và vẽ mọi kiểu thẻ / biểu ngữ ở 11 cỡ (trong vùng an toàn, không
   chồng nhau / nút HUD);
 - `KiemNhiemVu`: hội thoại / nhận nhiệm vụ bằng chạm / chuột / phím;
+- `KiemDiemNhiemVu` (báo lỗi 29/10/2026 "làm sao tới ô 53,19"): đuôi thứ hai gói -64 (điểm đích bước địa điểm) - dấu sao vàng trên ô đích, mũi tên quanh nhân vật khi ngoài màn, nút "Đi tới dấu sao" ở sổ nhiệm vụ (chạm / phím 5 = tìm đường), bản đồ khác: nút tắt "Tới <nơi>"; máy chủ cũ không đuôi đọc như trước (1280x720, 640x360, 240x320; `-Dchup.j2me=1`);
 - `KiemTheNhiemVu` (0.9.8): thẻ mục tiêu tân thủ (game.pokemon.TheNhiemVu) ở 11 cỡ - gói -64 thật, chưa nhận / hạ quái / hành động / đủ để trả / NPC bản đồ khác, không chồng HUD, nút đủ cỡ chạm, mũi tên chỉ hướng NPC, ẩn khi cấp > 15 / hộp thoại;
 - `KiemHopChiTiet` (0.9.6.1): thẻ chi tiết vật phẩm chung (game.pokemon.HopChiTiet - cửa hàng / cửa hàng đá / hành trang)
   ở 11 cỡ + J2ME: trong vùng an toàn, giữa, <= 80 %, chữ + nút trong thẻ, nút không đè chữ, tên một đoạn, có giá;

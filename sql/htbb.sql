@@ -31526,3 +31526,58 @@ UPDATE `data_quest_moi` SET `content` = '1Cresselia: Quan sát Liepard Shiny tro
 UPDATE `data_nhiem_vu_noi_dung` SET `dieu_kien` = 'dieu_kien_quan_sat=dem;kiem_hanh_dong=1' WHERE `ma` = 'P-33.0.2' AND `dieu_kien` = 'dieu_kien_quan_sat=dem';
 UPDATE `data_quest_lau_dai` SET `dia_danh` = 'Mahogany' WHERE `ma` = 'P-33.0.2' AND `dia_danh` = 'Hang Darkrai';
 UPDATE `data_quest_moi` SET `scontent` = 'Nói chuyện với Xatu ở làng', `content` = '1Xatu: Lại đây, mình chỉ bạn cách nấu Trà mật ong.>0(Bạn đứng bên bếp xem từng bước.)>1Xatu: Xong rồi! Khi có nguyên liệu, bạn tự nấu ở mục Công thức của Hệ sinh thái nhé.', `infofinish` = 'Nhiệm vụ hoàn thành|Xatu: Thơm quá! Phần này mời bạn nếm thử.', `infogift` = 'Nhiệm vụ:|Nói chuyện với Xatu ở làng|Địa điểm:|Làng khởi đầu|NPC:|Xatu|Phần thưởng:|1.099.482 EXP, 19.447 xu' WHERE `id` = 2408 AND `scontent` = 'Nấu 1 Trà mật ong ở Hang Darkrai';
+-- >>> sua_tim_nhiem_vu.sql
+-- ==================================================================================
+--  TIM DIEM NHIEM VU / NHA PEWTER / VUON - TRUNG / VE TAU (bao loi nguoi choi 29/10/2026). Chay lai bao nhieu lan cung
+--  duoc: UPDATE theo khoa chinh + GIA TRI CU, INSERT IGNORE / ON DUPLICATE KEY chi khi admin chua sua (sua_boi = '').
+--  Doi xong khoi dong lai server game. Kiem: server/test/KiemTimDiemNhiemVu.
+--   1. "Lam sao toi o 53,19": buoc dia diem (data_nhiem_vu_khu_vuc) - may chu gui them diem dich (duoi thu hai goi -64,
+--      real.KhuVucNhiemVuGame.dich) cho dau * tren the gioi / ban do nho / ban do to + nut "Đi tới dấu sao" (client
+--      0.9.23); chu chi duong ghi vi tri bang loi. O day: chu chuoi chinh C01.5 / C02.4 noi "dong co phia BAC" trong khi
+--      Pallet la cong phia DONG cua ca ba lang -> viet lai dung huong + mo ta cho.
+--   2. "Chua sua loi nv nha Pewter": C05.2 "Đến Nhà Pewter" (Xatu: "Bao tang nam trong ngoi nha lon o Pewter. Vao xem")
+--      chi tinh ban do 100 - nha KHONG co cua tren Pewter (chi Arcanine gac cong dan toi, chu khong noi). Nguoi choi vao
+--      ngoi nha co cua that (102, goc duoi ben phai lang, canh Kecleon) -> khong bao gio xong (prod: lv44 ket tu 23/10).
+--      Nay nha 102 (va nha tuong duong 72 / 82 o Blackthorn / Cianwood) cung tinh + chu noi ro duong di (cua nha / Arcanine).
+--   3. Vuon / trung: muc Huong dan tan thu (So tay > "Hướng dẫn tân thủ: công dụng các NPC") chi dung duong menu.
+--   4. Ve tau (data_potion 20, mua o Lapras, goi 81 Map.doBuyTicket): 15.000 -> 5.000 xu. Can tu cap 27 (tau toi New
+--      Bark); 15.000 = hon so xu trung vi nguoi choi cap 25-29 dang co (13.5k, prod 29/10) va ~3 gio thu nhap rong do
+--      duoc (~3-7k/gio) - chan tien trinh. 5.000 ~ 0.4 gio thu nhap thiet ke cap 27 (12.025 xu/gio), ~1 gio thu nhap rong.
+--      Van la cho tieu xu (tieu hao 1 ve / chuyen).
+-- ----------------------------------------------------------------------------------
+-- 1. chuoi chinh: dong co Pallet = cong phia Dong lang
+UPDATE `data_quest_moi` SET `content` = '1Chansey: Đêm qua cả làng thấy một vệt sáng rơi xuống đồng cỏ Pallet, ngoài cổng phía Đông làng.>1Chansey: Chỗ cỏ cháy ở góc trên bên phải đồng cỏ đó. Em ra đứng đúng chỗ ấy xem, biết đâu nhớ ra điều gì.>1Chansey: Mở Nhiệm vụ, bấm Đi tới dấu sao là tự đi tới nơi.'
+  WHERE `id` = 1005 AND `mainsub` = 0 AND `content` = '1Chansey: Đêm qua cả làng thấy một vệt sáng rơi xuống đồng cỏ phía bắc.>1Chansey: Em thử ra đúng chỗ đó xem, biết đâu nhớ ra điều gì.';
+UPDATE `data_quest_moi` SET `scontent` = 'Ra đồng cỏ Pallet (cổng phía Đông làng), đứng ở chỗ cỏ cháy góc trên bên phải'
+  WHERE `id` = 1005 AND `mainsub` = 0 AND `scontent` = 'Ra đồng cỏ Pallet, đứng đúng chỗ ngôi sao rơi';
+UPDATE `data_quest_moi` SET `content` = '1Kecleon: Kẻ giả mạo hay quay lại bãi cỏ góc trên bên phải đồng cỏ Pallet (ngoài cổng phía Đông làng) lúc vắng người.>1Kecleon: Đứng chờ ở đó, đừng động đậy nhé. Mở Nhiệm vụ, bấm Đi tới dấu sao nếu chưa rõ chỗ.'
+  WHERE `id` = 1010 AND `mainsub` = 0 AND `content` = '1Kecleon: Kẻ giả mạo hay quay lại bãi cỏ phía bắc lúc vắng người.>1Kecleon: Đứng chờ ở đó, đừng động đậy nhé.';
+UPDATE `data_quest_moi` SET `scontent` = 'Ra bãi cỏ góc trên bên phải đồng cỏ Pallet, đứng chờ kẻ giả mạo'
+  WHERE `id` = 1010 AND `mainsub` = 0 AND `scontent` = 'Ra bãi cỏ phía bắc Pallet, đứng chờ kẻ giả mạo';
+UPDATE `data_nhiem_vu_noi_dung` SET `muc_tieu_text` = 'Ra đồng cỏ Pallet (cổng phía Đông làng), đứng ở chỗ cỏ cháy góc trên bên phải'
+  WHERE `ma` = 'C01.5' AND `muc_tieu_text` = 'Ra đồng cỏ Pallet, đứng đúng chỗ ngôi sao rơi';
+UPDATE `data_nhiem_vu_noi_dung` SET `muc_tieu_text` = 'Ra bãi cỏ góc trên bên phải đồng cỏ Pallet, đứng chờ kẻ giả mạo'
+  WHERE `ma` = 'C02.4' AND `muc_tieu_text` = 'Ra bãi cỏ phía bắc Pallet, đứng chờ kẻ giả mạo';
+-- 2. C05.2 nha Pewter: nha co cua (102) cung tinh; ten noi = Bao tang
+INSERT IGNORE INTO `data_nhiem_vu_khu_vuc` (`ma`,`stt`,`map_id`,`x1`,`y1`,`x2`,`y2`,`noi_chuyen_sau`,`bat`,`ten_noi`,`ghi_chu`) VALUES
+('C05.2',1,102,0,0,255,255,0,1,'Nhà lớn Pewter','bao loi 29/10/2026: nha co cua that, Kecleon dung truoc cua (goc duoi ben phai Pewter)'),
+('C05.2',2,72,0,0,255,255,0,1,'Nhà lớn Blackthorn','bao loi 29/10/2026: nha tuong duong 102 o Blackthorn (KiemSuaTuyen.NHA_LANG)'),
+('C05.2',3,82,0,0,255,255,0,1,'Nhà lớn Cianwood','bao loi 29/10/2026: nha tuong duong 102 o Cianwood (KiemSuaTuyen.NHA_LANG)');
+UPDATE `data_nhiem_vu_khu_vuc` SET `ten_noi` = 'Bảo tàng Pewter' WHERE `ma` = 'C05.2' AND `stt` = 0 AND `ten_noi` = 'Nhà (Pewter)';
+UPDATE `data_quest_moi` SET `content` = '1Xatu: Bảo tàng nằm trong ngôi nhà lớn có Kecleon tạp hoá đứng trước cửa - ở Pewter là góc dưới bên phải làng. Vào xem các hòn đá rơi từ trời.>1Xatu: Ngại đi bộ thì nhờ Arcanine gác cổng, chọn Đến Bảo tàng Pewter.',
+  `scontent` = 'Vào ngôi nhà lớn có Kecleon đứng trước cửa (ở Pewter: góc dưới bên phải làng), hoặc nhờ Arcanine gác cổng',
+  `infogift` = REPLACE(`infogift`, 'Nhiệm vụ:|Đến Nhà Pewter|', 'Nhiệm vụ:|Vào ngôi nhà lớn có Kecleon đứng trước cửa (Pewter: góc dưới bên phải làng)|')
+  WHERE `id` = 1027 AND `mainsub` = 0 AND `scontent` = 'Đến Nhà Pewter';
+UPDATE `data_nhiem_vu_noi_dung` SET `muc_tieu_text` = 'Vào ngôi nhà lớn có Kecleon đứng trước cửa (ở Pewter: góc dưới bên phải làng), hoặc nhờ Arcanine gác cổng'
+  WHERE `ma` = 'C05.2' AND `muc_tieu_text` = 'Đến Nhà Pewter';
+-- 3. huong dan: tim diem nhiem vu, vuon, trung (So tay > Huong dan tan thu: cong dung cac NPC)
+INSERT INTO `data_huong_dan_tan_thu` (`ma`, `thu_tu`, `tieu_de`, `noi_dung`) VALUES
+('npc.18_diem_nhiem_vu', 47, 'Tìm chỗ nhiệm vụ (dấu sao)', 'Nhiệm vụ "Đứng tại điểm đánh dấu" / "Đến ...": mở Nhiệm vụ, chọn nhiệm vụ, bấm Đi tới dấu sao là tự đi tới nơi. Trên bản đồ có dấu sao vàng nhấp nháy ở đúng chỗ (cả bản đồ nhỏ và bản đồ to); ở xa thì có mũi tên vàng ngay cạnh bạn chỉ hướng. Đứng trong vòng vài ô quanh dấu sao là xong. Nơi không có cổng đi bộ (Bảo tàng Pewter, Đường Victory, núi Silver) thì nhờ Arcanine gác cổng ở làng.'),
+('npc.19_trung', 48, 'Trứng · Nhà trẻ', 'Trứng không bán ở cửa hàng NPC. Lấy trứng: Menu → Hệ sinh thái → Nhà trẻ và trứng → Gửi pet đang sở hữu (gửi 1-2 Pokémon), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái). Mua trứng người khác rao: Hệ sinh thái → Chợ sinh thái → Mua: Trứng.'),
+('npc.20_vuon', 49, 'Vườn và berry', 'Vườn không phải một bản đồ hay NPC: Menu → Hệ sinh thái → Vườn nhà và bạn bè (xem vườn, đặt trang trí, tưới vườn bạn bè). Hệ sinh thái cũng mở được ở Quầy đổi thưởng hoặc gõ hst vào ô chat. Mua berry: Hệ sinh thái → Chợ sinh thái → Mua: Berry.')
+ON DUPLICATE KEY UPDATE
+  `thu_tu` = VALUES(`thu_tu`),
+  `tieu_de` = IF(`sua_boi` = '', VALUES(`tieu_de`), `tieu_de`),
+  `noi_dung` = IF(`sua_boi` = '', VALUES(`noi_dung`), `noi_dung`);
+-- 4. ve tau
+UPDATE `data_potion` SET `price` = 5000 WHERE `id` = 20 AND `price` = 15000;

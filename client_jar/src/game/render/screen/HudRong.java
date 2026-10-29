@@ -1218,6 +1218,11 @@ public final class HudRong {
             g.setColor(16317005);
             g.fillRect(px - 2, py - 2, 5, 5);
         }
+        try {
+            game.pokemon.DiemNhiemVu.veTo(g, x0, y0, k);   // 0.9.23: dấu sao điểm nhiệm vụ
+        } catch (Throwable e) {
+            // bỏ qua
+        }
         int mx = x0 + (gs.mainChar.x * k >> 4), my = y0 + (gs.mainChar.y * k >> 4);
         g.setColor(GiaoDien.TRANG);
         g.fillArc(mx - 4, my - 4, 9, 9, 0, 360);
@@ -1416,7 +1421,7 @@ public final class HudRong {
     }
 
     /** Đi tới ô (tx, ty) từ bản đồ to: lưới tìm đường cả map (cmxMini / cmyMini = 0 khi tìm). */
-    static void diToi(GameScr gs, int tx, int ty) {
+    public static void diToi(GameScr gs, int tx, int ty) {
         if (tx < 0 || ty < 0 || tx >= Tilemap.w || ty >= Tilemap.h) {
             return;
         }

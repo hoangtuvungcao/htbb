@@ -87,10 +87,102 @@ public final class KhuVucNhiemVuGame {
         return ds != null && q != null && q.state_quest != NewCharQuest.FINISH && q.state_quest != NewCharQuest.DONE && !dangTrong(p, ds);
     }
 
-    /** Chu chi duong cua buoc cho nhan vat (o, huong, ban do). */
+    /** Client ve dau sao / nut "Đi tới dấu sao" (doc duoi thu hai -64) tu ban nay; client cu chi nhan chu (khong nhac dau sao). */
+    public static final int BAN_DAU_SAO = 922;
+
+    static boolean coDauSao(final Char p) {
+        return p != null && p.session != null && p.session.banClient >= BAN_DAU_SAO;
+    }
+
+    /** Ten noi cua vung (ten_noi CSDL, khong co thi ten ban do). */
+    static String tenNoi(final Vung v) {
+        return v.ten.isEmpty() ? TenBanDoMayChu.ten(v.map) : v.ten;
+    }
+
+    /**
+     * Chu chi duong cua buoc cho nhan vat (o, huong, ban do) + vi tri bang loi ("góc trên bên phải bản đồ") + loi di
+     * cho khu xa khong co cong (Arcanine gac cong) - bao loi 29/10/2026: nguoi choi khong biet o 53,19 la dau.
+     */
     static String chiDuong(final Char p, final List<Vung> ds) {
         final Vung d = ds.get(0);
-        return KhuVucNhiemVu.chiDuong(ds, NpcTinhBanDo.banDoNap(p), ox(p), oy(p), d.ten.isEmpty() ? TenBanDoMayChu.ten(d.map) : d.ten);
+        final int bd = NpcTinhBanDo.banDoNap(p);
+        final String goc = KhuVucNhiemVu.chiDuong(ds, bd, ox(p), oy(p), tenNoi(d));
+        if (KhuVucNhiemVu.trong(ds, bd, ox(p), oy(p))) {
+            return goc;
+        }
+        final Vung g = KhuVucNhiemVu.ganNhat(ds, bd, ox(p), oy(p));
+        final Vung v = g != null ? g : d;
+        final StringBuilder sb = new StringBuilder(goc);
+        final int[] kt = kichThuoc(v.map);
+        final String vt = KhuVucNhiemVu.viTri(v, kt[0], kt[1]);
+        if (!vt.isEmpty()) {
+            final String tb = TenBanDoMayChu.ten(v.map);
+            sb.append(", ").append(vt).append(" bản đồ ").append(tb == null || tb.isEmpty() ? tenNoi(v) : tb);
+        }
+        if (g == null) {
+            boolean khuXa = true;
+            for (final Vung x : ds) {
+                khuXa &= NpcDichVu.laKhuXa(x.map);
+            }
+            if (khuXa) {
+                sb.append(" - nhờ Arcanine gác cổng ở làng dẫn đường");
+            }
+        }
+        if (!KhuVucNhiemVu.laCaBanDo(v) && coDauSao(p)) {
+            sb.append(" - theo dấu sao vàng trên bản đồ");
+        }
+        return sb.toString();
+    }
+
+    private static final java.util.concurrent.ConcurrentHashMap<Integer, int[]> KICH_THUOC = new java.util.concurrent.ConcurrentHashMap<Integer, int[]>();
+
+    /** Kich thuoc (o) cua ban do nap {@code map} doc tu cMap; {0, 0} = khong doc duoc. */
+    static int[] kichThuoc(final int map) {
+        int[] k = KICH_THUOC.get(Integer.valueOf(map));
+        if (k == null) {
+            k = new int[]{0, 0};
+            try {
+                final com.htbb.pokemon.DinhDangBanDo b = com.htbb.pokemon.DinhDangBanDo.doc(
+                        java.nio.file.Files.readAllBytes(new java.io.File("cMap/" + map).toPath()));
+                k = new int[]{b.w, b.h};
+            } catch (final Exception ignored) {
+                // test / thieu tep: khong co vi tri bang loi
+            }
+            KICH_THUOC.put(Integer.valueOf(map), k);
+        }
+        return k;
+    }
+
+    /**
+     * Diem dich cho client (duoi thu hai goi -64, client &gt;= 0.9.23 ve dau ★ tren the gioi / ban do nho / ban do to,
+     * mui ten mep man, nut "Đi tới dấu sao"): {ban do nap, o tam x, o tam y, nua rong, nua cao, ca ban do 0/1}; null =
+     * buoc khong co vung / khong dang lam. Vung tren ban do dang dung uu tien (gan nhat), khong thi vung dau.
+     */
+    public static int[] dich(final Char p, final NewCharQuest q, final InfoQuestTemplate info) {
+        final List<Vung> ds = cua(info);
+        if (ds == null || q == null || q.state_quest != NewCharQuest.WORKING) {
+            return null;
+        }
+        Vung v = p == null ? null : KhuVucNhiemVu.ganNhat(ds, NpcTinhBanDo.banDoNap(p), ox(p), oy(p));
+        if (v == null) {
+            v = ds.get(0);
+        }
+        return new int[]{v.map, v.tamX(), v.tamY(), (v.x2 - v.x1) / 2, (v.y2 - v.y1) / 2, KhuVucNhiemVu.laCaBanDo(v) ? 1 : 0};
+    }
+
+    /** Ten noi cua diem {@link #dich} (chu nut / the client). */
+    public static String tenDich(final Char p, final InfoQuestTemplate info) {
+        final List<Vung> ds = cua(info);
+        if (ds == null) {
+            return "";
+        }
+        Vung v = p == null ? null : KhuVucNhiemVu.ganNhat(ds, NpcTinhBanDo.banDoNap(p), ox(p), oy(p));
+        if (v == null) {
+            v = ds.get(0);
+        }
+        final int[] kt = kichThuoc(v.map);
+        final String vt = KhuVucNhiemVu.viTri(v, kt[0], kt[1]);
+        return tenNoi(v) + (vt.isEmpty() ? "" : " (" + vt + ")");
     }
 
     /** Bao nguoi choi: da nhan buoc dia diem, can toi dau. */
@@ -102,7 +194,9 @@ public final class KhuVucNhiemVuGame {
         p.khuVucDaBao = NpcTinhBanDo.banDoNap(p);
         final String muc = info.shortContent == null || info.shortContent.isEmpty() ? info.name : info.shortContent;
         p.sendMessage(MessageCreator.createServerAlertMessage(muc + ": " + chiDuong(p, ds) + "."
-                + (KhuVucNhiemVu.noiChuyenSau(ds) ? " Tới nơi rồi quay lại nói chuyện để hoàn thành." : " Tới nơi là hoàn thành."), ""));
+                + (KhuVucNhiemVu.noiChuyenSau(ds) ? " Tới nơi rồi quay lại nói chuyện để hoàn thành." : " Tới nơi là hoàn thành.")
+                + (coDauSao(p) ? " Đứng gần dấu sao vàng (trong vài ô) là được; mở Nhiệm vụ, bấm \"Đi tới dấu sao\" để tự tìm đường."
+                        : " Đứng trong vài ô quanh điểm đó là được."), ""));
     }
 
     /** MessageCreator -64 nhom 2 (dang lam): mo ta ngan + chi duong cho buoc dia diem dang lam. */

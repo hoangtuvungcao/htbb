@@ -133,6 +133,25 @@ public final class KhuVucNhiemVu {
         return "còn khoảng " + v.cach(ox, oy) + " ô về " + huong(v.tamX() - ox, v.tamY() - oy) + " (ô " + v.tamX() + "," + v.tamY() + ")";
     }
 
+    /**
+     * Vi tri vung dich bang LOI (bao loi 29/10/2026: "lam sao toi o 53,19" - nguoi choi khong thay toa do o): "góc trên
+     * bên phải", "phía dưới", "giữa" theo tam vung so voi kich thuoc ban do (w x h o); nguong 40% / 60%. "" = ca ban
+     * do / khong ro kich thuoc.
+     */
+    public static String viTri(final Vung v, final int w, final int h) {
+        if (v == null || laCaBanDo(v) || w <= 0 || h <= 0) {
+            return "";
+        }
+        final int c = v.tamX() * 10 < w * 4 ? 0 : (v.tamX() * 10 > w * 6 ? 2 : 1);
+        final int r = v.tamY() * 10 < h * 4 ? 0 : (v.tamY() * 10 > h * 6 ? 2 : 1);
+        final String[][] t = {
+            {"góc trên bên trái", "phía trên", "góc trên bên phải"},
+            {"phía bên trái", "giữa", "phía bên phải"},
+            {"góc dưới bên trái", "phía dưới", "góc dưới bên phải"},
+        };
+        return t[r][c];
+    }
+
     /** Vung phu ca ban do (den_noi: vao ban do la toi). */
     public static boolean laCaBanDo(final Vung v) {
         return v.x1 <= 0 && v.y1 <= 0 && v.x2 >= 250 && v.y2 >= 250;

@@ -321,6 +321,7 @@ public final class Kiem {
             Kiem.bang("KiemKetTau khong nem loi", "", String.valueOf(e));
         }
         KiemCap140.chay();
+        KiemTimDiemNhiemVu.chay(); // bao loi 29/10/2026: diem nhiem vu (dau sao, vi tri bang loi), nha Pewter, vuon - trung, ve tau
         KiemBuocHanhDong.chay(); // sua-buoc-hanh-dong: buoc noi chuyen hua hanh dong -> kiem that hoac chu that (khoi sua_buoc_hanh_dong.sql)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

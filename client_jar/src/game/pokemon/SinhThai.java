@@ -967,6 +967,11 @@ public final class SinhThai {
         } catch (Throwable e) {
             // không làm hỏng bản đồ nhỏ
         }
+        try {
+            DiemNhiemVu.veMini(g);   // 0.9.23: dấu sao điểm nhiệm vụ
+        } catch (Throwable e) {
+            // không làm hỏng bản đồ nhỏ
+        }
         if (mocX != null && gs.map == MAP_DUA) {
             for (int i = 0; i < mocX.length; i++) {
                 g.setColor(GiaoDien.VIEN);
@@ -995,6 +1000,7 @@ public final class SinhThai {
             veMoc(g);
             veCau(g);
             veMuiTen(g);
+            DiemNhiemVu.veTheGioi(g);   // 0.9.23: dấu sao + mũi tên mép màn của bước địa điểm
         } catch (Throwable e) {
             // không làm hỏng khung hình game
         }

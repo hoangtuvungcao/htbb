@@ -46,6 +46,13 @@ public class Quest {
     public String khoa = "";
     public int co = 0;
     public static final int CO_CUA_AI = 1, CO_KHOA = 2;
+    /**
+     * 0.9.23 (đuôi thứ hai gói -64): điểm đích của bước địa điểm đang làm - bản đồ nạp (-1 = không có), ô tâm, nửa
+     * rộng / nửa cao vùng (ô), cả bản đồ (vào là xong), tên nơi. Vẽ dấu sao / mũi tên / nút "Đi tới dấu sao" (DiemNhiemVu).
+     */
+    public int dichMap = -1, dichX, dichY, dichRx, dichRy;
+    public boolean dichCaMap;
+    public String dichNoi = "";
 
     /** Có dữ liệu mục tiêu từ máy chủ (đuôi gói -64). */
     public boolean coMuc() {
