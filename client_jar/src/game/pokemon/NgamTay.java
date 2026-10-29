@@ -264,7 +264,14 @@ public final class NgamTay {
     static int phim = -1;
     static int xNut, yNut, rNut;
     static int xKeo, yKeo;
+    /**
+     * 0.9.22 (chủ dự án: "kéo thả chiêu ảo ảo"): điểm NHẤN thật - hướng cảm ứng = ngón - điểm nhấn (trước: ngón - TÂM
+     * nút -> nhấn lệch mép nút là vạch ngắm nhảy ngay sang hướng đó dù chưa kéo).
+     */
+    static int xBam, yBam;
     static boolean daRa;
+    /** 0.9.22: đang ở vùng huỷ (có trễ: vào khi <= banKinhHuy, ra khi > rNut - mép vùng không nháy huỷ / bắn). */
+    static boolean huyNay;
     /** Hướng ngắm hiện tại (x1000), 0,0 = chưa có (dùng hướng đang quay). */
     static int hx, hy;
     /** Phát chờ doFire bắn (sau khi thả). */
@@ -319,7 +326,7 @@ public final class NgamTay {
             if (o != null) {
                 int sk = skillCuaPhim(gs, o[0]);
                 if (sk >= 0 && thongSo(gs.mainChar.clazz, sk)[0] != K_TU_THAN && !laBuff(gs.mainChar.clazz, sk)) {
-                    batDauKeo(o[0], o[1], o[2], o[3]);
+                    batDauKeo(o[0], o[1], o[2], o[3], Canvas.pxLast, Canvas.pyLast);
                     keo(Canvas.px, Canvas.py);
                     return true;
                 }
@@ -338,42 +345,135 @@ public final class NgamTay {
         }
     }
 
-    /** Bắt đầu kéo từ nút chiêu (tâm x, y bán kính r, toạ độ màn hình logic). */
+    /** Bắt đầu kéo từ nút chiêu (tâm x, y bán kính r, toạ độ màn hình logic) - nhấn đúng tâm. */
     public static void batDauKeo(int phimChieu, int x, int y, int r) {
+        batDauKeo(phimChieu, x, y, r, x, y);
+    }
+
+    /** Bắt đầu kéo: nút tâm (x, y) bán kính r, điểm nhấn thật (bx, by) - mọi khoảng cách kéo tính từ điểm nhấn. */
+    public static void batDauKeo(int phimChieu, int x, int y, int r, int bx, int by) {
         phim = phimChieu;
         nguon = chuot ? 3 : 1;
         xNut = x;
         yNut = y;
         rNut = Math.max(8, r);
-        xKeo = x;
-        yKeo = y;
+        xBam = bx;
+        yBam = by;
+        xKeo = bx;
+        yKeo = by;
         daRa = false;
+        huyNay = false;
         hx = 0;
         hy = 0;
     }
 
-    /** Cập nhật điểm kéo (màn hình logic). */
+    /**
+     * 0.9.22: VÙNG CHẾT quanh điểm nhấn (px logic): ngón rung trong vùng này không đổi hướng (trước: lệch 3 px đã đặt
+     * hướng -> vạch ngắm giật theo run tay). Chưa ra khỏi vùng chết = vạch theo hướng đang quay = hướng sẽ bắn.
+     */
+    public static int vungChet() {
+        return Math.max(6, rNut / 3);
+    }
+
+    /** Bán kính vào vùng huỷ (kéo ra ngoài nút rồi kéo về gần điểm nhấn). */
+    static int banKinhHuy() {
+        return Math.max(vungChet() + 2, rNut * 2 / 3);
+    }
+
+    /** Cập nhật điểm kéo (màn hình logic). Gọi theo TỪNG sự kiện con trỏ (và lúc vẽ với điểm mới nhất). */
     public static void keo(int x, int y) {
         if (nguon == 0) {
             return;
         }
         xKeo = x;
         yKeo = y;
-        int dx = x - xNut, dy = y - yNut;
+        int dx = x - xBam, dy = y - yBam;
+        int d2 = dx * dx + dy * dy;
         if (nguon == 1 || nguon == 3) {
-            if (dx * dx + dy * dy > rNut * rNut) {
+            if (d2 > rNut * rNut) {
                 daRa = true;
+                huyNay = false;
+            } else if (daRa && d2 <= banKinhHuy() * banKinhHuy()) {
+                huyNay = true;
+            }
+            if (huyNay) {
+                return;   // vùng huỷ: giữ hướng cũ (vạch đỏ đứng yên), không giật theo ngón
             }
         }
-        int[] h;
-        if (nguon == 1) {
-            h = chuan(dx, dy);
-        } else {
+        int[] h = null;
+        int c = vungChet();
+        if (nguon == 2) {
             h = huongChuot(x, y);
+        } else if (d2 > c * c) {
+            // chạm: như cần điều khiển (ngón - điểm nhấn); chuột nhấn nút rồi rê: tới điểm thế giới dưới con trỏ
+            h = nguon == 1 ? chuan(dx, dy) : huongChuot(x, y);
         }
         if (h != null) {
             hx = h[0];
             hy = h[1];
+        }
+    }
+
+    /** Bán kính cần ngắm vẽ quanh nút (núm đi tới tối đa chừng này). */
+    public static int banKinhCan() {
+        return Math.max(rNut * 3 / 2, rNut + 12);
+    }
+
+    /**
+     * 0.9.22: cần ngắm để HUD vẽ (toạ độ của nơi gọi batDauKeo): {tâm x, tâm y, bán kính cần, núm x, núm y, huỷ 0/1,
+     * có hướng 0/1}; null = không ngắm bằng chạm / nhấn nút. Núm = tâm nút + (ngón - điểm nhấn), kẹp trong cần: theo ngón
+     * 1:1 (giữ độ lệch lúc nhấn), không nhảy về tâm.
+     */
+    public static int[] can() {
+        if (nguon != 1 && nguon != 3) {
+            return null;
+        }
+        int rc = banKinhCan();
+        int dx = xKeo - xBam, dy = yKeo - yBam;
+        long d2 = (long) dx * dx + (long) dy * dy;
+        if (d2 > (long) rc * rc) {
+            int l = isqrt(d2);
+            dx = dx * rc / l;
+            dy = dy * rc / l;
+        }
+        return new int[]{xNut, yNut, rc, xNut + dx, yNut + dy, huyNay ? 1 : 0, hx != 0 || hy != 0 ? 1 : 0};
+    }
+
+    /** HUD jar / PC (HudRong, thanh ô nhanh): vòng cần + núm theo ngón trên nút đang ngắm (toạ độ màn logic). */
+    public static void veNut(Graphics g) {
+        if (HUD_RIENG) {
+            return;
+        }
+        try {
+            if (nguon == 1 && Canvas.dangGiu) {
+                keo(Canvas.px, Canvas.py);   // điểm mới nhất lúc vẽ (không đợi nhịp logic)
+            }
+            int[] c = can();
+            if (c == null) {
+                return;
+            }
+            Canvas.resetTrans(g);
+            int mau = c[5] == 1 ? ChuDe.DO : ChuDe.CHINH_SANG;
+            g.setColor(ChuDe.BONG);
+            g.drawArc(c[0] - c[2] + 1, c[1] - c[2] + 1, 2 * c[2], 2 * c[2], 0, 360);
+            g.setColor(mau);
+            g.drawArc(c[0] - c[2], c[1] - c[2], 2 * c[2], 2 * c[2], 0, 360);
+            g.drawArc(c[0] - c[2] + 1, c[1] - c[2] + 1, 2 * c[2] - 2, 2 * c[2] - 2, 0, 360);
+            if (nguon == 1) {
+                int rk = Math.max(6, rNut / 2);
+                g.setColor(ChuDe.BONG);
+                g.fillArc(c[3] - rk + 2, c[4] - rk + 2, 2 * rk, 2 * rk, 0, 360);
+                g.setColor(mau);
+                g.fillArc(c[3] - rk, c[4] - rk, 2 * rk, 2 * rk, 0, 360);
+                g.setColor(0xFFFFFF);
+                g.drawArc(c[3] - rk, c[4] - rk, 2 * rk, 2 * rk, 0, 360);
+            }
+            if (c[5] == 1) {
+                game.render.screen.Font.borderFont.drawString(g, "Huỷ", c[0], c[1] - c[2] - game.render.screen.Font.borderFont.getHeight() - 2,
+                        game.render.screen.Font.CENTER);
+            }
+        } catch (Throwable e) {
+            // không làm hỏng khung vẽ
         }
     }
 
@@ -416,8 +516,7 @@ public final class NgamTay {
         if (nguon != 1 && nguon != 3) {
             return false;
         }
-        int dx = xKeo - xNut, dy = yKeo - yNut;
-        return daRa && dx * dx + dy * dy <= rNut * rNut;
+        return daRa && huyNay;
     }
 
     /** Kết quả thả: 0 = huỷ, 1 = bắn theo hướng kéo, 2 = bắn theo hướng đang quay (chạm nhanh). */
@@ -431,8 +530,10 @@ public final class NgamTay {
         keo(x, y);
         int p = phim;
         boolean huy = vungHuy();
-        boolean nhanh = (nguon == 1 || nguon == 3) && !daRa;
+        // 0.9.22: bắn ĐÚNG hướng vạch đang vẽ: chưa ra khỏi vùng chết = hướng đang quay; đã có hướng (kể cả chưa ra
+        // khỏi nút) = hướng đó (trước: chưa ra khỏi nút thì bắn theo hướng quay dù vạch đang chỉ hướng khác)
         int bx = hx, by = hy;
+        boolean nhanh = bx == 0 && by == 0;
         nguon = 0;
         phim = -1;
         if (huy) {
@@ -461,6 +562,7 @@ public final class NgamTay {
         nguon = 0;
         phim = -1;
         choBan = false;
+        huyNay = false;
         if (co) {
             KQ_THA = 0;
         }
@@ -484,6 +586,11 @@ public final class NgamTay {
                 tha(xKeo, yKeo);
             }
         } else if (nguon != 0 && !dangNgam()) {
+            huy();
+        }
+        // 0.9.22: mở hộp thoại / menu / đổi màn giữa lúc ngắm = huỷ (trước: thả tay sau khi đóng bảng vẫn bắn)
+        if (nguon != 0 && (Canvas.currentDialog != null || (Canvas.menu != null && Canvas.menu.showMenu)
+                || Canvas.currentScreen != Canvas.gameScr)) {
             huy();
         }
     }
@@ -698,6 +805,13 @@ public final class NgamTay {
     public static void ve(Graphics g, GameScr gs) {
         try {
             veVet(g);
+            // 0.9.22: hướng theo điểm con trỏ MỚI NHẤT lúc vẽ (PC: Pokémon / camera đi mà chuột đứng yên thì vạch vẫn chỉ
+            // đúng con trỏ; cảm ứng jar: không đợi nhịp logic 40 ms)
+            if ((nguon == 2 || nguon == 3) && xChuot >= 0) {
+                keo(xChuot, yChuot);
+            } else if (nguon == 1 && !HUD_RIENG && Canvas.dangGiu) {
+                keo(Canvas.px, Canvas.py);
+            }
             if (nguon != 0 && gs != null && gs.mainChar != null) {
                 veNgam(g, gs);
             }
@@ -853,6 +967,8 @@ public final class NgamTay {
         yChuot = -1;
         hx = 0;
         hy = 0;
+        huyNay = false;
+        daRa = false;
         VET.removeAllElements();
         GUI_LAN = 0;
         BAN_CUOI = null;

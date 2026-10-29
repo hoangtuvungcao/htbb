@@ -244,10 +244,18 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
-### Chưa phát hành (sau 0.9.20): lọc hành trang có chữ, HUD một bánh răng, nút đổi trang chiêu, gọn lối vào menu
+### Bản 0.9.21 (`BAN=921`: Auto tự dùng kỹ năng phụ trợ, lọc hành trang có chữ, HUD một bánh răng, nút đổi trang chiêu, gọn menu)
+
+Client `PHIEN_BAN=0.9.21-opentest` (`BAN = 0*10000 + 9*100 + 21`; `MIDlet-Version` 0.9.21) trên main 533ee444, chạy với
+mọi máy chủ 0.9.15+. `htbb-server.jar` của main (không build lại khi phát hành) - qua cổng staging trước khi lên production.
+
+0. **Auto tự dùng kỹ năng phụ trợ** (562aa589): chiêu bổ trợ đặt ở ô Auto tự dùng cho bản thân khi hết hiệu lực
+   (`game.pokemon.TuBuff` - luật khớp máy chủ `ChieuHoTro.kiem`: không hồi sinh, đã học, hết hiệu lực, hết hồi, đủ PP;
+   `GameScr.tuDungBoTro` gói 51 chỉ cho chính mình, mỗi chiêu theo hạn hiệu ứng riêng); Auto gốc không bấm ô bổ trợ mỗi
+   nhịp; bổ trợ bấm tay trừ PP theo cấp của chính chiêu, chỉ khi thật sự gửi. Kiểm: `client_pc/test/KiemTuBuff`.
 
 Chủ dự án (0.9.19 / 0.9.20, ảnh màn ngang): "chọn đồ trong phần hành trang cái có icon ?, cài đặt giống nhau vậy, nút xoay
-skill 1-2-3 cái xoay nó sao lại khó nhìn, nhiều cái menu button nó có nhiều đường đi vào làm spam menu". Chưa tăng số bản.
+skill 1-2-3 cái xoay nó sao lại khó nhìn, nhiều cái menu button nó có nhiều đường đi vào làm spam menu" (e8aa903a).
 
 1. **Lọc hành trang** (`LuoiTui.hangChipGon`, tab Trang bị): bỏ chip chỉ icon (chỉ mục chọn có chữ) và kiểu lật trang
    "< Đồ Thuốc N.liệu Khác" (hàng đổi dạng khi chọn mục chữ dài). MỘT kiểu chip, chip nào cũng có chữ, mức nhãn theo bề
@@ -284,6 +292,11 @@ Bảng lối vào sau khi gọn (cảm ứng = PC / APK; phím = J2ME, phím m�
 
 Đã bỏ: bánh răng Tự động (HUD APK + PC), 6 mục Sổ tay trùng cùng cấp (Nhiệm vụ của tôi + 5 hoạt động Sự kiện), kiểu chip
 lọc chỉ icon / lật trang.
+
+Máy chủ (main 533ee444): đọc thư không xoá nhầm thư người khác; chặn rút đồ khỏi giao dịch sau khi đối tác đã khoá; kết bạn
+phải có lời mời thật (không ép kết bạn); Gym 1 đấu 1 người khác không đánh / hút máu / kết liễu được boss (không cướp boss -
+5ec25df7); biển Khu báo rõ lý do khi đứng xa; 140 bước nhiệm vụ "nói chuyện" hứa hành động -> kiểm mục tiêu thật hoặc viết
+lại lời cho đúng (f587a7fb).
 
 ### Bản 0.9.20 (`BAN=920`: tab Trang bị trên điện thoại mật độ cao, cập nhật trong game cài thẳng bản mới)
 

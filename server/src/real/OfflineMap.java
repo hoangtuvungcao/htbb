@@ -1546,6 +1546,8 @@ public class OfflineMap extends Map {
             player.sendMessage(m);
             m.cleanup();
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+         } catch (java.io.EOFException var14) {
+            // goi tin cut ngan (client sai / gui bay): bo qua im lang, khong ghi stack ra log
          } catch (Exception var14) {
             var14.printStackTrace();
             System.out.println("loi mua ngoc " + var14.toString());
@@ -1742,6 +1744,8 @@ public class OfflineMap extends Map {
                      }
                   }
                }
+            } catch (java.io.EOFException var23) {
+               // goi tin cut ngan (client sai / gui bay): bo qua im lang, khong ghi stack ra log
             } catch (Exception var23) {
                var23.printStackTrace();
                System.out.println("LOI MUA ITEM TRONG STORE " + var23.toString());
