@@ -323,7 +323,17 @@ public final class NpcDichVu {
         if (KhoaBanDoGame.chan(p, d[0])) {
             return; // cap / cua ai chua du - KhoaBanDoGame da bao ly do
         }
-        p.map.move2Map(p, d[1] * 16 + 8, d[2] * 16 + 8, d[0], p.inCountry);
+        final int[] o = oDen(d);
+        p.map.move2Map(p, o[0], o[1], d[0], p.inCountry);
+    }
+
+    /**
+     * O (tile) xuat hien cua loi di Arcanine {@code d} = {ban do, o x, o y}. Map.move2Map nhan O, khong phai pixel: truoc
+     * 30/10/2026 truyen d * 16 + 8 (pixel) -> Bao tang (11 x 16 o) dat nguoi choi o (88, 168) ngoai ban do - khong di
+     * chuyen duoc, buoc "den Bao tang" (#36 C05.2, xet khi di chuyen) khong bao gio xong (bot 5 dong ket o day).
+     */
+    static int[] oDen(final int[] d) {
+        return new int[]{d[1], d[2]};
     }
 
     /** MapDoMenu: true neu {@code idNpc} la NPC cua lop nay (da xu ly). */
