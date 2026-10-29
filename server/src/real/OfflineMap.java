@@ -1704,6 +1704,9 @@ public class OfflineMap extends Map {
                         } else {
                            ItemTemplates template = null;
                            if (!isAnimalItem(var32) && !isBuyTheBaiLinhDanhThue(var32) && !isBuyTheBaiMuaban(var32)) {
+                              if (kindItem < 0 || kindItem >= itemTemplates.size() || itemTemplates.get(kindItem) == null) {
+                                 continue;   // loai vat pham sai (goi tin sai): bo qua, khong nem loi
+                              }
                               template = (ItemTemplates)((Hashtable)itemTemplates.get(kindItem)).get(new Integer(var32));
                            } else {
                               kindItem = 0;
