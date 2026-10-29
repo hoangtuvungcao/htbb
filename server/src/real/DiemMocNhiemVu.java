@@ -11,7 +11,7 @@ package real;
  *                    nhanh khac dung them diem moc cau_ca la dem hai lan)   dex gap (0 = khong)
  *  dao_dat           HeSinhThaiMenu.dao                    {@link #khiDao}        ma vat lieu
  *  nau_an            HeSinhThaiMenu.lamCongThuc (ky nang Nau an) {@link #khiNau}  id cong thuc
- *  lam_vuon          HeSinhThaiGame.khiThuHoach            {@link #khiThuHoach}   id cay
+ *  lam_vuon          HeSinhThaiMenu.thuHoach (VuonBerry)   {@link #khiThuHoachBerry} ten berry
  *  ap_trung          HeSinhThaiMenu.hanhDongTrung (no)     {@link #khiNoTrung}    dex
  *  do_vui            HeSinhThaiGame.DoVui.traLoi (dung)     {@link #khiDoVui}      ""
  *  dua_pokemon       HeSinhThaiGame.Dua.ketThuc (ve dich)   {@link #khiDua}        hang (1..)
@@ -72,8 +72,20 @@ public final class DiemMocNhiemVu {
         }
     }
 
+    /**
+     * Thu hoach vuon cu (Char.doHarvest, o dat ban do vuon game goc - khong con nap, xem com.htbb.pokemon.VuonBerry): hat
+     * giong {@code idCay} da doi ten thanh berry 30 + idCay % 8 (HeSinhThaiGame.doiTenHatGiong).
+     */
     public static void khiThuHoach(final Char p, final int idCay) {
-        ban(p, "lam_vuon", String.valueOf(idCay), 1);
+        khiThuHoachBerry(p, 30 + Math.floorMod(idCay, 8));
+    }
+
+    /**
+     * Thu hoach mot o vuon berry (HeSinhThaiMenu.thuHoach). Tham so = TEN berry ("Berry Oran") - buoc So tay "Trồng và
+     * thu hoạch" co dieu_kien vat_sinh_thai=&lt;ten&gt; chi dem dung loai (NhiemVuMau.khop).
+     */
+    public static void khiThuHoachBerry(final Char p, final int maBerry) {
+        ban(p, "lam_vuon", com.htbb.pokemon.VatLieuSinhThai.ten(maBerry), 1);
     }
 
     public static void khiNoTrung(final Char p, final int dex) {

@@ -47,6 +47,16 @@ public final class HoSoSinhThai {
     public int thanThien;
     /** Danh hieu chu (khong chi so) da mo, noi bang '~'. */
     public final List<String> danhHieu = new ArrayList<String>();
+    /**
+     * Vuon berry (VuonBerry, bat lai 29/10/2026): o i dang trong berry ma {@code vuonMa[i]} (0 = trong), bac
+     * {@code vuonBac[i]}, gieo luc {@code vuonGieo[i]} (ms, DongHo.bay() - dong ho MAY CHU). Cung dong voi tui nen gieo
+     * (tru xu) / thu hoach (cong berry vao tui) ghi chung mot lan: khong the nhan doi khi dang nhap lai / rot mang.
+     */
+    public final int[] vuonMa = new int[VuonBerry.O_TOI_DA];
+    public final int[] vuonBac = new int[VuonBerry.O_TOI_DA];
+    public final long[] vuonGieo = new long[VuonBerry.O_TOI_DA];
+    /** So o dat da mua them (0..VuonBerry.O_MUA_TOI_DA) / so lan thu hoach hom nay (tran VuonBerry.THU_TOI_DA_NGAY). */
+    public int vuonDaMua, thuVuonHomNay;
 
     // ------------------------------------------------------------------ ngay moi
 
@@ -64,6 +74,7 @@ public final class HoSoSinhThai {
         tuoiNhanHomNay = 0;
         tuoiChoHomNay = 0;
         deHomNay = 0;
+        thuVuonHomNay = 0;
         return true;
     }
 
@@ -226,6 +237,12 @@ public final class HoSoSinhThai {
             dh.append(dh.length() == 0 ? "" : "~").append(maDanhHieu(s));
         }
         m.put("dh", dh.toString());
+        final StringBuilder vu = new StringBuilder();
+        for (int i = 0; i < vuonMa.length; i++) {
+            vu.append(i == 0 ? "" : ",").append(vuonMa[i]).append('.').append(vuonBac[i]).append('.').append(vuonGieo[i]);
+        }
+        m.put("vu", vu.toString());
+        m.put("vd", vuonDaMua + "," + thuVuonHomNay);
         final StringBuilder b = new StringBuilder(PHIEN_BAN);
         for (final Map.Entry<String, String> e : m.entrySet()) {
             b.append('|').append(e.getKey()).append('=').append(e.getValue());
@@ -392,6 +409,29 @@ public final class HoSoSinhThai {
                 }
             }
         }
+        final String vu = m.get("vu");
+        if (vu != null && !vu.isEmpty()) {
+            final String[] o = vu.split(",");
+            for (int i = 0; i < o.length && i < h.vuonMa.length; i++) {
+                final String[] x = o[i].split("\\.");
+                if (x.length == 3) {
+                    try {
+                        final int ma = Integer.parseInt(x[0]);
+                        final int bac = Integer.parseInt(x[1]);
+                        final long gieo = Long.parseLong(x[2]);
+                        if (VuonBerry.chiSo(ma) >= 0) {
+                            h.vuonMa[i] = ma;
+                            h.vuonBac[i] = Math.max(1, Math.min(5, bac));
+                            h.vuonGieo[i] = gieo;
+                        }
+                    } catch (final NumberFormatException ignored) {
+                    }
+                }
+            }
+        }
+        final long[] vd = soLong(m.get("vd"), 2);
+        h.vuonDaMua = (int) Math.max(0, Math.min(VuonBerry.O_MUA_TOI_DA, vd[0]));
+        h.thuVuonHomNay = (int) Math.max(0, vd[1]);
         return h;
     }
 }

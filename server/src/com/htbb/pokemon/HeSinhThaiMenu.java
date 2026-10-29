@@ -27,7 +27,7 @@ public final class HeSinhThaiMenu {
             M_NHA_TRE_GUI = 7, M_TRUNG = 8, M_TRUNG_HD = 9, M_CHO = 10, M_CHO_LOAI = 11, M_CHO_MUA = 12,
             M_CHO_CUA_TOI = 13, M_DON = 14, M_DON_GIAO = 15, M_DON_TAO_MA = 16, M_DON_TAO_SO = 17, M_DON_TAO_GIA = 18,
             M_VUON = 19, M_VUON_DAT = 20, M_VUON_BAN = 21, M_SUU_TAM = 22, M_GIAI_TRI = 23, M_TUI_BAN_NPC = 24,
-            M_VUON_CAT = 25, M_VUNG = 26, M_DON_CUA_TOI = 27, M_TRUNG_GIA = 28, M_DANH_HIEU = 29;
+            M_VUON_CAT = 25, M_VUNG = 26, M_DON_CUA_TOI = 27, M_TRUNG_GIA = 28, M_DANH_HIEU = 29, M_VUON_O = 30, M_VUON_GIEO = 31;
 
     /** Trang thai menu cua tung nguoi (chon gi o buoc truoc). Chi la goi y - moi buoc kiem lai. */
     static final class NguCanh {
@@ -250,6 +250,12 @@ public final class HeSinhThaiMenu {
                     break;
                 case M_VUON_BAN:
                     tuoiBan(p, op);
+                    break;
+                case M_VUON_O:
+                    chonODat(p, op);
+                    break;
+                case M_VUON_GIEO:
+                    gieo(p, op);
                     break;
                 case M_SUU_TAM:
                     suuTam(p, op);
@@ -1801,6 +1807,15 @@ public final class HeSinhThaiMenu {
             return;
         }
         final List<String> m = new ArrayList<String>();
+        final long bay = DongHo.bay();
+        int coCay = 0;
+        synchronized (h) {
+            for (int o = 0; o < VuonBerry.O_TOI_DA; o++) {
+                coCay += h.vuonMa[o] > 0 ? 1 : 0;
+            }
+        }
+        m.add("Ô đất của tôi (" + coCay + "/" + VuonBerry.soO(HeSinhThaiGame.cap(p), h.vuonDaMua) + " ô có cây, "
+                + VuonBerry.soChin(h, bay) + " chín)");
         m.add("Xem vườn của tôi (điểm trang trí " + diemTrangTri(h) + ")");
         m.add("Cất trang trí về túi");
         m.add("Tưới vườn bạn bè (" + h.tuoiChoHomNay + "/5 hôm nay)");
@@ -1809,8 +1824,15 @@ public final class HeSinhThaiMenu {
         menu(p, M_VUON, m);
     }
 
-    static String moTaVuon(final String chu, final HoSoSinhThai h) {
-        final StringBuilder b = new StringBuilder("Vườn của ").append(chu).append('\n');
+    static String moTaVuon(final Char chu, final HoSoSinhThai h) {
+        final StringBuilder b = new StringBuilder("Vườn của ").append(chu.charname).append('\n');
+        final long bay = DongHo.bay();
+        final int cap = HeSinhThaiGame.cap(chu);
+        for (int o = 0; o < VuonBerry.O_TOI_DA; o++) {
+            if (VuonBerry.trangThai(h, o, cap, bay) != VuonBerry.KHOA) {
+                b.append(VuonBerry.moTaO(h, o, cap, bay).replace(" - thu hoạch", "").replace(" - gieo hạt", "")).append('\n');
+            }
+        }
         synchronized (h) {
             if (h.trangTri.isEmpty()) {
                 b.append("(chưa có trang trí)\n");
@@ -1833,9 +1855,13 @@ public final class HeSinhThaiMenu {
             return;
         }
         final NguCanh c = nc(p);
-        switch (op) {
+        if (op == 0) {
+            moODat(p);
+            return;
+        }
+        switch (op - 1) { // muc 0 = Ô đất của tôi (moVuon); cac muc sau giu thu tu cu
             case 0:
-                bao(p, moTaVuon(p.charname, h));
+                bao(p, moTaVuon(p, h));
                 break;
             case 1: {
                 c.ds.clear();
@@ -1856,7 +1882,7 @@ public final class HeSinhThaiMenu {
             case 2:
             case 3: {
                 c.ds.clear();
-                c.loai = op;
+                c.loai = op - 1; // 2 = tuoi, 3 = tham (tuoiBan)
                 final List<String> m = new ArrayList<String>();
                 if (p.friendListName != null) {
                     for (final String ten : new ArrayList<String>(p.friendListName)) {
@@ -1875,11 +1901,9 @@ public final class HeSinhThaiMenu {
                 break;
             }
             case 4:
-                // bao loi 29/10/2026 ("vuon o dau"): o dat trong cay (Char.seedsItem / tob_farm) chua nap cho nhan vat nao -
-                // khong noi "khu vuon san co" nua; chi duong mua berry that
-                bao(p, "Vườn nằm ngay trong menu này (Hệ sinh thái → Vườn nhà và bạn bè): xem vườn, đặt trang trí, tưới vườn"
-                        + " bạn bè. Ô đất gieo hạt chưa mở trong bản thử nghiệm. Berry (Oran, Pecha, Rawst, Cheri, Chesto, Leppa,"
-                        + " Sitrus, Lum) mua ở Hệ sinh thái → Chợ sinh thái → Mua: Berry; dùng để nấu ăn và chế thuốc.");
+                // bat lai vuon 29/10/2026: o dat gieo hat that (VuonBerry, luu trong ho so he sinh thai)
+                bao(p, VuonBerry.huongDan() + " Berry dùng để nấu ăn, chế thuốc; mua thêm của người chơi khác ở Hệ sinh thái"
+                        + " → Chợ sinh thái → Mua: Berry.");
                 break;
             default:
                 break;
@@ -1926,7 +1950,7 @@ public final class HeSinhThaiMenu {
             return;
         }
         if (c.loai == 3) {
-            bao(p, moTaVuon(b.charname, hb));
+            bao(p, moTaVuon(b, hb));
             return;
         }
         if (h.tuoiChoHomNay >= 5) {
@@ -1948,10 +1972,188 @@ public final class HeSinhThaiMenu {
             hb.tuoiNhanHomNay++;
             hb.thanThien++;
         }
-        bao(p, "Đã tưới vườn của " + b.charname + " (+5% berry lần thu hoạch tới của họ).");
+        bao(p, "Đã tưới vườn của " + b.charname + " (vườn được tưới từ " + VuonBerry.TUOI_DE_THEM
+                + " lần trong ngày: mỗi cây họ thu hoạch thêm " + VuonBerry.THEM_KHI_TUOI + " berry).");
         bao(b, p.charname + " vừa tưới vườn của bạn!");
         HeSinhThaiGame.danhDau(p);
         HeSinhThaiGame.danhDau(b);
+    }
+
+    // ================================================================== vuon berry: o dat (VuonBerry, bat lai 29/10/2026)
+
+    /** Ma dong menu o dat: 0..O_TOI_DA-1 = o, D_MUA_O = mo them o, D_THU_HET = thu moi o chin. */
+    static final int D_MUA_O = 100, D_THU_HET = 200;
+
+    static void moODat(final Char p) {
+        final HoSoSinhThai h = hoSo(p);
+        if (h == null) {
+            return;
+        }
+        final NguCanh c = nc(p);
+        final int cap = HeSinhThaiGame.cap(p);
+        final long bay = DongHo.bay();
+        c.ds.clear();
+        final List<String> m = new ArrayList<String>();
+        final int chin = VuonBerry.soChin(h, bay);
+        if (chin > 1) {
+            c.ds.add(D_THU_HET);
+            m.add("Thu hoạch tất cả ô đã chín (" + chin + ")");
+        }
+        for (int o = 0; o < VuonBerry.O_TOI_DA; o++) {
+            if (VuonBerry.trangThai(h, o, cap, bay) != VuonBerry.KHOA) {
+                c.ds.add(o);
+                m.add(VuonBerry.moTaO(h, o, cap, bay));
+            }
+        }
+        final long gia = VuonBerry.giaMoO(cap, h.vuonDaMua);
+        if (gia > 0) {
+            c.ds.add(D_MUA_O);
+            m.add("Mở thêm ô đất (" + gia + " xu)");
+        }
+        menu(p, M_VUON_O, m);
+    }
+
+    static void chonODat(final Char p, final int op) {
+        final NguCanh c = nc(p);
+        final HoSoSinhThai h = hoSo(p);
+        if (h == null || op >= c.ds.size()) {
+            return;
+        }
+        final int d = c.ds.get(op);
+        if (d == D_THU_HET) {
+            if (quaNhanh(p)) {
+                return;
+            }
+            int duoc = 0;
+            for (int o = 0; o < VuonBerry.O_TOI_DA; o++) {
+                if (VuonBerry.trangThai(h, o, HeSinhThaiGame.cap(p), DongHo.bay()) == VuonBerry.CHIN) {
+                    if (thuHoach(p, h, o) <= 0) {
+                        break;
+                    }
+                    duoc++;
+                }
+            }
+            if (duoc > 0) {
+                moODat(p);
+            }
+            return;
+        }
+        if (d == D_MUA_O) {
+            muaODat(p, h);
+            return;
+        }
+        final int tt = VuonBerry.trangThai(h, d, HeSinhThaiGame.cap(p), DongHo.bay());
+        if (tt == VuonBerry.TRONG) {
+            moGieo(p, d);
+        } else if (tt == VuonBerry.CHIN) {
+            if (quaNhanh(p)) {
+                return;
+            }
+            if (thuHoach(p, h, d) > 0) {
+                moODat(p);
+            }
+        } else if (tt == VuonBerry.DANG_LON) {
+            bao(p, VuonBerry.moTaO(h, d, HeSinhThaiGame.cap(p), DongHo.bay()) + ". Cây vẫn lớn khi bạn thoát game; chín rồi không héo.");
+        } else {
+            bao(p, "Ô đất này chưa mở.");
+        }
+    }
+
+    static void moGieo(final Char p, final int o) {
+        final NguCanh c = nc(p);
+        final int cap = HeSinhThaiGame.cap(p);
+        c.chiSo = o;
+        c.ds.clear();
+        final List<String> m = new ArrayList<String>();
+        for (int i = 0; i < VuonBerry.MA.length; i++) {
+            final int ma = VuonBerry.MA[i];
+            c.ds.add(ma);
+            m.add(cap < VuonBerry.CAP[i] ? VuonBerry.ten(ma) + " (cần cấp " + VuonBerry.CAP[i] + ")"
+                    : VuonBerry.ten(ma) + " - hạt " + VuonBerry.giaHat(ma, cap) + " xu, chín sau " + VuonBerry.PHUT[i] + " phút");
+        }
+        menu(p, M_VUON_GIEO, m);
+    }
+
+    /** Gieo: kiem lai moi dieu kien, tru xu hat, dat cay nguyen tu (that bai thi hoan xu). */
+    static void gieo(final Char p, final int op) {
+        final NguCanh c = nc(p);
+        final HoSoSinhThai h = hoSo(p);
+        if (h == null || op >= c.ds.size() || quaNhanh(p)) {
+            return;
+        }
+        final int ma = c.ds.get(op);
+        final int o = c.chiSo;
+        final int cap = HeSinhThaiGame.cap(p);
+        final String ly = VuonBerry.lyDoKhongGieo(h, o, ma, cap, DongHo.bay());
+        if (ly != null) {
+            bao(p, ly);
+            return;
+        }
+        final long gia = VuonBerry.giaHat(ma, cap);
+        if (!HeSinhThaiGame.truXu(p, gia, "hat vuon " + ma)) {
+            bao(p, "Không đủ " + gia + " xu mua hạt " + VuonBerry.ten(ma) + ".");
+            return;
+        }
+        if (!VuonBerry.datGieo(h, o, ma, cap, DongHo.bay())) {
+            HeSinhThaiGame.congXu(p, gia, "hoan hat vuon", Char.XU_HOAN);
+            bao(p, "Ô đất này vừa có cây, đã hoàn " + gia + " xu.");
+            return;
+        }
+        luuNgay(p, h);
+        bao(p, "Đã gieo " + VuonBerry.ten(ma) + " ở ô " + (o + 1) + " (" + gia + " xu). Chín sau "
+                + VuonBerry.PHUT[VuonBerry.chiSo(ma)] + " phút - cây vẫn lớn khi bạn thoát game.");
+        moODat(p);
+    }
+
+    /** Thu hoach mot o; tra ket qua VuonBerry.thu (so berry hoac ma loi - da bao nguoi choi). */
+    static int thuHoach(final Char p, final HoSoSinhThai h, final int o) {
+        final int[] ma = new int[1];
+        final int so = VuonBerry.thu(h, o, DongHo.bay(), ma);
+        if (so == VuonBerry.HET_LUOT) {
+            bao(p, "Hôm nay bạn đã thu hoạch " + VuonBerry.THU_TOI_DA_NGAY + " lần (tối đa mỗi ngày). Cây chín vẫn giữ nguyên,"
+                    + " mai thu tiếp.");
+            return so;
+        }
+        if (so <= 0) {
+            bao(p, so == VuonBerry.CHUA_CHIN ? "Cây chưa chín." : "Ô đất này chưa có cây.");
+            return so;
+        }
+        final int len = h.congExp(KyNangSong.TRONG_TROT, KyNangSong.expKhiLam(VatLieuSinhThai.giaPhanNghin(ma[0])) * 3);
+        luuNgay(p, h);
+        bao(p, "Thu hoạch ô " + (o + 1) + ": +" + so + " " + VuonBerry.ten(ma[0]) + " vào Túi sinh thái (hôm nay "
+                + h.thuVuonHomNay + "/" + VuonBerry.THU_TOI_DA_NGAY + " lần).");
+        lenCap(p, h, KyNangSong.TRONG_TROT, len);
+        real.DiemMocNhiemVu.khiThuHoachBerry(p, ma[0]); // diem moc lam_vuon (So tay "Trồng và thu hoạch ...")
+        return so;
+    }
+
+    static void muaODat(final Char p, final HoSoSinhThai h) {
+        if (quaNhanh(p)) {
+            return;
+        }
+        final int daMua = h.vuonDaMua;
+        final long gia = VuonBerry.giaMoO(HeSinhThaiGame.cap(p), daMua);
+        if (gia <= 0) {
+            bao(p, "Bạn đã mở đủ ô đất.");
+            return;
+        }
+        if (!HeSinhThaiGame.truXu(p, gia, "mo o vuon " + (daMua + 1))) {
+            bao(p, "Không đủ " + gia + " xu để mở thêm ô đất.");
+            return;
+        }
+        if (!VuonBerry.datMuaO(h, daMua)) {
+            HeSinhThaiGame.congXu(p, gia, "hoan mo o vuon", Char.XU_HOAN);
+            bao(p, "Ô đất vừa được mở, đã hoàn " + gia + " xu.");
+            return;
+        }
+        luuNgay(p, h);
+        bao(p, "Đã mở thêm ô đất (" + gia + " xu). Vườn có " + VuonBerry.soO(HeSinhThaiGame.cap(p), h.vuonDaMua) + " ô.");
+        moODat(p);
+    }
+
+    /** Ghi ho so NGAY (gieo / thu hoach / mo o): tien do So tay ghi CSDL ngay nen o dat + tui cung ghi ngay. */
+    static void luuNgay(final Char p, final HoSoSinhThai h) {
+        HeSinhThaiGame.luuNgay(p, h);
     }
 
     // ================================================================== suu tam
