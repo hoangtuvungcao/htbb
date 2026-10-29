@@ -472,7 +472,42 @@ public class BotXuyenSuot {
          * Nguoi choi binh thuong: ve lang voi it mau thi uong thuoc truoc khi ra ngoai (truoc day bot ra ngay voi ~5% HP, guc
          * lien tiep o cung buoc - bao cao can bang cap 26/10/2026). Toi da 8 binh, dung khi >= 70% HP / het thuoc.
          */
+        /**
+         * Y ta Chansey (Trung tam Pokemon cua lang, NPC loai 0): "Hồi phục Pokémon (miễn phí)" - nguoi choi that hoi mau o
+         * day chu khong uong thuoc khi da ve lang. Truoc 29/10/2026 bot uong thuoc trong lang, het xu mua thuoc o Cinnabar
+         * (13.000 -> 500 xu trong 30 phut) roi guc lien. true = da hoi day.
+         */
+        boolean hoiChansey() throws IOException {
+            if (!KichBanDS.laLang(b.mapId) || b.hp >= b.maxhp * 9 / 10) return false;
+            String l = KichBanHuongDan.toiNpc(b, 0);
+            if (l != null) return false;
+            int m = b.moc();
+            b.gui(23, (byte) 0);
+            if (b.doiMenu(m, 0, 0, 3000) <= 0) return false;
+            int hp0 = b.hp;
+            b.menu(0, 0, 0);
+            b.bom(1000);
+            b.lamMoi();
+            soHoiChansey++;
+            ghi("hoi mau o Chansey (mien phi): HP " + hp0 + " -> " + b.hp + "/" + b.maxhp);
+            return b.hp >= b.maxhp * 9 / 10;
+        }
+
+        int soHoiChansey;
+
+        /** Het thuoc giua bai, HP < 30%: ve lang hoi o Chansey (nhu nguoi choi) thay vi danh toi guc. */
+        boolean veHoiNeuCan() throws Exception {
+            if (b.hp <= 0 || b.hp >= b.maxhp * 3 / 10 || b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3) > 0) return false;
+            int tot = -1, ds = 999;
+            for (int c : new int[]{70, 0, 80, 1701, 301, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
+            if (tot < 0) return false;
+            ghi("het thuoc, HP " + b.hp + "/" + b.maxhp + " -> ve lang hoi o Chansey");
+            if (!toi(tot)) return false;
+            return hoiChansey();
+        }
+
         void hoiMau(String vi) throws IOException {
+            if (hoiChansey()) return;
             int uong = 0, hp0 = b.hp;
             for (int lan = 0; lan < 8 && b.hp > 0 && b.hp < b.maxhp * 7 / 10; lan++) {
                 int t = b.soThuoc(3) > 0 ? 3 : b.soThuoc(2) > 0 ? 2 : b.soThuoc(1) > 0 ? 1 : -1;
@@ -626,6 +661,7 @@ public class BotXuyenSuot {
                         if (o != null) b.diDuong(bd, o[0], o[1]);
                     }
                     if (b.hp > 0 && b.hp < b.maxhp / 2) uongThuoc(); // HP song tu goi 10 (quai danh minh)
+                    if (veHoiNeuCan()) return ha;
                     if (don % 10 == 9) { b.lamMoi(); uongThuoc(); if (b.hp <= 0) break; }
                 }
                 int[] q3 = b.quai.get(chon);
