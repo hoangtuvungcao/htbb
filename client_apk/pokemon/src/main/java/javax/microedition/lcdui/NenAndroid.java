@@ -327,6 +327,11 @@ public final class NenAndroid {
                     case TextField.URL: kieu = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI; break;
                     default: kieu = InputType.TYPE_CLASS_TEXT; break;
                 }
+                if ((c & TextField.NON_PREDICTIVE) != 0 && kieu == InputType.TYPE_CLASS_TEXT) {
+                    // ô chữ-số (tên tài khoản / tên Pokémon): không gợi ý từ / tự sửa (thêm dấu cách, dấu tiếng Việt) -
+                    // VISIBLE_PASSWORD: bàn phím Telex / Gboard gõ chữ Latin thẳng, chữ vẫn hiện
+                    kieu = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+                }
                 if ((c & TextField.PASSWORD) != 0) {
                     kieu = (kieu & InputType.TYPE_CLASS_NUMBER) != 0
                             ? InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD

@@ -288,7 +288,8 @@ public class LoginScr extends Screen {
         }
         String quen = "Quên mật khẩu?";
         int wQuen = game.pokemon.ChuDe.rong(quen, game.pokemon.ChuDe.PHU) + 8;
-        int wNho = Math.min(w - wQuen - 4, s + 10 + game.pokemon.ChuDe.rong("Nhớ mật khẩu", game.pokemon.ChuDe.PHU));
+        // 0.9.22: hai vùng chạm cách nhau >= cỡ cách tối thiểu (8 dp - APK) - trước sát 4 px, chạm mép dễ nhầm
+        int wNho = Math.min(w - wQuen - Math.max(4, game.pokemon.VungCham.CACH), s + 10 + game.pokemon.ChuDe.rong("Nhớ mật khẩu", game.pokemon.ChuDe.PHU));
         game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat("Nhớ mật khẩu", game.pokemon.ChuDe.PHU, wNho - s - 8), xo + s + 6, y, hDong,
                 game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU, 0);
         game.pokemon.VungCham.them(g, x, y, wNho, hDong, this.cmdRemem, "nho-mat-khau");

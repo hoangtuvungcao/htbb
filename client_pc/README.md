@@ -75,6 +75,10 @@ hàng tên trên đầu, hộp thoại đáy tự tắt, vùng bản đồ.
 
 Khác trong `client_pc/test/` (biên dịch cùng `ChupTrongGame.java` và `server/src/com/htbb/pokemon/IconPokemon*.java` -
 máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
+- `KiemTaoNhanVat` (0.9.22): luồng người chơi mới - Đăng ký / Đăng nhập / Tạo Pokémon / Chọn Pokémon ở mọi cỡ APK thật
+  (`CO_APK`) + PC (`-Dchup.j2me`: cỡ J2ME, phím): vùng chạm, 5 Pokémon khởi đầu chạm đúng con (bảng che đội hình -> hàng
+  chân dung trong bảng), tên Android (dấu cách thừa bỏ, dấu tiếng Việt / dài báo ở máy, không gửi), Tạo hai lần = một gói 14,
+  tạo xong về màn Chọn.
 - `ChupTrongGame` / `ChupTruocGame`: chụp mọi màn ở cỡ điện thoại / PC + kiểm cỡ chạm (`-Dchup.co=dt20x9,pc1080
   -Dchup.man=menu,the_gioi` để chạy một phần); tab Trang bị gọn (`kiemTrangBiGon`): chip lọc (0.9.21: mọi chip có chữ - một
   hàng, hai hàng 3 + 2 khi hẹp, bảng quá hẹp một chip "Lọc: ..." mở danh sách 5 bộ lọc; không chip chỉ icon / lật trang), lưới hành trang thấy >= 4 hàng PC / >= 3 điện thoại, không chữ cắt, 12 ô cùng cạnh ô
