@@ -282,6 +282,14 @@ public final class NhiemVuMau {
             }
             return false;
         }
+        // bat lai vuon (29/10/2026): "Trồng và thu hoạch 3 Berry Chesto" (dieu_kien vat_sinh_thai=Berry Chesto) chi dem lan
+        // thu hoach DUNG loai berry (DiemMocNhiemVu.khiThuHoachBerry gui ten berry). Truoc day bat ky lan thu nao cung dem.
+        if ("lam_vuon".equals(kieu)) {
+            final String vat = dieuKien.get("vat_sinh_thai");
+            if (vat != null && !vat.trim().isEmpty()) {
+                return vat.trim().equals(thamSo);
+            }
+        }
         final boolean rong = mucTieuId == null || mucTieuId.isEmpty();
         if (rong && "pokedex_shiny".equals(kieu)) {
             return false; // shiny phai dung loai muc tieu (so dex); du lieu thieu loai thi khong tinh

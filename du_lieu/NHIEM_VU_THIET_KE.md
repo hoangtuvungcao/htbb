@@ -248,7 +248,7 @@ Engine nhiệm vụ do người làm GĐ2 viết trong `src`; tài liệu này c
 | `ho_tong` | Hộ tống | Giao hàng (CharSuKien.doResponseTieu) với hàng nhiệm vụ | 3 | gd2 | 19 |
 | `kem_cap` | Sư phạm | SoTayLauDai.suPham / khiLenCap (tob_su_pham) | — | gd2 | 8 |
 | `kham_ngoc` | Khảm ngọc | MapEpNgoc.doFinishKhamItem | — | gd2 | 7 |
-| `lam_vuon` | Làm vườn | Char.doHarvest → HeSinhThaiGame.khiThuHoach (vườn berry trên bản đồ cá nhân) | 2 | he_sinh_thai | 28 |
+| `lam_vuon` | Làm vườn | HeSinhThaiMenu.thuHoach (Hệ sinh thái → Vườn nhà và bạn bè → Ô đất của tôi) → DiemMocNhiemVu.khiThuHoachBerry (tham số = tên berry) | 2 | he_sinh_thai | 28 |
 | `lua_chon` | Lựa chọn | Menu NPC (MapDoMenu) ghi nhánh vào tob_nhiem_vu_lau_dai | 3 | gd2 | 14 |
 | `nang_cap` | Mặc trang bị | Map.doUseItem (mặc đồ) | 3 | co_san | 2 |
 | `nang_cap_cong` | Nâng cấp | NangCapLauDaiGame.thu (MapEpNgoc.doFinishImbue, CharCapNhat.doAutoImbue) | — | gd2 | 13 |
@@ -292,7 +292,7 @@ Các mục tiêu đã đối chiếu với `docs/thiet-ke-game.md` và các lớ
 |---|---|---|
 | `cau_ca` | `HeSinhThaiMenu.cauCa` (lệnh chat `cauca` qua `HeSinhThaiGame.khiChat`). Phải đứng cách ô nước thật tối đa 2 ô; tốn 2 thể lực và mồi câu | `vat_sinh_thai=<tên trong VatLieuSinhThai>`: Vảy Goldeen, Ngọc trai nhỏ, Vỏ sò. Riêng 2 bước truyện câu vật phẩm nhiệm vụ dùng `vat_nhiem_vu_khi_cau=<id>`; engine cho rơi thêm vật đó khi câu ở đúng bản đồ |
 | `dao_dat` | `HeSinhThaiMenu.dao` (lệnh `dao`/`khaoco`). Chỉ đào được ở bản đồ loại hang, núi, sa mạc, tuyết; mỗi bản đồ có 6 điểm mỗi ngày | `khao_co=1` khi bản đồ thuộc 4 loại trên. Ngược lại là `diem_dao_nhiem_vu=1`: **engine nhiệm vụ cần đặt 1 điểm đào riêng** trên bản đồ đó và cho `dao` chấp nhận điểm này (10 dòng, như kho báu, hộp thư thời gian, gốc Berry ở Celadon) |
-| `lam_vuon` | `Char.doHarvest` → `HeSinhThaiGame.khiThuHoach` (vườn berry trên bản đồ cá nhân) | `vat_sinh_thai=Berry Oran/Pecha/Chesto/Leppa/Lum`. Tên hiển thị trong truyện ("Hoa sương", "Nấm phát quang"...) được ánh xạ sang berry thật ở `nv_chung.VAT_SINH_THAI` |
+| `lam_vuon` | `HeSinhThaiMenu.thuHoach` (Hệ sinh thái → Vườn nhà và bạn bè → Ô đất của tôi; luật ở `VuonBerry`) → `DiemMocNhiemVu.khiThuHoachBerry`. Mỗi lần thu hoạch một ô = 1 | `vat_sinh_thai=Berry Oran/Pecha/Chesto/Leppa/Lum`: chỉ lần thu hoạch **đúng loại** berry mới tính (`NhiemVuMau.khop`). Tên hiển thị trong truyện ("Hoa sương", "Nấm phát quang"...) được ánh xạ sang berry thật ở `nv_chung.VAT_SINH_THAI`; chữ mục tiêu ghi cả hai ("3 cây Berry Chesto (Hoa sương)") |
 | `nau_an` | `HeSinhThaiMenu.lamCongThuc` (menu Hệ sinh thái → Công thức) | `vat_sinh_thai=Bánh Poké` hoặc `Súp berry`. Các món trong truyện (bánh mật ong, bánh Lava, trà...) tính theo 2 công thức này |
 | `ap_trung` | `NhaTre` + `HeSinhThaiMenu.hanhDongTrung`. Cứ 300 quái hạ được 1 trứng; trứng nở sau 250–800 quái | `trung=bat_ky`: trứng nào nở cũng tính |
 | `do_vui` | `HeSinhThaiGame.DoVui.traLoi`, lúc **12:30 và 21:30** | — |

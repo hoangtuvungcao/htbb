@@ -31,7 +31,7 @@ import real.MonsterTemplate;
  *   Monster (sau PokedexPokemon.khiHaQuai) -> {@link #khiHaQuai}
  *   CharChiSo.attackDam              -> {@link #satThuongThoiTiet}
  *   MapChat.doChat                   -> {@link #khiChat}
- *   Char.doHarvest (vuon)            -> {@link #khiThuHoach}
+ *   Char.doHarvest (vuon cu, khong con nap - vuon moi: HeSinhThaiMenu.thuHoach / VuonBerry) -> {@link #khiThuHoach}
  *   RequestNPCInfoHandler -90 / MapDoMenu -> HeSinhThaiMenu (npc ao {@link #NPC_ID})
  *
  * Tat co sv.he_sinh_thai: MOI ham tra ve ngay (hanh vi cu y nguyen). Moi loi duoc bat va in log,
@@ -287,6 +287,18 @@ public final class HeSinhThaiGame {
         if (p != null) {
             BAN.add(Integer.valueOf(p.charDBID));
         }
+    }
+
+    /**
+     * Ghi NGAY mot ho so (vuon berry: gieo / thu hoach / mo o dat) - o dat va berry trong tui nam cung mot dong nen mot lan
+     * ghi la nhat quan; van danh dau ban (nhipCham ghi lai sau 15 giay) de thay doi xen giua khong bi mat.
+     */
+    static void luuNgay(final Char p, final HoSoSinhThai h) {
+        if (p == null || h == null || p.charDBID <= 0) {
+            return;
+        }
+        danhDau(p);
+        DuLieuHeSinhThai.luuHoSo(p.charDBID, h.chuoi());
     }
 
     /** Ghi ho so da doi; bo ho so cua nguoi da thoat (sau khi ghi). */
