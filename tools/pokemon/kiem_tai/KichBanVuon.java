@@ -10,7 +10,7 @@ import java.util.List;
  *              (tru xu hat); bam o dang lon = "còn N phút", khong thu; DANG NHAP LAI: cay con, van dang lon; tua 21 phut →
  *              "Thu hoạch tất cả ô đã chín (2)" → +3 + 3 Berry Oran, P-01.2.3 xong (tob_nhiem_vu_lau_dai trang_thai 1, 2/2);
  *              bam lai (goi menu cu) khong them berry; DANG NHAP LAI: o trong, tui 6 Berry Oran (tob_hst_nhan_vat), tien do
- *              giu nguyen. Can -Ddb (+ -Ddbport), may thu.
+ *              giu nguyen; che "Thuốc xịt từ vườn" (3 Berry Oran -> 1 Thuốc xịt = 10 binh HP nho). Can -Ddb (+ -Ddbport), may thu.
  * Chay: BotChucNang host cong kt vuon_berry (hoi_quy.conf nhom vuon_berry).
  */
 class KichBanVuon {
@@ -165,6 +165,28 @@ class KichBanVuon {
                 ket("vuon.tien_do_giu", "2/1".equals(tienDo(id)), tienDo(id));
                 String d2 = duLieu(id);
                 ket("vuon.tui_khong_doi", d2 != null && d2.contains("301:6"), "tui " + (d2 == null ? "null" : d2.replaceAll(".*\\|tui=([^|]*).*", "$1")));
+                // ---- dung berry: che "Thuốc xịt từ vườn" (3 Berry Oran -> 10 binh HP nho, re hon mua NPC)
+                cho(b);
+                int m = b.moc();
+                b.chat("hst");
+                int vt = b.doiMenu(m, NPC, M_GOC, 5000) < 0 ? -1 : b.timMuc("Nấu ăn, chế thuốc");
+                m = b.moc();
+                if (vt >= 0) b.menu(NPC, M_GOC, vt);
+                boolean coCt = b.doiMenu(m, NPC, 1, 5000) >= 0 && b.menuChu.size() > 30 && b.menuChu.get(30).startsWith("Thuốc xịt từ vườn");
+                ket("vuon.cong_thuc_thuoc_vuon", coCt, b.menuChu.size() > 30 ? b.menuChu.get(30) : String.valueOf(b.menuChu));
+                cho(b);
+                m = b.moc();
+                b.menu(NPC, 1, 30);
+                b.bom(2500);
+                b.close();
+                String d3 = null;
+                for (int lan = 0; lan < 12; lan++) { // che thuoc ghi theo nhip luu he sinh thai (15 giay)
+                    Thread.sleep(2500);
+                    d3 = duLieu(id);
+                    if (d3 != null && d3.contains("301:3")) break;
+                }
+                ket("vuon.che_thuoc_vuon", d3 != null && d3.contains("301:3") && d3.matches(".*\\|tui=[^|]*90[1-5]:1.*"),
+                        "tui " + (d3 == null ? "null" : d3.replaceAll(".*\\|tui=([^|]*).*", "$1")));
             } finally {
                 b.close();
             }

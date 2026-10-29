@@ -256,6 +256,22 @@ public final class KiemVuonBerryGame {
             bam(p, mVuon, 0);
             bam(p, mO, p.muc("Ô 2"));
             bang("thu Berry Pecha: TV-08.1 1/3", Long.valueOf(1L), Long.valueOf(t.get("TV-08.1")[0]));
+            // che "Thuốc xịt từ vườn" (3 Berry Oran -> 10 binh HP nho): re hon NPC, tran gia tri / ngay
+            final java.lang.reflect.Method moCt = HeSinhThaiMenu.class.getDeclaredMethod("moCongThuc", Char.class);
+            moCt.setAccessible(true);
+            moCt.invoke(null, p);
+            dung("menu cong thuc co 'Thuốc xịt từ vườn' o vi tri id 30", p.menu.size() > 30 && p.menu.get(30).startsWith("Thuốc xịt từ vườn"));
+            final long xuCt = p.xu;
+            final int oranTruoc = h2.tongMa(30);
+            bam(p, hang("M_CONG_THUC"), 30);
+            bang("che thuoc vuon: -3 Berry Oran", Integer.valueOf(oranTruoc - 3), Integer.valueOf(h2.tongMa(30)));
+            bang("che thuoc vuon: +1 Thuốc xịt (10 binh HP nho khi dung)", Integer.valueOf(1), Integer.valueOf(h2.tongMa(90)));
+            bang("che thuoc vuon: chi tru phi bep", Long.valueOf(xuCt - VuonBerry.phiBep(12)), Long.valueOf(p.xu));
+            bang("dem gia tri thuoc vuon hom nay", Long.valueOf(1000L), Long.valueOf(h2.thuocVuonHomNay));
+            h2.thuocVuonHomNay = VuonBerry.tranThuocNgay(12) - 999L;
+            bam(p, hang("M_CONG_THUC"), 30);
+            dung("vuot tran gia tri thuoc vuon / ngay: tu choi, khong tru berry", p.chuCuoi().contains("Thuốc từ vườn hôm nay đã đủ")
+                    && h2.tongMa(30) == oranTruoc - 3);
             // tham vuon ban: thay o dat cua ban
             hb.vuonMa[0] = 37;
             hb.vuonBac[0] = 3;
