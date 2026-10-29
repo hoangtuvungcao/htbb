@@ -57,6 +57,8 @@ public final class HoSoSinhThai {
     public final long[] vuonGieo = new long[VuonBerry.O_TOI_DA];
     /** So o dat da mua them (0..VuonBerry.O_MUA_TOI_DA) / so lan thu hoach hom nay (tran VuonBerry.THU_TOI_DA_NGAY). */
     public int vuonDaMua, thuVuonHomNay;
+    /** Gia tri NPC (xu) cua thuoc tu vuon da che hom nay (tran VuonBerry.tranThuocNgay). */
+    public long thuocVuonHomNay;
 
     // ------------------------------------------------------------------ ngay moi
 
@@ -75,6 +77,7 @@ public final class HoSoSinhThai {
         tuoiChoHomNay = 0;
         deHomNay = 0;
         thuVuonHomNay = 0;
+        thuocVuonHomNay = 0;
         return true;
     }
 
@@ -242,7 +245,7 @@ public final class HoSoSinhThai {
             vu.append(i == 0 ? "" : ",").append(vuonMa[i]).append('.').append(vuonBac[i]).append('.').append(vuonGieo[i]);
         }
         m.put("vu", vu.toString());
-        m.put("vd", vuonDaMua + "," + thuVuonHomNay);
+        m.put("vd", vuonDaMua + "," + thuVuonHomNay + "," + thuocVuonHomNay);
         final StringBuilder b = new StringBuilder(PHIEN_BAN);
         for (final Map.Entry<String, String> e : m.entrySet()) {
             b.append('|').append(e.getKey()).append('=').append(e.getValue());
@@ -429,9 +432,10 @@ public final class HoSoSinhThai {
                 }
             }
         }
-        final long[] vd = soLong(m.get("vd"), 2);
+        final long[] vd = soLong(m.get("vd"), 3);
         h.vuonDaMua = (int) Math.max(0, Math.min(VuonBerry.O_MUA_TOI_DA, vd[0]));
         h.thuVuonHomNay = (int) Math.max(0, vd[1]);
+        h.thuocVuonHomNay = Math.max(0L, vd[2]);
         return h;
     }
 }

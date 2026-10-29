@@ -115,7 +115,8 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
     ô đất trong `tob_hst_nhan_vat.du_lieu` - không bảng mới, `tob_farm` cũ không dùng). Chữ mục tiêu + gợi ý của 26 bước
     `lam_vuon` ("Trồng và thu hoạch …": N-x.12, TV-05.2, TV-08.1, AN-14, HT-CEL.3, HT-SUI.4, C54.4…C92.4, P-xx) ghi đúng
     loại berry + đường menu (`UPDATE … AND muc_tieu_text = <cũ>`), gợi ý C20.2 / C34.5 (chuỗi cũ "rơi từ") bỏ chữ vườn, cơ chế
-    `data_nhiem_vu_kieu.lam_vuon`. Mục Hướng dẫn tân thủ `npc.20_vuon` (khối 13) nay chỉ cách trồng. `server/test/KiemVuonBerry`.
+    `data_nhiem_vu_kieu.lam_vuon`. Mục Hướng dẫn tân thủ `npc.20_vuon` (khối 13) nay chỉ cách trồng + thuốc từ vườn (hạt 50% giá
+    tham chiếu, công thức thuốc chỉ cần berry ở `KyNangSong.CONG_THUC` 30–34 - mã, không phải SQL). `server/test/KiemVuonBerry`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

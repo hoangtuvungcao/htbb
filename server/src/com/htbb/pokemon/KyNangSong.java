@@ -284,6 +284,13 @@ public final class KyNangSong {
         new CongThuc(27, "Mồi thơm biển", NAU_AN, 15, new int[][]{{16, 1}, {1, 3}}, VatLieuSinhThai.MOI_THOM, 1, null),
         new CongThuc(28, "Bể san hô", KHAO_CO, 35, new int[][]{{17, 3}, {5, 1}, {1, 5}}, 115, 1, null),
         new CongThuc(29, "Tượng rồng Dratini", KHAO_CO, 45, new int[][]{{19, 1}, {18, 1}, {20, 1}, {58, 2}, {59, 2}}, 116, 1, null),
+        // Thuoc tu vuon (bat lai vuon 29/10/2026, chu game "lo thi choi lam gi"): CHI berry trong duoc (VuonBerry) - trong ->
+        // che ra binh thuoc that re hon mua NPC. Chung tran ME_THUOC_TOI_DA_NGAY, the luc + phi bep. Dau ra <= nguyen lieu (‰).
+        new CongThuc(30, "Thuốc xịt từ vườn", CHE_THUOC, 1, new int[][]{{30, 3}}, 90, 1, null),
+        new CongThuc(31, "Nước tinh khiết từ vườn", CHE_THUOC, 1, new int[][]{{34, 2}, {31, 1}}, 93, 1, null),
+        new CongThuc(32, "Siêu thuốc từ vườn", CHE_THUOC, 10, new int[][]{{36, 2}, {32, 1}}, 91, 1, null),
+        new CongThuc(33, "Nước khoáng từ vườn", CHE_THUOC, 15, new int[][]{{35, 2}, {33, 1}}, 94, 1, null),
+        new CongThuc(34, "Thuốc cao cấp từ vườn", CHE_THUOC, 25, new int[][]{{37, 1}, {36, 3}}, 92, 1, null),
     };
 
     /** Che thuoc toi da bao nhieu me / ngay (thuoc that la hang tieu hao re, tranh thay het ho hut thuoc NPC). */

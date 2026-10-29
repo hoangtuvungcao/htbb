@@ -770,6 +770,12 @@ public final class HeSinhThaiMenu {
             bao(p, "Hôm nay đã chế đủ " + KyNangSong.ME_THUOC_TOI_DA_NGAY + " mẻ thuốc.");
             return;
         }
+        final long tranVuon = VuonBerry.tranThuocNgay(HeSinhThaiGame.cap(p));
+        if (VuonBerry.laThuocVuon(ct) && h.thuocVuonHomNay + VuonBerry.giaNpcMe(ct) > tranVuon) {
+            bao(p, "Thuốc từ vườn hôm nay đã đủ (tối đa " + tranVuon + " xu giá NPC mỗi ngày, đã chế " + h.thuocVuonHomNay
+                    + "). Mai chế tiếp, hoặc dùng công thức thường.");
+            return;
+        }
         if (ct.ra == 0 && p.isFullInventory()) {
             bao(p, "Hành trang đã đầy.");
             return;
@@ -795,6 +801,9 @@ public final class HeSinhThaiMenu {
             }
             if (ct.kyNang == KyNangSong.CHE_THUOC) {
                 h.meThuocHomNay++;
+            }
+            if (VuonBerry.laThuocVuon(ct)) {
+                h.thuocVuonHomNay += VuonBerry.giaNpcMe(ct);
             }
         }
         final String ten;
@@ -1902,8 +1911,8 @@ public final class HeSinhThaiMenu {
             }
             case 4:
                 // bat lai vuon 29/10/2026: o dat gieo hat that (VuonBerry, luu trong ho so he sinh thai)
-                bao(p, VuonBerry.huongDan() + " Berry dùng để nấu ăn, chế thuốc; mua thêm của người chơi khác ở Hệ sinh thái"
-                        + " → Chợ sinh thái → Mua: Berry.");
+                bao(p, VuonBerry.huongDan() + "\n" + VuonBerry.moTaCongDung(HeSinhThaiGame.cap(p)) + " Mua thêm berry của người"
+                        + " chơi khác ở Hệ sinh thái → Chợ sinh thái → Mua: Berry.");
                 break;
             default:
                 break;
@@ -2069,7 +2078,8 @@ public final class HeSinhThaiMenu {
             final int ma = VuonBerry.MA[i];
             c.ds.add(ma);
             m.add(cap < VuonBerry.CAP[i] ? VuonBerry.ten(ma) + " (cần cấp " + VuonBerry.CAP[i] + ")"
-                    : VuonBerry.ten(ma) + " - hạt " + VuonBerry.giaHat(ma, cap) + " xu, chín sau " + VuonBerry.PHUT[i] + " phút");
+                    : VuonBerry.ten(ma) + " - hạt " + VuonBerry.giaHat(ma, cap) + " xu, " + VuonBerry.PHUT[i] + " phút → "
+                            + VuonBerry.congDung(ma, 2));
         }
         menu(p, M_VUON_GIEO, m);
     }
@@ -2121,7 +2131,8 @@ public final class HeSinhThaiMenu {
         final int len = h.congExp(KyNangSong.TRONG_TROT, KyNangSong.expKhiLam(VatLieuSinhThai.giaPhanNghin(ma[0])) * 3);
         luuNgay(p, h);
         bao(p, "Thu hoạch ô " + (o + 1) + ": +" + so + " " + VuonBerry.ten(ma[0]) + " vào Túi sinh thái (hôm nay "
-                + h.thuVuonHomNay + "/" + VuonBerry.THU_TOI_DA_NGAY + " lần).");
+                + h.thuVuonHomNay + "/" + VuonBerry.THU_TOI_DA_NGAY + " lần). Dùng để: " + VuonBerry.congDung(ma[0], 2)
+                + " (Nấu ăn, chế thuốc, chế tác).");
         lenCap(p, h, KyNangSong.TRONG_TROT, len);
         real.DiemMocNhiemVu.khiThuHoachBerry(p, ma[0]); // diem moc lam_vuon (So tay "Trồng và thu hoạch ...")
         return so;

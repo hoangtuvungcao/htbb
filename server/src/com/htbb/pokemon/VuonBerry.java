@@ -13,13 +13,18 @@ package com.htbb.pokemon;
  * Luat (moi so o day, test/real/KiemVuonBerry kiem):
  *  - O dat: {@link #O_CO_BAN} o mien phi, +1 o moi moc cap {@link #CAP_THEM_O}, mua them toi da {@link #O_MUA_TOI_DA} o
  *    bang xu (ho hut: {@link #GIA_MO_O_PHAN_NGHIN} ‰ gio thu nhap o cap nguoi choi). Toi da {@link #O_TOI_DA} o.
- *  - Hat giong: CHI mua o vuon luc gieo, gia {@link #GIA_HAT_LAN} x gia tham chieu 1 berry (bac theo cap). Berry trong tui
+ *  - Hat giong: CHI mua o vuon luc gieo, gia {@link #GIA_HAT_PHAN_TRAM}% gia tham chieu 1 berry (bac theo cap) - mot lan
+ *    thu (3 berry) = 6 lan tien hat: trong la LOI (chu game 29/10: "lỗ thì người chơi chơi làm cái éo gì"). Berry trong tui
  *    KHONG gieo duoc (khong tu nhan ban mien phi).
  *  - Lon theo dong ho may chu ({@link DongHo#bay()}): {@link #PHUT} phut. Chin roi giu nguyen (khong heo), thu luc nao cung duoc.
  *  - Thu hoach: {@link #SAN_LUONG} berry (bac luc gieo) vao Tui sinh thai, +{@link #THEM_KHI_TUOI} neu hom nay vuon duoc
  *    ban be tuoi tu {@link #TUOI_DE_THEM} lan. Toi da {@link #THU_TOI_DA_NGAY} lan thu / ngay.
- *  - Khong lam phat: NPC mua lai 40% gia tham chieu -> san luong toi da (4) ban NPC = 1,6 x gia tham chieu < gia hat
- *    (2 x): gieo roi ban NPC luon LO xu (vuon la ho hut, khong phai voi xu). Tran ban NPC 0,1 gio / ngay van giu.
+ *  - Gia tri that: che thuoc tu vuon (KyNangSong.CONG_THUC 30..34, chi berry) ra 10 binh HP / MP that re hon mua NPC
+ *    ({@link #tietKiemMe}); nau Banh Poke (+30 the luc), sup berry, chau hoa (congDung).
+ *  - Khong lam phat: ban NPC co the loi chut it nhung moi duong doi vat lieu sinh thai ra xu (HeSinhThaiMenu.banNpc, duy
+ *    nhat) bi TRAN CHUNG 0,1 gio thu nhap / ngay (ChoSinhThai.tranBanNpcNgay, chung voi ca / khoang); cho nguoi choi =
+ *    chuyen tien (thue 7% dot). Binh thuoc that khong ban NPC duoc -> tiet kiem thuoc chi la bot ho hut thuoc, toi da
+ *    ME_THUOC_TOI_DA_NGAY me / ngay.
  */
 public final class VuonBerry {
 
@@ -43,7 +48,14 @@ public final class VuonBerry {
     public static final int[] GIA_MO_O_PHAN_NGHIN = {1000, 3000};
 
     public static final int THU_TOI_DA_NGAY = 12;
-    public static final int GIA_HAT_LAN = 2;
+    /** Gia hat = % gia tham chieu 1 berry o bac theo cap. */
+    public static final int GIA_HAT_PHAN_TRAM = 50;
+    /** Gia NPC 1 binh thuoc that (data_potion price, Chansey / Kecleon): 90 HP nho 100, 91 HP vua 500, 92 HP lon 800, 93 MP
+     * nho 50, 94 MP vua 150. Test KiemVuonBerry so voi phan A sql/htbb.sql. Chi so = ma vat lieu thuoc - 90. */
+    public static final int[] GIA_BINH_NPC = {100, 500, 800, 50, 150};
+    public static final String[] TEN_BINH = {"HP nhỏ", "HP vừa", "HP lớn", "MP nhỏ", "MP vừa"};
+    /** Cong thuc thuoc tu vuon (KyNangSong.CONG_THUC). */
+    public static final int CT_DAU = 30, CT_CUOI = 34;
 
     /** Trang thai o. */
     public static final int KHOA = -1, TRONG = 0, DANG_LON = 1, CHIN = 2;
@@ -91,7 +103,141 @@ public final class VuonBerry {
 
     /** Gia 1 hat (xu) o cap nguoi choi. */
     public static long giaHat(final int ma, final int cap) {
-        return GIA_HAT_LAN * VatLieuSinhThai.giaXu(ma, VatLieuSinhThai.bacTheoCap(cap));
+        return Math.max(1L, VatLieuSinhThai.giaXu(ma, VatLieuSinhThai.bacTheoCap(cap)) * GIA_HAT_PHAN_TRAM / 100L);
+    }
+
+    /** Phi bep (xu) o cap: HeSinhThai.PHI_BEP_PHAN_NGHIN ‰ gio thu nhap (nhu HeSinhThaiGame.phi). */
+    public static long phiBep(final int cap) {
+        final int c = Math.max(1, Math.min(ThongSoLauDai.CAP_TOI_DA, cap));
+        return Math.max(1L, ThongSoLauDai.xuMoiGio(c) * HeSinhThai.PHI_BEP_PHAN_NGHIN / 1000L);
+    }
+
+    /** Cong thuc chi dung berry gieo duoc va moi berry da mo o cap {@code cap}. */
+    public static boolean meVuonDuoc(final KyNangSong.CongThuc ct, final int cap) {
+        if (ct.ra < 90 || ct.ra > 94) {
+            return false;
+        }
+        for (final int[] nl : ct.nguyenLieu) {
+            final int i = chiSo(nl[0]);
+            if (i < 0 || CAP[i] > cap) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Tien xu that cua 1 me thuoc tu vuon o cap: hat (moi hat ra SAN_LUONG berry) + phi bep. */
+    public static long chiPhiMe(final KyNangSong.CongThuc ct, final int cap) {
+        long hat = 0;
+        for (final int[] nl : ct.nguyenLieu) {
+            hat += giaHat(nl[0], cap) * nl[1];
+        }
+        return (hat + SAN_LUONG - 1) / SAN_LUONG + phiBep(cap);
+    }
+
+    /** Gia NPC cua 10 binh (1 me). */
+    public static long giaNpcMe(final KyNangSong.CongThuc ct) {
+        return 10L * GIA_BINH_NPC[ct.ra - 90];
+    }
+
+    /** Tiet kiem 1 me so voi mua NPC (co the am o cap cao voi binh re). */
+    public static long tietKiemMe(final KyNangSong.CongThuc ct, final int cap) {
+        return giaNpcMe(ct) - chiPhiMe(ct, cap);
+    }
+
+    /**
+     * Tran gia tri NPC cua thuoc tu vuon / ngay = ngan sach thuoc thiet ke cua nguoi choi {@link #GIO_NGAN_SACH_THUOC} gio
+     * (ThongSoLauDai.TIEU_HAO_PHAN_TRAM % thu nhap moi gio): vuon chi thay toi da phan thuoc cua mot nguoi choi vua (3 gio),
+     * nguoi choi nhieu van mua phan con lai - ho hut thuoc khong mat.
+     */
+    public static final int GIO_NGAN_SACH_THUOC = 3;
+
+    public static long tranThuocNgay(final int cap) {
+        final int c = Math.max(1, Math.min(ThongSoLauDai.CAP_TOI_DA, cap));
+        return GIO_NGAN_SACH_THUOC * ThongSoLauDai.xuMoiGio(c) * ThongSoLauDai.TIEU_HAO_PHAN_TRAM / 100L;
+    }
+
+    public static boolean laThuocVuon(final KyNangSong.CongThuc ct) {
+        return ct.id >= CT_DAU && ct.id <= CT_CUOI;
+    }
+
+    /**
+     * Tiet kiem toi da / ngay o cap (bo qua cap ky nang Che thuoc): chon so me moi cong thuc, tong <= ME_THUOC_TOI_DA_NGAY va
+     * tong gia NPC <= {@link #tranThuocNgay}, lon nhat tong (gia NPC - tien that).
+     */
+    public static long tietKiemNgay(final int cap) {
+        final java.util.List<KyNangSong.CongThuc> ds = new java.util.ArrayList<KyNangSong.CongThuc>();
+        for (final KyNangSong.CongThuc ct : KyNangSong.CONG_THUC) {
+            if (laThuocVuon(ct) && meVuonDuoc(ct, cap) && tietKiemMe(ct, cap) > 0) {
+                ds.add(ct);
+            }
+        }
+        return tot(ds, 0, KyNangSong.ME_THUOC_TOI_DA_NGAY, tranThuocNgay(cap), cap);
+    }
+
+    private static long tot(final java.util.List<KyNangSong.CongThuc> ds, final int i, final int me, final long tien, final int cap) {
+        if (i >= ds.size() || me <= 0) {
+            return 0L;
+        }
+        long best = tot(ds, i + 1, me, tien, cap);
+        final KyNangSong.CongThuc ct = ds.get(i);
+        if (giaNpcMe(ct) <= tien) {
+            best = Math.max(best, tietKiemMe(ct, cap) + tot(ds, i, me - 1, tien - giaNpcMe(ct), cap));
+        }
+        return best;
+    }
+
+    /** Xu toi da / ngay ban NPC tu vuon (sau tien hat): min(12 lan x (4 berry x gia NPC - hat), tran chung NPC). */
+    public static long xuNpcNgayToiDa(final int cap) {
+        long tot = 0;
+        for (final int ma : MA) {
+            if (CAP[chiSo(ma)] <= cap) {
+                final long loi = sanLuong(99) * VatLieuSinhThai.giaNpc(ma, VatLieuSinhThai.bacTheoCap(cap)) - giaHat(ma, cap);
+                tot = Math.max(tot, loi * THU_TOI_DA_NGAY);
+            }
+        }
+        return Math.min(Math.max(0L, tot), ChoSinhThai.tranBanNpcNgay(cap));
+    }
+
+    /** Ten cac cong thuc dung berry {@code ma} (uu tien thuoc tu vuon), toi da {@code n}. */
+    public static String congDung(final int ma, final int n) {
+        final java.util.List<String> l = new java.util.ArrayList<String>();
+        for (int k = 0; k < 2; k++) {
+            for (final KyNangSong.CongThuc ct : KyNangSong.CONG_THUC) {
+                final boolean vuon = ct.id >= CT_DAU && ct.id <= CT_CUOI;
+                if (vuon != (k == 0) || l.size() >= n) {
+                    continue;
+                }
+                for (final int[] nl : ct.nguyenLieu) {
+                    if (nl[0] == ma && !l.contains(ct.ten)) {
+                        l.add(ct.ten);
+                    }
+                }
+            }
+        }
+        return String.join(", ", l);
+    }
+
+    /** Chu "berry dung lam gi" (menu Hướng dẫn trồng berry, sau thu hoach). */
+    public static String moTaCongDung(final int cap) {
+        final StringBuilder b = new StringBuilder("Dùng berry: Hệ sinh thái → Nấu ăn, chế thuốc, chế tác.\n");
+        for (final KyNangSong.CongThuc ct : KyNangSong.CONG_THUC) {
+            if (ct.id >= CT_DAU && ct.id <= CT_CUOI) {
+                b.append("- ").append(ct.ten).append(" (Chế thuốc ").append(ct.capToiThieu).append("): ");
+                for (int i = 0; i < ct.nguyenLieu.length; i++) {
+                    b.append(i == 0 ? "" : " + ").append(ct.nguyenLieu[i][1]).append(' ').append(ten(ct.nguyenLieu[i][0]));
+                }
+                b.append(" → 10 bình ").append(TEN_BINH[ct.ra - 90]).append(" (NPC bán ").append(giaNpcMe(ct)).append(" xu");
+                if (meVuonDuoc(ct, cap)) {
+                    b.append(", tự trồng tốn ~").append(chiPhiMe(ct, cap)).append(" xu");
+                }
+                b.append(")\n");
+            }
+        }
+        b.append("- Bánh Poké: 2 Berry Oran + 1 Berry Pecha (+30 thể lực sinh hoạt); Súp berry: 3 Berry Rawst + 1 Rong biển "
+                + "(EXP kỹ năng x1,5); Chậu hoa berry: trang trí vườn. Tối đa ").append(KyNangSong.ME_THUOC_TOI_DA_NGAY)
+                .append(" mẻ thuốc / ngày; thuốc từ vườn tối đa ").append(tranThuocNgay(cap)).append(" xu giá NPC / ngày.");
+        return b.toString();
     }
 
     public static long msLon(final int ma) {
@@ -236,7 +382,8 @@ public final class VuonBerry {
         final StringBuilder b = new StringBuilder("Trồng berry: Hệ sinh thái → Vườn nhà và bạn bè → Ô đất của tôi → chọn ô trống → "
                 + "chọn hạt (mua ngay lúc gieo). Cây lớn theo giờ máy chủ, kể cả khi bạn thoát game; chín rồi không héo, chọn ô"
                 + " để thu hoạch " + SAN_LUONG + " berry vào Túi sinh thái (+" + THEM_KHI_TUOI + " nếu hôm nay vườn được bạn bè"
-                + " tưới từ " + TUOI_DE_THEM + " lần). Tối đa " + THU_TOI_DA_NGAY + " lần thu hoạch mỗi ngày.\n");
+                + " tưới từ " + TUOI_DE_THEM + " lần). Tối đa " + THU_TOI_DA_NGAY + " lần thu hoạch mỗi ngày. Hạt rẻ: một lần"
+                + " thu được gấp 6 lần tiền hạt.\n");
         for (int i = 0; i < MA.length; i++) {
             b.append("- ").append(ten(MA[i])).append(": cấp ").append(CAP[i]).append(", ").append(PHUT[i]).append(" phút\n");
         }

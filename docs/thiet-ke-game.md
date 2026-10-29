@@ -1217,16 +1217,33 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
   sao rơi, hoá thạch (1–2%).
 - **Vườn berry** (`VuonBerry`, bật lại 29/10/2026; ô đất cũ của game gốc - bản đồ vườn 29 nay là Rừng Ilex, `tob_farm` -
   không dùng): Hệ sinh thái → Vườn nhà và bạn bè → Ô đất của tôi. 2 ô, +1 ô ở cấp 15 và cấp 30, mua thêm 2 ô (1 giờ rồi 3 giờ
-  thu nhập ở cấp người chơi), tối đa 6. Hạt **chỉ mua lúc gieo**: 2 × giá tham chiếu 1 berry (bậc theo cấp); berry trong túi
-  không gieo được. 8 loại: Oran / Pecha cấp 1, 20 phút; Rawst / Cheri cấp 5, 30 phút; Chesto cấp 10, 45 phút; Leppa cấp 20,
-  60 phút; Sitrus cấp 30, 90 phút; Lum cấp 40, 120 phút. Lớn theo đồng hồ máy chủ (cả khi offline), chín rồi không héo.
-  Thu hoạch 3 berry (bậc lúc gieo), +1 nếu hôm nay vườn được bạn bè tưới từ 2 lần (5 lần / ngày mỗi người cho và mỗi vườn
-  nhận); tối đa 12 lần thu / ngày. Ô đất nằm trong hồ sơ sinh thái (`tob_hst_nhan_vat`, khoá `vu` / `vd`), cùng dòng với
-  Túi sinh thái: gieo / thu hoạch ghi một lần, đăng nhập lại không nhân đôi. **Không lạm phát**: bán NPC cả sản lượng tối đa
-  (4 × 40% giá tham chiếu = 1,6×) < giá hạt (2×) - vườn là hố hút xu (cấp 27: tối đa 12 hạt Oran = 4.128 xu / ngày ≈ 0,34
-  giờ thu nhập; NPC mua lại vẫn dưới trần chung 0,1 giờ / ngày). Bước Sổ tay "Trồng và thu hoạch N cây Berry X" tính mỗi lần
-  thu hoạch đúng loại. Trang trí vườn chế từ khảo cổ, 0 chỉ số; điểm thân thiện ≥ 50 cho danh hiệu.
-- **30 công thức**: nấu Bánh Poké (+30 thể lực, tối đa 2 / ngày), mồi thơm, súp berry; chế thuốc tối đa 5 mẻ / ngày (dùng
+  thu nhập ở cấp người chơi), tối đa 6. Hạt **chỉ mua lúc gieo**: 50% giá tham chiếu 1 berry (bậc theo cấp) - một lần thu (3
+  berry) = 6 lần tiền hạt, trồng là **lời** (chủ game 29/10: "lỗ thì người chơi chơi làm cái éo gì"); berry trong túi không
+  gieo được. 8 loại: Oran / Pecha cấp 1, 20 phút; Rawst / Cheri cấp 5, 30 phút; Chesto cấp 10, 45 phút; Leppa cấp 20, 60 phút;
+  Sitrus cấp 30, 90 phút; Lum cấp 40, 120 phút. Lớn theo đồng hồ máy chủ (cả khi offline), chín rồi không héo. Thu hoạch 3
+  berry (bậc lúc gieo), +1 nếu hôm nay vườn được bạn bè tưới từ 2 lần (5 lần / ngày mỗi người cho và mỗi vườn nhận); tối đa
+  12 lần thu / ngày. Ô đất nằm trong hồ sơ sinh thái (`tob_hst_nhan_vat`, khoá `vu` / `vd`), cùng dòng với Túi sinh thái:
+  gieo / thu hoạch ghi một lần, đăng nhập lại không nhân đôi. Menu hạt ghi công dụng từng berry; bước Sổ tay "Trồng và thu
+  hoạch N cây Berry X" tính mỗi lần thu hoạch đúng loại. Trang trí vườn chế từ khảo cổ, 0 chỉ số; điểm thân thiện ≥ 50 cho
+  danh hiệu.
+- **Thuốc từ vườn** (công thức 30–34, chỉ berry, chung trần 5 mẻ chế thuốc / ngày, tốn 3 thể lực + phí bếp): Thuốc xịt (3
+  Oran → 10 HP nhỏ, NPC 1.000 xu), Nước tinh khiết (2 Chesto + 1 Pecha → 10 MP nhỏ, 500), Siêu thuốc (2 Sitrus + 1 Rawst →
+  10 HP vừa, 5.000), Nước khoáng (2 Leppa + 1 Cheri → 10 MP vừa, 1.500), Thuốc cao cấp (1 Lum + 3 Sitrus → 10 HP lớn,
+  8.000). Tự trồng rẻ hơn mua NPC nhiều (cấp 27: Thuốc xịt ~146 xu thay 1.000). **Trần giá trị**: tổng giá NPC của thuốc
+  từ vườn / ngày ≤ ngân sách thuốc thiết kế của người chơi 3 giờ (`3 × 12% × thu nhập/giờ`) - vườn thay tối đa phần thuốc
+  của một người chơi vừa, người chơi nhiều vẫn mua phần còn lại.
+- **Kinh tế vườn** (`server/test/KiemVuonBerry` in bảng): bình thuốc thật không bán NPC được; vật liệu sinh thái đổi ra xu
+  **chỉ** qua NPC mua lại (`HeSinhThaiMenu.banNpc` → `ChoSinhThai.npcMua`), trần chung 0,1 giờ / ngày với cá / khoáng; chợ
+  người chơi là chuyển tiền (đốt 7%). Mỗi ngày tối đa:
+
+| Cấp | Thu nhập / giờ | Xu bán NPC từ vườn (= trần chung) | Tiết kiệm thuốc (≤ ngân sách 3 giờ) |
+|---|---|---|---|
+| 10 | 5.552 | 555 (0,10 giờ) | 1.371 (0,25 giờ; trần 1.998) |
+| 27 | 12.025 | 1.202 (0,10 giờ) | 3.446 (0,29 giờ; trần 4.329) |
+| 50 | 33.925 | 3.392 (0,10 giờ) | 9.924 (0,29 giờ; trần 12.213) |
+| 80 | 126.976 | 12.697 (0,10 giờ) | 15.585 (0,12 giờ; trần 45.711) |
+
+- **35 công thức** (30 cũ + 5 thuốc từ vườn): nấu Bánh Poké (+30 thể lực, tối đa 2 / ngày), mồi thơm, súp berry; chế thuốc tối đa 5 mẻ / ngày (dùng
   thì ra 10 bình HP / MP thật); ghép 12 mảnh thành **đá tiến hoá thật** (item 960–966); phục hồi hoá thạch thành pet. Giá
   trị đầu ra ≤ nguyên liệu; không vật liệu nào chỉ để bán NPC.
 
