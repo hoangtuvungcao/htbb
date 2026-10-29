@@ -79,7 +79,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   -Dchup.man=menu,the_gioi` để chạy một phần); tab Trang bị gọn (`kiemTrangBiGon`): chip lọc (0.9.21: mọi chip có chữ - một
   hàng, hai hàng 3 + 2 khi hẹp, bảng quá hẹp một chip "Lọc: ..." mở danh sách 5 bộ lọc; không chip chỉ icon / lật trang), lưới hành trang thấy >= 4 hàng PC / >= 3 điện thoại, không chữ cắt, 12 ô cùng cạnh ô
   hành trang thẳng cột / hàng, chip Tiềm năng trên ô, Danh hiệu dưới ô; `-Dchup.j2me` chạy thêm cỡ J2ME thật
-  `j2me240x320` / `j2me320x240` cho các màn Trang bị / hành trang lọc;
+  `j2me240x320` / `j2me320x240` cho các màn Trang bị / hành trang lọc; 0.9.22: + màn ảo giả lập Android `j2me800x480`,
+  `j2me854x480`, `j2me960x540`, `j2me1280x720`, `j2me1920x1080`, `j2me720x1280` (Canvas.heSo phóng nguyên) và màn
+  `MAN_J2ME_GIA_LAP` (thế giới, Menu, Kỹ năng, Tự động, hộp thoại...) ở mọi cỡ J2ME;
 - `ChupThoiTiet` (0.9.8): thời tiết / phủ màu mùa / ngày cộng đồng (game.pokemon.ThoiTiet, ThoiTietVe) ở 11 cỡ - đĩa
   HUD trong màn và đủ cách nút hàng trên, thẻ gợi ý trong màn, phủ mùa không đổi thẻ HUD và đổi độ sáng thế giới ≤ 16%,
   tắt màu = như không phủ, đường J2ME (Thấp) ≤ 40 lệnh vẽ / khung; ghi ảnh mẫu mỗi thời tiết / mùa vào thư mục tham số;
@@ -87,7 +89,9 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   nhau, chạm ô chiêu = đúng chiêu đó (ô "+" = bảng gán), nhắm NPC thì chiêu không mở cửa hàng / menu NPC, viên "1/2" /
   phím R / phím 0 đổi bộ chiêu; 0.9.17: chạm MỌI nút HUD + mọi ô Menu cá nhân (không mục tiêu / nhắm quái + thẻ thời
   tiết / nhắm NPC) -> đúng màn / thẻ (tiêu đề) / gói, menu máy chủ không mang tên quái đang nhắm - bảng `dich_nut.txt`
-  (`-Dchup.j2me` vẽ như J2ME, `-Dkiem.dich=0` bỏ phần này);
+  (`-Dchup.j2me` vẽ như J2ME, `-Dkiem.dich=0` bỏ phần này); 0.9.22 `-Dkiem.xoay=1` (tự bật với `-Dchup.coJ2me`): xoay
+  màn lúc đang chơi 360x640 -> 640x360 -> 1280x720 -> 720x1280 -> 1920x1080 -> 854x480 -> 640x360 (hệ số phóng, HUD,
+  phủ kín, vùng chạm, chạm thật thẻ người chơi / nút Menu, màn Nhân vật mở qua lần xoay, không lỗi) - ảnh `xoay*.png`;
 - `KiemPhimNpc` (0.9.19): nhắm NPC ở bản đồ làng thật - chọn NPC (tự nhắm / phím mềm phải / Tab) chỉ nhắm; phím bắn /
   phím 5 / nút đánh HUD / chạm / chuột trái / chuột phải / Enter / Space = nói chuyện đúng một lần, không gói đánh, không
   thế đánh; phím chiêu không đánh NPC (J2ME màn nhỏ = Giao tiếp, HUD = quái gần nhất); Tự động đánh không nhắm NPC; mỗi

@@ -62,8 +62,18 @@ public class ChupTrongGame {
         "apk1080x2340d2.75", "apk1080x2400d2.75", "apk1080x2400d3.25", "apk1440x3200d3.5", "apk1440x3200d4", "apk800x1280tab",
         "apk1200x2000tab", "apk1200x1920tab", "apk1600x2560tab"};
     /** Máy J2ME / giả lập J2ME người chơi dùng (nhật ký máy chủ: Nokia 6233 400x240...): x1, bấm phím. */
-    static final int[][] CO_J2ME = {{240, 320, -1}, {320, 240, -1}, {400, 240, -1}, {360, 640, -1}, {640, 360, -1}};
-    static final String[] TEN_CO_J2ME = {"j2me240x320", "j2me320x240", "j2me400x240", "j2me360x640", "j2me640x360"};
+    static final int[][] CO_J2ME = {{240, 320, -1}, {320, 240, -1}, {400, 240, -1}, {360, 640, -1}, {640, 360, -1},
+        // 0.9.22: màn ảo người chơi đặt trong giả lập Android (J2ME Loader / CoffeeCat) để chơi ngang như APK - cạnh ngắn
+        // >= 684 thì Canvas phóng nguyên (Canvas.heSo: 1280x720 = 640x360 x2, 1920x1080 = x3, 720x1280 = 360x640 x2)
+        {800, 480, -1}, {854, 480, -1}, {960, 540, -1}, {1280, 720, -1}, {1920, 1080, -1}, {720, 1280, -1}};
+    static final String[] TEN_CO_J2ME = {"j2me240x320", "j2me320x240", "j2me400x240", "j2me360x640", "j2me640x360",
+        "j2me800x480", "j2me854x480", "j2me960x540", "j2me1280x720", "j2me1920x1080", "j2me720x1280"};
+    /**
+     * 0.9.22: màn chạy thêm ở cỡ J2ME (ngoài MAN_J2ME_THAT) - thế giới + HUD, Menu, Kỹ năng, Tự động, hộp thoại / thẻ chọn:
+     * người chơi giả lập Android ngang dùng đủ các màn này. Cỡ J2ME không đặt cỡ chạm tối thiểu (MIN = 0).
+     */
+    static final String MAN_J2ME_GIA_LAP = ",the_gioi,menu,nv_ky_nang,nv_hanh_trang,tu_dong,tu_dong_dang,xac_nhan,hop_thong_bao,"
+        + "hop_len_cap,menu_ngu_canh,nhiem_vu,cua_hang_thuoc,pokedex,hop_dang_xuat,";
 
     /** Máy J2ME thật: màn logic đúng W x H, x1 (không phóng). */
     static void datCoJ2me(int W, int H) {
@@ -218,7 +228,7 @@ public class ChupTrongGame {
             int[] v = game.pokemon.VungCham.vungVe(i);
             String t = nhan + " [" + ten + "]";
             kiem(v[2] >= min && v[3] >= min, t + " co " + v[2] + "x" + v[3] + " >= " + min + " @" + v[0] + "," + v[1] + " (MIN luc ve " + game.pokemon.VungCham.MIN + ", logic " + NenPc.rong + "x" + NenPc.cao + ")");
-            kiem(v[0] >= 0 && v[1] >= 0 && v[0] + v[2] <= NenPc.rong + 1 && v[1] + v[3] <= NenPc.cao + 1, t + " trong man");
+            kiem(v[0] >= 0 && v[1] >= 0 && v[0] + v[2] <= game.render.Canvas.w + 1 && v[1] + v[3] <= game.render.Canvas.h + 1, t + " trong man");   // màn LOGIC (Canvas.heSo > 1: nhỏ hơn NenPc)
             int cx = v[0] + v[2] / 2, cy = v[1] + v[3] / 2;
             int j = game.pokemon.VungCham.tim(cx, cy);
             kiem(j == i, t + " bam tam trung (" + (j < 0 ? "-" : game.pokemon.VungCham.ten(j)) + ")");
@@ -419,7 +429,7 @@ public class ChupTrongGame {
             game.pokemon.VungCham.CACH = cach;
             for (int m = 0; m < man.length; m++) {
                 final String ten = man[m];
-                if (dpi < 0 && !MAN_J2ME_THAT.contains("," + ten + ",")) continue;
+                if (dpi < 0 && !MAN_J2ME_THAT.contains("," + ten + ",") && !MAN_J2ME_GIA_LAP.contains("," + ten + ",")) continue;
                 if (locMan != null && !("," + locMan + ",").contains("," + ten + ",")) continue;
                 chay(new Runnable() {
                     public void run() {
@@ -2174,7 +2184,7 @@ public class ChupTrongGame {
     }
 
     static void kiemTrongMan(String nhan) {
-        int W = NenPc.rong, H = NenPc.cao;
+        int W = game.render.Canvas.w, H = game.render.Canvas.h;   // 0.9.22: màn logic (= NenPc khi heSo 1)
         for (int b = 0; b < game.pokemon.GhiChu.soBieu; b++) {
             int x = game.pokemon.GhiChu.BX[b], y = game.pokemon.GhiChu.BY[b], w = game.pokemon.GhiChu.BW[b], h = game.pokemon.GhiChu.BH[b];
             kiem(x >= -1 && y >= -1 && x + w <= W + 1 && y + h <= H + 1, nhan + " bieu tuong ngoai man: " + game.pokemon.GhiChu.BS[b] + " @" + x + "," + y + " " + w + "x" + h);
@@ -2211,7 +2221,7 @@ public class ChupTrongGame {
         int n = game.pokemon.NhanTheGioi.soDaVe;
         int[] x = game.pokemon.NhanTheGioi.DX, y = game.pokemon.NhanTheGioi.DY, w = game.pokemon.NhanTheGioi.DW, h = game.pokemon.NhanTheGioi.DH_;
         for (int i = 0; i < n; i++) {
-            kiem(x[i] >= 0 && y[i] >= 0 && x[i] + w[i] <= NenPc.rong && y[i] + h[i] <= NenPc.cao, nhan + " nhan the gioi ngoai man: \"" + game.pokemon.NhanTheGioi.DS[i] + "\"");
+            kiem(x[i] >= 0 && y[i] >= 0 && x[i] + w[i] <= game.render.Canvas.w && y[i] + h[i] <= game.render.Canvas.h, nhan + " nhan the gioi ngoai man: \"" + game.pokemon.NhanTheGioi.DS[i] + "\"");
             for (int j = i + 1; j < n; j++) {
                 boolean giao = x[i] < x[j] + w[j] && x[j] < x[i] + w[i] && y[i] < y[j] + h[j] && y[j] < y[i] + h[i];
                 kiem(!giao, nhan + " nhan the gioi chong: \"" + game.pokemon.NhanTheGioi.DS[i] + "\" x \"" + game.pokemon.NhanTheGioi.DS[j] + "\"");

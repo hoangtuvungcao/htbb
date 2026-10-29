@@ -64,3 +64,11 @@ Một lớp thành phần chung cho cả jar J2ME, APK và PC (`client_jar/src/g
 Màn mới: dùng `Bang` / `ChuDe` / `KhungNro`, **không** tô khối trắng / teal trực tiếp - `python3 tools/giao_dien_nro/kiem_kieu_cu.py`
 (trên ảnh `ChupTrongGame`) gắn cờ màn còn kiểu cũ. Sửa hình: `tools/giao_dien_nro/sinh_khung_nro.py` (mảnh) và `icon_nro.py`
 (icon vẽ bằng lưới ký tự), chạy lại bộ sinh; `--kiem` kiểm tệp trong repo khớp.
+
+## Giả lập Android (J2ME Loader / CoffeeCat) - màn ngang (0.9.22)
+
+Người chơi đặt màn ảo trong giả lập (640x360, 1280x720, 1920x1080...). `Canvas.loadSize`: cạnh ngắn >= 684 -> `heSo`
+= cạnh ngắn / 360 (kẹp 1..4), game vẽ ở màn logic `w = thatW / heSo` vào ảnh đệm rồi phóng nguyên (`getRGB` / `drawRGB`
+theo dải 8 hàng), chạm chia `heSo`; nhỏ hơn (mọi máy thật) vẽ thẳng x1. Cảm ứng màn ngang: `VungCham.MIN` = 16.
+MANIFEST: giả lập chỉ đọc `Nokia-UI-Enhancement` (không dùng: đa chạm làm loạn toạ độ chạm) - không thuộc tính nào chọn
+màn ngang thay người chơi. Hướng dẫn người chơi + chi tiết: `docs/huong-dan-gia-lap-android.md`.
