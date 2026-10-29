@@ -49,17 +49,53 @@ public class BotXuyenSuot {
             while (h.find()) { int id = Integer.parseInt(h.group(1)); LOAD.put(id, id); }
         }
         for (short[] g : NHOM) if (g.length > 0 && g[0] >= 0) MAP_THU.add((int) g[0]);
-        for (String d : BotChucNang.sql("SELECT id, level, name FROM data_monster")) {
+        for (String d : BotChucNang.sql("SELECT id, level, name, he, IFNULL(he2, -1) FROM data_monster")) {
             String[] f = d.split("\t");
             if (f.length < 3) continue;
             CAP_QUAI.put(Integer.parseInt(f[0]), Integer.parseInt(f[1]));
             TEN_QUAI.put(Integer.parseInt(f[0]), f[2]);
+            if (f.length >= 5) try { HE_QUAI.put(Integer.parseInt(f[0]), new int[]{Integer.parseInt(f[3].trim()), Integer.parseInt(f[4].trim())}); } catch (NumberFormatException ignored) { }
         }
         for (int mid : MAP_THU) {
             Integer l = LOAD.get(mid);
             if (l == null) continue;
             for (int t : luoiQuai(l)) QUAI_MAP.computeIfAbsent(t, z -> new TreeSet<>()).add(mid);
         }
+    }
+
+    /** template quai -> {he1, he2} (data_monster). */
+    static final Map<Integer, int[]> HE_QUAI = new ConcurrentHashMap<>();
+
+    /**
+     * O chieu nguoi choi bam vao quai mau {@code tpl}: nhu nguoi choi nhin bieu tuong khac he - chi xoay cac chieu danh da
+     * hoc (o 0..3; o 4 la buff / bi dong o nhieu dong) co he so khac he cao nhat (>= 85% chieu tot nhat), xen chieu khac
+     * khi chi co mot. Truoc 29/10/2026 bot xoay mu 4 o dau (vd Charmander dung chieu Thuong vao quai Co thay vi chieu Lua).
+     */
+    static int chieuTheoHe(BotChucNang.Bot b, int lop, int tpl, int lan) {
+        int[] he = HE_QUAI.get(tpl);
+        int n = Math.min(4, b.chieu.length);
+        List<Integer> co = new ArrayList<>();
+        int[] gt = new int[n];
+        int tot = 0;
+        for (int k = 0; k < n; k++) {
+            if (b.chieu[k] <= 0) continue;
+            int hc = com.htbb.pokemon.ChieuPokemon.heChieu(lop, k);
+            int v = 100;
+            if (he != null && hc >= 0) v = com.htbb.pokemon.HePokemon.heSoTrongGame(hc, he[0], he[1]);
+            gt[k] = v;
+            tot = Math.max(tot, v);
+            co.add(k);
+        }
+        if (co.isEmpty()) return 0;
+        List<Integer> chon = new ArrayList<>();
+        for (int k : co) if (gt[k] * 100 >= tot * 85) chon.add(k);
+        if (chon.isEmpty()) chon = co;
+        if (chon.size() == 1 && co.size() > 1 && lan % 2 == 1) { // mot chieu tot: xen chieu khac khi no dang hoi
+            List<Integer> khac = new ArrayList<>(co);
+            khac.remove(chon.get(0));
+            return khac.get(Math.floorMod(lan / 2, khac.size()));
+        }
+        return chon.get(Math.floorMod(lan, chon.size()));
     }
 
     static Set<Integer> luoiQuai(int load) {
@@ -245,6 +281,16 @@ public class BotXuyenSuot {
     }
 
     // ======================================================================== mot dong choi
+    /**
+     * Vu khi cua hang dung bac cap cho dong (class) {@code lop} o cap {@code lv}: cap 1..35 = 79 + 7*lop + bac (bac 5 cap),
+     * cap 36..75 = 174 + 8*lop + bac (Than lua / Hat giong / Khan lua / Nuoc than / Nam cham vang 36 .. tinh anh 71).
+     * Truoc 29/10/2026 bot (va do suc) dung 174 cho MOI dong o cap >= 36 va dong 0 (lua) cho do suc - sai voi 4 dong kia.
+     */
+    static int vuKhiShop(int lop, int lv) {
+        if (lv >= 36) return 174 + 8 * lop + Math.min(7, (lv - 36) / 5);
+        return 79 + 7 * lop + Math.min(6, Math.max(0, (lv - 1) / 5));
+    }
+
     static class Dong implements Runnable {
         final int lop;
         final String user;
@@ -441,7 +487,7 @@ public class BotXuyenSuot {
 
         /** Het thuoc hoi mau: ve lang, vao nha, mua 20 binh (shop NPC lenh 24), ra lai. */
         void muaThuoc() throws Exception {
-            boolean canVk = 79 + 7 * lop + Math.min(6, Math.max(0, (b.lv - 1) / 5)) != vuKhiDangMac;
+            boolean canVk = vuKhiShop(lop, b.lv) != vuKhiDangMac;
             if (!canVk && b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3) >= 4 || System.currentTimeMillis() - thuocLanCuoi < 5 * 60000L || b.xu < 2000) return;
             thuocLanCuoi = System.currentTimeMillis();
             int lang = b.mapId;
@@ -459,8 +505,7 @@ public class BotXuyenSuot {
             b.lamMoi();
             ghi("mua thuoc " + lv + ": " + t0 + " -> " + b.soThuoc(lv) + " (xu " + b.xu + ")");
             // vu khi shop theo bac cap (79 + 7*lop: cap 1,6,11,...,31) - nguoi choi that mua do o tiem
-            int bac = Math.min(6, Math.max(0, (b.lv - 1) / 5));
-            int tpl = 79 + 7 * lop + bac;
+            int tpl = vuKhiShop(lop, b.lv);
             if (tpl != vuKhiDangMac) {
                 int id = KichBanDS3.muaVuKhi(b, tpl);
                 if (id != KichBanDS3.KHONG) {
@@ -472,9 +517,14 @@ public class BotXuyenSuot {
             KichBanDS2.raNgoai(b);
         }
 
+        /** HP < 50%: uong binh tot nhat (toi da 3 binh lien, dung khi >= 50% / het thuoc) - nhu nguoi choi bam thuoc. */
         void uongThuoc() throws IOException {
-            if (b.hp > 0 && b.hp < b.maxhp / 2) {
-                for (int t : new int[]{3, 2, 1}) if (b.soThuoc(t) > 0) { b.gui(22, (byte) t); b.bom(300); break; }
+            for (int lan = 0; lan < 3 && b.hp > 0 && b.hp < b.maxhp / 2; lan++) {
+                int t = b.soThuoc(3) > 0 ? 3 : b.soThuoc(2) > 0 ? 2 : b.soThuoc(1) > 0 ? 1 : -1;
+                if (t < 0) return;
+                b.gui(22, (byte) t);
+                b.bom(300);
+                b.lamMoi();
             }
         }
 
@@ -504,6 +554,11 @@ public class BotXuyenSuot {
                 b.bom(600);
                 b.px = b.tx * 16 + 8; b.py = b.ty * 16 + 8;
                 soDoiMap++;
+                // nguoi choi that uong thuoc khi di duong voi it mau (bao cao can bang 29/10/2026: bot di qua 3-4 ban do quai
+                // voi 20% HP roi guc giua duong - ket qua do bot, khong phai do game)
+                b.lamMoi();
+                if (b.hp <= 0) { hoiSinh(); return false; }
+                uongThuoc();
                 if (b.mapId == truoc) {
                     String t = b.chuTu(m);
                     ketLyDo("cong " + truoc + "->" + e[1] + " khong cho qua: " + (t.length() > 160 ? t.substring(0, 160) : t));
@@ -557,9 +612,8 @@ public class BotXuyenSuot {
                 int m = b.moc();
                 int don = 0;
                 for (; don < 120 && !b.dut; don++) {
-                    List<Integer> co = new ArrayList<>();
-                    for (int k = 0; k < Math.min(4, b.chieu.length); k++) if (b.chieu[k] > 0) co.add(k);
-                    b.gui(9, (short) (int) chon, (byte) (int) (co.isEmpty() ? 0 : co.get(don % co.size())));
+                    int[] qt = b.quai.get(chon);
+                    b.gui(9, (short) (int) chon, (byte) chieuTheoHe(b, lop, qt == null ? -1 : qt[5], don));
                     b.bom(260);
                     if (don % 3 == 2) { b.gui(7, (short) (int) chon); b.bom(150); }
                     int[] q2 = b.quai.get(chon);
@@ -568,6 +622,7 @@ public class BotXuyenSuot {
                         int[] o = bd.oGan(q2[0] / 16, q2[1] / 16, 2);
                         if (o != null) b.diDuong(bd, o[0], o[1]);
                     }
+                    if (b.hp > 0 && b.hp < b.maxhp / 2) uongThuoc(); // HP song tu goi 10 (quai danh minh)
                     if (don % 10 == 9) { b.lamMoi(); uongThuoc(); if (b.hp <= 0) break; }
                 }
                 int[] q3 = b.quai.get(chon);

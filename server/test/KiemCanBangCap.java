@@ -44,6 +44,13 @@ public final class KiemCanBangCap {
             e.printStackTrace();
             Kiem.bang("duong quai khong nem loi", "", String.valueOf(e));
         }
+        Kiem.nhom("Can bang theo dong / he (lan 2): quai chu dong, Gym khac he <= x1,25 moi dong, khoi sua_can_bang_lop.sql");
+        try {
+            KiemCanBangCapLop.chay();
+        } catch (final Exception e) {
+            e.printStackTrace();
+            Kiem.bang("KiemCanBangCapLop khong nem loi", "", String.valueOf(e));
+        }
     }
 
     // ------------------------------------------------------------------ Gym

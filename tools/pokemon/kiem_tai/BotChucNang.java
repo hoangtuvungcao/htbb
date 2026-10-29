@@ -587,6 +587,14 @@ public class BotChucNang {
                     case -92:
                         e.chu = "TIEN HOA";
                         break;
+                    case 10: { // quai danh: {quai, muc tieu, sat thuong, hp con} - HP minh song khong can hoi lai (lenh 88)
+                        r.readShort();
+                        int tg = r.readShort();
+                        r.readInt();
+                        int con = r.readInt();
+                        if (tg == actor && actor >= 0) hp = Math.max(0, con);
+                        break;
+                    }
                     case 15: {
                         int t = r.readByte();
                         int id = r.readShort();

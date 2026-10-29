@@ -447,6 +447,16 @@ public class Monster extends LiveActor {
         if ((this.idTemplate >= 85 && this.idTemplate <= 89) || this.idTemplate == 36 || this.idTemplate == 37) {
             return;
         }
+        // Boss Gym (1 dau 1) va de cua no chi danh nguoi thach dau (truoc 29/10/2026: boss Gym cua nguoi khac dung trong
+        // lang danh ca nguoi di ngang - nguoi do lai khong gay duoc sat thuong vao no).
+        if (this.target != null && !BossLauDai.chiDanhChu(this, this.target)) {
+            final Char chu = BossLauDai.chuGym(this);
+            if (chu == null) {
+                this.boMucTieu();
+                return;
+            }
+            this.target = chu; // quay ve nguoi thach dau
+        }
 
         final long now = System.currentTimeMillis();
         // GD2 6.4/6.6: ngu/bang/te liet; boss pha 3 danh nhanh hon 30% (tat co: y nhu cu).
@@ -454,6 +464,9 @@ public class Monster extends LiveActor {
             return;
         }
         if (now - this.lastTimeAttack > BossLauDai.treDanh(this, this.attackDelay)) {
+            if (this.target != null && !this.chuDongDuoc(this.target, now)) {
+                return; // quai xam / da du quai vay: giu muc tieu, chua danh (com.htbb.pokemon.ChuDongQuai)
+            }
             this.lastTimeAttack = now;
             try {
                 final Message m = new Message(10);
@@ -644,6 +657,9 @@ public class Monster extends LiveActor {
     @Override
     public void update() {
         this.kiemDiemSinh();
+        if (this.isBoss) {
+            BossLauDai.nhipNiem(this); // chieu lon bao truoc no DUNG luc het gio niem (vi tri muc tieu luc do)
+        }
         if (this.isDead && this.khongHoiSinh) {
             return; // boss Gym / the gioi / de: khong bao gio hoi sinh (cho go khoi bang quai)
         }
@@ -888,6 +904,47 @@ public class Monster extends LiveActor {
 
     public boolean isEnemy(final Char p) {
         return p.getIdCharThanThu() <= -1;
+    }
+
+    /** Bo muc tieu, bao client (nhu khi quai ve diem sinh). */
+    void boMucTieu() {
+        final Char t = this.target;
+        this.target = null;
+        if (t != null) {
+            try {
+                t.sendMessage(MessageCreator.createMsgMonsterRemoveTarget(this.id));
+            } catch (final Exception ignored) {
+            }
+        }
+    }
+
+    /**
+     * Quai hoang da thuong (lop Monster, khong boss) duoc ra don vao {@code c} luc nay khong: quai xam (thap hon tu
+     * quai.xam_cap cap) khong tu lao vao, toi da quai.toi_da_vay quai chua bi danh cung danh mot nguoi; quai da mat mau
+     * (bi danh) luon danh tra. Ra don thi ghi vao {@link Char#quaiVay}. Lop con (boss, quai pho ban, Moba...) giu nhu cu.
+     */
+    boolean chuDongDuoc(final Char c, final long now) {
+        if (this.getClass() != Monster.class || this.isBoss || c == null || !com.htbb.pokemon.LauDai.bat()) {
+            return true;
+        }
+        final java.util.concurrent.ConcurrentHashMap<Integer, Long> vay = c.quaiVay;
+        final Integer minh = Integer.valueOf(this.id);
+        int khac = 0;
+        for (final java.util.Iterator<java.util.Map.Entry<Integer, Long>> it = vay.entrySet().iterator(); it.hasNext(); ) {
+            final java.util.Map.Entry<Integer, Long> e = it.next();
+            if (now - e.getValue().longValue() > com.htbb.pokemon.ChuDongQuai.CUA_SO_VAY_MS) {
+                it.remove();
+            } else if (!e.getKey().equals(minh)) {
+                khac++;
+            }
+        }
+        final boolean ok = com.htbb.pokemon.ChuDongQuai.duocDanh(this.level, c.getLevel(), this.hp < this.maxhp, khac,
+                com.htbb.pokemon.LauDai.so("quai.xam_cap", com.htbb.pokemon.ChuDongQuai.XAM_CAP_MAC_DINH),
+                com.htbb.pokemon.LauDai.so("quai.toi_da_vay", com.htbb.pokemon.ChuDongQuai.TOI_DA_VAY_MAC_DINH));
+        if (ok) {
+            vay.put(minh, Long.valueOf(now));
+        }
+        return ok;
     }
 
     public boolean allWayAdd() {

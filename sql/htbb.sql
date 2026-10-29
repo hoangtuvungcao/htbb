@@ -31946,3 +31946,42 @@ UPDATE `data_noi_dung_gym` SET `tan_cong` = 1445, `phong_thu` = 320 WHERE `stt` 
 UPDATE `data_noi_dung_gym` SET `tan_cong` = 1524, `phong_thu` = 347 WHERE `stt` = 8 AND `tan_cong` = 1732 AND `phong_thu` = 434;
 UPDATE `data_noi_dung_gym` SET `tan_cong` = 1733, `phong_thu` = 422 WHERE `stt` = 9 AND `tan_cong` = 1863 AND `phong_thu` = 478;
 UPDATE `data_noi_dung_gym` SET `tan_cong` = 1820, `phong_thu` = 453 WHERE `stt` = 10 AND `tan_cong` = 1916 AND `phong_thu` = 494;
+-- >>> sua_can_bang_lop.sql
+-- ==================================================================================
+--  CAN BANG THEO DONG / HE (29/10/2026, lan 2 cua "Tự cân chỉnh"; bot do suc 5 dong x Gym / bai cua ai + bot choi 5 dong
+--  cap 1-40). Lan 1 chi do bang hai bot dong Lua -> guc don o Fuchsia / Cinnabar / Gym Cerulean (Nuoc danh Lua x1,5).
+--  Phan MAY CHU (khong o khoi nay, co khoa cau_hinh de chinh / tat, 0 = tat):
+--    quai.xam_cap (4)    quai thap hon nguoi choi >= 4 cap khong tu lao vao (van danh tra khi bi danh)
+--    quai.toi_da_vay (3) toi da 3 quai chua bi danh cung danh mot nguoi (truoc: moi quai trong 120 px "fp" cung vao)
+--    gym.he_toi_da (125) don truong Gym khac he (x1,5 / x2) ha ve x1,25 - khac he van thiet, khong chan cung
+--    gym.so_de (1)       Gym 1 dau 1 goi 1 de moi pha (truoc 2)
+--    gym.he_ra_toi_thieu (70) dong khong co chieu danh nao qua x0,7 vao he boss (Dien gap Golem / Seismitoad he Dat x0,3)
+--                        thi HP boss x tot / 70 (= chieu duoc tinh x0,7) - khac he khong chan cung ca hai chieu
+--    va 2 loi: boss Gym / de chi danh (va luon quay ve) nguoi thach dau (truoc danh ca nguoi di ngang trong lang - nguoi
+--    do khong gay duoc sat thuong); chieu lon bao truoc no LUC het gio niem (truoc: o don ke tiep, ne roi quay lai van x3).
+--  Khoi nay (du lieu):
+--   1. Gym Cerulean (stt 2, cap 19, cua ai CA-04.2 / chinh C10.6): sau phan may chu, do suc cap 19 van chi 2/5 dong thang
+--      (Lua / Co / Thuong guc, boss con 14-46%), cap 22 5/5; voi tan cong 660 + HP 62000 dong Lua cap 19-21 van guc o
+--      28-48% (sat thuong dong Lua vao Nuoc / Bay x0,7, ~400 / giay -> 155 giay). Tan cong 728 -> 660 (van >= Pewter 657),
+--      HP 72800 -> 52000 (van >= Pewter 49100; TTK dong Lua ~130 giay, dong trung tinh 50-90 giay - thiet ke 90-120).
+--      EXP / thuong Gym khong doi (ExpLauDai theo cap, khong theo HP).
+--   2. HP quai cap 61-69: bac TTK 5 -> 6 giay o cap 61 la MOT buoc HP +24% (60: 10080 -> 62: 12470) trong khi tan cong /
+--      thu +3% - gai A (so don co ban de ha quai) +21% giua hai bai ke nhau (do suc cap 60/65 + chi so nguoi choi do that).
+--      Noi suy thang HP cap 62..68 giua cap 60 (10080) va cap 70 (14030), nhu lan 1 lam voi bac cap 31. Cap >= 70, tan
+--      cong / thu, EXP, xu giu nguyen.
+--   3. Cinnabar (ban do 9, mo o cap 18 sau CA-04.2; CA-05.1 "45 Croagunk" cap 24): Croconaw cap 26 (Nuoc) / Croagunk cap 27
+--      cao hon cap vao bai 4-9 cap - cong thuc quai cu +70 sat thuong moi cap chenh, Nuoc vao Lua x1,5: dong Lua cap 22
+--      an 850-1300 / don (20% HP) tu 3 Croconaw, 0 con ha duoc truoc khi guc; dong Thuong guc sau 1 con. Ha ve dung bang
+--      cap bai: Croconaw cap 24 (= dong cap 24 Ariados / Cubone), Croagunk cap 25 (noi suy 24..26 cua duong lan 1). Thuong
+--      EXP / xu MOI CON theo cap moi (= quai cung cap, khong lam phat: de hon thi thuong it hon).
+--  Chay lai duoc: UPDATE theo khoa + GIA TRI CU. Doi xong khoi dong lai may chu game. Kiem: server/test/KiemCanBangCapLop.
+-- ==================================================================================
+UPDATE `data_noi_dung_gym` SET `hp` = 52000, `tan_cong` = 660 WHERE `stt` = 2 AND `hp` = 72800 AND `tan_cong` = 728;
+UPDATE `data_monster` SET `level` = 24 WHERE `id` = 29 AND `level` = 26;
+UPDATE `data_monster` SET `level` = 25 WHERE `id` = 30 AND `level` = 27;
+UPDATE `data_monster_lau_dai` SET `cap` = 24, `maxhp` = 3420, `attack` = 524, `defent` = 142, `rcvxp` = 1239, `rcvgold` = 107 WHERE `id` = 29 AND `cap` = 26 AND `maxhp` = 3680 AND `attack` = 550 AND `defent` = 153 AND `rcvxp` = 1453 AND `rcvgold` = 120;
+UPDATE `data_monster_lau_dai` SET `cap` = 25, `maxhp` = 3550, `attack` = 537, `defent` = 148, `rcvxp` = 1346, `rcvgold` = 113 WHERE `id` = 30 AND `cap` = 27 AND `maxhp` = 3800 AND `attack` = 563 AND `defent` = 159 AND `rcvxp` = 1574 AND `rcvgold` = 123;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 10870 WHERE `id` = 60 AND `maxhp` = 12470;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 11660 WHERE `id` = 77 AND `maxhp` = 12860;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 12450 WHERE `id` = 81 AND `maxhp` = 13260;
+UPDATE `data_monster_lau_dai` SET `maxhp` = 13240 WHERE `id` = 53 AND `maxhp` = 13630;

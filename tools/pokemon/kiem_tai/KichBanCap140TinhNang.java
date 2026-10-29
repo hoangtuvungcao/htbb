@@ -337,7 +337,7 @@ final class KichBanCap140TinhNang {
 
     static void giaoDich(KichBanCap140.NguoiChoi p) throws Exception {
         BotChucNang.Bot b = p.b;
-        boolean laA = p.nhanh.equals("lam");
+        boolean laA = p.kieu.equals("lam");
         CAP_GAP[laA ? 0 : 1] = p;
         if (!cho("hen")) { p.daGiaoDich = false; p.tinhNang("Giao dịch 2 người", "nguoi kia khong toi diem hen trong 4 phut (thu lai o moc sau)"); return; }
         KichBanCap140.NguoiChoi o = CAP_GAP[laA ? 1 : 0];

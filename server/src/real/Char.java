@@ -487,6 +487,8 @@ public class Char extends LiveActor {
     public long startPlay;
     public boolean isAdmin;
     public boolean beAttack;
+    /** Quai hoang da vua ra don vao nhan vat nay: id quai -> luc (ms). Dem "toi da vay" (com.htbb.pokemon.ChuDongQuai). */
+    public final java.util.concurrent.ConcurrentHashMap<Integer, Long> quaiVay = new java.util.concurrent.ConcurrentHashMap<Integer, Long>();
     public short nNearchar;
     public short idRegionNuiChauBau;
     public short idRegionLoidai;
