@@ -44,6 +44,11 @@ public class Monster extends LiveActor {
      * bao loi 24/10/2026 boss Gym bi ha xong 6 giay sau hien lai day mau (timeReBorn) thanh boss mo coi khong ai danh duoc.
      */
     public volatile boolean khongHoiSinh;
+    /**
+     * Boss Gym: so thu tu Gym (data_noi_dung_gym.stt) - dat o BossLauDai.datGym, giu sau khi BossLauDai.khiChet go
+     * trang thai (EXP ket lieu ExpLauDai.expHaBoss doc sau do). 0 = khong phai boss Gym.
+     */
+    public volatile int gymStt;
     public long bornTime;
     public Char target;
     public int level;
@@ -1755,7 +1760,7 @@ public class Monster extends LiveActor {
                     } catch (final Exception ex3) {
                     }
                     if (this.idTemplate != Map.idGhost) {
-                        Map.addXpCharEvent(p, 1000000L, false, "Monster1");
+                        Map.addXpCharEvent(p, ExpLauDai.expHaBoss(p, this), false, "Monster1"); // boss Gym: theo cap (ExpLauDai)
                         try {
                             if (Map.r.nextInt(1000) < 5) {
                                 Map.doCreateBookSkillPet(p, 0);

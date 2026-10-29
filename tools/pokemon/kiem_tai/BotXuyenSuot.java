@@ -324,6 +324,7 @@ public class BotXuyenSuot {
                 Thread.sleep(6000);
             }
             if (l != null) throw new IllegalStateException("vao game: " + l);
+            ngheDon();
             KichBanDS.veLang(b);
             b.lamMoi();
             capTruoc = b.lv;
@@ -372,15 +373,67 @@ public class BotXuyenSuot {
             b.lamMoi();
         }
 
+        /** Don quai trung minh gan day (goi 10): {luc ms, mau quai, sat thuong, hp con} - in khi guc (can bang cap 26/10/2026). */
+        final java.util.ArrayDeque<int[]> donGan = new java.util.ArrayDeque<>();
+        long donGoc = System.currentTimeMillis();
+
+        void ngheDon() {
+            final BotChucNang.Bot bb = b;
+            final java.util.function.Consumer<BotChucNang.SuKien> cu = bb.ngheNhan;
+            bb.ngheNhan = e -> {
+                if (cu != null) cu.accept(e);
+                if (e.cmd != 10 || e.d == null || e.d.length < 12) return;
+                try {
+                    DataInputStream r = new DataInputStream(new ByteArrayInputStream(e.d));
+                    int mq = r.readShort(), tg = r.readShort(), dmg = r.readInt(), hp = r.readInt();
+                    if (tg != bb.actor) return;
+                    int[] q = bb.quai.get(mq);
+                    synchronized (donGan) {
+                        donGan.addLast(new int[]{(int) (System.currentTimeMillis() - donGoc), q == null ? -1 : q[5], dmg, hp});
+                        while (donGan.size() > 12) donGan.removeFirst();
+                    }
+                } catch (IOException ignored) {
+                }
+            };
+        }
+
+        String tomTatDon() {
+            StringBuilder sb = new StringBuilder();
+            synchronized (donGan) {
+                long cuoi = donGan.isEmpty() ? 0 : donGan.peekLast()[0];
+                for (int[] d : donGan) sb.append(String.format("%.1fs:%s-%d(con %d) ", (d[0] - cuoi) / 1000.0, TEN_QUAI.getOrDefault(d[1], "?"), d[2], d[3]));
+                donGan.clear();
+            }
+            return sb.toString();
+        }
+
         void hoiSinh() throws Exception {
             soChet++;
-            ghi("chet -> ve lang");
+            ghi("chet -> ve lang | maxhp " + b.maxhp + " | don cuoi: " + tomTatDon());
             int m = b.moc();
             b.gui(31, new byte[0]);
             b.cho(x -> x.coLenh(m, 12), 6000);
             b.gui(12, (short) -500, (short) 0, (short) 0);
             b.bom(800);
             b.lamMoi();
+            hoiMau("sau khi ve lang");
+        }
+
+        /**
+         * Nguoi choi binh thuong: ve lang voi it mau thi uong thuoc truoc khi ra ngoai (truoc day bot ra ngay voi ~5% HP, guc
+         * lien tiep o cung buoc - bao cao can bang cap 26/10/2026). Toi da 8 binh, dung khi >= 70% HP / het thuoc.
+         */
+        void hoiMau(String vi) throws IOException {
+            int uong = 0, hp0 = b.hp;
+            for (int lan = 0; lan < 8 && b.hp > 0 && b.hp < b.maxhp * 7 / 10; lan++) {
+                int t = b.soThuoc(3) > 0 ? 3 : b.soThuoc(2) > 0 ? 2 : b.soThuoc(1) > 0 ? 1 : -1;
+                if (t < 0) break;
+                b.gui(22, (byte) t);
+                b.bom(700);
+                b.lamMoi();
+                uong++;
+            }
+            if (uong > 0) ghi("hoi mau " + vi + ": " + uong + " binh, HP " + hp0 + " -> " + b.hp + "/" + b.maxhp);
         }
 
         long thuocLanCuoi = 0;

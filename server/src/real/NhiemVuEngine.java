@@ -404,7 +404,7 @@ public final class NhiemVuEngine {
         final String id = String.valueOf(mt.idTemplate);
         final int delta = Math.abs(p.lvDetail.lv - mt.level);
         suKien(p, "giet", id, 1);
-        if (delta <= 5) {
+        if (delta <= 5 || ChenhCapNhiemVuGame.tinh(p, mt.level, 5)) { // + bai luyen cao nhat da mo (ChenhCapNhiemVu)
             suKien(p, "giet_lech_cap", "", 1);
         }
         if (mt.level > p.lvDetail.lv) {

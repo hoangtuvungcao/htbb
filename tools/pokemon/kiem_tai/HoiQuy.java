@@ -410,6 +410,7 @@ public final class HoiQuy {
         if (!log.isEmpty()) { tepLog = new File(log); viTri = tepLog.isFile() ? tepLog.length() : 0; }
         KichBanHoiQuy.dangKy();
         KichBanCap140.dangKy();
+        KichBanDoSuc.dangKy();
         List<String> chon = new ArrayList<>();
         // goi kieu BotChucNang (hoi_quy.conf kieu cn): <host> <cong> <tien to> [kich ban ...]; tien to chi de tuong thich
         int dau = 2;
