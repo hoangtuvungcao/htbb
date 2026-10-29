@@ -47,9 +47,17 @@ public final class TuDong {
     static final int TAT_TU_DI = 13;
     private static final String RMS_TEN = "htbbtd";
 
-    /** Bình HP / MP mạnh -> yếu (id loại thuốc của game, y GameScr.doUsePotion). */
-    private static final int[] BINH_HP = new int[]{94, 93, 22, 21, 3, 2, 1};
-    private static final int[] BINH_MP = new int[]{96, 95, 24, 23, 6, 5, 4};
+    /**
+     * Bình HP / PP yếu -> mạnh (id loại thuốc của game, y GameScr.doUsePotion) và lượng hồi (khớp máy chủ
+     * com.htbb.pokemon.TuDongKeHoach.BINH_HP / BINH_MP). Uống bình nhỏ nhất đủ bù phần thiếu, không có thì bình mạnh
+     * nhất đang có. Không có 126 / 127 (bình chiến trường: máy chủ chỉ cho dùng trong chiến trường, nơi không có Tự động).
+     */
+    static final int[] BINH_HP = new int[]{1, 2, 3, 21, 22, 93, 94};
+    static final int[] HOI_HP = new int[]{80, 300, 1000, 1500, 3000, 7000, 15000};
+    static final int[] BINH_MP = new int[]{4, 5, 6, 23, 24, 95, 96};
+    static final int[] HOI_MP = new int[]{160, 600, 2000, 2500, 3500, 7000, 15000};
+    /** Khoảng tối thiểu giữa hai lần tự uống (ms) - dưới nhịp thuốc chống bot của máy chủ 4 lần / 5 giây. */
+    static final long KHOANG_BINH = 1500L;
     /** Loại skill buff theo dòng (không dùng để đánh). */
     private static final byte[][] SKILL_BUFF = new byte[][]{{4, 5}, {4, 5}, {4, 5, 6, 7}, {4, 5}, {4, 5}};
 
@@ -82,6 +90,9 @@ public final class TuDong {
     private static boolean giuPhim, hoiPhuc;
     static String trangThai = "";
     static int soHa;
+    /** PP cần thuốc (dưới ngưỡng / không đủ cho chiêu tốn PP rẻ nhất) mà hết sạch bình PP: báo rõ, không đứng im. */
+    static boolean hetBinhPP;
+    private static boolean daBaoHetPP;
 
     // ---------------------------------------------------------------- cài đặt (RMS)
     /** Thứ tự chiêu (loại skill, -1 = trống); trống hết = mọi chiêu đánh đã học (mạnh trước). */
@@ -143,6 +154,28 @@ public final class TuDong {
             m.cleanup();
         } catch (Throwable e) {
             // mất kết nối: lần sau
+        }
+    }
+
+    /**
+     * 0.9.22: đổi ngưỡng thuốc / nhặt khi Tự động ĐANG chạy -> gửi ngay cho máy chủ (lệnh xin trạng thái 0 + giao
+     * thức + 5 byte cài đặt, real.TuDongGame.docCaiDat), trước đây chỉ gửi lúc bật nên kéo thanh "Thuốc PP" giữa
+     * chừng không có tác dụng tới lần bật sau.
+     */
+    static void guiCaiDat() {
+        try {
+            Message m = new Message(LENH);
+            m.writer().writeByte(0);
+            m.writer().writeByte(GIAO_THUC);
+            m.writer().writeByte(choThuoc() ? nguongHp : 0);
+            m.writer().writeByte(choThuoc() ? nguongMp : 0);
+            m.writer().writeByte(nhat);
+            m.writer().writeByte(veHoiPhuc ? 1 : 0);
+            m.writer().writeByte(tuHoiSinh && hoiSinhLuong ? 1 : 0);
+            GameService.gI().session.sendMessage(m);
+            m.cleanup();
+        } catch (Throwable e) {
+            // mất kết nối: gửi lại lúc bật
         }
     }
 
@@ -300,6 +333,8 @@ public final class TuDong {
         lucXinKe = 0L;
         lucNhip = System.currentTimeMillis() + 20000L;
         trangThai = "bắt đầu";
+        hetBinhPP = false;
+        daBaoHetPP = false;
         // auto gốc của game (BangAuto) không chạy song song
         GameScr.autoFight = false;
         GameScr.saveAutoFight = false;
@@ -404,7 +439,7 @@ public final class TuDong {
             theoKeHoach(gs, mc, l);
             return;
         }
-        binh(gs, mc, l);
+        binh(gs, mc, l, true);
         if (hoiPhuc(gs, mc, l)) {
             return;
         }
@@ -425,6 +460,13 @@ public final class TuDong {
         if (keHd < 0 || l - keLuc > 3000L) {
             nha();
             trangThai = "chờ máy chủ";
+            return;
+        }
+        // 0.9.22 (chủ game: "hết PP không tự sử dụng khi đang dùng auto"): PP trên client dưới ngưỡng / không đủ cho
+        // chiêu tốn PP rẻ nhất -> tự uống bình PP (máy chủ có thể chưa thấy: PP client trừ cả đòn máy chủ bỏ). HP
+        // để máy chủ quyết (HP luôn đồng bộ). Cùng lucBinh với lệnh thuốc của máy chủ: không bao giờ uống dồn.
+        if (keHd != HD_THUOC && keHd != HD_DUNG && binh(gs, mc, l, false)) {
+            nha();
             return;
         }
         switch (keHd) {
@@ -458,15 +500,27 @@ public final class TuDong {
                 if (l < lucDanh || mc.isDoing || mc.state == Char.A_ATTACK) {
                     return;
                 }
-                gs.doUseSkillToFocusActor((byte) keSo);
+                byte sk = (byte) keSo;
+                if (ppChieu(mc, sk) > mc.mp) {
+                    // máy chủ chọn chiêu mà PP trên client không đủ (game sẽ từ chối "Không đủ PP" = đứng im):
+                    // dùng chiêu đủ PP của mình (chiêu 0 PP), chờ bình / gói PP thật của máy chủ
+                    sk = chonChieu(mc, l);
+                    if (sk < 0 && ppChieu(mc, (byte) 0) <= mc.mp && l - mc.timeLastUseSkills[0] > mc.coolDownSkill[0]) {
+                        sk = 0;   // chiêu thường (0 PP) dù không có trên trang chiêu
+                    }
+                    if (sk < 0) {
+                        return;
+                    }
+                }
+                gs.doUseSkillToFocusActor(sk);
                 lucDanh = l + 450L;
                 return;
             }
             case HD_THUOC: {
                 nha();
-                if (l >= lucBinh && keSo >= 0 && keSo < mc.potions.length && mc.potions[keSo] > 0) {
+                if (l >= lucBinh && keSo >= 0 && keSo < mc.potions.length && mc.potions[keSo] > 0 && !dangHoi(mc, keSo, l)) {
                     gs.doUsePotion(keSo);
-                    lucBinh = l + 1500L;
+                    lucBinh = l + KHOANG_BINH;
                 }
                 keHd = -1;
                 lucXinKe = 0L;
@@ -532,20 +586,81 @@ public final class TuDong {
 
     // ---------------------------------------------------------------- thuốc
 
-    private static void binh(GameScr gs, MainChar mc, long l) {
-        if (l < lucBinh || !choThuoc()) {
-            return;
+    /**
+     * Tự uống thuốc. HP dưới ngưỡng (khi {@code coHp}) -> bình HP; PP dưới ngưỡng HOẶC không đủ cho chiêu đánh tốn PP
+     * rẻ nhất -> bình PP (ngưỡng PP = Tắt vẫn uống khi hết PP thật, nếu không Auto chỉ đánh chiêu 0 PP mãi). HP không có
+     * bình / bình đang hồi thì vẫn xét PP. Cách nhau ít nhất KHOANG_BINH và đúng thời gian hồi từng loại bình.
+     * Hết sạch bình PP: hetBinhPP + báo nhanh MỘT lần (tới khi có bình lại / PP hồi), không lặp.
+     * @return true = vừa uống.
+     */
+    static boolean binh(GameScr gs, MainChar mc, long l, boolean coHp) {
+        if (!choThuoc() || mc == null || mc.potions == null) {
+            hetBinhPP = false;
+            return false;
         }
-        if (nguongHp > 0 && mc.maxhp > 0 && (long) mc.hp * 100L < (long) mc.maxhp * nguongHp && uong(gs, mc, BINH_HP, l)) {
-            lucBinh = l + 1500L;
-            return;
+        boolean canPP = canPP(mc);
+        hetBinhPP = canPP && coBinh(mc, BINH_MP) < 0;
+        if (!hetBinhPP) {
+            daBaoHetPP = false;
+        } else if (!daBaoHetPP) {
+            daBaoHetPP = true;
+            game.pokemon.DungDo.bao("Hết bình PP - Tự động đánh tiếp bằng chiêu đủ PP.", game.pokemon.DungDo.TIN);
         }
-        if (nguongMp > 0 && mc.maxmp > 0 && (long) mc.mp * 100L < (long) mc.maxmp * nguongMp && uong(gs, mc, BINH_MP, l)) {
-            lucBinh = l + 1500L;
+        if (l < lucBinh) {
+            return false;
         }
+        if (coHp && nguongHp > 0 && mc.maxhp > 0 && (long) mc.hp * 100L < (long) mc.maxhp * nguongHp) {
+            int n = chonBinh(mc, BINH_HP, HOI_HP, mc.maxhp - mc.hp, l);
+            if (n >= 0) {
+                uong(gs, mc, n, l);
+                return true;
+            }
+        }
+        if (canPP) {
+            int n = chonBinh(mc, BINH_MP, HOI_MP, mc.maxmp - mc.mp, l);
+            if (n >= 0) {
+                uong(gs, mc, n, l);
+                return true;
+            }
+        }
+        return false;
     }
 
-    private static int coBinh(MainChar mc, int[] loai) {
+    /** PP cần uống: dưới ngưỡng người chơi chọn, hoặc không đủ cho chiêu đánh tốn PP rẻ nhất. */
+    static boolean canPP(MainChar mc) {
+        if (mc.maxmp <= 0 || mc.mp >= mc.maxmp) {
+            return false;
+        }
+        if (nguongMp > 0 && (long) mc.mp * 100L < (long) mc.maxmp * nguongMp) {
+            return true;
+        }
+        int re = ppReNhat(mc);
+        return re > 0 && mc.mp < re;
+    }
+
+    /** PP của chiêu đánh (sẽ dùng) tốn PP rẻ nhất; 0 = không chiêu nào tốn PP. */
+    static int ppReNhat(MainChar mc) {
+        byte[] ds = dsChieu(mc);
+        int re = 0;
+        for (int i = 0; i < ds.length; ++i) {
+            int pp = ppChieu(mc, ds[i]);
+            if (pp > 0 && (re == 0 || pp < re)) {
+                re = pp;
+            }
+        }
+        return re;
+    }
+
+    /** PP của chiêu s theo cấp đã học (0 nếu chưa học / ngoài bảng). */
+    static int ppChieu(MainChar mc, byte s) {
+        if (s < 0 || Char.skillLevelLearnt == null || s >= Char.skillLevelLearnt.length) {
+            return 0;
+        }
+        return SkillManager.ppAnToan(s, Char.skillLevelLearnt[s], mc.clazz);
+    }
+
+    /** Loại bình đầu tiên (theo bảng) còn trong túi; -1 = hết. */
+    static int coBinh(MainChar mc, int[] loai) {
         for (int i = 0; i < loai.length; ++i) {
             int n = loai[i];
             if (n < mc.potions.length && mc.potions[n] > 0) {
@@ -555,16 +670,44 @@ public final class TuDong {
         return -1;
     }
 
-    private static boolean uong(GameScr gs, MainChar mc, int[] loai, long l) {
-        int n = coBinh(mc, loai);
-        if (n < 0) {
-            return false;
+    /** Bình đó đang hồi (thời gian hồi của game, data_potion.delay). */
+    static boolean dangHoi(MainChar mc, int n, long l) {
+        return MainChar.listPotion != null && n < MainChar.listPotion.length && MainChar.listPotion[n] != null
+                && mc.potionLastTimeUse != null && n < mc.potionLastTimeUse.length && l - mc.potionLastTimeUse[n] < MainChar.listPotion[n].delay;
+    }
+
+    /** Bình nhỏ nhất đủ bù {@code thieu} (đang có, hết hồi); không bình nào đủ thì bình mạnh nhất đang có; -1 = không. */
+    static int chonBinh(MainChar mc, int[] loai, int[] hoi, int thieu, long l) {
+        int manh = -1;
+        for (int i = 0; i < loai.length; ++i) {
+            int n = loai[i];
+            if (n >= mc.potions.length || mc.potions[n] <= 0 || dangHoi(mc, n, l)) {
+                continue;
+            }
+            if (hoi[i] >= thieu) {
+                return n;
+            }
+            manh = n;
         }
-        if (MainChar.listPotion != null && n < MainChar.listPotion.length && MainChar.listPotion[n] != null && l - mc.potionLastTimeUse[n] < MainChar.listPotion[n].delay) {
-            return false;
-        }
+        return manh;
+    }
+
+    private static void uong(GameScr gs, MainChar mc, int n, long l) {
         gs.doUsePotion(n);
-        return true;
+        lucBinh = l + KHOANG_BINH;
+    }
+
+    /** Trạng thái hiển thị: hết bình PP thì luôn nói rõ (máy chủ gửi trạng thái mới mỗi bước, đè chữ của client). */
+    static String trangThaiHien() {
+        return hetBinhPP ? chuHetBinh(trangThai) : trangThai;
+    }
+
+    /** "hết bình PP - ..." (không lặp tiền tố). */
+    static String chuHetBinh(String tt) {
+        if (tt != null && tt.startsWith("hết bình PP")) {
+            return tt;
+        }
+        return tt == null || tt.length() == 0 ? "hết bình PP" : "hết bình PP - " + tt;
     }
 
     /** Về hồi phục: HP thấp mà không có / không được dùng thuốc -> về điểm đầu đứng nghỉ tới 80%. */
@@ -939,7 +1082,7 @@ public final class TuDong {
         if (!dang) {
             return null;
         }
-        return new StringBuffer("Tự động ").append(gio(conLai())).append(" - ").append(trangThai).toString();
+        return new StringBuffer("Tự động ").append(gio(conLai())).append(" - ").append(trangThaiHien()).toString();
     }
 
     /** 0.9.5: viên nhỏ dưới thẻ hồ sơ "Auto · 4:41 · đang đánh" (game.pokemon.VienTrangThai) + chữ "+N EXP". */
@@ -949,7 +1092,7 @@ public final class TuDong {
             if (choBat) {
                 s = game.pokemon.VienTrangThai.chuAuto(-1, null);
             } else if (dang) {
-                s = game.pokemon.VienTrangThai.chuAuto(conLai(), trangThai);
+                s = game.pokemon.VienTrangThai.chuAuto(conLai(), trangThaiHien());
             }
         }
         game.pokemon.VienTrangThai.ve(g, s, dang, y);
@@ -1009,6 +1152,9 @@ public final class TuDong {
             RMS.saveRMSString(RMS_TEN, b.toString());
         } catch (Throwable e) {
             // không lưu được: giữ trong phiên
+        }
+        if (dang) {
+            guiCaiDat();
         }
     }
 }

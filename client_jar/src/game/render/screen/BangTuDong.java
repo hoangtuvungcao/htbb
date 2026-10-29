@@ -71,7 +71,8 @@ final class BangTuDong {
                 if (!TuDong.choThuoc()) {
                     return "Thuốc PP: máy chủ tắt";
                 }
-                return TuDong.nguongMp <= 0 ? "Thuốc PP: tắt" : "Thuốc PP < " + TuDong.nguongMp + "%";
+                // 0.9.22: ngưỡng 0 vẫn uống khi PP không đủ cho chiêu tốn PP rẻ nhất (TuDong.canPP)
+                return TuDong.nguongMp <= 0 ? "Thuốc PP: khi hết PP" : "Thuốc PP < " + TuDong.nguongMp + "%";
             case NHAT:
                 return "Nhặt: " + TuDong.TEN_NHAT[TuDong.nhat];
             case HOI:
@@ -662,7 +663,7 @@ final class BangTuDong {
             }
         }, loai == 0 ? "td-thuoc-hp" : loai == 1 ? "td-thuoc-pp" : "td-vung");
         String sv = !bat ? "Máy chủ tắt" : loai == 2 ? TuDong.VUNG_O[Math.max(0, Math.min(TuDong.VUNG_O.length - 1, hien))] + " ô"
-                : hien <= 0 ? "Tắt" : "< " + hien + "%";
+                : hien <= 0 ? (loai == 1 ? "Khi hết" : "Tắt") : "< " + hien + "%";
         game.pokemon.ChuDe.chuGiua(g, sv, x + w - 8, y, nh, game.pokemon.ChuDe.SO, bat && (loai == 2 || hien > 0) ? game.pokemon.ChuDe.CHINH_TOI : game.pokemon.ChuDe.CHU_PHU, 1);
     }
 

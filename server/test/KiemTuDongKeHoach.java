@@ -28,6 +28,7 @@ public final class KiemTuDongKeHoach {
             duongDi();
             chieu();
             thuoc();
+            hetPP();
             hpThap();
             nhatDo();
             dung();
@@ -241,6 +242,59 @@ public final class KiemTuDongKeHoach {
         k = lap(t);
         Kiem.bang("PP 10% < 30%: uong thuoc PP", TuDongKeHoach.HD_THUOC, k.hd);
         Kiem.bang("binh PP 5 (600)", 5, k.so);
+    }
+
+    /** 0.9.22: "het PP khong tu su dung khi dang dung auto" (HP 5731/8752, PP 1/3769, 678 binh PP 24). */
+    static void hetPP() {
+        TuDongKeHoach.TinhHinh t = th();
+        t.quai.add(q(1, 420, 400, 10));
+        t.hp = 5731;
+        t.maxhp = 8752;
+        t.mp = 1;
+        t.maxmp = 3769;
+        t.chieu.add(new TuDongKeHoach.Chieu(1, HePokemon.THUONG, 150, 3, 0L));
+        t.chieu.add(new TuDongKeHoach.Chieu(2, HePokemon.THUONG, 200, 6, 0L));
+        t.thuoc[24] = 678;
+        t.thuoc[94] = 197;
+        t.nguongHpNguoi = 50;
+        t.nguongMpNguoi = 30;
+        TuDongKeHoach.KeHoach k = lap(t);
+        Kiem.bang("anh chu game: PP 1/3769 < 30% -> uong binh PP", TuDongKeHoach.HD_THUOC, k.hd);
+        Kiem.bang("anh chu game: binh PP 24 (Elixir toi da)", 24, k.so);
+        t.nguongMpNguoi = 0;
+        k = lap(t);
+        Kiem.bang("nguong PP nguoi choi = Tat nhung PP < chieu re nhat (3): van uong", TuDongKeHoach.HD_THUOC, k.hd);
+        Kiem.bang("nguong PP Tat: binh 24", 24, k.so);
+        t.mp = 3;
+        k = lap(t);
+        Kiem.bang("nguong PP Tat, PP du chieu re nhat: khong uong, danh", TuDongKeHoach.HD_DANH, k.hd);
+        final TuDongKeHoach.CauHinh c = new TuDongKeHoach.CauHinh();
+        c.nguongThuocMp = 0;
+        t.mp = 1;
+        Kiem.bang("tu_dong.nguong_thuoc_mp=0 (may chu tat thuoc PP): khong uong ca khi het PP", TuDongKeHoach.HD_DANH, TuDongKeHoach.lap(c, t).hd);
+        // HP duoi nguong nhung het binh HP: khong chan nhanh PP
+        t.nguongMpNguoi = 30;
+        t.hp = 1000;
+        t.thuoc[94] = 0;
+        k = lap(t);
+        Kiem.bang("HP 11% het binh HP: van uong binh PP", TuDongKeHoach.HD_THUOC, k.hd);
+        Kiem.bang("HP het binh: binh PP 24", 24, k.so);
+        // het binh PP: bao ro, khong dung im
+        t.hp = 5731;
+        t.thuoc[24] = 0;
+        k = lap(t);
+        Kiem.bang("het binh PP: van danh bang chieu 0 PP", TuDongKeHoach.HD_DANH, k.hd);
+        Kiem.bang("het binh PP: chieu 0", 0, k.so);
+        Kiem.dung("het binh PP: trang thai bao 'het binh PP' (" + k.ly + ")", k.ly.startsWith("hết bình PP"));
+        t.thuoc[24] = 678;
+        t.thuocConHoi = new long[200];
+        t.thuocConHoi[24] = 300L;
+        k = lap(t);
+        Kiem.bang("binh PP dang hoi (400 ms): khong uong", TuDongKeHoach.HD_DANH, k.hd);
+        Kiem.dung("binh dang hoi: khong bao het binh (" + k.ly + ")", !k.ly.startsWith("hết bình PP"));
+        t.thuocConHoi = null;
+        t.tuLanThuocMs = 500L;
+        Kiem.bang("vua uong < 1,5 giay: khong uong lien", TuDongKeHoach.HD_DANH, lap(t).hd);
     }
 
     static void hpThap() {
