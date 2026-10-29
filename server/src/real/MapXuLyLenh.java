@@ -1908,6 +1908,20 @@ class MapXuLyLenh {
      * ly); false = noi goi tu choi: nap lai ban do hien tai o vi tri may chu (toMapID = player.mapID, x/y may chu,
      * checklocation = false). Truoc 25/10/2026 kick ngay lan dau - client vua bi keo ve (tre mang) bi ngat oan.
      */
+    /** Cau bao khi tu choi qua cong vi khong dung o cong (congSaiO): guc thi bao hoi sinh, con lai bao di sat cong. */
+    static String lyDoCongSaiO(final Char player, final int toMapID) {
+        if (player != null && player.hp <= 0) {
+            return "Không qua cổng được: bạn đã bị hạ gục. Hãy hồi sinh (về làng) rồi đi tiếp.";
+        }
+        String ten = "";
+        try {
+            ten = KhoaBanDoGame.tenMap(toMapID);
+        } catch (Throwable ignored) {
+        }
+        return "Không qua cổng được: bạn chưa đứng ở cổng" + (ten == null || ten.isEmpty() ? "" : " sang " + ten)
+                + ". Hãy đi sát vào cổng rồi thử lại.";
+    }
+
     static boolean congSaiO(final Map map, final Char player, final int toMapID, final int toTX, final int toTY, final String nhan) {
         final com.htbb.log.DemCongSaiO.KetQua sai = com.htbb.log.DemCongSaiO.CHUNG.ghiNhan(player.charname, System.currentTimeMillis());
         if (sai.ghiLog) {
@@ -1919,6 +1933,11 @@ class MapXuLyLenh {
             }
         }
         if (!sai.kick) {
+            // 29/10/2026: truoc day nap lai IM LANG - nguoi choi bi keo ve ma khong biet vi sao (cong kiem cot_truyen).
+            try {
+                com.htbb.thongbao.ThongBao.rieng(player, lyDoCongSaiO(player, toMapID));
+            } catch (Throwable ignored) {
+            }
             return false;
         }
         CharManager.instance.kickPlayer(player, nhan + (toMapID != player.mapID ? " 6" : " 5"));
@@ -2091,6 +2110,7 @@ class MapXuLyLenh {
                     checklocation = false;
                 } else if (toMapID == 206) {
                     if (player.idClan == -1) {
+                        com.htbb.thongbao.ThongBao.rieng(player, "Không vào được: bản đồ này chỉ dành cho thành viên đội. Hãy vào một đội trước.");
                         toMapID = player.mapID;
                         toTX = player.x / 16;
                         toTY = player.y / 16;
