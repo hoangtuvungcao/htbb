@@ -252,6 +252,18 @@ public final class MucTieuNhiemVuGame {
                 k.muc += td;
                 k.ngan = td.trim();
             }
+            if (nhom == 2 && p != null) {
+                // bao loi 29/10/2026 ("lam sao toi o 53,19"): so nhiem vu client >= 915 chi hien muc (duoi goi), chi duong
+                // cua buoc dia diem (ban do, huong, vi tri bang loi) truoc day chi nam trong mo ta cu -> noi vao muc
+                final NewCharQuest q = info.main_sub == 0 ? p.mainQuest : p.subQuest;
+                if (q != null && q.getTemplate() == info && KhuVucNhiemVuGame.dich(p, q, info) != null) {
+                    final String cd = KhuVucNhiemVuGame.moTaDangLam(p, q, info);
+                    final String goc = info.shortContent == null ? "" : info.shortContent;
+                    if (cd.length() > goc.length() && cd.startsWith(goc)) {
+                        k.muc += " " + cd.substring(goc.length()).trim();
+                    }
+                }
+            }
             final int npc = nhom == 0 ? info.idNpcRcv : KhuVucNhiemVuGame.npcTra(info, nhom);
             final int npcThat = npc >= 0 && npc < 32000 ? npc : (info.idNpcRcv >= 0 && info.idNpcRcv < 32000 && nhom != 2 ? info.idNpcRcv : -1);
             k.tra = noiNpc(p, npcThat);

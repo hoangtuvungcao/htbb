@@ -158,6 +158,22 @@ final class KiemTienDoNhiemVu {
                 r[7] = d.readUTF();
                 r[8] = String.valueOf(d.readByte());
             }
+            // duoi THU HAI (bao loi 29/10/2026): diem dich buoc dia diem - n x (short map, short x, short y, u8, u8, u8, UTF)
+            if (d.available() > 0) {
+                final int k2 = d.readByte();
+                if (k2 != n) {
+                    throw new IllegalStateException("duoi diem dich " + k2 + " != " + n);
+                }
+                for (int i = 0; i < k2; i++) {
+                    d.readShort();
+                    d.readShort();
+                    d.readShort();
+                    d.readByte();
+                    d.readByte();
+                    d.readByte();
+                    d.readUTF();
+                }
+            }
         }
         if (d.available() != 0) {
             throw new IllegalStateException("thua " + d.available() + " byte");

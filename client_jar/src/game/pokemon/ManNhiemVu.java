@@ -323,6 +323,13 @@ public final class ManNhiemVu extends Screen {
             this.chon = null;
             this.ds.den(0);
         }
+        if (Canvas.isKeyPressed(5)) {
+            // 0.9.23: máy phím - phím 5 / OK = đi tới dấu sao của nhiệm vụ đang xem (không chọn thì nhiệm vụ có dấu sao)
+            Quest q = this.chon != null && DiemNhiemVu.oDay(this.chon) ? this.chon : DiemNhiemVu.nhiemVu();
+            if (DiemNhiemVu.diToi(q)) {
+                return;
+            }
+        }
         if (Canvas.isKeyPressed(2)) {
             this.ds.them(-(Bang.caoHang() + Bang.cach()));
         } else if (Canvas.isKeyPressed(8)) {
@@ -447,7 +454,7 @@ public final class ManNhiemVu extends Screen {
         final int idNpc = dangLam ? q.idNpcResponse : q.idNpcReceive;
         if (q.coMuc() && dangLam) {
             // 0.9.15: nơi trả theo máy chủ ("Machamp (Pewter)"; cửa ải: Sổ tay), xuống dòng thay vì cắt
-            String noi = q.tra != null && q.tra.length() > 0 ? (xong(q) ? "Xong! Về trả " : "Trả: ") + q.tra
+            String noi = DiemNhiemVu.coDich(q) ? "Tự xong khi đứng ở dấu sao vàng" : q.tra != null && q.tra.length() > 0 ? (xong(q) ? "Xong! Về trả " : "Trả: ") + q.tra
                     : (q.laCuaAi() ? "Nhận thưởng: Sổ tay → Nhiệm vụ của tôi" : (xong(q) ? "Trả ở: " : "Báo lại: ") + noiNpc(idNpc));
             yy = Bang.doan(g, ChuDe.NHAN, noi, x + 10, yy, w - 20, false, xong(q) ? ChuDe.CHINH_TOI : ChuDe.CHU) + 2;
         } else {
@@ -464,6 +471,11 @@ public final class ManNhiemVu extends Screen {
             yy = Bang.doan(g, ChuDe.PHU, "Mục tiêu: " + q.muc, x + 10, yy, w - 20, false, ChuDe.CHU) + 2;
             if (q.khoa != null && q.khoa.length() > 0) {
                 yy = Bang.doan(g, ChuDe.PHU, q.khoa, x + 10, yy, w - 20, false, ChuDe.DO) + 2;
+            }
+            if (dangLam && DiemNhiemVu.coDich(q)) {
+                // 0.9.23: bước địa điểm - khoảng cách sống tới dấu sao + cách tự đi (máy phím: phím 5)
+                yy = Bang.doan(g, ChuDe.PHU, DiemNhiemVu.chuNgan(q) + (DiemNhiemVu.oDay(q) ? ". Bấm Đi tới dấu sao (hoặc phím 5)." : ""),
+                        x + 10, yy, w - 20, false, ChuDe.CHINH_TOI) + 2;
             }
         } else {
             yy = Bang.doan(g, Font.arialFont, q.decript, x + 10, yy, w - 20, false) + 2;
@@ -516,6 +528,17 @@ public final class ManNhiemVu extends Screen {
                     });
                 }
             }, "huy-nv");
+        }
+        if (dangLam && DiemNhiemVu.coDich(q)) {
+            // 0.9.23 (báo lỗi "làm sao tới ô 53,19"): bước địa điểm - nút tự đi tới dấu sao thay cho "Mở Nhiệm vụ của tôi"
+            final boolean day = DiemNhiemVu.oDay(q);
+            String nhan = day ? "Đi tới dấu sao" : DiemNhiemVu.chuNgan(q);
+            Bang.nut(g, x + w - 6 - wb, yn, wb, nh, nhan, day ? Bang.XAC_NHAN : Bang.TAT, !day ? null : new IAction() {
+                public void perform() {
+                    DiemNhiemVu.diToi(q);
+                }
+            }, "di-toi");
+            return;
         }
         if (soTay) {
             Bang.nut(g, x + w - 6 - wb, yn, wb, nh, "Mở Nhiệm vụ của tôi", Bang.XAC_NHAN, new IAction() {

@@ -69,6 +69,9 @@ public final class TheNhiemVu {
         if (ManNhiemVu.xong(q)) {
             return "Xong! Trả ở " + ten;
         }
+        if (DiemNhiemVu.coDich(q)) {
+            return DiemNhiemVu.chuNgan(q);   // 0.9.23: bước địa điểm - khoảng cách tới dấu sao
+        }
         try {
             if (q.type == Quest.TYPE_KILL_MONS && q.idMonsKill != null && q.idMonsKill.length > 0) {
                 return Res.monsterTemplates[q.idMonsKill[0]].name + " " + Math.min(q.allMonsKilled[0], q.totalMonskill[0]) + "/" + q.totalMonskill[0];
@@ -143,6 +146,20 @@ public final class TheNhiemVu {
         tn = tn == null ? "NPC" : tn;
         String nhan = a != null ? "Đi tới " + tn : tn + " ở bản đồ khác";
         int yNut = y + h - 6 - hNut;
+        if (dangLam(q) && DiemNhiemVu.coDich(q)) {
+            // 0.9.23: bước địa điểm - nút tự đi tới dấu sao
+            final boolean day = DiemNhiemVu.oDay(q);
+            nhan = day ? "Đi tới dấu sao" : DiemNhiemVu.chuNgan(q);
+            Bang.nut(g, x + 6, yNut, w - 12, hNut, nhan, day ? Bang.XAC_NHAN : Bang.TAT, !day ? null : new IAction() {
+                public void perform() {
+                    DiemNhiemVu.diToi(q);
+                }
+            }, "nv-di-toi");
+            vuaVe = new int[]{x, y, w, h};
+            nutVuaVe = new int[]{x + 6, yNut, w - 12, hNut};
+            chuVuaVe = new String[]{tieuDe, viec, nhan};
+            return;
+        }
         Bang.nut(g, x + 6, yNut, w - 12, hNut, nhan, a != null ? Bang.XAC_NHAN : Bang.TAT, a == null ? null : new IAction() {
             public void perform() {
                 try {

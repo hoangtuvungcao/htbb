@@ -40,6 +40,9 @@ class KichBanHuongDan {
         int nhom, id, ms, npc = -1, loai = -1;
         String ten, chu = "";
         final List<int[]> muc = new ArrayList<>();
+        /** duoi -64 (client >= 915): cau muc tieu; duoi thu hai (bao loi 29/10/2026): diem dich {map, x, y, rx, ry, ca} + ten noi. */
+        String mucTieu = "", noiDich = "";
+        int[] dich;
 
         public String toString() {
             return ten + "#" + id + "/" + ms + " npc" + npc + " t" + loai;
@@ -86,6 +89,25 @@ class KichBanHuongDan {
                         }
                     }
                     l.add(q);
+                }
+                try {
+                    if (r.available() > 0 && (r.readByte() & 255) == l.size()) {
+                        for (Nv q : l) {
+                            q.mucTieu = r.readUTF();
+                            r.readUTF();
+                            r.readUTF();
+                            r.readByte();
+                        }
+                        if (r.available() > 0 && (r.readByte() & 255) == l.size()) {
+                            for (Nv q : l) {
+                                int[] d = {r.readShort(), r.readShort(), r.readShort(), r.readByte() & 255, r.readByte() & 255, r.readByte() & 255};
+                                q.noiDich = r.readUTF();
+                                q.dich = d[0] >= 0 ? d : null;
+                            }
+                        }
+                    }
+                } catch (IOException ex) {
+                    // khong co duoi (may chu cu / client cu)
                 }
                 kq = l;
             } catch (IOException ex) {

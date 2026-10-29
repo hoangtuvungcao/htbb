@@ -5327,6 +5327,7 @@ public class GameScr extends Screen {
         // pokemon: xoa hieu ung cu, nhac nen theo loai ban do + tieng dich chuyen
         game.pokemon.HieuUngDanh.xoa();
         game.pokemon.AmThanh.vaoMap(loadMap, mapName);
+        mapNap = loadMap;
         if (toX != -1 && toY != -1) {
             MainChar mainChar = this.mainChar;
             short s = (short) ((toX * 16) + 8);
@@ -8461,8 +8462,50 @@ public class GameScr extends Screen {
             coMucTieuNv = true;
         } catch (Exception e) {
             // đuôi hỏng: giữ phần đã đọc
+            return;
+        }
+        docDiemNhiemVu(m, qs);
+    }
+
+    /**
+     * 0.9.23: đuôi THỨ HAI gói -64 (sau đuôi mục tiêu): {@code u8 n}, n × (short bản đồ nạp (-1 = không), short ô x, short
+     * ô y, u8 nửa rộng, u8 nửa cao, u8 cả bản đồ, UTF tên nơi) - điểm đích bước địa điểm (dấu sao, nút Đi tới dấu sao).
+     * Máy chủ cũ không gửi: bỏ qua.
+     */
+    static void docDiemNhiemVu(Message m, Quest[] qs) {
+        try {
+            if (m.reader().available() <= 0) {
+                return;
+            }
+            int n = m.reader().readUnsignedByte();
+            if (n != qs.length) {
+                return;
+            }
+            for (int i = 0; i < n; i++) {
+                int mp = m.reader().readShort();
+                int x = m.reader().readShort();
+                int y = m.reader().readShort();
+                int rx = m.reader().readUnsignedByte();
+                int ry = m.reader().readUnsignedByte();
+                int ca = m.reader().readUnsignedByte();
+                String noi = m.reader().readUTF();
+                if (qs[i] != null) {
+                    qs[i].dichMap = mp;
+                    qs[i].dichX = x;
+                    qs[i].dichY = y;
+                    qs[i].dichRx = rx;
+                    qs[i].dichRy = ry;
+                    qs[i].dichCaMap = ca != 0;
+                    qs[i].dichNoi = noi == null ? "" : noi;
+                }
+            }
+        } catch (Exception e) {
+            // đuôi hỏng: bỏ qua
         }
     }
+
+    /** 0.9.23: bản đồ nạp hiện tại (onMap: mapLoad, -1 = chính map) - so với điểm đích nhiệm vụ của máy chủ. */
+    public static int mapNap = -1;
 
     /** 0.9.15: mở "Nhiệm vụ của tôi" (Sổ tay huấn luyện, NPC ảo -527 menu 0 mục 8) ở máy chủ. */
     public static void moNhiemVuCuaToi() {

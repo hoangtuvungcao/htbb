@@ -1875,9 +1875,11 @@ public final class HeSinhThaiMenu {
                 break;
             }
             case 4:
-                bao(p, "Trồng berry: dùng khu vườn (ô đất) sẵn có của bạn - các hạt giống nay là berry Oran, Pecha, Rawst,"
-                        + " Cheri, Chesto, Leppa, Sitrus, Lum. Mỗi lần thu hoạch nhận thêm berry vào Túi sinh thái (bạn bè tưới:"
-                        + " +5%/lần, tối đa +25%). Berry dùng để nấu ăn và chế thuốc.");
+                // bao loi 29/10/2026 ("vuon o dau"): o dat trong cay (Char.seedsItem / tob_farm) chua nap cho nhan vat nao -
+                // khong noi "khu vuon san co" nua; chi duong mua berry that
+                bao(p, "Vườn nằm ngay trong menu này (Hệ sinh thái → Vườn nhà và bạn bè): xem vườn, đặt trang trí, tưới vườn"
+                        + " bạn bè. Ô đất gieo hạt chưa mở trong bản thử nghiệm. Berry (Oran, Pecha, Rawst, Cheri, Chesto, Leppa,"
+                        + " Sitrus, Lum) mua ở Hệ sinh thái → Chợ sinh thái → Mua: Berry; dùng để nấu ăn và chế thuốc.");
                 break;
             default:
                 break;
