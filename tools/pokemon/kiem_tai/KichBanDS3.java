@@ -269,7 +269,10 @@ class KichBanDS3 {
         b.gui(77, (byte) 1);
         String t = b.doiChu(m2, 3000, "NANG CAP", "cần", "can ", "Thành công", "Thất bại");
         b.lamMoi(); // 77 chi gui 21 + 16/0: lay lai tui (16/1) de thay +N moi
-        return t == null ? "khong tra loi " + b.chuTu(m2) : t;
+        if (t != null) return t;
+        final int idf = id;
+        return "khong tra loi (map " + b.mapId + (KichBanDS2.laOffline(b.mapId) ? " nha" : "") + ", mon " + id
+                + (b.timDo(x -> x[0] == idf) == null ? " KHONG trong tui" : " trong tui") + ", da " + lkd + ", goi tu luc mo: " + b.chuTu(m) + ")";
     }
 
     static void nangCap() throws Exception {

@@ -897,8 +897,49 @@ final class KichBanCap140 {
                 String l = KichBanHuongDan.toiNpc(b, 2);
                 if (l != null) return "khong toi Machamp: " + l;
                 b.lamMoi();
-                if (b.dangMac.isEmpty()) return "khong mac mon nao de nang";
-                String t = KichBanDS3.moNangCap(b, b.dangMac.get(0), false);
+                // o nang cap nhan mon trong HANH TRANG (may chu tim trong iItems; mon dang mac -> im lang, bot "khong tra
+                // loi" 12 lan o #43 'Rèn thêm hai lần búa' ca 5 dong): thao mon ra, nang, mac lai - nhu nguoi choi
+                int idNang = KichBanDS3.KHONG; // id do la short, co the am
+                boolean daThao = false;
+                final int canPlus = Integer.parseInt(mn.group(1));
+                int[] dangNang = b.timDo(x -> x[2] > 0 && x[2] < canPlus); // mon da nang do dang (giu nang tiep mot mon)
+                if (dangNang != null) idNang = dangNang[0];
+                else if (!b.dangMac.isEmpty()) {
+                    // thao ra: mon vao tui voi id MOI (may chu cap lai id) - tim lai theo mau mon
+                    final int tplMac = b.dangMacTpl.isEmpty() ? -1 : b.dangMacTpl.get(0);
+                    Set<Integer> truocThao = new HashSet<>();
+                    for (int[] x : b.doDung) truocThao.add(x[0]);
+                    b.gui(30, (short) (int) b.dangMac.get(0)); b.bom(800); b.lamMoi();
+                    int[] moi = b.timDo(x -> !truocThao.contains(x[0]) && (tplMac < 0 || x[1] == tplMac));
+                    if (moi == null) moi = b.timDo(x -> !truocThao.contains(x[0]));
+                    if (moi != null) { idNang = moi[0]; daThao = true; }
+                } else if (!b.doDung.isEmpty()) idNang = b.doDung.get(0)[0];
+                if (idNang == KichBanDS3.KHONG && KichBanDS2.vaoNha(b, 103)) {
+                    // khong biet mon dang mac (vao lai game khong gui lai goi 15) va tui trong: mua mon re nhat o tiem (500 xu)
+                    int idm = KichBanDS3.muaVuKhi(b, BotXuyenSuot.vuKhiShop(lop, 1));
+                    KichBanDS2.raNgoai(b);
+                    if (idm != KichBanDS3.KHONG) { idNang = idm; ghi("mua vu khi re de nang cap (tui trong)"); }
+                    l = KichBanHuongDan.toiNpc(b, 2);
+                    if (l != null) return "khong toi Machamp: " + l;
+                }
+                if (idNang == KichBanDS3.KHONG) return "khong co mon nao de nang";
+                // nang trong xuong (nha 103 co Machamp; may chu cho phep nang trong nha - NpcTinhBanDo.oNoiDichVu): dung
+                // canh Machamp ngoai lang hay lech vi tri -> doFinishImbue im lang ("khong tra loi")
+                boolean trongNha = KichBanDS2.vaoNha(b, 103);
+                String t = KichBanDS3.moNangCap(b, idNang, false);
+                b.gui(77, (byte) -1); b.bom(200);
+                if (trongNha) KichBanDS2.raNgoai(b);
+                // khong mac lai giua chung (mac vao thi id doi, lan sau khong tim ra mon dang nang); dat muc thi mac lai
+                b.lamMoi();
+                final int idx = idNang;
+                int[] sau = b.timDo(x -> x[0] == idx);
+                if (sau != null && sau[2] >= canPlus) {
+                    b.gui(29, (short) idNang); b.bom(800); b.lamMoi();
+                    // vu khi dung bac cap con trong tui (da thao ra de nang thu): mac lai
+                    final int tplVk = BotXuyenSuot.vuKhiShop(lop, b.lv);
+                    int[] vk = b.timDo(x -> x[1] == tplVk);
+                    if (vk != null && sau[1] != tplVk) { b.gui(29, (short) vk[0]); b.bom(800); b.lamMoi(); }
+                }
                 ghi("hanh dong '" + q.ten + "': nang cap -> " + t);
                 if (t.contains("het da")) {
                     loi("buoc '" + q.ten + "' #" + q.id + " can nang +" + mn.group(1) + " nhung khong co da luyen kim (nguoi choi cap " + b.lv + " lay o dau?)");
