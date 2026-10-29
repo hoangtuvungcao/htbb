@@ -132,6 +132,8 @@ printf -- '-libraryjars "%s"(java/**)\n' "$RT_JAR" > out/rt.pro
 "$J/java" -jar tools/proguard.jar @release.pro @out/rt.pro -injars out/pg-in.jar -outjars out/pg-out.jar -printmapping "out/mapping-v$V.txt" > out/proguard-v$V.log 2>&1     || { tail -20 out/proguard-v$V.log; exit 1; }
 mv out/pg-out.jar "$REL" && rm -f out/pg-in.jar
 echo "OK -> $REL (mapping: out/mapping-v$V.txt)"
+# 0.9.22 (Nokia E72): kiểm lại API CLDC 1.1 / MIDP 2.0 trên JAR CUỐI (sau ProGuard) - class 45, chữ ký hàm / trường
+"$J/java" -Dapi="tools/cldcapi11.jar${S}tools/midpapi20.jar${S}$B/api" -cp "$B/tool${S}tools/asm.jar" Down45 k "$REL"
 
 # Bản NHẸ (GOI=nhe): như bản phát hành nhưng res/pk thay bằng res_nhe/pk
 if [ "$GOI" = nhe ]; then
@@ -148,5 +150,6 @@ if [ "$GOI" = nhe ]; then
     "$J/jar" cfm out/pg-in.jar "$B/MANIFEST.MF" -C "$B/cls45" . -C "$B/res_nhe" .
     "$J/java" -jar tools/proguard.jar @release.pro @out/rt.pro -injars out/pg-in.jar -outjars out/pg-out.jar -printmapping "out/mapping-v$V-nhe.txt" > out/proguard-v$V-nhe.log 2>&1     || { tail -20 out/proguard-v$V-nhe.log; exit 1; }
     rm -f "$NHE" && mv out/pg-out.jar "$NHE" && rm -f out/pg-in.jar
+    "$J/java" -Dapi="tools/cldcapi11.jar${S}tools/midpapi20.jar${S}$B/api" -cp "$B/tool${S}tools/asm.jar" Down45 k "$NHE"
     echo "OK -> $NHE ($(wc -c < "$NHE") byte)"
 fi

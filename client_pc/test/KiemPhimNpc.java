@@ -565,6 +565,7 @@ public class KiemPhimNpc {
             if (loc != null && !chon(loc, "pc720") && !chon(loc, "j2me640x360")) System.exit(maCon);
         }
         ra.mkdirs();
+        javax.microedition.lcdui.NghiemMidp.bat = true;   // 0.9.22 (Nokia E72): đường J2ME - lời gọi sai đặc tả MIDP = HỎNG
         System.setProperty("htbb.duLieu", new java.io.File(ra, "du_lieu").getAbsolutePath());
         System.setProperty("microedition.platform", "HTBB-PC/kiem");
         htbb.pc.CaiDat.thuMucDuLieu();
@@ -645,6 +646,7 @@ public class KiemPhimNpc {
                 chayDuong("j2me640x360");
             }
         }
+        for (String l : javax.microedition.lcdui.NghiemMidp.ds()) kiem(false, "MIDP nghiem (may J2ME that nem loi): " + l);
         System.out.println("KiemPhimNpc" + (khongCham ? " (J2ME chi phim)" : "") + ": " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 && maCon == 0 ? 0 : 1);
     }

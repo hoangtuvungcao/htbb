@@ -231,6 +231,15 @@ public final class KieuO {
         if (h > m) {
             h = m;
         }
+        if (m == TOI_DA) {
+            // 0.9.22 (Nokia E72 / S60): hiệu ứng mờ dần đổi alpha mỗi khung = một ảnh RGB mới mỗi khung (bộ nhớ gốc S60
+            // bộ gom rác không thấy). Màn J2ME: alpha làm tròn 16 mức -> mờ dần dùng lại ảnh đã có.
+            int a = argb >>> 24;
+            if (a > 0 && a < 255) {
+                a = (a & 0xF0) | 8;
+            }
+            argb = (a << 24) | (argb & 0xFFFFFF);
+        }
         String k = new StringBuffer().append(w).append('x').append(h).append('x').append(argb).toString();
         Image a = (Image) anhMo.get(k);
         if (a == null) {

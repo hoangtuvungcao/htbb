@@ -1192,6 +1192,8 @@ public class KiemChamHud {
         ngu(500);
         if (System.getProperty("chup.j2me") != null) {
             // 0.9.17: như ChupTrongGame -Dchup.j2me - vẽ như máy J2ME (font ảnh, khối phẳng)
+            // 0.9.22 (Nokia E72): máy J2ME thật ném lỗi khi vùng nguồn / mảng sai đặc tả MIDP - ghi lại, cuối chạy báo HỎNG
+            javax.microedition.lcdui.NghiemMidp.bat = true;
             htbb.pc.GiaoDienHD.bat = false;
             htbb.pc.ChuHD.bat = false;
             game.pokemon.ChuUI.bo = null;
@@ -1240,6 +1242,7 @@ public class KiemChamHud {
         pw.close();
         System.out.println("KiemChamHud dich nut: " + soNutDich + " lan cham nut HUD, " + soOMenu + " lan cham o Menu, " + soCheThe
                 + " nut duoi the thoi tiet, " + soChamLai + " o cham lai -> " + new java.io.File(ra, "dich_nut.txt"));
+        for (String l : javax.microedition.lcdui.NghiemMidp.ds()) kiem(false, "MIDP nghiem (may J2ME that nem loi): " + l);
         System.out.println("KiemChamHud: " + dat + " dat, " + hong + " hong");
         System.exit(hong == 0 ? 0 : 1);
     }

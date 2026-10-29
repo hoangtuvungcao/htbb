@@ -1037,6 +1037,13 @@ public class PokeBody {
      * trang luc trung don (HieuUngDanh, vai khung hinh).
      */
     private static void veSang(Graphics g, Image anh, int sx, int sy, int w, int h, int x, int y, int doSang) {
+        if (BoNho.laJ2me) {
+            // 0.9.22 (Nokia E72 / S60 văng game khi đánh): mỗi khung chớp tạo MỘT ảnh RGB mới - trên S60 điểm ảnh nằm ở
+            // bộ nhớ gốc (FBS) mà bộ gom rác Java không thấy -> đánh nhau lâu cạn bộ nhớ gốc, máy đóng game. Máy J2ME vẽ
+            // khung thường (không chớp sáng), không cấp phát ảnh nào.
+            g.drawRegion(anh, sx, sy, w, h, 0, x, y, Graphics.TOP | Graphics.LEFT);
+            return;
+        }
         try {
             int n = w * h;
             if (demSang == null || demSang.length < n) {

@@ -20,7 +20,11 @@ import javax.microedition.media.control.VolumeControl;
  * - Nhac nen: mot Player MIDI lap vo han, am luong = 70% am luong chung.
  */
 final class SoundMm {
-    private static final int TOI_DA_GIU = 8;
+    /**
+     * 0.9.22 (Nokia E72 / S60): mỗi Player đã prefetch giữ một kênh âm thanh gốc của máy (S60: DevSound) - máy J2ME thật
+     * chỉ giữ 3 tiếng sẵn sàng (PC / APK 8).
+     */
+    private static final int TOI_DA_GIU = game.pokemon.BoNho.laJ2me ? 3 : 8;
     private static final int TOI_DA_CHOI = 2;
 
     private final Player[] p = new Player[AmThanh.TEN.length];
