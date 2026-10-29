@@ -60,7 +60,7 @@ public class Menu extends Main {
     public void setIndex() {
         if (this.menuItems != null) {
             this.selected = GameScr.r.nextInt(this.menuItems.size());
-            this.ctoyBag = (this.selected * Screen.ITEM_HEIGHT) - (Screen.ITEM_HEIGHT * 2);
+            this.ctoyBag = (this.selected * this.hang) - (this.hang * (this.soHang / 2));
             if (this.ctoyBag < 0) {
                 this.ctoyBag = 0;
             }
@@ -103,8 +103,27 @@ public class Menu extends Main {
         if (this.menuW > Canvas.w - 14) {
             this.menuW = Canvas.w - 14;
         }
-        if (this.menuH > Screen.ITEM_HEIGHT * 4) {
-            this.menuH = Screen.ITEM_HEIGHT * 4;
+        // mục không vừa bề ngang: ngắt hai dòng (hàng cao gấp đôi), số hàng thấy theo chiều cao màn
+        this.hang = Screen.ITEM_HEIGHT;
+        this.soHang = 4;
+        this.dong = null;
+        if (!Canvas.isBB && Font.blackFont != null) {
+            int wc = this.menuW - (this.coHinh ? 23 : 7) - 8;
+            String[][] d = new String[menuItems.size()][];
+            boolean co = false;
+            for (int i = 0; i < menuItems.size(); i++) {
+                d[i] = ngatHai(Font.blackFont, ((Command) menuItems.elementAt(i)).caption, wc);
+                co |= d[i] != null;
+            }
+            if (co) {
+                this.dong = d;
+                this.hang = Font.blackFont.getHeight() * 2 + 6;
+                this.soHang = Math.max(2, Math.min(4, (Canvas.h - 70) / this.hang));
+                this.menuH = this.hang * menuItems.size();
+            }
+        }
+        if (this.menuH > this.hang * this.soHang) {
+            this.menuH = this.hang * this.soHang;
         }
         this.menuH += 4;
         this.menuY = (Canvas.h - 27) - this.menuH;
@@ -121,11 +140,11 @@ public class Menu extends Main {
         if (Canvas.h < 200) {
             this.menuY += 10;
         }
-        this.menuTemY = Canvas.h - Screen.ITEM_HEIGHT;
+        this.menuTemY = Canvas.h - this.hang;
         this.showMenu = true;
         game.pokemon.AmThanh.phat(game.pokemon.AmThanh.MO);   // pokemon: tieng mo menu
         this.selected = 0;
-        this.cylim = (this.menuItems.size() - 4) * Screen.ITEM_HEIGHT;
+        this.cylim = (this.menuItems.size() - this.soHang) * this.hang;
         if (this.cylim < 0) {
             this.cylim = 0;
         }
@@ -145,7 +164,7 @@ public class Menu extends Main {
         if (this.selected > this.menuItems.size() - 1) {
             this.selected = 0;
         }
-        this.ctoyBag = (this.selected * Screen.ITEM_HEIGHT) - (Screen.ITEM_HEIGHT * 2);
+        this.ctoyBag = (this.selected * this.hang) - (this.hang * (this.soHang / 2));
         if (this.ctoyBag < 0) {
             this.ctoyBag = 0;
         }
@@ -171,7 +190,7 @@ public class Menu extends Main {
                 this.cyBag = this.ctoyBag;
             }
             int b = this.menuTemY + 2;
-            int a = ((this.ctoyBag + Canvas.py) - b) / Screen.ITEM_HEIGHT;
+            int a = ((this.ctoyBag + Canvas.py) - b) / this.hang;
             if (a < 0) {
                 a = 0;
             }
@@ -195,7 +214,7 @@ public class Menu extends Main {
             if (Canvas.isPointer(this.menuX, this.menuY, this.menuW, this.menuH)) {
                 Canvas.isPointerClick = false;
                 int b2 = this.menuTemY + 2;
-                int a2 = ((this.ctoyBag + Canvas.py) - b2) / Screen.ITEM_HEIGHT;
+                int a2 = ((this.ctoyBag + Canvas.py) - b2) / this.hang;
                 if (a2 < 0) {
                     a2 = 0;
                 }
@@ -214,6 +233,40 @@ public class Menu extends Main {
     }
 
     private boolean coHinh;
+    /**
+     * Cao một hàng + số hàng thấy. Mục quá dài cho màn hẹp (vd hạt giống vườn ~60 ký tự trên 240x320) được NGẮT HAI
+     * DÒNG thay vì cắt "..": khi có mục như vậy mọi hàng cao gấp đôi (chọn / cuộn / chạm vẫn theo một bước cố định).
+     */
+    int hang = 1, soHang = 4;   // đặt ở startAt (Screen.ITEM_HEIGHT cần phông đã nạp)
+    /** Hai dòng đã ngắt của từng mục (null = một dòng) - tính một lần lúc mở. */
+    String[][] dong;
+
+    /** Ngắt s thành tối đa hai dòng rộng <= w (theo khoảng trắng; dòng hai cắt ".." nếu vẫn dài). null = vừa một dòng. */
+    static String[] ngatHai(Font f, String s, int w) {
+        if (s == null || f.getWidth(s) <= w) {
+            return null;
+        }
+        int cat = -1;
+        for (int i = s.indexOf(' '); i > 0; i = s.indexOf(' ', i + 1)) {
+            if (f.getWidth(s.substring(0, i)) > w) {
+                break;
+            }
+            cat = i;
+        }
+        String a, b;
+        if (cat <= 0) {
+            int n = s.length() - 1;
+            while (n > 1 && f.getWidth(s.substring(0, n)) > w) {
+                n--;
+            }
+            a = s.substring(0, n);
+            b = s.substring(n);
+        } else {
+            a = s.substring(0, cat);
+            b = s.substring(cat + 1);
+        }
+        return new String[]{a, game.pokemon.GiaoDien.catChu(f, b.trim(), w)};
+    }
 
     /** Thanh cuộn (như paintMenu): {x, rộng, y rãnh, cao rãnh, cao núm}; null = không có. */
     int[] thanh() {
@@ -221,7 +274,7 @@ public class Menu extends Main {
             return null;
         }
         int hThanh = this.menuH - 6;
-        int hNut = hThanh * 4 / this.menuItems.size();
+        int hNut = hThanh * this.soHang / this.menuItems.size();
         if (hNut < 8) {
             hNut = 8;
         }
@@ -276,10 +329,13 @@ public class Menu extends Main {
         g.setClip(this.menuX, this.menuY, this.menuW, this.menuH);
         g.translate(this.menuX + 5, this.menuTemY + 2);
         for (int i = 0; i < this.menuItems.size(); i++) {
-            int yy = (i * Screen.ITEM_HEIGHT) - this.cyBag;
+            int yy = (i * this.hang) - this.cyBag;
+            if (yy < -2 * this.hang || yy > this.menuH + this.hang) {
+                continue;   // ngoài khung (vùng cắt cũng bỏ) - không đo / vẽ chữ thừa
+            }
             if (this.selected != -1 && i == this.selected) {
-                game.pokemon.GiaoDien.chonSang(g, -3, yy, this.menuW - 4, Screen.ITEM_HEIGHT);
-                game.pokemon.GiaoDien.muiTen(g, 0, yy + (Screen.ITEM_HEIGHT >> 1) - 3, 6, game.pokemon.GiaoDien.VIEN);
+                game.pokemon.GiaoDien.chonSang(g, -3, yy, this.menuW - 4, this.hang);
+                game.pokemon.GiaoDien.muiTen(g, 0, yy + (this.hang >> 1) - 3, 6, game.pokemon.GiaoDien.VIEN);
             } else if (i > 0) {
                 g.setColor(game.pokemon.GiaoDien.XANH_NHAT);
                 g.fillRect(0, yy, this.menuW - 10, 1);
@@ -291,17 +347,25 @@ public class Menu extends Main {
                 // pokemon: biểu tượng theo nội dung mục + chữ cắt ".." thay vì bị xén ở mép
                 int xc = 7;
                 if (this.coHinh) {
-                    game.pokemon.GiaoDien.veHinhMuc(g, 6, yy + (Screen.ITEM_HEIGHT - 13) / 2, cap);
+                    game.pokemon.GiaoDien.veHinhMuc(g, 6, yy + (this.hang - 13) / 2, cap);
                     xc = 23;
                 }
-                Font.blackFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.blackFont, cap, this.menuW - xc - 8), xc, 3 + yy, 0);
+                String[] hai = this.dong != null && i < this.dong.length ? this.dong[i] : null;
+                if (hai != null) {
+                    int fh = Font.blackFont.getHeight();
+                    Font.blackFont.drawString(g, hai[0], xc, 3 + yy, 0);
+                    Font.blackFont.drawString(g, hai[1], xc, 3 + yy + fh, 0);
+                } else {
+                    Font.blackFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.blackFont, cap, this.menuW - xc - 8), xc,
+                            yy + (this.hang - Screen.ITEM_HEIGHT) / 2 + 3, 0);
+                }
             }
         }
         // thanh cuộn nhỏ khi danh sách dài hơn khung
         if (this.cylim > 0) {
             Canvas.resetTrans(g);
             int hThanh = this.menuH - 6;
-            int hNut = hThanh * 4 / this.menuItems.size();
+            int hNut = hThanh * this.soHang / this.menuItems.size();
             if (hNut < 8) {
                 hNut = 8;
             }

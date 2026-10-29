@@ -301,6 +301,9 @@ public final class ManLuyen extends Screen {
         int x = c[0], y = c[1], w = c[2], h = c[3];
         int k = Bang.cach();
         int lw = Math.min(w * 45 / 100, Math.max(220, w / 2));
+        // cỡ chạm lớn (APK mật độ cao, ô >= MIN): bàn đủ rộng cho hàng ô nguyên liệu, không tràn sang danh sách
+        int cot = this.kieu == HOP ? 3 : 4;
+        lw = Math.max(lw, Math.min(cot * VungCham.MIN + (cot - 1) * k + 16, w * 6 / 10));
         veBan(g, x, y, lw, h);
         veDanhSach(g, x + lw + k, y, w - lw - k, h);
     }

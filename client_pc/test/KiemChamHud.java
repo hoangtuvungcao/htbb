@@ -89,7 +89,11 @@ public class KiemChamHud {
         ChupTrongGame.chay(() -> goi("pointerPressed", x, y));
         ngu(90);
         ChupTrongGame.chay(() -> goi("pointerReleased", x, y));
+        // chờ TẤT ĐỊNH: hai nhịp logic trọn sau cú thả (Canvas nhận cú thả ở đầu nhịp kế - nhanThaCho) thay vì đoán giờ
+        // (máy kiểm tải nặng: nhịp 40 ms trễ > 250 ms thì đọc trạng thái trước khi game kịp xử lý cú chạm)
+        final int n0 = game.pokemon.KhoiDong.soNhip;
         ngu(250);
+        for (int i = 0; i < 60 && game.pokemon.KhoiDong.soNhip - n0 < 3; i++) ngu(50);
         ve();
     }
 
@@ -98,6 +102,28 @@ public class KiemChamHud {
             if (ten.equals(game.pokemon.VungCham.ten(i))) return game.pokemon.VungCham.vungVe(i);
         }
         return null;
+    }
+
+    /**
+     * Chạm lệnh thứ i (chỉ số trong cả danh sách) của thẻ MenuNguCanh đang mở: màn thấp (J2ME 400x240) thẻ chia trang
+     * để không đè HUD - lệnh ở trang sau thì chạm "Thêm" tới trang có nó.
+     */
+    static boolean chamLenh(int i) throws Exception {
+        for (int lan = 0; lan < 8; lan++) {
+            ve();
+            Object m = game.render.Canvas.currentDialog;
+            if (!(m instanceof game.pokemon.MenuNguCanh)) return false;
+            Method d = game.pokemon.MenuNguCanh.class.getDeclaredMethod("dsTrang");
+            d.setAccessible(true);
+            int[] ds = (int[]) d.invoke(m);
+            int them = -1;
+            for (int p = 0; p < ds.length; p++) {
+                if (ds[p] == i) return chamVung("lenh-" + p);
+                if (ds[p] < 0) them = p;
+            }
+            if (them < 0 || !chamVung("lenh-" + them)) return false;
+        }
+        return false;
     }
 
     static boolean chamVung(String ten) throws Exception {
@@ -929,9 +955,9 @@ public class KiemChamHud {
                     int hang = -1;
                     for (int j = 0; k.lenh != null && j < k.lenh.length; j++) if ("Quà hoạt động hôm nay".equals(k.lenh[j])) hang = j;
                     kiem(hang >= 0, nhan + ": co hang 'Qua hoat dong hom nay'");
-                    if (hang >= 0 && hang < game.pokemon.MenuNguCanh.TOI_DA) {
+                    if (hang >= 0) {
                         xoaGoi();
-                        kiem(chamVung("lenh-" + hang), nhan + ": cham hang Qua hoat dong");
+                        kiem(chamLenh(hang), nhan + ": cham hang Qua hoat dong");
                         Kq k2 = doc();
                         kiem(k2.coMenuOption(-527, 0, game.render.screen.GameScr.mucSoTay("Quà hoạt động hôm nay")),
                                 nhan + " > Qua hoat dong hom nay -> goi -527/0/6 (" + k2 + ")");

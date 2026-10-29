@@ -1262,6 +1262,19 @@ public final class ManNhanVat extends Screen {
         if (vien && rTen + wv + 6 > wTen) {
             vien = false;   // cấp xuống dòng phụ
         }
+        if (rTen > wTen && ten.indexOf(' ') > 0) {
+            // 0.9.22 (APK mật độ cao, cột thú hẹp): tên nhiều chữ không vừa ("Trứng Dratini") -> phần sau xuống đầu dòng phụ
+            // thay vì cắt ".."
+            int k = ten.length();
+            while ((k = ten.lastIndexOf(' ', k - 1)) > 0) {
+                if (Font.blackFont.getWidth(ten.substring(0, k)) <= wTen - wso) {
+                    String con = ten.substring(k + 1);
+                    ten = ten.substring(0, k);
+                    phu = phu == null || phu.length() == 0 ? con : con + " · " + phu;
+                    break;
+                }
+            }
+        }
         if (vien) {
             GiaoDien.vien(g, x + w - 8 - wv, y + 3, wv, hv, dangDung ? ChuDe.LA : ChuDe.CHINH, c);
         }

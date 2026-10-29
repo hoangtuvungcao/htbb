@@ -367,7 +367,7 @@ public final class HopThongBao extends Dialog {
     }
 
     /** Đường kính huy hiệu (px logic). */
-    static int dkHuy() {
+    public static int dkHuy() {
         return ChuDe.dt() ? 30 : 22;
     }
 
@@ -377,7 +377,7 @@ public final class HopThongBao extends Dialog {
     }
 
     /** Cao phần đầu (nửa huy hiệu + tiêu đề) trong thẻ. */
-    static int caoDauA() {
+    public static int caoDauA() {
         // đủ cao cho vùng chạm nút X (góc phải) + khe chạm trước hàng đầu của thân
         // 0.9.7: ô huy hiệu vuông (cạnh max(dk, 24)) nhô nửa trên mép thẻ: tiêu đề nằm DƯỚI ô, thân dưới tiêu đề
         int sh = Math.max(dkHuy(), 24);
@@ -491,7 +491,10 @@ public final class HopThongBao extends Dialog {
         int coNut = nut == null || nut.length == 0 ? 0 : nh + pad;
         int[] kh = khung(g, ww, hChu + coNut + pad, tieuDe, dong, ngoaiDong);
         int x = kh[0], y = kh[1], hh = kh[3];
-        int hThan = Math.min(hChu, hh - (caoDauA() + 2 * pad + coNut));
+        // 0.9.22 (APK màn thấp: hàng ô phần thưởng bị đẩy khỏi hộp, chữ 2 dòng có thanh cuộn thừa): chừa chỗ khối phụ
+        // (hàng ô phần thưởng) TRƯỚC, chữ dài thì cuộn trong phần còn lại
+        int hDong = d.length * lh;
+        int hThan = Math.min(hDong, Math.max(lh, hh - (caoDauA() + 2 * pad + coNut) - phu));
         int yt = kh[4] + 2;
         int xt = x + pad, wt = ww - 2 * pad;
         // biểu tượng loại thông báo đầu thân (thông tin / lưu ý / lỗi / thành công)
@@ -503,9 +506,9 @@ public final class HopThongBao extends Dialog {
             xt += ic + 8;
             wt -= ic + 8;
         }
-        if (hThan < hChu && cuon != null) {
+        if (hThan < hDong && cuon != null) {
             // nội dung dài: cuộn trong khung thân
-            cuon.khung(g, xt, yt, wt, hThan, hChu);
+            cuon.khung(g, xt, yt, wt, hThan, hDong);
             cuon.capNhat();
             int lech = cuon.lech();
             g.setClip(xt, yt, wt, hThan);

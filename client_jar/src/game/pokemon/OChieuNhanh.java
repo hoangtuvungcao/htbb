@@ -65,18 +65,21 @@ public final class OChieuNhanh {
         int hHang = Hd >= 280 ? 30 : 24;
         int hDau = 26;
         int hChan = 30;
+        int duoi = 10;
         if (ChonChieuNhanh.moi()) {   // bảng chung (Bang.khung), hàng / nút đủ cỡ chạm - PC / APK / J2ME cảm ứng
             // 0.9.7: hàng đủ cao cho 2 dòng (tên + hệ / cấp) đo theo font đang dùng (font ảnh J2ME cao hơn)
             hHang = Math.max(Math.max(34, VungCham.MIN + Bang.cach() + 2), ChuDe.cao(ChuDe.NHAN) + ChuDe.cao(ChuDe.PHU) + 6 + Bang.cach());
             hDau = ChuDe.caoDau() + ChuDe.DEM;
             hChan = Math.max(30, VungCham.MIN + 8);
+            // khe hàng cuối -> nút chân >= khoảng cách chạm (hàng thụt k/2, nút chân lùi 2 px): 0.9.22 APK d3.5 hở 9 < 10
+            duoi = Math.max(10, 10 + VungCham.CACH - (4 + Math.max(2, Bang.cach()) / 2));
         }
-        int toiDaHang = Math.max(1, (Hd - 8 - hDau - hChan - 10) / hHang);
+        int toiDaHang = Math.max(1, (Hd - 8 - hDau - hChan - duoi) / hHang);
         if (hang > toiDaHang) {
             hang = toiDaHang;
         }
         int w = Math.min(W - 8, cot == 2 ? 420 : 300);
-        int h = hDau + hang * hHang + hChan + 10;
+        int h = hDau + hang * hHang + hChan + duoi;
         int x = (W - w) / 2;
         int y = Math.max(4, (Hd - h) / 2);
         return new int[]{x, y, w, h, cot, hang, hHang, y + hDau + 4, hChan};

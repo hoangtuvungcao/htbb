@@ -228,6 +228,88 @@ public final class Bang {
         return w;
     }
 
+    /** Bề ngang chip lọc chu (như chip / hangChip). */
+    public static int rongChip(String chu) {
+        return Math.max(co(22), ChuDe.rong(chu, ChuDe.NHAN) + 20);
+    }
+
+    /** Tổng bề ngang hàng chip lọc nếu xếp một hàng. */
+    public static int rongHangChip(String[] chu) {
+        int t = 0;
+        for (int i = 0; i < chu.length; i++) {
+            t += rongChip(chu[i]) + (i > 0 ? cach() : 0);
+        }
+        return t;
+    }
+
+    /** Số hàng hangChip dùng ở bề ngang w. */
+    public static int soHangChip(String[] chu, int w) {
+        int k = cach(), xx = 0, n = 1;
+        for (int i = 0; i < chu.length; i++) {
+            int wc = rongChip(chu[i]);
+            if (xx + wc > w && xx > 0) {
+                xx = 0;
+                n++;
+            }
+            xx += wc + k;
+        }
+        return n;
+    }
+
+    /** Nhãn chip chọn gọn "Lọc: Tất cả" (hẹp thì bỏ "Lọc:") - mũi tên xuống vẽ riêng (phông không có "▾"). */
+    public static String nhanChipChon(String chu, int w) {
+        String a = "Lọc: " + chu;
+        return rongChipChon(a) <= w ? a : chu;
+    }
+
+    /** Bề ngang chip chọn có nhãn chu (chữ + mũi tên). */
+    public static int rongChipChon(String chu) {
+        return Math.max(co(22), ChuDe.rongVien(chu, ChuDe.NHAN, 0xFFFFFF) + 34);
+    }
+
+    /**
+     * MỘT chip "Lọc: <đang chọn> ▼" thay hàng chip khi hàng chip nhiều dòng chiếm chỗ danh sách (APK mật độ cao: chip
+     * >= 44 dp, màn 640x360 logic) - chạm mở danh sách bộ lọc (thẻ lệnh / menu phím J2ME). Trả bề ngang đã vẽ.
+     */
+    public static int chipChon(Graphics g, int x, int y, int wMax, final String[] chu, int chon, final Object[] viec, final String tieuDe,
+            String ten) {
+        final int fc = chon < 0 || chon >= chu.length ? 0 : chon;
+        String nhan = nhanChipChon(chu[fc], wMax);
+        int h = co(22), w = rongChipChon(nhan);
+        Object mo = viec == null ? null : new game.model.IAction() {
+            public void perform() {
+                java.util.Vector v = new java.util.Vector();
+                for (int i = 0; i < chu.length; i++) {
+                    final Object vi = viec[i];
+                    v.addElement(new game.model.Command(i == fc ? chu[i] + " (đang xem)" : chu[i], new game.model.IAction() {
+                        public void perform() {
+                            VungCham.chay(vi);
+                        }
+                    }));
+                }
+                if (MenuNguCanh.bat()) {
+                    MenuNguCanh.mo(v, tieuDe);
+                } else {
+                    Canvas.menu.startAt(v, 3);
+                }
+            }
+        };
+        boolean an = mo != null && dangAn(g, x, y, w, h);
+        if (!KhungNro.ve(g, an ? KhungNroBang.NUT_CAM + 1 : KhungNroBang.NUT_CAM, x, y, w, h)) {
+            GiaoDien.khoi(g, x, y, w, h, 3, ChuDe.CHINH);
+        }
+        int dy = an ? 1 : 0, m = 4;
+        ChuDe.chuVienGiua(g, nhan, x + (w - 14) / 2 + 2, y + dy, h, ChuDe.NHAN, 0xFFFFFF, ChuDe.VIEN, 2);
+        // mũi tên xuống (tam giác trắng viền nâu)
+        int tx = x + w - 13, ty = y + h / 2 - 2 + dy;
+        g.setColor(ChuDe.VIEN);
+        g.fillTriangle(tx - m - 1, ty - 1, tx + m + 1, ty - 1, tx, ty + m + 1);
+        g.setColor(0xFFFFFF);
+        g.fillTriangle(tx - m + 1, ty, tx + m - 1, ty, tx, ty + m - 1);
+        VungCham.them(g, x, y, w, h, mo, ten);
+        return w;
+    }
+
     /** Hàng chip lọc (tự xuống dòng khi hết bề ngang): trả cao đã dùng. chon = chip đang chọn; viec[i] chạm chip i. */
     public static int hangChip(Graphics g, int x, int y, int w, String[] chu, int chon, Object[] viec) {
         int k = cach();
@@ -407,11 +489,19 @@ public final class Bang {
     /** Ghi một khung vẽ tấm (không vẽ > 300 ms = tấm mới mở: đặt lại đồng hồ hiệu ứng mở). */
     public static void khungMoTam() {
         long now = System.currentTimeMillis();
-        if (now - lucVeTam > 300) {
+        // 0.9.22 (KiemChamHud chạm ô Menu "không ăn" khi máy tải nặng): trước đây "tấm mới mở" = không vẽ > 300 ms - máy
+        // chậm / GC dừng khung > 300 ms thì tấm ĐANG MỞ chạy lại hiệu ứng bung (nút Menu co về 70 %), cú chạm vào đúng ô
+        // lúc đó rơi xuống nền = đóng Menu. Nay: tấm mới = khung trước KHÔNG vẽ tấm nào (đếm khung VungCham), không theo giờ.
+        int k = VungCham.soKhung;
+        if (k - khungVeTam > 1) {
             lucMoTam = now;
         }
+        khungVeTam = k;
         lucVeTam = now;
     }
+
+    /** Số khung (VungCham.soKhung) lần cuối vẽ tấm (khungMoTam). */
+    private static int khungVeTam = -10;
 
     /**
      * Hiệu ứng mở tấm (0.9.6): gọi SAU khi vẽ nội dung - lớp trắng mờ dần trên tấm vừa mở (140 ms, "fade in" nhẹ).
@@ -953,7 +1043,7 @@ public final class Bang {
     /** Chip chờ nhỏ (thay dòng "Đang hỏi máy chủ..."): viên trắng, vòng quay teal + chữ phụ, tâm ngang cx. Trả bề ngang. */
     public static int chipCho(Graphics g, int cx, int y, String chu) {
         int h = Math.max(ChuDe.cao(ChuDe.PHU) + 6, 20);
-        int w = ChuDe.rong(chu, ChuDe.PHU) + h + 12;
+        int w = ChuDe.rong(chu, ChuDe.PHU) + h + 16;
         int x = cx - w / 2;
         if (!KhungNro.ve(g, KhungNroBang.TOOLTIP, x, y, w, h)) {
             GiaoDien.khoi(g, x, y, w, h, 2, 0x2B1A10);
@@ -962,7 +1052,14 @@ public final class Bang {
         if (!KhungNro.iconXoay(g, BieuTuong.POKEBALL, x + 4 + 8, y + h / 2, xoay)) {
             GiaoDien.dangTai(g, x + 4 + h / 2, y + h / 2, h / 2 - 4);
         }
-        ChuDe.chuGiua(g, chu, x + h + 6, y, h, ChuDe.PHU, 0xF2E0B4, 0);
+        // chip nền tối: font ảnh J2ME giữ bản chữ sáng (Font.nenSang của thẻ sáng bên dưới tô chữ thành navy - không đọc được)
+        boolean nenCu = Font.nenSang;
+        Font.nenSang = false;
+        try {
+            ChuDe.chuGiua(g, chu, x + h + 6, y, h, ChuDe.PHU, 0xF2E0B4, 0);
+        } finally {
+            Font.nenSang = nenCu;
+        }
         return w;
     }
 

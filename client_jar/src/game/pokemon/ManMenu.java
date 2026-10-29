@@ -296,7 +296,11 @@ public final class ManMenu extends Screen {
         // chạm ra ngoài = đóng (vùng phủ cả màn, đăng ký TRƯỚC: nút vẽ sau thắng)
         IAction dong = new IAction() {
             public void perform() {
-                ManMenu.ve();
+                // 0.9.22: đang bung (140 ms đầu, nút còn trượt ra) chạm trượt khỏi ô KHÔNG đóng Menu (trước: cú chạm vào ô
+                // đúng lúc khung đổi rơi xuống nền = đóng Menu, KiemChamHud chập chờn khi máy tải nặng)
+                if (Bang.tuoiTam() >= 140) {
+                    ManMenu.ve();
+                }
             }
         };
         VungCham.them(g, 0, 0, Canvas.w, Canvas.h, dong, "nen-ngoai");

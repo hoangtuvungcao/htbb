@@ -57,6 +57,8 @@ public final class VungCham {
      */
     public static final Object TAM = new Object();
 
+    /** Số khung đã vẽ (mỗi Canvas.paint +1) - Bang.khungMoTam nhận ra tấm vừa mở. */
+    public static int soKhung;
     /** số cú chạm đã xử lý (kiểm thử) */
     public static int soXuLy;
     /** tên vùng vừa trúng (kiểm thử / nhật ký) */
@@ -67,6 +69,7 @@ public final class VungCham {
 
     /** Đầu Canvas.paint. */
     public static void khungMoi() {
+        soKhung++;
         dang.n = 0;
         dang.lopMax = 0;
         lopHien = 0;
@@ -188,6 +191,11 @@ public final class VungCham {
 
     public static String ten(int i) {
         return chot.ten[i];
+    }
+
+    /** Hành động của vùng i (kiểm thử: chạm thẳng không qua cờ chạm dùng chung với luồng game). */
+    public static Object viec(int i) {
+        return chot.viec[i];
     }
 
     public static int lopVung(int i) {

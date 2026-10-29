@@ -703,7 +703,7 @@ public final class TheVatPham extends Dialog {
             this.so = 1;
         }
         if (this.muaToiDa > 1) {
-            int sb = hn, wTat = ChuDe.rong("Tối đa", ChuDe.SO) + 20;
+            int sb = hn, wTat = Math.max(VungCham.MIN, ChuDe.rong("Tối đa", ChuDe.SO) + 20);
             int wo = w - 2 * sb - wTat - 3 * k;
             Bang.nut(g, x, y, sb, sb, "-", Bang.PHU, new IAction() {
                 public void perform() {
@@ -962,7 +962,7 @@ public final class TheVatPham extends Dialog {
         ChuDe.chu(g, ChuDe.cat(ten() + " (có " + max + ")", ChuDe.THUONG, w - 2 * pad), x + w / 2, yy, ChuDe.THUONG, ChuDe.CHU, 2);
         yy += lh;
         // − [số] + Tất cả
-        int sb = hn, wTat = ChuDe.rong("Tất cả", ChuDe.SO) + 20;
+        int sb = hn, wTat = Math.max(VungCham.MIN, ChuDe.rong("Tất cả", ChuDe.SO) + 20);
         int wo = w - 2 * pad - 2 * sb - wTat - 3 * k;
         Bang.nut(g, x + pad, yy, sb, sb, "-", Bang.PHU, new IAction() {
             public void perform() {
