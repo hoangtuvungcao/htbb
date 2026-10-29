@@ -455,6 +455,7 @@ public class Graphics {
 
     public void drawRegion(Image img, int xs, int ys, int w, int h, int transform, int xd, int yd, int anchor) {
         if (img == null) throw new NullPointerException();
+        NghiemMidp.vung("drawRegion", img, xs, ys, w, h);
         if (w <= 0 || h <= 0) return;
         BufferedImage b = img.anh;
         boolean doi = transform >= 4; // ROT90/ROT270/MIRROR_ROT90/MIRROR_ROT270: đổi rộng <-> cao
@@ -501,6 +502,7 @@ public class Graphics {
     }
 
     public void drawRGB(int[] rgb, int offset, int scanlength, int x, int y, int w, int h, boolean processAlpha) {
+        NghiemMidp.mang("drawRGB", rgb, offset, scanlength, w, h);
         if (w <= 0 || h <= 0) return;
         BufferedImage tmp = new BufferedImage(w, h, processAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
         tmp.setRGB(0, 0, w, h, rgb, offset, scanlength);

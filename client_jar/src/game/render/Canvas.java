@@ -431,7 +431,19 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         }
     }
 
+    /**
+     * 0.9.22 (Nokia E72 / S60, bàn phím QWERTY): sự kiện phím chạy trên luồng giao diện của máy - lỗi trong xử lý phím
+     * không được lọt ra ngoài (máy thật có thể đóng MIDlet). Lỗi ghi chẩn đoán, bỏ phím đó.
+     */
     public void keyPressed(int keyCode) {
+        try {
+            keyPressed0(keyCode);
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("phim keyPressed " + keyCode, e);
+        }
+    }
+
+    private void keyPressed0(int keyCode) {
         if (isLoad) {
             return;
         }
@@ -613,7 +625,19 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         }
     }
 
+    /**
+     * 0.9.22 (Nokia E72 / S60, bàn phím QWERTY): sự kiện phím chạy trên luồng giao diện của máy - lỗi trong xử lý phím
+     * không được lọt ra ngoài (máy thật có thể đóng MIDlet). Lỗi ghi chẩn đoán, bỏ phím đó.
+     */
     public void keyReleased(int keyCode) {
+        try {
+            keyReleased0(keyCode);
+        } catch (Throwable e) {
+            game.pokemon.KhoiDong.loi("phim keyReleased " + keyCode, e);
+        }
+    }
+
+    private void keyReleased0(int keyCode) {
         if (isLoad) {
             return;
         }

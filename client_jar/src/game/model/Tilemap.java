@@ -1,6 +1,5 @@
 package game.model;
 
-import game.GameMidlet;
 import game.render.Canvas;
 import game.render.Res;
 import game.render.screen.GameScr;
@@ -278,23 +277,16 @@ public class Tilemap {
             }
             file.close();
             FilePack.reset();
-            imgMap = Image.createImage(w, h);
-            Graphics g = imgMap.getGraphics();
-            for (int a = 0; a < w; a++) {
-                for (int b = 0; b < h; b++) {
-                    if (tileTop.get(new Integer((b * w) + a)) != null) {
-                        ((TileTop) tileTop.get(new Integer((b * w) + a))).paintSmall(g);
-                    } else {
-                        short s = map[(b * w) + a];
-                        if (s != 255) {
-                            g.drawRegion(Res.imgtileSmall, 0, s, 1, 1, 0, a, b, 0);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
+            veBanDoNho();
+        } catch (Throwable e) {
+            // 0.9.22 (Nokia E72 / S60 "văng game"): trước đây mọi lỗi nạp bản đồ gọi notifyDestroyed() = ĐÓNG GAME im
+            // lặng (máy thật ném IllegalArgumentException / OutOfMemoryError ở chỗ giả lập bỏ qua). Nay chỉ ghi chẩn đoán:
+            // bản đồ thiếu phần lỗi (bản đồ nhỏ, cổng...) nhưng game chạy tiếp, máy chủ vẫn sửa vị trí được.
             Cout.println(new StringBuffer("LOAD TILE ERR ").append(level).append(" > ").append(e.toString()).toString());
-            GameMidlet.instance.notifyDestroyed();
+            game.pokemon.GiamSat.loi("nap ban do " + level, e);
+            if (e instanceof OutOfMemoryError) {
+                game.pokemon.BoNho.giai("nap ban do " + level);
+            }
         }
         if (Canvas.gameScr != null) {
             Canvas.gameScr.setPosMiniMap();
@@ -309,6 +301,40 @@ public class Tilemap {
                 hh2 = h;
             }
             GameScr.mapFind = new byte[ww2][hh2];
+        }
+    }
+
+    /**
+     * Bản đồ nhỏ 1 px / ô (0.9.22: tách khỏi loadMap, trong try riêng; ô ngoài bộ tile nhỏ bỏ qua thay vì ném
+     * IllegalArgumentException trên máy thật). Lỗi / thiếu bộ nhớ: không có bản đồ nhỏ, game vẫn chạy.
+     */
+    static void veBanDoNho() {
+        imgMap = null;
+        Image nho = Res.imgtileSmall;
+        if (map == null || w <= 0 || h <= 0 || nho == null) {
+            return;
+        }
+        try {
+            int cao = nho.getHeight();
+            Image anh = Image.createImage(w, h);
+            Graphics g = anh.getGraphics();
+            for (int a = 0; a < w; a++) {
+                for (int b = 0; b < h; b++) {
+                    TileTop tt = (TileTop) tileTop.get(new Integer((b * w) + a));
+                    if (tt != null) {
+                        tt.paintSmall(g);
+                    } else {
+                        short s = map[(b * w) + a];
+                        if (s != 255 && s >= 0 && s < cao) {
+                            g.drawRegion(nho, 0, s, 1, 1, 0, a, b, 0);
+                        }
+                    }
+                }
+            }
+            imgMap = anh;
+        } catch (Throwable e) {
+            imgMap = null;
+            game.pokemon.GiamSat.loi("ban do nho " + lv, e);
         }
     }
 
@@ -418,11 +444,12 @@ public class Tilemap {
     }
 
     public static final void paintTile(Graphics g) {
-        if (map != null) {
+        if (map != null && Res.imgTile != null) {
+            int cao = Res.imgTile.getHeight();   // 0.9.22: ô ngoài bộ tile bỏ qua (máy thật ném IllegalArgumentException)
             for (int a = Canvas.gameScr.gssx; a < Canvas.gameScr.gssxe; a++) {
                 for (int b = Canvas.gameScr.gssy; b < Canvas.gameScr.gssye; b++) {
                     short s = map[(b * w) + a];
-                    if (s != 255) {
+                    if (s != 255 && s >= 0 && (s << sip) + 16 <= cao) {
                         g.drawRegion(Res.imgTile, 0, s << sip, 16, 16, 0, a << sip, b << sip, 0);
                     }
                 }

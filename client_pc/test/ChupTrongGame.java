@@ -290,6 +290,8 @@ public class ChupTrongGame {
         htbb.pc.ChuHD.ghi = java.util.Collections.synchronizedSet(new java.util.HashSet<String>());
         if (System.getProperty("chup.j2me") != null) {
             // 0.9.6: vẽ như máy J2ME (font ảnh, khối phẳng - không chữ thật / khung HD), cùng bảng màu ChuDe
+            // 0.9.22 (Nokia E72): máy J2ME thật ném lỗi khi vùng nguồn / mảng sai đặc tả MIDP - ghi lại, cuối chạy báo HỎNG
+            javax.microedition.lcdui.NghiemMidp.bat = true;
             htbb.pc.GiaoDienHD.bat = false;
             htbb.pc.ChuHD.bat = false;
             game.pokemon.ChuUI.bo = null;
@@ -550,6 +552,7 @@ public class ChupTrongGame {
         System.out.println("DANH HIEU: " + DEM_DH[0] + " lan ve ten that (ten x man x co), " + DEM_DH[1] + " lan chup ten rong nhat (+ bo cuc gon)");
         System.out.println("HUAN LUYEN: che do " + nhanHL() + ", " + DEM_HL[0] + " man co nut/muc da kiem");
         System.out.println("ICON DO: " + DEM_ICON_DO[0] + " man do nhan vat da kiem (may chu anh " + MAY_CHU + ")");
+        for (String l : javax.microedition.lcdui.NghiemMidp.ds()) kiem(false, "MIDP nghiem (may J2ME that nem loi): " + l);
         System.out.println("ChupTrongGame: " + dat + " dat, " + hong + " hong -> " + ra.getAbsolutePath());
         System.exit(hong == 0 ? 0 : 1);
     }

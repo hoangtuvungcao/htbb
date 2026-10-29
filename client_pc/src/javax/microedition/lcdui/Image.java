@@ -101,6 +101,7 @@ public class Image {
     }
 
     public static Image createImage(Image src, int x, int y, int w, int h, int transform) {
+        NghiemMidp.vung("createImage(Image..)", src, x, y, w, h);
         if (w <= 0 || h <= 0) throw new IllegalArgumentException();
         boolean doi = transform >= 4;
         int dw = doi ? h : w;
@@ -114,6 +115,7 @@ public class Image {
     }
 
     public static Image createRGBImage(int[] rgb, int w, int h, boolean processAlpha) {
+        NghiemMidp.mang("createRGBImage", rgb, 0, w, w, h);
         if (w <= 0 || h <= 0) throw new IllegalArgumentException();
         BufferedImage b = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         if (processAlpha) {
@@ -196,6 +198,8 @@ public class Image {
     }
 
     public void getRGB(int[] rgb, int offset, int scanlength, int x, int y, int w, int h) {
+        NghiemMidp.vung("getRGB", this, x, y, w, h);
+        NghiemMidp.mang("getRGB", rgb, offset, scanlength, w, h);
         anh.getRGB(x, y, w, h, rgb, offset, scanlength);
     }
 }

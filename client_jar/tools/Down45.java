@@ -126,8 +126,68 @@ public class Down45 {
       }
       a = ds.toArray(new String[0]);
     }
+    if (a[0].equals("k")) {
+      // 0.9.22 (Nokia E72): java Down45 k <jar>...: KIỂM jar CUỐI (sau ProGuard, bản thường + nhẹ) - không ghi gì. Mọi
+      // class phải là 45.x, mọi tham chiếu java.* / javax.microedition.* (kể cả kiểu trong chữ ký hàm / trường) có trong
+      // CLDC 1.1 + MIDP 2.0 (+ WMA); không còn StringBuilder / lambda / class literal.
+      for (int i = 1; i < a.length; i++) {
+        try (java.util.zip.ZipFile z = new java.util.zip.ZipFile(a[i])) {
+          int so = 0;
+          for (java.util.Enumeration<? extends java.util.zip.ZipEntry> e = z.entries(); e.hasMoreElements(); ) {
+            java.util.zip.ZipEntry en = e.nextElement();
+            if (!en.getName().endsWith(".class")) continue;
+            byte[] in = z.getInputStream(en).readAllBytes();
+            int ban = ((in[6] & 255) << 8) | (in[7] & 255);
+            if (ban != 45) loi.add(a[i] + "!" + en.getName() + ": class version " + ban + " (can 45)");
+            kiemChuKy(new ClassReader(in));
+            ha(in);
+            so++;
+          }
+          System.out.println("Down45 k: " + a[i] + " - " + so + " class");
+        }
+      }
+      if (!loi.isEmpty()) {
+        System.err.println("Jar dung API ma may J2ME (CLDC 1.1 / MIDP 2.0) khong co:");
+        for (String s : new TreeSet<>(loi)) System.err.println("  " + s);
+        System.exit(1);
+      }
+      return;
+    }
     for (int i = 1; i < a.length; i += 2) {
-      byte[] in = Files.readAllBytes(Paths.get(a[i]));
+      Files.write(Paths.get(a[i+1]), ha(Files.readAllBytes(Paths.get(a[i]))));
+    }
+    if (!loi.isEmpty()) {
+      System.err.println("Code dung API ma may J2ME (CLDC 1.1 / MIDP 2.0) khong co:");
+      for (String s : new TreeSet<>(loi)) System.err.println("  " + s);
+      System.exit(1);
+    }
+  }
+
+  /** Kiểu java.* / javax.microedition.* trong chữ ký trường / hàm (không gọi vẫn phải có lớp khi máy nạp / kiểm class). */
+  static void kiemChuKy(ClassReader cr) {
+    final String lop = cr.getClassName();
+    cr.accept(new ClassVisitor(Opcodes.ASM9) {
+      public FieldVisitor visitField(int acc, String n, String d, String sg, Object v) {
+        kiemKieu(lop, Type.getType(d));
+        return null;
+      }
+      public MethodVisitor visitMethod(int acc, String n, String d, String sg, String[] ex) {
+        for (Type t : Type.getArgumentTypes(d)) kiemKieu(lop, t);
+        kiemKieu(lop, Type.getReturnType(d));
+        if (ex != null) for (String x : ex) kiemLop(lop, x);
+        return null;
+      }
+    }, ClassReader.SKIP_CODE);
+  }
+
+  static void kiemKieu(String lop, Type t) {
+    if (t.getSort() == Type.ARRAY) t = t.getElementType();
+    if (t.getSort() == Type.OBJECT) kiemLop(lop, t.getInternalName());
+  }
+
+  /** Hạ một class về 45.3 (StringBuilder -> StringBuffer) và ghi lỗi API vào loi. */
+  static byte[] ha(byte[] in) {
+    {
       ClassReader cr = new ClassReader(in);
       ClassWriter cw = new ClassWriter(0);
       final String lop = cr.getClassName();
@@ -171,12 +231,7 @@ public class Down45 {
           };
         }
       }, ClassReader.SKIP_FRAMES);
-      Files.write(Paths.get(a[i+1]), cw.toByteArray());
-    }
-    if (!loi.isEmpty()) {
-      System.err.println("Code dung API ma may J2ME (CLDC 1.1 / MIDP 2.0) khong co:");
-      for (String s : new TreeSet<>(loi)) System.err.println("  " + s);
-      System.exit(1);
+      return cw.toByteArray();
     }
   }
 }
