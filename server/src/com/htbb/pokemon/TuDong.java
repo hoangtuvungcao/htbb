@@ -350,6 +350,8 @@ public final class TuDong {
         public int mucTieu = -1;
         public boolean dangHoiPhuc;
         public long thuocLuc;
+        /** Lan cuoi gui HP / PP that (goi 60) cho client luc dang tu dong (0.9.22: PP tren client troi lech). */
+        public long dongBoLuc;
         public long keLuc;
         public TuDongKeHoach.KeHoach keCuoi;
         /** Ly do cho / dung da bao nguoi choi gan nhat (khong bao lap). */

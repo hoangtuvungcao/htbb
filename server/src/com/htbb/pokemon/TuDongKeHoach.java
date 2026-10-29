@@ -224,6 +224,7 @@ public final class TuDongKeHoach {
             return k;
         }
         final int pt = phanTram(t.hp, t.maxhp);
+        boolean hetBinhPP = false;
         // 3. thuoc (uu tien truoc PK: dang mat mau thi uong truoc da)
         if (c.tuDungThuoc && t.tuLanThuocMs >= KHOANG_THUOC_MS) {
             final int nguongHp = nguong(t.nguongHpNguoi, c.nguongThuocHp);
@@ -239,7 +240,11 @@ public final class TuDongKeHoach {
             }
             final int ptMp = phanTram(t.mp, t.maxmp);
             final int nguongMp = nguong(t.nguongMpNguoi, c.nguongThuocMp);
-            if (nguongMp > 0 && t.maxmp > 0 && ptMp < nguongMp) {
+            // 0.9.22 (chu game: "het PP khong tu su dung khi dang dung auto"): PP khong du cho chieu ton PP re nhat thi
+            // uong ca khi nguoi choi de nguong PP = Tat (0) - truoc do Auto chi danh chieu 0 PP mai, 678 binh PP nam yen.
+            // May chu tat thuoc PP (tu_dong.nguong_thuoc_mp=0) thi van khong uong.
+            final boolean hetPP = c.nguongThuocMp > 0 && t.maxmp > 0 && t.mp < ppToiThieu(t);
+            if (t.maxmp > 0 && (nguongMp > 0 && ptMp < nguongMp || hetPP)) {
                 final int loai = chonBinh(t, BINH_MP, t.maxmp - t.mp);
                 if (loai >= 0) {
                     k.hd = HD_THUOC;
@@ -248,6 +253,7 @@ public final class TuDongKeHoach {
                     k.hoiPhuc = t.dangHoiPhuc;
                     return k;
                 }
+                hetBinhPP = !conBinh(t, BINH_MP);
             }
         }
         // 4. HP thap, het thuoc: rut lui / dung
@@ -299,12 +305,15 @@ public final class TuDongKeHoach {
         final Chieu ch = chonChieu(c, t, q);
         if (ch == null) {
             k.so = -1;
-            k.ly = "chờ hồi chiêu / PP";
+            k.ly = hetBinhPP ? "hết bình PP - chờ hồi PP" : "chờ hồi chiêu / PP";
             return k;
         }
         k.so = ch.so;
         k.heSo = heSoChieu(c, t, ch, q);
         k.ly = k.heSo >= 150 ? "đánh - chiêu rất hiệu quả" : (k.heSo < 100 ? "đánh - chiêu kém hiệu quả" : "đang đánh");
+        if (hetBinhPP) {
+            k.ly = "hết bình PP - " + k.ly;
+        }
         return k;
     }
 
@@ -366,6 +375,28 @@ public final class TuDongKeHoach {
             }
         }
         return vua >= 0 ? vua : manh;
+    }
+
+    /** Con it nhat mot binh trong bang (ke ca dang hoi). */
+    static boolean conBinh(final TinhHinh t, final int[][] bang) {
+        for (int i = 0; i < bang.length; i++) {
+            final int loai = bang[i][0];
+            if (loai < t.thuoc.length && t.thuoc[loai] > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** PP cua chieu danh ton PP re nhat (bo chieu 0 PP); 0 = khong co chieu nao ton PP. */
+    static int ppToiThieu(final TinhHinh t) {
+        int min = 0;
+        for (final Chieu ch : t.chieu) {
+            if (ch.pp > 0 && (min == 0 || ch.pp < min)) {
+                min = ch.pp;
+            }
+        }
+        return min;
     }
 
     static int hoi(final TinhHinh t, final int[][] bang, final int i) {

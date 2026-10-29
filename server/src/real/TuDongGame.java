@@ -274,7 +274,7 @@ public final class TuDongGame {
             }
             SO_LAN_BAT.incrementAndGet();
             Nhat.kiemToan("TU_DONG", "bat " + p.charname + " map=" + n.map + " x=" + n.x + " y=" + n.y + " banKinh="
-                    + ph.banKinh + " conLai=" + TuDong.giayConLai(c, ph, n.theThang, homNay(bay)) + "s");
+                    + ph.banKinh + " nguongHp=" + ph.nguongHp + " nguongMp=" + ph.nguongMp + " conLai=" + TuDong.giayConLai(c, ph, n.theThang, homNay(bay)) + "s");
             guiTrangThai(p, c, ph, "");
             return;
         }
@@ -443,6 +443,30 @@ public final class TuDongGame {
             }
         }
         guiKeHoach(p, k);
+        dongBoHpPp(p, ph, bay);
+    }
+
+    /** Khoang gui lai HP / PP that cho client luc dang tu dong (ms). */
+    static final long DONG_BO_MS = 3000L;
+
+    /**
+     * 0.9.22 (chu game: "het PP khong tu su dung khi dang dung auto"): client tu tru PP moi lan bam chieu (ca khi
+     * may chu tu choi don: quai vua chet, ngoai tam, hoi chieu) va chi nhan PP that khi co hoi PP / uong thuoc - nhan
+     * vat khong hoi PP thi PP tren HUD troi xuong 1/3769 trong khi may chu con nhieu, bo nao khong cho uong ma client
+     * lai tu choi chieu "khong du PP" -> dung im. Gui goi 60 (HP / max / PP that, chi cho chinh minh) moi 3 giay.
+     */
+    static void dongBoHpPp(final Char p, final TuDong.Phien ph, final long bay) {
+        synchronized (ph) {
+            if (bay - ph.dongBoLuc < DONG_BO_MS) {
+                return;
+            }
+            ph.dongBoLuc = bay;
+        }
+        try {
+            p.sendMessage(MessageCreator.createNew_HMP_Message(p, 0));
+        } catch (final Exception e) {
+            // mat ket noi
+        }
     }
 
     static void guiKeHoach(final Char p, final TuDongKeHoach.KeHoach k) {
