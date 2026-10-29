@@ -633,8 +633,12 @@ public class BotXuyenSuot {
             return ha;
         }
 
+        /** Vat nhiem vu (loai 14) thay roi / nhat duoc (may chu xac nhan -65 cho minh) - kiem nhat co bi hong khong. */
+        int soVatNvThay, soVatNvNhat;
+
         /** Nhat do roi (lenh 17: danh sach roi) gan nguoi choi. */
         void nhatDo(int tu) throws IOException {
+            int thay = 0;
             for (int i = tu; i < b.su.size(); i++) {
                 BotChucNang.SuKien e = b.su.get(i);
                 if (e.cmd != 17 || e.d == null) continue;
@@ -647,12 +651,24 @@ public class BotXuyenSuot {
                         if (cat == 3) b.gui(18, (short) id);
                         else if (cat == 4) b.gui(19, (short) id);
                         else if (cat == 6 || cat == 7) b.gui(-41, (byte) cat, (short) id);
-                        else if (cat == 14) b.gui(-65, (short) id);
+                        else if (cat == 14) { b.gui(-65, (short) id); thay++; }
                     }
                 } catch (IOException ignored) {
                 }
             }
+            int moc = b.su.size();
             b.bom(200);
+            if (thay > 0) {
+                b.bom(300);
+                int nhat = 0;
+                for (int i = moc; i < b.su.size(); i++) {
+                    BotChucNang.SuKien e = b.su.get(i);
+                    if (e.cmd == -65 && e.d != null && e.d.length >= 2 && (short) (((e.d[0] & 255) << 8) | (e.d[1] & 255)) == (short) b.actor) nhat++;
+                }
+                soVatNvThay += thay;
+                soVatNvNhat += nhat;
+                ghi("vat nhiem vu: thay roi " + thay + ", nhat duoc " + nhat + " (cong don " + soVatNvNhat + "/" + soVatNvThay + ")");
+            }
         }
 
         /** Map tot nhat de luyen o cap hien tai (quai trong [lv-2, lv+3]) - gan nhat theo so cong. */

@@ -12727,6 +12727,32 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return idItemquest;
     }
 
+    /** Bao hiem xui vat nhiem vu kieu 2 (com.htbb.pokemon.BaoHiemRoiNhiemVu), theo nhiem vu + vat; chi trong phien. */
+    public final com.htbb.pokemon.BaoHiemRoiNhiemVu baoHiemRoi = new com.htbb.pokemon.BaoHiemRoiNhiemVu();
+
+    /**
+     * Vat nhiem vu roi khi ha quai {@code idMonster}: moi muc kieu 2 dang thieu cua dung loai quai do quay {@code trung}
+     * (ngau nhien, Monster) HOAC da truot {@code nguong} - 1 lan lien tiep (bao hiem xui, dat lai khi roi).
+     */
+    public Vector<Short> checkDropItemQuestBaoHiem(final int idMonster, final boolean trung, final int nguong) {
+        final Vector<Short> ra = new Vector<Short>();
+        for (final Short id : this.checkDropItemQuest(idMonster)) {
+            int ms = -1, idq = -1;
+            for (final NewCharQuest q : this.getAllQuestWorking()) {
+                final InfoQuestTemplate info = q.getTemplate();
+                if (info != null && info.type == 2 && info.itemget.contains(id)) {
+                    ms = q.main_sub;
+                    idq = q.id_quest;
+                    break;
+                }
+            }
+            if (this.baoHiemRoi.roi(com.htbb.pokemon.BaoHiemRoiNhiemVu.khoa(ms, idq, id.intValue()), trung, nguong)) {
+                ra.add(id);
+            }
+        }
+        return ra;
+    }
+
     public void checkFinishQuest(final int idMonster_item, final boolean iskillMons, final int lv) {
         final Vector<NewCharQuest> allQuestWorking = this.getAllQuestWorking();
         // sua-tien-do-nv: tien do tang ma chua xong -> gui lai "Dang lam" (x/N dung so may chu; truoc chi gui khi xong,

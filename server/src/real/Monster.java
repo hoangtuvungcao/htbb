@@ -1630,8 +1630,12 @@ public class Monster extends LiveActor {
                     }
                 }
                 p.checkFinishQuest(this.idTemplate, true, this.level);
-                if (p.receiveXP() != 3 && Map.randomMillion() < 150000 + 150000 * x2Drop / 100 + p.luck * 100) {
-                    final Vector<Short> idItemQuest = p.checkDropItemQuest(this.idTemplate);
+                if (p.receiveXP() != 3) {
+                    // vat nhiem vu kieu 2: 15% (+x2 / may man) moi con + bao hiem xui (BaoHiemRoiNhiemVu: chac roi sau
+                    // 2 x so con ky vong lan truot lien tiep - truoc 29/10/2026 co nguoi can 50+ con cho 5 vat)
+                    final int tiLeNv = 150000 + 150000 * x2Drop / 100 + p.luck * 100;
+                    final Vector<Short> idItemQuest = p.checkDropItemQuestBaoHiem(this.idTemplate, Map.randomMillion() < tiLeNv,
+                            com.htbb.pokemon.BaoHiemRoiNhiemVu.nguong(tiLeNv));
                     if (idItemQuest.size() > 0) {
                         for (int i = 0; i < idItemQuest.size(); ++i) {
                             final ItemQuest item2 = new ItemQuest(idItemQuest.get(i), 1);

@@ -30,6 +30,7 @@ public final class KiemCanBangCapLop {
     public static void chay() {
         chuDong();
         gymHe();
+        baoHiemRoi();
         try {
             nguon();
         } catch (final Exception e) {
@@ -135,6 +136,43 @@ public final class KiemCanBangCapLop {
         Kiem.bang("sau tran: moi Gym x moi dong <= x1,25", "[]", qua.toString());
     }
 
+    /** Bao hiem xui vat nhiem vu kieu 2 (BaoHiemRoiNhiemVu). */
+    static void baoHiemRoi() {
+        final int n = com.htbb.pokemon.BaoHiemRoiNhiemVu.nguong(com.htbb.pokemon.BaoHiemRoiNhiemVu.TI_LE_GOC);
+        Kiem.bang("nguong o ti le goc 15% = 2 x 6,7 con", Integer.valueOf(13), Integer.valueOf(n));
+        Kiem.bang("nguong ti le 100% / 0", "1/1", com.htbb.pokemon.BaoHiemRoiNhiemVu.nguong(1000000) + "/" + com.htbb.pokemon.BaoHiemRoiNhiemVu.nguong(0));
+        final com.htbb.pokemon.BaoHiemRoiNhiemVu b = new com.htbb.pokemon.BaoHiemRoiNhiemVu();
+        final String k = com.htbb.pokemon.BaoHiemRoiNhiemVu.khoa(0, 23, 5);
+        int lan = 0;
+        while (!b.roi(k, false, n)) {
+            lan++;
+        }
+        Kiem.bang("truot lien tiep: lan thu 13 chac chan roi", Integer.valueOf(12), Integer.valueOf(lan));
+        Kiem.bang("roi -> dat lai dem", Integer.valueOf(0), Integer.valueOf(b.dangTruot(k)));
+        b.roi(k, false, n);
+        b.roi(k, false, n);
+        Kiem.dung("trung ngau nhien thi roi ngay va dat lai", b.roi(k, true, n) && b.dangTruot(k) == 0);
+        b.roi(k, false, n);
+        Kiem.bang("dem rieng theo nhiem vu + vat", Integer.valueOf(0), Integer.valueOf(b.dangTruot(com.htbb.pokemon.BaoHiemRoiNhiemVu.khoa(0, 23, 6))));
+        // mo phong 20.000 vat o 15%: khong vat nao can > 13 con; trung binh <= ky vong khong bao hiem (6,7)
+        final java.util.Random r = new java.util.Random(29102026L);
+        final com.htbb.pokemon.BaoHiemRoiNhiemVu m = new com.htbb.pokemon.BaoHiemRoiNhiemVu();
+        int maxCon = 0;
+        long tong = 0;
+        for (int v = 0; v < 20000; v++) {
+            int con = 0;
+            boolean roi = false;
+            while (!roi) {
+                con++;
+                roi = m.roi("x", r.nextInt(1000000) < com.htbb.pokemon.BaoHiemRoiNhiemVu.TI_LE_GOC, n);
+            }
+            maxCon = Math.max(maxCon, con);
+            tong += con;
+        }
+        Kiem.dung("mo phong: nhieu nhat 13 con / vat (" + maxCon + "), trung binh " + String.format("%.2f", tong / 20000.0) + " <= 6,7",
+                maxCon <= 13 && tong / 20000.0 <= 6.7);
+    }
+
     /** Noi day trong may chu (khong chay duoc khong co ban do): kiem cho goi tren nguon. */
     static void nguon() throws Exception {
         final String m = new String(java.nio.file.Files.readAllBytes(new java.io.File("src/real/Monster.java").toPath()), "UTF-8");
@@ -147,6 +185,8 @@ public final class KiemCanBangCapLop {
         Kiem.dung("chuDongDuoc chi ap quai hoang da thuong (lop Monster, khong boss)", m.contains("this.getClass() != Monster.class || this.isBoss"));
         Kiem.dung("Monster.update cua boss: chieu lon no dung luc het gio niem (BossLauDai.nhipNiem)", m.contains("BossLauDai.nhipNiem(this)"));
         Kiem.dung("monsterDanh: khong con xet vung o don ke tiep (noNiem + niemTrung)", b.contains("noNiem(t, bay)") && b.contains("t.niemTrung = false"));
+        Kiem.dung("Monster: vat nhiem vu kieu 2 qua bao hiem xui (checkDropItemQuestBaoHiem, moi lan ha dung quai)",
+                m.contains("p.checkDropItemQuestBaoHiem(this.idTemplate, Map.randomMillion() < tiLeNv") && !m.contains("p.checkDropItemQuest(this.idTemplate)"));
         Kiem.dung("Gym goi de theo gym.so_de", b.contains("LauDai.so(\"gym.so_de\", GiaiDoanBoss.GYM_SO_DE)"));
         final String g = new String(java.nio.file.Files.readAllBytes(new java.io.File("src/real/GymLauDai.java").toPath()), "UTF-8");
         Kiem.dung("thach dau Gym: HP boss theo he chieu nguoi thach dau (hpGymTheoHe + heTotNhat)",
