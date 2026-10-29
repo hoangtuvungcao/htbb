@@ -90,6 +90,9 @@ public class BotXuyenSuot {
         List<Integer> chon = new ArrayList<>();
         for (int k : co) if (gt[k] * 100 >= tot * 85) chon.add(k);
         if (chon.isEmpty()) chon = co;
+        // o 0 = don thuong khong ton PP/MP: xen vao moi lan thu 3 (chi xoay chieu ton MP thi het MP, dung danh - bot dong
+        // Lua "ha 0 Litwick" 5 phut lien sau khi chon chieu theo he 29/10/2026)
+        if (!chon.contains(0) && co.contains(0) && lan % 3 == 2) return 0;
         if (chon.size() == 1 && co.size() > 1 && lan % 2 == 1) { // mot chieu tot: xen chieu khac khi no dang hoi
             List<Integer> khac = new ArrayList<>(co);
             khac.remove(chon.get(0));
@@ -644,8 +647,10 @@ public class BotXuyenSuot {
                 if (e.cmd != 17 || e.d == null) continue;
                 try {
                     DataInputStream r = new DataInputStream(new ByteArrayInputStream(e.d));
-                    r.readShort(); r.readShort(); r.readByte(); r.readInt(); r.readByte();
+                    int nguoiHa = r.readShort(); // goi 17: nguoi ket lieu - do roi cua quai nguoi khac ha la cua ho
+                    r.readShort(); r.readByte(); r.readInt(); r.readByte();
                     int n = r.readByte();
+                    if ((short) nguoiHa != (short) b.actor) continue;
                     for (int k = 0; k < n; k++) {
                         int cat = r.readByte(), tpl = r.readShort(), id = r.readShort(), x = r.readShort(), y = r.readShort();
                         if (cat == 3) b.gui(18, (short) id);
@@ -656,18 +661,22 @@ public class BotXuyenSuot {
                 } catch (IOException ignored) {
                 }
             }
-            int moc = b.su.size();
+            int moc = tu; // may chu tu nhat (autoGetItem) ngay khi roi: -65 co the den truoc vong nay
             b.bom(200);
             if (thay > 0) {
                 b.bom(300);
-                int nhat = 0;
+                int nhat = 0, khongCo = 0, khac = 0;
                 for (int i = moc; i < b.su.size(); i++) {
                     BotChucNang.SuKien e = b.su.get(i);
-                    if (e.cmd == -65 && e.d != null && e.d.length >= 2 && (short) (((e.d[0] & 255) << 8) | (e.d[1] & 255)) == (short) b.actor) nhat++;
+                    if (e.cmd == -65 && e.d != null && e.d.length >= 2) {
+                        if ((short) (((e.d[0] & 255) << 8) | (e.d[1] & 255)) == (short) b.actor) nhat++; else khac++;
+                    }
+                    if (e.cmd == 20 && e.d != null && e.d.length >= 1 && e.d[0] == 14) khongCo++; // may chu: khong con vat (nguoi khac / da nhat)
                 }
                 soVatNvThay += thay;
                 soVatNvNhat += nhat;
-                ghi("vat nhiem vu: thay roi " + thay + ", nhat duoc " + nhat + " (cong don " + soVatNvNhat + "/" + soVatNvThay + ")");
+                ghi("vat nhiem vu: thay roi " + thay + ", nhat duoc " + nhat + " (-65 nguoi khac " + khac + ", 20/14 khong con " + khongCo
+                        + "; cong don " + soVatNvNhat + "/" + soVatNvThay + ")");
             }
         }
 
