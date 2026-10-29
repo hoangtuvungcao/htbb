@@ -182,6 +182,17 @@ public final class NhaTre {
         return "ITEM:" + id + ":1";
     }
 
+    /**
+     * Pet dang gui ma nguoi choi CON so huu (pet chi la tham chieu, khong roi hanh trang khi gui): {a, b}, slot khong con
+     * so huu -> 0. Ca hai 0 = nha tre khong tinh buoc, khong de trung (bot tn_nha_tre 29/10/2026: vut / ban / trao het pet
+     * da gui roi ha quai van ra trung).
+     */
+    public static int[] petConGui(final int a, final int b, final java.util.Collection<Integer> soHuu) {
+        final int x = a > 0 && soHuu != null && soHuu.contains(Integer.valueOf(a)) ? a : 0;
+        final int y = b > 0 && soHuu != null && soHuu.contains(Integer.valueOf(b)) ? b : 0;
+        return new int[]{x, y};
+    }
+
     /** So trung de them sau khi cong {@code buoc} buoc (buocTichLuy: so du truoc), co tran ngay. */
     public static int soTrungMoi(final int buocTichLuy, final int buocThem, final int daDeHomNay) {
         final int tong = Math.max(0, buocTichLuy) + Math.max(0, buocThem);

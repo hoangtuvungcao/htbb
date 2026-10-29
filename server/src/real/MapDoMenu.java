@@ -1450,7 +1450,8 @@ class MapDoMenu {
                           return;
                       }
                     
-                    player.timeNextRegion = now;
+                    // Hoi chieu chi tinh khi DA doi khu (bot tn_khu 29/10/2026: chon trung khu dang dung / bi tu choi vi
+                    // giao hang van an mat 20 giay, lan doi that ngay sau do bi bao "chờ 20 giây").
                     if (player.region != idOptionMenu) 
                     {
                         if (player.monster != null) 
@@ -1461,6 +1462,7 @@ class MapDoMenu {
 
                         if (map.isMapChienTruongMoba() || abs(player.x / 16 - map.pRegion[0]) <= rangeNpc && abs(player.y / 16 - map.pRegion[1]) <= rangeNpc) 
                         {
+                            player.timeNextRegion = now;
                             map.playerExit(player);
                             player.region = idOptionMenu;
                             map.move2Map(player, player.x / 16, player.y / 16, player.mapID, player.inCountry);
@@ -1469,7 +1471,6 @@ class MapDoMenu {
 
                         // bot-cap1-40 (25/10/2026): truoc day "return" im lang - go "khu" o dau cung mo duoc menu Khu 1..N
                         // nhung chon khu khi o xa bien khu thi khong co gi xay ra.
-                        player.timeNextRegion = last; // khong tinh hoi chieu cho lan bi tu choi
                         player.sendMessage(MessageCreator.createServerAlertMessage(Map.xaBienKhu(map.pRegion), ""));
                         return;
                     }
