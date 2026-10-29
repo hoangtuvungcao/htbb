@@ -676,9 +676,17 @@ class MapDoMenu {
                             break;
                         }
 
+                        if (idMenu < 0 || idMenu >= player.pet.size()) {
+                            return;
+                        }
                         Pet pet = (Pet) player.pet.get(idMenu);
                         if (pet.isPetBachThu() && map.isMapOffline && pet.place != 1) {
-                            player.pet.remove(idMenu);
+                            // 29/10/2026 (ma-tran-bot #6): cung luat voi Tha (khoa / di theo / dang chao giao dich / trao doi).
+                            final String lyDoBan = QuanLyThuGame.rutDeBanNpc(player, pet);
+                            if (lyDoBan != null) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(lyDoBan, ""));
+                                return;
+                            }
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                             Database.instance.deletePet(pet.idDB);
                             Database.instance
@@ -710,7 +718,13 @@ class MapDoMenu {
                                     return;
                                 }
 
-                                player.animal.remove(idMenu);
+                                // 29/10/2026 (ma-tran-bot #6): ban NPC = cung luat voi Tha (khoa / dang cuoi / cho tang / trao doi), rut theo
+                                // DOI TUONG duoi khoa nhan vat (QuanLyThuGame.rutDeBanNpc) thay cho remove(idMenu) mu.
+                                final String lyDoBan = QuanLyThuGame.rutDeBanNpc(player, anim);
+                                if (lyDoBan != null) {
+                                    player.sendMessage(MessageCreator.createServerAlertMessage(lyDoBan, ""));
+                                    return;
+                                }
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                                 Database.instance.delAnimal(anim.dbid);
                                 Database.instance.saveOrtherLog("", player.charname, "ban pet " + anim.getAttribute() + " > " + anim.getName() + " > " + anim.idImg, "sellanimal");

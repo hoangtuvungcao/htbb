@@ -1013,6 +1013,211 @@ public final class KichBanBatThuong {
         kiemLog("bt_thu");
     }
 
+    // ================================================================== 11. tien / vat pham: tru TRUOC trao (29/10/2026)
+    /** So ban VU_KHI trong CSDL ca hanh trang + dang mac + KHO (bag) - mot mon chi duoc nam o MOT noi. */
+    static int vuKhiCsdlKho(BotChucNang.Bot b) {
+        String v = BotChucNang.sql1("SELECT CONCAT(IFNULL(inven,''), '#', IFNULL(equip,''), '#', IFNULL(bag,'')) FROM tob_char WHERE id = " + b.charDb);
+        if (v == null) return -1;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("," + VU_KHI + ",-?\\d+,500,").matcher(v);
+        int n = 0;
+        while (m.find()) n++;
+        return n;
+    }
+
+    /** Mo kho do (NPC 9 Kangaskhan; trong nha = ban do offline nen o dau cung mo duoc) -> goi 23 kieu 2. */
+    static boolean moKho(BotChucNang.Bot b) throws IOException {
+        int m = b.moc();
+        b.gui(23, (byte) 9);
+        int n = b.doiMenu(m, 9, 0, 3000);
+        int mk = b.moc();
+        if (n > 0 && b.timMuc("Mở kho") >= 0) b.menu(9, 0, b.timMuc("Mở kho"));
+        return b.cho(x -> x.coLenh(mk, 23) || x.coLenh(m, 23), 4000);
+    }
+
+    /**
+     * TIEN / VAT PHAM: tru TRUOC trao (29/10/2026, ma-tran-bot "Lo hong uu tien" #2 #5 #6 #9 #14). MOT nguoi choi thuong P
+     * (trong nha 103 = ban do offline: Kecleon, tho ren, kho do, gian hang) lam lien bon phan de giu thoi gian nhom <= 15 phut:
+     * <ol>
+     *   <li>{@code bt_thu_ban}: 2 thu cuoi (chep tu thu GM "poro 1" qua CSDL truoc khi dang nhap) DA KHOA (-119/2), ban NPC
+     *       (-800 chon 1) x3 -> khong mat con nao; mo khoa 1 con, ban 1 lan -> mat dung 1 (CSDL tob_animal khop);</li>
+     *   <li>{@code bt_ep}: xu VUA DU mot lan ghep ngoc (5000), 3 lenh ghep 5 vien (100%) xen 3 lenh mua thuoc -> ghep <= 1 lan,
+     *       xu tieu = 5000 x lan + 100 x binh, ngoc dung = 5 x lan;</li>
+     *   <li>{@code bt_kho}: 31 goi 68/69 xen ke don dap cung MOT vu khi (68 luong phien, 69 truoc day luong ban do);</li>
+     *   <li>{@code bt_cho}: A rao vu khi 10.000 xu; P thieu 1 xu xac nhan -> khong mua; P vua du xac nhan -32 x3 xen mua thuoc
+     *       -> mua dung 1 lan, P tieu = gia, A nhan = gia - thue.</li>
+     * </ol>
+     * Cuoi: thoat CA HAI, doi may chu luu (kick sau ~5 giay), doi chieu CSDL: vu khi P = khoi dau + 2 (kho + mua cho), A =
+     * khoi dau (da ban), xu khop, khong am.
+     */
+    static void tienVatPham() throws Exception {
+        loiLogMoi();
+        BotChucNang.Bot g = gm();
+        g.gm("poro 1", 1500);
+        String nguon = BotChucNang.sql1("SELECT id FROM tob_animal WHERE owner = " + g.charDb + " AND del = 0 ORDER BY id DESC LIMIT 1");
+        BotChucNang.Bot b0 = BotChucNang.botThuong();
+        String u = b0.user;
+        int cid = b0.charDb;
+        b0.close();
+        boolean coThu = nguon != null && nguon.trim().matches("\\d+");
+        Thread.sleep(2500);
+        if (coThu)
+            for (int i = 0; i < 2; i++)
+                BotChucNang.sql("INSERT INTO tob_animal (owner, place, att, id_img, lv, name, texpire, isHoaHinh, timeHoaHinh) SELECT " + cid
+                        + ", 0, att, id_img, lv, name, texpire, isHoaHinh, timeHoaHinh FROM tob_animal WHERE id = " + nguon.trim());
+        BotChucNang.Bot b = vaoLai(new BotChucNang.Bot(u));
+        BotChucNang.Bot a = null;
+        try {
+            KichBanDS.veLang(b);
+            if (!KichBanDS2.vaoNha(b, 103)) { ket("bt_tien", false, "khong vao duoc nha (map " + b.mapId + ")"); return; }
+            onDinh(b);
+            lenhGm("slv " + b.ten + " 20 0");
+            final int goc = vuKhiCsdlKho(b); // vu khi khoi dau (nhan vat moi mac san mot Than lua so cap)
+
+            // ---- 1. ban thu cho NPC: con da khoa
+            String demSql = "SELECT COUNT(*) FROM tob_animal WHERE owner = " + cid + " AND del = 0";
+            int n0 = b.thu.size();
+            if (!coThu || n0 < 2) {
+                BotChucNang.ket("bt_thu_ban", coThu ? Boolean.FALSE : null, "khong dung duoc canh: GM poro=" + coThu + ", thu cua nguoi choi " + n0);
+            } else {
+                for (int[] t : new ArrayList<>(b.thu)) b.gui(-119, (byte) 2, (byte) 0, (short) t[0], (byte) 1);
+                b.bom(800);
+                int m = b.moc();
+                for (int i = 0; i < 3; i++) { b.menu(-800, 0, 1); b.bom(300); }
+                b.bom(800);
+                onDinh(b);
+                int n1 = b.thu.size();
+                String db1 = BotChucNang.sql1(demSql);
+                ket("bt_thu_ban.da_khoa", n1 == n0 && ("" + n0).equals(db1 == null ? "" : db1.trim()),
+                        n0 + " thu da khoa, -800 ban x3: trong game " + n0 + " -> " + n1 + ", CSDL " + db1 + " " + b.chuTu(m));
+                if (!b.thu.isEmpty()) {
+                    b.gui(-119, (byte) 2, (byte) 0, (short) b.thu.get(0)[0], (byte) 0);
+                    b.bom(600);
+                    b.menu(-800, 0, 1);
+                    b.bom(1000);
+                    onDinh(b);
+                    String db2 = BotChucNang.sql1(demSql);
+                    ket("bt_thu_ban.mo_khoa", b.thu.size() == n1 - 1 && ("" + (n1 - 1)).equals(db2 == null ? "" : db2.trim()),
+                            "mo khoa 1 con, ban 1 lan: " + n1 + " -> " + b.thu.size() + " (CSDL " + db2 + ")");
+                }
+            }
+
+            // ---- 2. ghep ngoc voi xu vua du + lenh tieu xu xen giua
+            lenhGm("gem " + b.ten + " 60 15 0");
+            b.cho(x -> x.soNgoc(60) >= 15, 8000);
+            datThuoc(b, 1, 0);
+            boolean ke = moKecleon(b);
+            datXu(b, 5000);
+            int g60 = b.soNgoc(60), g61 = b.soNgoc(61);
+            int rid = KichBanDS3.realIdNgoc(b, 60);
+            for (int i = 0; i < 3; i++) {
+                b.gui(-36, (byte) 1, (byte) 5, (short) rid, (short) rid, (short) rid, (short) rid, (short) rid);
+                b.gui(24, (byte) 1, (byte) 4, (short) 1, (short) 1);
+            }
+            b.bom(1500);
+            onDinh(b);
+            int lan = b.soNgoc(61) - g61, dung = g60 - b.soNgoc(60), binh = b.soThuoc(1);
+            long tieu = 5000 - b.xu;
+            ket("bt_ep.vua_du", rid != KichBanDS3.KHONG && g60 >= 15 && lan >= 0 && lan <= 1 && dung == 5 * lan && b.xu >= 0
+                            && tieu == 5000L * lan + (long) GIA_THUOC_1 * binh,
+                    "kecleon=" + ke + "; 3 lenh ghep + 3 lenh mua voi 5000 xu: ghep " + lan + " lan, ngoc60 " + g60 + " -> " + b.soNgoc(60) + ", binh " + binh
+                            + ", xu 5000 -> " + b.xu + " (tieu " + tieu + ")");
+
+            // ---- 3. kho do: 68/69 xen ke don dap cung mot mon
+            datXu(b, 2000);
+            int id = muaVuKhi(b, VU_KHI);
+            boolean mo = id != KichBanDS3.KHONG && moKho(b);
+            if (mo) {
+                for (int i = 0; i < 15; i++) { b.gui(68, (short) id); b.gui(69, (short) id); }
+                b.gui(68, (short) id);
+                b.bom(1500);
+                onDinh(b);
+            }
+            final int tuiKho = demTpl(b, VU_KHI);
+
+            // ---- 4. cho ky gui: A rao, P thieu 1 xu / vua du + xac nhan x3
+            a = nguoiTrongNha();
+            lenhGm("slv " + a.ten + " 20 0");
+            final int gocA = vuKhiCsdl(a);
+            datXu(a, 50000);
+            int idA = muaVuKhi(a, VU_KHI);
+            final int gia = 10000;
+            int npc = 11, shop = 0, m = a.moc();
+            for (npc = 11; idA != KichBanDS3.KHONG && npc <= 20; npc++) {
+                m = a.moc();
+                final int m92 = m;
+                a.gui(92, true, (byte) npc, (byte) shop, (short) idA, gia, (byte) 0);
+                a.cho(x -> x.layLenh(m92, -31) != null || x.coLenh(m92, 92), 3000);
+                if (a.layLenh(m, -31) != null) { a.gui(-31, (short) -32047, (byte) 0, ""); a.bom(1000); }
+                if (a.coLenh(m, 92)) break;
+                if (a.doiChu(m, 0, "chỉ bán") == null) break;
+            }
+            boolean daRao = idA != KichBanDS3.KHONG && a.coLenh(m, 92);
+            if (!daRao) ket("bt_cho.dang_ban", false, "A mua=" + (idA != KichBanDS3.KHONG) + " " + a.chuTu(m));
+            onDinh(a);
+            final int npcB = npc;
+            final int tpl0 = demTpl(b, VU_KHI);
+            datXu(b, gia - 1);
+            long xa0 = a.xu;
+            BotChucNang.SuKien p1 = daRao ? choHoi(b, npcB, shop, a, idA) : null;
+            if (p1 != null) b.gui(-32, (short) p1.so[0], (byte) p1.so[1], "", (byte) 1);
+            b.bom(1200);
+            onDinh(b);
+            onDinh(a);
+            ket("bt_cho.thieu_mot_xu", daRao && b.xu == gia - 1 && a.xu == xa0 && demTpl(b, VU_KHI) == tpl0,
+                    "hoi=" + (p1 != null) + "; P " + (gia - 1) + " -> " + b.xu + ", A " + xa0 + " -> " + a.xu + ", P vu khi " + tpl0 + " -> " + demTpl(b, VU_KHI));
+            datThuoc(b, 1, 0);
+            moKecleon(b);
+            datXu(b, gia);
+            xa0 = a.xu;
+            BotChucNang.SuKien p = daRao ? choHoi(b, npcB, shop, a, idA) : null;
+            if (p != null) {
+                for (int i = 0; i < 3; i++) {
+                    b.gui(-32, (short) p.so[0], (byte) p.so[1], "", (byte) 1);
+                    b.gui(24, (byte) 1, (byte) 4, (short) 1, (short) 1);
+                }
+            }
+            b.bom(1500);
+            a.bom(300);
+            onDinh(b);
+            onDinh(a);
+            int binh2 = b.soThuoc(1);
+            boolean coMon = demTpl(b, VU_KHI) == tpl0 + 1;
+            long tieu2 = gia - b.xu - (long) GIA_THUOC_1 * binh2;
+            long nhan = a.xu - xa0;
+            ket("bt_cho.vua_du", p != null && b.xu >= 0 && demTpl(b, VU_KHI) <= tpl0 + 1 && (coMon ? tieu2 == gia && nhan > 0 && nhan <= gia : tieu2 == 0 && nhan == 0),
+                    "P co mon=" + coMon + ", P tieu cho mon " + tieu2 + " (+" + binh2 + " binh), A nhan " + nhan + "/" + gia + " (sau thue), P xu " + b.xu);
+
+            // ---- thoat ca hai, doi may chu luu, doi chieu CSDL
+            long xaG = a.xu, xbG = b.xu;
+            a.close();
+            b.close();
+            Thread.sleep(7500); // may chu kick + luu khi thoat sau ~5 giay (CharVongLap: now - timeExit > 5000)
+            int vb = vuKhiCsdlKho(b), va = vuKhiCsdlKho(a);
+            long xaD = xuCsdl(a), xbD = xuCsdl(b);
+            ket("bt_kho.don_dap", mo && vb == goc + (coMon ? 2 : 1) && tuiKho <= 1,
+                    "mo kho=" + mo + "; 31 goi 68/69 xen ke cung mon: tui " + tuiKho + ", sau khi thoat CSDL (tui+mac+kho) " + vb + " (dung khoi dau " + goc
+                            + " + 1 kho" + (coMon ? " + 1 mua cho" : "") + ")");
+            ket("bt_cho.csdl", coMon && va == gocA && xaD == xaG && xbD == xbG && xbD >= 0 && xaD >= 0,
+                    "vu khi A CSDL " + va + " (khoi dau " + gocA + ", da ban); xu A " + xaG + " (CSDL " + xaD + "), P " + xbG + " (CSDL " + xbD + ")");
+        } finally {
+            b.close();
+            if (a != null) a.close();
+        }
+        kiemLog("bt_tien");
+    }
+
+    /** C mo gian hang cua A, hoi mua mon id (95) -> cho popup -32. */
+    static BotChucNang.SuKien choHoi(BotChucNang.Bot c, int npc, int shop, BotChucNang.Bot a, int id) throws IOException {
+        int m = c.moc();
+        c.gui(94, (byte) 0, (byte) npc, (byte) shop);
+        c.bom(400);
+        c.gui(94, (byte) 1, (byte) npc, (byte) shop, (short) a.actor);
+        c.bom(400);
+        c.gui(95, (byte) npc, (byte) shop, (short) a.actor, (short) id, (byte) 0);
+        c.cho(x -> x.layLenh(m, -32) != null, 4000);
+        return c.layLenh(m, -32);
+    }
+
     // ================================================================== dang ky + main
     static void dk(String ten, BotChucNang.KichBan k) {
         BotChucNang.dk(ten, false, () -> {
@@ -1036,6 +1241,7 @@ public final class KichBanBatThuong {
         dk("bt_guc", KichBanBatThuong::khiGuc);
         dk("bt_goi_sai", KichBanBatThuong::goiSai);
         dk("bt_thu", KichBanBatThuong::docThu);
+        dk("bt_tien", KichBanBatThuong::tienVatPham);
     }
 
     public static void main(String[] a) throws Exception {
@@ -1044,7 +1250,7 @@ public final class KichBanBatThuong {
         dangKy();
         List<String> chon = new ArrayList<>();
         for (int i = 3; i < a.length; i++) chon.add(a[i]);
-        if (chon.isEmpty()) chon.addAll(Arrays.asList("bt_mua", "bt_ban", "bt_tui", "bt_dut", "bt_dang_nhap", "bt_gd", "bt_nc", "bt_guc", "bt_goi_sai", "bt_thu"));
+        if (chon.isEmpty()) chon.addAll(Arrays.asList("bt_mua", "bt_ban", "bt_tui", "bt_dut", "bt_dang_nhap", "bt_gd", "bt_nc", "bt_guc", "bt_goi_sai", "bt_thu", "bt_tien"));
         String[] b = new String[3 + chon.size()];
         b[0] = a[0];
         b[1] = a[1];
