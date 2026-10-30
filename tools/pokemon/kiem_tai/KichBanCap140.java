@@ -1254,9 +1254,34 @@ final class KichBanCap140 {
 
         static final int[] O_GIAP = {0, 1, 2, 8, 9, 10, 11};
 
+        /**
+         * Vu khi tiem tot nhat mua NGAY duoc (gia + du tru <= xu) va hon vu khi dang cam; khong co thi bac dung cap (de danh).
+         * Truoc 30/10/2026 bot chi nham bac dung cap: Lua / Thuong cap 36 de danh 40.300 xu cho bac 36 (co 32.000) va van cam
+         * vu khi cap 21 - nguoi that mua bac 31 (28.800) ngay.
+         */
+        int vuKhiMuaDuoc() {
+            int dich = BotXuyenSuot.vuKhiShop(lop, b.lv);
+            int capCam = 0;
+            for (int t : new ArrayList<>(b.dangMacTpl)) {
+                boolean vk = t >= 79 + 7 * lop && t < 86 + 7 * lop || t >= 174 + 8 * lop && t < 182 + 8 * lop;
+                if (!vk) continue;
+                String l = BotChucNang.sql1("SELECT level FROM data_item WHERE id=" + t);
+                try { if (l != null) capCam = Math.max(capCam, Integer.parseInt(l.trim())); } catch (NumberFormatException ignored) { }
+            }
+            for (int lv = b.lv; lv >= 1; lv -= 5) {
+                int t = BotXuyenSuot.vuKhiShop(lop, lv);
+                String l = BotChucNang.sql1("SELECT level FROM data_item WHERE id=" + t);
+                int c;
+                try { c = l == null ? 0 : Integer.parseInt(l.trim()); } catch (NumberFormatException e) { c = 0; }
+                if (c <= capCam) break;
+                if (t != vuKhiMac && b.xu >= gia(t) + DU_TRU_XU) return t;
+            }
+            return dich;
+        }
+
         @Override
         void muaThuoc() throws Exception {
-            int tplVk = BotXuyenSuot.vuKhiShop(lop, b.lv);
+            int tplVk = vuKhiMuaDuoc();
             int loai = loaiThuoc();
             long giaVk = tplVk != vuKhiMac ? gia(tplVk) : Long.MAX_VALUE;
             int co = b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3);

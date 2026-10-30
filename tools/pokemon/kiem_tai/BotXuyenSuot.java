@@ -635,6 +635,8 @@ public class BotXuyenSuot {
 
         /** Khu xa co Arcanine gac cong ("Về làng" mien phi): New Bark 10 (tu 30/10/2026), Chan nui Silver 41, Nui Silver 42, Duong Victory 118. */
         static final Set<Integer> KHU_XA_ARCANINE = new HashSet<>(Arrays.asList(10, 41, 42, 118));
+        /** Cum Johto mo cap 27..40 (New Bark 10 + 11 / 13 / 14 / 15): chi noi voi 113 / 114 (cap 72+). */
+        static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15));
 
         // ---------------------------------------------------------------- di chuyen giua cac map
         boolean toi(int dich) throws Exception {
@@ -642,13 +644,11 @@ public class BotXuyenSuot {
             int tu = b.mapId;
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
             // cum Johto -> lang: di bo toi New Bark roi Arcanine "Về làng" (truoc 30/10/2026 duong mot chieu)
-            if (duong(tu, dich) == null && KichBanDS.laLang(dich) && dich != 10) {
-                for (int k : KHU_XA_ARCANINE) {
-                    if (cungBanDo(tu, k) || duong(tu, k) != null) {
-                        if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
-                        break;
-                    }
-                }
+            // (duong() bo qua khoa cap: tu cum Johto "co duong" qua 113 / 114 cap 72+ nhung cong bi chan)
+            if (KichBanDS.laLang(dich) && (KHU_XA_ARCANINE.contains(tu) || CUM_JOHTO.contains(tu))) {
+                int k = KHU_XA_ARCANINE.contains(tu) ? tu : 10;
+                if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
+                if (cungBanDo(tu, dich)) return true;
             }
             // cum Johto 10/11/13/14/15 khong di bo toi duoc truoc cap 69 (chi qua 118 / 23 / 24): Arcanine "Đến New Bark"
             if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {
