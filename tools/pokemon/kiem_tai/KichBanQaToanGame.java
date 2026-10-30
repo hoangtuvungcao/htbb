@@ -817,8 +817,11 @@ public class KichBanQaToanGame {
 
     /** Dang ky trong game bang dung giao thuc client (cau do), roi dang nhap tai khoan moi, tao nhan vat, vao game. */
     static void dangKyTrongGame() throws Exception {
-        String ten = "qx";
-        for (long v = System.currentTimeMillis(), i = 0; i < 6; i++, v /= 26) ten += (char) ('b' + (int) (v % 24)); // chi chu (tranh bad_word "ad", "dm"...)
+        // ten ghep tu am tiet an toan (phu am + nguyen am): khong the tao chuoi cam nhu "xxx", "dm", "ad"... (truoc: chu ngau
+        // nhien b..y doi khi ra "xxx" -> bo loc ten tu choi dung luat, nhom qa_toan_game hong vo co)
+        String[] AT = {"ba", "bo", "ki", "lu", "mi", "na", "po", "ru", "so", "tu", "vi", "ke"};
+        String ten = "qa";
+        for (long v = System.currentTimeMillis(), i = 0; i < 4; i++, v /= AT.length) ten += AT[(int) (v % AT.length)];
         String may = "qa-may-" + ten;
         try (BotChucNang.Bot b = new BotChucNang.Bot(ten)) {
             b.ketNoi();
