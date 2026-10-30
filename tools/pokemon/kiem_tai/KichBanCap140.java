@@ -1372,12 +1372,22 @@ final class KichBanCap140 {
             Set<Integer> truoc = new HashSet<>();
             b.lamMoi();
             for (int[] x : b.doDung) truoc.add(x[0]);
-            b.gui(30, (short) idVk);
+            // may chu khong cho thao do cam tay ("hãy cầm món khác để thay"): mua vu khi re nhat (tiem cung nha 103), cam vao
+            // de doi - vu khi tot ra tui (nhu nguoi choi), nang xong cam lai; vu khi re de lai / ban o lan don tui sau
+            int m30 = b.moc();
+            int re = KichBanDS3.muaVuKhi(b, BotXuyenSuot.vuKhiShop(lop, 1));
+            if (re == KichBanDS3.KHONG) { ghi("nang vu khi: khong mua duoc vu khi re de doi | " + b.chuTu(m30)); KichBanDS2.raNgoai(b); return; }
+            b.gui(29, (short) re);
             b.bom(800);
             b.lamMoi();
             int[] vk = b.timDo(x -> x[1] == tplVk && !truoc.contains(x[0]));
             if (vk == null) vk = b.timDo(x -> x[1] == tplVk);
-            if (vk == null) { ghi("nang vu khi: khong thay vu khi trong tui sau khi thao"); KichBanDS2.raNgoai(b); return; }
+            if (vk == null) {
+                ghi("nang vu khi: khong thay vu khi trong tui sau khi thao (id " + idVk + " tpl " + tplVk + ", mac " + b.dangMac + " " + b.dangMacTpl + " " + b.dangMacPlus
+                        + ", tui " + b.doDung.size() + ") | " + b.chuTu(m30));
+                KichBanDS2.raNgoai(b);
+                return;
+            }
             final int idN = vk[0];
             int lan = 0, plus = vk[2];
             String t = "";
