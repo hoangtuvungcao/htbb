@@ -101,6 +101,13 @@ final class KichBanCap140 {
             System.out.println("DUONG " + tu + " -> " + den + ": " + (d == null ? "KHONG" : d.size() + " cong" + s) + " | MAP_THU co den: " + BotXuyenSuot.MAP_THU.contains(den)
                     + " load " + BotXuyenSuot.LOAD.get(den) + " hang " + BotXuyenSuot.hang(den) + " canh " + BotXuyenSuot.canh(den).size());
         }
+        for (String v : System.getProperty("vaoMap", "").split(",")) {
+            if (v.isEmpty()) continue;
+            int den = Integer.parseInt(v.trim());
+            for (int mid : BotXuyenSuot.LOAD.keySet())
+                for (int[] e : BotXuyenSuot.canh(mid)) if (BotXuyenSuot.cungBanDo(e[1], den)) System.out.println("CONG VAO " + den + ": tu map " + mid + " cong " + e[0] + " -> " + e[1]);
+            System.out.println("NPC cua load " + BotXuyenSuot.LOAD.get(den) + ": " + KichBanHuongDan.npcCMap(BotXuyenSuot.LOAD.getOrDefault(den, -1)).stream().map(java.util.Arrays::toString).collect(java.util.stream.Collectors.joining(" ")));
+        }
         for (String n : System.getProperty("thuNpc", "").split(",")) {
             if (n.isEmpty()) continue;
             int npc = Integer.parseInt(n.trim());

@@ -222,6 +222,14 @@ public class BotXuyenSuot {
      * cum Johto 10/11/13/14/15 - Dong.toi tu dung Arcanine khi can.
      */
     static List<int[]> duongUocTinh(int tu, int den) {
+        for (int k : Dong.CHI_ARCANINE.keySet()) {
+            if (cungBanDo(den, k) && !cungBanDo(tu, den)) {
+                if (dangChan(k)) return null;
+                List<int[]> r = new ArrayList<>();
+                for (int i = 0; i < 8; i++) r.add(new int[]{-1, k, 0, 0});
+                return r;
+            }
+        }
         List<int[]> d = duong(tu, den);
         if (d != null || dangChan(10)) return d;
         List<int[]> j = duong(10, den);
@@ -668,7 +676,13 @@ public class BotXuyenSuot {
         }
 
         /** Khu xa co Arcanine gac cong ("Về làng" mien phi): New Bark 10 (tu 30/10/2026), Chan nui Silver 41, Nui Silver 42, Duong Victory 118. */
-        static final Set<Integer> KHU_XA_ARCANINE = new HashSet<>(Arrays.asList(10, 41, 42, 118));
+        static final Set<Integer> KHU_XA_ARCANINE = new HashSet<>(Arrays.asList(10, 41, 42, 118, 21, 22));
+        /** Ban do CHI toi duoc qua Arcanine "Đến ..." (khong cong nao dan vao): Dong co phia tay 21, Tau S.S. Anne 22 (30/10/2026). */
+        static final Map<Integer, String> CHI_ARCANINE = new HashMap<>();
+        static {
+            CHI_ARCANINE.put(21, "Đồng cỏ phía tây");
+            CHI_ARCANINE.put(22, "Tàu S.S. Anne");
+        }
         /** Cum Johto mo cap 27..40 (New Bark 10 + 11 / 13 / 14 / 15): chi noi voi 113 / 114 (cap 72+). */
         static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15));
 
@@ -713,6 +727,15 @@ public class BotXuyenSuot {
             if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {
                 if (quaArcanine("New Bark")) tu = b.mapId;
                 else MAP_CHAN.put(10, System.currentTimeMillis());
+            }
+            for (Map.Entry<Integer, String> e : CHI_ARCANINE.entrySet()) {
+                if (cungBanDo(dich, e.getKey()) && !cungBanDo(tu, dich)) {
+                    if (quaArcanine(e.getValue())) tu = b.mapId;
+                    if (cungBanDo(tu, dich)) return true;
+                    MAP_CHAN.put(dich, System.currentTimeMillis());
+                    ketLyDo("Arcanine khong dua toi " + e.getValue() + " (" + dich + ")");
+                    return false;
+                }
             }
             List<int[]> d = duong(tu, dich);
             if (d == null) { ketLyDo("khong co duong tu map " + tu + " toi " + dich); return false; }

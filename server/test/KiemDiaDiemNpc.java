@@ -89,10 +89,11 @@ final class KiemDiaDiemNpc {
         for (final int[] d : real.NpcDichVuKiem.loiDi()) {
             khuXa.add(Integer.valueOf(d[0]));
         }
-        Kiem.bang("Arcanine dan toi 5 khu xa (them New Bark 30/10/2026)", "[10, 41, 42, 100, 118]", khuXa.toString());
+        // 30/10/2026: + Dong co phia tay 21 / Tau S.S. Anne 22 (khong cong nao dan vao - KiemQuaiNhiemVuToiDuoc)
+        Kiem.bang("Arcanine dan toi 7 khu xa (New Bark, Dong co phia tay, Tau S.S. Anne 30/10/2026)", "[10, 21, 22, 41, 42, 100, 118]", khuXa.toString());
         Kiem.dung("data_npc loai 4 (Arcanine) o lang + 41 / 42 / 118", arcanine != null && arcanine.containsAll(LANG)
                 && arcanine.containsAll(java.util.Arrays.asList(41, 42, 118)));
-        for (final int m : new int[]{41, 42, 118}) {
+        for (final int m : new int[]{41, 42, 118, 21, 22}) {
             final DinhDangBanDo b = DinhDangBanDo.doc(Files.readAllBytes(Paths.get("cMap", String.valueOf(m))));
             boolean co = false;
             for (final DinhDangBanDo.Diem n : b.npc) {
@@ -100,8 +101,8 @@ final class KiemDiaDiemNpc {
             }
             Kiem.dung("cMap/" + m + " co Arcanine (ve lang)", co);
         }
-        Kiem.dung("Arcanine: menu o lang = 5 loi, o khu xa = 4 loi khac + Về làng", real.NpcDichVuKiem.soLoi(0) == 5
-                && real.NpcDichVuKiem.soLoi(42) == 4 && real.NpcDichVuKiem.laKhuXa(42) && !real.NpcDichVuKiem.laKhuXa(0));
+        Kiem.dung("Arcanine: menu o lang = 7 loi, o khu xa = 6 loi khac + Về làng", real.NpcDichVuKiem.soLoi(0) == 7
+                && real.NpcDichVuKiem.soLoi(42) == 6 && real.NpcDichVuKiem.laKhuXa(42) && !real.NpcDichVuKiem.laKhuXa(0));
         final String nd = new String(Files.readAllBytes(Paths.get("src/real/NpcDichVu.java")), StandardCharsets.UTF_8);
         Kiem.dung("Arcanine: qua KhoaBanDoGame.chan truoc khi dua di (cap + cua ai)", nd.contains("if (KhoaBanDoGame.chan(p, d[0])) {"));
         Kiem.dung("goi 23 loai 4 -> NpcDichVu", new String(Files.readAllBytes(Paths.get("src/real/cmd/RequestNPCInfoHandler.java")),
