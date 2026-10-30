@@ -578,9 +578,8 @@ class CharCapNhat {
             if (self.pointActiveQuest > 300) {
                 self.pointActiveQuest = 300;
             }
-            if (self.subQuest.id_quest > -1) {
-                self.subQuest.reset();
-                self.subQuest.id_quest = -1;
+            // 30/10/2026: phu lau dai (P-*, mot lan) giu tien do qua ngay - truoc day bi xoa im lang luc 0h
+            if (NhiemVuLauDaiGame.huyPhuQuaNgay(self)) {
                 MessageCreator.createMsgCharQuest(self, 0);
             }
 

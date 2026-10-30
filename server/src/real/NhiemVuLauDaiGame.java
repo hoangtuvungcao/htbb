@@ -115,6 +115,22 @@ public final class NhiemVuLauDaiGame {
     // ------------------------------------------------------------------ danh sach / nhan
 
     /** Thay Char.getAllQuestCanReceive khi bat co. */
+    /**
+     * Qua ngay (dang nhap ngay moi / doi ngay luc dang choi). He cu (tat sv.lau_dai): nhiem vu phu la viec hang ngay -> huy
+     * nhu ban goc. Bat sv.lau_dai: nhiem vu phu la chuoi theo thi tran lam MOT lan (P-*, 3-5 buoc, khong ton diem hoat
+     * dong) -> GIU nguyen tien do. Truoc 30/10/2026 ca hai duong deu xoa phu dang lam luc 0h, khong bao: nguoi choi dang ha
+     * 20/35 Kricketot qua nua dem la mat het (bot phu kin: nhan lai cung mot nhiem vu phu 3-4 lan).
+     * @return true neu da huy (can gui lai danh sach nhiem vu)
+     */
+    public static boolean huyPhuQuaNgay(final Char p) {
+        if (p == null || p.subQuest == null || p.subQuest.id_quest <= -1 || LauDai.bat()) {
+            return false;
+        }
+        p.subQuest.reset();
+        p.subQuest.id_quest = -1;
+        return true;
+    }
+
     public static Vector<NewCharQuest> locDanhSach(final Char p) {
         final Vector<NewCharQuest> ds = new Vector<NewCharQuest>();
         if (p.mainQuest.state_quest == NewCharQuest.UN_RECEIVE) {
