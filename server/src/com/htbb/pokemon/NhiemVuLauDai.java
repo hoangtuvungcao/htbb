@@ -7,8 +7,9 @@ import java.util.List;
  * Nhiem vu theo thiet ke dai han (docs/thiet-ke-game.md, GD2 buoc 4). Lop THUAN.
  *
  *   - ve chuong: 2 ve / tuan (reset thu Hai 05:00), tich toi da 4, bat dau 4 ve;
- *   - loc nhiem vu phu theo cap truoc khi gui (danh sach ghi so luong bang 1 byte <= 127):
- *     chi gui nhiem vu co lv <= cap < lv + 10, toi da 20;
+ *   - loc nhiem vu phu theo cap truoc khi gui (danh sach ghi so luong bang 1 byte <= 127): nhiem vu co lv <= cap + 10
+ *     (KHONG chan duoi tu 30/10/2026 - truoc day lv <= cap < lv + 10: len cap nhanh qua 10 cap la mat han nhiem vu phu),
+ *     xep gan cap nguoi choi nhat truoc, cung do lech thi thap truoc, roi theo thu tu nhiem vu (thi tran); toi da 20;
  *   - bang tuan: 2 nhiem vu / tuan theo bac cap.
  */
 public final class NhiemVuLauDai {
@@ -49,24 +50,47 @@ public final class NhiemVuLauDai {
         return new int[]{moi, tuanNay};
     }
 
-    /** Nhiem vu (cap toi thieu {@code lv}) co hop dai cap nguoi choi khong. */
+    /**
+     * Nhiem vu phu (cap {@code lv}) co moi nguoi choi cap {@code cap} khong: lv <= cap + DAI_CAP, khong chan duoi (chu game
+     * 30/10/2026: nguoi len cap nhanh khong mat vinh vien nhiem vu phu cap thap; thuong giu nguyen o cap cua nhiem vu).
+     */
     public static boolean hopCap(final int lv, final int cap) {
-        final int d = cap - lv;
-        return d >= 0 && d < DAI_CAP;
+        return lv <= cap + DAI_CAP;
+    }
+
+    /** Thu tu hien: gan cap nguoi choi nhat truoc; cung do lech -> nhiem vu thap hon truoc; roi thu tu goc (thi tran). */
+    public static List<Integer> xepGanCap(final int[] lv, final int cap, final List<Integer> chiSo) {
+        final List<Integer> kq = new ArrayList<Integer>(chiSo);
+        java.util.Collections.sort(kq, new java.util.Comparator<Integer>() {
+            @Override
+            public int compare(final Integer a, final Integer b) {
+                final int da = Math.abs(lv[a.intValue()] - cap), db = Math.abs(lv[b.intValue()] - cap);
+                if (da != db) {
+                    return da < db ? -1 : 1;
+                }
+                if (lv[a.intValue()] != lv[b.intValue()]) {
+                    return lv[a.intValue()] < lv[b.intValue()] ? -1 : 1;
+                }
+                return a.compareTo(b);
+            }
+        });
+        return kq;
     }
 
     /**
-     * Chon nhiem vu phu de gui: giu thu tu, chi lay hopCap, toi da {@code toiDa}.
+     * Chon nhiem vu phu de gui (goi -64, client cu khong co trang): moi muc hopCap, xep gan cap nhat truoc, toi da
+     * {@code toiDa} (xong / bo bot muc gan thi muc xa hon hien len). Day du + trang: So tay -> Nhan nhiem vu phu.
      * @return chi so (trong mang lv) duoc chon
      */
     public static List<Integer> locPhu(final int[] lv, final int cap, final int toiDa) {
-        final List<Integer> kq = new ArrayList<Integer>();
-        for (int i = 0; i < lv.length && kq.size() < toiDa; i++) {
+        final List<Integer> hop = new ArrayList<Integer>();
+        for (int i = 0; i < lv.length; i++) {
             if (hopCap(lv[i], cap)) {
-                kq.add(Integer.valueOf(i));
+                hop.add(Integer.valueOf(i));
             }
         }
-        return kq;
+        final List<Integer> kq = xepGanCap(lv, cap, hop);
+        return kq.size() > toiDa ? new ArrayList<Integer>(kq.subList(0, toiDa)) : kq;
     }
 
     /**

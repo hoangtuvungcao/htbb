@@ -1039,7 +1039,9 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
   ~1 giờ. Nhiệm vụ không bao giờ thưởng lượng (trừ thành tựu lớn).
 - Engine: chuỗi chính / hướng dẫn chạy trên `data_quest` cũ (bản `data_quest_moi`, `ORDER BY id`); phần còn lại chạy trên
   `real.NhiemVuEngine` + `NhiemVuMau` (3 khe phụ cùng lúc, nhánh lựa chọn, câu đố kiểm trong chat, khoá `truoc` / ẩn, vật
-  phẩm nhiệm vụ 10–50). Mở từ Quầy đổi thưởng → "Nhiệm vụ của tôi". Danh sách gửi client được lọc theo cấp (≤ 127 mục).
+  phẩm nhiệm vụ 10–50). Mở từ Quầy đổi thưởng → "Nhiệm vụ của tôi". Danh sách gửi client được lọc theo cấp (≤ 127 mục): nhiệm vụ phụ mời khi cấp nhiệm vụ ≤ cấp người chơi + 10, **không chặn dưới**
+  (chủ game 30/10/2026: lên cấp nhanh không mất vĩnh viễn phụ cấp thấp; thưởng giữ ở cấp của nhiệm vụ), xếp gần cấp người chơi
+  nhất trước, NPC (-64) tối đa 20 mục; Quầy đổi thưởng → Nhiệm vụ của tôi → Nhận nhiệm vụ phụ đầy đủ, chia trang "Xem thêm". Phụ đang làm giữ tiến độ qua ngày.
 
 ### 6.2 Sự kiện: lịch năm theo ngày thật + tuần Pokémon
 

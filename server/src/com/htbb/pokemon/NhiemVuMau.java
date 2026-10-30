@@ -197,7 +197,8 @@ public final class NhiemVuMau {
      * @return null neu duoc, nguoc lai ly do
      */
     public String kiemNhan(final int capNguoi, final int ngayHienTai, final java.util.Set<String> daXong, final boolean moAn) {
-        if (capNguoi < cap) {
+        // nhiem vu phu: moi tu truoc toi 10 cap (cung luat danh sach -64, NhiemVuLauDai.hopCap; chu game 30/10/2026)
+        if (capNguoi < cap && !("phu".equals(loai) && NhiemVuLauDai.hopCap(cap, capNguoi))) {
             return "Cần đạt cấp " + cap;
         }
         if (ngayMo > ngayHienTai) {

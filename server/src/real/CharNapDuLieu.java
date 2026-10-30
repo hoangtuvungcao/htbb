@@ -955,9 +955,8 @@ class CharNapDuLieu {
                 self.receiveGiftEvent = 0;
                 self.flower = 0;
                 self.giveMoneyClan = 1;
-                if (self.subQuest.id_quest > -1) {
-                    self.subQuest.reset();
-                    self.subQuest.id_quest = -1;
+                // 30/10/2026: phu lau dai (P-*, mot lan) giu tien do qua ngay - truoc day bi xoa im lang luc 0h
+                if (NhiemVuLauDaiGame.huyPhuQuaNgay(self)) {
                     MessageCreator.createMsgCharQuest(self, 0);
                 }
                 if (self.lvDetail.lv >= 34) {

@@ -148,7 +148,63 @@ final class KichBanCap140TinhNang {
         b.py = b.ty * 16 + 8;
         boolean ok = KichBanDS.laLang(b.mapId);
         p.ghi("ve lang bang So tay (khong co duong di bo tu " + truoc + "): " + (ok ? "OK -> " + b.mapId : "HONG | " + b.chuTu(m)));
+        if (!ok) ok = dungVe(p);
         return ok;
+    }
+
+    /**
+     * Het luot "Về làng miễn phí": nguoi choi dung Vé dịch chuyển (mua o Kecleon, bot giu san vai ve - muaVe). Truoc 30/10/2026
+     * bot ket o ban do xa khong co duong di bo (19 / 20 / 26) toi khi sang ngay moi.
+     */
+    static boolean dungVe(KichBanCap140.NguoiChoi p) throws Exception {
+        BotChucNang.Bot b = p.b;
+        b.lamMoi();
+        int ve1 = b.soThuoc(162);
+        if (ve1 <= 0) return false;
+        int truoc = b.mapId;
+        int m4 = b.moc();
+        b.gui(22, (byte) 162);
+        if (b.doiMenu(m4, -590, 0, 3000) <= 0) {
+            java.util.regex.Matcher mh = java.util.regex.Pattern.compile("chờ (\\d+) giây").matcher(b.chuTu(m4));
+            if (!mh.find()) { p.ghi("dung Vé dịch chuyển khong mo menu: " + b.chuTu(m4)); return false; }
+            b.bom(Math.min(120, Integer.parseInt(mh.group(1)) + 2) * 1000L);
+            m4 = b.moc();
+            b.gui(22, (byte) 162);
+            if (b.doiMenu(m4, -590, 0, 3000) <= 0) return false;
+        }
+        int m5 = b.moc();
+        b.menu(-590, 0, 0);
+        b.cho(x -> x.coLenh(m5, 12), 5000);
+        if (b.coLenh(m5, 12)) { b.gui(12, (short) -500, (short) 0, (short) 0); b.bom(1200); }
+        b.px = b.tx * 16 + 8;
+        b.py = b.ty * 16 + 8;
+        b.lamMoi();
+        boolean ok = KichBanDS.laLang(b.mapId);
+        p.ghi("ve lang bang Vé dịch chuyển (tu " + truoc + "): " + (ok ? "OK -> " + b.mapId : "HONG | " + b.chuTu(m5)) + " ve " + ve1 + "->" + b.soThuoc(162));
+        return ok;
+    }
+
+    /** Giu san {@code can} Vé dịch chuyển (dang o trong tiem 103): mua tung ve qua menu Kecleon nhu nguoi choi. */
+    static void muaVe(KichBanCap140.NguoiChoi p, int can) throws Exception {
+        BotChucNang.Bot b = p.b;
+        for (int lan = 0; lan < can && b.soThuoc(162) < can; lan++) {
+            long xu0 = b.xu;
+            int ve0 = b.soThuoc(162);
+            int m = b.moc();
+            b.gui(23, (byte) 1);
+            b.doiMenu(m, 1, -1, 3000);
+            int i = b.timMuc("Vé dịch chuyển");
+            if (i < 0) return;
+            int m2 = b.moc();
+            b.menu(1, b.menuCuoi[1], i);
+            if (b.doiMenu(m2, -591, -1, 3000) <= 0) return;
+            b.menu(-591, b.menuCuoi[1], 0);
+            b.bom(1200);
+            b.lamMoi();
+            p.xuTieu += Math.max(0, xu0 - b.xu);
+            if (b.soThuoc(162) <= ve0) return;
+            p.ghi("mua Vé dịch chuyển: " + ve0 + " -> " + b.soThuoc(162) + " (xu " + xu0 + " -> " + b.xu + ")");
+        }
     }
 
     // ------------------------------------------------------------------ Ve lang mien phi
