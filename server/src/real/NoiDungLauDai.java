@@ -120,8 +120,8 @@ public final class NoiDungLauDai {
                 }
             }
             if (LauDai.ngayMoNoiDung() >= NGAY_NAM_2 && m.level >= 84 && Map.random(3) == 0) {
-                final int[] ds = NAM2.get(Integer.valueOf(daiCap(m.level + 3)));
-                if (ds != null && ds.length > 0) {
+                final int[] ds = chonNam2(m.level, NAM2);
+                if (ds.length > 0) {
                     final MonsterTemplate t = Map.monsterTemplates.get(Integer.valueOf(ds[Map.random(ds.length)]));
                     if (t != null) {
                         GOC_NAM2.put(m, Integer.valueOf(m.idTemplate));
@@ -143,6 +143,38 @@ public final class NoiDungLauDai {
         } catch (final Exception e) {
             System.out.println("NoiDungLauDai.khiHoiSinh: " + e);
         }
+    }
+
+    /** Quai nam 2 thay quai goc chi lech cap goc toi da chung nay (tren / duoi). */
+    public static final int LECH_CAP_NAM2 = 2;
+
+    /**
+     * Template nam 2 duoc thay cho quai goc cap {@code capGoc}: lay o dai (cap+3) va dai cua cap goc, chi giu loai co
+     * |cap - capGoc| <= {@link #LECH_CAP_NAM2}. Truoc 31/10/2026 lay ca dai (cap+3) -> o Mahogany (Luxray 84) moc ra
+     * Wailord / Zangoose / Grumpig / Banette cap 91-92: quai cao hon nguoi choi cap 85 tu 6 cap duoc x2 tan cong va giam
+     * nua thu (LiveActor.attackDam) - mot don 5994 / 21851 HP (27%), bot cap 85 do +6 guc lien tuc o buoc "Hạ 20 Luxray
+     * trong 8 phút". Cap cua template doc o Map.monsterTemplates; template khong ro cap bi bo.
+     */
+    public static int[] chonNam2(final int capGoc, final java.util.Map<Integer, int[]> bang) {
+        final java.util.LinkedHashSet<Integer> ung = new java.util.LinkedHashSet<Integer>();
+        for (final int dai : new int[]{daiCap(capGoc + 3), daiCap(capGoc)}) {
+            final int[] ds = bang == null ? null : bang.get(Integer.valueOf(dai));
+            if (ds == null) {
+                continue;
+            }
+            for (final int id : ds) {
+                final MonsterTemplate t = Map.monsterTemplates == null ? null : Map.monsterTemplates.get(Integer.valueOf(id));
+                if (t != null && Math.abs(t.level - capGoc) <= LECH_CAP_NAM2) {
+                    ung.add(Integer.valueOf(id));
+                }
+            }
+        }
+        final int[] kq = new int[ung.size()];
+        int i = 0;
+        for (final Integer id : ung) {
+            kq[i++] = id.intValue();
+        }
+        return kq;
     }
 
     static int daiCap(final int cap) {
