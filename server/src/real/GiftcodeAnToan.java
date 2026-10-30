@@ -114,8 +114,10 @@ public final class GiftcodeAnToan {
             return;
         }
         // Tui khong du cho: bao ro, KHONG danh dau / tru luot (truoc day ma bi dung het luot ma vat pham roi mat).
-        final int canO = GiftcodeAnToanLogic.soOCan(thuong, id -> id >= 0 && id < p.listGemitemLock.length && p.listGemitemLock[id] > 0,
-                n -> TuDongGame.soOCanVe(p, GiftcodeAnToanLogic.ID_VE_TREO, n)); // ve treo xep chong: 1 o / 999 ve
+        // [chong-vat-pham] moi ITEM (ke ca ve treo) qua ChongVatPham.soOCan: type 28 don vao chong san co / 1 o / 999 mon
+        // (createItemSoLuong xep chong); mon khong chong = n o.
+        final int canO = GiftcodeAnToanLogic.soOCanChong(thuong, id -> id >= 0 && id < p.listGemitemLock.length && p.listGemitemLock[id] > 0,
+                (id, n) -> TuDongGame.soOCanVe(p, id, n));
         if (canO > 0 && p.countSlotInventory() < canO) {
             bao(p, "Hành trang không đủ chỗ: cần " + canO + " ô trống để nhận quà của mã này. Dọn bớt rồi nhập lại (mã chưa bị dùng).");
             return;

@@ -142,6 +142,45 @@ public final class GiftcodeAnToanLogic {
         return (int) Math.min(Integer.MAX_VALUE, o);
     }
 
+    /**
+     * [chong-vat-pham] Nhu tren nhung MOI ITEM tinh qua {@code oItem}(id, n) = so o MOI can de nhan n mon id (vat pham
+     * type 28 don vao chong san co / gop chung mot o - ChongVatPham.soOCan; mon khong chong = n). Cac dong ITEM cung id
+     * duoc CONG lai roi hoi mot lan (hai dong cung loai khong cung "vua" mot cho trong chong). null = cach cu (n o).
+     * Truoc 31/10/2026 giftcode "ITEM:714:2" (Keo Poke type 28) doi 2 o trong du qua chi vao 1 chong.
+     */
+    public static int soOCanChong(final String chuan, final java.util.function.IntPredicate daCoNgoc,
+            final java.util.function.IntBinaryOperator oItem) {
+        if (oItem == null) {
+            return soOCan(chuan, daCoNgoc, null);
+        }
+        if (chuan == null) {
+            return 0;
+        }
+        long o = 0L;
+        final java.util.Set<Integer> ngocMoi = new java.util.HashSet<Integer>();
+        final java.util.Map<Integer, Long> item = new java.util.LinkedHashMap<Integer, Long>();
+        for (final String phan : chuan.split(",")) {
+            final String[] t = phan.split(":");
+            try {
+                if (t[0].equals("ITEM")) {
+                    final long n = Math.max(0L, Long.parseLong(t[2]));
+                    item.merge(Integer.valueOf(Integer.parseInt(t[1])), Long.valueOf(n), Long::sum);
+                } else if (t[0].equals("GEM")) {
+                    final int id = Integer.parseInt(t[1]);
+                    if ((daCoNgoc == null || !daCoNgoc.test(id)) && ngocMoi.add(Integer.valueOf(id))) {
+                        o++;
+                    }
+                }
+            } catch (final RuntimeException ignored) {
+            }
+        }
+        for (final java.util.Map.Entry<Integer, Long> e : item.entrySet()) {
+            final int n = (int) Math.min(Integer.MAX_VALUE, e.getValue().longValue());
+            o += Math.max(0, oItem.applyAsInt(e.getKey().intValue(), n));
+        }
+        return (int) Math.min(Integer.MAX_VALUE, o);
+    }
+
     /** Tong XU trong chuoi DA chuan hoa. */
     public static long tongXu(final String chuan) {
         long x = 0L;

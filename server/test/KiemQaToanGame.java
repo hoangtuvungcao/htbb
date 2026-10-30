@@ -39,7 +39,7 @@ public final class KiemQaToanGame {
                 GiftcodeAnToanLogic.soOCan("ITEM:714:1,ITEM:960:2,GEM:9:1:-1,LUONGKHOA:5", id -> false));
         Kiem.bang("soOCan: null = 0", 0, GiftcodeAnToanLogic.soOCan(null, null));
         final String s = doc("src/real/GiftcodeAnToan.java");
-        final int kiem = s.indexOf("GiftcodeAnToanLogic.soOCan(");
+        final int kiem = s.indexOf("GiftcodeAnToanLogic.soOCanChong("); // [chong-vat-pham] o qua ChongVatPham
         final int danhDau = s.indexOf("DatabaseLauDai.ghiLogGiftcode(");
         final int truLuot = s.indexOf("DatabaseLauDai.truLuotGiftcode(");
         Kiem.dung("GiftcodeAnToan: kiem o trong TRUOC khi ghi log / tru luot", kiem > 0 && danhDau > kiem && truLuot > kiem);
