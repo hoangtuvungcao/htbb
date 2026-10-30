@@ -97,6 +97,19 @@ public final class HopThongBao extends Dialog {
      */
     public static void mo(String tieuDe, String noiDung, int kieu, String[] nut, int[] kieuNut, IAction[] viec, IAction dong) {
         HopThongBao h = gI();
+        // 31/10/2026 (soi giao diện hành trình): tin máy chủ có đường dẫn (vd "Kích hoạt tại https://.../kichhoat") chỉ có
+        // nút OK - người chơi phải tự chép tay địa chỉ. Hộp một nút có "http": thêm nút "Mở trang" (mở trình duyệt, không
+        // thoát game) bên trái nút OK.
+        final String lienKet = lienKet(noiDung);
+        if (lienKet != null && nut != null && nut.length == 1 && kieu != HOI) {
+            nut = new String[]{"Mở trang", nut[0]};
+            kieuNut = new int[]{Bang.TRUNG, kieuNut != null && kieuNut.length > 0 ? kieuNut[0] : Bang.XAC_NHAN};
+            viec = new IAction[]{new IAction() {
+                public void perform() {
+                    KhungVao.moWeb(lienKet);
+                }
+            }, viec == null ? null : viec[0]};
+        }
         h.tieuDe = tieuDe == null || tieuDe.length() == 0 ? tieuDeTheoNoiDung(noiDung, kieu) : tieuDe;
         h.noiDung = noiDung == null ? "" : noiDung;
         h.kieu = kieu;
@@ -124,8 +137,24 @@ public final class HopThongBao extends Dialog {
             }
         };
         // hộp thông tin một nút: chạm ra ngoài = đóng; hộp nhiều lựa chọn: phải chọn nút / X
-        h.ngoaiDong = n <= 1;
+        h.ngoaiDong = n <= 1 || lienKet != null && n == 2 && kieu != HOI;
         h.show();
+    }
+
+    /** Đường dẫn http(s) đầu tiên trong chữ (bỏ dấu câu cuối), null = không có. */
+    static String lienKet(String s) {
+        int i = s == null ? -1 : s.indexOf("http");
+        if (i < 0 || !(s.startsWith("http://", i) || s.startsWith("https://", i))) {
+            return null;
+        }
+        int j = i;
+        while (j < s.length() && s.charAt(j) > ' ') {
+            j++;
+        }
+        while (j > i && ".,;:)!?".indexOf(s.charAt(j - 1)) >= 0) {
+            j--;
+        }
+        return j - i > 10 ? s.substring(i, j) : null;
     }
 
     /** Tiêu đề theo nội dung khi máy chủ không gửi tiêu đề (tiến hoá / lên cấp / hoàn thành / quà...). */
@@ -232,7 +261,9 @@ public final class HopThongBao extends Dialog {
     /** Bề ngang tối đa: PC 40% màn, điện thoại ngang ~50%, máy tính bảng (gần vuông) ~62%; trọn vùng an toàn. */
     public static int rongToiDa() {
         int vung = Bang.phai() - Bang.trai();
-        int tl = !ChuDe.dt() ? 40 : Canvas.w * 10 > Canvas.h * 16 ? 50 : 62;
+        // 31/10/2026 (soi giao diện hành trình): màn J2ME hẹp (240x320, 320x240) chỉ cho 40% = hộp 140 px -> nút
+        // "Đăng xu.." bị cắt dù hai bên còn trống. Màn hẹp < 360: tới 90% (hộp vẫn co theo nội dung).
+        int tl = Canvas.w < 360 ? 90 : !ChuDe.dt() ? 40 : Canvas.w * 10 > Canvas.h * 16 ? 50 : 62;
         return Math.min(vung - 16, Math.max(rongToiThieu0(), Canvas.w * tl / 100));
     }
 
@@ -470,6 +501,11 @@ public final class HopThongBao extends Dialog {
         int tong = 0;
         for (int i = 0; i < n; i++) {
             wb[i] = ChuDe.dt() ? (ww - 2 * pad - (n - 1) * k) / n : Math.min(rongNut(nut[i]), (ww - 2 * pad - (n - 1) * k) / n);
+            if (n == 1 && ChuDe.dt()) {
+                // 31/10/2026 (soi giao diện; chủ dự án chê nút quá to): hộp một nút ở điện thoại không kéo nút OK hết bề
+                // ngang hộp - nửa hộp, canh giữa (vẫn >= cỡ chạm, chữ dài thì rộng theo chữ)
+                wb[i] = Math.min(ww - 2 * pad, Math.max(rongNut(nut[i]), (ww - 2 * pad) / 2));
+            }
             tong += wb[i] + (i > 0 ? k : 0);
         }
         int xb = x + (ww - tong) / 2;

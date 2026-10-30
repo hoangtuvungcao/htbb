@@ -519,6 +519,25 @@ public final class DungDo {
                 y = dp + 4;
             }
         }
+        // 31/10/2026 (soi giao diện hành trình): thẻ nhiệm vụ tân thủ (TheNhiemVu, trái trên - vùng "nv-") bị biểu ngữ /
+        // thẻ thông báo giữa trên đè mất nút "Đi tới ..." đúng lúc người chơi mới cần bấm. Thu hẹp cột thông báo cho khỏi
+        // thẻ; hẹp quá thì xếp xuống dưới thẻ.
+        rongTranh = 0;
+        if (theGioi) {
+            int phai = VungCham.phaiVung("nv-", y, y + 140, Canvas.hw);
+            if (phai > 0) {
+                int rong = 2 * (Canvas.hw - phai - 6);
+                if (rong >= 170) {
+                    rongTranh = rong;
+                    rongToiDa = Math.min(rongToiDa, rong);
+                } else {
+                    int d = VungCham.duoiVung("nv-", 0, Canvas.hw, Canvas.h / 2);
+                    if (d + 4 > y) {
+                        y = d + 4;
+                    }
+                }
+            }
+        }
         if (theGioi && bieu != null) {
             y = veBieuNgu(g, bieu, y, now) + 6;
         }
@@ -545,6 +564,8 @@ public final class DungDo {
     }
 
     private static final int[] CAO = new int[SO_DONG];
+    /** > 0: bề ngang tối đa của cột thông báo để không đè thẻ nhiệm vụ (đặt mỗi khung ở ve). */
+    static int rongTranh;
     /** độ đậm bóng (alpha) dưới thẻ hiếm / biểu ngữ - màu bóng là token ChuDe.BONG */
     static final int BONG_THE = 0x20000000, BONG_BIEU = 0x30000000;
 
@@ -553,9 +574,14 @@ public final class DungDo {
         // 0.9.22: bề ngang ngắt dòng = đúng phần chữ veThe vẽ được (đĩa hình <= 34 + lề 22; trước: - 40 -> dòng đầu dài
         // hơn chỗ vẽ, bị cắt ".." và MẤT chữ: "...rồi qu.. / lại nhé!")
         int wChu = rongToiDa - 34 - 22;
-        if (t.dong == null || t.rongNgat != rongToiDa) {
+        if (theGioi) {
+            // 31/10/2026 (soi giao diện hành trình, J2ME 240 px): ngắt dòng không chừa chỗ nút "Xem" -> mỗi dòng bị cắt
+            // ".." giữa chữ ("Hãy gặp Trưởn.. / Xatu, NPC có d.."). Chừa sẵn chỗ "Xem" khi ngắt.
+            wChu -= ChuDe.rong("Xem", ChuDe.NHAN) + 14;
+        }
+        if (t.dong == null || t.rongNgat != wChu) {
             t.dong = ChuDe.ngat(t.chinh, vai, wChu, 3);
-            t.rongNgat = rongToiDa;
+            t.rongNgat = wChu;
         }
         int soDong = Math.min(2, t.dong.length);
         int lh = ChuDe.cao(vai);
@@ -706,6 +732,9 @@ public final class DungDo {
         String nhan = boss ? "BOSS" : vui ? "TIN NỔI BẬT" : "TOÀN MÁY CHỦ";
         int ic = boss ? BieuTuong.HUY_HIEU : BieuTuong.SU_KIEN;
         int rongToiDa = Math.max(200, Math.min(ChuDe.dt() ? 460 : 420, Canvas.w - 2 * 140));
+        if (rongTranh > 0) {
+            rongToiDa = Math.min(rongToiDa, rongTranh);
+        }
         int wChu = rongToiDa - 54;   // 0.9.22: = chỗ chữ vẽ được (ô icon <= 30 + lề 24)
         if (t.dong == null || t.rongNgat != rongToiDa) {
             t.dong = ChuDe.ngat(t.chinh, ChuDe.THUONG, wChu, 2);

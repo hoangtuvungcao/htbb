@@ -360,6 +360,8 @@ public class ChupTrongGame {
             // 30/10/2026: bản đồ vùng (Menu › Bản đồ vùng / chạm bản đồ nhỏ / phím *) - Kanto có dấu sao nhiệm vụ, Johto (đang
             // đứng ở vùng khác), Hoenn
             "ban_do_vung", "ban_do_vung_johto", "ban_do_vung_hoenn"};
+        // 31/10/2026 (soi giao diện toàn bộ - KiemHanhTrinhUI): các hộp / menu người chơi gặp thường mà trước đây chưa chụp
+        man = noi(man, PhuTrang.MAN);
         kiemMenuNhiemVu();
         chay(new Runnable() {
             public void run() {
@@ -436,7 +438,8 @@ public class ChupTrongGame {
             game.pokemon.VungCham.CACH = cach;
             for (int m = 0; m < man.length; m++) {
                 final String ten = man[m];
-                if (dpi < 0 && !MAN_J2ME_THAT.contains("," + ten + ",") && !MAN_J2ME_GIA_LAP.contains("," + ten + ",")) continue;
+                if (dpi < 0 && !MAN_J2ME_THAT.contains("," + ten + ",") && !MAN_J2ME_GIA_LAP.contains("," + ten + ",")
+                        && !ten.startsWith("phu_")) continue;
                 if (dpi >= 0 && "menu_chu_vuon_gieo".equals(ten)) continue;   // menu chữ: chỉ máy J2ME
                 if (locMan != null && !("," + locMan + ",").contains("," + ten + ",")) continue;
                 chay(new Runnable() {
@@ -449,7 +452,7 @@ public class ChupTrongGame {
                     public void run() {
                         // hộp thoại mạng (không có máy chủ khi kiểm) đè lên màn đang kiểm: bỏ
                         Object d = game.render.Canvas.currentDialog;
-                        if (!ten.startsWith("hop_") && !ten.equals("the_phan_thuong") && !ten.equals("xac_nhan") && !ten.equals("so_luong")
+                        if (!ten.startsWith("hop_") && !ten.startsWith("phu_") && !ten.equals("the_phan_thuong") && !ten.equals("xac_nhan") && !ten.equals("so_luong")
                                 && (d instanceof game.render.screen.MsgDlg || d instanceof game.pokemon.HopThongBao)) {
                             game.render.Canvas.endDlg();
                         }
@@ -543,9 +546,9 @@ public class ChupTrongGame {
                 // màn chơi: HUD PC (HudRong) chỉ ở cỡ PC; HUD APK (Hud.java) kiểm riêng bằng client_jar/tools/KiemCoCham
                 boolean theGioi = ten.startsWith("the_gioi") || "thong_bao_kich_hoat".equals(ten) || "suc_khoe".equals(ten)
                         || "goi_y_chieu".equals(ten) || ten.startsWith("tu_dong") || "hop_vat_pham".equals(ten) || ten.startsWith("npc_")
-                        || "cai_dat_tai_khoan".equals(ten) || "hst_ky_nang".equals(ten) || "cau_can".equals(ten)
+                        || "cai_dat_tai_khoan".equals(ten) || ten.startsWith("phu_cai_dat_pc") || "hst_ky_nang".equals(ten) || "cau_can".equals(ten)
                         // 0.9.6.1: hộp "OK" báo tin trong game (lên cấp, phần thưởng...) nay là thẻ nhanh trên màn chơi
-                        || ten.startsWith("hop_") && game.render.Canvas.currentDialog == null
+                        || (ten.startsWith("hop_") || ten.startsWith("phu_hop")) && game.render.Canvas.currentDialog == null
                         && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
                 // menu chữ J2ME (PauseMenu): bấm phím, không vùng chạm (máy cảm ứng dùng Menu kiểu GO)
                 if ((!theGioi || dpi == 0) && !"menu_chu_nhiem_vu".equals(ten) && !"menu_chu_ban_than".equals(ten)
@@ -1923,6 +1926,8 @@ public class ChupTrongGame {
             game.render.Canvas.gameScr.onEpNgoc((short) 2000);
         } else if ("hop_tin_bang".equals(ten)) {
             game.pokemon.HopThongBao.tinNhiemVuBang("Nhiệm vụ đội: hạ 30 Geodude ở Đường hầm đá. Phần thưởng: 2000 xu, 500 điểm cống hiến.");
+        } else if (ten.startsWith("phu_")) {
+            PhuTrang.mo(ten);
         } else if (ten.startsWith("hop_") && hopMau(ten)) {
             // đã mở trong hopMau
         } else if ("so_luong".equals(ten)) {
@@ -3575,6 +3580,175 @@ public class ChupTrongGame {
             f.set(o, gt);
         } catch (Throwable e) {
             e.printStackTrace();
+        }
+    }
+
+    static String[] noi(String[] a, String[] b) {
+        String[] r = new String[a.length + b.length];
+        System.arraycopy(a, 0, r, 0, a.length);
+        System.arraycopy(b, 0, r, a.length, b.length);
+        return r;
+    }
+
+    /**
+     * 31/10/2026 (chủ dự án: "khi chơi có nhiều giao diện và pop up lắm"): hộp / menu / màn người chơi gặp mà ChupTrongGame
+     * chưa chụp (kiểm kê màn của KiemHanhTrinhUI), mở bằng đúng lối vào thật (gói máy chủ giả qua MessageHandler / hàm
+     * mở của màn) với dữ liệu thật, chữ dài (chữ máy chủ thật: HoiSinh, SoTayLauDai, ThanhVien...). Chạy ở mọi cỡ, kể cả J2ME.
+     */
+    static final class PhuTrang {
+        static final String[] MAN = {"phu_hop_hoi_sinh", "phu_hop_len_cap_hen_gio", "phu_menu_nhiem_vu_cua_toi", "phu_menu_npc_nhiem_vu",
+            "phu_hop_dung_vat_pham", "phu_hop_vut_do", "phu_hop_doi_thu_cuoi", "phu_hop_hoc_chieu", "phu_menu_kho_xu", "phu_menu_ban_bong",
+            "phu_menu_nap", "phu_menu_dich_chuyen", "phu_menu_su_kien_con", "phu_menu_lich_dang_nhap", "phu_thu", "phu_hop_lien_ket",
+            "phu_xep_hang_tab1", "phu_xep_hang_tab2", "phu_doi_ban_be", "phu_hop_dang_ky_xong", "phu_menu_gym",
+            "phu_hop_khoa_map", "phu_menu_huong_dan", "phu_hop_huy_nhiem_vu", "phu_hop_mo_rong_tui", "phu_hop_them_o_thu", "phu_hop_tay_diem",
+            "phu_hop_mua_trang_tri", "phu_hop_chan", "phu_menu_loc_tui", "phu_menu_kho_tien_ich", "phu_cai_dat_pc_0", "phu_cai_dat_pc_1",
+            "phu_cai_dat_pc_3", "phu_cai_dat_pc_5"};
+
+        static void hoiSinh() throws java.io.IOException {
+            java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+            java.io.DataOutputStream o = new java.io.DataOutputStream(b);
+            o.writeByte(0);
+            o.writeUTF("Pokémon đã gục");
+            o.writeUTF("Gục lần 2 trong 30 phút: phí tại chỗ ×1,5.");
+            String[][] l = {{"1", "Dùng Thuốc hồi sinh", "Còn 0 · 50% HP", "0", "Không có Thuốc hồi sinh (Sổ tay - Cửa hàng, 1.200 xu/viên)."},
+                {"2", "Dùng Thuốc hồi sinh tối đa", "Còn 2 · 100% HP", "1", ""},
+                {"3", "Trả xu hồi sinh tại chỗ", "18.750 xu (×1,5) · 30% HP", "1", ""},
+                {"4", "Trả lượng khoá hồi sinh tại chỗ", "3 lượng khoá · 30% HP", "1", ""},
+                {"5", "Về Trung tâm Pokémon (Kanto)", "Miễn phí · −1% EXP cấp, −5% độ bền đồ", "1", ""},
+                {"6", "Chờ đồng đội hồi sinh", "Đồng đội có 30 giây để cứu bạn", "0", "Không có đồng đội ở gần mang Thuốc hồi sinh."}};
+            o.writeByte(l.length);
+            for (String[] x : l) {
+                o.writeByte(Integer.parseInt(x[0]));
+                o.writeUTF(x[1]);
+                o.writeUTF(x[2]);
+                o.writeByte(Integer.parseInt(x[3]));
+                o.writeUTF(x[4]);
+                o.writeShort(0);
+            }
+            o.writeShort(0);
+            goi(-101, b.toByteArray());
+        }
+
+        static void menu(String tieuDe, int npc, int id, String[] ds) {
+            game.pokemon.MenuNguCanh.choTieuDe(tieuDe);
+            menuMayChu(npc, id, ds);
+        }
+
+        static void mo(String ten) {
+            game.render.Canvas.gameScr.switchToMe();
+            game.model.IAction k = KHONG;
+            try {
+                if ("phu_hop_hoi_sinh".equals(ten)) {
+                    hoiSinh();
+                } else if ("phu_hop_len_cap_hen_gio".equals(ten)) {
+                    // GameScr.onLevelUp: hộp OK tự đóng sau thời gian (startOKDlg có timeout)
+                    game.render.Canvas.startOKDlg("Chúc mừng! Charmander99 đã lên cấp 25. Nhận 1 điểm kỹ năng và 5 điểm huấn luyện - mở Hồ sơ › Kỹ năng "
+                            + "để học chiêu mới.", false, 3000);
+                } else if ("phu_menu_nhiem_vu_cua_toi".equals(ten)) {
+                    menu("Nhiệm vụ của tôi", -527, 8, new String[]{"Đang làm (3)", "Thử thách cửa ải", "Nhiệm vụ hằng ngày (2/5)",
+                        "Nhiệm vụ hằng tuần (0/3)", "Nhận nhiệm vụ phụ", "Sự kiện tuần này", "Thành tựu (12/80)",
+                        "Cốt truyện năm 2026 - Chương 3: Bóng tối ở Lavender"});
+                } else if ("phu_menu_npc_nhiem_vu".equals(ten)) {
+                    menu("Trưởng làng Xatu", 5, 0, new String[]{"Trả nhiệm vụ: Dẹp loạn Rattata (10/10)", "Nhận nhiệm vụ: Giao thư cho Giáo sư Oak",
+                        "Nhiệm vụ của tôi", "Nói chuyện"});
+                } else if ("phu_hop_dung_vat_pham".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoi("Dùng vật phẩm", "Dùng Siêu thuốc hồi máu cho Charmander99? Hồi phục 1.500 HP.", "Dùng", k, k);
+                } else if ("phu_hop_vut_do".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiNguyHiem("Vứt vật phẩm", "Vứt 3 Khăn quàng xanh (Cấp 6, +12 tấn công)? Vật phẩm bị vứt không lấy lại được.",
+                            "Vứt", k);
+                } else if ("phu_hop_doi_thu_cuoi".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoi("Đổi thú cưỡi", "Xuống Ponyta đang cưỡi và cưỡi Rapidash Ánh Trăng (tốc độ +40%)?", "Đổi thú", k, k);
+                } else if ("phu_hop_hoc_chieu".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiGia("Học chiêu", "Học Phun lửa (Lửa · Cấp 1)? Chiêu mới vào trang chiêu đang trống.", "Học",
+                            game.pokemon.TienTe.XU, 25000, k);
+                } else if ("phu_menu_kho_xu".equals(ten)) {
+                    menu("Kangaskhan thủ kho", -522, 0, new String[]{"Gửi xu (đang giữ 1.250.000 xu)", "Rút xu (trong kho 3.000.000 xu)", "Gửi lượng",
+                        "Rút lượng", "Lịch sử giao dịch kho"});
+                } else if ("phu_menu_ban_bong".equals(ten)) {
+                    menu("Y tá Chansey", -581, 0, new String[]{"Poké Ball ×10 - 2.000 xu", "Great Ball ×5 - 6.000 xu", "Ultra Ball ×3 - 15 lượng khoá",
+                        "Master Ball - 500 lượng"});
+                } else if ("phu_menu_nap".equals(ten)) {
+                    menu("Nạp lượng", -540, 0, new String[]{"Thẻ cào điện thoại (Viettel, Mobifone, Vinaphone)", "Chuyển khoản ngân hàng (VietQR)",
+                        "Lịch sử nạp", "Ưu đãi nạp lần đầu: x2 lượng"});
+                } else if ("phu_menu_dich_chuyen".equals(ten)) {
+                    menu("Pidgeot chở bay", -590, 0, new String[]{"Pallet (500 xu)", "Viridian (500 xu)", "Pewter (800 xu)", "Cerulean (1.200 xu)",
+                        "Vermilion (1.500 xu)", "Cao nguyên Indigo (cần 8 huy hiệu)", "Đóng"});
+                } else if ("phu_menu_su_kien_con".equals(ten)) {
+                    menu("Sự kiện Hoàng hôn Halloween", -527, 30, new String[]{"Đổi Kẹo bí ngô lấy quà", "Bảng xếp hạng sự kiện (cập nhật 10 phút)",
+                        "Nhận quà đăng nhập hôm nay", "Hướng dẫn sự kiện"});
+                } else if ("phu_menu_lich_dang_nhap".equals(ten)) {
+                    menu("Quà đăng nhập 7 ngày", -527, 31, new String[]{"Ngày 1: 2.000 xu (đã nhận)", "Ngày 2: 3 Thuốc hồi HP (đã nhận)",
+                        "Ngày 3: 1 Great Ball (nhận ngay)", "Ngày 4: 5.000 xu", "Ngày 5: 10 lượng khoá", "Ngày 6: Đá tiến hoá ngẫu nhiên",
+                        "Ngày 7: Rương quà Huyền thoại"});
+                } else if ("phu_thu".equals(ten)) {
+                    game.render.screen.MessageScr.gI().addTab("Chào mừng tân thủ! Hệ thống tặng bạn 3 Thuốc hồi HP và 5.000 xu - mở Hành trang để dùng. "
+                            + "Hãy làm theo hướng dẫn tân thủ để nhận thêm quà mỗi bước.", "Hệ thống", 0);
+                    game.render.screen.MessageScr.gI().addTab("Bạn có 1 lời mời kết bạn từ Pikachu88.", "Pikachu88", 0);
+                    game.pokemon.KenhChat.riengCu("Hệ thống", "Chào mừng tân thủ! Hệ thống tặng bạn 3 Thuốc hồi HP và 5.000 xu - mở Hành trang để dùng.");
+                    game.pokemon.KenhChat.riengCu("Pikachu88", "Kết bạn với mình nhé, tối nay đi săn Snorlax ở Tuyến đường 12 không?");
+                    game.render.screen.MessageScr.nMSG = 2;
+                    // lối vào thật: Menu › Thư / Quà › Hộp thư
+                    if (game.pokemon.MenuNguCanh.bat()) game.pokemon.ManChat.moTab(game.pokemon.KenhChat.RIENG);
+                    else game.render.screen.MessageScr.gI().switchToMe();
+                } else if ("phu_hop_lien_ket".equals(ten)) {
+                    game.pokemon.HopThongBao.bao(null, "Tài khoản chưa kích hoạt: vẫn chơi bình thường, chỉ tạm khoá giao dịch trực tiếp, chat thế giới "
+                            + "(loa), chợ, chuyển lượng, giftcode. Kích hoạt tại https://huyenthoaibaoboi.fun/kichhoat.");
+                } else if ("phu_xep_hang_tab1".equals(ten) || "phu_xep_hang_tab2".equals(ten)) {
+                    int t = ten.endsWith("1") ? 1 : 2;
+                    game.pokemon.ManXepHang.mo();
+                    java.lang.reflect.Method m = game.pokemon.ManBang.class.getDeclaredMethod("chonTab", int.class);
+                    m.setAccessible(true);
+                    m.invoke(game.pokemon.ManXepHang.gI(), t);
+                    game.pokemon.ManXepHang.nhan(t == 1 ? 3 : 7, TOP);
+                    game.render.Canvas.endDlg();   // "Xin chờ" của lần xin danh sách (máy chủ giả đã trả)
+                } else if ("phu_doi_ban_be".equals(ten)) {
+                    game.pokemon.ManDoi.mo(1);
+                } else if ("phu_hop_tai_loi".equals(ten)) {
+                    game.pokemon.ManTai.baoLoi("Hết thời gian chờ máy chủ. Kiểm tra kết nối mạng rồi thử lại.");
+                } else if ("phu_hop_dang_ky_xong".equals(ten)) {
+                    game.pokemon.HopThongBao.mo("Đăng ký thành công", "Tên đăng nhập: trainer2026. Tài khoản đã tạo, bạn có thể đăng nhập ngay. Một vài "
+                            + "tính năng (giao dịch, chat thế giới, chợ...) mở sau khi kích hoạt. Nên thêm email trên trang web để lấy lại mật khẩu khi quên.",
+                            game.pokemon.HopThongBao.THONG_TIN, new String[]{"Đóng", "Đăng nhập"},
+                            new int[]{game.pokemon.Bang.TRUNG, game.pokemon.Bang.XAC_NHAN}, new game.model.IAction[]{k, k}, k);
+                } else if ("phu_menu_gym".equals(ten)) {
+                    menu("Gym Pewter - Thủ lĩnh Brock", -527, 32, new String[]{"Thách đấu Gym (cấp đề nghị 12, còn 2/3 lượt hôm nay)",
+                        "Xem đội hình thủ lĩnh", "Phần thưởng: Huy hiệu Đá + 3.000 xu", "Bảng vinh danh tuần"});
+                } else if ("phu_hop_khoa_map".equals(ten)) {
+                    game.pokemon.DungDo.loi("Arcanine gác cổng: cần đạt cấp 15 và hoàn thành \"Dẹp loạn Rattata\" để qua Rừng Viridian.");
+                } else if ("phu_hop_huy_nhiem_vu".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiNguyHiem("Huỷ nhiệm vụ", "Huỷ nhiệm vụ Dẹp loạn Rattata? Tiến độ 6/10 sẽ mất, nhận lại ở Trưởng làng Xatu.",
+                            "Huỷ nhiệm vụ", k);
+                } else if ("phu_hop_mo_rong_tui".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiGia("Mở rộng hành trang", "Mở thêm 10 ô hành trang (đang có 40/120 ô)?", "Mở rộng",
+                            game.pokemon.TienTe.LUONG, 50, k);
+                } else if ("phu_hop_them_o_thu".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiGia("Thêm ô thú", "Mở thêm 1 ô chứa thú cưỡi / thú đi theo (đang có 3 ô)?", "Mở ô",
+                            game.pokemon.TienTe.LUONG_KHOA, 100, k);
+                } else if ("phu_hop_tay_diem".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiNguyHiem("Tẩy điểm huấn luyện", "Trả lại toàn bộ 45 điểm huấn luyện đã cộng để cộng lại từ đầu? "
+                            + "Dùng 1 Thuốc tẩy điểm.", "Tẩy điểm", k);
+                } else if ("phu_hop_mua_trang_tri".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiGia("Mua trang trí", "Mua Mũ phù thuỷ Halloween (dùng 30 ngày)? Đội lên trong tab Ngoại hình.", "Mua",
+                            game.pokemon.TienTe.LUONG, 50, k);
+                } else if ("phu_hop_chan".equals(ten)) {
+                    game.pokemon.HopXacNhan.hoiNguyHiem("Chặn người chơi", "Chặn tin nhắn, lời mời đội và giao dịch từ Pikachu88? Bỏ chặn trong tab Bạn bè.",
+                            "Chặn", k);
+                } else if ("phu_menu_loc_tui".equals(ten)) {
+                    java.util.Vector v = new java.util.Vector();
+                    String[] loc = {"Tất cả (36)", "Trang bị (12)", "Thuốc (9)", "Nguyên liệu (11)", "Khác (4)"};
+                    for (String x : loc) v.addElement(new game.model.Command(x, k));
+                    game.pokemon.MenuNguCanh.mo(v, "Lọc hành trang");
+                } else if ("phu_menu_kho_tien_ich".equals(ten)) {
+                    menu("Kho tiện ích", -10000, 0, new String[]{"Mở Túi đồ", "Mở Kho đồ", "Shop đặc biệt", "Đổi xu lấy lượng khoá"});
+                } else if (ten.startsWith("phu_cai_dat_pc_")) {
+                    htbb.pc.LopPhu.moCaiDat();
+                    datTinh(htbb.pc.LopPhu.class, "tab", Integer.valueOf(ten.charAt(ten.length() - 1) - '0'));
+                } else if ("phu_menu_huong_dan".equals(ten)) {
+                    menu("Gardevoir phù thuỷ", -527, 40, new String[]{"Làm hướng dẫn tân thủ (khuyên dùng)", "Bỏ qua hướng dẫn (đã quen chơi)"});
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
     }
 }

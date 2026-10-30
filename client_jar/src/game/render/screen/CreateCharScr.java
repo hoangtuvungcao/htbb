@@ -165,6 +165,12 @@ public class CreateCharScr extends Screen {
     }
 
     /** Nút Tạo / phím giữa: bỏ dấu cách đầu cuối, kiểm tên ở máy, gửi MỘT lần (chạm đúp / phím lặp khi hộp chờ chưa hiện không gửi lại). */
+    /**
+     * 31/10/2026 (soi giao diện hành trình): tên Pokémon vừa gửi tạo - máy chủ trả danh sách có tên này thì vào game luôn
+     * (trước: về màn Chọn Pokémon, người chơi mới phải chạm thêm "Vào game").
+     */
+    public static String tenVuaTao;
+
     void guiTao() {
         if (Canvas.currentDialog != null) {
             return;   // đang chờ máy chủ / đang báo lỗi
@@ -179,6 +185,7 @@ public class CreateCharScr extends Screen {
             return;
         }
         GameService.gI().createChar(t, this.currentClazz, 0, 0, selectNation);
+        tenVuaTao = t;
         Canvas.startWaitDlg("Xin chờ", true);
     }
 

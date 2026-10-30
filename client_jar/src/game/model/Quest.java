@@ -140,7 +140,9 @@ public class Quest {
                     // ArrayIndexOutOfBounds MỖI lần bấm phím (isShow vẫn bật nên GameScr gọi lại mãi)
                     if (this.type == 3) {
                         if (this.content.size() > 0) {
-                            GameScr.addChat(npc, (String) this.content.elementAt(this.content.size() - 1), 100);
+                            // 31/10/2026 (soi giao diện hành trình): lời cuối nhiệm vụ "nói chuyện" hiện cả ký tự người nói
+                            // ("1Luvdisc: ...") - bỏ như mọi lời khác
+                            GameScr.addChat(npc, loi(this.content.elementAt(this.content.size() - 1)), 100);
                         }
                         this.stateQuest = (byte) 3;
                         GameService.gI().onSendInfoQuest(1, this.idQuest, this.main_sub);

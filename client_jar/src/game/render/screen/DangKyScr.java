@@ -233,18 +233,31 @@ public class DangKyScr extends Screen {
             Canvas.loginScr.tfUser.setText(ten);
             Canvas.loginScr.tfPass.setText(mk);
             Canvas.loginScr.switchToMe();
-            Canvas.msgdlg.isIcon = false;
-            Canvas.msgdlg.setInfo("Đăng ký thành công tài khoản " + ten + "! " + tb, new Command("Đóng", new IAction() {
-                public void perform() {
-                    Canvas.endDlg();
-                }
-            }), new Command("Đăng nhập", new IAction() {
+            // 31/10/2026 (soi giao diện hành trình): trước đây hộp này tiêu đề "Xác nhận", nút CHÍNH (cam) là "Đóng" còn
+            // "Đăng nhập" - việc người chơi cần làm tiếp - là nút phụ. Nay: tiêu đề nói kết quả, "Đăng nhập" là nút chính
+            // (máy cảm ứng: nút phải; J2ME: phím mềm trái), "Đóng" = huỷ / phím mềm phải.
+            IAction vao = new IAction() {
                 public void perform() {
                     Canvas.endDlg();
                     Canvas.loginScr.doLogin();
                 }
-            }), (Command) null);
-            Canvas.msgdlg.show();
+            };
+            IAction dong = new IAction() {
+                public void perform() {
+                    Canvas.endDlg();
+                }
+            };
+            String noi = "Tên đăng nhập: " + ten + ". " + tb;
+            if (game.pokemon.MenuNguCanh.bat()) {
+                game.pokemon.HopThongBao.mo("Đăng ký thành công", noi, game.pokemon.HopThongBao.THONG_TIN,
+                        new String[]{"Đóng", "Đăng nhập"}, new int[]{game.pokemon.Bang.TRUNG, game.pokemon.Bang.XAC_NHAN},
+                        new IAction[]{dong, vao}, dong);
+            } else {
+                Canvas.msgdlg.isIcon = false;
+                Canvas.msgdlg.setInfo("Đăng ký thành công! " + noi, new Command("Đăng nhập", vao), (Command) null,
+                        new Command("Đóng", dong));
+                Canvas.msgdlg.show();
+            }
             DangKyScr.me = null;
             return;
         }

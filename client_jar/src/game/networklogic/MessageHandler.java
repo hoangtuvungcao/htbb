@@ -1768,10 +1768,26 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                             }
                         }
                         CharSelectScr.gI().setCharList(charInfos);
-                        CharSelectScr.gI().switchToMe();
+                        if (i45 == 0 && network.Session_ME.gI().connected) {
+                            // 31/10/2026 (soi giao diện hành trình): tài khoản mới chưa có Pokémon -> vào thẳng màn Tạo
+                            // Pokémon (trước: màn Chọn Pokémon 3 ô trống, "Xoá" / "Vào game" xám - thêm một chạm vô ích).
+                            // "Quay lại" ở màn Tạo vẫn về màn Chọn.
+                            CreateCharScr.gI().switchToMe();
+                        } else {
+                            CharSelectScr.gI().switchToMe();
+                            String vua = CreateCharScr.tenVuaTao;
+                            CreateCharScr.tenVuaTao = null;
+                            for (int iv = 0; vua != null && iv < i45; iv++) {
+                                if (charInfos[iv] != null && vua.equalsIgnoreCase(charInfos[iv].name)) {
+                                    CharSelectScr.gI().tuChonLai(charInfos[iv].IDDB);   // vừa tạo xong: vào game luôn
+                                    break;
+                                }
+                            }
+                        }
                     }
                     break;
                 case 14:
+                    CreateCharScr.tenVuaTao = null;
                     Canvas.startOKDlg("Xin chọn tên Pokémon khác");
                     break;
                 case 15:
