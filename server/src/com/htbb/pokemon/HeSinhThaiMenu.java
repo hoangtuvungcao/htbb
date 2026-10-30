@@ -27,7 +27,8 @@ public final class HeSinhThaiMenu {
             M_NHA_TRE_GUI = 7, M_TRUNG = 8, M_TRUNG_HD = 9, M_CHO = 10, M_CHO_LOAI = 11, M_CHO_MUA = 12,
             M_CHO_CUA_TOI = 13, M_DON = 14, M_DON_GIAO = 15, M_DON_TAO_MA = 16, M_DON_TAO_SO = 17, M_DON_TAO_GIA = 18,
             M_VUON = 19, M_VUON_DAT = 20, M_VUON_BAN = 21, M_SUU_TAM = 22, M_GIAI_TRI = 23, M_TUI_BAN_NPC = 24,
-            M_VUON_CAT = 25, M_VUNG = 26, M_DON_CUA_TOI = 27, M_TRUNG_GIA = 28, M_DANH_HIEU = 29, M_VUON_O = 30, M_VUON_GIEO = 31;
+            M_VUON_CAT = 25, M_VUNG = 26, M_DON_CUA_TOI = 27, M_TRUNG_GIA = 28, M_DANH_HIEU = 29, M_VUON_O = 30, M_VUON_GIEO = 31,
+            M_PET_NHAN = 32, M_PET_MUA = 33;
 
     /** Trang thai menu cua tung nguoi (chon gi o buoc truoc). Chi la goi y - moi buoc kiem lai. */
     static final class NguCanh {
@@ -195,6 +196,12 @@ public final class HeSinhThaiMenu {
                     break;
                 case M_NHA_TRE_GUI:
                     guiPet(p, op);
+                    break;
+                case M_PET_NHAN:
+                    nhanPetMienPhi(p, op);
+                    break;
+                case M_PET_MUA:
+                    muaPet(p, op);
                     break;
                 case M_TRUNG:
                     chonTrung(p, op);
@@ -1092,7 +1099,123 @@ public final class HeSinhThaiMenu {
         m.add(h.ngayPhiNhaTre == h.ngay ? "Đã trả phí hôm nay"
                 : h.nhaTre1 <= 0 && h.nhaTre2 <= 0 ? "Trả phí hôm nay (gửi pet trước)" : "Trả phí hôm nay (" + phi + " xu)");
         m.add("Xem trứng (" + h.trung.size() + "/" + HeSinhThai.TRUNG_TOI_DA_TUI + ")");
+        // pet dong hanh (PetDongHanh): muc MOI chi them o CUOI - chi so 0..4 cu giu nguyen (client / bot cu)
+        m.add(daNhanPet(p) ? "Pet đồng hành miễn phí: đã nhận" : NHAN_PET_MIEN_PHI);
+        m.add("Mua pet đồng hành (" + PetDongHanh.gia(HeSinhThaiGame.xuGio(p)) + " xu)");
         menu(p, M_NHA_TRE, m);
+    }
+
+    // ================================================================== pet dong hanh (PetDongHanh)
+
+    public static final String NHAN_PET_MIEN_PHI = "Nhận pet đồng hành đầu tiên (miễn phí, 1 lần)";
+
+    /** charDBID da nhan pet mien phi (chi luu khi da biet CHAC la da nhan - CSDL la nguon that). */
+    static final Map<Integer, Boolean> DA_NHAN_PET = new ConcurrentHashMap<Integer, Boolean>();
+
+    static boolean daNhanPet(final Char p) {
+        if (DA_NHAN_PET.containsKey(p.charDBID)) {
+            return true;
+        }
+        final boolean da = data.DatabaseLauDai.daNhanPetDongHanh(p.charDBID);
+        if (da) {
+            DA_NHAN_PET.put(p.charDBID, Boolean.TRUE);
+        }
+        return da;
+    }
+
+    /**
+     * Mo menu chon pet mien phi. {@code tuNhiemVu}: thuong buoc chinh C07.3 (NhiemVuEngine.thuongKhac "pet_dong_hanh") -
+     * da nhan roi thi chi bao (khong mo menu mua).
+     */
+    public static void moNhanPetDongHanh(final Char p, final boolean tuNhiemVu) {
+        if (p == null) {
+            return;
+        }
+        if (!HeSinhThai.bat()) {
+            if (tuNhiemVu) {
+                bao(p, "Phần thưởng pet đồng hành: khi Hệ sinh thái mở, vào Menu → Hệ sinh thái → Nhà trẻ và trứng → "
+                        + NHAN_PET_MIEN_PHI + ".");
+            }
+            return;
+        }
+        if (daNhanPet(p)) {
+            bao(p, tuNhiemVu ? "Bạn đã nhận pet đồng hành miễn phí trước đó (chỉ 1 lần)."
+                    : "Bạn đã nhận pet đồng hành miễn phí rồi (chỉ 1 lần). Muốn thêm: Nhà trẻ và trứng → Mua pet đồng hành.");
+            return;
+        }
+        final List<String> m = new ArrayList<String>();
+        for (final int id : PetDongHanh.LOAI) {
+            m.add(PetDongHanh.nhanChon(id));
+        }
+        if (tuNhiemVu) {
+            bao(p, "Phần thưởng: chọn 1 pet đồng hành (miễn phí, 1 lần). Pet đi theo bạn và gửi được vào Nhà trẻ để có trứng. "
+                    + "Đóng bảng này thì nhận sau ở Hệ sinh thái → Nhà trẻ và trứng.");
+        }
+        menu(p, M_PET_NHAN, m);
+    }
+
+    static void nhanPetMienPhi(final Char p, final int op) {
+        if (PetDongHanh.idTheoChon(op) < 0) {
+            return;
+        }
+        if (daNhanPet(p)) {
+            bao(p, "Bạn đã nhận pet đồng hành miễn phí rồi (chỉ 1 lần).");
+            return;
+        }
+        if (p.isFullInventory()) {
+            bao(p, "Hành trang đã đầy. Dọn 1 ô rồi nhận pet.");
+            return;
+        }
+        final int kq = PetDongHanh.nhanMienPhi(op,
+                () -> data.DatabaseLauDai.danhDauPetDongHanh(p.charDBID, PetDongHanh.idTheoChon(op), "mien_phi"),
+                id -> real.Char.createItemSoLuong(id, 1, p) != null);
+        if (kq == PetDongHanh.DA_NHAN) {
+            DA_NHAN_PET.put(p.charDBID, Boolean.TRUE);
+            bao(p, "Bạn đã nhận pet đồng hành miễn phí rồi (chỉ 1 lần).");
+            return;
+        }
+        if (kq != PetDongHanh.OK) {
+            return;
+        }
+        DA_NHAN_PET.put(p.charDBID, Boolean.TRUE);
+        final int id = PetDongHanh.idTheoChon(op);
+        HeSinhThaiGame.ghiLog(p, "pet dong hanh mien phi: ITEM:" + id + ":1");
+        bao(p, "Đã nhận " + PetDongHanh.ten(id) + " cấp 1 (pet đồng hành, khoá - không giao dịch). Gửi vào nhà trẻ: Nhà trẻ và trứng → "
+                + "Gửi pet đang sở hữu → Trả phí hôm nay; mỗi " + HeSinhThai.BUOC_DE_TRUNG + " Pokémon bạn hạ được 1 trứng.");
+        HeSinhThaiGame.danhDau(p);
+    }
+
+    static void moMuaPet(final Char p) {
+        final long gia = PetDongHanh.gia(HeSinhThaiGame.xuGio(p));
+        final List<String> m = new ArrayList<String>();
+        for (final int id : PetDongHanh.LOAI) {
+            m.add(PetDongHanh.nhanChon(id) + " - " + gia + " xu");
+        }
+        menu(p, M_PET_MUA, m);
+    }
+
+    static void muaPet(final Char p, final int op) {
+        if (PetDongHanh.idTheoChon(op) < 0) {
+            return;
+        }
+        if (p.isFullInventory()) {
+            bao(p, "Hành trang đã đầy.");
+            return;
+        }
+        final long gia = PetDongHanh.gia(HeSinhThaiGame.xuGio(p));
+        final int kq = PetDongHanh.mua(op, () -> HeSinhThaiGame.truXu(p, gia, "mua pet dong hanh"),
+                id -> real.Char.createItemSoLuong(id, 1, p) != null);
+        if (kq == PetDongHanh.THIEU_TIEN) {
+            bao(p, "Cần " + gia + " xu để mua pet đồng hành.");
+            return;
+        }
+        if (kq != PetDongHanh.OK) {
+            return;
+        }
+        final int id = PetDongHanh.idTheoChon(op);
+        HeSinhThaiGame.ghiLog(p, "mua pet dong hanh " + gia + " xu: ITEM:" + id + ":1");
+        bao(p, "Đã mua " + PetDongHanh.ten(id) + " cấp 1 (" + gia + " xu, khoá - không giao dịch).");
+        HeSinhThaiGame.danhDau(p);
     }
 
     /**
@@ -1101,16 +1224,17 @@ public final class HeSinhThaiMenu {
      */
     public static final String CHUA_CO_PET = "Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, "
             + "Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá) trong hành trang hoặc đang dắt theo, "
-            + "không phải Pokémon chiến đấu. Bạn chưa có pet nào như vậy. Có pet: trứng pet thỉnh thoảng rơi khi hạ Pokémon "
-            + "chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc mua trứng ở Hệ sinh thái → Chợ sinh thái → Mua: Trứng "
-            + "rồi cho nở. Có pet rồi: Gửi pet đang sở hữu → Trả phí hôm nay.";
+            + "không phải Pokémon chiến đấu. Bạn chưa có pet nào như vậy. Có pet: chọn \"Nhận pet đồng hành đầu tiên (miễn phí, 1 lần)\""
+            + " ngay trong menu Nhà trẻ (Hoothoot, Zubat hoặc Cleffa), hoặc \"Mua pet đồng hành\" bằng xu; ngoài ra trứng pet "
+            + "thỉnh thoảng rơi khi hạ Pokémon chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc mua trứng ở Hệ sinh thái → "
+            + "Chợ sinh thái → Mua: Trứng rồi cho nở. Có pet rồi: Gửi pet đang sở hữu → Trả phí hôm nay.";
 
     static String tenGui(final int dex) {
         return dex > 0 ? SuuTamSinhThai.tenLoai(dex) : "(trống)";
     }
 
     /** Dex cac pet nguoi choi dang so huu (pet di theo + item pet trong hanh trang) co the ra trung. */
-    static List<Integer> petSoHuu(final Char p) {
+    public static List<Integer> petSoHuu(final Char p) {
         final List<Integer> r = new ArrayList<Integer>();
         try {
             if (p.pet != null) {
@@ -1203,6 +1327,12 @@ public final class HeSinhThaiMenu {
             }
             case 4:
                 moTrung(p);
+                break;
+            case 5:
+                moNhanPetDongHanh(p, false);
+                break;
+            case 6:
+                moMuaPet(p);
                 break;
             default:
                 moNhaTre(p);

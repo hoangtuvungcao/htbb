@@ -75,6 +75,8 @@ public final class ChuThuongNhiemVu {
                 final String v = phan.substring(k + 1).trim();
                 if ("danh_hieu".equals(loai) && !v.isEmpty()) {
                     p.add("danh hiệu " + v);
+                } else if (PetDongHanh.THUONG_KHAC.equals(loai)) {
+                    p.add("1 pet đồng hành (tự chọn, nếu chưa nhận)");
                 } else if ("bong".equals(loai)) {
                     final int x = v.indexOf('x');
                     final String ma = (x > 0 ? v.substring(0, x) : v).trim();

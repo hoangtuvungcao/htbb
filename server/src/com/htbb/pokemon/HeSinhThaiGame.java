@@ -409,6 +409,14 @@ public final class HeSinhThaiGame {
         }
     }
 
+    /** Nhat ky he sinh thai (tob_log_other, loai "hesinhthai"). */
+    static void ghiLog(final Char p, final String noiDung) {
+        try {
+            data.Database.instance.saveOrtherLog("", p.charname, "he sinh thai " + noiDung, "hesinhthai");
+        } catch (final Exception ignored) {
+        }
+    }
+
     static Char timOnline(final int charDBID) {
         try {
             return CharManager.instance.getCharByCharDbID(charDBID);

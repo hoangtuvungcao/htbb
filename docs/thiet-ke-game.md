@@ -1260,6 +1260,22 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
 - **Shiny trứng** 1/512, pity 200. **Phẩm chất S** (tổng IV ≥ 84) nở pet cấp 2 nếu loài có cấp 2 (lợi ích kinh tế, không
   cộng chỉ số chiến đấu). IV hiện chỉ quyết định phẩm chất, cấp nở và giá trứng.
 - Trứng là hàng hoá trên chợ (giá theo IV, shiny ×5); NPC không mua trứng.
+- **Pet đồng hành để dùng nhà trẻ** (chủ game 30/10/2026: "có"; `com.htbb.pokemon.PetDongHanh`, test `KiemPetDongHanh`,
+  khối `them_pet_dong_hanh.sql`). Nhà trẻ chỉ nhận pet đồng hành (`PetPokemon.BANG`), không nhận Pokémon chiến đấu; trước
+  đây nguồn duy nhất là trứng pet rơi (~1 / 2.500 quái chênh ≤ 5 cấp, cần Poké Ball, hết hạn 3–15 ngày) và chợ (0 tin bán).
+  Hai nguồn mới, đều ở menu Nhà trẻ và trứng (mục mới thêm **cuối** menu, chỉ số cũ không đổi):
+  - **Miễn phí, 1 lần mỗi nhân vật**: "Nhận pet đồng hành đầu tiên (miễn phí, 1 lần)" → chọn Hoothoot / Zubat / Cleffa
+    cấp 1 (item 689 / 704 / 699, đúng item nở từ trứng: IV hoang dã, **không thêm chỉ số** nào ngoài luật pet sẵn có).
+    Nhân vật mới còn được mở bảng chọn này làm thưởng bước chính **C07.3** "Bánh mật ong thơm lừng" (cấp 14, Chansey, bước
+    đầu dùng Hệ sinh thái; `thuong_khac` = `pet_dong_hanh:1`). Cả hai đường dùng **một** cờ: bảng `tob_pet_dong_hanh`
+    (khoá `id_char`), `INSERT IGNORE` **trước** rồi mới phát → bấm đúp, đăng nhập lại, nhân vật cũ đã nhận rồi làm C07.3
+    đều không ra pet thứ hai.
+  - **Mua bằng xu** (hố hút, đếm `xu_ra`): "Mua pet đồng hành", cùng 3 loài, giá **1.500‰H** = 1,5 giờ thu nhập ở cấp
+    người mua (cấp 10: 8.328 xu; cấp 20: 13.527 xu; cấp 50: 50.887 xu), trừ xu trước, đủ mới phát. Chọn bán ở NPC thay vì
+    tăng pity rơi trứng: rơi trứng là nguồn ngẫu nhiên có hạn dùng, còn giá theo ‰H là đơn vị chung của Hệ sinh thái và là
+    hố hút ròng.
+  - Pet nhận / mua vào túi **khoá** (`lock = 1`, như pet nở từ trứng): không ký gửi / giao dịch, bán NPC 0 xu → clone không
+    chuyển được giá trị. Dratini, Rufflet, Ponyta… vẫn chỉ từ trứng (giữ độ hiếm).
 
 ### 7.5 Chợ sinh thái, đơn đặt hàng
 
