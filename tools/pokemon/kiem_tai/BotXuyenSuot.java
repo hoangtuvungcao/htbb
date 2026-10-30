@@ -221,6 +221,29 @@ public class BotXuyenSuot {
      * Uoc luong duong de CHON ban do (khong dung de di): duong cong, hoac Arcanine "Đến New Bark" (+6 buoc) roi di bo trong
      * cum Johto 10/11/13/14/15 - Dong.toi tu dung Arcanine khi can.
      */
+    /** Cap toi thieu cua ban do (data_ban_do_mo_khoa), nap mot lan. */
+    static final Map<Integer, Integer> CAP_KHOA = new ConcurrentHashMap<>();
+
+    /** Duong {@code d} qua ban do co cap toi thieu > {@code lv} hoac dang bi chan (cong tu choi gan day). */
+    static boolean quaKhoa(List<int[]> d, int lv) {
+        if (d == null) return false;
+        if (CAP_KHOA.isEmpty()) {
+            synchronized (CAP_KHOA) {
+                if (CAP_KHOA.isEmpty()) {
+                    for (String r : BotChucNang.sql("SELECT map_id, cap_toi_thieu FROM data_ban_do_mo_khoa")) {
+                        String[] f = r.split("\t");
+                        try { CAP_KHOA.put(Integer.parseInt(f[0].trim()), Integer.parseInt(f[1].trim())); } catch (Exception ignored) { }
+                    }
+                    CAP_KHOA.putIfAbsent(-1, 0);
+                }
+            }
+        }
+        for (int[] e : d) {
+            if (dangChan(e[1]) || CAP_KHOA.getOrDefault(e[1], 0) > lv) return true;
+        }
+        return false;
+    }
+
     static List<int[]> duongUocTinh(int tu, int den) {
         for (int k : Dong.CHI_ARCANINE.keySet()) {
             if (cungBanDo(den, k) && !cungBanDo(tu, den)) {
@@ -731,7 +754,10 @@ public class BotXuyenSuot {
                 if (toi(0)) tu = b.mapId;
             }
             // cum Johto 10/11/13/14/15 khong di bo toi duoc truoc cap 69 (chi qua 118 / 23 / 24): Arcanine "Đến New Bark"
-            if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {
+            // ... va khi duong di bo co qua ban do khoa voi minh (BFS bo qua khoa: bo bot cap 41 di 481 -> 118 Duong Victory
+            // cap 69 moi lan toi Nui Mat Trang 13, 31/10/2026)
+            if ((duong(tu, dich) == null || quaKhoa(duong(tu, dich), b.lv)) && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)
+                    && !quaKhoa(duong(10, dich), b.lv)) {
                 if (quaArcanine("New Bark")) tu = b.mapId;
                 else MAP_CHAN.put(10, System.currentTimeMillis());
             }
