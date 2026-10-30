@@ -1555,8 +1555,8 @@ Khi Pokémon gục, người chơi **chọn** trong hộp thoại "Pokémon củ
 - **Cấm tại chỗ** (chỉ còn Về Trung tâm / Chờ đồng đội): sàn đấu, giải Liên minh, chiến trường, lãnh địa đội, Chiếm Gym đang
   đánh, đấu trường; đang thách đấu Gym; đã đánh boss còn sống cùng bản đồ; Mê cung; bản đồ thêm (`hoi_sinh.map_cam_them`).
 - **Về Trung tâm Pokémon**: ở Hoenn về Trung tâm của thị trấn Hoenn gần nhất; Kanto / Johto về làng nhà. Phạt (không áp tân
-  thủ): mất 2% EXP lên cấp hiện tại (trần 15 phút cày, **không bao giờ tụt cấp**), mất 5% độ bền tối đa mỗi trang bị đang mặc
-  (không vỡ đồ), **Mệt mỏi** 5 phút (−20% EXP hạ quái, −10% tấn công). Không rơi đồ.
+  thủ): mất 2% EXP lên cấp hiện tại (trần 15 phút cày, **không bao giờ tụt cấp**), mất 2% độ bền tối đa mỗi trang bị đang mặc
+  (không vỡ đồ; 31/10/2026 hạ 5% → 2% vì đăng nhập lại không còn hồi đầy độ bền), **Mệt mỏi** 5 phút (−20% EXP hạ quái, −10% tấn công). Không rơi đồ.
 - "Auto về Map Up" không còn bay lại bãi luyện sau khi gục (`hoi_sinh.auto_ve_map_up=0`), để không treo máy vô hạn.
 - Client cũ không có hộp -101 nhận menu thường (id -803) với cùng lựa chọn; đồng đội cứu qua menu -804.
 
