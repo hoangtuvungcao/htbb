@@ -1464,7 +1464,8 @@ final class KichBanCap140 {
                 long thua = b.xu - (long) MUC * GIA_THUOC[loai];
                 for (int type : O_GIAP) {
                     int[] g = giapTiem(type);
-                    if (g == null || giapMac.getOrDefault(type, 0) >= g[1] || g[2] > thua) continue;
+                    // capDaMac (doc tu trang bi dang mac luc vao game): sau vao lai khong mua lai mon da mac (d290 mua 2 lan 45.000 xu)
+                    if (g == null || giapMac.getOrDefault(type, 0) >= g[1] || capDaMac.getOrDefault(type, 0) >= g[1] || g[2] > thua) continue;
                     if (giap == null || g[2] < giap[2]) { giap = g; giap = new int[]{g[0], g[1], g[2], type}; }
                 }
             }
