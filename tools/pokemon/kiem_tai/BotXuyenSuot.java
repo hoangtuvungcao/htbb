@@ -458,6 +458,8 @@ public class BotXuyenSuot {
                 }
             }
             ghi("vao game lop " + lop + " map " + b.mapId + " (" + b.tenMap + ") chieu " + Arrays.toString(b.chieu));
+            // guc truoc khi thoat (vd JVM bot bi tat giua tran): vao lai van guc - nguoi choi that thay hop hoi sinh ngay
+            if (b.hp <= 0 && b.maxhp > 0) { ghi("vao game dang guc (HP 0) -> hoi sinh"); hoiSinh(); }
         }
 
         void vaoLai() throws Exception {
@@ -803,7 +805,19 @@ public class BotXuyenSuot {
                         double d = Math.hypot(o[2] - b.px / 16, o[3] - b.py / 16);
                         if (d < kc) { kc = d; toi = o; }
                     }
-                    if (toi == null) { daToi.clear(); b.bom(2500); continue; }
+                    if (toi == null) {
+                        // ban do khong sinh loai can (vd vua guc / bi dua ve lang giua buoc): tra ve de buoc tim lai duong.
+                        // Truoc 31/10/2026 cho im bom(2500) toi 7 phut khong gui goi nao -> may chu ngat "het gio im lang
+                        // 180 s" (206 lan / ngay o cb2), bot guc khong hoi sinh roi di tiep toi cong ("bạn đã bị hạ gục")
+                        boolean coO = false;
+                        for (int[] o : oQuai(b.mapLoad)) if (t < 0 || o[1] == t) { coO = true; break; }
+                        if (!coO) return ha;
+                        daToi.clear();
+                        b.lamMoi();
+                        if (b.hp <= 0) { hoiSinh(); return ha; }
+                        b.bom(2000);
+                        continue;
+                    }
                     daToi.add(toi[2] / 8 * 1000 + toi[3] / 8);
                     BotChucNang.BanDo bd0 = BotChucNang.BanDo.nap(b.mapLoad);
                     int[] o = bd0 == null ? null : bd0.oGan(toi[2], toi[3], 3);

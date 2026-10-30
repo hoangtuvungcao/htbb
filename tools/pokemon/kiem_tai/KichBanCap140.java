@@ -410,7 +410,10 @@ final class KichBanCap140 {
             lanVaoLai = System.currentTimeMillis();
             congDiem(); // diem huan luyen con du (vao lai / lan dau che do huan luyen)
             napDangMac();
-            ghi("vao game map " + b.mapId + " (" + b.tenMap + ") xu " + b.xu);
+            ghi("vao game map " + b.mapId + " (" + b.tenMap + ") xu " + b.xu + " HP " + b.hp + "/" + b.maxhp);
+            // guc truoc khi rot / tat JVM: vao lai van guc (may chu giu HP 0) - nguoi choi that thay hop hoi sinh ngay;
+            // truoc 31/10/2026 bot di tiep khi dang guc toi cong ("bạn đã bị hạ gục")
+            if (b.hp <= 0 && b.maxhp > 0) { ghi("vao game dang guc -> hoi sinh"); hoiSinh(); }
         }
 
         void chayAnToan() {
