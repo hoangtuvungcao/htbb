@@ -855,10 +855,14 @@ final class KichBanCap140 {
                     if (!toi(dich)) return "khong toi duoc " + tenBd;
                 }
                 BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+                if (nha != null && b.mapId == nha && b.mapLoad != nha) {
+                    ghi("trong nha " + nha + ": mapLoad " + b.mapLoad + " -> dung luoi " + nha + " (o " + b.tx + "," + b.ty + ")");
+                    bd = BotChucNang.BanDo.nap(nha);
+                }
                 int x = Integer.parseInt(mo.group(1)), y = Integer.parseInt(mo.group(2));
                 int[] o = bd == null ? null : bd.oGan(x, y, 2);
                 KichBanHuongDan.dongBoViTri(b);
-                if (o == null || !b.diDuong(bd, o[0], o[1])) return "khong di bo toi o " + x + "," + y + " o " + tenBd;
+                if (o == null || !b.diDuong(bd, o[0], o[1])) return "khong di bo toi o " + x + "," + y + " o " + tenBd + " (map " + b.mapId + " load " + b.mapLoad + " tu o " + b.px / 16 + "," + b.py / 16 + (o == null ? ", khong co o gan" : "") + ")";
                 b.bom(1500);
                 int lan = lanToiDich.merge(q.id * 10 + q.ms, 1, Integer::sum);
                 ghi("toi dich '" + q.ten + "' o " + x + "," + y + " map " + b.mapId + " (lan " + lan + ")");
