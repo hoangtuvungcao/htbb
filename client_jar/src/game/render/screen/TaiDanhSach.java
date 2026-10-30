@@ -41,7 +41,7 @@ final class TaiDanhSach {
     static String docManifest(String khoa) {
         java.io.InputStream in = null;
         try {
-            in = "".getClass().getResourceAsStream("/META-INF/MANIFEST.MF");   // CLDC: khong co class literal
+            in = (game.GameMidlet.instance != null ? game.GameMidlet.instance.getClass() : "".getClass()).getResourceAsStream("/META-INF/MANIFEST.MF");   // lop cua MIDlet: tai nguyen trong jar game (CLDC: khong co class literal)
             if (in == null) {
                 return null;
             }
