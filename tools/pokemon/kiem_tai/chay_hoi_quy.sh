@@ -64,19 +64,18 @@ if [ -n "${HTBB_BOT_CP:-}" ]; then
 else
     command -v javac >/dev/null 2>&1 || { echo "[LOI] khong co javac (apt install openjdk-17-jdk-headless) va khong dat HTBB_BOT_CP"; exit 2; }
     CP="$RA/bot-cls"; mkdir -p "$CP"
-    if ! javac -encoding UTF-8 -nowarn -d "$CP" "$DIR"/*.java > "$RA/bien_dich.log" 2>&1; then
-        echo "[LOI] bien dich bot hong:"; tail -n 20 "$RA/bien_dich.log"; exit 2
-    fi
-    # lop may chu (com.htbb.pokemon.DuongMenu + real.MenuDoiThuong): bat bien DUONG_MENU cua HoiQuy kiem chu "A → B" voi
-    # cay menu that. Hong thi HoiQuy bo qua bat bien nay (in canh bao), cac nhom khac khong anh huong.
+    # lop may chu bien dich TRUOC: bot dung truc tiep vai lop thuan (com.htbb.pokemon.ChieuPokemon / HePokemon) va
+    # HoiQuy dung com.htbb.pokemon.DuongMenu + real.MenuDoiThuong cho bat bien DUONG_MENU.
     SV="$RA/sv-cls"; mkdir -p "$SV"
     find "$GOC/server/src" -name '*.java' > "$RA/sv-nguon.txt"
-    if javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "$GOC/server/lib/jxl-2.6.jar:$GOC/server/lib/mysql-connector-java-5.1.49.jar" \
+    if ! javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "$GOC/server/lib/jxl-2.6.jar:$GOC/server/lib/mysql-connector-java-5.1.49.jar" \
         -sourcepath "$GOC/server/src" -d "$SV" @"$RA/sv-nguon.txt" > "$RA/bien_dich_sv.log" 2>&1; then
-        CP="$CP:$SV"
-    else
-        echo "[CANH BAO] khong bien dich duoc lop may chu - HoiQuy bo bat bien duong menu"
+        echo "[LOI] bien dich lop may chu hong:"; tail -n 20 "$RA/bien_dich_sv.log"; exit 2
     fi
+    if ! javac -encoding UTF-8 -nowarn -cp "$SV" -d "$CP" "$DIR"/*.java > "$RA/bien_dich.log" 2>&1; then
+        echo "[LOI] bien dich bot hong:"; tail -n 20 "$RA/bien_dich.log"; exit 2
+    fi
+    CP="$CP:$SV"
 fi
 
 # JDBC cho bot: BotChucNang.sql dung MOT ket noi CSDL / JVM (khong mo tien trinh mysql = ket noi moi cho moi truy van;
