@@ -67,6 +67,23 @@ public final class KhuVucNhiemVu {
     }
 
     /** Dung trong mot vung bat ky cua danh sach. */
+    /**
+     * Trong nha (ban do offline: client KHONG gui goi 4 di chuyen, buoc dia diem chi xet MOT lan luc vao cua o o xuat hien):
+     * moi vung cua buoc tren ban do nha nay deu tinh ca ngoi nha. Truoc 30/10/2026 C34.4 / C35.3 "Rừng Ilex (cạnh làng khởi
+     * đầu)" (nha 29 / 31 / 30, vung 19..25 x 18..24) - cua vao dat nguoi choi o 18,23 ngoai vung -> chuoi chinh ket mai.
+     */
+    public static boolean trongNha(final List<Vung> ds, final int banDo) {
+        if (ds == null) {
+            return false;
+        }
+        for (final Vung v : ds) {
+            if (v.map == banDo) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean trong(final List<Vung> ds, final int banDo, final int ox, final int oy) {
         if (ds == null) {
             return false;
