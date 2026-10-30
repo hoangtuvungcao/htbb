@@ -136,6 +136,9 @@ final class KichBanCap140 {
         return s;
     }
 
+    /** Ban do trong lang khoi dau phe 0 (vao bang cua o lang 0 / 301): KiemSuaTuyen.NHA_LANG cot 0. */
+    static final Set<Integer> NHA_LANG_0 = new HashSet<>(Arrays.asList(29, 102, 103, 104, 108, 109));
+
     static final int CAP_DICH = Integer.getInteger("capDich", 40);
     /**
      * Luot phu kin nhiem vu phu (-DuuTienPhu=1): nhu nguoi choi thich lam het viec phu o moi thi tran - nhiem vu phu dang lam
@@ -330,16 +333,18 @@ final class KichBanCap140 {
         void docCp() throws IOException {
             if (!tepCp.isFile()) return;
             for (String l : Files.readAllLines(tepCp.toPath(), StandardCharsets.UTF_8)) {
+                // ngoac cho moi vong for: truoc 30/10/2026 "else if" sau "chinh=" gan vao if TRONG vong for (dangling else) ->
+                // phu= / ket= / gd= / moc= / tn= / so= khong bao gio doc: moi lan chay lai bot di lai vong tinh nang ~10 phut
                 if (l.startsWith("user=")) user = l.substring(5);
                 else if (l.startsWith("phut=")) phutCongDon = Double.parseDouble(l.substring(5));
                 else if (l.startsWith("ngayAo=")) soNgayAo = Integer.parseInt(l.substring(7));
                 else if (l.startsWith("tg=")) dongThoiGian.add(l.substring(3));
                 else if (l.startsWith("cap=")) { String[] f = l.substring(4).split(":"); capLuc.put(Integer.parseInt(f[0]), Long.parseLong(f[1])); }
-                else if (l.startsWith("chinh=")) for (String x : l.substring(6).split(",")) if (!x.isEmpty()) chinhDaXong.add(Integer.parseInt(x));
-                else if (l.startsWith("phu=")) for (String y : l.substring(4).split(",")) if (!y.isEmpty()) phuDaXong.add(Integer.parseInt(y));
+                else if (l.startsWith("chinh=")) { for (String x : l.substring(6).split(",")) if (!x.isEmpty()) chinhDaXong.add(Integer.parseInt(x)); }
+                else if (l.startsWith("phu=")) { for (String y : l.substring(4).split(",")) if (!y.isEmpty()) phuDaXong.add(Integer.parseInt(y)); }
                 else if (l.startsWith("ket=")) ketChi.add(l.substring(4));
                 else if (l.startsWith("gd=")) daGiaoDich = l.endsWith("1");
-                else if (l.startsWith("moc=")) for (String z : l.substring(4).split(",")) if (!z.isEmpty()) mocTinhNang.add(Integer.parseInt(z));
+                else if (l.startsWith("moc=")) { for (String z : l.substring(4).split(",")) if (!z.isEmpty()) mocTinhNang.add(Integer.parseInt(z)); }
                 else if (l.startsWith("tn=")) { String[] f = l.substring(3).split("\t", 2); if (f.length == 2) tinhNangKq.put(f[0], f[1]); }
                 else if (l.startsWith("so=")) {
                     String[] f = l.substring(3).split(",");
@@ -839,13 +844,27 @@ final class KichBanCap140 {
                     return BotChucNang.khongDau(chu).contains("noi chuyen") ? "" : "buoc noi chuyen dang lam khong ghi o dich: " + chu;
                 }
                 int dich = tenBd == null ? b.mapId : mapTheoTen(b.mapId, tenBd);
-                if (dich < 0) return "khong biet ban do '" + tenBd + "'";
-                if (!toi(dich)) return "khong toi duoc " + tenBd;
+                Integer nha = tenBd == null ? null : LOAD_THEO_TEN.get(tenBd.trim());
+                if (dich < 0 && nha != null && NHA_LANG_0.contains(nha)) {
+                    // ban do trong lang (nha / khu noi bo cua lang khoi dau, vd 29 "Rừng Ilex (cạnh làng khởi đầu)"): ve lang
+                    // roi vao cua nhu nguoi choi (truoc 30/10/2026 bot d210 ket "khong biet ban do 'Rừng Ilex'" o C34.4)
+                    if (b.mapId != nha) {
+                        KichBanCap140TinhNang.veLangDiBo(this);
+                        if (!KichBanDS2.vaoNha(b, nha) || b.mapId != nha) return "khong vao duoc " + tenBd + " (" + nha + ") tu lang " + b.mapId;
+                    }
+                } else {
+                    if (dich < 0) return "khong biet ban do '" + tenBd + "'";
+                    if (!toi(dich)) return "khong toi duoc " + tenBd;
+                }
                 BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+                if (nha != null && b.mapId == nha && b.mapLoad != nha) {
+                    ghi("trong nha " + nha + ": mapLoad " + b.mapLoad + " -> dung luoi " + nha + " (o " + b.tx + "," + b.ty + ")");
+                    bd = BotChucNang.BanDo.nap(nha);
+                }
                 int x = Integer.parseInt(mo.group(1)), y = Integer.parseInt(mo.group(2));
                 int[] o = bd == null ? null : bd.oGan(x, y, 2);
                 KichBanHuongDan.dongBoViTri(b);
-                if (o == null || !b.diDuong(bd, o[0], o[1])) return "khong di bo toi o " + x + "," + y + " o " + tenBd;
+                if (o == null || !b.diDuong(bd, o[0], o[1])) return "khong di bo toi o " + x + "," + y + " o " + tenBd + " (map " + b.mapId + " load " + b.mapLoad + " tu o " + b.px / 16 + "," + b.py / 16 + (o == null ? ", khong co o gan" : "") + ")";
                 b.bom(1500);
                 int lan = lanToiDich.merge(q.id * 10 + q.ms, 1, Integer::sum);
                 ghi("toi dich '" + q.ten + "' o " + x + "," + y + " map " + b.mapId + " (lan " + lan + ")");
@@ -902,6 +921,12 @@ final class KichBanCap140 {
                 if (dich < 0 && co != null) {
                     int ds = Integer.MAX_VALUE;
                     for (int mid : co) { List<int[]> d = BotXuyenSuot.duongUocTinh(b.mapId, mid); if (d != null && d.size() < ds) { ds = d.size(); dich = mid; } }
+                }
+                if (dich < 0 && co != null && co.stream().anyMatch(BotXuyenSuot::dangChan)) {
+                    // ban do cua quai dang khoa (cua ai / cap): nhan cua ai nhu nguoi choi doc hop "Để vào X cần xong cửa ải"
+                    hop95(0);
+                    nhanCuaAiNeuKhoa();
+                    return "ban do cua " + HoiQuy.TEN_QUAI.get(tpl) + " dang khoa (cua ai / cap)";
                 }
                 if (dich < 0) return "khong biet ban do cua quai " + tpl + " (" + HoiQuy.TEN_QUAI.get(tpl) + ")";
                 Integer cq = BotXuyenSuot.CAP_QUAI.get(tpl);
@@ -1445,7 +1470,8 @@ final class KichBanCap140 {
                 long thua = b.xu - (long) MUC * GIA_THUOC[loai];
                 for (int type : O_GIAP) {
                     int[] g = giapTiem(type);
-                    if (g == null || giapMac.getOrDefault(type, 0) >= g[1] || g[2] > thua) continue;
+                    // capDaMac (doc tu trang bi dang mac luc vao game): sau vao lai khong mua lai mon da mac (d290 mua 2 lan 45.000 xu)
+                    if (g == null || giapMac.getOrDefault(type, 0) >= g[1] || capDaMac.getOrDefault(type, 0) >= g[1] || g[2] > thua) continue;
                     if (giap == null || g[2] < giap[2]) { giap = g; giap = new int[]{g[0], g[1], g[2], type}; }
                 }
             }

@@ -270,7 +270,8 @@ public final class KhuVucNhiemVuGame {
             return;
         }
         final int bd = NpcTinhBanDo.banDoNap(p);
-        if (!KhuVucNhiemVu.trong(ds, bd, ox(p), oy(p))) {
+        final boolean nha = p.map != null && p.map.isMapOffline && KhuVucNhiemVu.trongNha(ds, bd);
+        if (!nha && !KhuVucNhiemVu.trong(ds, bd, ox(p), oy(p))) {
             if (bd != p.khuVucDaBao && KhuVucNhiemVu.ganNhat(ds, bd, ox(p), oy(p)) != null) {
                 // vua vao ban do dich: chi duong mot lan + lam moi danh sach dang lam (dong tien do)
                 p.khuVucDaBao = bd;
