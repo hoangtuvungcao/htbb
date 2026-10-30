@@ -262,10 +262,33 @@ public class BotXuyenSuot {
     static volatile long tongTuaPhut = 0;
     static final List<String> NHAT_KY_TUA = Collections.synchronizedList(new ArrayList<>());
 
-    /** Tua dong ho ao (moi lan toi da 1 lan / 20 giay cho tat ca cac dong). */
+    /**
+     * Danh dau "dang danh Gym" chung moi JVM bot tren may (tep trong thu muc tam): tua dong ho ao trong luc co tran Gym lam
+     * het gio tran (BossLauDai het gio theo DongHo ao) -> may chu go boss, bot tuong thang. Choi 30/10/2026: bot doan
+     * d130 "thang" Gym Celadon o giay 60 dung luc bo2 tua 1 ngay (ve chuong), cua ai khong duoc tinh.
+     */
+    static final File GYM_DANG = new File(System.getProperty("gymDang", System.getProperty("java.io.tmpdir") + "/htbb_gym_dang"));
+
+    static void gymBatDau(String ai) {
+        try { GYM_DANG.mkdirs(); new FileOutputStream(new File(GYM_DANG, ai)).close(); } catch (IOException ignored) { }
+    }
+
+    static void gymXong(String ai) {
+        new File(GYM_DANG, ai).delete();
+    }
+
+    static boolean coTranGym() {
+        File[] ds = GYM_DANG.listFiles();
+        if (ds == null) return false;
+        for (File f : ds) if (System.currentTimeMillis() - f.lastModified() < 11 * 60000L) return true;
+        return false;
+    }
+
+    /** Tua dong ho ao (moi lan toi da 1 lan / 20 giay cho tat ca cac dong; khong tua khi co bot dang danh Gym). */
     static void tua(String thamSo, String lyDo) {
         synchronized (KHOA_DH) {
             if (dieuPhoi == null || System.currentTimeMillis() - lanTuaCuoi < 20000) return;
+            if (coTranGym()) { System.out.println("[DIEU PHOI] hoan tua " + thamSo + " (" + lyDo + "): co bot dang danh Gym"); return; }
             try {
                 int m = dieuPhoi.moc();
                 dieuPhoi.chat("tua " + thamSo);

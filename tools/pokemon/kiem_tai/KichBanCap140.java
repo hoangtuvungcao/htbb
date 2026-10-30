@@ -1110,6 +1110,15 @@ final class KichBanCap140 {
          * HP boss / minh moi 60 giay (do sat thuong / giay de biet thua vi thieu suc hay vi bot). Tra so don, -1 = khong ha.
          */
         int danhBoss(int boss, String ten, int mocTran) throws IOException {
+            BotXuyenSuot.gymBatDau(b.user);
+            try {
+                return danhBossTran(boss, ten, mocTran);
+            } finally {
+                BotXuyenSuot.gymXong(b.user);
+            }
+        }
+
+        int danhBossTran(int boss, String ten, int mocTran) throws IOException {
             BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
             KichBanHuongDan.dongBoViTri(b);
             long bd0 = System.currentTimeMillis(), moc = bd0;
