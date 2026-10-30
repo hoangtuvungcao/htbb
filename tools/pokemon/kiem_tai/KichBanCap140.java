@@ -1697,13 +1697,12 @@ final class KichBanCap140 {
             }
             // Vé dịch chuyển du phong (het luot Ve lang mien phi o ban do xa khong co duong di bo): gia ~ 56 xu x cap
             if (b.soThuoc(162) < 2 && b.xu > DU_TRU_XU + 3L * 60 * b.lv) KichBanCap140TinhNang.muaVe(this, 2);
-            if (giap != null && b.xu - giap[2] >= DU_TRU_XU) {
+            if (giap != null && b.xu - giap[2] >= DU_TRU_XU && sangNhaGiap()) {
                 final int tpl = giap[0];
                 Set<Integer> cu = new HashSet<>();
                 for (int[] x : b.doDung) cu.add(x[0]);
                 long x1 = b.xu;
-                b.gui(23, (byte) 2);
-                b.bom(500);
+                moTiemGiap();
                 b.gui(24, (byte) 1, (byte) 3, (short) tpl, (short) 1, (byte) lop); // tab dong minh (nhu client chon dong o tiem giap)
                 b.bom(1000);
                 b.lamMoi();
@@ -1719,6 +1718,26 @@ final class KichBanCap140 {
             }
             if (b.xu < xu0) xuTieu += xu0 - b.xu;
             KichBanDS2.raNgoai(b);
+        }
+
+        /**
+         * Giap ban o Bronzong (NPC 3) - nha canh tiem Machamp (Pewter 103 -> 104, 73 -> 74, 83 -> 84). Tu 31/10/2026 may
+         * chu chi ban mon trong danh sach cua NPC dang dung canh (goi 24): bot cu mua giap trong nha 103 (chi co Machamp).
+         */
+        boolean sangNhaGiap() throws Exception {
+            int nha = b.mapId + 1;
+            KichBanDS2.raNgoai(b);
+            if (KichBanDS2.vaoNha(b, nha) && b.mapId == nha) return true;
+            ghi("khong vao duoc nha Bronzong " + nha + " (dang o " + b.mapId + ")");
+            if (KichBanDS2.laOffline(b.mapId)) KichBanDS2.raNgoai(b);
+            return false;
+        }
+
+        /** Mo cua so giap cua Bronzong (goi 23 loai 3 + lop, chon "Trang bị vật lý") nhu client. */
+        void moTiemGiap() throws IOException {
+            int m = b.moc();
+            b.gui(23, (byte) 3, (byte) lop);
+            if (b.doiMenu(m, 3, 0, 3000) > 0) { b.menu(3, 0, 1); final int mm = m; b.cho(x -> x.coLenh(mm, 23), 3000); }
         }
 
         /**

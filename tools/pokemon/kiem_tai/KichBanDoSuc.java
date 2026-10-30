@@ -195,6 +195,8 @@ final class KichBanDoSuc {
             List<Integer> loai = new ArrayList<>(Collections.singletonList(3));
             if (!"0".equals(System.getProperty("doSucGiap", "1"))) loai.addAll(Arrays.asList(0, 1, 2, 8, 9, 10, 11));
             for (int type : loai) {
+                // giap / phu kien ban o Bronzong nha ben (104) - may chu chi ban mon cua NPC dang dung canh (31/10/2026)
+                if (type != 3 && b.mapId == 103) { KichBanDS2.raNgoai(b); if (!KichBanDS2.vaoNha(b, 104)) { mua.add("khong_vao_104"); break; } b.gui(23, (byte) 3, (byte) lop); b.bom(800); }
                 List<String> ids = type == 3
                         ? Collections.singletonList(String.valueOf(BotXuyenSuot.vuKhiShop(lop, L)))
                         : BotChucNang.sql("SELECT id FROM data_item WHERE type=" + type + " AND clazz=-1 AND level<=" + L

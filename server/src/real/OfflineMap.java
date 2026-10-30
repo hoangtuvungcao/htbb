@@ -1743,6 +1743,13 @@ public class OfflineMap extends Map {
                            }
                         }
 
+                        if (isOk && !NpcTinhBanDo.banTaiCho(player, var32)) {
+                           // dung danh sach trang nhung NPC dang dung canh khong ban mon nay (vd giap Indigo o Pewter)
+                           player.sendMessage(MessageCreator.createServerAlertMessage("Món này không bán ở đây. Hãy đến đúng cửa hàng bán món này.", ""));
+                           data.NghiVanGianLan.ghiVatPham(player, "hackbitem",
+                                   "doi mua vat pham id " + var32 + " o NPC khong ban mon nay (map " + player.mapID + ")");
+                           continue;
+                        }
                         if (!isOk) {
                            Database.instance.saveOrtherLog("", player.charname, "hack mua item id: " + var32, "hackbitem");
                            data.NghiVanGianLan.ghiVatPham(player, "hackbitem",
