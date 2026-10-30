@@ -2375,6 +2375,7 @@ class MapXuLyLenh {
                     }
                 } catch (Exception var37) {
                 }
+                KhuVucNhiemVuGame.sauKhiVaoBanDo(player); // vao nha qua cua: client khong gui goi di chuyen trong nha (bao loi 30/10)
             }
         } catch (Exception var40) {
             System.out.print(" " + player.charname + " ");

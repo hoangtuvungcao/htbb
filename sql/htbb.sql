@@ -32000,3 +32000,12 @@ UPDATE `data_monster_lau_dai` SET `maxhp` = 10870 WHERE `id` = 60 AND `maxhp` = 
 UPDATE `data_monster_lau_dai` SET `maxhp` = 11660 WHERE `id` = 77 AND `maxhp` = 12860;
 UPDATE `data_monster_lau_dai` SET `maxhp` = 12450 WHERE `id` = 81 AND `maxhp` = 13260;
 UPDATE `data_monster_lau_dai` SET `maxhp` = 13240 WHERE `id` = 53 AND `maxhp` = 13630;
+-- >>> sua_nha_tre_pet.sql
+-- ==================================================================================
+--  NHA TRE: "GUI PET" LA PET DONG HANH (bao loi 30/10/2026, J2ME: bam "Trả phí hôm nay" chi thay "Chưa gửi pet nào.").
+--  Muc Huong dan tan thu npc.19_trung ghi "gửi 1-2 Pokémon" -> nguoi choi tuong gui Pokemon chien dau; nha tre chi nhan pet
+--  dong hanh (item pet, com.htbb.pokemon.PetPokemon.BANG). Chay lai duoc: UPDATE theo khoa + GIA TRI CU + sua_boi = ''.
+--  Chu trong game (menu / thong bao Nha tre) o ma: com.htbb.pokemon.HeSinhThaiMenu.CHUA_CO_PET. Kiem: server/test/KiemVaoNhaNhiemVu.
+-- ----------------------------------------------------------------------------------
+UPDATE `data_huong_dan_tan_thu` SET `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá - trong hành trang hoặc đang dắt theo), không phải Pokémon chiến đấu. Lấy trứng: Menu → Hệ sinh thái → Nhà trẻ và trứng → Gửi pet đang sở hữu (1-2 pet), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái). Chưa có pet: trứng pet thỉnh thoảng rơi khi hạ Pokémon chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc mua trứng người khác rao: Hệ sinh thái → Chợ sinh thái → Mua: Trứng.'
+  WHERE `ma` = 'npc.19_trung' AND `sua_boi` = '' AND `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Lấy trứng: Menu → Hệ sinh thái → Nhà trẻ và trứng → Gửi pet đang sở hữu (gửi 1-2 Pokémon), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái). Mua trứng người khác rao: Hệ sinh thái → Chợ sinh thái → Mua: Trứng.';

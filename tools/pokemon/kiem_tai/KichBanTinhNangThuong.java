@@ -454,6 +454,20 @@ public final class KichBanTinhNangThuong {
         KichBanBatThuong.loiLogMoi();
         BotChucNang.Bot p = KichBanBatThuong.nguoi();
         try {
+            // bao loi 30/10/2026 (J2ME "đây là khi ấn trả phí hôm nay"): nguoi choi CHUA CO pet bam Tra phi chi thay
+            // "Chưa gửi pet nào." - nay chu noi pet dong hanh la gi + cach co, khong tru xu.
+            int n0 = moHst(p, "Nhà trẻ", 6);
+            String nhanK = n0 > 0 ? String.join(" ; ", p.menuChu) : p.chuTu(0);
+            ket("tn_nha_tre.khong_pet_nhan", n0 > 0 && nhanK.contains("gửi pet trước"), nhanK);
+            if (n0 > 0) {
+                long xuK = p.xu;
+                String k1 = chonHst(p, 6, 3, -1, "pet đồng hành");
+                onDinh(p);
+                ket("tn_nha_tre.khong_pet_tra_phi", k1 != null && k1.contains("Chưa gửi pet") && k1.contains("Chợ sinh thái") && p.xu == xuK,
+                        k1 + " | xu " + xuK + " -> " + p.xu);
+                String k2 = chonHst(p, 6, 1, -1, "pet đồng hành");
+                ket("tn_nha_tre.khong_pet_gui", k2 != null && k2.contains("không phải Pokémon chiến đấu"), String.valueOf(k2));
+            }
             // dung canh: GM tang 1 Hoothoot cap 1 (item 689) + xu
             lenhGm("ait " + p.ten + " 689 0 0 0");
             lenhGm("slv " + p.ten + " 12 0"); // danh quai nhanh hon (buoc = so quai ha, khong phu thuoc cap)
