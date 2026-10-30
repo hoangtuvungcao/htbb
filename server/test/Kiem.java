@@ -337,6 +337,7 @@ public final class Kiem {
         KiemPetDongHanh.chay(); // chu game 30/10/2026 "có": pet dong hanh mien phi 1 lan + mua bang xu (Nha tre dung duoc)
         KiemQuaiNam2.chay(); // cong kiem bot 31/10/2026: quai nam 2 chi lech cap goc <= 2 (Mahogany 84 moc Wailord / Banette 91-92)
         KiemMuaDungNpc.chay(); // bot phu kin 31/10/2026: goi 24 chi mua mon cua NPC dang dung canh (giap Indigo khong mua o Pewter)
+        KiemChanKhiGuc.chay(); // chu game 31/10/2026: dang guc khong dung NPC / di chuyen bang NPC / mua ban / giao dich / qua cong
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

@@ -974,6 +974,22 @@ public class RealController extends ServerController {
         return (ICommandHandler) commandHandler.get(47);
     }
 
+    /** true = da tu choi lenh vi nhan vat dang guc (da bao cho nguoi choi). */
+    public static boolean chanKhiGuc(final Session session, final Message message) {
+        final Char p = CharManager.instance.getByUserID(session.userID);
+        if (p == null || p.hp > 0 || p.isAdmin || p.map == null) {
+            return false;
+        }
+        if (!com.htbb.pokemon.ChanKhiGuc.chan(message.command, com.htbb.pokemon.ChanKhiGuc.docDau(message))) {
+            return false;
+        }
+        try {
+            p.sendMessage(MessageCreator.createServerAlertMessage(com.htbb.pokemon.ChanKhiGuc.CAU, ""));
+        } catch (final Exception ignored) {
+        }
+        return true;
+    }
+
     public void processMessage(Session session, Message message) {
         while (true) {
             try {
@@ -985,6 +1001,11 @@ public class RealController extends ServerController {
                     continue;
                 }
 
+                // Dang guc: tu choi noi chuyen NPC / di chuyen bang NPC / mua ban / giao dich / dung vat pham / qua cong
+                // (com.htbb.pokemon.ChanKhiGuc) - van cho hoi sinh, chat, dang xuat.
+                if (session.userID > 0 && chanKhiGuc(session, message)) {
+                    return;
+                }
                 ICommandHandler handler = (ICommandHandler) commandHandler.get(message.command);
                 if (handler != null) {
                     handler.process(session, message);
