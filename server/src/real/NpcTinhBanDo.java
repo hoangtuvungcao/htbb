@@ -223,4 +223,73 @@ public final class NpcTinhBanDo {
         final Object om = RealController.mapList.get(-1);
         return om instanceof OfflineMap ? (Map) om : null;
     }
+    // ------------------------------------------------------------------ danh sach ban cua tung NPC (goi 24)
+
+    /** Bronzong ban giap (3) ban do &lt; 200 - khop MessageCreator.createMsgSellArmoOfNPC. */
+    static final int[] GIAP_3_THAP = {3, 20, 27, 46, 53, 72, 114, 122, 126, 134, 138, 146, 150, 158, 162, 170};
+    /** Bronzong ban giap (3) ban do &gt; 200 (khong co NPC 3 nao o day, giu cho khop createMsgSellArmoOfNPC). */
+    static final int[] GIAP_3_CAO = {21, 26, 47, 52, 73, 78, 123, 125, 135, 137, 147, 149, 159, 161, 171, 173, 467, 506};
+    /** Bronzong ban giap Indigo (27). */
+    static final int[] GIAP_27 = {21, 26, 47, 52, 73, 78, 123, 125, 135, 137, 147, 149, 159, 161, 171, 173, 467, 506, 569, 572};
+    /** Machamp tho ren (2) ban do &lt; 200: do cam tay + the mua ban (675) + trang bi thu (createMsgNPCSellWeapone / RequestNPCInfoHandler). */
+    static final int[] REN_2_THAP = {79, 113, 465, 466, 675, 675, 509, 568};
+    /** Do cam tay cao (2 o ban do &gt; 200, 28). */
+    static final int[] REN_CAO = {174, 213};
+    /** NPC 24 (RequestNPCInfoHandler case 24). */
+    static final int[] NPC_24 = {214, 263};
+
+    /** Cac doan [tu, den] vat pham NPC loai {@code loai} ban o ban do {@code mapID} (rong = NPC khong ban vat pham loai 3). */
+    public static int[] dsBan(final int loai, final int mapID) {
+        switch (loai) {
+            case 2:
+                return mapID < 200 ? REN_2_THAP : mapID > 200 ? REN_CAO : new int[0];
+            case 28:
+                return REN_CAO;
+            case 3:
+                return mapID < 200 ? GIAP_3_THAP : mapID > 200 ? GIAP_3_CAO : new int[0];
+            case 27:
+                return GIAP_27;
+            case 24:
+                return NPC_24;
+            default:
+                return new int[0];
+        }
+    }
+
+    static boolean trong(final int[] doan, final int id) {
+        for (int k = 0; k + 1 < doan.length; k += 2) {
+            if (id >= doan[k] && id <= doan[k + 1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Goi 24 (mua vat pham loai 3): vat pham {@code id} co trong danh sach ban cua mot NPC ma nguoi choi dang dung canh
+     * (trong nha: NPC cua nha do; ngoai troi: trong {@link #BAN_KINH_O} o). Truoc 31/10/2026 may chu chi kiem danh
+     * sach trang (MessageCreator.ALL_ID_ITEM_NPC_SELL) -> dung canh Machamp / Bronzong Pewter mua duoc giap Indigo
+     * (467..506). Ban do / nha khong co danh sach NPC trong tep cMap: giu luat cu (chi danh sach trang).
+     */
+    public static boolean banTaiCho(final Char p, final int id) {
+        final int load = banDoNap(p);
+        if (load < 0) {
+            return false;
+        }
+        final List<int[]> ds = cua(load);
+        if (ds.isEmpty()) {
+            return true;
+        }
+        final int ox = p.x / 16;
+        final int oy = p.y / 16;
+        for (final int[] n : ds) {
+            if (!p.map.isMapOffline && (Math.abs(n[0] - ox) > BAN_KINH_O || Math.abs(n[1] - oy) > BAN_KINH_O)) {
+                continue;
+            }
+            if (trong(dsBan(n[2], p.mapID), id)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
