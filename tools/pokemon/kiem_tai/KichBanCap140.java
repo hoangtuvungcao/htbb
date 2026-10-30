@@ -591,7 +591,11 @@ final class KichBanCap140 {
                 docNv();
                 boolean conXong = l1.stream().anyMatch(x -> x.id == q.id && x.ms == q.ms);
                 String t = b.chuTu(m);
-                if (conXong) { ketLai("tra '" + q.ten + "' #" + q.id + "/" + q.ms + " khong duoc: " + t); continue; }
+                if (conXong) {
+                    if (t.contains("Hành trang đã đầy") || t.contains("hành trang đầy")) donTui(); // nguoi choi ban bot do roi tra lai
+                    ketLai("tra '" + q.ten + "' #" + q.id + "/" + q.ms + " khong duoc: " + t);
+                    continue;
+                }
                 b.lamMoi();
                 if (q.ms == 0) { chinhDaXong.add(q.id); nvChinhIdCuoi = q.id; soNvChinh++; }
                 else if (q.ms == 1) { phuDaXong.add(q.id); soPhu++; }
@@ -1333,6 +1337,28 @@ final class KichBanCap140 {
                 }
             }
             if (b.xu < xu0) xuTieu += xu0 - b.xu;
+            KichBanDS2.raNgoai(b);
+        }
+
+        /**
+         * Tui day (may chu: "Hành trang đã đầy... để nhận thưởng"): vao tiem ban moi mon trang bi trong tui khong khoa, tru
+         * vu khi dung bac cap va mon da nang (+N) - nhu nguoi choi don tui.
+         */
+        void donTui() throws Exception {
+            if (!KichBanDS.laLang(b.mapId)) KichBanCap140TinhNang.veLangDiBo(this);
+            if (!KichBanDS2.vaoNha(b, 103)) return;
+            b.lamMoi();
+            final int tplVk = BotXuyenSuot.vuKhiShop(lop, b.lv);
+            int ban = 0;
+            long x0 = b.xu;
+            for (int[] x : new ArrayList<>(b.doDung)) {
+                if (x.length < 5 || x[4] != 0 || x[1] == tplVk || x[2] > 0 || x[3] <= 0) continue;
+                b.gui(28, (short) x[0]);
+                b.bom(250);
+                ban++;
+            }
+            b.lamMoi();
+            ghi("tui day -> ban " + ban + " mon (xu " + x0 + " -> " + b.xu + ", tui con " + b.doDung.size() + ")");
             KichBanDS2.raNgoai(b);
         }
 
