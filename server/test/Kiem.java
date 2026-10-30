@@ -326,6 +326,7 @@ public final class Kiem {
         KiemTimDiemNhiemVu.chay(); // bao loi 29/10/2026: diem nhiem vu (dau sao, vi tri bang loi), nha Pewter, vuon - trung, ve tau
         KiemVuonBerry.chay(); // bat lai vuon 29/10/2026: o dat gieo / lon / thu hoach, luu ho so, buoc So tay lam_vuon, ngan sach
         KiemBuocHanhDong.chay(); // sua-buoc-hanh-dong: buoc noi chuyen hua hanh dong -> kiem that hoac chu that (khoi sua_buoc_hanh_dong.sql)
+        KiemGiaVeTau.chay(); // bao loi 30/10/2026: ve tau ghi 15k mua 5k - gia hien o goi dang nhap = data_potion 20
         KiemCanBangCap.chay(); // can bang cap 15-45: duong quai / gia do cua hang, #29 luon lam duoc, EXP thang Gym theo cap
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

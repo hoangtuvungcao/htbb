@@ -134,11 +134,28 @@ public class LoginHandler implements ICommandHandler {
         return r;
     }
 
+    /** Vi tri ve tau trong data_potion (Map.doBuyTicket tru dung gia nay). */
+    public static final int VE_TAU = 20;
+
+    /**
+     * Gia ve tau client hien o menu Lapras "Mua vé (x xu)" - GameScr.pTicket, doc bang readShort() o goi dang nhap (lenh 1)
+     * tren MOI client (J2ME / PC / Unity, moi ban). Lay dung gia data_potion 20 ma Map.doBuyTicket tru. Truoc day viet cung
+     * 15000 -> sau khi ha gia con 5000 (khoi sua_tim_nhiem_vu.sql) client van ghi 15.000 nhung mua tru 5.000
+     * (bao loi 30/10/2026). Kep vao [0, 32767] vi client doc short co dau.
+     */
+    public static int giaVeTauHienThi() {
+        final java.util.Vector<PotionTemplate2> ds = Map.potionTemplates2;
+        if (ds == null || ds.size() <= VE_TAU || ds.get(VE_TAU) == null) {
+            return 0;
+        }
+        return Math.max(0, Math.min(Short.MAX_VALUE, ds.get(VE_TAU).getPrice()));
+    }
+
     public static Message createMsgLogin(final int vsTile) {
         final Message msgLoginSuccess = new Message(1);
         try {
             msgLoginSuccess.dos.writeByte(4);
-            msgLoginSuccess.dos.writeShort(15000);
+            msgLoginSuccess.dos.writeShort(giaVeTauHienThi());
             msgLoginSuccess.dos.writeByte(Map.potionTemplates2.size());
             for (PotionTemplate2 potion : Map.potionTemplates2) {
                 msgLoginSuccess.dos.writeByte(potion.idImage);
