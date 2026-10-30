@@ -671,6 +671,7 @@ public final class NhiemVuEngine {
                 if (op < 0 || op >= NHOM_GOC.length) {
                     return;
                 }
+                TRANG_PHU.remove(Integer.valueOf(p.charDBID)); // mo lai tu menu goc: trang 1
                 if (NHOM_GOC[op] == 0) {
                     dsDangLam(p);
                 } else {
@@ -684,6 +685,10 @@ public final class NhiemVuEngine {
             }
             if (idMenu == M_DANG) {
                 chonDangLam(p, ds[op]);
+            } else if (idMenu == M_NHAN && XEM_THEM.equals(ds[op])) {
+                final Integer tr = TRANG_PHU.get(Integer.valueOf(p.charDBID));
+                TRANG_PHU.put(Integer.valueOf(p.charDBID), Integer.valueOf(tr == null ? 1 : tr.intValue() + 1));
+                dsCoTheNhan(p, 1);
             } else if (idMenu == M_NHAN) {
                 baoNhan(p, ds[op]);
             } else if (idMenu == M_CHON) {
@@ -732,6 +737,25 @@ public final class NhiemVuEngine {
     }
 
     /** Danh sach co the nhan theo nhom: 1 phu, 2 ngay, 3 tuan, 4 thanh tuu, 5 su kien. */
+    /** Ma gia cua dong "Xem thêm" trong So tay -> Nhan nhiem vu phu. */
+    static final String XEM_THEM = "#xem_them";
+    /** Trang dang xem cua "Nhận nhiệm vụ phụ" theo nhan vat (mo tu menu goc -> ve trang 1). */
+    static final ConcurrentHashMap<Integer, Integer> TRANG_PHU = new ConcurrentHashMap<Integer, Integer>();
+
+    /**
+     * Chia trang danh sach phu: moi trang DS_TOI_DA - 1 muc + dong "Xem thêm" khi nhieu hon DS_TOI_DA (trang cuoi quay ve
+     * dau). @return {tu, den (khong gom), so trang, trang that}
+     */
+    public static int[] trangPhu(final int tong, final int trang) {
+        if (tong <= NhiemVuMau.DS_TOI_DA) {
+            return new int[]{0, tong, 1, 0};
+        }
+        final int moi = NhiemVuMau.DS_TOI_DA - 1;
+        final int soTrang = (tong + moi - 1) / moi;
+        final int t = Math.floorMod(trang, soTrang);
+        return new int[]{t * moi, Math.min(tong, t * moi + moi), soTrang, t};
+    }
+
     static void dsCoTheNhan(final Char p, final int nhom) {
         final ConcurrentHashMap<String, long[]> t = td(p);
         if (t == null) {
@@ -760,8 +784,10 @@ public final class NhiemVuEngine {
             return;
         }
         final List<String> ngayRut = nhom == 2 ? bangNgay(p) : null;
+        final boolean trangPhu = nhom == 1; // phu: lay HET roi xep gan cap + chia trang (duoi)
+        final List<Integer> capPhu = new ArrayList<Integer>();
         for (final NhiemVuMau m : MAU.values()) {
-            if (ma.size() >= NhiemVuMau.DS_TOI_DA || !(NhiemVuMau.engineQuanLy(m.loai) || m.chuoiNam2) || m.laThanhTuu()) {
+            if (!trangPhu && ma.size() >= NhiemVuMau.DS_TOI_DA || !(NhiemVuMau.engineQuanLy(m.loai) || m.chuoiNam2) || m.laThanhTuu()) {
                 continue;
             }
             if (m.chuoiNam2 && (nhom != 6 || kiemNam2(m) != null)) {
@@ -781,6 +807,33 @@ public final class NhiemVuEngine {
             }
             ma.add(m.ma);
             nhan.add(m.ten + (m.tenNpc.isEmpty() ? "" : " (" + m.tenNpc + ")"));
+            capPhu.add(Integer.valueOf(m.cap));
+        }
+        if (trangPhu && !ma.isEmpty()) {
+            final int[] lv = new int[capPhu.size()];
+            final List<Integer> chiSo = new ArrayList<Integer>();
+            for (int i = 0; i < lv.length; i++) {
+                lv[i] = capPhu.get(i).intValue();
+                chiSo.add(Integer.valueOf(i));
+            }
+            final List<Integer> thuTu = com.htbb.pokemon.NhiemVuLauDai.xepGanCap(lv, p.lvDetail.lv, chiSo);
+            final Integer tr = TRANG_PHU.get(Integer.valueOf(p.charDBID));
+            final int[] cat = trangPhu(thuTu.size(), tr == null ? 0 : tr.intValue());
+            final List<String> ma2 = new ArrayList<String>();
+            final List<String> nhan2 = new ArrayList<String>();
+            for (int k = cat[0]; k < cat[1]; k++) {
+                ma2.add(ma.get(thuTu.get(k).intValue()));
+                nhan2.add(nhan.get(thuTu.get(k).intValue()));
+            }
+            if (cat[2] > 1) {
+                ma2.add(XEM_THEM);
+                nhan2.add("Xem thêm (trang " + (cat[3] + 1) + "/" + cat[2] + ")");
+            }
+            TRANG_PHU.put(Integer.valueOf(p.charDBID), Integer.valueOf(cat[3]));
+            ma.clear();
+            ma.addAll(ma2);
+            nhan.clear();
+            nhan.addAll(nhan2);
         }
         if (nhom == 7) {
             toDam(p, ma, nhan);

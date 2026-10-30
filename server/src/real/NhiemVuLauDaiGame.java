@@ -143,6 +143,13 @@ public final class NhiemVuLauDaiGame {
                     phu.add(t); // 0.9.7.1: da nhan / xong o So tay hoac da tra qua NPC -> khong moi lai
                 }
             }
+            // Hashtable khong co thu tu: theo id (nhiem vu cung thi tran / tuyen lien nhau) truoc khi xep gan cap
+            java.util.Collections.sort(phu, new java.util.Comparator<InfoQuestTemplate>() {
+                @Override
+                public int compare(final InfoQuestTemplate a, final InfoQuestTemplate b) {
+                    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+                }
+            });
             final int[] lv = new int[phu.size()];
             for (int i = 0; i < lv.length; i++) {
                 lv[i] = phu.get(i).lv;

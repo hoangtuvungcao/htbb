@@ -661,8 +661,11 @@ public final class KiemLauDaiGd2 {
     static void buoc4() {
         Kiem.nhom("GD2 buoc 4 - nhiem vu: cap, ve tuan, loc danh sach");
         Kiem.dung("hop cap: lv 20, cap 25", NhiemVuLauDai.hopCap(20, 25));
-        Kiem.sai("hop cap: lv 20, cap 30", NhiemVuLauDai.hopCap(20, 30));
-        Kiem.sai("hop cap: lv 20, cap 19", NhiemVuLauDai.hopCap(20, 19));
+        // 30/10/2026: khong chan duoi (len cap nhanh khong mat phu thap), moi truoc toi 10 cap
+        Kiem.dung("hop cap: lv 20, cap 30 (khong chan duoi)", NhiemVuLauDai.hopCap(20, 30));
+        Kiem.dung("hop cap: lv 15, cap 90 (khong chan duoi)", NhiemVuLauDai.hopCap(15, 90));
+        Kiem.dung("hop cap: lv 20, cap 10 (truoc 10 cap)", NhiemVuLauDai.hopCap(20, 10));
+        Kiem.sai("hop cap: lv 21, cap 10 (truoc qua 10 cap)", NhiemVuLauDai.hopCap(21, 10));
         final int[] lv = new int[300];
         for (int i = 0; i < lv.length; i++) {
             lv[i] = 20;
