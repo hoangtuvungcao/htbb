@@ -333,16 +333,18 @@ final class KichBanCap140 {
         void docCp() throws IOException {
             if (!tepCp.isFile()) return;
             for (String l : Files.readAllLines(tepCp.toPath(), StandardCharsets.UTF_8)) {
+                // ngoac cho moi vong for: truoc 30/10/2026 "else if" sau "chinh=" gan vao if TRONG vong for (dangling else) ->
+                // phu= / ket= / gd= / moc= / tn= / so= khong bao gio doc: moi lan chay lai bot di lai vong tinh nang ~10 phut
                 if (l.startsWith("user=")) user = l.substring(5);
                 else if (l.startsWith("phut=")) phutCongDon = Double.parseDouble(l.substring(5));
                 else if (l.startsWith("ngayAo=")) soNgayAo = Integer.parseInt(l.substring(7));
                 else if (l.startsWith("tg=")) dongThoiGian.add(l.substring(3));
                 else if (l.startsWith("cap=")) { String[] f = l.substring(4).split(":"); capLuc.put(Integer.parseInt(f[0]), Long.parseLong(f[1])); }
-                else if (l.startsWith("chinh=")) for (String x : l.substring(6).split(",")) if (!x.isEmpty()) chinhDaXong.add(Integer.parseInt(x));
-                else if (l.startsWith("phu=")) for (String y : l.substring(4).split(",")) if (!y.isEmpty()) phuDaXong.add(Integer.parseInt(y));
+                else if (l.startsWith("chinh=")) { for (String x : l.substring(6).split(",")) if (!x.isEmpty()) chinhDaXong.add(Integer.parseInt(x)); }
+                else if (l.startsWith("phu=")) { for (String y : l.substring(4).split(",")) if (!y.isEmpty()) phuDaXong.add(Integer.parseInt(y)); }
                 else if (l.startsWith("ket=")) ketChi.add(l.substring(4));
                 else if (l.startsWith("gd=")) daGiaoDich = l.endsWith("1");
-                else if (l.startsWith("moc=")) for (String z : l.substring(4).split(",")) if (!z.isEmpty()) mocTinhNang.add(Integer.parseInt(z));
+                else if (l.startsWith("moc=")) { for (String z : l.substring(4).split(",")) if (!z.isEmpty()) mocTinhNang.add(Integer.parseInt(z)); }
                 else if (l.startsWith("tn=")) { String[] f = l.substring(3).split("\t", 2); if (f.length == 2) tinhNangKq.put(f[0], f[1]); }
                 else if (l.startsWith("so=")) {
                     String[] f = l.substring(3).split(",");
