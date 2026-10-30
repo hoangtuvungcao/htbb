@@ -32,6 +32,9 @@ public class ThemNpcLang {
         // 113/114 (cap 72+) nen truoc day la duong mot chieu: khong hoi mau / mua thuoc / ve lang (tru So tay 1 luot/ngay).
         // Arcanine (Về làng + khu xa) canh diem den, Chansey (hoi phuc + thuoc) duoi loi doc.
         {10, 4, 94, 2}, {10, 0, 91, 8},
+        // 30/10/2026: Dong co phia tay 21 / Tau S.S. Anne 22 (va ban sao 721..724 / 741..744) khong co cong / NPC nao dan
+        // vao: Arcanine "Đến ..." (khoa ban do cap 61 / 65 + CA-10.3) + Arcanine ben trong de "Về làng" (diem den ngay duoi)
+        {21, 4, 36, 2}, {22, 4, 30, 27},
     };
 
     public static void main(final String[] a) throws Exception {

@@ -378,7 +378,10 @@ public final class KiemCanBangCapLop {
         for (final String l : npc) {
             final java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                     "UPDATE `data_npc` SET `ban_do` = '([0-9,]+)' WHERE `type` = (\\d+) AND `ban_do` = '([0-9,]+)';").matcher(l);
-            if (m.matches() && dump.containsKey(Integer.valueOf(m.group(2))) && m.group(1).equals(dump.get(Integer.valueOf(m.group(2)))[6])
+            // dump phan A = gia tri SAU moi khoi (khoi sau co the them ban do nua, vd Arcanine 21 / 22 sua_tau_ss_anne.sql)
+            if (m.matches() && dump.containsKey(Integer.valueOf(m.group(2)))
+                    && new java.util.HashSet<String>(java.util.Arrays.asList(dump.get(Integer.valueOf(m.group(2)))[6].split(",")))
+                            .containsAll(java.util.Arrays.asList(m.group(1).split(",")))
                     && ("," + m.group(1) + ",").contains(",10,") && !("," + m.group(3) + ",").contains(",10,")) {
                 npcKhop++;
             }
