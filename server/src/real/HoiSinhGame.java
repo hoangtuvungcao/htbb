@@ -138,6 +138,31 @@ public final class HoiSinhGame {
         return t;
     }
 
+    /** Test: so lan guc trong cua so (t.lan) cua nhan vat, -1 neu chua co. */
+    public static int lanGucChoKiem(final Char p) {
+        final TT t = DS.get(Integer.valueOf(p.charDBID));
+        return t == null ? -1 : t.lan;
+    }
+
+    /** Test: luc guc da ghi (ms), -1 neu chua co. */
+    public static long gucLucChoKiem(final Char p) {
+        final TT t = DS.get(Integer.valueOf(p.charDBID));
+        return t == null ? -1L : t.ls.gucLuc;
+    }
+
+    /** Test: lui luc guc da ghi {@code ms} (gia lap thoi gian troi qua). */
+    public static void luiGucLucChoKiem(final Char p, final long ms) {
+        final TT t = DS.get(Integer.valueOf(p.charDBID));
+        if (t != null) {
+            t.ls.gucLuc -= ms;
+        }
+    }
+
+    /** Test: xoa trang thai cua nhan vat. */
+    public static void xoaChoKiem(final Char p) {
+        DS.remove(Integer.valueOf(p.charDBID));
+    }
+
     /** Co che moi ap dung cho guc nay (nguoi that, ban do thuong). Ban do co luat rieng giu nguyen luong cu. */
     public static boolean apDung(final Char p) {
         if (!laNguoi(p) || p.map == null || !bat()) {
@@ -169,8 +194,12 @@ public final class HoiSinhGame {
             final TT t = tt(p, true);
             final long bay = System.currentTimeMillis();
             synchronized (t) {
-                if (t.dangGuc && bay - t.ls.gucLuc < 3000L) {
-                    return; // Monster goi actorDie 2 lan
+                if (t.dangGuc) {
+                    // van dang guc tu lan truoc (chua hoi sinh - moi duong hoi sinh dat dangGuc = false): KHONG tinh lan guc
+                    // moi. Truoc 31/10/2026 chi bo qua trong 3 giay: client guc van gui di chuyen (CharCapNhat.doPlayerMoveThan)
+                    // / danh (Region.doAttackMonster) -> actorDie moi 3 giay = "Gục lần N" (phi tai cho xN), dem nguoc hoi
+                    // sinh tai cho chay lai tu dau, su kien nhiem vu "guc" cong lien (cb2: 10+ lan / phut / nguoi).
+                    return;
                 }
                 t.dangGuc = true;
                 t.lan = t.ls.ghiGuc(bay, c.cuaSoPhut * 60000L);
