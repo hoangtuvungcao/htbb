@@ -616,7 +616,8 @@ public class BotXuyenSuot {
                 for (int c : new int[]{0, 301, 70, 80, 1701, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
                 if (tot < 0 || !toi(tot)) return false;
             }
-            if (KichBanHuongDan.toiNpc(b, 4) != null) return false;
+            String khong = KichBanHuongDan.toiNpc(b, 4);
+            if (khong != null) { ghi("Arcanine '" + noi + "': " + khong); return false; }
             int m = b.moc();
             b.gui(23, (byte) 4);
             if (b.doiMenu(m, 4, 0, 3000) <= 0) return false;

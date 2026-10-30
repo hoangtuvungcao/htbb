@@ -1046,6 +1046,9 @@ final class KichBanCap140 {
             if (b.lv < gymThuCap.getOrDefault(q.ten, 0) + 2 && System.currentTimeMillis() - gymThuLuc.getOrDefault(q.ten, 0L) < 15 * 60000L) { luyen(4); return null; }
             gymThuCap.put(q.ten, b.lv);
             gymThuLuc.put(q.ten, System.currentTimeMillis());
+            // ve lang TRUOC roi moi mua thuoc: truoc 30/10/2026 mua o cum Johto (khong co shop) that bai -> bo Thuong vao
+            // Gym Celadon voi 0 binh thuoc (thua o 37, boss con 17%)
+            KichBanCap140TinhNang.veLangDiBo(this);
             lanMuaThuoc = 0;
             muaThuoc();
             // thach dau o lang (Quay doi thuong o lang; boss danh duoc trong lang tu 24/10/2026): truoc day bot ra bai luyen
