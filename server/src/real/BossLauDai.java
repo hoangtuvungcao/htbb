@@ -33,6 +33,8 @@ public final class BossLauDai {
         /** Boss Gym: stt gym (>0) va nhan vat duy nhat duoc tinh (1 dau 1). */
         int gym;
         int chuGym;
+        /** Nguoi thach dau Gym (boss / de chi danh nguoi nay - chiDanhChu, chuGym). */
+        Char chu;
         long hetGioGym;
         final long lan;
         final HashMap<Integer, long[]> diem = new HashMap<Integer, long[]>();
@@ -42,6 +44,8 @@ public final class BossLauDai {
         int[] niem; // {x, y, r, hetHanMsThap, idTarget}
         long niemHet;
         Char niemMucTieu;
+        /** Chieu lon da no luc het gio niem va muc tieu con trong vung: don ke tiep x3 (nhipNiem). */
+        boolean niemTrung;
 
         TrangThai(final boolean theGioi) {
             this.lan = com.htbb.pokemon.DongHo.bay();
@@ -157,7 +161,15 @@ public final class BossLauDai {
             if (map == null || t == null) {
                 return;
             }
-            final int n = GiaiDoanBoss.soDe(soNguoi);
+            int n = GiaiDoanBoss.soDe(soNguoi);
+            synchronized (BossLauDai.class) {
+                final TrangThai cha = BOSS.get(boss);
+                if (cha != null && cha.gym > 0) {
+                    // Gym 1 dau 1: soDe(1) = 2 de moi pha (4 de / tran) cap boss - dong mau thap (Eevee 3.000 HP cap 19) guc
+                    // vi de truoc khi kip danh boss (do suc 29/10/2026). Mac dinh 1 de moi pha (cau_hinh gym.so_de).
+                    n = Math.max(0, Math.min(n, LauDai.so("gym.so_de", GiaiDoanBoss.GYM_SO_DE)));
+                }
+            }
             for (int i = 0; i < n; i++) {
                 final Monster de = new MonsterSumon(map, t, boss.x + Map.random(97) - 48, boss.y + Map.random(97) - 48, boss.inCountry);
                 de.level = boss.level;
@@ -197,14 +209,16 @@ public final class BossLauDai {
             synchronized (t) {
                 sk = t.gd.capNhat(m.hp, Math.max(1, m.maxhp), bay);
                 kq = (int) Math.min(Integer.MAX_VALUE, (long) ahp * t.gd.heSoSatThuong() / 100L);
-                // chieu lon da bao truoc: het gio ma muc tieu con trong vung -> them 2 don
-                if (t.niem != null && bay >= t.niemHet) {
-                    if (t.niemMucTieu != null && GiaiDoanBoss.trongVung(0, t.niem[0], t.niem[1], t.niem[2], 0, 0,
-                            t.niemMucTieu.x, t.niemMucTieu.y)) {
-                        kq = (int) Math.min(Integer.MAX_VALUE, (long) kq * 3L);
-                    }
-                    t.niem = null;
-                    t.niemMucTieu = null;
+                if (t.gym > 0) {
+                    kq = giamKhacHeGym(m, muc, kq);
+                }
+                // chieu lon da bao truoc: no LUC HET GIO niem (nhipNiem, vi tri muc tieu luc do) -> don nay them 2 don.
+                // Truoc 29/10/2026 xet vi tri o DON KE TIEP sau het gio (toi 3 giay sau): nguoi danh can chien ne ra roi
+                // quay lai danh boss (vong tron quanh cho cu, sat boss) van an x3 - ne khong co tac dung.
+                noNiem(t, bay);
+                if (t.niemTrung) {
+                    kq = (int) Math.min(Integer.MAX_VALUE, (long) kq * 3L);
+                    t.niemTrung = false;
                 }
                 if (t.niem == null && muc instanceof Char && t.gd.denLucNiem(bay)) {
                     t.niem = new int[]{muc.x, muc.y, 48};
@@ -226,6 +240,75 @@ public final class BossLauDai {
             System.out.println("BossLauDai.monsterDanh: " + e);
         }
         return kq;
+    }
+
+    /** Het gio niem: no o vi tri muc tieu LUC NAY (goi duoi khoa t). */
+    static void noNiem(final TrangThai t, final long bay) {
+        if (t.niem != null && bay >= t.niemHet) {
+            t.niemTrung = t.niemMucTieu != null && t.niemMucTieu.hp > 0 && GiaiDoanBoss.trongVung(0, t.niem[0], t.niem[1], t.niem[2], 0, 0,
+                    t.niemMucTieu.x, t.niemMucTieu.y);
+            t.niem = null;
+            t.niemMucTieu = null;
+        }
+    }
+
+    /** Monster.update cua boss: chieu lon het gio niem thi no ngay (khong cho don danh ke tiep). */
+    static void nhipNiem(final Monster m) {
+        if (!LauDai.bat()) {
+            return;
+        }
+        final TrangThai t = lay(m, false);
+        if (t == null) {
+            return;
+        }
+        synchronized (t) {
+            noNiem(t, com.htbb.pokemon.DongHo.bay());
+        }
+    }
+
+    /**
+     * Truong Gym danh dong bi khac he (x1,5 / x2 trong game): ha ve x1,25 (gym.he_toi_da). Dong Lua gap Gym Cerulean
+     * (Gyarados Nuoc) / dong Nuoc gap Gym Vermilion (Luxray Dien) guc trong 15-60 giay du do cua hang dung bac (do suc
+     * 29/10/2026); khac he van thiet (x1,25), nhung khong chan cung. Chieu cua nguoi choi vao boss giu nguyen.
+     */
+    static int giamKhacHeGym(final Monster m, final LiveActor muc, final int dam) {
+        if (muc == null || dam <= 0) {
+            return dam;
+        }
+        final int he = com.htbb.pokemon.SatThuongHe.heSo(m.hePokemon1(), muc.hePokemon1(), muc.hePokemon2());
+        return GiaiDoanBoss.giamKhacHeGym(dam, he, LauDai.so("gym.he_toi_da", GiaiDoanBoss.GYM_HE_TOI_DA));
+    }
+
+    /**
+     * Boss Gym (va de cua no) chi danh nguoi thach dau: nguoi khac danh no khong gay sat thuong (ghiNhan tra 0) nen no cung
+     * khong duoc danh ho. true = {@code muc} hop le (boss / quai khac: luon true).
+     */
+    static synchronized boolean chiDanhChu(final Monster m, final LiveActor muc) {
+        if (!(muc instanceof Char) || !(m.isBoss || m.khongHoiSinh)) {
+            return true;
+        }
+        TrangThai t = BOSS.get(m);
+        if (t == null) {
+            t = DE.get(m);
+        }
+        return t == null || t.gym <= 0 || ((Char) muc).charDBID == t.chuGym;
+    }
+
+    /**
+     * Nguoi thach dau cua boss Gym / de {@code m} neu dang o cung ban do / khu / nuoc va con song, khong thi null. Boss dang
+     * nham muc tieu nguoi khac (vong gan muc tieu "fp" cua ban do chon nguoi dau danh sach) thi quay ve nguoi nay - truoc ban
+     * sua nay mot boss Gym trong lang dong nguoi gan nhu khong danh chu tran (bo muc tieu roi lai nhan nguoi khac).
+     */
+    static synchronized Char chuGym(final Monster m) {
+        TrangThai t = BOSS.get(m);
+        if (t == null) {
+            t = DE.get(m);
+        }
+        final Char c = t == null || t.gym <= 0 ? null : t.chu;
+        if (c == null || c.exit || c.hp <= 0 || c.map == null || !c.map.equals(m.map) || c.region != m.region || c.inCountry != m.inCountry) {
+            return null;
+        }
+        return c;
     }
 
     /** Tre giua hai don (pha 3 +30% toc do). */
@@ -272,6 +355,7 @@ public final class BossLauDai {
         final TrangThai t = new TrangThai(false);
         t.gym = stt;
         t.chuGym = chu.charDBID;
+        t.chu = chu;
         m.gymStt = stt;
         t.hetGioGym = com.htbb.pokemon.DongHo.bay() + ms;
         BOSS.put(m, t);

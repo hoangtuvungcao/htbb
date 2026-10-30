@@ -86,6 +86,38 @@ public final class GiaiDoanBoss {
         return kq;
     }
 
+    /** Tran he so khac he (%) cua don truong Gym vao nguoi choi (cau_hinh gym.he_toi_da), can bang 29/10/2026. */
+    public static final int GYM_HE_TOI_DA = 125;
+    /** So de moi lan goi cua tran Gym 1 dau 1 (cau_hinh gym.so_de); boss the gioi van theo soDe. */
+    public static final int GYM_SO_DE = 1;
+
+    /**
+     * Don truong Gym da nhan khac he {@code heSo}% (HePokemon.heSoTrongGame: 150 / 200 khi khac): ha ve {@code tran}%.
+     * Yeu / gan mien (&lt;= tran) giu nguyen; tran &lt;= 0 = tat. Toi thieu 1.
+     */
+    public static int giamKhacHeGym(final int dam, final int heSo, final int tran) {
+        if (dam <= 0 || tran <= 0 || heSo <= tran) {
+            return dam;
+        }
+        return (int) Math.max(1L, (long) dam * tran / heSo);
+    }
+
+    /** San he so khac he (%) cua chieu NGUOI CHOI vao truong Gym (cau_hinh gym.he_ra_toi_thieu). */
+    public static final int GYM_HE_RA_TOI_THIEU = 70;
+
+    /**
+     * HP truong Gym cho nguoi thach dau ma chieu danh tot nhat chi gay {@code heTotNhat}% (khac he): duoi san {@code san}% thi
+     * HP x heTotNhat / san - bang voi viec chieu cua ho duoc tinh it nhat x0,7. Dong Dien (moi chieu danh deu he Dien) gap
+     * Seismitoad / Golem (he Dat, gan mien x0,3) truoc day chi gay 30% - khong the ha trong 10 phut (do suc 29/10/2026).
+     * san <= 0 = tat; heTotNhat <= 0 (khong biet) giu nguyen.
+     */
+    public static int hpGymTheoHe(final int hp, final int heTotNhat, final int san) {
+        if (hp <= 0 || san <= 0 || heTotNhat <= 0 || heTotNhat >= san) {
+            return hp;
+        }
+        return (int) Math.max(1L, (long) hp * heTotNhat / san);
+    }
+
     /** He so sat thuong boss (%): no theo thoi gian x3. */
     public int heSoSatThuong() {
         return daNoThoiGian ? NO_THOI_GIAN_SAT_THUONG_PHAN_TRAM : 100;

@@ -530,9 +530,10 @@ final class KiemMucTieuNhiemVu {
 
         // ma nguon: dem theo mau quai, ti le roi vat nhiem vu
         final String mon = new String(Files.readAllBytes(Paths.get("src/real/Monster.java")), StandardCharsets.UTF_8);
+        // 29/10/2026: roi vat qua bao hiem xui (checkDropItemQuestBaoHiem, ti le tiLeNv) - KiemCanBangCapLop
         Kiem.dung("Monster: dem nhiem vu theo mau quai (idTemplate)", mon.contains("p.checkFinishQuest(this.idTemplate, true, this.level);")
-                && mon.contains("p.checkDropItemQuest(this.idTemplate)"));
-        final Matcher r = Pattern.compile("randomMillion\\(\\) < (\\d+)[^\\n]*\\n\\s*final Vector<Short> idItemQuest = p\\.checkDropItemQuest").matcher(mon);
+                && mon.contains("p.checkDropItemQuestBaoHiem(this.idTemplate,"));
+        final Matcher r = Pattern.compile("final int tiLeNv = (\\d+)").matcher(mon);
         Kiem.dung("Monster: vat nhiem vu roi >= 10% moi lan ha (" + (r.find() ? r.group(1) : "?") + "/1e6)",
                 r.find(0) && Integer.parseInt(r.group(1)) >= 100000);
     }

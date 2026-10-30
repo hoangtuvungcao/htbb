@@ -84,10 +84,13 @@ public final class HoiQuy {
     static final Map<String, Integer> CHAR_DB = new ConcurrentHashMap<>();
 
     static synchronized String tenMoi(String tienTo) {
-        StringBuilder s = new StringBuilder(tienTo);
-        int v = demTk++;
-        for (int i = 0; i < 6; i++) { s.append(CHU.charAt(v % CHU.length())); v /= CHU.length(); }
-        return s.toString();
+        for (;;) {
+            StringBuilder s = new StringBuilder(tienTo);
+            int v = demTk++;
+            for (int i = 0; i < 6; i++) { s.append(CHU.charAt(v % CHU.length())); v /= CHU.length(); }
+            // bo loc ten nhan vat cam ba chu lap ("www", "xxx") - tao nhan vat that bai giua chung (do suc 29/10/2026)
+            if (!s.toString().matches(".*(.)\\1\\1.*")) return s.toString();
+        }
     }
 
     /** {loai, ...}: [0]="0" cau do (q), "1" thanh cong, "2" loi (cac thong bao). Doc goi 39 "#dk2" tu moc. */

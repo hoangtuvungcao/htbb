@@ -150,7 +150,9 @@ public final class GymLauDai {
             return "Không triệu hồi được trưởng Gym.";
         }
         final boolean[] moi = {false};
-        final Monster b = BossLauDai.moGym(p, stt, t, so(g[3]), so(g[6]), so(g[7]), so(g[8]), THOI_GIAN_MS, moi);
+        final int hp = com.htbb.pokemon.GiaiDoanBoss.hpGymTheoHe(so(g[6]), heTotNhat(p, t),
+                com.htbb.pokemon.LauDai.so("gym.he_ra_toi_thieu", com.htbb.pokemon.GiaiDoanBoss.GYM_HE_RA_TOI_THIEU));
+        final Monster b = BossLauDai.moGym(p, stt, t, so(g[3]), hp, so(g[7]), so(g[8]), THOI_GIAN_MS, moi);
         if (b == null) {
             return "Không triệu hồi được trưởng Gym.";
         }
@@ -163,6 +165,29 @@ public final class GymLauDai {
         } catch (final Exception ignored) {
         }
         return g[5] + " xuất hiện ngay cạnh bạn! Hãy đánh tay trong 10 phút (nổi giận sau " + so(g[9]) + " phút).";
+    }
+
+    /**
+     * He so khac he (%) TOT NHAT cua cac chieu danh (o 0..3, da hoc) cua {@code p} vao he cua mau boss {@code t}; 0 = khong
+     * biet. Dung de ha HP boss cho dong khong co chieu nao danh duoc no (GiaiDoanBoss.hpGymTheoHe).
+     */
+    static int heTotNhat(final Char p, final MonsterTemplate t) {
+        int tot = 0;
+        try {
+            for (int k = 0; k < 4 && k < p.skill.length; k++) {
+                if (p.skill[k] <= 0) {
+                    continue;
+                }
+                final int hc = HocChieuGame.heChieu(p, k);
+                if (hc < 0) {
+                    continue;
+                }
+                tot = Math.max(tot, com.htbb.pokemon.HePokemon.heSoTrongGame(hc, t.he, t.he2));
+            }
+        } catch (final Exception ignored) {
+            return 0;
+        }
+        return tot;
     }
 
     /**

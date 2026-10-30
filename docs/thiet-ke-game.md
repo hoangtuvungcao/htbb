@@ -277,6 +277,9 @@ PvP      = sát thương × 0,30, TRẦN 8% HP tối đa của mục tiêu mỗi
 
 - Thời tiết (khi bật hệ sinh thái): chiêu hợp trời ±10% (mục 7.1), chỉ áp đòn của người chơi.
 - Sau mọi lớp giảm phía bị đánh, đòn còn ít nhất 40% (sàn chống bất tử, mục 4.5).
+- Quái chủ động (`com.htbb.pokemon.ChuDongQuai`, cân bằng 29/10/2026): quái thấp hơn người chơi từ 4 cấp không tự lao vào
+  (`quai.xam_cap`); cùng lúc tối đa 2 quái chưa bị đánh được đánh một người (`quai.toi_da_vay`) - quái đã mất máu luôn đánh
+  trả. Trước đó mọi quái trong 120 px tự vào khi người chơi đang bị đánh (4–6 con trong 1–2 giây).
 - TTK mục tiêu: quái thường hạ người ~12–15 đòn; quái tinh anh ~20 giây; boss Gym 90–120 giây đánh một mình đúng cấp;
   boss thế giới 8–12 phút với 20 người; PvP cùng cấp cùng đồ 10–14 giây.
 
@@ -942,9 +945,10 @@ vào bằng **vé Mê cung**, quái ra theo đợt kèm boss Mê cung, giới h�
 | Cơ chế | Chi tiết |
 |---|---|
 | Pha | 100–70% HP: đánh thường + 1 chiêu lớn; 70–40%: thêm chiêu vùng, gọi đệ; < 40%: "nộ" +30% tốc độ đánh, gọi đệ lần 2 |
-| Báo trước chiêu lớn | gói -96: thời gian niệm 1,5–3 giây + hình vùng (tròn / nón / chữ nhật / vành); đứng ngoài vùng thì không trúng |
+| Báo trước chiêu lớn | gói -96: thời gian niệm 1,5–3 giây + hình vùng (tròn / nón / chữ nhật / vành); chiêu **nổ đúng lúc hết giờ niệm** (`BossLauDai.nhipNiem`), mục tiêu đứng ngoài vùng lúc đó thì không trúng (trước 29/10/2026 xét ở đòn kế tiếp - né rồi quay lại vẫn ăn ×3) |
 | Nộ theo thời gian | boss Gym sau 5 phút, boss thế giới sau 15 phút: sát thương ×3 (chống kéo dài bằng người đông) |
-| Gọi đệ | ở 70% và 40% HP, 2..6 con theo số người đang đánh |
+| Gọi đệ | ở 70% và 40% HP, 2..6 con theo số người đang đánh; **Gym 1 đấu 1: 1 con mỗi pha** (`gym.so_de`) |
+| Gym 1 đấu 1 | boss Gym và đệ chỉ đánh người thách đấu (nhắm nhầm người khác thì quay về người thách đấu); khắc hệ của đòn trưởng Gym vào người chơi trần **×1,25** (`gym.he_toi_da`, `GiaiDoanBoss.giamKhacHeGym`); dòng không có chiêu đánh nào quá ×0,7 vào hệ boss (Điện gặp Golem / Seismitoad hệ Đất ×0,3) thì HP boss × tốt nhất / 70 (`gym.he_ra_toi_thieu`, `GiaiDoanBoss.hpGymTheoHe`) - dòng bị khắc vẫn khó hơn nhưng không bị chặn cứng |
 | Thông báo pha | gói -98 (vào pha, nộ, gọi đệ, khiên) |
 
 **Quái tinh anh** (chữ người chơi thấy là "quái tinh anh", không dùng "Alpha"): 1/50 lần hồi sinh, to ×1,3, HP ×4, tấn
