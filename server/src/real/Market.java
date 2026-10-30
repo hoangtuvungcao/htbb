@@ -205,6 +205,13 @@ public class Market {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
                 return false;
             } else if (priceBid > item.priceBid && priceBid < item.priceSell) {
+                // 29/10/2026 (TruTruocTrao): tru ky quy TRUOC (kiem-va-tru mot buoc), roi moi hoan nguoi dat truoc /
+                // ghi gia moi. Ban cu subXu (chan ve 0) SAU khi da hoan + ghi gia -> tieu xu o luong khac giua chung
+                // = dat gia khong tien, nguoi dat truoc van duoc hoan.
+                if (!player.truXuNeuDu(priceBid, false, "maket 1", Char.XU_CHUYEN)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
+                    return false;
+                }
                 if (!item.charBid.trim().equals("")) {
                     ItemMarket.addMoneyCharSell(item.charBid.trim(), item.priceBid);
                     Database.instance
@@ -230,7 +237,7 @@ public class Market {
 
                 item.charBid = player.charname;
                 item.priceBid = priceBid;
-                player.subXu(priceBid, false, "maket 1", Char.XU_CHUYEN); // ky quy dat gia, ve nguoi ban / hoan qua kho cho
+                // (ky quy da tru o tren bang truXuNeuDu - ve nguoi ban / hoan qua kho cho)
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 if (!cs.hadBitItem(item)) {
                     cs.addItem(item);
@@ -263,6 +270,10 @@ public class Market {
                 isItemExpired(item);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm đã hết thời gian đăng bán", ""));
                 return false;
+            } else if (!player.truXuNeuDu(item.priceSell, false, "maket 2", Char.XU_CHUYEN)) {
+                // 29/10/2026 (TruTruocTrao): tru nguoi mua TRUOC khi trao mon / cong nguoi ban (ban cu subXu chan ve 0 SAU).
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
+                return false;
             } else {
                 NewClan clan = NewClan.getClan(Map.idClanTown[item.country]);
                 long tax = 0L;
@@ -286,7 +297,7 @@ public class Market {
                 Item it = item.item.cloneItem();
                 it.id = player.getIDItem();
                 player.iItems.add(it);
-                player.subXu(item.priceSell, false, "maket 2", Char.XU_CHUYEN);
+                // (xu nguoi mua da tru o tren bang truXuNeuDu)
                 com.htbb.pokemon.LauDai.ghiXuRa(tax); // nguoi ban nhan priceSell - tax (kho cho), thue = xu ra
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));

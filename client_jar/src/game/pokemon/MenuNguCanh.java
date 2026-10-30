@@ -264,6 +264,8 @@ public final class MenuNguCanh extends Dialog {
 
     /** Khung thẻ vừa vẽ {x, y, w, h} (kiểm thử: trong vùng an toàn, không chồng HUD). */
     public static final int[] VUA_VE = new int[4];
+    /** Thẻ vừa vẽ lệch khỏi giữa ngang để không đè HUD (màn thấp) - kiểm thử chấp nhận lệch khi đó. */
+    public static boolean neHud;
 
     /**
      * 0.9.6 (kiểu GO): THẺ TRẮNG nhỏ neo cạnh mục tiêu - tên đậm trên, mỗi lệnh một hàng (đĩa icon màu + nhãn), mũi
@@ -300,51 +302,66 @@ public final class MenuNguCanh extends Dialog {
         int tdTot = TOI_DA, chongTot = Integer.MAX_VALUE;
         int trangCu = this.trang, chonCu = this.chon;
         int nLenh = this.lenh.size();
-        for (int td = Math.min(TOI_DA, Math.max(2, nLenh)); td >= 2; td--) {
-            this.moiTrang = td;
-            this.trang = Math.min(trangCu, soTrang() - 1);
-            int[] ds1 = dsTrang();
-            int wNhan = 0;
-            for (int i = 0; i < ds1.length; i++) {
-                wNhan = Math.max(wNhan, ChuDe.rong(ds1[i] < 0 ? "Thêm" : chu(ds1[i]), ChuDe.NHAN));
-            }
-            int wc1 = Math.max(ChuDe.dt() ? 170 : 140, Math.min(ChuDe.dt() ? 260 : 220, wNhan + ic + 30));
-            if (tieu != null) {
-                wc1 = Math.max(wc1, Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36)));
-            }
-            int cot1 = 1;
-            int hang1 = ds1.length;
-            if (hTieu + hang1 * (nh + k) + 6 > B - T - 4 && ds1.length > 1) {
-                cot1 = 2;
-                hang1 = (ds1.length + 1) / 2;
-            }
-            int w1 = cot1 * wc1 + (cot1 - 1) * k + 12, h1 = hTieu + hang1 * (nh + k) - k + 8;
-            int[] o1 = viTri(w1, h1, L, T, R, B);
-            if (o1[3] > 0 && cot1 == 1 && ds1.length > 1) {
-                // một cột không có chỗ trống không chồng HUD: thử 2 cột (thẻ thấp hơn)
-                int hang2 = (ds1.length + 1) / 2, w2 = 2 * wc1 + k + 12, h2 = hTieu + hang2 * (nh + k) - k + 8;
-                int[] o2 = viTri(w2, h2, L, T, R, B);
-                if (o2[3] < o1[3]) {
-                    cot1 = 2;
-                    hang1 = hang2;
-                    w1 = w2;
-                    h1 = h2;
-                    o1 = o2;
+        int wMax = (R - L) * 80 / 100, nhTot = nh;
+        // lượt 2 (chỉ khi lượt 1 - thẻ giữa ngang - chỗ nào cũng đè HUD, vd J2ME 400x240): cột hẹp nhất + thử vị trí lệch
+        for (int lan = 0; lan < 2 && chongTot > 0; lan++) {
+            final boolean ne = lan == 1;
+            for (int td = Math.min(TOI_DA, Math.max(2, nLenh)); td >= 2; td--) {
+                this.moiTrang = td;
+                this.trang = Math.min(trangCu, soTrang() - 1);
+                int[] ds1 = dsTrang();
+                int wNhan = 0;
+                for (int i = 0; i < ds1.length; i++) {
+                    wNhan = Math.max(wNhan, ChuDe.rong(ds1[i] < 0 ? "Thêm" : chu(ds1[i]), ChuDe.NHAN));
                 }
-            }
-            if (o1[3] < chongTot) {
-                chongTot = o1[3];
-                tdTot = td;
-                ds = ds1;
-                wc = wc1;
-                cot = cot1;
-                hang = hang1;
-                w = w1;
-                h = h1;
-                o = o1;
-            }
-            if (o1[3] == 0 || nLenh <= 1) {
-                break;
+                int wc1 = Math.max(ChuDe.dt() ? 170 : 140, Math.min(ChuDe.dt() ? 260 : 220, wNhan + ic + 30));
+                if (tieu != null) {
+                    wc1 = Math.max(wc1, Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36)));
+                }
+                // màn hẹp (J2ME 240x320): thẻ <= 80 % vùng an toàn - lệnh dài ngắt hai dòng (nutLenh)
+                wc1 = Math.min(wc1, ne ? ChuDe.dt() ? 170 : 140 : wMax - 12);
+                // hàng cao thêm khi một lệnh cần 3 dòng chữ nhỏ (màn hẹp) - mọi hàng trang này cùng cao
+                int nh1 = nh;
+                for (int i = 0; i < ds1.length; i++) {
+                    if (ds1[i] >= 0) {
+                        nh1 = Math.max(nh1, caoNut(chu(ds1[i]), wc1, nh));
+                    }
+                }
+                int cot1 = 1;
+                int hang1 = ds1.length;
+                if (hTieu + hang1 * (nh1 + k) + 6 > B - T - 4 && ds1.length > 1 && 2 * wc1 + k + 12 <= wMax) {
+                    cot1 = 2;
+                    hang1 = (ds1.length + 1) / 2;
+                }
+                int w1 = cot1 * wc1 + (cot1 - 1) * k + 12, h1 = hTieu + hang1 * (nh1 + k) - k + 8;
+                int[] o1 = viTri(w1, h1, L, T, R, B, ne);
+                if (o1[3] > 0 && cot1 == 1 && ds1.length > 1 && 2 * wc1 + k + 12 <= wMax) {
+                    // một cột không có chỗ trống không chồng HUD: thử 2 cột (thẻ thấp hơn)
+                    int hang2 = (ds1.length + 1) / 2, w2 = 2 * wc1 + k + 12, h2 = hTieu + hang2 * (nh1 + k) - k + 8;
+                    int[] o2 = viTri(w2, h2, L, T, R, B, ne);
+                    if (o2[3] < o1[3]) {
+                        cot1 = 2;
+                        hang1 = hang2;
+                        w1 = w2;
+                        h1 = h2;
+                        o1 = o2;
+                    }
+                }
+                if (o1[3] < chongTot) {
+                    chongTot = o1[3];
+                    tdTot = td;
+                    ds = ds1;
+                    wc = wc1;
+                    cot = cot1;
+                    hang = hang1;
+                    w = w1;
+                    h = h1;
+                    o = o1;
+                    nhTot = nh1;
+                }
+                if (o1[3] == 0 || nLenh <= 1) {
+                    break;
+                }
             }
         }
         this.moiTrang = tdTot;
@@ -355,6 +372,7 @@ public final class MenuNguCanh extends Dialog {
         VUA_VE[1] = y;
         VUA_VE[2] = w;
         VUA_VE[3] = h;
+        neHud = o[4] != 0;
         // mũi nhọn về mục tiêu (bên trái / phải hộp): tam giác giấy da viền nâu
         if (this.mx >= 0 && (this.mx < x || this.mx > x + w)) {
             int yt = Math.max(y + 14, Math.min(y + h - 14, this.my));
@@ -397,8 +415,8 @@ public final class MenuNguCanh extends Dialog {
         for (int i = 0; i < ds.length; i++) {
             final int li = ds[i];
             int c = i / hang, r = i % hang;
-            int xr = x + 6 + c * (wc + k), yr = y + hTieu + r * (nh + k);
-            nutLenh(g, xr, yr, wc, nh, li < 0 ? "Thêm" : chu(li), i == this.chon, new IAction() {
+            int xr = x + 6 + c * (wc + k), yr = y + hTieu + r * (nhTot + k);
+            nutLenh(g, xr, yr, wc, nhTot, li < 0 ? "Thêm" : chu(li), i == this.chon, new IAction() {
                 public void perform() {
                     if (li < 0) {
                         MenuNguCanh.this.trang = (MenuNguCanh.this.trang + 1) % MenuNguCanh.this.soTrang();
@@ -409,13 +427,13 @@ public final class MenuNguCanh extends Dialog {
                 }
             }, i);
             if (this.cham != null && li >= 0 && li < this.cham.length && this.cham[li]) {
-                ChuDe.cham(g, xr + wc - 10, yr + nh / 2);
+                ChuDe.cham(g, xr + wc - 10, yr + nhTot / 2);
             }
         }
     }
 
     /** Vị trí thẻ (w x h): gần mục tiêu, trong vùng an toàn, ít chồng HUD nhất. */
-    int[] viTri(int w, int h, int L, int T, int R, int B) {
+    int[] viTri(int w, int h, int L, int T, int R, int B, boolean ne) {
         Object[][] hud = null;
         try {
             if (game.render.screen.HudRong.bat() && Canvas.gameScr != null) {
@@ -460,7 +478,58 @@ public final class MenuNguCanh extends Dialog {
                 by = y;
             }
         }
-        return new int[]{bx, by, tot, (int) Math.min(Integer.MAX_VALUE, chongTot)};
+        int xGiua = x;
+        if (ne && chongTot > 0 && hud != null) {
+            // màn thấp (J2ME 400x240): giữa ngang chỗ nào cũng đè HUD -> thử thêm vị trí sát cạnh từng phần HUD / sát
+            // biên vùng an toàn (trái / phải), chọn chỗ ít đè nhất rồi gần giữa nhất. Chỉ chạy khi cách thường còn đè.
+            int n = hud.length;
+            int[] xs = new int[2 * n + 3], ys2 = new int[2 * n + 3];
+            xs[0] = x;
+            xs[1] = L + 2;
+            xs[2] = R - 2 - w;
+            ys2[0] = giua;
+            ys2[1] = T + 2;
+            ys2[2] = B - 2 - h;
+            for (int q = 0; q < n; q++) {
+                int[] a = (int[]) hud[q][1];
+                xs[3 + 2 * q] = a[0] + a[2] + 2;
+                xs[4 + 2 * q] = a[0] - w - 2;
+                ys2[3 + 2 * q] = a[1] + a[3] + 2;
+                ys2[4 + 2 * q] = a[1] - h - 2;
+            }
+            long diem2 = Long.MAX_VALUE;
+            for (int i = 0; i < xs.length; i++) {
+                int cx = Math.max(L + 2, Math.min(R - 2 - w, xs[i]));
+                for (int j = 0; j < ys2.length; j++) {
+                    int cy = Math.max(T + 2, Math.min(B - 2 - h, ys2[j]));
+                    long chong = 0;
+                    for (int q = 0; q < n; q++) {
+                        String ten = (String) hud[q][0];
+                        if ("ten_chieu".equals(ten) || "muc_tieu".equals(ten)) {
+                            continue;
+                        }
+                        int[] a = (int[]) hud[q][1];
+                        int ox = Math.min(cx + w, a[0] + a[2]) - Math.max(cx, a[0]);
+                        int oy = Math.min(cy + h, a[1] + a[3]) - Math.max(cy, a[1]);
+                        if (ox > 0 && oy > 0) {
+                            chong += (long) ox * oy;
+                        }
+                    }
+                    if (chong > chongTot) {
+                        continue;
+                    }
+                    long phat = coMt && ax >= cx - 8 && ax <= cx + w + 8 && ay >= cy - 8 && ay <= cy + h + 8 ? 400 : 0;
+                    long d = (chong + phat) * 1000 + Math.abs(cy - giua) + Math.abs(cx - x);
+                    if (d < diem2) {
+                        diem2 = d;
+                        chongTot = chong;
+                        bx = cx;
+                        by = cy;
+                    }
+                }
+            }
+        }
+        return new int[]{bx, by, tot, (int) Math.min(Integer.MAX_VALUE, chongTot), bx != xGiua ? 1 : 0};
     }
 
     String chu(int i) {
@@ -499,6 +568,20 @@ public final class MenuNguCanh extends Dialog {
         return r;
     }
 
+    /** Bề ngang chữ của nút lệnh rộng w (như nutLenh). */
+    static int rongChuNut(int w, int h) {
+        return w - Math.min(h - 6, 16) - 26;
+    }
+
+    /** Cao nút lệnh cần cho chu ở bề ngang w: h thường; lệnh dài cần 3 dòng chữ nhỏ thì cao hơn. */
+    static int caoNut(String chu, int w, int h) {
+        int wc = rongChuNut(w, h), hp = ChuDe.cao(ChuDe.PHU);
+        if (chu == null || ChuDe.rong(chu, ChuDe.NHAN) <= wc || ChuDe.ngat(chu, ChuDe.PHU, wc, 3).length < 3) {
+            return h;
+        }
+        return Math.max(h, 3 * hp + 6);
+    }
+
     /** Một lệnh (0.9.7): NÚT KHỐI giấy da (chọn bằng phím = viền vàng; nhấn = lõm) + icon pixel trái + nhãn. */
     static void nutLenh(Graphics g, int x, int y, int w, int h, String chu, boolean chon, Object viec, int i) {
         boolean an = viec != null && Bang.dangAn(g, x, y, w, h);
@@ -517,8 +600,18 @@ public final class MenuNguCanh extends Dialog {
         if (!KhungNro.iconGiua(g, b[0], cx, cy, 1, -1)) {
             BieuTuong.ve(g, b[0], cx - s / 2, cy - s / 2, s, b[1], ChuDe.NEN);
         }
-        ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, w - s - 26), x + s + 16, y + dy, h, ChuDe.NHAN,
-                b[0] == BieuTuong.KHOA ? ChuDe.CHU_NHAT : ChuDe.CHU, 0);
+        int mau = b[0] == BieuTuong.KHOA ? ChuDe.CHU_NHAT : ChuDe.CHU, wc = w - s - 26;
+        int hp = ChuDe.cao(ChuDe.PHU);
+        if (chu != null && ChuDe.rong(chu, ChuDe.NHAN) > wc && 2 * hp + 2 <= h) {
+            // lệnh dài (hạt giống vườn "Berry Oran - hạt 35 xu, 20 phút → ...", tin chợ): 2-3 dòng chữ nhỏ thay vì cắt
+            String[] d = ChuDe.ngat(chu, ChuDe.PHU, wc, Math.min(3, (h - 2) / hp));
+            int y0 = y + dy + (h - d.length * hp) / 2;
+            for (int k = 0; k < d.length; k++) {
+                ChuDe.chu(g, d[k], x + s + 16, y0 + k * hp, ChuDe.PHU, mau, 0);
+            }
+        } else {
+            ChuDe.chuGiua(g, ChuDe.cat(chu, ChuDe.NHAN, wc), x + s + 16, y + dy, h, ChuDe.NHAN, mau, 0);
+        }
         VungCham.them(g, x, y, w, h, viec, "lenh-" + i);
     }
 

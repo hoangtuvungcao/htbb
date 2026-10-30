@@ -127,6 +127,11 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
     - `sua_can_bang_cap.sql`: `data_monster_lau_dai` quái thường cấp 13-59: thủ giảm dần tới 25% và tấn công tới 15% (cấp
       22-45) rồi trả dần về 0 ở cấp 60, HP / tấn công cấp 31-39 nội suy giữa cấp 30 và 40 (bỏ bậc thang cấp 31: HP ×1,29
       trong một cấp).
+16. `sua_nha_tre_pet.sql` (30/10/2026, người chơi J2ME bấm "Trả phí hôm nay" chỉ thấy "Chưa gửi pet nào."): mục Hướng dẫn
+    tân thủ `npc.19_trung` nói rõ nhà trẻ chỉ nhận **pet đồng hành** (không phải Pokémon chiến đấu) và cách có pet (trứng pet
+    rơi khi có Poké Ball, trứng Chợ sinh thái); `UPDATE … AND sua_boi = '' AND noi_dung = <cũ>`. Chữ menu / thông báo Nhà
+    trẻ ở mã (`HeSinhThaiMenu.CHUA_CO_PET`). Cùng đợt (mã, không SQL): bước địa điểm trong nhà (C05.2 "Bảo tàng thiên thạch")
+    xong ngay lúc vào nhà - client không gửi gói di chuyển trong nhà. `server/test/KiemVaoNhaNhiemVu`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

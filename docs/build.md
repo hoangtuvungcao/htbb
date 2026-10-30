@@ -244,6 +244,38 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.22 (`BAN=922`: kéo thả chiêu mượt, Auto tự uống bình PP, dấu sao nhiệm vụ, Nokia E72, J2ME ngang trên giả lập Android, màn Tạo Pokémon Android, giao diện điện thoại)
+
+Client `PHIEN_BAN=0.9.22-opentest` (`BAN = 0*10000 + 9*100 + 22`; `MIDlet-Version` 0.9.22) trên main 7ea61bf6, chạy với
+mọi máy chủ 0.9.15+ (dấu sao nhiệm vụ cần máy chủ có đuôi gói -64 mới; máy chủ cũ đọc như trước). `htbb-server.jar` của
+main (không build lại khi phát hành) - qua cổng staging trước khi lên production.
+
+1. **Kéo thả chiêu mượt** (d081d645 / 3eec1c99): cần ngắm tay (`NgamTay`: vùng chết, nút cầm, huỷ có trễ) và kéo chiêu
+   vào ô nhanh (`KeoChieu`). Kiểm: `client_pc/test/KiemKeoTha`.
+2. **Auto tự uống bình PP** (65395269 / 448236b3): đồng bộ HP/PP thật mỗi 3 giây, uống khi PP dưới chiêu rẻ nhất, hết
+   bình báo rõ "hết bình PP". Kiểm: `client_pc/test/KiemTuDongThuoc`.
+3. **Dấu sao vàng chỉ chỗ nhiệm vụ** (e71370ec / c55f95cd): đuôi gói -64 mang ô đích bước địa điểm - dấu sao trên ô đích,
+   mũi tên quanh nhân vật khi ngoài màn, nút "Đi tới dấu sao" ở sổ nhiệm vụ (chạm / phím 5 = tìm đường), bản đồ khác: nút
+   "Tới <nơi>". Kiểm: `client_pc/test/KiemDiemNhiemVu`.
+4. **Nokia E72 (J2ME, S60 3rd FP2)** (75167a7c / b46e45e1): nạp bản đồ lỗi không đóng game, không tạo ảnh mới mỗi khung,
+   ít âm thanh prefetch, kiểm API CLDC trên jar cuối sau ProGuard.
+5. **J2ME chơi ngang trên CoffeeCat / J2ME Loader** (28199097 / ffc63a76): phóng to nguyên màn ảo lớn, xoay màn giữa
+   chừng, hướng dẫn người chơi cài giả lập.
+6. **Màn Tạo Pokémon trên Android** (fa44be20 / f32b1bd8): khung không đè 5 Pokémon khởi đầu, nút không ra ngoài màn, tên
+   4-10 ký tự, bàn phím không gợi ý chữ. Kiểm: `client_pc/test/KiemTaoNhanVat`.
+7. **Giao diện điện thoại** (4544580e / 1dd42588): nút tối thiểu 44dp, hộp chọn số lượng, cửa hàng, giao dịch, menu ngữ
+   cảnh ở 400x240, chạm không bị mất trong nhịp game, chip Auto, dòng vườn J2ME; `ChupTrongGame` thường + `-Dchup.j2me`
+   về 0 lỗi.
+
+Máy chủ (main 7ea61bf6) lên cùng bản: hộp thư; chặn lừa giao dịch; chặn kết bạn cưỡng ép; Gym 1 đấu 1 + quái con Gym không
+còn mồ côi ở làng (bb0c4dea); trừ tiền / đồ trước rồi mới trao ở chợ, đấu giá, ghép ngọc, chế tạo, góp quỹ (041796de);
+chặn bán thú đang khoá; nhà trẻ (trứng từ pet đã bỏ), đổi khu không treo 20 giây (291cb2d7); 140 bước nhiệm vụ; nhà Pewter
++ Arcanine gác cổng đưa tới ô đúng (7ea61bf6); vé tàu 5.000 xu; vườn berry bật lại và có lời (5aa8bd3b / 63f95235); cân
+bằng cấp 15-45 (98fbfa11); Auto PP (đồng bộ PP thật).
+
+Kiểm (bản PC phát hành, main 7ea61bf6): KiemPc 257/0, KiemCapNhat 509/0, KiemTuBuff 31/0, KiemTuDongThuoc 30/0,
+KiemTrungLap 247/0, KiemKeoTha 271/0, KiemDiemNhiemVu 51/0, KiemTaoNhanVat 5117/0.
+
 ### Bản 0.9.21 (`BAN=921`: Auto tự dùng kỹ năng phụ trợ, lọc hành trang có chữ, HUD một bánh răng, nút đổi trang chiêu, gọn menu)
 
 Client `PHIEN_BAN=0.9.21-opentest` (`BAN = 0*10000 + 9*100 + 21`; `MIDlet-Version` 0.9.21) trên main 533ee444, chạy với

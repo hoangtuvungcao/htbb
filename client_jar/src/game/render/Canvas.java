@@ -443,6 +443,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         if (gameTick > 10000) {
             gameTick = 0;
         }
+        nhanThaCho();
         if (isVirTualKey) {
             virKey.update();
         }
@@ -873,13 +874,27 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         x = chamX(x);
         y = chamY(y);
         dangGiu = false;
-        isPointerDown = false;
-        isPointerClick = true;
-        isPointerRelease = true;
-        isPointerDownNj = false;
-        isPointerJustRelease = true;
         px = x;
         py = y;
+        // 0.9.22 (KiemChamHud: chạm ô Menu "không ăn" khi máy tải nặng): cú thả tới từ luồng sự kiện GIỮA nhịp logic (sau
+        // VungCham.xuLy, trước clearKeyPressed cuối nhịp / màn lưu-khôi phục cờ quanh gameScr.update) bị xoá mất. Nay
+        // chỉ ghi chờ; đầu nhịp kế (nhipLogic) mới bật cờ thả - mọi bước của nhịp đó đều thấy cú thả.
+        thaCho = true;
+    }
+
+    /** Cú thả đang chờ nhịp logic kế (pointerReleased -> nhipLogic). */
+    private static volatile boolean thaCho;
+
+    /** Đầu nhịp logic: bật cờ cú thả đang chờ. */
+    static void nhanThaCho() {
+        if (thaCho) {
+            thaCho = false;
+            isPointerDown = false;
+            isPointerClick = true;
+            isPointerRelease = true;
+            isPointerDownNj = false;
+            isPointerJustRelease = true;
+        }
     }
 
     public static void clearKeyHold() {

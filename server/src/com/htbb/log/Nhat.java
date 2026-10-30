@@ -379,6 +379,12 @@ public final class Nhat {
     static void tuStackCu(final String dau, final String khung, final String khoi) {
         final String s = sachGiuTab(khoi);
         final String d = sachGiuTab(dau);
+        // printStackTrace() cua EOFException = goi tin client cut ngan (client sai / bot thao tac bat thuong), khong
+        // phai loi may chu: dem vao [GOI_CUT] thay vi in stack muc LOI.
+        if (d.startsWith("java.io.EOFException")) {
+            real.GoiTinCut.dem("?", -1);
+            return;
+        }
         xuLyStack(Muc.LOI, "STACK", d, mau(d) + " @ " + (khung == null ? "?" : khung), dinhDang(Muc.LOI, "STACK", s, true));
     }
 

@@ -16,6 +16,16 @@ public final class KhungVao {
     private KhungVao() {
     }
 
+    /**
+     * 0.9.22: true = bảng được che đội hình khởi đầu trên đường (màn Tạo Pokémon bố cục gọn: chọn Pokémon bằng hàng chân
+     * dung TRONG bảng) - bố cục đặt bảng như không có đội hình. Người gọi đặt lại false sau logoVaBang.
+     */
+    public static boolean cheDoiHinh;
+
+    private static int[] doiHinh() {
+        return cheDoiHinh ? null : Banner.vungKhoiDau();
+    }
+
     public static boolean moi() {
         return ChuUI.bo != null;
     }
@@ -103,7 +113,7 @@ public final class KhungVao {
         }
         int L = le() + Bang.anTrai, R = W - le() - Bang.anPhai;
         int T = le() + Bang.anTren, B = H - le() - Bang.anDuoi;
-        int[] k = Banner.vungKhoiDau();
+        int[] k = doiHinh();
         int yb = k == null ? B : Math.min(B, k[1] - 4);
         int mid = (L + R) / 2;
         int wc = Math.min(wCan, R - mid - 8);
@@ -155,7 +165,7 @@ public final class KhungVao {
         int W = Canvas.w, H = Canvas.h - game.render.screen.Screen.deltaY;
         int L = le() + Bang.anTrai, R = W - le() - Bang.anPhai;
         int T = le() + Bang.anTren, B = H - le() - Bang.anDuoi;
-        int[] k = Banner.vungKhoiDau();
+        int[] k = doiHinh();
         int w = Math.min(wCan, R - L);
         int h0 = w >= 220 ? hRong : hHep;
         // A: dải giữa logo và đội hình

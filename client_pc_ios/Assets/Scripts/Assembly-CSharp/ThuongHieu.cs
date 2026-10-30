@@ -47,7 +47,7 @@ public static class ThuongHieu
 	public const string CAP_NHAT_URL = "";
 
 	/// <summary>Ten phien ban cho nguoi choi; ban build dong gia tri tu tools/phat-hanh/phien_ban.conf.</summary>
-	public const string PHIEN_BAN = "0.9.21-opentest";
+	public const string PHIEN_BAN = "0.9.22-opentest";
 
 	/// <summary>Ten tep cau hinh BuildCli sinh luc build trong Assets/Resources (khong dua len git).</summary>
 	public const string TEP_PHAT_HANH = "htbb_phat_hanh";

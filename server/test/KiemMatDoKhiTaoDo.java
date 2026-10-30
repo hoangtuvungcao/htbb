@@ -122,11 +122,12 @@ public final class KiemMatDoKhiTaoDo {
      */
     private static void khongTruXuKhiTaoDoThatBai() {
         final String s = doc("src/real/MapCheTao.java");
-        Kiem.dung("giu lai ket qua cua doCreateNewItem", s.contains("final Item vuaTao = map.doCreateNewItem("));
-        Kiem.dung("that bai thi ra som, khong tru xu", s.contains("if (vuaTao == null) {"));
-        final int viTriKiem = s.indexOf("if (vuaTao == null) {");
-        final int viTriTruXu = s.indexOf("player.subXu(5000L, true, \"map 23\")");
-        Kiem.dung("cho kiem null nam TRUOC cho tru xu", viTriKiem > 0 && viTriTruXu > viTriKiem);
+        // 29/10/2026: tru 5000 TRUOC (TruTruocTrao.voiPhi), doCreateNewItem tra null -> HONG -> hoan du (KiemTruTruocTrao).
+        final int viTriPhi = s.indexOf("TruTruocTrao.voiPhi(player, 5000L");
+        final int viTriTao = s.indexOf("return map.doCreateNewItem(", viTriPhi);
+        Kiem.dung("giu lai ket qua cua doCreateNewItem (trong voiPhi)", viTriPhi > 0 && viTriTao > viTriPhi);
+        Kiem.dung("that bai (null) = trao hong -> hoan xu, khong mat", s.indexOf(") != null;", viTriTao) > viTriTao);
+        Kiem.sai("khong con subXu 5000 sau khi trao", s.contains("player.subXu(5000L"));
     }
 
     /**

@@ -620,6 +620,9 @@ public final class HeSinhThaiGame {
     static boolean buocTrungVaNhaTre(final Char p, final HoSoSinhThai h) {
         boolean doi = false;
         final List<NhaTre.Trung> no = new ArrayList<NhaTre.Trung>();
+        // pet gui nha tre chi la tham chieu: chi tinh slot nguoi choi CON so huu (tinh ngoai khoa h - petSoHuu khoa tui)
+        final int[] gui = h.nhaTre1 > 0 || h.nhaTre2 > 0 ? NhaTre.petConGui(h.nhaTre1, h.nhaTre2, HeSinhThaiMenu.petSoHuu(p))
+                : new int[]{0, 0};
         synchronized (h) {
             for (final NhaTre.Trung t : h.trung) {
                 if (!t.daNo()) {
@@ -629,13 +632,13 @@ public final class HeSinhThaiGame {
                     }
                 }
             }
-            if ((h.nhaTre1 > 0 || h.nhaTre2 > 0) && h.ngayPhiNhaTre == h.ngay) {
+            if ((gui[0] > 0 || gui[1] > 0) && h.ngayPhiNhaTre == h.ngay) {
                 h.buocNhaTre++;
                 final int n = NhaTre.soTrungMoi(h.buocNhaTre - 1, 1, h.deHomNay);
                 if (n > 0 && h.trung.size() < HeSinhThai.TRUNG_TOI_DA_TUI) {
                     h.buocNhaTre = 0;
                     h.deHomNay++;
-                    final NhaTre.Trung t = deTrung(p, h);
+                    final NhaTre.Trung t = deTrung(p, h, gui[0], gui[1]);
                     if (t != null) {
                         h.trung.add(t);
                         bao(p, "Nhà trẻ: " + SuuTamSinhThai.tenLoai(t.dex) + " vừa đẻ trứng · xem ở Hệ sinh thái › Nhà trẻ và trứng");
@@ -653,9 +656,8 @@ public final class HeSinhThaiGame {
         return doi;
     }
 
-    /** Tao trung tu 1-2 pet dang gui. */
-    static NhaTre.Trung deTrung(final Char p, final HoSoSinhThai h) {
-        final int a = h.nhaTre1, b = h.nhaTre2;
+    /** Tao trung tu cac pet dang gui {@code a}, {@code b} (0 = slot trong / khong con so huu). */
+    static NhaTre.Trung deTrung(final Char p, final HoSoSinhThai h, final int a, final int b) {
         final int me = a > 0 && b > 0 ? (R.nextBoolean() ? a : b) : (a > 0 ? a : b);
         final int dexGoc = NhaTre.loaiGoc(me);
         if (NhaTre.chiSo(dexGoc) < 0) {

@@ -86,6 +86,10 @@ public class TField extends ObjGame {
                 tb.setConstraints(65536);
             } else if (this.inputType == 1) {
                 tb.setConstraints(2);
+            } else if (this.inputType == 3) {
+                // 0.9.22: ô chữ-số (tên tài khoản / tên Pokémon / mã thẻ): NON_PREDICTIVE - bàn phím Android không gợi ý từ,
+                // không tự thêm dấu cách / dấu tiếng Việt (máy chủ chỉ nhận a-z, A-Z, 0-9)
+                tb.setConstraints(0x80000);
             } else {
                 tb.setConstraints(0);
             }

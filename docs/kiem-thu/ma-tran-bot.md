@@ -6,7 +6,7 @@ Lập ngày 25/10/2026. Nguồn dùng để lập:
 
 - Phía máy chủ: bảng điều phối gói tin `server/src/real/MapXuLyLenh.java:461-930` và `server/src/real/RealController.java:975+`. Trong đó có danh sách lệnh chạy trên luồng phiên `privateCmd` (:76), bảng `commandHandler` (:939-953) và các switch riêng cho -45, 85, 22, -30, -31. Các bản ghi đè trong `OfflineMap.java` (cửa hàng trong nhà) và `NpcTinhBanDo.banDoDichVu` (NPC dịch vụ đặt ngoài trời) cũng được tính.
 - Phía client: `client_jar/src/game/pokemon/ManMenu.java:24` (13 nút Menu), `client_jar/src/game/render/screen/MenuNhanh.java:42`, Sổ tay `server/src/real/SoTayLauDai.java:64` và `com/htbb/pokemon/DuongMenu.java`.
-- Phía bot: `tools/pokemon/kiem_tai/hoi_quy.conf` (22 nhóm của cổng kiểm lúc lập bảng; nay 23 nhóm, thêm `bat_thuong`), `BotChucNang` cùng các `KichBan*`, `HoiQuy`, `BatBien` và `BotHonLoan`.
+- Phía bot: `tools/pokemon/kiem_tai/hoi_quy.conf` (22 nhóm của cổng kiểm lúc lập bảng; thêm `bat_thuong` 25/10, `tn_pokemon` + `tn_he_thong` 29/10), `BotChucNang` cùng các `KichBan*`, `HoiQuy`, `BatBien` và `BotHonLoan`.
 
 ## Cách đọc
 
@@ -35,12 +35,12 @@ Hầu hết số liệu `ket(...)` được trích bằng `grep -n`. Riêng các
 
 | Chỉ số | Số tính năng |
 |---|---|
-| **Tổng tính năng liệt kê** | **173** |
-| Kiểm (assert) | 103 (trước `bat_thuong`: 101; khá nhiều dòng chỉ kiểm bằng GM, ghi "Kiểm (GM)") |
-| Chỉ chạy qua | 13 (trước: 12) |
-| Thiếu (cả Thiếu*) | 57 (trước: 60) |
+| **Tổng tính năng liệt kê** | **174** (29/10: tách "Nhà trẻ và trứng" khỏi "câu cá / khảo cổ / đua") |
+| Kiểm (assert) | 108 (trước `tn_*` 29/10: 103; trước `bat_thuong`: 101; khá nhiều dòng chỉ kiểm bằng GM, ghi "Kiểm (GM)") |
+| Chỉ chạy qua | 11 (trước `tn_*`: 13) |
+| Thiếu (cả Thiếu*) | 55 (trước `tn_*`: 57; trước `bat_thuong`: 60) |
 |   trong đó Thiếu*: có kịch bản ngoài cổng hoặc chỉ chạy đêm | 9 |
-| Dòng có ít nhất một biến thể bất thường đã được kiểm | ≈53 (trước `bat_thuong`: ≈38) |
+| Dòng có ít nhất một biến thể bất thường đã được kiểm | ≈60 (trước `tn_*`: ≈53; trước `bat_thuong`: ≈38) |
 | Dòng đánh ★ còn mở (biến thể bất thường chưa có bot) | ≈69 (lúc lập: 82; `bat_thuong` đóng 13 dòng, mở rộng thêm 2) |
 
 Các con số trên được đếm tự động từ cột "Mức" của các bảng dưới đây.
@@ -91,11 +91,11 @@ Nhận xét chung:
 | Qua cổng (đổi bản đồ) | 12: short toMap, short x, short y — `real/MapXuLyLenh.java:1933` | Đi vào cổng | cn_cong_tat_ca `cong_tat_ca` KichBanDS2.java:36 (.cong :62) (GM); người chơi thường: `di_bo`, `cua_ai` | Kiểm | Cổng sai / toạ độ sai, spam cổng, rớt mạng ngay sau gói cổng: **có** — `bt_dut.cong_gia` / `.spam_cong` / `.doi_map` KichBanBatThuong.java:479-497 | Bất biến NAP_LAP BatBien.java:112 |
 | Cổng khoá theo cấp/cửa ải | 12 → popup 95, -32 | Hộp "Mở khoá" | `qa_khoa_popup` KichBanQaToanGame.java:293 (.hien_lai :346) | Kiểm | Bấm lại dưới 10 giây: có | |
 | Vào bản đồ chưa mở | 27 mto | — | `qa_moba_chua_mo` KichBanQaToanGame.java:355 | Kiểm | — | Dùng lệnh GM |
-| Đổi khu | 27 "khu" (`real/MapChat.java:338`) → -30 (-34, menu, khu) — `real/MapDoMenu.java:1413` | Chat "khu" / nút khu | Chỉ có `pb_khu` KichBanPhoBanCup.java:144: mở menu trong phó bản | Chỉ chạy qua | ★ khu sai, chưa hết 20 giây, khi đang đánh, đang giao dịch: Thiếu. Đổi khu khi đang gục: chỉ chạy qua (`bt_guc` KichBanBatThuong.java:863, kiểm bảo toàn tiền + log) | |
+| Đổi khu | 27 "khu" (`real/MapChat.java:338`) → -30 (-34, menu, khu) — `real/MapDoMenu.java:1413` | Chat "khu" / nút khu | Chỉ có `pb_khu` KichBanPhoBanCup.java:144: mở menu trong phó bản; tn_he_thong `tn_khu` KichBanTinhNangThuong.java (người chơi thường vùng Johto ở Cherrygrove, mở menu bằng biển Khu -34) | Kiểm | Khu sai (100), xa biển (báo ô, đi bộ tới), chọn trùng khu, đổi lại trong 20 giây, hết hồi chiêu: **có**. Đang đánh / giao dịch: Thiếu ★ | **LỖI THẬT, ĐÃ SỬA 29/10/2026:** chọn trùng khu (hoặc bị từ chối vì giao hàng) vẫn ghi hồi chiêu → lần đổi thật ngay sau bị "chờ 20 giây". Nay chỉ ghi khi đã đổi (`real/MapDoMenu.java`, test `server/test/KiemTinhNangThuong.java`). Chat "khu" chỉ dành cho GM. |
 | Dịch chuyển tới boss | -33: byte x, byte y, short map — `real/Map.java:9015` | Menu boss | — | Thiếu | ★ toạ độ giả | |
 | Bay Pidgeot (xa phu) | 79: byte xaphu, short map — `real/Map.java:14451` | NPC Pidgeot | `dich_vu.pidgeot.bay` KichBanNPC.java:501 (ngoài cổng) | Thiếu* | ★ thiếu xu, map không có trong danh sách | Kiểm tiền rồi mới trừ, không nguyên tử |
 | Về làng khi chết | 31 — `real/Map.java:17256` | Hộp gục | `chet_hoi_sinh` KichBanDS.java:473 (:487) | Kiểm | Đang sống gửi 31 (không được dịch chuyển miễn phí), rớt mạng khi đang gục: **có** — `bt_guc.ve_lang_khi_song` / `.rut_mang_khi_guc` KichBanBatThuong.java:863 | |
-| Về làng miễn phí (Sổ tay) | -30 (-527,0,…) — `real/VeLangMienPhiGame.java` | Sổ tay huấn luyện (mục Về làng) | `ve_lang` KichBanHoiQuy.java:376 (.mien_phi_ve_lang :386); BotHonLoan nhánh 12 bấm 2 lần :178 | Kiểm | Bấm 2 lần: chỉ chạy qua | |
+| Về làng miễn phí (Sổ tay) | -30 (-527,0,…) — `real/VeLangMienPhiGame.java` | Sổ tay huấn luyện (mục Về làng) | `ve_lang` KichBanHoiQuy.java:376 (.mien_phi_ve_lang :386); BotHonLoan nhánh 12 bấm 2 lần :178; tn_he_thong `tn_ngay_moi` KichBanTinhNangThuong.java (1 lượt / ngày, hết lượt không dịch chuyển, tua đồng hồ ảo sang ngày mới có lại, vào lại không thêm lượt) | Kiểm | Bấm 2 lần: chỉ chạy qua | |
 | Vé dịch chuyển: mua | -30 (-591, cấp, gói) — `real/VeDichChuyenGame.java:91` (mua) | Kecleon | `ve_dich_chuyen` KichBanHoiQuy2.java:182 (.mua_1 :207) | Kiểm | Thiếu xu, túi đầy: Thiếu ★ | |
 | Vé dịch chuyển: dùng | 22(162) → -30 (-590) — `real/VeDichChuyenGame.java:276/:321` | Túi | `ve_dc.ve_lang` :221, `.hoi_chieu` :228 | Kiểm | Bấm đúp: có | |
 | Giấy thổ địa | 22(19) | Túi | `thuoc.ve_thanh` KichBanDS3.java:95 | Kiểm | — | |
@@ -133,28 +133,29 @@ Nhận xét chung:
 
 | Tính năng | Gói/cmd (server file:line) | Đường client | Nhóm bot / case (file:line) | Mức | Thao tác bất thường | Ghi chú |
 |---|---|---|---|---|---|---|
-| Mua bóng ở Chansey | -30 (-581) | NPC Chansey | thu_phuc `tp_bat` .mua_bong KichBanThuPhuc.java:143 | Kiểm (GM) | — | |
-| Ném bóng bắt | -121 kiểu 1: short idQuai, byte thứ tự — `real/BatPokemonGame.java:408` | HUD bóng | `tp_bat` .bat :167, .quai_thuong_tu_choi :158 | Kiểm | Ném vào quái thường: có | |
-| Mở Hộp PC | -121 kiểu 3 | Menu → Pokémon | `tp_bat` .hop_pc_mo :145 | Kiểm | — | |
-| Hộp PC: theo / luyện / tiến hoá / thả / chuyển | -121 kiểu 4: byte hd, int id — `real/BatPokemonGame.java:1131` | Hộp PC | — | Thiếu | ★ id không có, thả khi đang trao đổi | |
-| Trao đổi Pokémon | -121 kiểu 6: mời(short)/trả lời(byte)/đặt(byte n, n×int)/khoá/xác nhận/huỷ — `real/TraoDoiPokemonGame.java:115` | Hộp PC → Trao đổi | — | Thiếu | ★ đổi sau khi khoá, rớt mạng, xác nhận đúp | Rủi ro nhân bản |
+| Mua bóng ở Chansey | -30 (-581) | NPC Chansey | thu_phuc `tp_bat` .mua_bong KichBanThuPhuc.java:143; tn_pokemon `tn_bat.mua_bong` / `.mua_dup` KichBanTinhNangThuong.java (người chơi thường, trừ đúng giá trên menu) | Kiểm | Bấm mua 2 lần liền: có | |
+| Ném bóng bắt | -121 kiểu 1: short idQuai, byte thứ tự — `real/BatPokemonGame.java:408` | HUD bóng | `tp_bat` .bat :167, .quai_thuong_tu_choi :158; tn_pokemon `tn_bat.bat` / `.bong_tru_dung` / `.quai_thuong` KichBanTinhNangThuong.java (người chơi thường đi bộ ra đồng, tự giao chiến; GM chỉ `hoangda` con quái) | Kiểm | Ném vào quái thường: có | |
+| Mở Hộp PC | -121 kiểu 3 | Menu → Pokémon | `tp_bat` .hop_pc_mo :145; `tn_bat.hop_pc` / `.csdl` / `.vao_lai` KichBanTinhNangThuong.java (tob_hop_pc khớp gói) | Kiểm | — | |
+| Hộp PC: theo / luyện / tiến hoá / thả / chuyển | -121 kiểu 4: byte hd, int id — `real/BatPokemonGame.java:1131` | Hộp PC | tn_pokemon `tn_bat.theo` / `.tha` / `.tha_csdl` KichBanTinhNangThuong.java; `tn_trao_doi.tha_khi_dua` | Kiểm | Thả lại id đã thả: có. Thả khi đang trao đổi: có (bị chặn). Luyện / tiến hoá / chuyển: Thiếu ★ | |
+| Trao đổi Pokémon | -121 kiểu 6: mời(short)/trả lời(byte)/đặt(byte n, n×int)/khoá/xác nhận/huỷ — `real/TraoDoiPokemonGame.java:115` | Hộp PC → Trao đổi | tn_pokemon `tn_trao_doi` KichBanTinhNangThuong.java (hai người chơi thường; Hộp PC có sẵn ghi CSDL trước lần -121 đầu) | Kiểm | Xác nhận đúp, thả con đang đưa, đưa lại con vừa nhận (khoá 24 giờ): có. Đổi sau khi khoá, rớt mạng: Thiếu ★ | Rủi ro nhân bản CSDL 1-1 sau khi thoát (không nhân bản), nhật ký tob_log_trao_doi_pokemon, Pokédex "Đã bắt" bên nhận. |
 | Chợ Pokémon | -121 kiểu 7: đăng(int id, int giá)/mua(long tin)/huỷ(long tin) — `real/ChoPokemonGame.java:115` | Hộp PC → Chợ | thu_phuc `tp_cho` KichBanThuPhuc.java:178 (.mua đúng giá :228, .thue :237) | Kiểm (GM) | Mua đúp, mua tin vừa huỷ, tự mua tin của mình: Thiếu ★ | Nhịp 800 ms :125 |
-| Pokédex | -121 kiểu 2, -126 — `real/LoaiMayChu.java:43` | Menu → Pokédex | `pokedex_menu` KichBanDS4.java:573; `tp.pokedex_da_bat` KichBanThuPhuc.java:173 | Kiểm | — | |
+| Pokédex | -121 kiểu 2, -126 — `real/LoaiMayChu.java:43` | Menu → Pokédex | `pokedex_menu` KichBanDS4.java:573; `tp.pokedex_da_bat` KichBanThuPhuc.java:173; `tn_bat.pokedex_da_bat` KichBanTinhNangThuong.java (người chơi thường, gói -121/2 + tob_pokedex.so_bat) | Kiểm | — | |
 | Thả thú | -119 kiểu 1: ubyte n, n×(byte loại, short id) — `real/QuanLyThuGame.java:360` | Pokémon → Quản lý | qa_toan_game `qa_quan_ly_thu` KichBanQaToanGame.java:642 (.tha_khoa_dup :671) | Kiểm (GM) | Bấm đúp: có | |
 | Khoá thú | -119 kiểu 2 — `real/QuanLyThuGame.java:446` | — | `qa_quan_ly_thu` .dang_nhap_lai :684 | Kiểm | — | |
-| Vé mở ô thú (mua / dùng) | -119 kiểu 3/4 — `real/QuanLyThuGame.java:509` | — | `qa_ve_o_thu` KichBanQaToanGame.java:571 (.dung :596) | Kiểm | Dùng đúp: có | |
+| Vé mở ô thú (mua / dùng) | -119 kiểu 3/4 — `real/QuanLyThuGame.java:509` | — | `qa_ve_o_thu` KichBanQaToanGame.java:571 (.dung :596); tn_pokemon `tn_o_thu` KichBanTinhNangThuong.java (người chơi thường: mua, thiếu 1 lượng, dùng đúp, vào lại) | Kiểm | Dùng đúp, thiếu lượng: có | |
 | Mở rộng hành trang | -107: byte kiểu (1 dùng vé / 2 mua xu) — `real/MoRongTuiGame.java:234` | Túi | — | Thiếu | ★ bấm đúp, thiếu xu | |
 | Cưỡi thú | -45 kiểu 0: byte, short id — `real/doCuoiThu.java:18` | Túi / Pokémon | `thu_cuoi` KichBanDS3.java:554 (.cuoi :582) (GM); `thu_cuoi` KichBanHoiQuy2.java:233 (.cuoi :276, .mua_sao đúng -300 lượng :248) | Kiểm | — | |
 | Xuống thú | 108 kiểu 0 — `real/Map.java:5436` | — | `thu_cuoi.xuong` KichBanHoiQuy2.java:280 | Kiểm | — | |
 | Tháo trang phục / rìu (xuống thú kiểu 1/2) | 108 kiểu 1/2 — `real/Map.java:5511/:5535` | — | — | Thiếu | ★ túi đầy (máy chủ không kiểm) | |
 | Thú đi theo | -45 kiểu 1 | Pokémon | — | Thiếu | — | |
-| Bán thú cho NPC | -30 (-800/-801, menu, 1) — `real/RealController.java:1074`, `real/MapDoMenu.java:673` (-801), `:689` (-800) | Thú → Bán (trong nhà) | — | Thiếu | ★ bán thú đã khoá, đang giao dịch, bán đúp | Bỏ qua khoá thú và kiểm giao dịch |
+| Bán thú cho NPC | -30 (-800/-801, menu, 1) — `real/RealController.java:1074`, `real/MapDoMenu.java:673` (-801), `:689` (-800) | Thú → Bán (trong nhà) | `bat_thuong` `bt_thu_ban` (nhóm `bt_tien`) KichBanBatThuong.java:1052 | Kiểm | Bán thú đã khoá ×3: **có** (người chơi thường); đang trao đổi / đang chào giao dịch / chờ tặng: test `KiemTruTruocTrao` | **LỖI THẬT, ĐÃ SỬA 29/10/2026:** jar cũ bán (xoá) cả 2 thú đã khoá. Nay cả 3 nhánh qua `QuanLyThuGame.rutDeBanNpc` (luật Thả + không đang trao đổi, rút theo đối tượng dưới khoá nhân vật) |
 | Tặng thú | -30 (-800 "Tặng" / -514) | — | — | Thiếu | ★ | |
 | Đặt tên Pokémon | -30 (-561) → -31 — `real/DatTenPetGame.java:397/:452` | NPC | `dat_ten_pet` KichBanDatTenPet.java:25 (ngoài cổng) | Thiếu* | ★ tên tục, bấm đúp thẻ | |
 | Đổi màu đồ thú | -61 — `real/Map.java:8716` | — | — | Thiếu | — | Rỗng trong nhà (`real/OfflineMap.java:1964`) |
 | Tháo trang bị thú | 29 → `real/Map.java:16352` | — | — | Thiếu | ★ túi đầy | |
 | Hệ sinh thái (xem các mục) | -30 (-90 → "Hệ sinh thái") — `com/htbb/pokemon/HeSinhThaiMenu.java` | Menu → Hệ sinh thái | `he_sinh_thai` KichBanDS5.java:113 (:138 mỗi mục có phản hồi) | Chỉ chạy qua | — | Chỉ mở xem |
-| Nhà trẻ và trứng / câu cá / khảo cổ / đua | `HeSinhThaiMenu.java:144` (G_NHA_TRE); chat "cauca"/"dao"/"dua" | Hệ sinh thái | — | Thiếu | ★ | |
+| Nhà trẻ và trứng | -30 (-528, menu 6/7/8/9) — `com/htbb/pokemon/HeSinhThaiMenu.java:1135` (nhaTre / guiPet / hanhDongTrung), bước `HeSinhThaiGame.buocTrungVaNhaTre` | Hệ sinh thái → Nhà trẻ và trứng | tn_pokemon `tn_nha_tre` KichBanTinhNangThuong.java (người chơi thường; GM chỉ `ait` pet; số bước đặt trong CSDL lúc đã thoát) | Kiểm | Trả phí khi chưa gửi, trả phí 2 lần / ngày, nở đúp, vứt hết pet đã gửi: **có** | **LỖI THẬT, ĐÃ SỬA 29/10/2026:** gửi pet chỉ lưu dex (pet không rời túi); vứt / bán / trao hết pet đã gửi rồi hạ quái vẫn đẻ trứng. Nay chỉ tính pet còn sở hữu (`NhaTre.petConGui`, test `server/test/KiemHeSinhThai.java`). |
+| Câu cá / khảo cổ / đua | `HeSinhThaiMenu.java:144` (G_NHA_TRE); chat "cauca"/"dao"/"dua" | Hệ sinh thái | — | Thiếu | ★ | |
 
 ## 5. Vật phẩm, cửa hàng
 
@@ -177,7 +178,7 @@ Nhận xét chung:
 | Vứt đồ (huỷ) | 61: short id [, byte 1 xác nhận đồ khoá] — `real/Map.java:15585` | Túi | dùng để dọn túi ở KichBanDungVatPham.java:102, KichBanQaToanGame.java:424 | Chỉ chạy qua | ★ vứt đồ đang đặt chợ / trong ô nâng cấp | |
 | Vứt thuốc | -21: short loại [, short sl] — `real/Map.java:15539` | Túi | `thuoc.bo_ra_dat` KichBanDS3.java:100 | Kiểm | SL âm / 0 / quá số có: Thiếu ★ | |
 | Vứt nguyên liệu / ngọc | -23: byte kiểu, short id, [byte khoá], [short sl] — `real/MapEpNgoc.java:1134` | Túi | — | Thiếu | ★ vứt ngọc đã thêm vào ô nâng cấp | |
-| Kho đồ (gửi / lấy / đóng) | 68 / 69: short id; 70 — `real/OfflineMap.java:599/:560` | NPC kho | — | Thiếu | ★ gửi và lấy dồn dập (68 chạy luồng phiên, 69 chạy luồng bản đồ), lấy khi túi đầy, đang giao dịch | 69 không có checkTrade |
+| Kho đồ (gửi / lấy / đóng) | 68 / 69: short id; 70 — `real/OfflineMap.java:599/:560` | NPC kho | `bat_thuong` `bt_kho` (nhóm `bt_tien`) KichBanBatThuong.java:1052 | Kiểm | 31 gói 68/69 xen kẽ cùng một món, lấy lại ×4: **có** (CSDL túi + mặc + kho = khởi đầu + 1). Lấy khi túi đầy: đã chặn từ 19/10 | **ĐÃ SỬA 29/10/2026** (bot không bắt được nhân bản trên jar cũ, sửa phòng ngừa): 69 vào `privateCmd` (cùng luồng phiên với 68), cả hai dưới `synchronized (player)`, rút khỏi nơi cũ TRƯỚC rồi mới thêm; 69 có `checkTrade` |
 | Sửa đồ | 72: byte 0/1/2 — `real/OfflineMap.java:1831` | NPC thợ | `KichBanNPC` :428 (ngoài cổng) | Thiếu* | ★ thiếu xu | |
 | Đổi hệ vật lý / phép | -54: byte, short id — `real/Map.java:8792` | — | — | Thiếu | ★ bấm liên tục | CÓ THỂ: chỉ số bị chia 10 mỗi lần |
 | Trang phục (xin / mặc / chế / mua) | -116 — `real/TrangPhucGame.java:739` | Pokémon → Trang phục | — | Thiếu | ★ mua đúp | |
@@ -186,15 +187,15 @@ Nhận xét chung:
 
 | Tính năng | Gói/cmd (server file:line) | Đường client | Nhóm bot / case (file:line) | Mức | Thao tác bất thường | Ghi chú |
 |---|---|---|---|---|---|---|
-| Nâng cấp trang bị | 71 byte; 75 short id; 76 short ngọc [byte 1=gỡ]; 77 byte (-1 huỷ / 1 làm) — `real/MapEpNgoc.java:1108/:379/:419/:599` | NPC thợ rèn | `nang_cap` KichBanDS3.java:275 (.len_15 :321, .bua_bao_ho :322, .pity :323, .rot_khong_bua :347, .thieu_xu :355) | Kiểm (GM) | Thiếu xu: có. **`bat_thuong`:** bán ngọc sau khi thêm (76 → 78 → 77), 77 gửi ×6, rớt mạng ngay sau 77 — `bt_nc.*` KichBanBatThuong.java:784. Vứt ngọc (-23) giữa chừng: Thiếu ★ | Chế độ dài hạn (`NangCapLauDaiGame.thu`) đếm lại đá trong `truNeuDu` nên an toàn — bot xác nhận ("Lên +1 cần … đá", không trừ xu). Nhánh cũ (LauDai tắt) chưa kiểm |
+| Nâng cấp trang bị | 71 byte; 75 short id; 76 short ngọc [byte 1=gỡ]; 77 byte (-1 huỷ / 1 làm) — `real/MapEpNgoc.java:1108/:379/:419/:599` | NPC thợ rèn | `nang_cap` KichBanDS3.java:275 (.len_15 :321, .bua_bao_ho :322, .pity :323, .rot_khong_bua :347, .thieu_xu :355) | Kiểm (GM) | Thiếu xu: có. **`bat_thuong`:** bán ngọc sau khi thêm (76 → 78 → 77), 77 gửi ×6, rớt mạng ngay sau 77 — `bt_nc.*` KichBanBatThuong.java:784. Vứt ngọc (-23) giữa chừng: Thiếu ★ | Chế độ dài hạn (`NangCapLauDaiGame.thu`) đếm lại đá trong `truNeuDu` nên an toàn — bot xác nhận ("Lên +1 cần … đá", không trừ xu). Nhánh cũ (LauDai tắt): **ĐÃ SỬA 29/10/2026** - đếm lại ngọc trong ô (`MapEpNgoc.duNgocNangCapCu`) → trừ xu → trừ ngọc → mới tung, dưới `synchronized (player)`; test `KiemTruTruocTrao` |
 | Tự động nâng cấp | -69: short id, byte cấp, byte n, n×(short ngọc, byte khoá) — `real/MapEpNgoc.java:545` | — | — | Thiếu | ★ | |
 | Mua ngọc / đá | 74: short n, n×short id — `real/OfflineMap.java:1433` | NPC | `ngoc.mua` KichBanDS3.java:369 | Kiểm (GM) | n âm, id ngoài bảng: Thiếu ★ | |
 | Bán ngọc | 78: short id, byte khoá, [short sl] — `real/OfflineMap.java:1341` | NPC | `ngoc.ban` KichBanDS3.java:378 | Kiểm (GM) | Bán ngọc đang nằm trong ô nâng cấp: **có** (`bt_nc.ban_da_giua_chung`). SL 0/âm, bán vé ô: Thiếu ★ | |
-| Ghép ngọc | -36: byte 1, byte len(3..5), len×short — `real/MapEpNgoc.java:848` | NPC | `ngoc.ghep` KichBanDS3.java:391 | Kiểm (GM) | Trùng id trong danh sách, thiếu xu đúng lúc: Thiếu ★ | Trừ xu sau khi trao kết quả (:979) |
+| Ghép ngọc | -36: byte 1, byte len(3..5), len×short — `real/MapEpNgoc.java:848` | NPC | `ngoc.ghep` KichBanDS3.java:391; `bat_thuong` `bt_ep` (nhóm `bt_tien`) KichBanBatThuong.java:1052 | Kiểm | Xu vừa đủ 1 lần, 3 lệnh ghép (trùng id ×5) xen 3 lệnh mua: **có** | **ĐÃ SỬA 29/10/2026:** trừ xu (`truXuNeuDu`) TRƯỚC khi tung / trao, cả khối dưới `synchronized (player)` |
 | Đục lỗ / khảm | -34 byte; -35 byte — `real/MapEpNgoc.java:822/:987` | NPC | `ngoc.duc_lo` :408, `ngoc.kham` :427 | Kiểm (GM) | — | |
 | Ngọc hệ: đặt / nâng / tháo / mài / phân rã | -120 kiểu 3..7 — `real/BoNgocGame.java:653` | NPC Machamp | — | Thiếu | ★ | Có synchronized và truNeuDu |
 | Chế tạo mới | -120 kiểu 1: short idMẫu [, byte hệ, byte đá] — `real/CheTaoGame.java:203` | NPC | — | Thiếu | ★ túi đầy, bấm đúp | Trừ trước, nếu taoMon null thì không hoàn |
-| Chế tạo / nâng cấp cũ | -52: byte option … — `real/MapCheTao.java:428` | — | — | Thiếu | ★ thiếu xu đúng lúc | Trừ xu sau khi trao (:434 / :446-527) |
+| Chế tạo / nâng cấp cũ | -52: byte option … — `real/MapCheTao.java:428` | — | — | Kiểm (test) | Thiếu xu đúng lúc: test `KiemTruTruocTrao` (bot: Thiếu ★, cần nguyên liệu) | **ĐÃ SỬA 29/10/2026:** `TruTruocTrao.voiPhi` - trừ 5000 trước, hàm con hỏng / ném lỗi thì hoàn |
 | Phân rã / nghiền bột | -68 kiểu 4: short id — `real/OfflineMap.java:1967` | NPC | `phan_ra` KichBanDS3.java:433 (.do_shop :442; .roi_do luôn đúng :452) | Chỉ chạy qua | ★ phân rã đồ đang mặc / đặt chợ, bấm đúp | Trừ 2000 xu SAU khi xoá đồ |
 | Tách nguyên liệu | -68 kiểu 0: short id — `real/MapEpNgoc.java:227` | — | — | Thiếu | ★ | Không có isItemSelled, checkTrade, Database.deleteItem |
 | Thêm thuộc tính / khoá đồ người / khoá đồ thú | -68 kiểu 1/2/3/5: short id, short ngọc, byte khoá … — `real/Map.java:8469`, `real/OfflineMap.java:1891/:1926`, `real/MapCheTao.java:707` | — | — | Thiếu | ★ id ngọc ngoài bảng | |
@@ -222,7 +223,8 @@ Nhận xét chung:
 | Rao bán ngọc theo số lượng | 92 type 1 → `real/OfflineMap.java:975` | NPC chợ | — | Thiếu | ★ SL vượt số có | |
 | Huỷ rao | 92: bool false … | NPC chợ | — | Thiếu | ★ huỷ đúng lúc có người mua | |
 | Xem hàng | 94: byte kiểu, byte npc, byte shop [, short id người bán] — `real/OfflineMap.java:1776` | NPC chợ | `cho` (:532-534) | Chỉ chạy qua | — | |
-| Mua hàng | 95: byte npc, byte shop, short người bán, short id, [byte] → -32 popup 2 → `real/OfflineMap.java:318` | NPC chợ | `cho.mua` :548 (chỉ "xu giảm"), `cho.thue` :549 | Kiểm (GM, không SQL) | Hai người mua cùng lúc, số dư vừa đúng, tiêu xu ở luồng khác giữa lúc kiểm và lúc trừ, người bán offline: Thiếu ★ | CÓ THỂ: cộng tiền người bán trước khi trừ người mua, subXu kẹp về 0 (:340/:408-426) |
+| Mua hàng | 95: byte npc, byte shop, short người bán, short id, [byte] → -32 popup 2 → `real/OfflineMap.java:318` | NPC chợ | `cho.mua` :548, `cho.thue` :549; `bat_thuong` `bt_cho` (nhóm `bt_tien`) KichBanBatThuong.java:1052 | Kiểm | Thiếu 1 xu, vừa đủ, xác nhận -32 ×3 xen mua thuốc: **có** (người chơi thường, CSDL). Hai người mua cùng lúc, người bán offline: Thiếu ★ | **ĐÃ SỬA 29/10/2026:** trừ người mua TRƯỚC (`TruTruocTrao.truNguoiMuaCho`), rút món / ngọc (`truGemNeuDu`) rồi mới cộng người bán; hỏng thì hoàn. Đấu giá `real/Market.java` (mua + đặt giá) cùng cách |
+| Mua hàng | 95: byte npc, byte shop, short người bán, short id, [byte] → -32 popup 2 → `real/OfflineMap.java:318` | NPC chợ | `cho.mua` :548 (chỉ "xu giảm"), `cho.thue` :549; tn_he_thong `tn_cho` KichBanTinhNangThuong.java (hai người chơi thường, đối chiếu tob_char.gold) | Kiểm | Số dư vừa đúng giá, xác nhận đúp, mua lại tin đã bán: **có**. Hai người mua cùng lúc, tiêu xu ở luồng khác, người bán offline: Thiếu ★ | CÓ THỂ: cộng tiền người bán trước khi trừ người mua, subXu kẹp về 0 (:340/:408-426) |
 | Lệnh 62 (rao bán kiểu cũ) | 62 — `real/Map.java:8380` (rỗng) | — | — | Thiếu | — | Không làm gì |
 
 ## 9. Xã hội: chat, bạn bè, tổ đội, bang hội, thư
@@ -240,8 +242,13 @@ Nhận xét chung:
 | Bang: tạo | -9; -10: short icon, UTF tên — `real/MapDoi.java:221/:1203` | — | `bang_hoi` KichBanDS4.java:211 (.tao :231, .csdl :233) | Kiểm (GM) | Tên trùng, thiếu xu: Thiếu ★ | |
 | Bang: mời / nhận | -11 — `real/MapDoi.java:1054` | — | `bang_hoi.moi` :244 | Kiểm | — | |
 | Bang: chat | -18 — `real/MapDoi.java:433` | — | `bang_hoi.chat` :249 | Kiểm | — | |
-| Bang: góp quỹ | -20: int tiền → -32 popup 114 — `real/MapDoi.java:394`, `real/Map.java:9834` | — | `bang_hoi.quy` :259 | Kiểm (GM) | Góp đúp, số dư vừa đúng, tiêu xu giữa hai bước: Thiếu ★ | CÓ THỂ: quỹ được cộng nhiều hơn số đã trừ (`real/Map.java:9884-9913`) |
+| Bang: góp quỹ | -20: int tiền → -32 popup 114 — `real/MapDoi.java:394`, `real/Map.java:9834` | — | `bang_hoi.quy` :259 | Kiểm (GM + test) | Tiêu xu giữa hai bước: test `KiemTruTruocTrao` (bot: Thiếu ★, cần cấp 50 + bang) | **ĐÃ SỬA 29/10/2026:** `TruTruocTrao.truGopQuy` trừ trước (kiểm-và-trừ một bước), quỹ chỉ cộng khi đã trừ được |
 | Bang: rời / giải tán | -15 / -14 — `real/MapDoi.java:641/:500` | — | `.roi` :264, `.giai_tan` :268 (chỉ kiểm còn kết nối) | Chỉ chạy qua | — | |
+| Bang: tạo | -9; -10: short icon, UTF tên — `real/MapDoi.java:221/:1203` | — | `bang_hoi` KichBanDS4.java:211 (.tao :231, .csdl :233); tn_he_thong `tn_bang.tao` / `.tao_lai` KichBanTinhNangThuong.java (người chơi thường, đúng 100 triệu xu) | Kiểm | Số dư vừa đúng, tạo lại khi đã có đội: có. Tên trùng: Thiếu ★ | |
+| Bang: mời / nhận | -11 — `real/MapDoi.java:1054` | — | `bang_hoi.moi` :244; `tn_bang.moi` / `.roi_moi_lai` KichBanTinhNangThuong.java (CSDL member) | Kiểm | — | |
+| Bang: chat | -18 — `real/MapDoi.java:433` | — | `bang_hoi.chat` :249; `tn_bang.chat` KichBanTinhNangThuong.java | Kiểm | — | |
+| Bang: góp quỹ | -20: int tiền → -32 popup 114 — `real/MapDoi.java:394`, `real/Map.java:9834` | — | `bang_hoi.quy` :259 | Kiểm (GM) | Góp đúp, số dư vừa đúng, tiêu xu giữa hai bước: Thiếu ★ | CÓ THỂ: quỹ được cộng nhiều hơn số đã trừ (`real/Map.java:9884-9913`) |
+| Bang: rời / giải tán | -15 / -14 — `real/MapDoi.java:641/:500` | — | `.roi` :264, `.giai_tan` :268 (chỉ kiểm còn kết nối); tn_he_thong `tn_bang.roi` KichBanTinhNangThuong.java (phí rời 500.000 xu vừa đúng, CSDL member) | Kiểm | Rời: có. Giải tán: chỉ chạy qua (cn_xa_hoi) | |
 | Bang: đuổi / khẩu hiệu / thông báo / xem / top / nhiệm vụ bang | -13, -16, -17, -12, -7, -8, -53, -37, -70 | — | — | Thiếu | — | |
 | Hộp thư: đọc | 110: byte index — `real/Map.java:15404` | Thư/Quà → Hộp thư | `bat_thuong` `bt_thu.doc_thu` KichBanBatThuong.java:979 | Kiểm | Có (thư người khác ở id nhỏ phải còn) | **LỖI THẬT, ĐÃ SỬA 25/10/2026:** `delInboxMsg(index)` xoá dòng có id = chỉ số → thư người khác. Nay xoá theo `idMsg` + tên người nhận (`CharInboxMessage.idCanXoa`, `Database.delInboxMsg(id, charname)`); test `server/test/KiemDocThu.java` |
 | Giftcode | -31 (actor,7,mã) — `real/RealController.java:1383` | Thư/Quà → Nhập giftcode | cn_dai_han `giftcode` KichBanGiftcode.java:31 (:60-:96); `qa_giftcode_tui_day` KichBanQaToanGame.java:392; HoiQuy `giftcode` KichBanHoiQuy2.java:141 | Kiểm | Túi đầy, mã sai / hết hạn / tắt / hết lượt, bấm nhanh: có | |
@@ -256,7 +263,7 @@ Nhận xét chung:
 |---|---|---|---|---|---|---|
 | Nhiệm vụ chính | -64 (0 nhận / 1 trả / 2 huỷ) — `real/cmd/QuestHandler.java:16` | Nhiệm vụ của tôi | `nhiem_vu_chinh` KichBanDS4.java:374; cot_truyen KichBanHoiQuy.java:677 (.tien_trien :742); `tdnv_all` KichBanTienDoNhiemVu.java:183 | Kiểm | Trả đúp: chỉ chạy qua (BotHonLoan nhánh 7 :131) ★ | |
 | Nhiệm vụ phụ | Sổ tay -527/10,12 | Sổ tay huấn luyện (mục Nhiệm vụ) | `nhiem_vu` KichBanDS4.java:323 (.3_khe_phu :334) | Kiểm | Nhận cái thứ 4: có | |
-| Nhiệm vụ tuần | -527 | Sổ tay huấn luyện (mục Nhiệm vụ tuần) | `nhiem_vu.tuan_toi_da_2` :360 | Kiểm | Quá giới hạn: có | |
+| Nhiệm vụ tuần | -527 | Sổ tay huấn luyện (mục Nhiệm vụ tuần) | `nhiem_vu.tuan_toi_da_2` :360; `tn_ngay_moi.tuan_toi_da_2` / `.tuan_moi` KichBanTinhNangThuong.java (người chơi thường; qua mốc thứ Hai 05:00 bằng đồng hồ ảo nhận tiếp được) | Kiểm | Quá giới hạn, đặt lại đầu tuần: có | |
 | Câu đố | 27 | — | `nhiem_vu.cau_do` :352 | Kiểm | — | |
 | Cửa ải | -64, -32 95 | Nhiệm vụ → Thử thách cửa ải | `cua_ai` KichBanHoiQuy.java:398 (.chua_nhan_khong_tinh :415); `tdnv_sai_quai` KichBanTienDoNhiemVu.java:219-247 | Kiểm | Huỷ nhiệm vụ cửa ải: có (.khong_huy :247) | |
 | Huỷ nhiệm vụ | -64 kiểu 2; 52 (client cũ) — `real/Char.java:8195` | — | `KichBanNhiemVu` nv_huy (ngoài cổng) | Thiếu* | ★ | |
@@ -286,10 +293,10 @@ Nhận xét chung:
 ## Nhóm `bat_thuong` (mới, 25/10/2026)
 
 Lớp `tools/pokemon/kiem_tai/KichBanBatThuong.java`, dòng `bat_thuong` trong `hoi_quy.conf` (kiểu `cn`, giới hạn 1200 giây,
-chạy thật trên stack cục bộ: **≈12 phút**, 53 PASS / 0 FAIL / 2 BỎ QUA).
+chạy thật trên stack cục bộ: **≈14 phút**, 61 PASS / 0 FAIL / 2 BỎ QUA sau khi thêm `bt_tien` 29/10/2026).
 
 - **Người chơi thường** `kt101..` (không GM, nhân vật mới mỗi lần). GM `kt0xx` CHỈ chuẩn bị cảnh bằng lệnh nhắm tên (`smn` đặt xu chính xác, `spt` thuốc, `gem` đá, `slv` cấp cho chống clone, `die`).
-- **Bất biến, không so chữ thông báo:** tiền / thuốc / số món bảo toàn (đối chiếu `tob_char.gold`, `tob_char.potion`, số bản ghi vũ khí trong `inven` + `equip` sau khi thoát), không âm, không kẹt trạng thái (đăng nhập lại, vào map hợp lệ, hp > 0), máy chủ còn trả lời (một người chơi khác đăng nhập + làm mới), **không Exception mới trong log** (`-Dlog`, mỗi case một `.log_sach`).
+- **Bất biến, không so chữ thông báo:** tiền / thuốc / số món bảo toàn (đối chiếu `tob_char.gold`, `tob_char.potion`, số bản ghi vũ khí trong `inven` + `equip` (+ `bag`) sau khi thoát - nhân vật mới MẶC SẴN một Thần lửa sơ cấp 79, nên so với số khởi đầu; máy chủ kick + lưu khoảng 5 giây sau khi ngắt, đọc CSDL sau đó), không âm, không kẹt trạng thái (đăng nhập lại, vào map hợp lệ, hp > 0), máy chủ còn trả lời (một người chơi khác đăng nhập + làm mới), **không Exception mới trong log** (`-Dlog`, mỗi case một `.log_sach`).
 - **Chờ trạng thái, không chờ giờ:** `onDinh` gửi 88 rồi đợi gói 16 (88 chạy cùng luồng phiên với 24/28/29/22) tới khi xu + thuốc + túi đứng yên hai lần; mọi chờ có hạn 5-15 giây.
 - Exception do **gói sai cố ý** (`bt_mua`, `bt_goi_sai`) ghi `.log_goi_sai` = BỎ QUA kèm dòng log (máy chủ đã bắt, trạng thái kiểm riêng) — xem "Còn mở" dưới.
 
@@ -306,26 +313,68 @@ chạy thật trên stack cục bộ: **≈12 phút**, 53 PASS / 0 FAIL / 2 BỎ
 | `bt_guc` | Khi gục: mua, uống thuốc, dùng id lạ, đổi khu; gửi 31 khi đang sống; rớt mạng khi gục | Không hồi máu, không lợi tiền; 31 khi sống không dịch chuyển; vào lại hồi sinh được | KichBanBatThuong.java:863 | Kiểm |
 | `bt_goi_sai` | 136 gói sai / cụt / ngẫu nhiên (hạt giống cố định) trên 34 lệnh (22, 24, 28, 29, 61, 66, 68, 69, 71, 74-78, 85, 92, 94, 95, 108, 110, -21, -23, -30, -34..-36, -45, -52, -62, -68, -69, -107, -119, -120) | Xu / lượng / lượng khoá / món / ngọc / thuốc không tăng, xu không âm (CSDL), máy chủ còn trả lời | KichBanBatThuong.java:918 | Kiểm |
 | `bt_thu` | Đọc 4 thư của mình (110 chỉ số 0..3) khi người khác có thư chờ ở id nhỏ | Thư người khác còn nguyên (**lỗi thật, đã sửa**) | KichBanBatThuong.java:979 | Kiểm |
+| `bt_tien` (29/10/2026) | MỘT người chơi thường trong nhà 103: (1) `bt_thu_ban` 2 thú cưỡi đã khoá (-119/2), bán NPC -800 ×3, mở khoá 1 con bán 1 lần; (2) `bt_ep` xu vừa đủ 5000, 3 lệnh ghép 5 viên xen 3 lệnh mua thuốc; (3) `bt_kho` 31 gói 68/69 xen kẽ cùng một vũ khí; (4) `bt_cho` người B rao vũ khí 10.000, thiếu 1 xu xác nhận, vừa đủ xác nhận -32 ×3 xen mua thuốc | Thú khoá không mất (**lỗi thật, đã sửa**); ghép ≤ 1 lần, xu tiêu = 5000 × lần + 100 × bình; vũ khí CSDL (túi + mặc + kho) = khởi đầu + 2, người bán = khởi đầu; xu CSDL = trong game, không âm | KichBanBatThuong.java:1052 | Kiểm |
 
 Ba lỗi thật bot tìm ra đều có kiểm hồi quy `server/test` (đăng ký trong `Kiem.java`): `KiemDocThu`, `KiemGiaoDichRutDo`,
-`KiemKetBan`. Chạy nhóm trên `htbb-server.jar` CŨ: `bt_gd` + `bt_thu` cho 4 FAIL đúng ba lỗi; trên bản đã sửa: 0 FAIL.
+`KiemKetBan`; lỗi thứ tư (bán thú đã khoá, 29/10/2026) và các sửa "trừ trước trao sau": `KiemTruTruocTrao`. Trên jar CŨ (bb0c4dea) `bt_thu_ban.da_khoa` FAIL (2 thú khoá → 0); các case `bt_ep` / `bt_kho` / `bt_cho` PASS trên cả jar cũ (khe tranh chấp quá hẹp để bot ép) - giữ làm bất biến hồi quy. Chạy nhóm trên `htbb-server.jar` CŨ: `bt_gd` + `bt_thu` cho 4 FAIL đúng ba lỗi; trên bản đã sửa: 0 FAIL.
 
 **Còn mở (chưa sửa, ghi nhận):** gói sai làm máy chủ in Exception (đã bắt, không đổi trạng thái): `OfflineMap.doBuyItem`
 với `kind` ngoài bảng (`ArrayIndexOutOfBoundsException: 99`) và gói cụt (`EOFException`); `doBuySpecialItem` id lạ
 (`NullPointerException ... "sell"`); EOF ở nhiều lệnh khác khi gói cụt. Không phải lỗi kinh tế; nên kiểm biên trước khi
 đọc / tra bảng để log không bị gói rác làm đầy.
 
+## Nhóm `tn_pokemon` / `tn_he_thong` (mới, 29/10/2026)
+
+Lớp `tools/pokemon/kiem_tai/KichBanTinhNangThuong.java`, hai dòng trong `hoi_quy.conf` (kiểu `cn`, giới hạn 900 giây mỗi
+nhóm). Chạy thật trên stack cục bộ: `tn_pokemon` ≈7 phút, `tn_he_thong` ≈9 phút.
+
+- **Người chơi thường** `kt101..` (không GM, nhân vật mới). GM chỉ dựng cảnh nhắm tên / nhắm quái: `smn` (xu / lượng chính
+  xác), `slv`, `spt`, `ait` (pet Hoothoot), `hoangda` (biến quái gần người chơi thành Pokémon hoang dã), `mc` (tới cạnh
+  người chơi), `tua` (đồng hồ ảo, máy thử). Dựng cảnh bằng CSDL khi nhân vật đã thoát: số bước nhà trẻ / trứng
+  (`tob_hst_nhan_vat`), Hộp PC có sẵn một con (`tob_hop_pc`, ghi trước lần -121 đầu), vị trí lưu + mốc miễn khoá bản đồ
+  (`tob_char.pInfo`, `tob_ban_do_mo`) cho Cherrygrove.
+- Bất biến: xu / bóng / con / trứng / món đúng (gói tin + CSDL sau khi thoát), đăng nhập lại giữ nguyên, máy chủ còn trả
+  lời, không Exception mới (`-Dlog`, mỗi case một `.log_sach`).
+
+| Case | Làm gì | Bất biến | Mức |
+|---|---|---|---|
+| `tn_bat` | Mua bóng ở Chansey (giá trên menu, bấm 2 lần), đi bộ ra đồng, ném vào quái thường, giao chiến + ném tới khi bắt, Pokédex, thoát / vào lại, theo, thả, thả lại | Xu trừ đúng giá × số lần; bóng = mua − số lần ném; Hộp PC +1; tob_pokedex.so_bat +1; tob_hop_pc khớp; thả bỏ cả "đang theo" | Kiểm |
+| `tn_trao_doi` | Hai người: mời, đồng ý, đặt, khoá, thả con đang đưa, xác nhận đúp, đưa lại con vừa nhận | Thả bị chặn; đổi đúng 1-1 (CSDL), nhật ký 1 dòng, phí không âm, Pokédex bên nhận; con vừa nhận khoá 24 giờ | Kiểm |
+| `tn_nha_tre` | Trả phí khi chưa gửi, gửi pet, trả phí 2 lần, đẻ trứng, IV, sắp nở, nở đúp, vứt hết pet đã gửi | Phí đúng menu, 1 lần / ngày; trứng IV trong khoảng hoang dã; nở đúng 1 pet; trứng mất khỏi hồ sơ; không đẻ từ pet không còn (**lỗi thật, đã sửa**) | Kiểm |
+| `tn_o_thu` | Mua vé mở ô thú, thiếu 1 lượng, dùng đúp, vào lại | Lượng trừ đúng 1 lần; thiếu không trừ; ô +1 đúng một lần; giữ sau vào lại | Kiểm |
+| `tn_cho` | A bán vũ khí ở gian hàng, C (số dư vừa đúng giá) mua, xác nhận đúp, mua lại tin đã bán | C còn 0 xu và có 1 món; A mất món, nhận giá − thuế; CSDL gold khớp; vào lại giữ | Kiểm |
+| `tn_bang` | Tạo đội (đúng 100 triệu), tạo lại, mời, chat, rời (phí 500.000 vừa đúng), mời lại | Xu đúng; tob_clan / member khớp; mời lại báo thời gian chờ | Kiểm |
+| `tn_khu` | Khu 100, xa biển khu, chọn trùng khu, đổi, đổi lại ngay, hết 20 giây | Không đổi khi sai / xa; báo ô biển khu; chọn trùng không ăn hồi chiêu (**lỗi thật, đã sửa**) | Kiểm |
+| `tn_ngay_moi` | Nhiệm vụ tuần lần 3, Về làng miễn phí 2 lần, tua đồng hồ ảo tới thứ Hai 05:01, dùng lại, vào lại | Tuần chỉ 2; ngày 1 lượt; qua mốc có lại; vào lại không thêm | Kiểm |
+
+Hai lỗi thật có kiểm hồi quy `server/test`: `KiemHeSinhThai` (nhà trẻ, `NhaTre.petConGui`) và `KiemTinhNangThuong` (đổi khu),
+đăng ký trong `Kiem.java`.
+
+**Không áp dụng / còn thiếu sau đợt này:** thư không có đính kèm (hộp thư chỉ chữ; quà đến qua giftcode đã có ở
+`nguoi_choi_that`); cúp tuần / đấu trường / xếp hạng / phó bản / hầm ngục bằng người chơi thường; danh hiệu (chỉ GM);
+sự kiện; cài đặt (lưu ở client); nạp / thành viên; thú cưỡi / đi theo / bán thú trong Quản lý thú (cần GM tạo thú cho
+người khác - lệnh `ngua` chỉ tạo cho chính GM); luyện / tiến hoá / chuyển đổi trong Hộp PC.
+
 ## Lỗ hổng ưu tiên
 
 Xếp theo rủi ro kinh tế: nhân bản, mất tiền, tiền được cộng sai. Mọi mục dưới đây là **Thiếu** hoặc **chỉ kiểm bằng GM / chỉ kiểm phía client**.
 
 1. ~~**Giao dịch rút thuốc sau khi đối phương khoá**~~ — **ĐÃ XÁC NHẬN + SỬA** (bot `bt_gd.doi_sau_khi_khoa`, `GiaoDichThuoc.rutDoDuoc`).
+2. ~~**Chợ: mua trong lúc người mua đang tiêu xu ở luồng khác.**~~ — **ĐÃ SỬA 29/10/2026** (xác nhận bằng đọc mã + mô hình `KiemTruTruocTrao.moHinhCu` dùng `Char.subXu` thật: kẹp về 0 → món miễn phí + người bán được cộng đủ; bot không ép được khe thời gian). Trừ người mua trước, rút món, rồi cộng người bán (`real/TruTruocTrao.java`); thêm đấu giá `Market.buyItem/bid` và giao dịch pet popup 112 (cùng lỗi, kèm lỗi bán NHẦM con cuối danh sách khi con đang chào đã mất - `QuanLyThuGame.petDangChao`). Bot `bt_cho`.
+3. ~~**Góp quỹ bang khi số dư đổi giữa hai bước.**~~ — **ĐÃ SỬA 29/10/2026** (đọc mã + test): `TruTruocTrao.truGopQuy` kiểm-và-trừ một bước trước khi cộng quỹ. Bot: chưa (cần cấp 50 + bang).
+4. **Nâng cấp: ngọc đã thêm (76) rồi bán (78) hoặc vứt (-23) trước khi gửi 77.** Nhánh dài hạn: bot `bt_nc.ban_da_giua_chung` xác nhận an toàn (bán). Nhánh cũ khi LauDai tắt: **ĐÃ SỬA 29/10/2026** (đếm lại ngọc trước khi trừ xu / tung, test `KiemTruTruocTrao`). Còn: vứt (-23) bằng bot.
+5. ~~**Ghép ngọc (-36) và chế tạo cũ (-52) trừ xu SAU khi đã trao kết quả.**~~ — **ĐÃ SỬA 29/10/2026** (đọc mã + test; bot `bt_ep` không ép được khe): trừ trước, hỏng / ngoại lệ thì hoàn (`TruTruocTrao.voiPhi`).
+6. ~~**Bán thú cho NPC (-800/-801) bỏ qua khoá thú và trạng thái giao dịch.**~~ — **ĐÃ XÁC NHẬN + SỬA 29/10/2026** (bot `bt_thu_ban.da_khoa`: jar cũ bán cả 2 thú đã khoá; `QuanLyThuGame.rutDeBanNpc`).
+7. **Trao đổi Pokémon (-121/6)** chưa có kịch bản bot. Đọc mã 29/10: chốt kiểm lại mọi cổng + con nguyên vẹn như lúc khoá, trừ phí trước, ghi một giao dịch CSDL, hỏng thì hoàn; chợ / thả kiểm `dangDua` - không thấy lỗ tiền. Logic thuần đã có test `KiemTraoDoiPokemon`. Còn: bot đặt / khoá / đổi lại / xác nhận đúp / rớt mạng.
+8. **Chợ Pokémon (-121/7):** đọc mã 29/10: trừ người mua trước (`truNeuDu`), CAS trên tin, hỏng thì hoàn - đúng mẫu; `KiemChoPokemon` đã kiểm mua lần hai / hết hạn / huỷ lần hai. Còn: bot mua đúp, hai người mua cùng tin.
+9. ~~**Kho đồ 68/69 chạy trên hai luồng khác nhau, và 69 không có checkTrade.**~~ — **ĐÃ SỬA 29/10/2026** (phòng ngừa; bot `bt_kho` 31 gói xen kẽ không bắt được nhân bản trên jar cũ): 69 cùng luồng phiên, `synchronized (player)`, rút trước thêm sau, 69 kiểm trao đổi.
 2. **Chợ: mua trong lúc người mua đang tiêu xu ở luồng khác.** Mã ở `real/OfflineMap.java:318-426`. Người bán được cộng trước, người mua bị trừ sau, mà subXu kẹp về 0. Kiểm hiện có ở `cho` chỉ là "xu giảm" bằng GM.
 3. **Góp quỹ bang khi số dư đổi giữa hai bước.** Mã ở `real/MapDoi.java:394` và `real/Map.java:9834-9913`. Quỹ có thể được cộng nhiều hơn số đã trừ.
 4. **Nâng cấp: ngọc đã thêm (76) rồi bán (78) hoặc vứt (-23) trước khi gửi 77.** Nhánh dài hạn: bot `bt_nc.ban_da_giua_chung` xác nhận an toàn (bán). Còn: vứt (-23), và nhánh cũ khi LauDai tắt (`real/MapEpNgoc.java:726/:752` không đếm lại đá).
 5. **Ghép ngọc (-36) và chế tạo cũ (-52) trừ xu SAU khi đã trao kết quả.** Mã ở `real/MapEpNgoc.java:979` và `real/MapCheTao.java:434`. Gửi song song với một lệnh tiêu xu khác thì nhận được đồ miễn phí.
 6. **Bán thú cho NPC (-800/-801) bỏ qua khoá thú và trạng thái giao dịch.** Mã ở `real/RealController.java:1074` và `real/MapDoMenu.java:673,689`.
-7. **Trao đổi Pokémon (-121/6)** chưa có kịch bản nào. Cần thử: đặt, khoá, đổi lại; xác nhận đúp; rớt mạng.
+7. **Trao đổi Pokémon (-121/6):** luồng chuẩn + thả con đang đưa + xác nhận đúp đã có (`tn_trao_doi`, CSDL 1-1). Còn: đổi
+   đề nghị sau khi đối phương khoá, rớt mạng giữa xác nhận.
 8. **Chợ Pokémon (-121/7):** mua đúp, mua tin vừa huỷ, hai người mua cùng tin.
 9. **Kho đồ 68/69 chạy trên hai luồng khác nhau, và 69 không có checkTrade.** Mã ở `real/OfflineMap.java:560/599`. Cần thử gửi và lấy dồn dập, lấy khi túi đầy.
 10. **Bán đồ (28):** bán đúp cùng id + đồ đang mặc đã có bot (`bt_ban`). Còn: bán đồ đang đặt chợ hoặc đang trong ô nâng cấp, bán đồ khoá. Mã ở `real/OfflineMap.java:1242`.
@@ -335,7 +384,8 @@ Xếp theo rủi ro kinh tế: nhân bản, mất tiền, tiền được cộng
 14. **Số dư vừa đúng bằng giá:** 24 đã có (`bt_mua.bam_lien_vua_du`, `.thieu_mot_xu`). Còn 85, 95, -20.
 15. ~~**Hộp thư (110) xoá nhầm thư người khác.**~~ — **ĐÃ XÁC NHẬN + SỬA** (bot `bt_thu.doc_thu`, `CharInboxMessage.idCanXoa`).
 16. ~~**Kết bạn ép** (101 ok=1 khi không có lời mời)~~ — **ĐÃ XÁC NHẬN + SỬA** (bot `bt_ket_ban`, `LoiMoiKetBan`).
-17. **Đổi khu (-30/-34):** khu sai, gửi trong 20 giây hồi, khi đang đánh, chết hoặc giao dịch. Mã ở `real/MapDoMenu.java:1413`.
+17. **Đổi khu (-30/-34):** khu sai, xa biển, trong 20 giây hồi, chọn trùng khu đã có (`tn_khu`; lỗi hồi chiêu đã sửa). Còn:
+    khi đang đánh hoặc giao dịch. Mã ở `real/MapDoMenu.java:1413`.
 18. **Mở rộng túi (-107) và vé ô thú** khi bấm đúp hoặc thiếu xu. Hộp may mắn (-62) và vòng quay (87) khi túi đầy hoặc bấm đúp.
-19. **Thao tác khi đang chết hoặc đang trong trận PvP / đấu trường:** khi gục đã có bot (`bt_guc`: mua, uống, đổi khu, 31). Còn: trong trận PvP / đấu trường; 85, 66, vé 22/162 khi gục.
+19. **Thao tác khi đang chết hoặc đang trong trận PvP / đấu trường** (29/10/2026: chưa làm phần PvP / đấu trường): khi gục đã có bot (`bt_guc`: mua, uống, đổi khu, 31). Còn: trong trận PvP / đấu trường; 85, 66, vé 22/162 khi gục.
 20. **Rớt mạng giữa:** 77 (`bt_nc.rut_mang`), 66/5 (`bt_gd.rut_mang`), 24/28/12 (`bt_dut`) đã có bot. Còn: 95 + -32 (mua chợ), -119/1 (thả thú).

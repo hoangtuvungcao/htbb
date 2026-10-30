@@ -676,9 +676,17 @@ class MapDoMenu {
                             break;
                         }
 
+                        if (idMenu < 0 || idMenu >= player.pet.size()) {
+                            return;
+                        }
                         Pet pet = (Pet) player.pet.get(idMenu);
                         if (pet.isPetBachThu() && map.isMapOffline && pet.place != 1) {
-                            player.pet.remove(idMenu);
+                            // 29/10/2026 (ma-tran-bot #6): cung luat voi Tha (khoa / di theo / dang chao giao dich / trao doi).
+                            final String lyDoBan = QuanLyThuGame.rutDeBanNpc(player, pet);
+                            if (lyDoBan != null) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(lyDoBan, ""));
+                                return;
+                            }
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                             Database.instance.deletePet(pet.idDB);
                             Database.instance
@@ -710,7 +718,13 @@ class MapDoMenu {
                                     return;
                                 }
 
-                                player.animal.remove(idMenu);
+                                // 29/10/2026 (ma-tran-bot #6): ban NPC = cung luat voi Tha (khoa / dang cuoi / cho tang / trao doi), rut theo
+                                // DOI TUONG duoi khoa nhan vat (QuanLyThuGame.rutDeBanNpc) thay cho remove(idMenu) mu.
+                                final String lyDoBan = QuanLyThuGame.rutDeBanNpc(player, anim);
+                                if (lyDoBan != null) {
+                                    player.sendMessage(MessageCreator.createServerAlertMessage(lyDoBan, ""));
+                                    return;
+                                }
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                                 Database.instance.delAnimal(anim.dbid);
                                 Database.instance.saveOrtherLog("", player.charname, "ban pet " + anim.getAttribute() + " > " + anim.getName() + " > " + anim.idImg, "sellanimal");
@@ -1436,7 +1450,8 @@ class MapDoMenu {
                           return;
                       }
                     
-                    player.timeNextRegion = now;
+                    // Hoi chieu chi tinh khi DA doi khu (bot tn_khu 29/10/2026: chon trung khu dang dung / bi tu choi vi
+                    // giao hang van an mat 20 giay, lan doi that ngay sau do bi bao "chờ 20 giây").
                     if (player.region != idOptionMenu) 
                     {
                         if (player.monster != null) 
@@ -1447,6 +1462,7 @@ class MapDoMenu {
 
                         if (map.isMapChienTruongMoba() || abs(player.x / 16 - map.pRegion[0]) <= rangeNpc && abs(player.y / 16 - map.pRegion[1]) <= rangeNpc) 
                         {
+                            player.timeNextRegion = now;
                             map.playerExit(player);
                             player.region = idOptionMenu;
                             map.move2Map(player, player.x / 16, player.y / 16, player.mapID, player.inCountry);
@@ -1455,7 +1471,6 @@ class MapDoMenu {
 
                         // bot-cap1-40 (25/10/2026): truoc day "return" im lang - go "khu" o dau cung mo duoc menu Khu 1..N
                         // nhung chon khu khi o xa bien khu thi khong co gi xay ra.
-                        player.timeNextRegion = last; // khong tinh hoi chieu cho lan bi tu choi
                         player.sendMessage(MessageCreator.createServerAlertMessage(Map.xaBienKhu(map.pRegion), ""));
                         return;
                     }

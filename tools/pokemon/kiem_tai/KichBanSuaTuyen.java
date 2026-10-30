@@ -10,7 +10,8 @@
  *                  C01.5 "Nơi ngôi sao rơi": goi -64 dang lam co duoi diem dich (Pallet 53,19, ban kinh 3) + muc tieu ghi
  *                  "góc trên bên phải"; ra Pallet, di bo toi o di duoc gan tam diem dich NHU NUT "Đi tới dấu sao" -> xong.
  *                  C05.2 "Bảo tàng thiên thạch" (nha Pewter): nghe Xatu -> dang lam; di bo vao ngoi nha co cua (102,
- *                  Kecleon dung truoc cua) -> xong (truoc: chi nha 100 khong cua moi tinh).
+ *                  Kecleon dung truoc cua) -> xong (truoc: chi nha 100 khong cua moi tinh). Trong nha bot DUNG YEN nhu client
+ *                  that (khong gui goi 4 trong nha - bao loi 30/10/2026 J2ME "vẫn ko làm đc nv nhà pewter").
  * Du 10 buoc huong dan theo vung: KichBanHuongDan hd_toan_bo (Kanto) / hd_toan_bo_johto. Can -Ddb, -Ddbport, -Dnoi.
  */
 class KichBanSuaTuyen {
@@ -312,14 +313,16 @@ class KichBanSuaTuyen {
             boolean vao = KichBanDS2.vaoNha(b, 102);
             ket("st.td.pewter.vao_nha_102", vao && b.mapId == 102, "map " + b.mapId);
             KichBanHuongDan.dongBoViTri(b);
+            // bao loi 30/10/2026: client that (J2ME / Android / PC: GameService.moveChar bo qua khi Tilemap.isOfflineMap)
+            // KHONG gui goi di chuyen (4) trong nha -> bot cung dung yen o cua, khong buoc nao. Truoc bot di vai buoc nen
+            // qua, nguoi choi that ket mai.
             String isf = null;
             for (int lan = 0; lan < 6; lan++) {
-                b.diToi(b.px + (lan % 2 == 0 ? 16 : -16), b.py); // vai buoc trong nha (kiem vung luc di chuyen)
                 b.bom(1000);
                 isf = BotChucNang.sql1("SELECT isfinish FROM tob_char_quest WHERE id_char=" + id);
                 if (isf != null && !isf.startsWith(C05_2 + ",")) break;
             }
-            ket("st.td.pewter.vao_nha_xong", isf != null && isf.startsWith((C05_2 + 1) + ","), "isfinish " + isf + " | " + KichBanHuongDan.chuSau(b, m));
+            ket("st.td.pewter.vao_nha_xong_khong_di", isf != null && isf.startsWith((C05_2 + 1) + ","), "isfinish " + isf + " | " + KichBanHuongDan.chuSau(b, m));
         } finally {
             b.close();
         }

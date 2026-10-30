@@ -166,6 +166,7 @@ public final class Kiem {
         KiemChiemVatRoi.chay();
         KiemDocThu.chay();
         KiemGiaoDichRutDo.chay();
+        KiemTruTruocTrao.chay(); // 29/10/2026 ma-tran-bot: cho / quy doi / ghep ngoc / che tao / nang cap cu tru TRUOC trao; ban thu NPC; kho do
         KiemKetBan.chay();
         KiemGiftcodeDoCamTayBaoVat.chay();
         KiemGiftcodeRuyBangHoenn.chay();
@@ -321,9 +322,12 @@ public final class Kiem {
             Kiem.bang("KiemKetTau khong nem loi", "", String.valueOf(e));
         }
         KiemCap140.chay();
+        KiemTinhNangThuong.chay();
         KiemTimDiemNhiemVu.chay(); // bao loi 29/10/2026: diem nhiem vu (dau sao, vi tri bang loi), nha Pewter, vuon - trung, ve tau
         KiemVuonBerry.chay(); // bat lai vuon 29/10/2026: o dat gieo / lon / thu hoach, luu ho so, buoc So tay lam_vuon, ngan sach
         KiemBuocHanhDong.chay(); // sua-buoc-hanh-dong: buoc noi chuyen hua hanh dong -> kiem that hoac chu that (khoi sua_buoc_hanh_dong.sql)
+        KiemGiaVeTau.chay(); // bao loi 30/10/2026: ve tau ghi 15k mua 5k - gia hien o goi dang nhap = data_potion 20
+        KiemVaoNhaNhiemVu.chay(); // bao loi 30/10/2026: vao nha (C05.2 Bao tang Pewter) xong ngay - client khong gui goi di chuyen trong nha; chu Nha tre
         KiemCanBangCap.chay(); // can bang cap 15-45: duong quai / gia do cua hang, #29 luon lam duoc, EXP thang Gym theo cap
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

@@ -310,6 +310,68 @@ public final class QuanLyThuGame {
         return daKhoa(p, o) ? "Đã khoá" : null;
     }
 
+    /** Nhu lyDoDangDung nhung bo qua "Đang giao dịch" cua chinh lan chao ban dang chot (popup 112). */
+    public static String lyDoDangDungTruChao(final Char p, final Pet t) {
+        if (t.place == 1 || p.petUsing == t) {
+            return "Đang đi theo";
+        }
+        return p.pet.contains(t) ? null : "Không còn";
+    }
+
+    /**
+     * BAN THU CHO NPC (-800 / -801, ban do offline - 29/10/2026, ma-tran-bot "Lo hong uu tien" #6): cung luat voi
+     * Tha ({@link #lyDoKhongTha}: dang cuoi / di theo / cho tang / dang chao giao dich / da khoa) cong them: khong ban
+     * khi dang trao doi (66). Truoc day hai nhanh ban chi kiem {@code place != 1}: ban duoc con DA KHOA va con dang
+     * chao giao dich (popup 111/112) / dang cho tang (-32048).
+     */
+    public static String lyDoKhongBanNpc(final Char p, final Object o) {
+        if (p.userTrade != null && p.userTrade.size() > 0) {
+            return "Không thể bán thú khi đang trao đổi.";
+        }
+        return lyDoKhongTha(p, o);
+    }
+
+    /**
+     * Rut {@code o} khoi danh sach thu cua {@code p} de ban cho NPC - kiem-va-rut duoi khoa nhan vat (chung khoa voi
+     * {@link #tha}). @return null = da rut (noi goi xoa CSDL + ghi log), khac = ly do khong ban.
+     */
+    public static String rutDeBanNpc(final Char p, final Object o) {
+        synchronized (p) {
+            final String l = lyDoKhongBanNpc(p, o);
+            if (l != null) {
+                return l;
+            }
+            final boolean bo = o instanceof Animal ? p.animal.remove(o) : p.pet.remove(o);
+            if (!bo) {
+                return "Thú không còn trong danh sách.";
+            }
+            final String k = khoaCua(o);
+            if (k != null) {
+                p.thuKhoa.remove(k);
+                p.thuKhoa.remove("-" + k);
+            }
+            return null;
+        }
+    }
+
+    /** Pet co id {@code id} cua {@code p}, null neu khong co (KHONG tra con cuoi danh sach nhu vong lap cu). */
+    public static Pet timPet(final Char p, final int id) {
+        for (final Pet t : new ArrayList<Pet>(p.pet)) {
+            if (t.id == id) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    /** Pet {@code ban} dang chao ban cho {@code mua} (popup 111 -&gt; 112), null neu het chao / khong con. */
+    public static Pet petDangChao(final Char ban, final Char mua) {
+        if (ban == null || mua == null || ban.nameTangPet == null || !ban.nameTangPet.equalsIgnoreCase(mua.charname)) {
+            return null;
+        }
+        return timPet(ban, ban.idPetTang);
+    }
+
     static String ten(final Object o) {
         try {
             if (o instanceof Animal) {

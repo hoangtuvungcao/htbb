@@ -381,9 +381,28 @@ public class OfflineMap extends Map {
                   // Voi ngoc (type 1, ban theo so luong tu 19/09/2026): kiem nguoi ban con SO HUU
                   // du >= so luong dong niem yet nay hay khong (delGem/doAddGemItem se tinh lai
                   // toan bo bang counter, khong con doi tuong GemItem rieng cho tung dong nua).
-                  boolean conHang = (type == 0)
-                        ? p.iItems.remove((Item)item)
-                        : p.listGemitem[((GemSellEntry)item).idGemTemplate] >= ((GemSellEntry)item).soLuong;
+                  // 29/10/2026 (ma-tran-bot "Lo hong uu tien" #2): TRU XU NGUOI MUA TRUOC, kiem-va-tru mot buoc duoi
+                  // Char.KHOA_TIEN (truXuNeuDu). Ban cu kiem getxu() < gia o tren, CONG xu nguoi ban, roi moi
+                  // subXu nguoi mua - subXu chan ve 0. Nguoi mua tieu xu o luong phien (68/85/24... chay song
+                  // song voi 95/-32 o luong ban do) giua hai buoc -> nhan mon mien phi VA nguoi ban van duoc
+                  // cong du = xu sinh ra. Nay: chua tru duoc thi khong rut mon, khong cong ai; rut mon hong thi
+                  // hoan dung so vua tru (cung kieu XU_CHUYEN, khong dem kinh te).
+                  final long bf = player.getxu();
+                  final long gia = player.sellerInfo.priceSell;
+                  if (!TruTruocTrao.truNguoiMuaCho(player, gia)) {
+                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
+                     return;
+                  }
+                  boolean conHang = false;
+                  try {
+                     conHang = (type == 0)
+                           ? p.iItems.remove((Item)item)
+                           : p.truGemNeuDu(((GemSellEntry)item).idGemTemplate, ((GemSellEntry)item).soLuong, 0);
+                  } finally {
+                     if (!conHang) {
+                        TruTruocTrao.hoanNguoiMuaCho(player, gia);
+                     }
+                  }
                   if (!conHang) {
                      npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemSellEntry)item).realId);
                      item.isSelling = false;
@@ -392,7 +411,6 @@ public class OfflineMap extends Map {
                   }
 
                   long sf = p.getxu();
-                  long bf = player.getxu();
                   npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemSellEntry)item).realId);
                   NewClan clan = NewClan.getClan(idClanTown[player.inCountry]);
                   if (clan != null) {
@@ -423,7 +441,7 @@ public class OfflineMap extends Map {
                      com.htbb.pokemon.LauDai.ghiXuRa(money); // thue cho bi dot
                   }
 
-                  player.subXu(player.sellerInfo.priceSell, false, "offline map 2", Char.XU_CHUYEN);
+                  // (xu nguoi mua da tru o tren - TruTruocTrao.truNguoiMuaCho - truoc khi rut mon / cong nguoi ban)
                   com.htbb.pokemon.ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_KY_GUI, player.sellerInfo.priceSell,
                      (type == 0 ? "vat pham " + ((Item)item).getTemplate().name : "ngoc " + ((GemSellEntry)item).idGemTemplate
                         + " x" + ((GemSellEntry)item).soLuong) + (item.getCharcanBuy().equals("") ? "" : " (dat rieng)"));
@@ -518,7 +536,7 @@ public class OfflineMap extends Map {
                      // delGem/doAddGemItem (co san, dung chung voi moi duong tru/cong ngoc
                      // khac trong game) tu lo het: tru/cong counter, don marker rong, giai
                      // phong id - khong con can dong tay tung buoc nhu ban goc 1-vien/lan.
-                     p.delGem(entry.idGemTemplate, entry.soLuong, false);
+                     // (ngoc nguoi ban da tru o buoc conHang - truGemNeuDu, kiem-va-tru mot buoc)
                      player.doAddGemItem(entry.idGemTemplate, entry.soLuong, false);
                   }
 
@@ -558,6 +576,17 @@ public class OfflineMap extends Map {
    }
 
    protected void doGetItemFromBag(Char player, short itemID) {
+      // 29/10/2026 (ma-tran-bot #9): kho do tuan tu theo nhan vat - 68/69 cung luong phien (privateCmd) VA duoi
+      // khoa nhan vat, de "co trong kho chua / them / xoa khoi tui" khong xen nhau voi lenh kho khac.
+      synchronized (player) {
+         doGetItemFromBagKhoa(player, itemID);
+      }
+   }
+
+   private void doGetItemFromBagKhoa(Char player, short itemID) {
+      if (this.checkTrade(player)) { // 29/10/2026: 69 truoc day khong kiem trao doi (68 co)
+         return;
+      }
       if (player.isPutItem2Bag) {
          // 19/10/2026: lay do tu kho ra hanh trang phai con o trong (truoc day khong kiem -> tran tui).
          if (player.isFullInventory()) {
@@ -567,13 +596,16 @@ public class OfflineMap extends Map {
          for (int i = 0; i < player.bItem.size(); i++) {
             Item item = (Item)player.bItem.get(i);
             if (item.id == itemID) {
+               // 29/10/2026: rut khoi kho TRUOC roi moi them vao tui (mot lan luu giua chung khong thay mon o ca hai noi)
+               if (!player.bItem.remove(item)) {
+                  return;
+               }
                if (player.isExistInvector(player.iItems, itemID) == -1) {
                   player.iItems.add(item);
                   item.place = 0;
                }
 
                try {
-                  player.bItem.remove(item);
                   Message m = new Message(69);
                   m.dos.writeShort(item.id);
                   player.sendMessage(m);
@@ -597,6 +629,14 @@ public class OfflineMap extends Map {
    }
 
    protected void doPutItem2Bag(Char player, short itemID) {
+      // 29/10/2026 (ma-tran-bot #9): kho do tuan tu theo nhan vat - 68/69 cung luong phien (privateCmd) VA duoi
+      // khoa nhan vat, de "co trong kho chua / them / xoa khoi tui" khong xen nhau voi lenh kho khac.
+      synchronized (player) {
+         doPutItem2BagKhoa(player, itemID);
+      }
+   }
+
+   private void doPutItem2BagKhoa(Char player, short itemID) {
       if (!this.checkTrade(player)) {
          if (player.isPutItem2Bag) {
             if (player.bItem.size() >= Char.MAX_KHO_DO) {
@@ -615,13 +655,16 @@ public class OfflineMap extends Map {
                      }
 
                      try {
+                        // 29/10/2026: rut khoi tui TRUOC roi moi cat vao kho
+                        if (!player.iItems.remove(item)) {
+                           return;
+                        }
                         if (player.isExistInvector(player.bItem, itemID) == -1) {
                            item.place = 3;
                            player.bItem.add(item);
                         }
 
                         try {
-                           player.iItems.remove(item);
                            Message m = new Message(68);
                            m.dos.writeShort(item.id);
                            player.sendMessage(m);
@@ -1661,6 +1704,9 @@ public class OfflineMap extends Map {
                         } else {
                            ItemTemplates template = null;
                            if (!isAnimalItem(var32) && !isBuyTheBaiLinhDanhThue(var32) && !isBuyTheBaiMuaban(var32)) {
+                              if (kindItem < 0 || kindItem >= itemTemplates.size() || itemTemplates.get(kindItem) == null) {
+                                 continue;   // loai vat pham sai (goi tin sai): bo qua, khong nem loi
+                              }
                               template = (ItemTemplates)((Hashtable)itemTemplates.get(kindItem)).get(new Integer(var32));
                            } else {
                               kindItem = 0;

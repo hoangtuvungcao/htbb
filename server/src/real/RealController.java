@@ -74,7 +74,9 @@ public class RealController extends ServerController {
 
     static {
         try {
-            byte[] pCmd = new byte[]{-45, -37, -46, -33, -28, -27, -24, -71, -70, -23, -22, -21, -19, -18, -16, -17, -12, -7, -8, -6, 110, -5, 109, 108, 104, 102, 101, 72, 100, 88, 86, 82, -2, -3, 7, 21, 31, 27, 61, 51, 52, 53, 55, 67, -69, -68, -67, -66, 87, -63, -62, -61, -59, -54, -57, -53, -52, -41, -36, -35, -34, -30, -31, -32, -15, -14, -13, -11, -9, 107, 106, 103, 92, 85, 81, 78, 77, 75, 76, 74, 71, 70, 68, 9, 6, 18, 19, -65, 24, 28, 29, 34, 36, 49, 50, 22, -113};
+            // 69 (lay do tu kho) them 29/10/2026: chay CUNG luong phien voi 68 (cat do vao kho) - truoc day 68 o luong
+            // phien, 69 o luong ban do, gui xen ke cung mot mon co the de mon o CA hanh trang lan kho (nhan ban khi luu).
+            byte[] pCmd = new byte[]{-45, -37, -46, -33, -28, -27, -24, -71, -70, -23, -22, -21, -19, -18, -16, -17, -12, -7, -8, -6, 110, -5, 109, 108, 104, 102, 101, 72, 100, 88, 86, 82, -2, -3, 7, 21, 31, 27, 61, 51, 52, 53, 55, 67, -69, -68, -67, -66, 87, -63, -62, -61, -59, -54, -57, -53, -52, -41, -36, -35, -34, -30, -31, -32, -15, -14, -13, -11, -9, 107, 106, 103, 92, 85, 81, 78, 77, 75, 76, 74, 71, 70, 68, 69, 9, 6, 18, 19, -65, 24, 28, 29, 34, 36, 49, 50, 22, -113};
 
             for (int i = 0; i < pCmd.length; ++i) {
                 privateCmd.put(pCmd[i], pCmd[i]);
@@ -1092,7 +1094,13 @@ public class RealController extends ServerController {
                                                             return;
                                                         }
 
-                                                        p.animal.remove(idMenu);
+                                                        // 29/10/2026 (ma-tran-bot #6): ban NPC = cung luat voi Tha (khoa / dang cuoi / cho tang / trao doi), rut theo
+                                                        // DOI TUONG duoi khoa nhan vat (QuanLyThuGame.rutDeBanNpc) thay cho remove(idMenu) mu.
+                                                        final String lyDoBan = QuanLyThuGame.rutDeBanNpc(p, anim);
+                                                        if (lyDoBan != null) {
+                                                            p.sendMessage(MessageCreator.createServerAlertMessage(lyDoBan, ""));
+                                                            return;
+                                                        }
                                                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
                                                         Database.instance.delAnimal(anim.dbid);
                                                         Database.instance.saveOrtherLog("", p.charname, "ban pet " + anim.getAttribute() + " > " + anim.getName() + " > " + anim.idImg, "sellanimal");

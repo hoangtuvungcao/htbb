@@ -9886,7 +9886,14 @@ public class Map implements Runnable {
                     return;
                 }
 
-                if (player.getxu() < (long) money) {
+                if (ok == 1 && player.pointCongHienClan < 200) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 200 điểm cống hiến", ""));
+                    return;
+                }
+                // 29/10/2026 (ma-tran-bot "Lo hong uu tien" #3): TRU XU TRUOC, kiem-va-tru mot buoc (TruTruocTrao.truGopQuy)
+                // - quy chi duoc cong dung so da that su tru. Ban cu kiem getxu() < money o day, subXu (chan ve 0) o duoi
+                // roi cong money vao quy: tieu xu o luong khac giua hai buoc -> quy duoc cong nhieu hon so bi tru.
+                if (!TruTruocTrao.truGopQuy(player, (long) money)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                     return;
                 }
@@ -9912,7 +9919,7 @@ public class Map implements Runnable {
                                 + " > dung dch "
                                 + (ok == 1 ? " yes" : "no")
                         );
-                player.subXu((long) money, false, "map 777");
+                // (xu da tru o tren bang TruTruocTrao.truGopQuy)
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 clandata.addMoney2Clan((long) money);
@@ -10036,19 +10043,13 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    Pet pet = null;
-                    int ix = 0;
-
+                    // 29/10/2026: tim DUNG con dang chao (truoc day het danh sach ma khong thay thi "pet" con tro con CUOI
+                    // vua duyet -> ban nham con khac khi nguoi ban da tha / ban NPC con dang chao), va nguoi ban phai con
+                    // dang chao cho CHINH nguoi nay.
+                    Pet pet = QuanLyThuGame.petDangChao(p, player);
                     while (true) {
-                        if (ix < p.pet.size()) {
-                            pet = (Pet) p.pet.get(ix);
-                            if (pet.id != p.idPetTang) {
-                                ix++;
-                                continue;
-                            }
-                        }
-
                         if (pet == null || !pet.canTrade()) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Thú này không còn được giao dịch.", ""));
                             return;
                         }
 
@@ -10064,7 +10065,7 @@ public class Map implements Runnable {
                             return;
                         }
 
-                        if (player.getxu() < (long) p.moneyTrade) {
+                        if (p.moneyTrade < 0 || player.getxu() < (long) p.moneyTrade) {
                             player.nameTangPet = "";
                             p.nameTangPet = "";
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
@@ -10081,16 +10082,34 @@ public class Map implements Runnable {
                             return;
                         }
 
-                        p.pet.remove(pet);
-                        pet.id = player.getIDItem();
-                        pet.ownerid = player.charDBID;
-                        player.pet.add(pet);
+                        // 29/10/2026 (TruTruocTrao): TRU nguoi mua TRUOC (kiem-va-tru mot buoc), roi rut con khoi nguoi ban
+                        // (Vector.remove nguyen tu; that bai = hoan), roi moi cong nguoi ban. Ban cu chuyen con + cong nguoi
+                        // ban roi moi subXu nguoi mua (chan ve 0) -> tieu xu o luong khac giua chung = thu mien phi + xu sinh ra.
                         long xuP = p.getxu();
                         long xuPL = player.getxu();
                         long moneytrade = (long) p.moneyTrade;
+                        if (!player.truXuNeuDu(moneytrade, false, "map 27", Char.XU_CHUYEN)) {
+                            player.nameTangPet = "";
+                            p.nameTangPet = "";
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                            return;
+                        }
+                        final boolean rut;
+                        synchronized (p) {
+                            rut = QuanLyThuGame.lyDoDangDungTruChao(p, pet) == null && p.pet.remove(pet);
+                        }
+                        if (!rut) {
+                            player.addXu(moneytrade, "hoan map 27", Char.XU_CHUYEN);
+                            player.nameTangPet = "";
+                            p.nameTangPet = "";
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Thú này không còn được giao dịch.", ""));
+                            return;
+                        }
+                        pet.id = player.getIDItem();
+                        pet.ownerid = player.charDBID;
+                        player.pet.add(pet);
                         // chuyen giua hai nguoi choi (khong dem), rieng 10% phi bi dot = xu ra
                         p.addXu(moneytrade * 90L / 100L, "map 26", Char.XU_CHUYEN);
-                        player.subXu(moneytrade, false, "map 27", Char.XU_CHUYEN);
                         com.htbb.pokemon.LauDai.ghiXuRa(moneytrade - moneytrade * 90L / 100L);
                         Database.instance.savePet(pet);
                         com.htbb.pokemon.ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_THU_CUNG, moneytrade,
@@ -10134,18 +10153,8 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    Pet pet = null;
-                    int ix = 0;
-
+                    Pet pet = QuanLyThuGame.timPet(player, player.idPetTang); // 29/10/2026: dung con, khong phai con cuoi
                     while (true) {
-                        if (ix < player.pet.size()) {
-                            pet = (Pet) player.pet.get(ix);
-                            if (pet.id != player.idPetTang) {
-                                ix++;
-                                continue;
-                            }
-                        }
-
                         if (pet == null || !pet.canTrade()) {
                             return;
                         }
@@ -14831,6 +14840,14 @@ public class Map implements Runnable {
 
 
     protected void doPutItem2Bag(Char player, short itemID) {
+       // 29/10/2026 (ma-tran-bot #9): kho do tuan tu theo nhan vat - 68/69 cung luong phien (privateCmd) VA duoi
+       // khoa nhan vat, de "co trong kho chua / them / xoa khoi tui" khong xen nhau voi lenh kho khac.
+       synchronized (player) {
+          doPutItem2BagKhoa(player, itemID);
+       }
+    }
+
+    private void doPutItem2BagKhoa(Char player, short itemID) {
         if (player.isVip()) {
             if (!this.checkTrade(player)) {
                 if (player.isPutItem2Bag) {
@@ -14850,13 +14867,16 @@ public class Map implements Runnable {
                                 }
 
                                 try {
+                                    // 29/10/2026: rut khoi tui TRUOC roi moi cat vao kho
+                                    if (!player.iItems.remove(item)) {
+                                       return;
+                                    }
                                     if (player.isExistInvector(player.bItem, itemID) == -1) {
-                                        item.place = 3;
-                                        player.bItem.add(item);
+                                       item.place = 3;
+                                       player.bItem.add(item);
                                     }
 
                                     try {
-                                        player.iItems.remove(item);
                                         Message m = new Message(68);
                                         m.dos.writeShort(item.id);
                                         player.sendMessage(m);
@@ -14877,6 +14897,17 @@ public class Map implements Runnable {
     }
 
     protected void doGetItemFromBag(Char player, short itemID) {
+       // 29/10/2026 (ma-tran-bot #9): kho do tuan tu theo nhan vat - 68/69 cung luong phien (privateCmd) VA duoi
+       // khoa nhan vat, de "co trong kho chua / them / xoa khoi tui" khong xen nhau voi lenh kho khac.
+       synchronized (player) {
+          doGetItemFromBagKhoa(player, itemID);
+       }
+    }
+
+    private void doGetItemFromBagKhoa(Char player, short itemID) {
+       if (this.checkTrade(player)) { // 29/10/2026: 69 truoc day khong kiem trao doi (68 co)
+          return;
+       }
         if (player.isVip()) {
             // 19/10/2026: lay do tu kho ra hanh trang phai con o trong (truoc day khong kiem -> tran tui).
             if (player.isPutItem2Bag && player.isFullInventory()) {
@@ -14887,13 +14918,16 @@ public class Map implements Runnable {
                 for (int i = 0; i < player.bItem.size(); i++) {
                     Item item = (Item) player.bItem.get(i);
                     if (item.id == itemID) {
+                        // 29/10/2026: rut khoi kho TRUOC roi moi them vao tui (mot lan luu giua chung khong thay mon o ca hai noi)
+                        if (!player.bItem.remove(item)) {
+                           return;
+                        }
                         if (player.isExistInvector(player.iItems, itemID) == -1) {
                             player.iItems.add(item);
                             item.place = 0;
                         }
 
                         try {
-                            player.bItem.remove(item);
                             Message m = new Message(69);
                             m.dos.writeShort(item.id);
                             player.sendMessage(m);
@@ -16909,6 +16943,7 @@ public class Map implements Runnable {
             player.doFinishAutoInbue();
             player.doChangeMapCharHire();
             player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+            KhuVucNhiemVuGame.sauKhiVaoBanDo(player); // trong nha client khong gui goi di chuyen (bao loi 30/10)
         } catch (Exception var11) {
             var11.printStackTrace();
         }

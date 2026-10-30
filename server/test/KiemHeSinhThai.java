@@ -323,6 +323,21 @@ public final class KiemHeSinhThai {
         Kiem.bang("trung: chuoi hoa / doc lai", t.chuoi(), t2 == null ? null : t2.chuoi());
         Kiem.dung("trung: chuoi hong -> null", NhaTre.Trung.doc("abc") == null && NhaTre.Trung.doc("9999.1.1.1.0.0") == null);
         Kiem.bang("IV ngoai khoang bi kep", Integer.valueOf(31), Integer.valueOf(NhaTre.Trung.doc("147.99.0.0.0.0").ivHp));
+        // bot tn_nha_tre 29/10/2026: vut het pet da gui roi ha quai van de trung -> chi tinh pet con so huu
+        final java.util.List<Integer> soHuu = java.util.Arrays.asList(Integer.valueOf(163));
+        Kiem.bang("nha tre: pet da gui con so huu", "[163, 0]", java.util.Arrays.toString(NhaTre.petConGui(163, 41, soHuu)));
+        Kiem.bang("nha tre: vut het pet da gui -> khong slot nao", "[0, 0]",
+                java.util.Arrays.toString(NhaTre.petConGui(163, 41, java.util.Collections.<Integer>emptyList())));
+        Kiem.bang("nha tre: so huu null -> khong slot nao", "[0, 0]", java.util.Arrays.toString(NhaTre.petConGui(163, 0, null)));
+        try {
+            final String g = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/com/htbb/pokemon/HeSinhThaiGame.java")), "UTF-8");
+            final int i = g.indexOf("static boolean buocTrungVaNhaTre");
+            final String than = i < 0 ? "" : g.substring(i, Math.min(g.length(), i + 2500));
+            Kiem.dung("nha tre: buoc + de trung chi tu pet con so huu (petConGui + deTrung(p, h, gui[0], gui[1]))",
+                    than.contains("NhaTre.petConGui(") && than.contains("deTrung(p, h, gui[0], gui[1])") && !than.contains("(h.nhaTre1 > 0 || h.nhaTre2 > 0) && h.ngayPhiNhaTre"));
+        } catch (final java.io.IOException e) {
+            Kiem.dung("nha tre: doc HeSinhThaiGame.java", false);
+        }
         Kiem.bang("pham chat S", "S", NhaTre.phamChat(84));
         Kiem.bang("pham chat C", "C", NhaTre.phamChat(49));
         Kiem.bang("trung S Dratini -> pet cap 2 (695)", "ITEM:695:1", NhaTre.thuongNo(t));

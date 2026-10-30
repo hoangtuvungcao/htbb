@@ -244,6 +244,22 @@ public final class KhuVucNhiemVuGame {
         }
     }
 
+    /**
+     * Vua doi ban do (MapXuLyLenh.doChangeMap qua cua, Map.move2Map - Arcanine gac cong / dich chuyen): kiem buoc dia diem
+     * NGAY, khong cho goi di chuyen. Client (client_jar GameService.moveChar, client_pc_ios GameService.moveChar) KHONG
+     * gui goi 4 khi dang trong nha (Tilemap.isOfflineMap) -> buoc dich la ca ngoi nha (C05.2 "Bảo tàng thiên thạch":
+     * nha 100 / 102 / 72 / 82) truoc day khong bao gio xong voi nguoi choi that (bao loi 30/10/2026 "vẫn ko làm đc nv nhà
+     * pewter", J2ME; bot di vai buoc trong nha nen khong thay).
+     */
+    public static void sauKhiVaoBanDo(final Char p) {
+        try {
+            NhiemVuEngine.khiDiChuyen(p); // So tay: den_noi / dung_toa_do trong nha
+        } catch (final Exception e) {
+            System.out.println("KhuVucNhiemVuGame.sauKhiVaoBanDo (so tay): " + e);
+        }
+        khiDiChuyen(p);
+    }
+
     static void kiem(final Char p, final NewCharQuest q, final byte ms) {
         if (q == null || q.id_quest < 0 || q.state_quest != NewCharQuest.WORKING) {
             return; // nhanh nhat: phan lon nhan vat dung o day
