@@ -321,69 +321,36 @@ public final class TuDongGame {
                 + " miễn phí hôm nay)." : " (đang dùng - đã hết giờ miễn phí hôm nay).");
     }
 
-    /** Tran so ve trong MOT chong (bang ChongVatPham.TRAN cua he xep chong type 28). */
-    static final int CHONG_VE_TOI_DA = 999;
-
-    /** So o hanh trang MOI can de nhan {@code n} ve {@code id} (0 neu don het vao chong san co). */
+    /** So o hanh trang MOI can de nhan {@code n} ve {@code id} (0 neu don het vao chong san co) - ChongVatPham. */
     public static int soOCanVe(final Char p, final int id, final int n) {
-        int conCho = 0;
-        synchronized (p.iItems) {
-            for (final Item it : p.iItems) {
-                if (it != null && it.getTemplate() != null && it.getTemplate().id == id && it.lock == 1) {
-                    conCho += Math.max(0, CHONG_VE_TOI_DA - Math.max(1, it.quanlity));
-                }
-            }
-        }
-        final int du = Math.max(0, n - conCho);
-        return (du + CHONG_VE_TOI_DA - 1) / CHONG_VE_TOI_DA;
+        return com.htbb.pokemon.ChongVatPham.soOCan(p, id, n);
     }
 
     /**
-     * Trao {@code n} ve treo KHOA (giftcode): don vao chong ve khoa san co trong tui (Item.quanlity, toi
-     * {@link #CHONG_VE_TOI_DA}), phan con lai thanh chong moi - MOT o cho ca 40 ve (truoc day createItemSoLuong tao
-     * 40 mon rieng = 40 o). Cung cach bieu dien voi he xep chong type 28 (so luong o Item.quanlity, cot 29 cua chuoi
-     * luu). Noi goi da kiem o trong ({@link #soOCanVe}). @return so ve da trao.
+     * Trao {@code n} ve treo KHOA (giftcode) qua he xep chong type 28 (com.htbb.pokemon.ChongVatPham.nhan): don vao
+     * chong ve khoa san co, phan con lai thanh chong moi (toi da ChongVatPham.TRAN / chong) - MOT o cho ca 40 ve.
+     * Noi goi da kiem o trong ({@link #soOCanVe}). @return so ve da trao.
      */
     public static int traoVeTreo(final Char p, final int id, final int n) {
-        final ItemTemplates t = Map.itemTemplates.get(5).get(Integer.valueOf(id));
-        if (p == null || t == null || n <= 0) {
+        if (p == null || n <= 0) {
             return 0;
         }
-        int con = n;
-        synchronized (p.iItems) {
-            for (final Item it : p.iItems) {
-                if (con <= 0) {
-                    break;
-                }
-                if (it != null && it.getTemplate() != null && it.getTemplate().id == id && it.lock == 1) {
-                    final int q = Math.max(1, it.quanlity);
-                    final int them = Math.min(con, CHONG_VE_TOI_DA - q);
-                    if (them > 0) {
-                        it.quanlity = q + them;
-                        con -= them;
-                    }
-                }
-            }
-            while (con > 0 && !p.isFullInventory()) {
-                final Item moi = new Item(t, false, 0, 0, id);
-                moi.id = p.getIDItem();
-                moi.owner = p.charDBID;
-                moi.level = t.level;
-                moi.identify = p.charDBID;
-                moi.clazz = -1;
-                moi.lock = 1;
-                moi.dateCreate = Char.getDayTime(0L);
-                moi.quanlity = Math.min(con, CHONG_VE_TOI_DA);
-                con -= moi.quanlity;
-                p.iItems.add(moi);
-            }
+        final Item mau = Char.mauSoLuong(id, p);
+        if (mau == null) {
+            return 0;
         }
-        return n - con;
+        mau.id = p.getIDItem();
+        mau.dateCreate = Char.getDayTime(0L);
+        final int[] kq = com.htbb.pokemon.ChongVatPham.nhan(p, mau, n);
+        if (kq[1] == 0) {
+            p.removeIDItem(mau.id); // don het vao chong cu: tra id mon mau
+        }
+        return kq[0];
     }
 
     /**
-     * Dung "Ve treo N gio" (VatPhamDungLauDai, hieu_ung gio_treo:N): kiem tran kho -&gt; tru 1 ve (chong: giam so
-     * luong, le: bo khoi tui) -&gt; cong N gio vao kho -&gt; ghi ho so (luu cung luot luu nhan vat voi hanh trang).
+     * Dung "Ve treo N gio" (VatPhamDungLauDai, hieu_ung gio_treo:N): kiem tran kho -&gt; tru 1 ve
+     * (ChongVatPham.tieuMot) -&gt; cong N gio vao kho -&gt; ghi ho so (luu cung luot luu nhan vat voi hanh trang).
      * Can ho so dai han (sv.lau_dai=1): khong co thi tu choi, khong mat ve.
      */
     public static void dungVeTreo(final Char p, final Item item, final int gio) {
@@ -410,21 +377,12 @@ public final class TuDongGame {
             DungVatPham.loi(p, loi);
             return;
         }
-        // tru ve TRUOC (CODING_CONVENTION muc 5)
-        final int conVe;
-        synchronized (p.iItems) {
-            if (!p.iItems.contains(item)) {
-                return;
-            }
-            if (item.quanlity > 1) {
-                item.quanlity--;
-                conVe = item.quanlity;
-            } else {
-                p.iItems.remove(item);
-                p.removeIDItem(item.id);
-                conVe = 0;
-            }
+        // tru ve TRUOC (CODING_CONVENTION muc 5) - MOT duong tru: ChongVatPham.tieuMot (DungVatPham da tach 1 don vi
+        // khoi chong truoc khi goi; goi thang voi chong thi giam 1)
+        if (!com.htbb.pokemon.ChongVatPham.tieuMot(p, item)) {
+            return;
         }
+        final int conVe = com.htbb.pokemon.ChongVatPham.dem(p.iItems, item.getTemplate().id); // ca phan chong da tach
         final long kho = TuDong.themKho(ph, ms);
         ghiNgay(p, ph);
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));

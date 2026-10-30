@@ -293,19 +293,23 @@ public final class KiemVeTreo {
         final String[] b = KiemDungVatPham.dung(p, chong.id);
         Kiem.dung("dung ve (client moi): thong bao +10 gio + kho", b != null && b[1].contains("+10 giờ") && b[1].contains("Kho giờ treo: 10 giờ"));
         Kiem.dung("dung ve: bao con 2 ve", b != null && b[1].contains("Còn 2 vé"));
-        Kiem.bang("chong 3 -> 2 (van trong tui, cung o)", Integer.valueOf(2), Integer.valueOf(chong.quanlity));
-        Kiem.dung("chong van trong tui", p.iItems.contains(chong));
+        // ChongVatPham: DungVatPham tach 1 don vi de dung, phan con lai giu id cu (o phim tat / client tro dung chong)
+        final short idChong = chong.id;
+        Kiem.bang("chong 3 -> 2 (MOT lan tru, khong tru doi)", Integer.valueOf(2),
+                Integer.valueOf(com.htbb.pokemon.ChongVatPham.dem(p.iItems, 1260)));
+        Kiem.dung("chong con lai van trong tui, cung id, 1 o", theoId(p, idChong) != null && theoId(p, idChong).quanlity == 2
+                && demDong(p, 1260) == 1);
         Kiem.bang("ho so: kho 10 gio (a3)", Long.valueOf(10 * GIO), Long.valueOf(h.tdMsKho));
         final Object[] tt = trangThai();
         Kiem.dung("goi -100 sau khi dung: con lai >= 10 gio, <= toi da", tt != null && ((Integer) tt[0]).intValue() >= 10 * 3600
                 && ((Integer) tt[0]).intValue() <= ((Integer) tt[1]).intValue());
         Kiem.dung("goi -100: dong kho gio treo cho bang Tu dong", tt != null && ((String) tt[2]).contains("Kho giờ treo"));
-        KiemDungVatPham.dung(p, chong.id);
-        final Item le = chong;
+        final String[] b2 = KiemDungVatPham.dung(p, idChong);
         Kiem.bang("dung lan 2: kho 20 gio", Long.valueOf(20 * GIO), Long.valueOf(h.tdMsKho));
-        final String[] b3 = KiemDungVatPham.dung(p, le.id);
+        Kiem.dung("dung lan 2: bao con 1 ve", b2 != null && b2[1].contains("Còn 1 vé"));
+        final String[] b3 = KiemDungVatPham.dung(p, idChong);
         Kiem.bang("dung ve cuoi: kho 30 gio", Long.valueOf(30 * GIO), Long.valueOf(h.tdMsKho));
-        Kiem.sai("ve cuoi bo khoi tui", p.iItems.contains(le));
+        Kiem.bang("ve cuoi bo khoi tui", Integer.valueOf(0), Integer.valueOf(com.htbb.pokemon.ChongVatPham.dem(p.iItems, 1260)));
         Kiem.dung("ve cuoi: khong bao 'Còn'", b3 != null && !b3[1].contains("Còn "));
         // dang nhap lai: Char moi, phien moi nap tu chuoi luu
         final HoSoLauDai luu = HoSoLauDai.giaiMa(h.maHoa());
@@ -319,7 +323,7 @@ public final class KiemVeTreo {
         final Item v3 = ve(p3, 5);
         final String[] b4 = KiemDungVatPham.dung(p3, v3.id);
         Kiem.dung("kho 495 gio: tu choi (tran 500)", b4 != null && "LOI".equals(b4[0]) && b4[1].contains("500 giờ"));
-        Kiem.bang("tu choi: khong tru ve", Integer.valueOf(5), Integer.valueOf(v3.quanlity));
+        Kiem.bang("tu choi: khong tru ve", Integer.valueOf(5), Integer.valueOf(com.htbb.pokemon.ChongVatPham.dem(p3.iItems, 1260)));
         Kiem.bang("tu choi: kho khong doi", Long.valueOf(495 * GIO), Long.valueOf(luu.tdMsKho));
         // client cu (0.9.21 / 0.9.22 / J2ME): hop thoai 37
         final Char cu = nv(cache, DBID + 1, new HoSoLauDai());
@@ -338,6 +342,25 @@ public final class KiemVeTreo {
         // cloneItem giu so luong chong (kho Kangaskhan / cho)
         final Item c5 = ve(cu, 7);
         Kiem.bang("cloneItem giu so luong chong", Integer.valueOf(7), Integer.valueOf(c5.cloneItem().quanlity));
+    }
+
+    static Item theoId(final Char p, final short id) {
+        for (final Item it : p.iItems) {
+            if (it.id == id) {
+                return it;
+            }
+        }
+        return null;
+    }
+
+    static int demDong(final Char p, final int tpl) {
+        int n = 0;
+        for (final Item it : p.iItems) {
+            if (it.tempateID == tpl) {
+                n++;
+            }
+        }
+        return n;
     }
 
     static void traoVe() throws Exception {
