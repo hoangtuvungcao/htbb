@@ -76,7 +76,7 @@ public final class KichBanBatThuong {
         for (int i = 0; i < 12; i++) {
             lamMoi(b);
             if (b.dut) return;
-            String nay = b.xu + "|" + b.luong + "|" + b.lk + "|" + b.thuoc + "|" + b.doDung.size() + "|" + b.soMac + "|" + b.ngoc.size();
+            String nay = b.xu + "|" + b.luong + "|" + b.lk + "|" + b.thuoc + "|" + b.doDung.size() + "/" + b.tongMon() + "|" + b.soMac + "|" + b.ngoc.size();
             if (nay.equals(truoc)) return;
             truoc = nay;
         }
@@ -274,7 +274,7 @@ public final class KichBanBatThuong {
             // so luong 0 / am / id thuoc la / loai la / goi cut / n am -> khong doi gi
             datXu(b, 100000);
             Map<Integer, Integer> th0 = new LinkedHashMap<>(b.thuoc);
-            int nDo = b.doDung.size();
+            int nDo = b.doDung.size(), tong0 = b.tongMon(); // tong mon: dup vao chong type 28 khong tang so O
             List<byte[]> sai = Arrays.asList(
                     BotChucNang.goi((byte) 1, (byte) 4, (short) 1, (short) 0),
                     BotChucNang.goi((byte) 1, (byte) 4, (short) 1, (short) -5),
@@ -292,9 +292,9 @@ public final class KichBanBatThuong {
             ghiLogGoiSai("bt_mua");
             boolean song = b.conSong();
             if (!song) b = vaoLai(b);
-            ket("bt_mua.goi_sai", b.xu == 100000 && b.thuoc.equals(th0) && b.doDung.size() == nDo,
+            ket("bt_mua.goi_sai", b.xu == 100000 && b.thuoc.equals(th0) && b.doDung.size() == nDo && b.tongMon() == tong0,
                     sai.size() + " goi 24 sai (sl 0/-5/-32768, id -1/30000, loai 7, kind 99, mon khong ban, n=-1, cut): xu 100000 -> " + b.xu
-                            + ", thuoc " + th0 + " -> " + b.thuoc + ", mon " + nDo + " -> " + b.doDung.size() + ", ket noi " + (song ? "con" : "bi dong (dang nhap lai duoc)"));
+                            + ", thuoc " + th0 + " -> " + b.thuoc + ", mon " + nDo + " -> " + b.doDung.size() + " (tong " + tong0 + " -> " + b.tongMon() + "), ket noi " + (song ? "con" : "bi dong (dang nhap lai duoc)"));
             // so luong khong lo: chi toi da 999 / o, tien tru dung so binh nhan
             datThuoc(b, 1, 0);
             datXu(b, 5000000);
@@ -357,14 +357,14 @@ public final class KichBanBatThuong {
                     "sau 9 goi 29: vu khi trong tui " + tui1 + "; vao lai: trong tui " + tui2 + ", CSDL (tui + dang mac) " + csdl + " ban (phai = " + (vk0 + 1) + ": " + vk0 + " khoi dau + 2 mua - 1 ban)");
             // id khong co / am
             long xu2 = b.xu;
-            int n2 = b.doDung.size();
+            int n2 = b.doDung.size(), tong2 = b.tongMon();
             b.gui(28, (short) -1);
             b.gui(28, (short) 32767);
             b.gui(28, new byte[0]);
             b.gui(29, (short) 12345);
             onDinh(b);
             if (!b.conSong()) b = vaoLai(b);
-            ket("bt_ban.id_la", b.xu == xu2 && b.doDung.size() == n2, "ban/dung id la: xu " + xu2 + " -> " + b.xu + ", mon " + n2 + " -> " + b.doDung.size());
+            ket("bt_ban.id_la", b.xu == xu2 && b.doDung.size() == n2 && b.tongMon() == tong2, "ban/dung id la: xu " + xu2 + " -> " + b.xu + ", mon " + n2 + " -> " + b.doDung.size() + " (tong " + tong2 + " -> " + b.tongMon() + ")");
         } finally {
             b.close();
         }
@@ -749,7 +749,7 @@ public final class KichBanBatThuong {
 
     static int demTpl(BotChucNang.Bot b, int tpl) {
         int n = 0;
-        for (int[] d : b.doDung) if (d[1] == tpl) n++;
+        n += b.soDo(tpl); // cong so luong chong type 28 (ChongVatPham), khong dem o
         return n;
     }
 
@@ -926,7 +926,7 @@ public final class KichBanBatThuong {
             long xu0 = b.xu;
             int luong0 = b.luong, lk0 = b.lk;
             Map<Integer, Integer> th0 = new LinkedHashMap<>(b.thuoc);
-            int nDo = b.doDung.size(), nNgoc = b.ngoc.size();
+            int nDo = b.doDung.size(), tongDo = b.tongMon(), nNgoc = b.ngoc.size(); // tong: dup vao chong khong tang so O
             Random r = new Random(20261025L);
             int[] lenh = {22, 24, 28, 29, 61, 66, 68, 69, 71, 74, 75, 76, 77, 78, 85, 92, 94, 95, 108, 110, -21, -23, -30, -34, -35, -36, -45, -52, -62, -68, -69, -107, -119, -120};
             int n = 0;
@@ -946,9 +946,9 @@ public final class KichBanBatThuong {
             if (!b.conSong()) { dong++; b = vaoLai(b); }
             onDinh(b);
             ghiLogGoiSai("bt_goi_sai");
-            ket("bt_goi_sai.khong_loi", b.xu <= xu0 && b.luong <= luong0 && b.lk <= lk0 && b.doDung.size() <= nDo && b.ngoc.size() <= nNgoc && khongTang(th0, b.thuoc),
+            ket("bt_goi_sai.khong_loi", b.xu <= xu0 && b.luong <= luong0 && b.lk <= lk0 && b.doDung.size() <= nDo && b.tongMon() <= tongDo && b.ngoc.size() <= nNgoc && khongTang(th0, b.thuoc),
                     n + " goi sai / cut tren " + lenh.length + " lenh: xu " + xu0 + " -> " + b.xu + ", luong " + luong0 + " -> " + b.luong + ", lk " + lk0 + " -> " + b.lk
-                            + ", mon " + nDo + " -> " + b.doDung.size() + ", ngoc " + nNgoc + " -> " + b.ngoc.size() + ", thuoc " + th0 + " -> " + b.thuoc + " (bi dong ket noi " + dong + " lan)");
+                            + ", mon " + nDo + " -> " + b.doDung.size() + " (tong " + tongDo + " -> " + b.tongMon() + "), ngoc " + nNgoc + " -> " + b.ngoc.size() + ", thuoc " + th0 + " -> " + b.thuoc + " (bi dong ket noi " + dong + " lan)");
             ket("bt_goi_sai.xu_khong_am", b.xu >= 0 && xuCsdlSauThoat(b) >= 0, "xu " + b.xu);
         } finally {
             b.close();

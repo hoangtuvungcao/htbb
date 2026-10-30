@@ -80,7 +80,12 @@ public class BotChucNang {
         int luong = -1, lk = -1;
         boolean coBanDo;
         final Map<Integer, Integer> thuoc = new TreeMap<>();
-        final List<int[]> doDung = new ArrayList<>(); // {id, tpl, plus, level, lock, color}
+        final List<int[]> doDung = new ArrayList<>(); // {id, tpl, plus, level, lock, color, so luong}
+        /**
+         * id thuoc tinh "Số lượng" cua chong vat pham type 28 (com.htbb.pokemon.ChongVatPham: dong ten THEM o cuoi bang ten
+         * thuoc tinh goi 25 luc dang nhap). -1 = chua biet (moi mon coi la 1).
+         */
+        int idSoLuong = -1;
         final Map<Integer, int[]> ngoc = new TreeMap<>(); // realId -> {tpl, sl, khoa}
         final List<int[]> dsNv = new ArrayList<>(); // {dbid, lv, using}
         final List<String> dsTen = new ArrayList<>();
@@ -293,6 +298,18 @@ public class BotChucNang {
                     case 2:
                         e.chu = "DANG NHAP LOI: " + r.readUTF();
                         break;
+                    case 25: { // bang ten thuoc tinh vat pham: tim dong "Số lượng" THEM o cuoi (ChongVatPham.themTenThuocTinh)
+                        int n = r.readUnsignedByte(), id = -1;
+                        for (int i = 0; i < n; i++) {
+                            int ida = r.readUnsignedByte();
+                            String tn = r.readUTF();
+                            r.readByte();
+                            r.readByte();
+                            if (tn.endsWith("Số lượng")) id = ida; // LOCAL_SERVER them tien to "[otherAtt_x] - "
+                        }
+                        idSoLuong = id;
+                        break;
+                    }
                     case 13: {
                         int n = r.readByte();
                         dsNv.clear();
@@ -472,10 +489,13 @@ public class BotChucNang {
                                 int lock = r.readByte();
                                 r.readUTF();
                                 r.readShort();
-                                int na = r.readByte();
-                                for (int k = 0; k < na; k++) { r.readByte(); r.readShort(); }
+                                int na = r.readByte(), sl = 1;
+                                for (int k = 0; k < na; k++) {
+                                    int ida = r.readUnsignedByte(), gt = r.readShort();
+                                    if (ida == idSoLuong && gt > 1) sl = gt; // chong type 28: mot o = sl mon
+                                }
                                 r.readByte();
-                                doDung.add(new int[]{id, tpl, plus, lev, lock, color});
+                                doDung.add(new int[]{id, tpl, plus, lev, lock, color, sl});
                             }
                         }
                         if (t == 2) {
@@ -800,6 +820,25 @@ public class BotChucNang {
         int soNgoc(int tpl) {
             int n = 0;
             for (int[] g : ngoc.values()) if (g[0] == tpl) n += g[1];
+            return n;
+        }
+
+        /** So luong mon template {@code tpl} trong tui: CONG so luong tung o (o chong type 28 = nhieu mon), khong dem o. */
+        int soDo(int tpl) {
+            int n = 0;
+            for (int[] d : doDung) if (d[1] == tpl) n += soO(d);
+            return n;
+        }
+
+        /** So mon trong mot o hanh trang (o chong type 28 &gt; 1). */
+        static int soO(int[] d) {
+            return d.length > 6 ? Math.max(1, d[6]) : 1;
+        }
+
+        /** Tong so mon (cong so luong cac chong) - khac doDung.size() = so O. */
+        int tongMon() {
+            int n = 0;
+            for (int[] d : doDung) n += soO(d);
             return n;
         }
 

@@ -462,7 +462,7 @@ public class KichBanQaToanGame {
     /** So mon template {@code tpl} trong tui. */
     static int dem(BotChucNang.Bot b, int tpl) {
         int n = 0;
-        for (int[] d : b.doDung) if (d[1] == tpl) n++;
+        n += b.soDo(tpl); // cong so luong chong type 28 (ChongVatPham), khong dem o
         return n;
     }
 
@@ -598,9 +598,9 @@ public class KichBanQaToanGame {
             b.bom(600);
             b.lamMoi();
             try (java.io.PrintWriter w = new java.io.PrintWriter(TEP_KDL, "UTF-8")) {
-                w.println(b.user + " " + b.xu + " " + b.soThuoc(1) + " " + a + " " + b.lv + " " + b.doDung.size());
+                w.println(b.user + " " + b.xu + " " + b.soThuoc(1) + " " + a + " " + b.lv + " " + b.tongMon()); // tong mon (cong chong type 28)
             }
-            BotChucNang.ket("qa_khoi_dong_lai_ghi", true, b.user + " xu " + b.xu + " thuoc1 " + b.soThuoc(1) + " lv " + b.lv + " tui " + b.doDung.size());
+            BotChucNang.ket("qa_khoi_dong_lai_ghi", true, b.user + " xu " + b.xu + " thuoc1 " + b.soThuoc(1) + " lv " + b.lv + " tui " + b.tongMon());
         }
     }
 
@@ -616,10 +616,10 @@ public class KichBanQaToanGame {
             b.lamMoi();
             long[] o = oNhanh(b, 0);
             boolean ok = b.xu == Long.parseLong(f[1]) && b.soThuoc(1) == Integer.parseInt(f[2]) && o != null
-                    && o[2] == Long.parseLong(f[3]) && b.lv == Integer.parseInt(f[4]) && b.doDung.size() == Integer.parseInt(f[5]);
+                    && o[2] == Long.parseLong(f[3]) && b.lv == Integer.parseInt(f[4]) && b.tongMon() == Integer.parseInt(f[5]);
             BotChucNang.ket("qa_khoi_dong_lai_kiem", ok, "mong doi xu " + f[1] + " thuoc1 " + f[2] + " o1 " + f[3] + " lv " + f[4] + " tui " + f[5]
                     + " | thuc te xu " + b.xu + " thuoc1 " + b.soThuoc(1) + " o1 " + (o == null ? "-" : String.valueOf(o[2])) + " lv " + b.lv
-                    + " tui " + b.doDung.size());
+                    + " tui " + b.tongMon());
         }
     }
 

@@ -446,7 +446,7 @@ public final class KichBanTinhNangThuong {
 
     static int dem(BotChucNang.Bot b, int tpl) {
         int n = 0;
-        for (int[] d : b.doDung) if (d[1] == tpl) n++;
+        n += b.soDo(tpl); // cong so luong chong type 28 (ChongVatPham), khong dem o
         return n;
     }
 

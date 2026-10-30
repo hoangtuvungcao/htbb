@@ -633,12 +633,12 @@ final class KichBanHoiQuy {
         BatBien.kiemKet(b); // bat bien cuoi kich ban (co the di chuyen) TRUOC khi chup trang thai
         b.lamMoi();
         Thread.sleep(500);
-        String truoc = "lv" + b.lv + " xu" + b.xu + " lk" + b.lk + " luong" + b.luong + " thuoc" + b.soThuoc(1) + " do" + b.doDung.size() + " map" + b.mapId;
+        String truoc = "lv" + b.lv + " xu" + b.xu + " lk" + b.lk + " luong" + b.luong + " thuoc" + b.soThuoc(1) + " do" + b.tongMon() + " map" + b.mapId;
         b.close();
         Thread.sleep(2500);
         try (BotChucNang.Bot c = HoiQuy.vaoLai(u)) {
             c.lamMoi();
-            String sau = "lv" + c.lv + " xu" + c.xu + " lk" + c.lk + " luong" + c.luong + " thuoc" + c.soThuoc(1) + " do" + c.doDung.size() + " map" + c.mapId;
+            String sau = "lv" + c.lv + " xu" + c.xu + " lk" + c.lk + " luong" + c.luong + " thuoc" + c.soThuoc(1) + " do" + c.tongMon() + " map" + c.mapId;
             // ban sao lang (301 = Dong Pewter) dang nhap lai ve ban goc cung nhom (0) la dung
             String a1 = truoc.replaceAll(" map\\d+$", ""), a2 = sau.replaceAll(" map\\d+$", "");
             int mt = Integer.parseInt(truoc.replaceAll(".* map", "")), ms = c.mapId;
