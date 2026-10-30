@@ -162,6 +162,14 @@ final class KichBanCap140 {
             Integer l = BotXuyenSuot.LOAD.get(mid);
             if (l != null) NPC_CUA_LOAD.computeIfAbsent(l, KichBanHuongDan::npcCMap);
         }
+        // ban do ngoai nhom goi 105 (21 Dong co phia tay - chi qua Arcanine): quai cua no cung vao QUAI_MAP (truoc: "khong
+        // biet quai 'Scyther'" o #253 d250)
+        for (int mid : mapTim()) {
+            if (BotXuyenSuot.MAP_THU.contains(mid)) continue;
+            Integer l = BotXuyenSuot.LOAD.get(mid);
+            if (l == null) continue;
+            for (int t : BotXuyenSuot.luoiQuai(l)) BotXuyenSuot.QUAI_MAP.computeIfAbsent(t, z -> new TreeSet<>()).add(mid);
+        }
     }
 
     /** Ban do (mapId ban sao 0) co ten {@code ten} ma di toi duoc tu {@code tu}, gan nhat; -1 = khong co. */
