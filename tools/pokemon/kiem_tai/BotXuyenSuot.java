@@ -657,6 +657,8 @@ public class BotXuyenSuot {
          * Arcanine gac cong (NPC loai 4, o lang): "Đến {noi}". Ve lang gan nhat co duong truoc. true = da toi ban do khac.
          */
         boolean quaArcanine(String noi) throws Exception {
+            // dang guc: may chu tu choi NPC (ChanKhiGuc, 31/10/2026) - hoi sinh truoc, khong thi ban do bi danh dau chan 30 phut
+            if (b.hp <= 0) hoiSinh();
             if (!KichBanDS.laLang(b.mapId) && !KHU_XA_ARCANINE.contains(b.mapId)) {
                 int tot = -1, ds = 999;
                 for (int c : new int[]{0, 301, 70, 80, 1701, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
@@ -698,6 +700,7 @@ public class BotXuyenSuot {
         // ---------------------------------------------------------------- di chuyen giua cac map
         boolean toi(int dich) throws Exception {
             if (cungBanDo(b.mapId, dich)) return true;
+            if (b.hp <= 0) hoiSinh(); // guc giua duong (vd boss lang thang danh lan): hoi sinh truoc khi di tiep
             int tu = b.mapId;
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
             // cum Johto -> lang: di bo toi New Bark roi Arcanine "Về làng" (truoc 30/10/2026 duong mot chieu)
