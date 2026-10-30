@@ -125,7 +125,28 @@ final class KichBanCap140TinhNang {
         if (KichBanDS.laLang(b.mapId)) return true;
         int tot = -1, ds = 999;
         for (int c : new int[]{0, 70, 80, 301, 1701, 1901}) { List<int[]> d = BotXuyenSuot.duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
-        return tot >= 0 && p.toi(tot);
+        if (tot >= 0 && p.toi(tot)) return true;
+        return veLangSoTay(p);
+    }
+
+    /**
+     * Khong co duong di bo ve lang (cum Johto 10/11/13/14/15 sau Arcanine "Den New Bark" - New Bark khong co Chansey /
+     * shop / Arcanine): nguoi choi dung "Về làng miễn phí" trong So tay (N luot/ngay, +1 moi Gym). Truoc 30/10/2026 bot
+     * dung o day, danh Gym Celadon o map 11 voi 70% HP va 2 binh thuoc ("khong ve duoc lang de mua thuoc") - thua 8 lan.
+     */
+    static boolean veLangSoTay(KichBanCap140.NguoiChoi p) throws Exception {
+        BotChucNang.Bot b = p.b;
+        if (KichBanDS.laLang(b.mapId)) return true;
+        int truoc = b.mapId;
+        int m = KichBanHoiQuy.soTay(b, "Về làng");
+        if (m < 0) return false;
+        b.cho(x -> x.coLenh(m, 12), 5000);
+        if (b.coLenh(m, 12)) { b.gui(12, (short) -500, (short) 0, (short) 0); b.bom(1200); }
+        b.px = b.tx * 16 + 8;
+        b.py = b.ty * 16 + 8;
+        boolean ok = KichBanDS.laLang(b.mapId);
+        p.ghi("ve lang bang So tay (khong co duong di bo tu " + truoc + "): " + (ok ? "OK -> " + b.mapId : "HONG | " + b.chuTu(m)));
+        return ok;
     }
 
     // ------------------------------------------------------------------ Ve lang mien phi
