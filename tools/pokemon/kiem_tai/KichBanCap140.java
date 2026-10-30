@@ -465,7 +465,9 @@ final class KichBanCap140 {
                         Integer l = BotXuyenSuot.LOAD.get(mid);
                         if (l == null || KichBanHuongDan.oNpc(l, npc) == null) continue;
                         List<int[]> d = BotXuyenSuot.duong(b.mapId, mid);
-                        int s = d == null ? Integer.MAX_VALUE : d.size() - (KichBanDS.laLang(mid) ? 1 : 0);
+                        // cum Johto / khu xa: lang ve duoc qua Arcanine "Về làng" (toi() lo), du khong co duong di bo
+                        boolean quaArc = d == null && KichBanDS.laLang(mid) && (BotXuyenSuot.Dong.CUM_JOHTO.contains(b.mapId) || BotXuyenSuot.Dong.KHU_XA_ARCANINE.contains(b.mapId));
+                        int s = quaArc ? 1000 : d == null ? Integer.MAX_VALUE : d.size() - (KichBanDS.laLang(mid) ? 1 : 0);
                         if (s < ds) { ds = s; dich = mid; }
                     }
                     if (tenBd != null && dich >= 0) chuNv("NPC loai " + npc + " ghi '" + tra + "' nhung khong co o ban do '" + tenBd + "' (co o " + HoiQuy.TEN_MAP.get(BotXuyenSuot.LOAD.get(dich)) + ")");
