@@ -1273,7 +1273,7 @@ final class KichBanCap140 {
             if (!KichBanDS.laLang(b.mapId)) {
                 int tot = -1, ds = 999;
                 for (int c : new int[]{0, 70, 80, 301, 1701, 1901}) { List<int[]> d = BotXuyenSuot.duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
-                if (tot < 0 || !toi(tot)) { ghi("khong ve duoc lang de mua thuoc"); return; }
+                if ((tot < 0 || !toi(tot)) && !KichBanCap140TinhNang.veLangSoTay(this)) { ghi("khong ve duoc lang de mua thuoc"); return; }
             }
             if (!KichBanDS2.vaoNha(b, 103)) { ketLai("khong vao duoc nha tiem 103 o lang " + b.mapId); return; }
             if (canVk) {

@@ -497,7 +497,7 @@ public final class KiemHuongDanTanThu {
         }
         Kiem.bang("ba lang co du NPC huong dan + Chansey + Snorlax", "", thieuLang.trim());
         final String ten = DayDu.nangCap(); // phan 5 cua sql/htbb.sql: data_npc + data_map_ten (tung la pokemon_ten_hien.sql)
-        Kiem.dung("data_npc.ban_do Chansey / Snorlax co 0,70,80", ten.contains("'Chansey',113,0,'0,43,") && ten.contains(",70,80,100,281'")
+        Kiem.dung("data_npc.ban_do Chansey / Snorlax co 0,70,80", ten.contains("'Chansey',113,0,'0,10,43,") && ten.contains(",70,80,100,281'")
                 && ten.contains("'Snorlax',143,8,'0,51,57,60,70,80,105,160'"));
         Kiem.dung("ban do 0 dong goi client = server", Arrays.equals(Files.readAllBytes(new File("cMap/0").toPath()),
                 Files.readAllBytes(new File("../client_jar/res/0").toPath())));

@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `data_npc` (
   PRIMARY KEY (`type`)
 ) DEFAULT CHARSET=utf8;
 INSERT INTO `data_npc` (`type`,`ten`,`chuc_vu`,`pokemon`,`dex`,`id_anh`,`ban_do`) VALUES
-(0,'Y tá Chansey','Trung tâm Pokémon: hồi phục, bán thuốc','Chansey',113,0,'0,43,45,47,49,51,54,56,59,60,62,70,80,100,281'),
+(0,'Y tá Chansey','Trung tâm Pokémon: hồi phục, bán thuốc','Chansey',113,0,'0,10,43,45,47,49,51,54,56,59,60,62,70,80,100,281'),
 (1,'Kecleon tạp hoá','Tạp hoá','Kecleon',352,1,'0,45,47,49,54,56,62,70,72,80,82,102'),
 (2,'Machamp thợ rèn','Thợ rèn: chế tạo, sửa, khảm đồ','Machamp',68,2,'0,45,70,73,80,83,103'),
 (3,'Bronzong thợ giáp','Bán trang bị','Bronzong',437,3,'0,47,55,59,70,74,80,84,104'),
