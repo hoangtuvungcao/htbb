@@ -721,6 +721,10 @@ final class KichBanCap140 {
          * roi sau " ở " / " trên " / "Đến ", roi ten dai nhat. Bo qua ten trong phan "Trả:" / "Nhận thưởng ở".
          */
         String tenBanDoTrong(String chu) {
+            // goi y cua may chu "(hãy tới X (ô a,b)..." la ban do that cua diem (vd #57: "trên Cerulean, chân Núi Mặt Trăng
+            // (ô 53,49)" - diem o Cerulean, khong phai Nui Mat Trang)
+            Matcher mh = Pattern.compile("hãy tới ([^(),]+?) \\(ô").matcher(chu);
+            if (mh.find() && LOAD_THEO_TEN.containsKey(mh.group(1).trim())) return mh.group(1).trim();
             String c = chu;
             for (String cat : new String[]{" · Trả", "Trả:", "Nhận thưởng ở", "Nhận thưởng"}) { int k = c.indexOf(cat); if (k > 0) c = c.substring(0, k); }
             String tot = null;
