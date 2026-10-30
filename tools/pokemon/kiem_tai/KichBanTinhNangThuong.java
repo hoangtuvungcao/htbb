@@ -458,7 +458,7 @@ public final class KichBanTinhNangThuong {
             // "Chưa gửi pet nào." - nay chu noi pet dong hanh la gi + cach co, khong tru xu.
             int n0 = moHst(p, "Nhà trẻ", 6);
             String nhanK = n0 > 0 ? String.join(" ; ", p.menuChu) : p.chuTu(0);
-            ket("tn_nha_tre.khong_pet_nhan", n0 > 0 && nhanK.contains("gửi pet trước"), nhanK);
+            ket("tn_nha_tre.khong_pet_nhan", n0 > 0 && nhanK.contains("gửi pet trước") && nhanK.contains("Nhận pet đồng hành đầu tiên"), nhanK);
             if (n0 > 0) {
                 long xuK = p.xu;
                 String k1 = chonHst(p, 6, 3, -1, "pet đồng hành");
@@ -468,12 +468,40 @@ public final class KichBanTinhNangThuong {
                 String k2 = chonHst(p, 6, 1, -1, "pet đồng hành");
                 ket("tn_nha_tre.khong_pet_gui", k2 != null && k2.contains("không phải Pokémon chiến đấu"), String.valueOf(k2));
             }
-            // dung canh: GM tang 1 Hoothoot cap 1 (item 689) + xu
-            lenhGm("ait " + p.ten + " 689 0 0 0");
+            // dung canh: cap + xu (GM dat cho nguoi choi); pet thi NGUOI CHOI tu nhan (khong GM tang - PetDongHanh 30/10/2026)
             lenhGm("slv " + p.ten + " 12 0"); // danh quai nhanh hon (buoc = so quai ha, khong phu thuoc cap)
             KichBanBatThuong.datXu(p, 50000);
             onDinh(p);
-            ket("tn_nha_tre.co_pet", dem(p, 689) == 1, "Hoothoot trong tui: " + dem(p, 689));
+            // nhan pet dong hanh mien phi (1 lan): Nha tre muc 5 -> chon Hoothoot
+            moHst(p, "Nhà trẻ", 6);
+            String dsLoai = chonHst(p, 6, 5, 32);
+            ket("tn_nha_tre.chon_loai", dsLoai != null && dsLoai.contains("Hoothoot") && dsLoai.contains("Zubat") && dsLoai.contains("Cleffa"),
+                    String.valueOf(dsLoai));
+            long xuNhan = p.xu;
+            String nh = dsLoai == null ? null : chonHst(p, 32, 0, -1, "Đã nhận Hoothoot");
+            onDinh(p);
+            ket("tn_nha_tre.co_pet", nh != null && dem(p, 689) == 1 && p.xu == xuNhan, nh + " | Hoothoot trong tui: " + dem(p, 689)
+                    + " | xu " + xuNhan + " -> " + p.xu);
+            ket("tn_nha_tre.csdl_nhan", "689".equals(BotChucNang.sql1("SELECT id_item FROM tob_pet_dong_hanh WHERE id_char = " + p.charDb)),
+                    "tob_pet_dong_hanh: " + BotChucNang.sql1("SELECT CONCAT(id_item, ',', nguon) FROM tob_pet_dong_hanh WHERE id_char = " + p.charDb));
+            // bam lai bang chon cu (Zubat) + muc nhan lan 2: tu choi, khong them pet
+            String nh2 = chonHst(p, 32, 1, -1, "đã nhận pet đồng hành");
+            moHst(p, "Nhà trẻ", 6);
+            String nhan2 = p.menuChu.size() > 5 ? p.menuChu.get(5) : String.join(" ; ", p.menuChu);
+            String nh3 = chonHst(p, 6, 5, -1, "đã nhận pet đồng hành");
+            onDinh(p);
+            ket("tn_nha_tre.nhan_lan_2", nh2 != null && nh3 != null && nhan2.contains("đã nhận") && dem(p, 689) == 1 && dem(p, 704) == 0,
+                    nh2 + " | " + nhan2 + " | " + nh3 + " | Hoothoot " + dem(p, 689) + ", Zubat " + dem(p, 704));
+            // mua them 1 Zubat bang xu: tru DUNG gia ghi tren menu
+            moHst(p, "Nhà trẻ", 6);
+            String mucMua = p.menuChu.size() > 6 ? p.menuChu.get(6) : "";
+            long giaPet = giaTrongChu(mucMua);
+            long xuMua = p.xu;
+            String dsMua = chonHst(p, 6, 6, 33);
+            String mu = dsMua == null ? null : chonHst(p, 33, 1, -1, "Đã mua", "Cần");
+            onDinh(p);
+            ket("tn_nha_tre.mua_pet", mu != null && mu.contains("Đã mua Zubat") && giaPet > 0 && xuMua - p.xu == giaPet && dem(p, 704) == 1,
+                    "\"" + mucMua + "\" -> " + mu + " | xu " + xuMua + " -> " + p.xu + " | Zubat " + dem(p, 704));
             int n = moHst(p, "Nhà trẻ", 6);
             ket("tn_nha_tre.mo", n > 0, n > 0 ? String.join(" ; ", p.menuChu) : p.chuTu(0));
             if (n <= 0) return;
@@ -506,6 +534,14 @@ public final class KichBanTinhNangThuong {
             p = suaHoSoRoiVao(p, du -> du.replaceFirst("(nt[=:])(-?\\d+),(-?\\d+),(-?\\d+),", "$1$2,$3,299,"));
             nt = nhaTreCsdl(hstCsdl(p));
             ket("tn_nha_tre.csdl_gui", nt != null && nt[0] == 163 && nt[2] == 299, "nt=" + (nt == null ? "null" : Arrays.toString(nt)) );
+            // dang nhap lai: van khong nhan duoc pet mien phi lan 2 (co CSDL, khong phai bo nho)
+            moHst(p, "Nhà trẻ", 6);
+            String vl = p.menuChu.size() > 5 ? p.menuChu.get(5) : String.join(" ; ", p.menuChu);
+            int pVl = dem(p, 689) + dem(p, 704) + dem(p, 699);
+            String nhVl = chonHst(p, 6, 5, -1, "đã nhận pet đồng hành");
+            onDinh(p);
+            ket("tn_nha_tre.nhan_vao_lai", vl.contains("đã nhận") && nhVl != null && dem(p, 689) + dem(p, 704) + dem(p, 699) == pVl,
+                    vl + " | " + nhVl + " | pet " + pVl + " -> " + (dem(p, 689) + dem(p, 704) + dem(p, 699)));
             List<Integer> q = raBanDoCoQuai(p);
             if (q.isEmpty()) { ket("tn_nha_tre.de_trung", false, "khong ra duoc ban do co quai"); return; }
             int md = p.moc();

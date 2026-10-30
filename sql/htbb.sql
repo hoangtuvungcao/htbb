@@ -32009,3 +32009,28 @@ UPDATE `data_monster_lau_dai` SET `maxhp` = 13240 WHERE `id` = 53 AND `maxhp` = 
 -- ----------------------------------------------------------------------------------
 UPDATE `data_huong_dan_tan_thu` SET `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá - trong hành trang hoặc đang dắt theo), không phải Pokémon chiến đấu. Lấy trứng: Menu → Hệ sinh thái → Nhà trẻ và trứng → Gửi pet đang sở hữu (1-2 pet), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái). Chưa có pet: trứng pet thỉnh thoảng rơi khi hạ Pokémon chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc mua trứng người khác rao: Hệ sinh thái → Chợ sinh thái → Mua: Trứng.'
   WHERE `ma` = 'npc.19_trung' AND `sua_boi` = '' AND `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Lấy trứng: Menu → Hệ sinh thái → Nhà trẻ và trứng → Gửi pet đang sở hữu (gửi 1-2 Pokémon), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái). Mua trứng người khác rao: Hệ sinh thái → Chợ sinh thái → Mua: Trứng.';
+-- >>> them_pet_dong_hanh.sql
+-- ==================================================================================
+--  PET DONG HANH DE CO HON (chu game 30/10/2026: "có"). Nha tre chi nhan pet dong hanh (com.htbb.pokemon.PetPokemon.BANG)
+--  ma nguon cu chi la trung pet roi ~1 / 2.500 quai (chenh <= 5 cap, phai co Poke Ball, het han 3-15 ngay) + Cho sinh thai
+--  (0 tin) -> gan nhu khong ai dung duoc Nha tre. Phan MAY CHU (com.htbb.pokemon.PetDongHanh, HeSinhThaiMenu, muc Nha tre):
+--    - "Nhận pet đồng hành đầu tiên (miễn phí, 1 lần)": chon Hoothoot / Zubat / Cleffa cap 1 (item 689 / 704 / 699, cung
+--      item nhu no tu trung - khong them chi so). Mot lan moi nhan vat: bang tob_pet_dong_hanh (khoa id_char), INSERT
+--      IGNORE TRUOC roi moi phat -> bam dup / dang nhap lai / nhan vat cu da nhan + buoc C07.3 khong ra pet thu hai.
+--    - "Mua pet đồng hành": cung 3 loai, 1.500‰H = 1,5 gio thu nhap o cap nguoi mua (cap 20: 1,5 x 9.018 = 13.527 xu),
+--      tru xu TRUOC (ho hut, xu_ra). Pet vao tui KHOA (khong ky gui / giao dich, ban NPC 0 xu).
+--  Khoi nay: bang co (nguoi choi: CREATE IF NOT EXISTS, khong dong du lieu), thuong buoc chinh C07.3 (cap 14, Chansey,
+--  buoc dau dung He sinh thai) cho nhan vat moi, chu Huong dan tan thu npc.19_trung. Chay lai duoc: UPDATE theo khoa +
+--  GIA TRI CU. Kiem: server/test/KiemPetDongHanh; bot tn_nha_tre.
+-- ----------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tob_pet_dong_hanh` (
+  `id_char` int(11) NOT NULL,
+  `id_item` int(11) NOT NULL DEFAULT 0,
+  `nguon` varchar(16) NOT NULL DEFAULT '',
+  `luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_char`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+UPDATE `data_nhiem_vu_noi_dung` SET `thuong_khac` = 'pet_dong_hanh:1', `dong_thuong` = 'Thưởng: 89.646 EXP, 1.923 xu, 2 lượng khoá, 1 pet đồng hành (tự chọn)'
+  WHERE `ma` = 'C07.3' AND `thuong_khac` = '' AND `dong_thuong` = 'Thưởng: 89.646 EXP, 1.923 xu, 2 lượng khoá';
+UPDATE `data_huong_dan_tan_thu` SET `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá - trong hành trang hoặc đang dắt theo), không phải Pokémon chiến đấu. Chưa có pet: Menu → Hệ sinh thái → Nhà trẻ và trứng → Nhận pet đồng hành đầu tiên (miễn phí, 1 lần) - chọn Hoothoot, Zubat hoặc Cleffa (người chơi mới còn được tặng ở nhiệm vụ chính "Bánh mật ong thơm lừng" của Chansey, cấp 14). Muốn thêm pet: Mua pet đồng hành (giá bằng 1,5 giờ thu nhập ở cấp bạn), hoặc trứng pet rơi khi hạ Pokémon chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc Chợ sinh thái → Mua: Trứng. Lấy trứng: Nhà trẻ và trứng → Gửi pet đang sở hữu (1-2 pet), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái).'
+  WHERE `ma` = 'npc.19_trung' AND `sua_boi` = '' AND `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá - trong hành trang hoặc đang dắt theo), không phải Pokémon chiến đấu. Lấy trứng: Menu → Hệ sinh thái → Nhà trẻ và trứng → Gửi pet đang sở hữu (1-2 pet), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái). Chưa có pet: trứng pet thỉnh thoảng rơi khi hạ Pokémon chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc mua trứng người khác rao: Hệ sinh thái → Chợ sinh thái → Mua: Trứng.';

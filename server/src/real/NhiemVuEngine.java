@@ -1102,7 +1102,7 @@ public final class NhiemVuEngine {
         return String.format(java.util.Locale.ROOT, "%,d", v).replace(',', '.');
     }
 
-    /** thuong_khac "danh_hieu:<ten>;item:<id>xN;truyen:..;trang_tri:..;diem_bang:N;bong:<poke|great|ultra>xN". */
+    /** thuong_khac "danh_hieu:<ten>;item:<id>xN;truyen:..;trang_tri:..;diem_bang:N;bong:<poke|great|ultra>xN;pet_dong_hanh:1". */
     static void thuongKhac(final Char p, final String s, final String lyDo) {
         if (s == null || s.isEmpty()) {
             return;
@@ -1141,6 +1141,10 @@ public final class NhiemVuEngine {
                     // 0.9.8: bong:<poke|great|ultra>xN -> Hop PC (tran bong tang / ngay)
                     final int x = v.indexOf('x');
                     BatPokemonGame.thuongBong(p, x > 0 ? v.substring(0, x) : v, x > 0 ? Integer.parseInt(v.substring(x + 1)) : 1, "nhiệm vụ");
+                } else if (com.htbb.pokemon.PetDongHanh.THUONG_KHAC.equals(k)) {
+                    // pet dong hanh mien phi MOT lan / nhan vat (buoc C07.3): mo menu chon loai; co CSDL tob_pet_dong_hanh
+                    // dung chung voi muc Nha tre nen nhan vat cu da nhan o Nha tre khong nhan them
+                    com.htbb.pokemon.HeSinhThaiMenu.moNhanPetDongHanh(p, true);
                 } else if ("trang_tri".equals(k) && TrangPhucGame.laMa(v)) {
                     TrangPhucGame.trao(p, v, "nhiem_vu"); // [trang-phuc] mon tu do trang tri
                 } else {

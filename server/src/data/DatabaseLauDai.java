@@ -60,6 +60,10 @@ public final class DatabaseLauDai {
             + " luc DATETIME NULL, PRIMARY KEY (lan, id_char)) DEFAULT CHARSET=utf8",
         "CREATE TABLE IF NOT EXISTS tob_pokedex_shiny (id_char INT NOT NULL, dex SMALLINT NOT NULL,"
             + " so_shiny INT NOT NULL DEFAULT 0, PRIMARY KEY (id_char, dex)) DEFAULT CHARSET=utf8",
+        // pet dong hanh mien phi mot lan moi nhan vat (com.htbb.pokemon.PetDongHanh) - cung DDL voi khoi
+        // them_pet_dong_hanh.sql cua sql/htbb.sql
+        "CREATE TABLE IF NOT EXISTS tob_pet_dong_hanh (id_char INT NOT NULL, id_item INT NOT NULL DEFAULT 0,"
+            + " nguon VARCHAR(16) NOT NULL DEFAULT '', luc DATETIME NULL, PRIMARY KEY (id_char)) DEFAULT CHARSET=utf8",
     };
 
     public static void taoBang() {
@@ -961,6 +965,18 @@ public final class DatabaseLauDai {
 
     /** executeUpdate voi tham so bind; -1 neu loi. */
     /** {@link #ghi} cho lop ngoai goi (real.XepHangPvpGame): so dong da doi, -1 = loi. */
+    /** Nhan vat da nhan pet dong hanh mien phi chua (tob_pet_dong_hanh). Loi doc = coi nhu DA nhan (khong phat khi nghi ngo). */
+    public static boolean daNhanPetDongHanh(final int idChar) {
+        final List<Object[]> r = docBang("SELECT COUNT(*) FROM tob_pet_dong_hanh WHERE id_char = " + idChar, 1);
+        return r.isEmpty() || !(r.get(0)[0] instanceof Number) || ((Number) r.get(0)[0]).longValue() > 0;
+    }
+
+    /** Danh dau nhan pet dong hanh mien phi: true CHI KHI lan nay chen duoc dong (INSERT IGNORE theo khoa id_char). */
+    public static boolean danhDauPetDongHanh(final int idChar, final int idItem, final String nguon) {
+        return ghi("INSERT IGNORE INTO tob_pet_dong_hanh (id_char, id_item, nguon, luc) VALUES (?, ?, ?, NOW())",
+                Integer.valueOf(idChar), Integer.valueOf(idItem), nguon) == 1;
+    }
+
     /** real.LangKhoiDau: nhan vat co dong tob_lang_khoi_dau (tao tu ban sua lang theo vung). */
     public static boolean coLangKhoiDau(final int idChar) {
         return !docBang("SELECT id_char FROM tob_lang_khoi_dau WHERE id_char = " + idChar, 1).isEmpty();

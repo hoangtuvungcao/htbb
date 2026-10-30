@@ -329,6 +329,7 @@ public final class Kiem {
         KiemGiaVeTau.chay(); // bao loi 30/10/2026: ve tau ghi 15k mua 5k - gia hien o goi dang nhap = data_potion 20
         KiemVaoNhaNhiemVu.chay(); // bao loi 30/10/2026: vao nha (C05.2 Bao tang Pewter) xong ngay - client khong gui goi di chuyen trong nha; chu Nha tre
         KiemCanBangCap.chay(); // can bang cap 15-45: duong quai / gia do cua hang, #29 luon lam duoc, EXP thang Gym theo cap
+        KiemPetDongHanh.chay(); // chu game 30/10/2026 "có": pet dong hanh mien phi 1 lan + mua bang xu (Nha tre dung duoc)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);
