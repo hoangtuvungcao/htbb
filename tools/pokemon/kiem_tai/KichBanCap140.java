@@ -830,6 +830,15 @@ final class KichBanCap140 {
 
         /** null = da lam gi do; "" = khong co gi de lam (cho tra); chuoi = ly do ket. */
         String lamMot(KichBanTienDoNhiemVu.Dong q, String chu) throws Exception {
+            // huong dan HD.01..10 (id 901..910) do dang (vd ket o buoc 2 luc tao nhan vat roi choi tiep): lam theo kich ban huong
+            // dan (cau ca o ao lang, mac do...) - lamMot chung khong biet "Thả câu 1 lần" (lamp4 ket o HD.09)
+            if (q.ms == 0 && q.id >= 901 && q.id <= 910) {
+                KichBanHuongDan.Nv nv = KichBanHuongDan.chinh(b, 0, 0);
+                if (nv != null && nv.id == q.id) {
+                    String ly = KichBanHuongDan.lamBuoc(b, nv, nv.id - 901);
+                    return ly == null ? null : "huong dan '" + q.ten + "': " + ly;
+                }
+            }
             String tenBd = tenBanDoTrong(chu);
             if (daGhiChu.add(q.id * 10 + q.ms)) ghi("muc tieu #" + q.id + "/" + q.ms + " '" + q.ten + "' t" + q.loai + ": " + chu + " -> ban do '" + tenBd + "'");
             if (q.loai == 1) return "";
