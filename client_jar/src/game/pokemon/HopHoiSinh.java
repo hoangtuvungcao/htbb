@@ -30,6 +30,10 @@ public final class HopHoiSinh extends Dialog {
 
     private String tieuDe = "";
     private String[] moTa = new String[0];
+    private String moTaGoc = "";
+    /** Khung vừa vẽ kiểu tấm cảm ứng (chạm đi qua VungCham, không dò toạ độ kiểu cũ). */
+    private boolean veMoi;
+    private Command trai, phai;
     private int n;
     private byte[] ma = new byte[0];
     private String[] ten = new String[0];
@@ -114,6 +118,7 @@ public final class HopHoiSinh extends Dialog {
             HopHoiSinh h = hop;
             h.tieuDe = r.readUTF();
             String mt = r.readUTF();
+            h.moTaGoc = mt;
             int k = r.readUnsignedByte();
             h.ma = new byte[k];
             h.ten = new String[k];
@@ -218,11 +223,112 @@ public final class HopHoiSinh extends Dialog {
         return k > this.n ? this.n : k;
     }
 
+    /**
+     * 31/10/2026 (soi giao diện toàn bộ): hộp gục / hồi sinh - người chơi nào gục cũng thấy - còn vẽ kiểu J2ME cũ (dải đỏ,
+     * hàng chữ nhỏ 28 px, dòng khoá bị cắt "...", phím mềm "Chọn"/"Đóng" tí hon) và không đăng ký vùng chạm. Máy cảm ứng:
+     * tấm chung của giao diện (Bang.khungTam): mô tả, mỗi lựa chọn một hàng cao bằng cỡ chạm (tên + chi tiết, khoá = xám +
+     * lý do đủ chữ), chạm hàng = chọn. Máy bấm phím giữ lối cũ (phím 2 8 / 5).
+     */
+    private void veCham(Graphics g) {
+        int k = Bang.cach();
+        int nhan = ChuDe.cao(ChuDe.NHAN), phu = ChuDe.cao(ChuDe.PHU);
+        int hMax = Bang.duoi() - Bang.tren() - 8;
+        int dau = Bang.caoDauTam(false) + ChuDe.DEM;
+        // một cột; không đủ cao (màn ngang thấp: 6 lựa chọn) thì 2 cột - mọi lựa chọn (cả "Về Trung tâm") luôn thấy
+        // thứ tự thử: 1 cột (chi tiết 2 dòng), 2 cột (2 dòng), 1 cột (1 dòng), 2 cột (1 dòng) - J2ME 320x240 thấp
+        for (int lan = 0; lan < 4; lan++) {
+            int cot = lan == 0 || lan == 2 ? 1 : 2, md = lan < 2 ? 2 : 1;
+            int wT = Math.min(Bang.phai() - Bang.trai() - 16, cot == 1 ? (ChuDe.dt() ? 520 : 420) : (ChuDe.dt() ? 760 : 620));
+            wT = Math.min(wT, Bang.oTam(wT, 0)[2]);   // tấm bị kẹp <= 80 % vùng an toàn: ngắt dòng theo bề ngang thật
+            int wNoi = wT - 2 * ChuDe.DEM - 8;
+            int wO = (wNoi - (cot - 1) * k) / cot;
+            String[] mt = ChuDe.ngat(this.moTaGoc, ChuDe.PHU, wNoi, 3);
+            int hMoTa = mt.length * phu + (mt.length > 0 ? k : 0);
+            String[][] d2 = new String[this.n][];
+            int hh = VungCham.MIN;
+            for (int i = 0; i < this.n; i++) {
+                d2[i] = ChuDe.ngat(dong2(i), ChuDe.PHU, wO - 16, md);
+                for (int l = 0; l < d2[i].length; l++) {
+                    d2[i][l] = ChuDe.cat(d2[i][l], ChuDe.PHU, wO - 16);   // dòng cuối của ngat có thể còn dài
+                }
+                hh = Math.max(hh, nhan + d2[i].length * phu + 8);
+            }
+            int hang = (this.n + cot - 1) / cot;
+            int tong = hMoTa + hang * (hh + k);
+            if (lan < 3 && dau + tong > hMax) {
+                continue;
+            }
+            int[] c = Bang.khungTam(g, wT, Math.min(hMax, dau + tong), this.tieuDe, null, 0, null, new IAction() {
+                public void perform() {
+                    Canvas.currentDialog = null;
+                }
+            });
+            int x = c[0] + 4, y = c[1], w = c[2] - 8;
+            wO = (w - (cot - 1) * k) / cot;
+            for (int i = 0; i < mt.length; i++) {
+                ChuDe.chu(g, mt[i], x + w / 2, y + i * phu, ChuDe.PHU, ChuDe.CHU_PHU, 2);
+            }
+            y += hMoTa;
+            for (int i = 0; i < this.n; i++) {
+                final int li = i;
+                int xo = x + (i / hang) * (wO + k), yo = y + (i % hang) * (hh + k);
+                boolean bd = bamDuoc(i);
+                Bang.hang(g, xo, yo, wO, hh, i, i == this.chon, new IAction() {
+                    public void perform() {
+                        HopHoiSinh.this.chon = li;
+                        HopHoiSinh.this.bam(li);
+                    }
+                }, "hs-" + i);
+                ChuDe.chu(g, ChuDe.cat(this.ten[i], ChuDe.NHAN, wO - 16), xo + 8, yo + 4, ChuDe.NHAN, bd ? ChuDe.CHU : ChuDe.XAM, 0);
+                for (int l = 0; l < d2[i].length; l++) {
+                    ChuDe.chu(g, ChuDe.cat(d2[i][l], ChuDe.PHU, wO - 16), xo + 8, yo + 4 + nhan + l * phu, ChuDe.PHU,
+                            this.duoc[i] ? ChuDe.CHU_PHU : ChuDe.DO_TOI, 0);
+                }
+            }
+            return;
+        }
+    }
+
+    /** Dòng chi tiết của lựa chọn i (khoá / chờ / đồng đội). */
+    private String dong2(int i) {
+        String d;
+        if (!this.duoc[i]) {
+            d = new StringBuffer("Khoá: ").append(this.khoa[i]).toString();
+        } else if (!bamDuoc(i)) {
+            d = new StringBuffer(this.chiTiet[i]).append(" · chờ ").append(conCho(i)).append("s").toString();
+        } else {
+            d = this.chiTiet[i];
+        }
+        if (this.ma[i] == 6 && this.choDongDoi > 0) {
+            int con = this.choDongDoi - (int) ((System.currentTimeMillis() - this.lucNhan) / 1000L);
+            if (con > 0) {
+                d = new StringBuffer("Đang chờ đồng đội: ").append(con).append("s").toString();
+            }
+        }
+        return d;
+    }
+
     public void paint(Graphics g) {
         Canvas.resetTrans(g);
         if (this.n <= 0) {
             super.paint(g);
             return;
+        }
+        this.veMoi = MenuNguCanh.bat();
+        if (this.veMoi) {
+            // máy cảm ứng: không vẽ dải phím mềm "Chọn" / "Đóng" tí hon (chạm hàng = chọn, X = đóng)
+            if (this.left != null) {
+                this.trai = this.left;
+                this.phai = this.right;
+                this.left = null;
+                this.right = null;
+            }
+            veCham(g);
+            return;
+        }
+        if (this.left == null && this.trai != null) {
+            this.left = this.trai;
+            this.right = this.phai;
         }
         int w = rong();
         int x = (Canvas.w - w) / 2;
@@ -313,7 +419,7 @@ public final class HopHoiSinh extends Dialog {
             bam(this.chon);
             return;
         }
-        if (Canvas.isPointerClick) {
+        if (Canvas.isPointerClick && !this.veMoi) {
             int w = rong();
             int x = (Canvas.w - w) / 2;
             int thay = soDongThay();

@@ -118,6 +118,8 @@ public final class HanhDong {
         if (gs() == null) {
             return;
         }
+        // 31/10/2026 (soi giao diện hành trình): thẻ menu hệ sinh thái mang tiêu đề + chân dung NPC đang nhắm ("Y tá Chansey")
+        MenuNguCanh.choTieuDe("Hệ sinh thái");
         GameService.gI().chat("hst");
     }
 
@@ -233,7 +235,9 @@ public final class HanhDong {
         if (ok && c.isMonster()) {
             ok = ((LiveActor) c).hp > 0;
         }
-        if (ok) {
+        if (ok && c != choNoi) {
+            // (31/10/2026) NPC đang đi tới để nói chuyện (nút "Đi tới" thẻ nhiệm vụ: NPC có thể xa > 18 ô) giữ mục tiêu tới
+            // khi tới nơi - trước đây bị tự nhắm NPC khác dọc đường, tới nơi không nói chuyện
             int dx = c.x - g.mainChar.x, dy = c.y - g.mainChar.y;
             ok = dx * dx + dy * dy < 290 * 290;
         }
@@ -323,6 +327,11 @@ public final class HanhDong {
 
     /** Đi tới NPC rồi nói chuyện (gần thì nói luôn). */
     static void noiVoi(GameScr g, Actor npc) {
+        // 31/10/2026 (soi giao diện hành trình): nút "Đi tới <NPC>" của thẻ nhiệm vụ gọi thẳng vào đây mà KHÔNG nhắm NPC
+        // -> tự nhắm chọn NPC khác đứng gần đường (Ông Snorlax cạnh Trưởng làng Xatu): tick() huỷ cuộc nói chuyện khi tới
+        // nơi, bấm lần nữa mở menu của NPC kia. Luôn nhắm đúng NPC cần nói.
+        g.focusedActor = npc;
+        chon = npc;
         int dx = npc.x - g.mainChar.x, dy = npc.y - g.mainChar.y;
         if (dx * dx + dy * dy <= 44 * 44) {
             choNoi = null;

@@ -18,7 +18,7 @@ import javax.microedition.midlet.MIDlet;
  *     dài -> báo NGAY ở máy (không gửi gói 14), nhãn ô Tên nói đúng giới hạn máy chủ (4-10 ký tự);
  *  4) chạm Tạo hai lần liền (chạm đúp / máy lag) -> đúng MỘT gói 14 (lỗi: gói thứ hai làm máy chủ trả "Xin chọn tên khác"
  *     dù Pokémon đã được tạo); máy chủ trả lỗi tên (hộp báo) -> chạm Tạo lại gửi được;
- *  5) máy chủ trả danh sách (gói tạo xong) -> màn Chọn Pokémon có Pokémon mới, hộp "Xin chờ" đóng.
+ *  5) máy chủ trả danh sách (gói tạo xong) -> vào game luôn bằng Pokémon vừa tạo (31/10/2026), hộp "Xin chờ" đóng.
  *
  *   javac -cp client_pc/out/build/cls -d $O client_pc/test/ChupTrongGame.java client_pc/test/KiemTaoNhanVat.java \
  *       server/src/com/htbb/pokemon/IconPokemon.java server/src/com/htbb/pokemon/IconPokemonBang.java
@@ -464,6 +464,8 @@ public class KiemTaoNhanVat {
 
     /** Máy chủ trả danh sách Pokémon (tạo xong) -> màn Chọn có Pokémon mới, hộp chờ đóng. */
     static void kiemNhanDanhSach(String nhan, int W, int H) {
+        final int chon0 = demGoi(13);
+        final String vua = game.render.screen.CreateCharScr.tenVuaTao;
         chay(new Runnable() {
             public void run() {
                 network.Session_ME.gI().connected = true;   // CharSelectScr.setCharList bỏ gói khi mất kết nối
@@ -484,8 +486,16 @@ public class KiemTaoNhanVat {
         });
         ve(W, H);
         ve(W, H);
-        kiem(game.render.Canvas.currentScreen instanceof game.render.screen.CharSelectScr, nhan + ": sau tao xong khong ve man Chon ("
-                + game.render.Canvas.currentScreen + ")");
+        // 31/10/2026 (KiemHanhTrinhUI): danh sách có đúng Pokémon VỪA gửi tạo -> vào game luôn (gói chọn 13), không bắt chạm
+        // "Vào game"; tên khác (lần tạo cuối là tên khác) -> màn Chọn như cũ
+        if ("Pikachu".equalsIgnoreCase(vua)) {
+            kiem(game.render.Canvas.currentScreen instanceof game.render.screen.ChangScr && demGoi(13) > chon0, nhan
+                    + ": sau tao xong khong vao game ngay bang Pokemon vua tao (" + game.render.Canvas.currentScreen + ", goi 13: "
+                    + (demGoi(13) - chon0) + ")");
+        } else {
+            kiem(game.render.Canvas.currentScreen instanceof game.render.screen.CharSelectScr && demGoi(13) == chon0, nhan
+                    + ": danh sach khong co Pokemon vua tao (" + vua + ") ma khong ve man Chon (" + game.render.Canvas.currentScreen + ")");
+        }
         kiem(game.render.Canvas.currentDialog == null, nhan + ": hop cho van mo sau tao xong (" + game.render.Canvas.currentDialog + ")");
     }
 

@@ -603,6 +603,14 @@ final class BangTuDong {
         String nt = "Trang chiêu dùng";
         String tt = TuDong.tenTrang();
         int hn = Math.min(nh - 8, game.pokemon.Bang.co(18));
+        // 31/10/2026 (soi giao diện hành trình): hàng hẹp (J2ME 240 px) cắt cả nhãn lẫn chip ("Trang chiêu dùn.." /
+        // "Trang đang dùng (.."): dùng chữ gọn "Trang chiêu" + "Đang dùng (N)" trước khi phải cắt.
+        if (game.pokemon.ChuDe.rong(nt, game.pokemon.ChuDe.NHAN) + game.pokemon.ChuDe.rong(tt, game.pokemon.ChuDe.NHAN) + 42 > wr) {
+            nt = "Trang chiêu";
+            if (tt.startsWith("Trang đang dùng")) {
+                tt = "Đang dùng" + tt.substring("Trang đang dùng".length());
+            }
+        }
         int wt = Math.min(wr / 2, game.pokemon.ChuDe.rong(tt, game.pokemon.ChuDe.NHAN) + 18);
         tt = game.pokemon.ChuDe.cat(tt, game.pokemon.ChuDe.NHAN, wt - 10);
         game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(nt, game.pokemon.ChuDe.NHAN, wr - wt - 24), xr + 8, yr, nh,

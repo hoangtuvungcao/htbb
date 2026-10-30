@@ -457,8 +457,15 @@ public final class Bang {
             return new int[]{x + ChuDe.DEM, yNoi, w - 2 * ChuDe.DEM, y + h - ChuDe.DEM - yNoi};
         }
         if (tieuDe != null) {
-            String t = ChuDe.cat(tieuDe, vai, w - 2 * hd - 48);
-            int wb = Math.min(w - 2 * hd - 16, ChuDe.rong(t, vai) + 44);
+            // 31/10/2026 (soi giao diện hành trình): tấm hẹp (đăng nhập / đăng ký ở điện thoại 720p, PC 720p) cắt tiêu đề
+            // thành "Đăng.." / "Đăng ký tài kho..". Không nút X thì không giữ chỗ hai bên cho nó; còn thiếu chỗ thì hạ vai
+            // tiêu đề tấm lớn về vai tiêu đề thường trước khi cắt.
+            int wbMax = w - (dong != null ? 2 * hd + 16 : 2 * ChuDe.DEM + 8);
+            if (vai == ChuDe.TIEU_DE_TO && ChuDe.rong(tieuDe, vai) > wbMax - 32) {
+                vai = ChuDe.TIEU_DE;
+            }
+            String t = ChuDe.cat(tieuDe, vai, wbMax - 32);
+            int wb = Math.min(wbMax, ChuDe.rong(t, vai) + 44);
             int yb = y + 3;
             ChuDe.bien(g, x + (w - wb) / 2, yb, wb, hd);
             ChuDe.chuVienGiua(g, t, x + w / 2, yb, hd, vai, 0xFFFFFF, ChuDe.VIEN, 2);
@@ -541,6 +548,27 @@ public final class Bang {
     /** Tiền tố tên vùng chạm của tab (kiểm thử phân biệt hàng tab lồng nhau) - đặt ngay trước phanDoan, tự trả về "tab-". */
     public static String tienToTab = "tab-";
 
+    /** Tên gọn của tab khi tab hẹp (màn J2ME 240 px: 5 tab ~46 px) - thay vì cắt "Tran.." / "Kỹ n..". */
+    static final String[][] TAB_GON = {{"Trang bị", "Đồ"}, {"Kỹ năng", "Chiêu"}, {"Ngoại hình", "Ngoại"}, {"Nguyên liệu", "N.liệu"},
+        {"Hành trang", "Túi"}};
+
+    /**
+     * 31/10/2026 (soi giao diện hành trình): nhãn tab vừa ô: đủ chữ (lề hẹp hơn ở tab hẹp), không vừa thì tên gọn, cuối
+     * cùng mới cắt.
+     */
+    static String nhanTab(String s, int ww) {
+        int vua = ww - (ww < 64 ? 6 : 14);
+        if (ChuDe.rong(s, ChuDe.NHAN) <= vua) {
+            return s;
+        }
+        for (int i = 0; i < TAB_GON.length; i++) {
+            if (TAB_GON[i][0].equals(s) && ChuDe.rong(TAB_GON[i][1], ChuDe.NHAN) <= vua) {
+                return TAB_GON[i][1];
+            }
+        }
+        return ChuDe.cat(s, ChuDe.NHAN, vua);
+    }
+
     public static void phanDoan(Graphics g, int x, int y, int w, int h, String[] chu, int chon, Object[] viec) {
         String tienTo = tienToTab;
         tienToTab = "tab-";
@@ -566,7 +594,7 @@ public final class Bang {
             } else if (c) {
                 GiaoDien.khoi(g, xt + 1, y + 1, ww - 2, h - 2, 3, ChuDe.NEN);
             }
-            String ct = ChuDe.cat(chu[i], ChuDe.NHAN, ww - 14);
+            String ct = nhanTab(chu[i], ww);
             if (c) {
                 // 0.9.8: tab đang chọn cùng cỡ / độ đậm với tab khác (chữ NHAN viền), chữ tối trên nền giấy da sáng
                 ChuDe.chuGiua(g, ct, xt + ww / 2, y + 1, h, ChuDe.NHAN, ChuDe.CHU, 2);

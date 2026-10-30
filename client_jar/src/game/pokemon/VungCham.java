@@ -244,6 +244,27 @@ public final class VungCham {
         }
     }
 
+    /**
+     * Mép PHẢI lớn nhất của các vùng (bộ đã chốt) tên bắt đầu bằng tienTo, nằm trọn bên trái giữa màn và giao dải dọc
+     * [y0, y1); -1 = không có. (Thông báo giữa trên tránh thẻ nhiệm vụ bên trái.)
+     */
+    public static int phaiVung(String tienTo, int y0, int y1, int xMax) {
+        synchronized (KHOA) {
+            Bo b = chot;
+            int r = -1;
+            for (int i = 0; i < b.n; i++) {
+                String t = b.ten[i];
+                if (t == null || !t.startsWith(tienTo) || b.x[i] + b.w[i] > xMax) {
+                    continue;
+                }
+                if (b.y[i] < y1 && y0 < b.y[i] + b.h[i]) {
+                    r = Math.max(r, b.x[i] + b.w[i]);
+                }
+            }
+            return r;
+        }
+    }
+
     /** Chỉ số vùng (bộ đã chốt) trúng điểm (x, y), -1 = không. */
     public static int tim(int px, int py) {
         synchronized (KHOA) {

@@ -160,6 +160,17 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   (chữ thô "ID:", "null", %s, toạ độ, từ cấm) và kiểm mọi hộp thoại canh giữa / trong giới hạn cỡ; 0.9.6: mọi TẤM
   (Bang.khungTam) canh giữa ±2 px, rộng <= 80 % vùng an toàn, trong vùng an toàn ở 11 cỡ; menu ngữ cảnh NPC trong vùng
   an toàn và không chồng phần HUD nào;
+- `KiemHanhTrinhUI` (31/10/2026, chủ dự án "cho bot vừa chơi vừa check giao diện"): hành trình NGƯỜI CHƠI THẬT trên
+  máy chủ thật (stack thử, CSDL `sql/htbb.sql`) bằng chạm ngón tay thật (sự kiện con trỏ Canvas): đăng ký trong game ->
+  tạo Pokémon -> lời mở đầu -> hướng dẫn tân thủ theo nút "Đi tới" của thẻ nhiệm vụ -> nút HUD -> NPC dịch vụ -> mua
+  thuốc -> mọi ô Menu -> Hồ sơ / hành trang -> Tự động; `-Dhanh.gm=<tk GM>` = phần 2 (dịch chuyển Pewter / Pallet / Rừng
+  Viridian / Đấu trường / Cao nguyên, menu NPC Machamp / Kangaskhan, mọi mục Sổ tay). Mỗi bước chụp 7 cỡ (APK 1080 d3 /
+  720 d2, PC 720p / 1080p, J2ME 320x240 / 240x320 / 640x360) + soi: chữ tràn / đè, vùng chạm, nhãn bị cắt "..",
+  tương phản < 2,5:1, tiếng Việt thiếu dấu, chuỗi giữ chỗ, màn trống; ghi `bao_cao.tsv`, `so_cham.tsv` (số chạm mỗi việc
+  hay làm), `buoc.tsv`. Chạy: `sh tools/pokemon/kiem_tai/kiem_hanh_trinh_ui.sh <host> <cổng game> <thư mục ra> [tk GM]`.
+  `ChupTrongGame` thêm các màn `phu_*` (hộp gục / hồi sinh thật -101, menu Nhiệm vụ của tôi 8 mục, menu NPC ảo kho xu /
+  bóng / nạp / Pidgeot, lịch quà đăng nhập, Gym, hộp dùng / vứt / đổi thú / học chiêu, hộp có đường dẫn, xếp hạng tab
+  2-3, bạn bè, hộp thư...) chạy cả ở cỡ J2ME;
 - `DoKhung`: thời gian vẽ một khung (p50 / p99 / max), KB cấp phát mỗi khung, GC - thế giới 24 người chơi, Menu,
   Nhân vật + Hành trang, Cửa hàng, chat, ở 1280x720 và 1920x1080 (`--j2me`: tắt chữ / khung HD);
 - `DoCuaSo`: FPS trong CỬA SỔ THẬT (cần màn hình): khung game / khung trình bày mỗi giây + bộ đo khung.
