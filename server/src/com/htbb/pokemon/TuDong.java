@@ -72,6 +72,13 @@ public final class TuDong {
      * real.TuDongGame.docCaiDat); C_TAT co the kem byte ly do (TAT_TU_DI khi nguoi choi tu di chuyen).
      */
     public static final int C_XIN = 0, C_BAT = 1, C_TAT = 2, C_NHIP = 3, C_KE = 4;
+    /**
+     * 0.9.24 (chu game: "jar bat auto khong dung cac chieu da gan a?"): C_KE cua client moi kem DANH SACH CHIEU DA GAN:
+     * byte DS_CHIEU (1), byte co (bit 0 = "Thu tu chieu" nguoi choi tu dat - dung dung thu tu), byte n (0..10), n byte
+     * so chieu (trang chieu tu dong dung / Thu tu chieu, chi chieu danh). n = 0: nguoi choi chua gan chieu danh nao ->
+     * moi chieu da hoc (nhu client). Client cu khong gui: may chu doc trang chieu luu o ho so (NgoaiHinhGame.nhanONhanh).
+     */
+    public static final int DS_CHIEU = 1, DS_CHIEU_TOI_DA = 10;
     /** Phien ban giao thuc -100 cua client moi (client cu khong gui = 1). */
     public static final int GIAO_THUC = 2;
     /** Server -> client: byte dau goi -100. 0 = trang thai (nhu cu), 1 = ke hoach (client moi). */
@@ -87,7 +94,7 @@ public final class TuDong {
 
     public static final int TAT_NGUOI_CHOI = 0, TAT_HET_GIO = 1, TAT_PVP = 2, TAT_BOSS = 3, TAT_DOI_MAP = 4,
             TAT_RA_VUNG = 5, TAT_VI_PHAM = 6, TAT_CHET = 7, TAT_TAT_TINH_NANG = 8, TAT_SAN_DAU = 9, TAT_THOAT = 10,
-            TAT_DAY_TUI = 11, TAT_HP_THAP = 12, TAT_TU_DI = 13, TAT_KHU_CAM = 14;
+            TAT_DAY_TUI = 11, TAT_HP_THAP = 12, TAT_TU_DI = 13, TAT_KHU_CAM = 14, TAT_VU_KHI_HONG = 15;
     static final String[] LY_DO = {
         "Đã dừng Tự động đánh.",
         "Hết thời gian Tự động đánh hôm nay. Ngày mai được dùng tiếp.",
@@ -104,6 +111,9 @@ public final class TuDong {
         "Tự động đánh dừng: HP thấp và hết thuốc hồi phục.",
         "Tự động đánh dừng vì bạn tự di chuyển.",
         "Tự động đánh dừng: bản đồ này không cho dùng Tự động đánh.",
+        // 31/10/2026 (chu game: "do vat cam tay bi hong" -> Auto dung im khong bao gi): may chu tu choi moi don khi do
+        // cam tay hong (Char.checkDurableWeapone) - noi ro thay vi dung im
+        "Tự động đánh dừng: đồ cầm tay hỏng - đến Thợ rèn sửa rồi bật lại.",
     };
 
     public static String lyDo(final int ma) {
@@ -360,6 +370,13 @@ public final class TuDong {
         public int nguongHp = -1, nguongMp = -1;
         public int nhat = TuDongKeHoach.NHAT_THUOC_XU;
         public boolean veHoiPhuc = true;
+        /**
+         * Chieu danh nguoi choi da gan (client gui kem C_KE, {@link #DS_CHIEU}); null = client cu chua gui (may chu doc
+         * trang chieu trong ho so), rong = chua gan chieu danh nao (moi chieu da hoc).
+         */
+        public int[] chieuGan;
+        /** chieuGan la "Thu tu chieu" nguoi choi tu dat: dung dung thu tu (khong chi uu tien theo he). */
+        public boolean thuTuNghiem;
         /** Nguoi choi dong y rieng cho tu dung vat pham hoi sinh tra phi (luong khoa). */
         public boolean xinHoiSinhTraPhi;
         /** Trang thai bo nao giua cac buoc. */
@@ -464,6 +481,8 @@ public final class TuDong {
         public int y;
         /** Ban do khoa Tu dong danh (data_ban_do_mo_khoa.cho_phep_tu_dong = 0): cau bao, null = cho phep. */
         public String khoaMap;
+        /** Do cam tay hong (do ben 0): may chu tu choi moi don danh. */
+        public boolean vuKhiHong;
     }
 
     /**
@@ -484,6 +503,9 @@ public final class TuDong {
         }
         if (n.chet) {
             return "Pokémon đang gục, chưa bật được Tự động đánh.";
+        }
+        if (n.vuKhiHong) {
+            return "Đồ cầm tay hỏng - đến Thợ rèn sửa rồi mới bật được Tự động đánh.";
         }
         if (c.chiMapDaMo && !n.baiLuyen) {
             return "Chỉ bật Tự động đánh ở bãi luyện tập có Pokémon hoang dã.";

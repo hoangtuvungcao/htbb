@@ -21,8 +21,12 @@ import java.util.List;
  *   6. muc tieu: Pokemon hoang da GAN NHAT THEO DUONG DI (BFS tren o di duoc, khong xuyen tuong) trong vung, dung
  *      khoang cap (tu_dong.chenh_cap_tren / _duoi), khong boss (tu_dong.danh_boss), khong qua manh
  *      (tu_dong.hp_quai_toi_da_pt); giu muc tieu cu neu con hop le (khong nhay qua lai);
- *   7. chieu: diem = sat thuong % x he so khac he (HePokemon / ChieuPokemon, tu_dong.chon_chieu_theo_he) x STAB, chi
- *      chieu da hoc, het hoi chieu, du PP; khong co chieu nao san thi DANH voi chieu -1 (client tien lai, cho);
+ *   7. chieu: CHI chieu nguoi choi da gan (TinhHinh.chieuGan: trang chieu tu dong dung / "Thu tu chieu"; chua gan
+ *      chieu danh nao = moi chieu da hoc), het hoi chieu, du PP. "Thu tu chieu" tu dat: chieu dau tien dung duoc theo
+ *      dung thu tu (bo chieu mien nhiem neu con chieu khac); trang chieu: diem = sat thuong % x he so khac he
+ *      (HePokemon / ChieuPokemon, tu_dong.chon_chieu_theo_he) x STAB giua cac chieu DA GAN, bang diem giu thu tu o.
+ *      Khong chieu da gan nao dung duoc thi danh thuong (chieu 0) neu san; khong co gi thi DANH voi chieu -1 (client
+ *      tien lai, cho);
  *   8. khong co muc tieu: ve diem bat dau / cho, kem LY DO ro rang (bao nguoi choi).
  */
 public final class TuDongKeHoach {
@@ -184,6 +188,15 @@ public final class TuDongKeHoach {
         /** Thuoc vua dung (ms truoc) - tranh uong lien tiep khi goi tin cap nhat HP chua toi. */
         public long tuLanThuocMs = Long.MAX_VALUE;
         public DiDuoc diDuoc;
+        /**
+         * 0.9.24: so chieu danh nguoi choi da gan, theo thu tu (client gui / trang chieu trong ho so). null hoac rong =
+         * khong biet / chua gan chieu danh nao -> moi chieu trong {@link #chieu} (nhu truoc).
+         */
+        public int[] chieuGan;
+        /** chieuGan la "Thu tu chieu" nguoi choi tu dat -> dung dung thu tu. */
+        public boolean thuTuNghiem;
+        /** Do cam tay hong: may chu tu choi moi don -> dung + bao (khong dung im danh khong ra don). */
+        public boolean vuKhiHong;
     }
 
     /** Ke hoach mot buoc. */
@@ -221,6 +234,13 @@ public final class TuDongKeHoach {
             k.hd = HD_DUNG;
             k.lyDoTat = TuDong.TAT_DAY_TUI;
             k.ly = TuDong.lyDo(TuDong.TAT_DAY_TUI);
+            return k;
+        }
+        // 1b. vu khi hong: moi don bi tu choi ("Khong the danh khi do cam tay bi hong") -> dung, noi ro
+        if (t.vuKhiHong) {
+            k.hd = HD_DUNG;
+            k.lyDoTat = TuDong.TAT_VU_KHI_HONG;
+            k.ly = TuDong.lyDo(TuDong.TAT_VU_KHI_HONG);
             return k;
         }
         final int pt = phanTram(t.hp, t.maxhp);
@@ -388,10 +408,10 @@ public final class TuDongKeHoach {
         return false;
     }
 
-    /** PP cua chieu danh ton PP re nhat (bo chieu 0 PP); 0 = khong co chieu nao ton PP. */
+    /** PP cua chieu danh (se dung) ton PP re nhat (bo chieu 0 PP); 0 = khong co chieu nao ton PP. */
     static int ppToiThieu(final TinhHinh t) {
         int min = 0;
-        for (final Chieu ch : t.chieu) {
+        for (final Chieu ch : chieuDung(t)) {
             if (ch.pp > 0 && (min == 0 || ch.pp < min)) {
                 min = ch.pp;
             }
@@ -619,22 +639,97 @@ public final class TuDongKeHoach {
     }
 
     /**
-     * Chieu tot nhat dang dung duoc (het hoi, du PP). Bang diem: uu tien chieu it PP hon (giu PP cho chieu manh khi
-     * quai gan het mau: neu chieu yeu da du ha thi khong phi chieu manh).
+     * Chieu se dung theo thu tu: chieu da gan ({@link TinhHinh#chieuGan}) co trong {@link TinhHinh#chieu} (da hoc, khong
+     * buff), khong trung; khong gan / khong chieu gan nao con hoc = moi chieu da hoc (chinh {@code t.chieu}).
+     */
+    public static List<Chieu> chieuDung(final TinhHinh t) {
+        if (t.chieuGan == null || t.chieuGan.length == 0) {
+            return t.chieu;
+        }
+        final List<Chieu> ds = new ArrayList<Chieu>();
+        for (final int so : t.chieuGan) {
+            for (final Chieu ch : t.chieu) {
+                if (ch.so == so && !ds.contains(ch)) {
+                    ds.add(ch);
+                    break;
+                }
+            }
+        }
+        return ds.isEmpty() ? t.chieu : ds;
+    }
+
+    /** He so trong game cua don mien nhiem (HePokemon.heSoTrongGame: chinh xac 0 -> 30). */
+    static final int HE_SO_MIEN_NHIEM = 30;
+
+    static boolean dungDuoc(final TinhHinh t, final Chieu ch) {
+        return ch.conHoi <= 0L && ch.pp <= t.mp;
+    }
+
+    /**
+     * Chieu danh buoc nay, CHI trong chieu nguoi choi da gan ({@link #chieuDung}): het hoi, du PP. "Thu tu chieu" tu dat:
+     * chieu dau tien dung duoc (bo chieu mien nhiem khi con chieu khac). Trang chieu / khong gan: bang diem, uu tien chieu
+     * it PP hon (giu PP cho chieu manh), roi o truoc. Khong chieu da gan nao dung duoc: danh thuong (chieu 0) neu san.
      */
     static Chieu chonChieu(final CauHinh c, final TinhHinh t, final Quai q) {
+        final List<Chieu> ds = chieuDung(t);
+        final boolean gan = ds != t.chieu;
         Chieu tot = null;
-        long diemTot = -1L;
-        for (final Chieu ch : t.chieu) {
-            if (ch.conHoi > 0L || ch.pp > t.mp) {
-                continue;
+        if (gan && t.thuTuNghiem) {
+            for (final Chieu ch : ds) {
+                if (!dungDuoc(t, ch)) {
+                    continue;
+                }
+                if (heSoChieu(c, t, ch, q) > HE_SO_MIEN_NHIEM) {
+                    return ch;
+                }
+                if (tot == null) {
+                    tot = ch; // mien nhiem: chi dung khi khong con chieu nao khac
+                }
             }
-            final long d = diem(c, t, ch, q);
-            if (d > diemTot || d == diemTot && tot != null && ch.pp < tot.pp) {
-                diemTot = d;
-                tot = ch;
+        } else {
+            long diemTot = -1L;
+            for (final Chieu ch : ds) {
+                if (!dungDuoc(t, ch)) {
+                    continue;
+                }
+                final long d = diem(c, t, ch, q);
+                if (d > diemTot || d == diemTot && tot != null && ch.pp < tot.pp) {
+                    diemTot = d;
+                    tot = ch;
+                }
+            }
+        }
+        if (tot == null && gan) {
+            for (final Chieu ch : t.chieu) {
+                if (ch.so == 0 && dungDuoc(t, ch)) {
+                    return ch; // danh thuong khi moi chieu da gan dang hoi / thieu PP
+                }
             }
         }
         return tot;
+    }
+
+    /**
+     * So chieu danh tren MOT trang o nhanh luu o ho so (NgoaiHinhGame: 5 o x 12 bit, (kieu+1) 3 bit | gia tri 8 bit | buff
+     * 1 bit, o 0 o bit thap; kieu 1 = chieu). Bo o trong / thuoc / o danh dau bo tro, khong trung; theo thu tu o.
+     */
+    public static int[] chieuTrongTrang(final long trang) {
+        final int[] tam = new int[5];
+        int n = 0;
+        for (int i = 0; i < 5; i++) {
+            final int m = (int) ((trang >> (12 * i)) & 0xFFF);
+            if (((m >> 9) & 7) != 2 || (m & 1) != 0) {
+                continue;
+            }
+            final int so = (m >> 1) & 255;
+            boolean trung = false;
+            for (int k = 0; k < n; k++) {
+                trung |= tam[k] == so;
+            }
+            if (!trung) {
+                tam[n++] = so;
+            }
+        }
+        return java.util.Arrays.copyOf(tam, n);
     }
 }

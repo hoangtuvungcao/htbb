@@ -27,6 +27,8 @@ public final class KiemTuDongKeHoach {
             mucTieu();
             duongDi();
             chieu();
+            chieuGan();
+            vuKhiHong();
             thuoc();
             hetPP();
             hpThap();
@@ -189,6 +191,126 @@ public final class KiemTuDongKeHoach {
         t.chieu.add(new TuDongKeHoach.Chieu(0, HePokemon.MA, 100, 0, 0L));
         t.chieu.add(new TuDongKeHoach.Chieu(1, HePokemon.THUONG, 90, 0, 0L));
         Kiem.bang("he Ma vao he Thuong (mien nhiem): khong chon", 1, lap(t).so);
+    }
+
+    /**
+     * 0.9.24 (chu game: "jar bat auto khong dung cac chieu da gan a?"): bo nao truoc chon trong MOI chieu da hoc (chieu
+     * 2 he Co manh nhat du nguoi choi chi gan chieu 1, 3 vao trang chieu). Nay chi chieu da gan.
+     */
+    static void chieuGan() {
+        TuDongKeHoach.TinhHinh t = th();
+        t.chieu.clear();
+        t.chieu.add(new TuDongKeHoach.Chieu(0, HePokemon.THUONG, 100, 0, 0L));
+        t.chieu.add(new TuDongKeHoach.Chieu(1, HePokemon.NUOC, 90, 5, 0L));
+        t.chieu.add(new TuDongKeHoach.Chieu(2, HePokemon.CO, 300, 5, 0L));
+        t.chieu.add(new TuDongKeHoach.Chieu(3, HePokemon.THUONG, 150, 5, 0L));
+        final TuDongKeHoach.Quai qt = q(1, 420, 400, 10);
+        t.quai.add(qt);
+        Kiem.bang("khong biet chieu gan (client cu, ho so trong): nhu cu - manh nhat da hoc", 2, lap(t).so);
+        t.chieuGan = new int[]{1, 3};
+        Kiem.bang("trang chieu gan 1, 3: KHONG dung chieu 2 chua gan (manh hon)", 3, lap(t).so);
+        qt.he1 = HePokemon.LUA;
+        Kiem.bang("trang chieu: khac he chi la uu tien giua chieu DA GAN (Nuoc vao Lua)", 1, lap(t).so);
+        qt.he1 = HePokemon.THUONG;
+        t.chieu.get(3).conHoi = 400L;
+        Kiem.bang("chieu 3 dang hoi: chieu gan con lai (1)", 1, lap(t).so);
+        t.chieu.get(1).conHoi = 400L;
+        TuDongKeHoach.KeHoach k = lap(t);
+        Kiem.bang("moi chieu gan dang hoi: danh thuong (chieu 0), khong chieu 2", 0, k.so);
+        Kiem.bang("... van DANH", TuDongKeHoach.HD_DANH, k.hd);
+        t.chieu.get(0).conHoi = 300L;
+        Kiem.bang("ca danh thuong dang hoi: cho (-1), khong dung chieu 2 chua gan", -1, lap(t).so);
+        t.chieu.get(0).conHoi = 0L;
+        t.chieu.get(1).conHoi = 0L;
+        t.chieu.get(3).conHoi = 0L;
+        t.mp = 3;
+        Kiem.bang("thieu PP cho moi chieu gan: danh thuong", 0, lap(t).so);
+        t.mp = 100;
+        // "Thu tu chieu" tu dat: dung dung thu tu
+        t.thuTuNghiem = true;
+        Kiem.bang("Thu tu chieu 1 -> 3: chieu 1 truoc du chieu 3 manh hon", 1, lap(t).so);
+        t.chieu.get(1).conHoi = 400L;
+        Kiem.bang("Thu tu: chieu 1 hoi -> chieu 3", 3, lap(t).so);
+        t.chieu.get(1).conHoi = 0L;
+        t.chieu.get(1).he = HePokemon.MA;
+        Kiem.bang("Thu tu: chieu 1 he Ma mien nhiem vao Thuong -> bo qua, chieu 3", 3, lap(t).so);
+        t.chieu.get(3).conHoi = 400L;
+        Kiem.bang("Thu tu: chi con chieu mien nhiem -> van dung (khong dung im)", 1, lap(t).so);
+        // chieu gan da quen / la buff (khong co trong t.chieu): coi nhu chua gan -> moi chieu da hoc
+        t = th();
+        t.chieu.add(new TuDongKeHoach.Chieu(2, HePokemon.CO, 300, 5, 0L));
+        t.quai.add(q(1, 420, 400, 10));
+        t.chieuGan = new int[]{7};
+        Kiem.bang("chieu gan khong con hoc: moi chieu da hoc", 2, lap(t).so);
+        t.chieuGan = new int[0];
+        Kiem.bang("client gui danh sach rong (chua gan chieu danh nao): moi chieu da hoc", 2, lap(t).so);
+        // PP thuoc: chi theo chieu se dung
+        t = th();
+        t.chieu.add(new TuDongKeHoach.Chieu(1, HePokemon.NUOC, 120, 5, 0L));
+        t.chieu.add(new TuDongKeHoach.Chieu(2, HePokemon.CO, 300, 40, 0L));
+        t.chieuGan = new int[]{2};
+        Kiem.bang("chieu se dung = chi chieu da gan", 1, TuDongKeHoach.chieuDung(t).size());
+        Kiem.bang("... la chieu 2 (40 PP), khong chieu 1 chua gan", 40, TuDongKeHoach.chieuDung(t).get(0).pp);
+        // giai trang chieu trong ho so (NgoaiHinhGame, 5 o x 12 bit)
+        final long trang = o(0, 2, 0, false) | o(1, 2, 5, true) | o(2, 2, 0, false) | o(3, 2, 3, false) | o(4, 3, 4, false);
+        Kiem.dung("chieuTrongTrang: chieu 0, 3 (bo trung, bo o bo tro, bo thuoc)",
+                java.util.Arrays.equals(new int[]{0, 3}, TuDongKeHoach.chieuTrongTrang(trang)));
+        Kiem.bang("chieuTrongTrang: trang trong", 0, TuDongKeHoach.chieuTrongTrang(0L).length);
+        // noi vao game + client
+        final String g = KiemTuDong.doc("src/real/TuDongGame.java");
+        Kiem.dung("C_KE doc danh sach chieu gan", g.contains("if (loai == TuDong.C_KE) {\n                docChieuGan(ph, message.dis);"));
+        Kiem.dung("client cu: doc trang chieu dang dung trong ho so", g.contains("t.chieuGan = chieuTrangHoSo(p);"));
+        Kiem.bang("DS_CHIEU = 1", 1, TuDong.DS_CHIEU);
+        final String c = KiemTuDong.doc("../client_jar/shared/mod/game/render/screen/TuDong.java");
+        if (!c.isEmpty()) {
+            Kiem.dung("client gui chieu gan kem lenh 4", c.contains("} else if (loai == 4) {") && c.contains("byte[] ds = chieuGan(mc);"));
+            Kiem.dung("client: may chu cu chon chieu khong gan -> chieu gan cua minh", c.contains("if (sk != 0 && !coTrong(chieuGan(mc), sk)) {"));
+        }
+    }
+
+    /**
+     * 31/10/2026 (chu game: "do vat cam tay bi hong, sau do thoat game vao lai thi lai treo binh thuong"): (1) dang nhap
+     * lai KHONG duoc sua do mien phi - noi nap goi setTemplate lan hai sau initInfoFromDB tung dat lai do ben toi da;
+     * (2) vu khi hong: bo nao dung + noi ro, bat Tu dong bi tu choi kem ly do, khong dung im.
+     */
+    static void vuKhiHong() {
+        TuDongKeHoach.TinhHinh t = th();
+        t.chieu.add(new TuDongKeHoach.Chieu(1, HePokemon.NUOC, 150, 5, 0L));
+        t.quai.add(q(1, 420, 400, 10));
+        Kiem.bang("vu khi tot: danh", TuDongKeHoach.HD_DANH, lap(t).hd);
+        t.vuKhiHong = true;
+        final TuDongKeHoach.KeHoach k = lap(t);
+        Kiem.bang("vu khi hong: DUNG (khong ra lenh danh bi tu choi)", TuDongKeHoach.HD_DUNG, k.hd);
+        Kiem.bang("... ma ly do TAT_VU_KHI_HONG", TuDong.TAT_VU_KHI_HONG, k.lyDoTat);
+        Kiem.dung("... cau bao noi Tho ren: " + k.ly, k.ly.contains("hỏng") && k.ly.contains("Thợ rèn"));
+        final TuDong.NguCanh n = new TuDong.NguCanh();
+        n.vuKhiHong = true;
+        n.map = 1;
+        final TuDong.CauHinh ch = new TuDong.CauHinh();
+        ch.bat = true;
+        final String loi = TuDong.kiemBat(ch, new TuDong.Phien(), n, 20261031);
+        Kiem.dung("bat Tu dong khi vu khi hong: tu choi + noi Tho ren: " + loi, loi != null && loi.contains("Thợ rèn"));
+        // do ben sau dang nhap lai (real.Item.doBenSauNap): mau 10 (mDurable toi da 100)
+        Kiem.dung("hong (0/0) van hong sau nap lai", java.util.Arrays.equals(new int[]{0, 0}, real.Item.doBenSauNap(0, 0, 10)));
+        Kiem.dung("mDurable 0, durable le: van hong", real.Item.doBenSauNap(3, 0, 10)[1] == 0);
+        Kiem.dung("con 37/100 -> giu 37 (durable 4)", java.util.Arrays.equals(new int[]{4, 37}, real.Item.doBenSauNap(4, 37, 10)));
+        Kiem.dung("day giu day", java.util.Arrays.equals(new int[]{10, 100}, real.Item.doBenSauNap(10, 100, 10)));
+        Kiem.dung("vuot toi da cua mau (mau doi) -> kep", java.util.Arrays.equals(new int[]{10, 100}, real.Item.doBenSauNap(30, 300, 10)));
+        Kiem.dung("chua tung luu (-1) -> day", java.util.Arrays.equals(new int[]{10, 100}, real.Item.doBenSauNap(10, -1, 10)));
+        Kiem.dung("mau khong co do ben -> nhu mau", java.util.Arrays.equals(new int[]{0, 0}, real.Item.doBenSauNap(5, 50, 0)));
+        for (final String f : new String[]{"src/real/CharTrangBi.java", "src/real/CharVongLap.java", "src/data/Pet.java"}) {
+            final String s = KiemTuDong.doc(f);
+            Kiem.dung(f + ": nap do giu do ben (khong setTemplate lai sau initInfoFromDB)",
+                    s.contains("napLaiTemplateGiuDoBen()") && !s.contains("item.setTemplate(item.tempateID, item.clazz, item.clazz, item.tempateID)"));
+        }
+        final String g = KiemTuDong.doc("src/real/TuDongGame.java");
+        Kiem.dung("TuDongGame: vu khi hong -> tat ca che do client tu chon", g.contains("lyDo = TuDong.TAT_VU_KHI_HONG;"));
+        Kiem.dung("TuDongGame: bo nao + bat biet vu khi hong", g.contains("t.vuKhiHong = vuKhiHong(p);") && g.contains("n.vuKhiHong = vuKhiHong(p);"));
+    }
+
+    /** Ma 12 bit mot o trang chieu (khop client TrangChieu.ma): kieu = quickslotType + 1 (2 = chieu, 3 = thuoc). */
+    static long o(final int i, final int kieu, final int gt, final boolean buff) {
+        return ((long) ((kieu & 7) << 9 | (gt & 255) << 1 | (buff ? 1 : 0))) << (12 * i);
     }
 
     static void thuoc() {

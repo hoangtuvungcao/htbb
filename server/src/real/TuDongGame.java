@@ -154,6 +154,7 @@ public final class TuDongGame {
         final TuDong.NguCanh n = new TuDong.NguCanh();
         final Map m = p.map;
         n.chet = p.hp <= 0;
+        n.vuKhiHong = vuKhiHong(p);
         n.pvp = p.isKiller;
         n.sanDau = m == null || laSanDau(p, m);
         n.baiLuyen = m != null && !(m instanceof OfflineMap) && !(m instanceof MapChauBau) && !n.sanDau && coQuai(m);
@@ -223,6 +224,85 @@ public final class TuDongGame {
         }
     }
 
+    /**
+     * 0.9.24: danh sach chieu da gan client moi gui kem C_KE (TuDong.DS_CHIEU): byte 1, byte co, byte n, n byte chieu.
+     * Client cu (khong gui) giu nguyen chieuGan = null -> tinhHinh doc trang chieu trong ho so.
+     */
+    static void docChieuGan(final TuDong.Phien ph, final java.io.DataInputStream dis) throws java.io.IOException {
+        if (dis.available() < 3 || dis.readByte() != TuDong.DS_CHIEU) {
+            return;
+        }
+        final int co = dis.readByte();
+        final int n = Math.max(0, Math.min(TuDong.DS_CHIEU_TOI_DA, dis.readUnsignedByte()));
+        final int[] ds = new int[Math.min(n, dis.available())];
+        for (int i = 0; i < ds.length; i++) {
+            ds[i] = dis.readUnsignedByte();
+        }
+        synchronized (ph) {
+            ph.chieuGan = ds;
+            ph.thuTuNghiem = (co & 1) != 0;
+        }
+    }
+
+    /**
+     * Chieu danh tren trang chieu nguoi choi dang dung, doc tu ho so (client &gt;= 0.9.8 gui -103 loai 1 moi lan gan /
+     * doi trang). null = may chu chua co du lieu trang chieu (sv.lau_dai tat / client chua gui).
+     */
+    static int[] chieuTrangHoSo(final Char p) {
+        final HoSoLauDai h;
+        try {
+            h = LauDaiNhanVat.lay(p);
+        } catch (final Exception e) {
+            return null;
+        }
+        if (h == null) {
+            return null;
+        }
+        final long a, b, c;
+        final int trang;
+        synchronized (h) {
+            a = h.oNhanh1;
+            b = h.oNhanh2;
+            c = h.oNhanh3;
+            trang = h.trangChieu;
+        }
+        if (a == 0L && b == 0L && c == 0L) {
+            return null;
+        }
+        return TuDongKeHoach.chieuTrongTrang(trang == 1 ? b : trang == 2 ? c : a);
+    }
+
+    /**
+     * Do cam tay dang mac hong (do ben 0) - cung dieu kien Char.checkDurableWeapone (mon cam tay type 3-7, 13; bo id
+     * 773-787; nap >= 20000 duoc danh du hong) nhung KHONG doi gi (khong xoa do thue het han, khong gui goi).
+     */
+    static boolean vuKhiHong(final Char p) {
+        try {
+            if (p.luongNap >= 20000 || p.diemNapVip >= 20000) {
+                return false;
+            }
+            final Item[] ds = p.wItems[p.slotWearing];
+            for (final Item it : ds) {
+                if (it == null || it.getTemplate() == null) {
+                    continue;
+                }
+                final int t = it.getTemplate().type, id = it.getTemplate().id;
+                if (id >= 773 && id <= 787 || !(t == 3 || t == 4 || t == 5 || t == 6 || t == 7 || t == 13)) {
+                    continue;
+                }
+                if (it.getMinuteLoan(false) <= 0 && it.minuteExist > 0) {
+                    continue; // do thue het han: checkDurableWeapone tu xoa + bao
+                }
+                if (it.mDurable == 0 || it.durable == 0) {
+                    return true;
+                }
+            }
+        } catch (final Exception e) {
+            // trang bi doi giua chung
+        }
+        return false;
+    }
+
     /** Lenh -100 (luong ban do). */
     static void xuLy(final Char p, final Message message) {
         if (laNguoi(p) == null) {
@@ -245,6 +325,9 @@ public final class TuDongGame {
             }
             if (loai == TuDong.C_BAT || loai == TuDong.C_XIN) {
                 docCaiDat(ph, message.dis);
+            }
+            if (loai == TuDong.C_KE) {
+                docChieuGan(ph, message.dis);
             }
             if (loai == TuDong.C_TAT && message.dis.available() >= 1) {
                 final int l = message.dis.readByte();
@@ -467,6 +550,8 @@ public final class TuDongGame {
             lyDo = TuDong.TAT_PVP; // 0.9.8 ngam tay: trong tran giua nguoi choi luon dung
         } else if (c.mapBiCam(p.map.mapId)) {
             lyDo = TuDong.TAT_KHU_CAM;
+        } else if (vuKhiHong(p)) {
+            lyDo = TuDong.TAT_VU_KHI_HONG; // ca che do client tu chon (ke_hoach=0): may chu tu choi moi don
         }
         final String khoaMap = (lyDo < 0 || lyDo == TuDong.TAT_DOI_MAP) && p.map != null ? KhoaBanDoGame.lyDoKhongTuDong(p.map.mapId) : null;
         if (khoaMap != null) {
@@ -634,7 +719,15 @@ public final class TuDongGame {
             t.mucTieuCu = ph.mucTieu;
             t.dangHoiPhuc = ph.dangHoiPhuc;
             t.tuLanThuocMs = ph.thuocLuc == 0L ? Long.MAX_VALUE : bay - ph.thuocLuc;
+            t.chieuGan = ph.chieuGan == null ? null : ph.chieuGan.clone();
+            t.thuTuNghiem = ph.chieuGan != null && ph.thuTuNghiem;
         }
+        if (t.chieuGan == null) {
+            // client cu (0.9.21-0.9.23 khong gui danh sach): it nhat KHONG danh chieu nguoi choi khong gan - trang chieu
+            // dang dung trong ho so (chu game: "jar bat auto khong dung cac chieu da gan a?")
+            t.chieuGan = chieuTrangHoSo(p);
+        }
+        t.vuKhiHong = vuKhiHong(p);
         t.thuoc = p.potions == null ? new int[0] : p.potions;
         if (p.timeUsePotion != null) {
             t.thuocConHoi = new long[p.timeUsePotion.length];
