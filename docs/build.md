@@ -244,6 +244,33 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.23 (`BAN=923`: màn chọn máy chủ chỉ còn máy chủ HTBB, Bản đồ vùng, ô túi hiện số lượng vật phẩm cộng dồn)
+
+Client `PHIEN_BAN=0.9.23-opentest` (`BAN = 0*10000 + 9*100 + 23`; `MIDlet-Version` 0.9.23) trên main cb9337cd, chạy với
+mọi máy chủ 0.9.15+ (số lượng ở ô túi cần máy chủ gửi dòng "Số lượng" - 53c4a66a; máy chủ cũ hiện như trước).
+`htbb-server.jar` của main (không build lại khi phát hành) - qua cổng staging trước khi lên production.
+
+1. **Màn chọn máy chủ chỉ còn máy chủ HTBB** (f86ceed2): bỏ danh sách 9 máy chủ của game gốc (IP người khác) - mặc định
+   `ServerListScr` đúng một máy chủ Huyền Thoại Bảo Bối; bỏ danh sách RMS cũ nhiều máy chủ. Trình giả lập không trả
+   `getAppProperty` (ThuêTab...) thì `TaiDanhSach.docManifest` đọc `HTBB-May-Chu` thẳng từ `/META-INF/MANIFEST.MF` của
+   jar. Kiểm: jar phát hành đọc được `HTBB-May-Chu` qua resource stream; không còn IP game gốc trong jar / APK / jar PC.
+2. **Bản đồ vùng** (e70a53b9 / f03004d8): chạm bản đồ nhỏ ở HUD (PC / APK), Menu › Bản đồ vùng, phím `*` (J2ME, khi không
+   nhắm người chơi) mở `ManBanDoVung`: tab Kanto / Johto / Hoenn theo cổng nối thật, tên mọi điểm không chồng, chân dung ở
+   điểm đang đứng, dấu sao ở bản đồ đích nhiệm vụ; chạm điểm / 2 8 = chọn, 4 6 = đổi vùng, X / phím mềm phải / `*` = đóng
+   (chỉ xem, không dịch chuyển). Menu chữ "Bản đồ lớn" -> "Bản đồ vùng". Kiểm: `client_pc/test/KiemBanDoVung`.
+3. **Ô túi hiện số lượng vật phẩm cộng dồn** (53c4a66a / e3ae2375): vật phẩm loại 28 xếp chồng trên máy chủ (trần 999),
+   client đọc dòng "Số lượng" (`ItemInInventory`), ô túi (`LuoiTui`) vẽ số khi > 1, thẻ vật phẩm hiện ở hàng "Số lượng"
+   (không lặp trong chỉ số).
+
+Máy chủ (main cb9337cd) lên cùng bản: vật phẩm loại 28 xếp chồng (53c4a66a) + vé treo trừ / trao qua một đường
+(0be3d981); vé treo 10 giờ + giftcode xu / mã TREO400 (4fbc0a72); New Bark có Arcanine (Về làng) + Chansey, Gym bù khác hệ
+(15b6159a); Arcanine gác cổng "Đến New Bark" cho cụm Johto (d35a6f03) và đưa tới đúng ô (38b8f6a0); pet đồng hành cho Nhà
+trẻ (3fa62883); bước địa điểm trong nhà xong ngay khi vào (5efd7d38); vé tàu menu Lapras đúng giá (ffe2b2d8); bảo hiểm xui
+vật nhiệm vụ (d0a760f1); quái chủ động tối đa 2 (64f12959); cân bằng vòng 2 (e7bf448a, 031b5f18); bot kiểm thử xuyên suốt.
+
+Kiểm (bản PC phát hành, main cb9337cd): KiemPc 257/0, KiemCapNhat 509/0, KiemBanDoVung 448/0, KiemTrungLap 252/0,
+KiemDiemNhiemVu 51/0, KiemTaoNhanVat 5117/0.
+
 ### Bản 0.9.22 (`BAN=922`: kéo thả chiêu mượt, Auto tự uống bình PP, dấu sao nhiệm vụ, Nokia E72, J2ME ngang trên giả lập Android, màn Tạo Pokémon Android, giao diện điện thoại)
 
 Client `PHIEN_BAN=0.9.22-opentest` (`BAN = 0*10000 + 9*100 + 22`; `MIDlet-Version` 0.9.22) trên main 7ea61bf6, chạy với
