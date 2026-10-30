@@ -87,7 +87,7 @@ public final class GiaiDoanBoss {
     }
 
     /** Tran he so khac he (%) cua don truong Gym vao nguoi choi (cau_hinh gym.he_toi_da), can bang 29/10/2026. */
-    public static final int GYM_HE_TOI_DA = 125;
+    public static final int GYM_HE_TOI_DA = 115;
     /** So de moi lan goi cua tran Gym 1 dau 1 (cau_hinh gym.so_de); boss the gioi van theo soDe. */
     public static final int GYM_SO_DE = 1;
 
@@ -103,12 +103,15 @@ public final class GiaiDoanBoss {
     }
 
     /** San he so khac he (%) cua chieu NGUOI CHOI vao truong Gym (cau_hinh gym.he_ra_toi_thieu). */
-    public static final int GYM_HE_RA_TOI_THIEU = 70;
+    public static final int GYM_HE_RA_TOI_THIEU = 100;
 
     /**
      * HP truong Gym cho nguoi thach dau ma chieu danh tot nhat chi gay {@code heTotNhat}% (khac he): duoi san {@code san}% thi
      * HP x heTotNhat / san - bang voi viec chieu cua ho duoc tinh it nhat x0,7. Dong Dien (moi chieu danh deu he Dien) gap
      * Seismitoad / Golem (he Dat, gan mien x0,3) truoc day chi gay 30% - khong the ha trong 10 phut (do suc 29/10/2026).
+     * 30/10/2026 (do suc chi vu khi shop, khong giap): san 70 -> 100 va chi tinh chieu he (o 1..3, khong tinh don Cao he
+     * Thuong o 0) - dong Lua thua Seismitoad cap 40 / 42 (boss con 30% / 27%), Dien thua Celadon cap 37 (con 23%):
+     * chieu chinh x0,7 ma san 70 khong bu. Khac he van thiet: boss danh manh hon (tran x1,15) va tran dai hon.
      * san <= 0 = tat; heTotNhat <= 0 (khong biet) giu nguyen.
      */
     public static int hpGymTheoHe(final int hp, final int heTotNhat, final int san) {

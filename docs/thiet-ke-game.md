@@ -948,7 +948,7 @@ vào bằng **vé Mê cung**, quái ra theo đợt kèm boss Mê cung, giới h�
 | Báo trước chiêu lớn | gói -96: thời gian niệm 1,5–3 giây + hình vùng (tròn / nón / chữ nhật / vành); chiêu **nổ đúng lúc hết giờ niệm** (`BossLauDai.nhipNiem`), mục tiêu đứng ngoài vùng lúc đó thì không trúng (trước 29/10/2026 xét ở đòn kế tiếp - né rồi quay lại vẫn ăn ×3) |
 | Nộ theo thời gian | boss Gym sau 5 phút, boss thế giới sau 15 phút: sát thương ×3 (chống kéo dài bằng người đông) |
 | Gọi đệ | ở 70% và 40% HP, 2..6 con theo số người đang đánh; **Gym 1 đấu 1: 1 con mỗi pha** (`gym.so_de`) |
-| Gym 1 đấu 1 | boss Gym và đệ chỉ đánh người thách đấu (nhắm nhầm người khác thì quay về người thách đấu); khắc hệ của đòn trưởng Gym vào người chơi trần **×1,25** (`gym.he_toi_da`, `GiaiDoanBoss.giamKhacHeGym`); dòng không có chiêu đánh nào quá ×0,7 vào hệ boss (Điện gặp Golem / Seismitoad hệ Đất ×0,3) thì HP boss × tốt nhất / 70 (`gym.he_ra_toi_thieu`, `GiaiDoanBoss.hpGymTheoHe`) - dòng bị khắc vẫn khó hơn nhưng không bị chặn cứng |
+| Gym 1 đấu 1 | boss Gym và đệ chỉ đánh người thách đấu (nhắm nhầm người khác thì quay về người thách đấu); khắc hệ của đòn trưởng Gym vào người chơi trần **×1,15** (`gym.he_toi_da`, `GiaiDoanBoss.giamKhacHeGym`); chiêu hệ tốt nhất của người thách đấu (ô 1..3, không tính đòn Cào ô 0) dưới ×1 vào hệ boss thì HP boss × tốt nhất / 100 (`gym.he_ra_toi_thieu`, `GiaiDoanBoss.hpGymTheoHe`; Lửa gặp Seismitoad, Điện gặp Celadon ×0,7 → 70% HP; Điện gặp Golem ×0,3 → 30%) - dòng bị khắc vẫn khó hơn (đòn boss mạnh hơn, trận dài hơn) nhưng không bị chặn cứng |
 | Thông báo pha | gói -98 (vào pha, nộ, gọi đệ, khiên) |
 
 **Quái tinh anh** (chữ người chơi thấy là "quái tinh anh", không dùng "Alpha"): 1/50 lần hồi sinh, to ×1,3, HP ×4, tấn

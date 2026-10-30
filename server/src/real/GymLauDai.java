@@ -168,11 +168,11 @@ public final class GymLauDai {
     }
 
     /**
-     * He so khac he (%) TOT NHAT cua cac chieu danh (o 0..3, da hoc) cua {@code p} vao he cua mau boss {@code t}; 0 = khong
+     * He so khac he (%) TOT NHAT cua cac chieu danh (o 1..3 da hoc; o 0 - don Cao - chi khi chua co chieu nao) cua {@code p} vao he cua mau boss {@code t}; 0 = khong
      * biet. Dung de ha HP boss cho dong khong co chieu nao danh duoc no (GiaiDoanBoss.hpGymTheoHe).
      */
     static int heTotNhat(final Char p, final MonsterTemplate t) {
-        int tot = 0;
+        int tot = 0, goc = 0;
         try {
             for (int k = 0; k < 4 && k < p.skill.length; k++) {
                 if (p.skill[k] <= 0) {
@@ -182,12 +182,17 @@ public final class GymLauDai {
                 if (hc < 0) {
                     continue;
                 }
-                tot = Math.max(tot, com.htbb.pokemon.HePokemon.heSoTrongGame(hc, t.he, t.he2));
+                final int hs = com.htbb.pokemon.HePokemon.heSoTrongGame(hc, t.he, t.he2);
+                if (k == 0) {
+                    goc = hs; // don Cao (o 0, he Thuong, suc yeu): chi tinh khi chua hoc chieu he nao
+                } else {
+                    tot = Math.max(tot, hs);
+                }
             }
         } catch (final Exception ignored) {
             return 0;
         }
-        return tot;
+        return tot > 0 ? tot : goc;
     }
 
     /**

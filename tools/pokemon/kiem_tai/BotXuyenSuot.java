@@ -611,7 +611,7 @@ public class BotXuyenSuot {
          * Arcanine gac cong (NPC loai 4, o lang): "Đến {noi}". Ve lang gan nhat co duong truoc. true = da toi ban do khac.
          */
         boolean quaArcanine(String noi) throws Exception {
-            if (!KichBanDS.laLang(b.mapId)) {
+            if (!KichBanDS.laLang(b.mapId) && !KHU_XA_ARCANINE.contains(b.mapId)) {
                 int tot = -1, ds = 999;
                 for (int c : new int[]{0, 301, 70, 80, 1701, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
                 if (tot < 0 || !toi(tot)) return false;
@@ -632,11 +632,23 @@ public class BotXuyenSuot {
             return b.mapId != truoc;
         }
 
+        /** Khu xa co Arcanine gac cong ("Về làng" mien phi): New Bark 10 (tu 30/10/2026), Chan nui Silver 41, Nui Silver 42, Duong Victory 118. */
+        static final Set<Integer> KHU_XA_ARCANINE = new HashSet<>(Arrays.asList(10, 41, 42, 118));
+
         // ---------------------------------------------------------------- di chuyen giua cac map
         boolean toi(int dich) throws Exception {
             if (cungBanDo(b.mapId, dich)) return true;
             int tu = b.mapId;
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
+            // cum Johto -> lang: di bo toi New Bark roi Arcanine "Về làng" (truoc 30/10/2026 duong mot chieu)
+            if (duong(tu, dich) == null && KichBanDS.laLang(dich) && dich != 10) {
+                for (int k : KHU_XA_ARCANINE) {
+                    if (cungBanDo(tu, k) || duong(tu, k) != null) {
+                        if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
+                        break;
+                    }
+                }
+            }
             // cum Johto 10/11/13/14/15 khong di bo toi duoc truoc cap 69 (chi qua 118 / 23 / 24): Arcanine "Đến New Bark"
             if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {
                 if (quaArcanine("New Bark")) tu = b.mapId;

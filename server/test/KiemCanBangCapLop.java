@@ -16,9 +16,9 @@ import java.util.TreeMap;
  * <ol>
  *   <li>Quai chu dong (com.htbb.pokemon.ChuDongQuai): quai xam (thap hon >= 4 cap) khong tu lao vao, toi da 2 quai chua
  *       bi danh cung danh mot nguoi, quai bi danh luon danh tra.</li>
- *   <li>Truong Gym: khac he vao nguoi choi tran x1,25 (GiaiDoanBoss.giamKhacHeGym) - MOI dong x MOI Gym (he theo loai cua
- *       dong o cap Gym) <= x1,25; truoc co cap (Gyarados -> dong Lua, Luxray -> dong Nuoc...) x1,5. Chieu nguoi choi vao
- *       Gym it nhat x0,7 hieu dung (GiaiDoanBoss.hpGymTheoHe: dong Dien gap Golem / Seismitoad he Dat x0,3).</li>
+ *   <li>Truong Gym: khac he vao nguoi choi tran x1,15 (30/10/2026; truoc x1,25) (GiaiDoanBoss.giamKhacHeGym) - MOI dong x MOI Gym (he theo loai cua
+ *       dong o cap Gym) <= x1,15; truoc co cap (Gyarados -> dong Lua, Luxray -> dong Nuoc...) x1,5. Chieu nguoi choi vao
+ *       Gym (chieu he o 1..3) bu bang HP boss x tot / 100 (GiaiDoanBoss.hpGymTheoHe, san 100 tu 30/10/2026).</li>
  *   <li>Khoi sua_can_bang_lop.sql: Gym Cerulean nhe hon (van >= Pewter), HP quai cap 61-69 noi suy (het buoc +24%).</li>
  * </ol>
  */
@@ -35,6 +35,12 @@ public final class KiemCanBangCapLop {
             arcanine();
         } catch (final Exception e) {
             Kiem.bang("Arcanine khong nem loi", "", String.valueOf(e));
+        }
+        try {
+            duongVe();
+        } catch (final Exception e) {
+            e.printStackTrace();
+            Kiem.bang("duong ve lang khong nem loi", "", String.valueOf(e));
         }
         try {
             nguon();
@@ -67,9 +73,9 @@ public final class KiemCanBangCapLop {
 
     static void gymHe() {
         final int t = GiaiDoanBoss.GYM_HE_TOI_DA;
-        Kiem.bang("gym.he_toi_da mac dinh 125, gym.so_de 1", "125/1", t + "/" + GiaiDoanBoss.GYM_SO_DE);
-        Kiem.bang("khac x1,5 -> x1,25", Integer.valueOf(833), Integer.valueOf(GiaiDoanBoss.giamKhacHeGym(1000, 150, t)));
-        Kiem.bang("khac x2 -> x1,25", Integer.valueOf(625), Integer.valueOf(GiaiDoanBoss.giamKhacHeGym(1000, 200, t)));
+        Kiem.bang("gym.he_toi_da mac dinh 115 (30/10/2026, truoc 125), gym.so_de 1", "115/1", t + "/" + GiaiDoanBoss.GYM_SO_DE);
+        Kiem.bang("khac x1,5 -> x1,15", Integer.valueOf(766), Integer.valueOf(GiaiDoanBoss.giamKhacHeGym(1000, 150, t)));
+        Kiem.bang("khac x2 -> x1,15", Integer.valueOf(575), Integer.valueOf(GiaiDoanBoss.giamKhacHeGym(1000, 200, t)));
         Kiem.bang("trung tinh giu", Integer.valueOf(1000), Integer.valueOf(GiaiDoanBoss.giamKhacHeGym(1000, 100, t)));
         Kiem.bang("yeu x0,7 giu", Integer.valueOf(1000), Integer.valueOf(GiaiDoanBoss.giamKhacHeGym(1000, 70, t)));
         Kiem.bang("tran 0 = tat", Integer.valueOf(1000), Integer.valueOf(GiaiDoanBoss.giamKhacHeGym(1000, 150, 0)));
@@ -104,10 +110,12 @@ public final class KiemCanBangCapLop {
             }
         }
         Kiem.dung("du 16 Gym x 5 dong (" + cap + ")", cap >= 80);
-        // chieu NGUOI CHOI vao Gym: dong khong co chieu danh nao qua x0,7 -> HP boss x tot / 70 (GiaiDoanBoss.hpGymTheoHe)
+        // chieu NGUOI CHOI vao Gym: chieu he tot nhat < x1 -> HP boss x tot / 100 (GiaiDoanBoss.hpGymTheoHe)
         final int san = GiaiDoanBoss.GYM_HE_RA_TOI_THIEU;
-        Kiem.bang("hpGymTheoHe: x0,3 -> 30/70 HP", Integer.valueOf(30000), Integer.valueOf(GiaiDoanBoss.hpGymTheoHe(70000, 30, san)));
-        Kiem.bang("hpGymTheoHe: >= san giu", Integer.valueOf(70000), Integer.valueOf(GiaiDoanBoss.hpGymTheoHe(70000, 70, san)));
+        Kiem.bang("san = 100 (khac he chi bu HP, do suc 30/10/2026)", Integer.valueOf(100), Integer.valueOf(san));
+        Kiem.bang("hpGymTheoHe: x0,3 -> 30% HP", Integer.valueOf(21000), Integer.valueOf(GiaiDoanBoss.hpGymTheoHe(70000, 30, san)));
+        Kiem.bang("hpGymTheoHe: x0,7 -> 70% HP", Integer.valueOf(49000), Integer.valueOf(GiaiDoanBoss.hpGymTheoHe(70000, 70, san)));
+        Kiem.bang("hpGymTheoHe: >= san giu", Integer.valueOf(70000), Integer.valueOf(GiaiDoanBoss.hpGymTheoHe(70000, 150, san)));
         Kiem.bang("hpGymTheoHe: khong biet (0) giu", Integer.valueOf(70000), Integer.valueOf(GiaiDoanBoss.hpGymTheoHe(70000, 0, san)));
         Kiem.bang("hpGymTheoHe: san 0 = tat", Integer.valueOf(70000), Integer.valueOf(GiaiDoanBoss.hpGymTheoHe(70000, 30, 0)));
         final List<String> chan = new ArrayList<String>();
@@ -119,7 +127,7 @@ public final class KiemCanBangCapLop {
             }
             for (int lop = 0; lop < LoaiPokemon.KHOI_DAU_THEO_CLASS.length; lop++) {
                 int tot = 0;
-                for (int k = 0; k < 4; k++) {
+                for (int k = 1; k < 4; k++) { // nhu GymLauDai.heTotNhat: chieu he o 1..3 (khong tinh don Cao o 0)
                     final int hc = com.htbb.pokemon.ChieuPokemon.heChieu(lop, k);
                     if (hc >= 0) {
                         tot = Math.max(tot, HePokemon.heSoTrongGame(hc, hb[0], hb[1]));
@@ -136,9 +144,11 @@ public final class KiemCanBangCapLop {
             }
         }
         Kiem.dung("truoc: dong Dien gan mien Gym he Dat (Pewter Golem, Seismitoad) (" + chan + ")", chan.contains("1/4:30") && chan.contains("5/4:30"));
-        Kiem.bang("sau: moi Gym x moi dong danh hieu dung >= x0,7", "[]", conChan.toString());
+        Kiem.dung("truoc: Lua vs Seismitoad, Dien vs Celadon x0,7 (do suc chi vu khi: thua con 27-30% / 23%) (" + chan + ")",
+                chan.contains("5/0:70") && chan.contains("4/4:70"));
+        Kiem.bang("sau: moi Gym x moi dong danh hieu dung >= x1 (HP boss bu khac he)", "[]", conChan.toString());
         Kiem.dung("truoc tran co cap khac he > x1,25 (" + truoc + ")", truoc.contains("2/0:150") && truoc.contains("3/3:150"));
-        Kiem.bang("sau tran: moi Gym x moi dong <= x1,25", "[]", qua.toString());
+        Kiem.bang("sau tran: moi Gym x moi dong <= x1,15", "[]", qua.toString());
     }
 
     /**
@@ -161,6 +171,127 @@ public final class KiemCanBangCapLop {
         Kiem.bang("Arcanine: o xuat hien trong ban do dich", "[]", ngoai.toString());
         final String s = new String(java.nio.file.Files.readAllBytes(new java.io.File("src/real/NpcDichVu.java").toPath()), "UTF-8");
         Kiem.dung("Arcanine: move2Map nhan O (khong con d * 16 + 8)", !s.contains("d[1] * 16 + 8") && s.contains("p.map.move2Map(p, o[0], o[1], d[0], p.inCountry)"));
+    }
+
+    /** Cap mo cao nhat cua cac ban do phai co duong ve lang mien phi, khong gioi han luot. */
+    static final int CAP_DUONG_VE = 40;
+
+    /**
+     * Moi ban do ngoai troi toi duoc tu lang va mo o cap <= 40 co DUONG VE LANG khong ton xu / luot: di bo qua cong (chi
+     * qua ban do mo o cap <= 40 hoac lang) toi lang 0 / 70 / 80, hoac toi mot khu xa co Arcanine gac cong ("Về làng"
+     * mien phi, NpcDichVu.diLoi; Arcanine o lang / Cao nguyen dua toi khu xa da mo). Khong tinh Pidgeot / Lapras (tra xu), So tay "Về làng miễn phí" (N luot / ngay), Day
+     * thoat hiem / Ve dich chuyen (tra xu). Choi 5 dong 30/10/2026: cum Johto 10/11/13/14/15 (cap 27..40, vao bang
+     * Arcanine "Đến New Bark") chi noi voi 113 / 114 (cap 72+) - khong hoi mau / mua thuoc / ve lang; dong Nuoc danh Gym
+     * Celadon o map 11 voi 70% HP va 2 binh thuoc, thua 8 lan. Sua: Arcanine + Chansey o New Bark (cMap/10).
+     */
+    static void duongVe() throws Exception {
+        final String du = DayDu.sql();
+        final Map<Integer, Integer> capMo = new HashMap<Integer, Integer>();
+        for (final List<String> r : KiemSuaTuyen.dong(du, "data_ban_do_mo_khoa")) {
+            capMo.put(Integer.valueOf(r.get(0).trim()), Integer.valueOf(r.get(1).trim()));
+        }
+        final String rc = KiemSuaTuyen.doc("src/real/RealController.java");
+        final List<List<int[]>> loc = new ArrayList<List<int[]>>();
+        for (final String g : KiemSuaTuyen.nhom(KiemSuaTuyen.khoi(rc, "Map.locationMap = new short[][][]"))) {
+            final List<int[]> l = new ArrayList<int[]>();
+            for (final String a : KiemSuaTuyen.mang(g)) {
+                l.add(KiemSuaTuyen.so(a));
+            }
+            loc.add(l);
+        }
+        final Map<Integer, Integer> grp = new HashMap<Integer, Integer>();
+        final List<String> mid = KiemSuaTuyen.mang(KiemSuaTuyen.khoi(rc, "Map.mapID = new short[][]"));
+        for (int i = 0; i < mid.size(); i++) {
+            for (final int x : KiemSuaTuyen.so(mid.get(i))) {
+                grp.putIfAbsent(Integer.valueOf(x), Integer.valueOf(i));
+            }
+        }
+        final java.util.Set<Integer> dich = new java.util.TreeSet<Integer>(KiemSuaTuyen.LANG);
+        final java.util.Set<Integer> xet = new java.util.TreeSet<Integer>();
+        for (final Integer m : KiemSuaTuyen.toiDuoc(du)) {
+            if (!new java.io.File("cMap/" + m).isFile() || KiemSuaTuyen.banDo(m.intValue()).offline || KiemSuaTuyen.laNha(m.intValue())) {
+                continue;
+            }
+            boolean arc = false;
+            for (final int[] n : real.NpcTinhBanDo.cua(m.intValue())) {
+                arc |= n[2] == real.NpcDichVu.NPC_ARCANINE;
+            }
+            if (arc && real.NpcDichVuKiem.laKhuXa(m.intValue())) {
+                dich.add(m);
+            }
+            final Integer c = capMo.get(m);
+            if (c != null && c.intValue() <= CAP_DUONG_VE && !KiemSuaTuyen.LANG.contains(m)) {
+                xet.add(m);
+            }
+        }
+        final List<String> ket = new ArrayList<String>();
+        for (final Integer tu : xet) {
+            final java.util.Set<Integer> seen = new java.util.HashSet<Integer>();
+            final java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<Integer>();
+            seen.add(tu);
+            q.add(tu);
+            boolean ve = false;
+            while (!q.isEmpty() && !ve) {
+                final int m = q.poll().intValue();
+                if (dich.contains(Integer.valueOf(m))) {
+                    ve = true;
+                    break;
+                }
+                // Arcanine o ban do nay (lang / Cao nguyen 201 / khu xa): mien phi toi cac khu xa LOI_DI da mo (cap <= 40)
+                for (final int[] n : real.NpcTinhBanDo.cua(m)) {
+                    if (n[2] != real.NpcDichVu.NPC_ARCANINE) {
+                        continue;
+                    }
+                    for (final int[] d : real.NpcDichVuKiem.loiDi()) {
+                        final Integer c = capMo.get(Integer.valueOf(d[0]));
+                        if (c != null && c.intValue() <= CAP_DUONG_VE && seen.add(Integer.valueOf(d[0]))) {
+                            q.add(Integer.valueOf(d[0]));
+                        }
+                    }
+                }
+                final Integer g = grp.get(Integer.valueOf(m));
+                if (g == null || g.intValue() >= loc.size() || !new java.io.File("cMap/" + m).isFile()) {
+                    continue;
+                }
+                for (final com.htbb.pokemon.DinhDangBanDo.Cong cg : KiemSuaTuyen.banDo(m).cong) {
+                    if (cg.toM >= loc.get(g.intValue()).size()) {
+                        continue;
+                    }
+                    final Integer d = Integer.valueOf(loc.get(g.intValue()).get(cg.toM)[0]);
+                    final Integer c = capMo.get(d);
+                    final boolean qua = KiemSuaTuyen.LANG.contains(d) || c != null && c.intValue() <= CAP_DUONG_VE;
+                    if (qua && seen.add(d)) {
+                        q.add(d);
+                    }
+                }
+            }
+            if (!ve) {
+                ket.add(tu + " (cap " + capMo.get(tu) + ")");
+            }
+        }
+        Kiem.dung("duong ve: xet du ban do cap <= 40 (" + xet.size() + "), co New Bark 10 / Rung Viridian 11", xet.size() >= 10
+                && xet.contains(Integer.valueOf(10)) && xet.contains(Integer.valueOf(11)));
+        Kiem.bang("moi ban do mo o cap <= 40 co duong ve lang mien phi (cong / Arcanine khu xa)", "[]", ket.toString());
+        // New Bark: Arcanine canh diem den (o xuat hien LOI_DI) + Chansey, deu tren o di duoc
+        final boolean[] di = KiemHoiSinh.diDuoc(10);
+        final int w = KiemSuaTuyen.banDo(10).w;
+        int[] arc = null, ta = null;
+        for (final int[] n : real.NpcTinhBanDo.cua(10)) {
+            if (n[2] == real.NpcDichVu.NPC_ARCANINE) {
+                arc = n;
+            } else if (n[2] == 0) {
+                ta = n;
+            }
+        }
+        int[] den = null;
+        for (final int[] d : real.NpcDichVuKiem.loiDi()) {
+            if (d[0] == 10) {
+                den = real.NpcDichVuKiem.oDen(d);
+            }
+        }
+        Kiem.dung("New Bark co Arcanine + Chansey tren o di duoc", arc != null && ta != null && di[arc[1] * w + arc[0]] && di[ta[1] * w + ta[0]]);
+        Kiem.dung("New Bark: Arcanine trong ban kinh dich vu cua o den (" + (den == null ? "-" : den[0] + "," + den[1]) + ")", arc != null
+                && den != null && Math.abs(arc[0] - den[0]) <= real.NpcTinhBanDo.BAN_KINH_O && Math.abs(arc[1] - den[1]) <= real.NpcTinhBanDo.BAN_KINH_O);
     }
 
     /** Bao hiem xui vat nhiem vu kieu 2 (BaoHiemRoiNhiemVu). */
@@ -230,7 +361,29 @@ public final class KiemCanBangCapLop {
         bang.put("data_monster", mau);
         KiemMucTieuNhiemVu.ap(DayDu.phanNangCap("sua_can_bang_cap.sql"), bang); // lan 1 truoc (gia tri cu cua khoi nay)
         final TreeMap<Integer, Integer> hpTruoc = hpTheoCap(quai);
-        final String khoi = DayDu.phanNangCap("sua_can_bang_lop.sql");
+        final String khoiDu = DayDu.phanNangCap("sua_can_bang_lop.sql");
+        // data_npc (New Bark): phan A (dump) da mang gia tri moi (test/KiemNpc doi chieu cMap) - lenh UPDATE chi cho DB cu
+        final StringBuilder sb = new StringBuilder();
+        final List<String> npc = new ArrayList<String>();
+        for (final String l : khoiDu.split("\n")) {
+            if (l.startsWith("UPDATE `data_npc`")) {
+                npc.add(l);
+            } else {
+                sb.append(l).append('\n');
+            }
+        }
+        final String khoi = sb.toString();
+        final Map<Integer, String[]> dump = KiemTenHien.dongDump(DayDu.sql(), "data_npc", 7);
+        int npcKhop = 0;
+        for (final String l : npc) {
+            final java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                    "UPDATE `data_npc` SET `ban_do` = '([0-9,]+)' WHERE `type` = (\\d+) AND `ban_do` = '([0-9,]+)';").matcher(l);
+            if (m.matches() && dump.containsKey(Integer.valueOf(m.group(2))) && m.group(1).equals(dump.get(Integer.valueOf(m.group(2)))[6])
+                    && ("," + m.group(1) + ",").contains(",10,") && !("," + m.group(3) + ",").contains(",10,")) {
+                npcKhop++;
+            }
+        }
+        Kiem.bang("khoi sua_can_bang_lop.sql: 2 lenh data_npc (Chansey / Arcanine them New Bark 10) = dump phan A", "2/2", npcKhop + "/" + npc.size());
         final List<Integer> lan1 = KiemMucTieuNhiemVu.ap(khoi, bang);
         int sai = 0;
         for (final Integer n : lan1) {

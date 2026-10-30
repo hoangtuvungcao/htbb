@@ -137,6 +137,8 @@ final class KichBanCap140TinhNang {
     static boolean veLangSoTay(KichBanCap140.NguoiChoi p) throws Exception {
         BotChucNang.Bot b = p.b;
         if (KichBanDS.laLang(b.mapId)) return true;
+        // khu xa co Arcanine di bo toi duoc (New Bark tu 30/10/2026): "Về làng" mien phi, khong ton luot So tay
+        if (p.toi(0) && KichBanDS.laLang(b.mapId)) return true;
         int truoc = b.mapId;
         int m = KichBanHoiQuy.soTay(b, "Về làng");
         if (m < 0) return false;

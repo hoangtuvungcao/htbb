@@ -28,6 +28,10 @@ public class ThemNpcLang {
         // 0.9.8: Arcanine gac cong (loai 4, real.NpcDichVu.LOI_DI) o khu xa khong co cong / tau dan vao - diem "Về làng"
         // va diem den (o ngay duoi Arcanine): Nui Silver 42 (khong co cong), Chan nui Silver 41, Duong Victory 118
         {42, 4, 34, 41}, {41, 4, 30, 13}, {118, 4, 43, 22},
+        // 30/10/2026: New Bark 10 (Arcanine "Đến New Bark", diem den 97,2) - cum Johto 10/11/13/14/15 chi noi voi
+        // 113/114 (cap 72+) nen truoc day la duong mot chieu: khong hoi mau / mua thuoc / ve lang (tru So tay 1 luot/ngay).
+        // Arcanine (Về làng + khu xa) canh diem den, Chansey (hoi phuc + thuoc) duoi loi doc.
+        {10, 4, 94, 2}, {10, 0, 91, 8},
     };
 
     public static void main(final String[] a) throws Exception {
