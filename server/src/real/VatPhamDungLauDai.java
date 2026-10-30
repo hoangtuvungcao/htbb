@@ -18,7 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * NGUYEN chuoi cua doi noi dung, vd "tc:20,giay:90"). Bo doc hieu ung la DU LIEU: them vat pham moi
  * chi can them dong, khong sua code, mien la dung cac khoa da ho tro duoi day. Chi chay khi LauDai.bat().
  *
- * Khoa ho tro: hp, mp, mp_doi (%); go:<1..5|tat_ca>, mien:<giay>; hoi_sinh:<%HP>;
+ * Khoa ho tro: hp, mp, mp_doi (%); go:<1..5|tat_ca>, mien:<giay>; hoi_sinh:<%HP>; gio_treo:<gio> (Ve treo,
+ * TuDongGame.dungVeTreo);
  * tc / thu / chi_mang / boss / toc_danh / chinh_xac + giay (buff co han); xua:<cap>, phut (xua quai);
  * exp_phut + tru_nang_luong_phut (Keo Hiem, 2/tuan); tu_dung:<hp50|mp20|trang_thai|bong|doc|te|ngu|dong_bang>
  * (qua mong: dung tay hoac TU DUNG khi du dieu kien, LauDaiJob); o:phien_da (do giu: bam dung = mang/thao,
@@ -37,6 +38,9 @@ public final class VatPhamDungLauDai {
     private static final ConcurrentHashMap<Integer, HashMap<String, long[]>> BUFF = new ConcurrentHashMap<Integer, HashMap<String, long[]>>();
 
     static final String[] KHOA_BUFF = {"tc", "thu", "chi_mang", "boss", "toc_danh", "chinh_xac", "xua"};
+
+    /** hieu_ung "gio_treo:N" (Ve treo N gio, id com.htbb.pokemon.TuDong.ID_VE_TREO): +N gio kho Tu dong danh. */
+    public static final String HIEU_UNG_GIO_TREO = "gio_treo";
 
     private VatPhamDungLauDai() {
     }
@@ -115,6 +119,11 @@ public final class VatPhamDungLauDai {
         }
         if (hu.containsKey(DatTenPetGame.HIEU_UNG)) {
             DatTenPetGame.batDau(p, item); // the dat ten Pokemon: menu chon pet -> o nhap ten (the tru khi dat xong)
+            return true;
+        }
+        if (hu.containsKey(HIEU_UNG_GIO_TREO)) {
+            // Ve treo N gio: cong N gio vao kho gio Tu dong danh (TuDongGame tu tru ve / bao loi)
+            TuDongGame.dungVeTreo(p, item, so(hu, HIEU_UNG_GIO_TREO, com.htbb.pokemon.TuDong.GIO_MOI_VE_TREO));
             return true;
         }
         final String loi = kiemDung(p, hu);

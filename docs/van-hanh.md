@@ -471,15 +471,24 @@ phần "Mã kiểu cũ"; khoá hẳn các mã cũ còn mở bằng `tools/luu_tr
 thiểu, ghi chú. Trang kiểm phần thưởng ngay khi gõ và hiện giá trị/ngân sách tháng. Nút bật/tắt để tạm khoá mã,
 xoá để bỏ hẳn; tab nhật ký cho biết ai đã nhận.
 
-Cú pháp phần thưởng (nhiều phần cách nhau dấu phẩy) — **chỉ ba loại, đều là đồ khoá**:
+Cú pháp phần thưởng (nhiều phần cách nhau dấu phẩy) — **chỉ bốn loại**:
 
 | Loại | Ý nghĩa | Giá trị tính trần |
 |---|---|---|
 | `LUONGKHOA:n` | n lượng khoá | n |
+| `XU:n` | n xu (1 ≤ n ≤ 50.000 / mã; đếm vào xu sinh ra của kinh tế) | ⌈n / 1.000⌉ |
 | `GEM:id:n` | n ngọc/nguyên liệu id (luôn khoá) | n |
 | `ITEM:id:n` | n vật phẩm id (n ≤ 10, khoá) | 5 × n |
+| `ITEM:1260:n` | n **Vé treo 10 giờ** (khoá, xếp chồng một ô, n ≤ 50) — mỗi vé +10 giờ kho Tự động đánh | 1 × n |
 
-Xu, lượng mở, thú, trang bị tuỳ ý… bị từ chối. Ví dụ: `LUONGKHOA:10,ITEM:<id>:2`.
+Lượng mở, thú, trang bị tuỳ ý… bị từ chối. Ví dụ: `LUONGKHOA:10,ITEM:<id>:2`.
+
+**Mã TREO400** (31/10/2026, quà người chơi hiện tại): `XU:1000,ITEM:1260:40` = 1.000 xu + 40 Vé treo 10 giờ (400 giờ),
+giá trị 41 (máy chủ thật: trần 150), 1000 lượt, cấp 1, hạn 7 ngày tính từ lúc chạy
+`sudo mysql htbb_db < /opt/htbb/vps/van_hanh/giftcode_treo400.sql` (sau khi `nang_cap_csdl.sh` đã thêm vật phẩm 1260 và
+máy chủ chạy jar có Vé treo). Người chơi: Menu → Thư/Quà → "Nhập giftcode" → `TREO400`; mỗi tài khoản một lần; cần 1 ô
+trống nếu chưa có chồng vé. Dùng vé trong hành trang: +10 giờ vào kho (tối đa 500 giờ), Tự động đánh dùng kho sau khi hết
+giờ miễn phí hôm nay.
 
 Luật khi người chơi nhập (theo thứ tự):
 

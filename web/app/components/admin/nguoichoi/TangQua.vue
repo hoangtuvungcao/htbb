@@ -48,7 +48,7 @@ async function gui() {
           title="Quà đi qua giftcode an toàn"
           description="Web tạo một mã dùng 1 lần cho riêng người này và gửi vào hộp thư trong game; người chơi tự nhập mã. Chỉ vật phẩm khoá / lượng khoá trong danh sách trắng, có trần giá trị và ngân sách tháng. Cần máy chủ bật sv.lau_dai=1." />
         <div class="space-y-3">
-          <UFormField label="Phần thưởng" help="LUONGKHOA:n · GEM:id:n · ITEM:id:n (n ≤ 10), cách nhau dấu phẩy" required>
+          <UFormField label="Phần thưởng" help="LUONGKHOA:n · XU:n (≤ 50 000) · GEM:id:n · ITEM:id:n (n ≤ 10; Vé treo 1260: n ≤ 50), cách nhau dấu phẩy" required>
             <UInput v-model="f.phanThuong" class="w-full font-mono" maxlength="500" />
             <div class="mt-1 flex flex-wrap gap-1">
               <UButton size="xs" color="neutral" variant="soft" label="+ 5 lượng khoá" @click="them('LUONGKHOA:5')" />

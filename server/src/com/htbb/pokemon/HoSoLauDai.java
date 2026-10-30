@@ -122,6 +122,8 @@ public final class HoSoLauDai {
     // ---- tu dong danh (TuDong): ngay va ms da dung hom do (tran gio/ngay, chi tinh luc online) ----
     public int tdNgay;
     public long tdMsDung;
+    /** Kho gio treo (ms) nap tu "Ve treo N gio" - TuDong.Phien.msKho; tru sau khi het gio mien phi ngay. */
+    public long tdMsKho;
 
     // ---- ve lang mien phi (VeLangMienPhi, So tay): ngay bo dem, luot ngay da dung, luot them (thang Gym) dang giu ----
     public int vlNgay;
@@ -191,6 +193,7 @@ public final class HoSoLauDai {
         dat(b, "zd", tgThoat);
         dat(b, "a1", tdNgay);
         dat(b, "a2", tdMsDung);
+        dat(b, "a3", tdMsKho);
         dat(b, "l1", vlNgay);
         dat(b, "l2", vlDaDung);
         dat(b, "l3", vlThem);
@@ -356,6 +359,8 @@ public final class HoSoLauDai {
                 h.tdNgay = iv;
             } else if (k.equals("a2")) {
                 h.tdMsDung = v;
+            } else if (k.equals("a3")) {
+                h.tdMsKho = v;
             } else if (k.equals("l1")) {
                 h.vlNgay = iv;
             } else if (k.equals("l2")) {

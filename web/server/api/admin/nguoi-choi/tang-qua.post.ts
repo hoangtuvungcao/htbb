@@ -40,10 +40,10 @@ export default defineAdminHandler(async (event, admin) => {
 
   // ---- cùng luật với giftcode-moi/luu
   const chuan = gcChuanHoaThuong(b.phanThuong)
-  if (!chuan) throw apiLoi(400, 'Phần thưởng chỉ được gồm LUONGKHOA:n, GEM:id:n, ITEM:id:n (n ≤ 10, vật phẩm khoá).')
+  if (!chuan) throw apiLoi(400, 'Phần thưởng chỉ được gồm LUONGKHOA:n, XU:n (≤ 50 000), GEM:id:n, ITEM:id:n (n ≤ 10, vật phẩm khoá; Vé treo 1260: n ≤ 50).')
   const gioiHan = await gcGioiHan()
   const giaTri = gcGiaTri(chuan)
-  if (giaTri > gioiHan.giaTriToiDa) throw apiLoi(400, `Giá trị quà ${giaTri} vượt trần ${gioiHan.giaTriToiDa} (lượng khoá + số đá + 5 × số vật phẩm).`)
+  if (giaTri > gioiHan.giaTriToiDa) throw apiLoi(400, `Giá trị quà ${giaTri} vượt trần ${gioiHan.giaTriToiDa} (lượng khoá + ⌈xu / 1000⌉ + số đá + 5 × số vật phẩm, vé treo 1 × số vé).`)
   const cap = Math.max(1, Math.min(100, Math.trunc(Number(c.lastLv) || 1)))
   const loiVatPham = await gcKiemVatPham(chuan, cap)
   if (loiVatPham) throw apiLoi(400, loiVatPham)

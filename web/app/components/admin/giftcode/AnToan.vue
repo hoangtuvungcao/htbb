@@ -94,7 +94,7 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
         <UFormField label="Hết hạn" help="Trống = không hạn"><UInput v-model="f.han" type="datetime-local" class="w-full" /></UFormField>
         <UFormField label="Tổng lượt (mọi tài khoản)"><UInputNumber v-model="f.tongLuot" :min="1" class="w-full" /></UFormField>
         <UFormField label="Cấp tối thiểu"><UInputNumber v-model="f.capToiThieu" :min="1" :max="100" class="w-full" /></UFormField>
-        <UFormField label="Phần thưởng (chỉ vật phẩm khoá)" class="md:col-span-3" help="LUONGKHOA:n · GEM:id:n · ITEM:id:n (n ≤ 10), cách nhau dấu phẩy">
+        <UFormField label="Phần thưởng (chỉ vật phẩm khoá)" class="md:col-span-3" help="LUONGKHOA:n · XU:n (≤ 50 000) · GEM:id:n · ITEM:id:n (n ≤ 10; Vé treo 1260: n ≤ 50), cách nhau dấu phẩy">
           <UInput v-model="f.phanThuong" class="w-full font-mono" />
           <div class="mt-1 flex flex-wrap gap-1">
             <UButton size="xs" color="neutral" variant="soft" label="+ 5 lượng khoá" @click="themThuong('LUONGKHOA:5')" />

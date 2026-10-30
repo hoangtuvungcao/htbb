@@ -2,8 +2,9 @@
  * Giftcode AN TOÀN (bảng tob_giftcode / tob_giftcode_log, HTBB/tools/luu_tru_sinh_du_lieu/sql_nguon/them_bang_lau_dai.sql).
  * Bản TS của com.htbb.pokemon.GiftcodeAnToanLogic — sửa bên Java thì sửa cả ở đây. Server game
  * kiểm lại y hệt khi phát quà, web kiểm trước để báo lỗi sớm.
- *   Phần thưởng chỉ gồm: LUONGKHOA:n | GEM:id:n (luôn khoá) | ITEM:id:n (n ≤ 10, khoá).
- *   Giá trị mã = lượng khoá + số đá + 5 × số ITEM ≤ giftcode.gia_tri_toi_da (30).
+ *   Phần thưởng chỉ gồm: LUONGKHOA:n | XU:n (≤ 50 000) | GEM:id:n (luôn khoá) | ITEM:id:n (n ≤ 10, khoá; Vé treo
+ *   1260 xếp chồng: n ≤ 50).
+ *   Giá trị mã = lượng khoá + ⌈xu / 1000⌉ + số đá + 5 × số ITEM (vé treo: 1 × số vé) ≤ giftcode.gia_tri_toi_da (30).
  *   Ngân sách tháng: tổng gia_tri trong tob_giftcode_log của tháng ≤ giftcode.ngan_sach_thang (20 000).
  *   Vật phẩm: danh sách trắng gcKiemVatPham (shared/data/giftcode-an-toan.json), server game kiểm lại theo cấp nhân vật.
  *   Danh sách TRANG BỊ phát được đọc lúc chạy từ data_noi_dung_trang_bi (id_item, cùng nguồn với server game);
@@ -24,6 +25,13 @@ export async function gcDuLieu(): Promise<DuLieuGiftcodeAnToan> {
 }
 
 export const GC_GIA_TRI_ITEM = 5
+/** Vé treo N giờ (com.htbb.pokemon.TuDong.ID_VE_TREO): xếp chồng 1 ô, n ≤ 50, giá trị 1 / vé. */
+export const GC_ID_VE_TREO = 1260
+export const GC_VE_TREO_TOI_DA = 50
+export const GC_GIA_TRI_VE_TREO = 1
+/** XU:n — trần mỗi mã, 1 điểm giá trị / 1 000 xu (làm tròn lên). */
+export const GC_XU_TOI_DA = 50000
+export const GC_XU_MOI_GIA_TRI = 1000
 export const GC_MAC_DINH = { giaTriToiDa: 30, nganSachThang: 20000, toiDaThang: 2 }
 
 export function gcChuanHoaMa(s: unknown): string | null {
@@ -39,7 +47,12 @@ export function gcChuanHoaThuong(s: unknown): string | null {
     const t = phan.trim().split(':').map(x => x.trim())
     const k = (t[0] ?? '').toUpperCase()
     const so = (x: string | undefined) => (x !== undefined && /^-?\d+$/.test(x) ? Number(x) : Number.NaN)
-    if (k === 'LUONGKHOA' && t.length === 2) {
+    if (k === 'XU' && t.length === 2) {
+      const n = so(t[1])
+      if (!(n > 0) || n > GC_XU_TOI_DA) return null
+      ra.push(`XU:${n}`)
+    }
+    else if (k === 'LUONGKHOA' && t.length === 2) {
       const n = so(t[1])
       if (!(n > 0)) return null
       ra.push(`LUONGKHOA:${n}`)
@@ -51,7 +64,7 @@ export function gcChuanHoaThuong(s: unknown): string | null {
     }
     else if (k === 'ITEM' && t.length === 3) {
       const id = so(t[1]); const n = so(t[2])
-      if (!(id >= 0) || !(n > 0) || n > 10) return null
+      if (!(id >= 0) || !(n > 0) || n > (id === GC_ID_VE_TREO ? GC_VE_TREO_TOI_DA : 10)) return null
       ra.push(`ITEM:${id}:${n}`)
     }
     else return null
@@ -64,7 +77,9 @@ export function gcGiaTri(chuan: string): number {
   for (const p of chuan.split(',')) {
     const t = p.split(':')
     if (t[0] === 'LUONGKHOA') v += Number(t[1])
+    else if (t[0] === 'XU') v += Math.ceil(Number(t[1]) / GC_XU_MOI_GIA_TRI)
     else if (t[0] === 'GEM') v += Number(t[2])
+    else if (t[0] === 'ITEM' && Number(t[1]) === GC_ID_VE_TREO) v += GC_GIA_TRI_VE_TREO * Number(t[2])
     else if (t[0] === 'ITEM') v += GC_GIA_TRI_ITEM * Number(t[2])
   }
   return v
@@ -116,6 +131,7 @@ export async function gcMoTa(chuan: string): Promise<string[]> {
   return chuan.split(',').map((p) => {
     const t = p.split(':')
     if (t[0] === 'LUONGKHOA') return `${Number(t[1]).toLocaleString('vi-VN')} lượng khoá`
+    if (t[0] === 'XU') return `${Number(t[1]).toLocaleString('vi-VN')} xu`
     if (t[0] === 'GEM') return `${t[2]} × ${ten[Number(t[1])] ?? `đá/ngọc #${t[1]}`} (khoá)`
     return `${t[2]} × ${ten[Number(t[1])] ?? `vật phẩm #${t[1]}`} (khoá)`
   })

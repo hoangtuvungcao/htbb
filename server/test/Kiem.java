@@ -202,6 +202,7 @@ public final class Kiem {
         KiemHoiSinh.chay(); // guc / hoi sinh (com.htbb.pokemon.HoiSinh)
         KiemDungVatPham.chay(); // lenh 29 / 22: moi loai vat pham co tac dung + phan hoi (real.DungVatPham, -104)
         KiemChongVatPham.chay(); // 30/10/2026: vat pham type 28 giong het chong mot o (ChongVatPham: gop / nhan / dung / ban / kho / luu)
+        KiemVeTreo.chay(); // Ve treo 10 gio: kho gio Tu dong danh + giftcode TREO400 (XU + ve xep chong)
         KiemLuongKhoaShop.chay(); // cua hang dac biet: dong tra bang luong khoa ghi ro / goi 25 noi them / khong tru luong thay
         KiemMoTaVatPham.chay(); // 0.9.14 ra soat vat pham: loai / mo ta / dung tu tui / sao goi thu cuoi / shop
         KiemQuanLyThu.chay(); // o thu chung, tha ve tu nhien (xu), khoa, ve mo o thu, goi 16 noi them + -119
