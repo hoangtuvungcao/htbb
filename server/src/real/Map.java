@@ -14910,7 +14910,8 @@ public class Map implements Runnable {
        }
         if (player.isVip()) {
             // 19/10/2026: lay do tu kho ra hanh trang phai con o trong (truoc day khong kiem -> tran tui).
-            if (player.isPutItem2Bag && player.isFullInventory()) {
+            // [chong-vat-pham] tui day nhung chong cung loai trong tui con du cho -> van rut duoc (don vao chong).
+            if (player.isPutItem2Bag && player.isFullInventory() && !vuaChongTrongTui(player, itemID)) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
                 return;
             }
@@ -14923,8 +14924,15 @@ public class Map implements Runnable {
                            return;
                         }
                         if (player.isExistInvector(player.iItems, itemID) == -1) {
-                            player.iItems.add(item);
                             item.place = 0;
+                            // [chong-vat-pham] don vao chong cung loai trong tui truoc, phan thua thanh dong rieng
+                            final int conLai = com.htbb.pokemon.ChongVatPham.donVao(player.iItems, item, com.htbb.pokemon.ChongVatPham.so(item));
+                            if (conLai > 0) {
+                                item.quanlity = conLai;
+                                player.iItems.add(item);
+                            } else {
+                                player.removeIDItem(item.id);
+                            }
                         }
 
                         try {
@@ -14949,6 +14957,13 @@ public class Map implements Runnable {
                 }
             }
         }
+    }
+
+    /** [chong-vat-pham] Mon id {@code itemID} trong kho don HET duoc vao chong cung loai dang co trong tui. */
+    public static boolean vuaChongTrongTui(Char player, short itemID) {
+        final Item it = player.getItemFormVector(player.bItem, itemID);
+        return it != null && com.htbb.pokemon.ChongVatPham.chongDuoc(it)
+                && com.htbb.pokemon.ChongVatPham.choTrongChong(player.iItems, it) >= com.htbb.pokemon.ChongVatPham.so(it);
     }
 
     public static boolean isItemThanThu(int type) {
@@ -15652,6 +15667,17 @@ public class Map implements Runnable {
                         }
                         if (huyKhoa && !com.htbb.pokemon.BanDoKhoa.huyDuoc(true, item.getTemplate().ndayLoan > 0, item.isSelling)) {
                             DungVatPham.loi(player, "Vật phẩm khoá này không huỷ được.");
+                            return;
+                        }
+
+                        // [chong-vat-pham] chong > 1: bo / huy MOT don vi moi lan bam (tranh mat ca chong vi bam nham).
+                        if (com.htbb.pokemon.ChongVatPham.so(item) > 1
+                                && com.htbb.pokemon.ChongVatPham.truMot(player.iItems, item) == com.htbb.pokemon.ChongVatPham.DA_GIAM) {
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                            DungVatPham.bao(player, "Đã huỷ 1 " + item.getTemplate().name + " (còn " + com.htbb.pokemon.ChongVatPham.so(item) + ").");
+                            Database.instance.saveOrtherLog("tob_log_other_item", player.charname, (huyKhoa ? "Huỷ khoá " : "Bỏ ") + "1/"
+                                    + (com.htbb.pokemon.ChongVatPham.so(item) + 1) + " " + item.getTemplate().name + "|" + item.getDBInfo(),
+                                    huyKhoa ? com.htbb.pokemon.BanDoKhoa.LOG_HUY : "delI");
                             return;
                         }
 

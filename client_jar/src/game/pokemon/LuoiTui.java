@@ -722,6 +722,9 @@ public final class LuoiTui {
             if (it.lock == 1) {
                 oKhoaNho(g, x + s - 9, y + 3);
             }
+            if (it.number > 1) {
+                soLuong(g, x, y, s, it.number);   // chồng vật phẩm tiêu hao (máy chủ gửi dòng "Số lượng")
+            }
         } else if (o instanceof Integer) {
             int loai = ((Integer) o).intValue();
             ManNhanVat.veThuoc(g, loai, cx, cy, ic);

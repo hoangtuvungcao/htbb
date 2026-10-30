@@ -210,7 +210,9 @@ public final class CuaHangLauDai {
         int can = 0;
         for (final int[] t : thuong) {
             if (t[0] == 0) {
-                can += t[2];
+                // [chong-vat-pham] type 28 (createItemSoLuong) don vao chong san co: chi can o cho phan vuot chong
+                final ItemTemplates tp = Map.itemTemplates.get(5).get(Integer.valueOf(t[1]));
+                can += tp != null && tp.type == 28 ? com.htbb.pokemon.ChongVatPham.soOCan(p, t[1], t[2]) : t[2];
             } else if (t[0] == 1 && demNgoc(p, t[1]) == 0) {
                 can++;
             } else if (t[0] == 2 && (t[1] < 0 || t[1] >= p.potions.length)) {

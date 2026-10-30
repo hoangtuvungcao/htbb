@@ -1522,6 +1522,13 @@ class CharNapDuLieu {
                     }
                 }
             }
+            // [chong-vat-pham] gop dong trung type 28 (hanh trang + kho) thanh chong - tong so luong bao toan (lan luu sau
+            // ghi it dong hon). Sau khi nap XONG moi nguon vat pham (chuoi invent / bag + dong tob_item).
+            try {
+                com.htbb.pokemon.ChongVatPham.gopNhanVat(self);
+            } catch (final Exception e) {
+                System.out.println("ChongVatPham.gopNhanVat " + self.charname + ": " + e);
+            }
             self.reclass = 1;
             try {
                 self.dbSkill = null;

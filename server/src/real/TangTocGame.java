@@ -64,10 +64,10 @@ public final class TangTocGame {
             VatPhamDungLauDai.bao(p, loi);
             return true;
         }
-        if (!p.iItems.remove(item)) {
+        if (!com.htbb.pokemon.ChongVatPham.tieuMot(p, item)) { // [chong-vat-pham] chong: tru 1 ve
             return true;
         }
-        if (item.dbid != 0) {
+        if (item.dbid != 0 && !p.iItems.contains(item)) {
             try {
                 Database.instance.deleteItem(item.dbid);
             } catch (final Exception ignored) {
@@ -186,7 +186,7 @@ public final class TangTocGame {
             if (Map.itemTemplates.get(5).get(Integer.valueOf(id)) == null) {
                 return; // chua chay sql/htbb.sql
             }
-            if (p.countSlotInventory() < so) {
+            if (p.countSlotInventory() < com.htbb.pokemon.ChongVatPham.soOCan(p, id, so)) { // [chong-vat-pham]
                 VatPhamDungLauDai.bao(p, "Hành trang đầy: không nhận được " + TangToc.TEN[loai] + " (" + nguon + ").");
                 return;
             }

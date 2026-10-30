@@ -301,7 +301,7 @@ public final class KiemDatTenPet {
         final String g = doc("src/real/DatTenPetGame.java");
         Kiem.dung("game: luu = UPSERT theo id_pet (moi pet 1 dong)", g.contains("INSERT INTO tob_pet_dat_ten") && g.contains("PRIMARY KEY (id_pet)")
                 && g.contains("ON DUPLICATE KEY UPDATE id_char = VALUES(id_char), ten = VALUES(ten), chi_so = VALUES(chi_so)"));
-        Kiem.dung("game: tru the TRUOC khi quay, luu loi thi hoan the", g.indexOf("p.iItems.remove(the)") < g.indexOf("DatTenPet.quay(bang")
+        Kiem.dung("game: tru the TRUOC khi quay, luu loi thi hoan the", g.indexOf("ChongVatPham.tieuMot(p, the)") >= 0 && g.indexOf("ChongVatPham.tieuMot(p, the)") < g.indexOf("DatTenPet.quay(bang")
                 && g.contains("Char.createItemSoLuong(ph.idMau, 1, p); // hoan the"));
     }
 

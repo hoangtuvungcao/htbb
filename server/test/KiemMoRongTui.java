@@ -474,7 +474,8 @@ public final class KiemMoRongTui {
         Kiem.dung("Shop dac biet: kiem tui truoc khi tru tien", map.contains("kiem tui TRUOC khi tru tien"));
         Kiem.dung("OfflineMap ban nguyen lieu khoa: chong clone", off.contains("Vật phẩm khoá không bán được."));
         Kiem.dung("Vong quay kiem o trong", doc("src/real/Char.java").contains("phan thuong vong quay vao hanh trang"));
-        Kiem.dung("Da tien hoa roi kiem day tui", doc("src/real/RoiDaTienHoa.java").contains("p.isFullInventory()"));
+        Kiem.dung("Da tien hoa roi kiem day tui (con cho: o trong hoac chong da cung loai - ChongVatPham.conCho)",
+                doc("src/real/RoiDaTienHoa.java").contains("ChongVatPham.conCho(p, idDa, 1)"));
         Kiem.dung("Giao dich thuoc kiem o moi", doc("src/real/MapMuaBan.java").contains("GiaoDichThuoc.soOThemCan"));
         Kiem.dung("Giftcode kiem o truoc khi tru luot", doc("src/data/DatabaseGiftCode.java").contains("uocLuongO(item)"));
         Kiem.dung("Nhat do tu nghien: khong lam mat mon khi day", doc("src/real/MapXuLyLenh.java").contains("chi nhat mon SE bi nghien ngay"));

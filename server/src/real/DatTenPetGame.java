@@ -496,11 +496,10 @@ public final class DatTenPetGame {
         final DatTenPet.TrangThai cu = trangThai(pet);
         synchronized (p) {
             final Item the = timThe(p, ph);
-            if (the == null || !p.iItems.remove(the)) {
+            if (the == null || !com.htbb.pokemon.ChongVatPham.tieuMot(p, the)) { // [chong-vat-pham] chong: tru 1 the
                 baoKetQua(p, false, "Không đặt tên được", "Thẻ đặt tên không còn trong túi.");
                 return;
             }
-            p.removeIDItem(the.id);
         }
         final int tran = tranDong();
         final DatTenPet.KetQua kq = DatTenPet.quay(bang, dsSo(DatTenPet.K_MUC, DatTenPet.MUC_MAC_DINH),

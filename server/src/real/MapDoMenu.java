@@ -2915,8 +2915,8 @@ class MapDoMenu {
                                         );
                                         if (!player.isAdmin || !adminTest) {
                                             if (!((Item) player.itemPetEat.get(idOptionMenu)).isTuHonDan()) {
-                                                player.iItems.remove(player.itemPetEat.get(idOptionMenu));
-                                                player.removeIDItem(((Item) player.itemPetEat.get(idOptionMenu)).id);
+                                                // [chong-vat-pham] chong (vd Huyet linh thao 720): chi an 1 don vi
+                                                com.htbb.pokemon.ChongVatPham.tieuMot(player, (Item) player.itemPetEat.get(idOptionMenu));
 
                                                 try {
                                                     Database.instance

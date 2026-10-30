@@ -140,11 +140,10 @@ public final class VatPhamDungLauDai {
                 return true;
             }
         }
-        // tru vat pham TRUOC (CODING_CONVENTION muc 5)
-        if (!p.iItems.remove(item)) {
+        // tru vat pham TRUOC (CODING_CONVENTION muc 5); [chong-vat-pham] chong: chi tru 1 don vi
+        if (!com.htbb.pokemon.ChongVatPham.tieuMot(p, item)) {
             return true;
         }
-        p.removeIDItem(item.id);
         apDung(p, hu);
         if (hu.containsKey("hoi_sinh")) {
             HoiSinhGame.daHoiSinh(p);
@@ -300,11 +299,10 @@ public final class VatPhamDungLauDai {
             DungVatPham.loi(p, "Hành trang cần 2 ô trống để mở hộp.");
             return;
         }
-        if (!p.iItems.remove(item)) {
+        if (!com.htbb.pokemon.ChongVatPham.tieuMot(p, item)) { // [chong-vat-pham] chong: chi tru 1 hop
             return;
         }
-        p.removeIDItem(item.id);
-        if (item.dbid != 0) {
+        if (item.dbid != 0 && !p.iItems.contains(item)) {
             try {
                 Database.instance.deleteItem(item.dbid);
             } catch (final Exception ignored) {
@@ -608,8 +606,7 @@ public final class VatPhamDungLauDai {
                 continue;
             }
             final Item it = timItem(p, e.getKey().intValue());
-            if (it != null && p.iItems.remove(it)) {
-                p.removeIDItem(it.id);
+            if (it != null && com.htbb.pokemon.ChongVatPham.tieuMot(p, it)) { // [chong-vat-pham] chong: tru 1
                 apDung(p, hu);
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
                 DungVatPham.baoNhe(p, "Tự dùng " + DungVatPham.ten(it) + ".");
@@ -639,16 +636,9 @@ public final class VatPhamDungLauDai {
 
     // ------------------------------------------------------------------ tien ich tui
 
+    /** [chong-vat-pham] Tong SO LUONG theo template (chong tinh du so luong, bo mon dang rao ban). */
     public static int demItem(final Char p, final int idTemplate) {
-        int n = 0;
-        synchronized (p.iItems) {
-            for (final Item it : p.iItems) {
-                if (it != null && it.getTemplate() != null && it.getTemplate().id == idTemplate && !it.isSelling) {
-                    n++;
-                }
-            }
-        }
-        return n;
+        return com.htbb.pokemon.ChongVatPham.dem(p.iItems, idTemplate);
     }
 
     static Item timItem(final Char p, final int idTemplate) {
@@ -662,28 +652,12 @@ public final class VatPhamDungLauDai {
         return null;
     }
 
-    /** Lay ra {@code n} mon theo template (tat ca hoac khong). @return true neu da lay du. */
+    /**
+     * Lay ra {@code n} don vi theo template (tat ca hoac khong). [chong-vat-pham] chong giam so luong, chong het thi lay
+     * ra khoi tui (tra id). @return true neu da lay du.
+     */
     public static boolean truItem(final Char p, final int idTemplate, final int n) {
-        synchronized (p.iItems) {
-            if (demItem(p, idTemplate) < n) {
-                return false;
-            }
-            int da = 0;
-            for (int i = p.iItems.size() - 1; i >= 0 && da < n; i--) {
-                final Item it = p.iItems.get(i);
-                if (it != null && it.getTemplate() != null && it.getTemplate().id == idTemplate && !it.isSelling) {
-                    p.iItems.remove(i);
-                    if (it.dbid != 0) {
-                        try {
-                            Database.instance.deleteItem(it.dbid);
-                        } catch (final Exception ignored) {
-                        }
-                    }
-                    da++;
-                }
-            }
-            return da == n;
-        }
+        return com.htbb.pokemon.ChongVatPham.tieu(p, idTemplate, n);
     }
 
     /** id bua bao ho that cho muc +k (0 neu khong co bua nao hop). */

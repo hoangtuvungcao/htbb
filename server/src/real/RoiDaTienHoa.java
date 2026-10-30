@@ -23,7 +23,8 @@ public final class RoiDaTienHoa {
                 return;
             }
             // 19/10/2026: day tui thi khong nhan (truoc day moi lan roi them 1 o, khong kiem suc chua).
-            if (p.isFullInventory()) {
+            // [chong-vat-pham] da cung loai don vao chong san co: tui day ma con cho trong chong van nhan.
+            if (!com.htbb.pokemon.ChongVatPham.conCho(p, idDa, 1)) {
                 p.sendMessage(MessageCreator.createMsgChat(p.id, "Hành trang đã đầy"));
                 return;
             }

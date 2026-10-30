@@ -539,6 +539,29 @@ public class ItemInInventory {
         return s2;
     }
 
+    /**
+     * Số lượng chồng (vật phẩm tiêu hao giống hệt gộp một ô, máy chủ 30/10/2026): dòng thuộc tính tên "Số lượng" máy chủ
+     * thêm cuối bảng tên thuộc tính (gói 25). 0 = món lẻ. Id 126 (cũng tên "Số lượng") là số lượng gói của cửa hàng - bỏ.
+     */
+    public static short soLuongChong(ItemInInventory it) {
+        for (int i = 0; it != null && i < it.allAttribute.size(); i++) {
+            InfoAttributeItem a = (InfoAttributeItem) it.allAttribute.elementAt(i);
+            if (laDongSoLuongChong(a.getID())) {
+                return (short) a.getValueAtt();
+            }
+        }
+        return 0;
+    }
+
+    /** Id thuộc tính là dòng "Số lượng" của chồng (không phải 126 của cửa hàng). */
+    public static boolean laDongSoLuongChong(int id) {
+        if (id <= 126) {
+            return false;
+        }
+        Object n = ItemTemplate.ALL_NAME_ATTRIBUTE_ITEM.get(String.valueOf(id));
+        return n instanceof NameAttributeItem && "Số lượng".equals(((NameAttributeItem) n).name);
+    }
+
     public static Vector getAllItem(int colorItem) {
         Vector all = new Vector();
         for (int i = 0; i < Char.inventory.size(); i++) {

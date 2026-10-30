@@ -661,6 +661,24 @@ hàng. Cột cũng được máy chủ tự thêm lúc khởi động. Hằng s�
 giao thức (`-107`, phần nối thêm của `-105`) ở `server/src/real/MoRongTuiGame.java`. Tra cứu:
 `SELECT charname, o_mo_rong FROM tob_char WHERE o_mo_rong > 0;` và nhật ký `tob_other_log` loại `morong`.
 
+### 9.8 Chồng vật phẩm type 28 (30/10/2026)
+
+Vật phẩm type 28 giống hệt chiếm **một ô** có số lượng (≤ 999 / ô) — luật ở [thiet-ke-game.md](thiet-ke-game.md) mục
+3.4b, mã ở `server/src/com/htbb/pokemon/ChongVatPham.java`, kiểm ở `server/test/KiemChongVatPham.java`. Không cần sửa
+CSDL: số lượng nằm trong chuỗi vật phẩm có sẵn (`quanlity`), nhân vật cũ được gộp tự động khi đăng nhập lần đầu sau bản
+này.
+
+Client hiển thị số lượng thế nào:
+
+| Client | Thấy gì |
+|---|---|
+| J2ME / Android / PC 0.9.21, 0.9.22 (đã phát hành) | Ô hiện **một** icon; mở chi tiết có dòng chỉ số **"Số lượng: N"**. Máy chủ thêm tên thuộc tính này ở cuối bảng tên thuộc tính (gói 25, không phải dòng `data_attribute`), vì thẻ vật phẩm 0.9.x ẩn id 126 cũ. |
+| Bản client build từ nguồn hiện tại (sau 0.9.22) | Như trên, cộng **số ở góc ô** trong túi; dòng "Số lượng" ở thẻ vật phẩm thay cho dòng chỉ số. |
+| Unity PC (`client_pc_ios`) | Dòng "Số lượng: N" trong chi tiết (cùng cơ chế bảng tên thuộc tính; theo mã nguồn, chưa chạy thử). |
+
+Bán NPC / Huỷ: mỗi lần bấm một món (client gửi một lệnh, không có ô nhập số lượng). Nhật ký: bán một món trong chồng ghi
+`ITEM x1 (chong con N)`, huỷ ghi `Huỷ khoá 1/N` / `Bỏ 1/N`, nhận ghi loại `item_soluong` với `xđã nhận/muốn`.
+
 ---
 
 ## 10. Thành viên và kích hoạt tài khoản

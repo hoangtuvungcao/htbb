@@ -46,6 +46,7 @@ public final class KiemDungVatPham {
             ngoaiHinh();
             khongDungDuoc();
             buffChiSo();
+            chongVatPham();
             ketQuaClientCu();
             noiVaoGame();
         } catch (final Throwable e) {
@@ -468,7 +469,7 @@ public final class KiemDungVatPham {
         String[] b = dung(p, q.id);
         Kiem.dung("qua le 1057 (dong doi item:1057x1): mo duoc tu tui (" + chu(b) + ")", b != null && "OK".equals(b[0]) && b[1].startsWith("Mở"));
         Kiem.bang("qua le: tru 1 qua", 0, dem(p, 1057));
-        Kiem.bang("qua le: nhan 3 Qua Oran", 3, dem(p, 1215));
+        Kiem.bang("qua le: nhan 3 Qua Oran (1 chong - ChongVatPham)", "3/1", tongSo(p, 1215) + "/" + dem(p, 1215));
         Kiem.dung("qua le: gop thanh 1 thong bao (khong hop thoai 37 tung mon)", !coGoi(37));
         final Item h = cho(p, 1050);
         b = dung(p, h.id);
@@ -545,6 +546,41 @@ public final class KiemDungVatPham {
         b = dung(p, c.id);
         Kiem.dung("X Chinh xac: OK + xuyen giap (" + chu(b) + ")", b != null && b[1].contains("xuyên giáp"));
         Kiem.bang("X Chinh xac 15 -> xuyen giap 5%", 5, real.VatPhamDungLauDai.xuyenGiap(p));
+    }
+
+    static int tongSo(final Char p, final int tpl) {
+        int n = 0;
+        for (final Item it : p.iItems) {
+            if (it.tempateID == tpl) {
+                n += com.htbb.pokemon.ChongVatPham.so(it);
+            }
+        }
+        return n;
+    }
+
+    /** [chong-vat-pham] Dung 1 mon trong chong type 28: tru dung 1 don vi; khong dung duoc thi chong nguyen ven. */
+    static void chongVatPham() throws Exception {
+        final Char p = nhanVat();
+        final Item t = cho(p, 1208);
+        t.quanlity = 3;
+        p.giuIDItem(t.id); // cho() dat id tay (ngoai getIDItem)
+        String[] b = dung(p, t.id);
+        Kiem.dung("chong 3 X Toc do: dung OK (" + chu(b) + ")", b != null && "OK".equals(b[0]));
+        Kiem.bang("chong 3 X Toc do -> 1 dong con 2 (khong mat ca chong)", "1/2", dem(p, 1208) + "/" + tongSo(p, 1208));
+        boolean giuId = false;
+        for (final Item it : p.iItems) {
+            giuId |= it.tempateID == 1208 && it.id == t.id;
+        }
+        Kiem.dung("chong con lai giu id cu (phim tat client van tro dung chong)", giuId);
+        final Item n = cho(p, 1034);
+        n.quanlity = 5;
+        b = dung(p, n.id);
+        Kiem.dung("chong 5 Bui sao (khong dung duoc): bao loi (" + chu(b) + ")", b != null && "LOI".equals(b[0]));
+        Kiem.bang("chong 5 Bui sao: van 1 dong 5, giu id client", "1/5/true", dem(p, 1034) + "/" + tongSo(p, 1034) + "/" + p.iItems.contains(n));
+        final Item q = cho(p, 1057);
+        q.quanlity = 2;
+        b = dung(p, q.id);
+        Kiem.bang("mo 1 qua trong chong 2: con 1 qua, nhan 3 Qua Oran (1 chong)", "1/3/1", tongSo(p, 1057) + "/" + tongSo(p, 1215) + "/" + dem(p, 1215));
     }
 
     /** Client cu / Unity (khong gui so ban): van nhan hop thoai 37 nhu truoc, khong nhan -104. */
