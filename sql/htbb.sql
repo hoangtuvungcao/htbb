@@ -32066,3 +32066,11 @@ INSERT IGNORE INTO `data_vat_pham_lau_dai` (`id_item`,`ma`,`ten`,`nhom`,`hieu_un
 --  cMap/22 30,27 - tools/pokemon/ThemNpcLang) de "Về làng". data_npc.ban_do khop cMap (test/KiemNpc). Chay lai duoc.
 -- ----------------------------------------------------------------------------------
 UPDATE `data_npc` SET `ban_do` = '0,10,21,22,41,42,70,80,118,201,281' WHERE `type` = 4 AND `ban_do` = '0,10,41,42,70,80,118,201,281';
+
+-- >>> giam_do_ben_khi_guc.sql
+-- ==================================================================================
+--  MAT DO BEN KHI GUC 5% -> 2% (31/10/2026, chu game chon "giam muc tru khi chet"): tu ban nay dang nhap lai
+--  KHONG con hoi day do ben (Item.napLaiTemplateGiuDoBen) nen nguoi treo Tu dong hay guc can sua it hon.
+--  Chi doi mac dinh (admin chua dat gia tri rieng trong cau_hinh thi theo mac dinh); chi doi khi con gia tri cu.
+-- ==================================================================================
+UPDATE `cau_hinh_danh_muc` SET `mac_dinh` = '2' WHERE `khoa` = 'hoi_sinh.do_ben_mat_phan_tram' AND `mac_dinh` = '5';

@@ -81,7 +81,7 @@ public final class HoiSinh {
     public static final int HP_TRA_PHI = 50;
     public static final int EXP_MAT_PHAN_NGHIN = 20;
     public static final int EXP_MAT_TOI_DA_PHUT = 15;
-    public static final int DO_BEN_PHAN_TRAM = 5;
+    public static final int DO_BEN_PHAN_TRAM = 2;   // 31/10/2026 chu game: 5 -> 2 (sau khi dang nhap lai khong con hoi day do ben)
     public static final int MET_PHUT = 5;
     public static final int MET_EXP = 20;
     public static final int MET_TAN_CONG = 10;
