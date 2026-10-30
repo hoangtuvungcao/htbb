@@ -95,6 +95,26 @@ public final class KiemVaoNhaNhiemVu {
             p.mapID = 103;
             KhuVucNhiemVuGame.sauKhiVaoBanDo(p);
             Kiem.bang("nha 103: khong tinh", Integer.valueOf(NewCharQuest.WORKING), Integer.valueOf(q.state_quest));
+            // 30/10/2026 (bot phu kin d210 ket C34.4): vung MOT PHAN nha (Rung Ilex nha 29, 19..25 x 18..24), cua vao dat o
+            // 18,23 ngoai vung - client khong gui goi 4 trong nha -> truoc day khong bao gio xong; nay ca ngoi nha tinh
+            final HashMap<String, List<KhuVucNhiemVu.Vung>> m2 = new HashMap<String, List<KhuVucNhiemVu.Vung>>();
+            m2.put("NHA.1", new ArrayList<KhuVucNhiemVu.Vung>(Arrays.asList(
+                    new KhuVucNhiemVu.Vung("NHA.1", 29, 19, 18, 25, 24, true, "Rừng Ilex (cạnh làng khởi đầu)"))));
+            KhuVucNhiemVuGame.dat(m2);
+            q.state_quest = NewCharQuest.WORKING;
+            p.mapID = 29;
+            p.x = 18 * 16 + 8;
+            p.y = 23 * 16 + 8;
+            KhuVucNhiemVuGame.sauKhiVaoBanDo(p);
+            Kiem.bang("vao nha 29 o cua 18,23 (vung 19..25 x 18..24): da toi (ca ngoi nha)", Integer.valueOf(NewCharQuest.FINISH), Integer.valueOf(q.state_quest));
+            // cung toa do nhung ban do NGOAI TROI (khong offline): van can dung trong vung
+            q.state_quest = NewCharQuest.WORKING;
+            final real.Map ngoai = new real.Map();
+            ngoai.mapIDLoadMap = 29;
+            p.map = ngoai;
+            KhuVucNhiemVuGame.sauKhiVaoBanDo(p);
+            Kiem.bang("ngoai troi 18,23 ngoai vung: chua toi", Integer.valueOf(NewCharQuest.WORKING), Integer.valueOf(q.state_quest));
+            p.map = nha;
             // khong co nhan vat / ban do: khong nem
             KhuVucNhiemVuGame.sauKhiVaoBanDo(null);
             p.map = null;
