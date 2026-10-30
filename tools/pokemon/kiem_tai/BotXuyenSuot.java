@@ -233,6 +233,17 @@ public class BotXuyenSuot {
 
     /** Duong qua cong ngan nhat (BFS so map) toi den HOAC mot ban sao cua den. {gate, dich, x, y} hoac null. */
     static List<int[]> duong(int tu, int den) {
+        List<int[]> d = duongBfs(tu, den);
+        if (d != null) return d;
+        // ban sao (khu) khac cot 0 (vd lang 301 "Đông Pewter" = ban sao cua Pewter 0): cong cung load nen di theo duong cua
+        // ban goc (may chu xep khu khi qua cong). Truoc 30/10/2026: tu 301 "khong co duong" toi Cao nguyen Indigo 201 / New
+        // Bark ... trong khi tu 0 co (bot doan d170 ket "khong ban do nao co NPC loai 24").
+        int h = hang(tu);
+        if (h >= 0 && NHOM[h].length > 0 && NHOM[h][0] >= 0 && NHOM[h][0] != tu) return duongBfs(NHOM[h][0], den);
+        return null;
+    }
+
+    static List<int[]> duongBfs(int tu, int den) {
         if (cungBanDo(tu, den)) return new ArrayList<>();
         Map<Integer, int[]> truoc = new HashMap<>();
         ArrayDeque<Integer> q = new ArrayDeque<>();
@@ -661,6 +672,11 @@ public class BotXuyenSuot {
         /** Cum Johto mo cap 27..40 (New Bark 10 + 11 / 13 / 14 / 15): chi noi voi 113 / 114 (cap 72+). */
         static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15));
 
+        /** Het luot Ve lang mien phi: cach ve lang khac (bot choi: Vé dịch chuyển). */
+        boolean veLangKhac() throws Exception {
+            return false;
+        }
+
         // ---------------------------------------------------------------- di chuyen giua cac map
         boolean toi(int dich) throws Exception {
             if (cungBanDo(b.mapId, dich)) return true;
@@ -686,6 +702,7 @@ public class BotXuyenSuot {
                     tu = b.mapId;
                     if (cungBanDo(tu, dich)) return true;
                 }
+                if (!KichBanDS.laLang(b.mapId) && veLangKhac()) { tu = b.mapId; if (cungBanDo(tu, dich)) return true; }
             }
             // ban do khong co duong toi dich (bot doan / ban do cap cao ngoai do thi): ve lang truoc roi di tu lang
             if (duong(tu, dich) == null && !KichBanDS.laLang(tu) && !KichBanDS.laLang(dich) && !CUM_JOHTO.contains(tu)

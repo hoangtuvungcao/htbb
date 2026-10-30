@@ -42,6 +42,7 @@ final class KichBanCap140 {
 
     static void dangKy() {
         HoiQuy.dk("cap1_40_luu", "buoc nhiem vu dia diem da nhan: thoat + vao lai van dang lam", KichBanCap140::luuBuocVung);
+        HoiQuy.dk("duong_thu", "in duong di giua cac ban do (-Dthu=tu:den,...) + ban do co NPC loai (-DthuNpc=24,25)", KichBanCap140::duongThu);
         HoiQuy.dkCham("cap1_40", "choi tu nhien cap 1 -> " + CAP_DICH + " (khong GM): moi nhiem vu chinh/phu/cua ai, Gym, tinh nang theo cap", KichBanCap140::chay);
     }
 
@@ -86,7 +87,54 @@ final class KichBanCap140 {
         }
     }
 
+    /** Chan doan: duong di / ban do co NPC tren the gioi that (bot GM chi doc goi 105, khong lam gi). */
+    static void duongThu() throws Exception {
+        BotChucNang.Bot gmb = HoiQuy.gm();
+        HoiQuy.napTheGioi(gmb);
+        napTen();
+        for (String c : System.getProperty("thu", "").split(",")) {
+            if (!c.contains(":")) continue;
+            int tu = Integer.parseInt(c.split(":")[0]), den = Integer.parseInt(c.split(":")[1]);
+            List<int[]> d = BotXuyenSuot.duong(tu, den);
+            StringBuilder s = new StringBuilder();
+            if (d != null) for (int[] e : d) s.append(" ->").append(e[1]);
+            System.out.println("DUONG " + tu + " -> " + den + ": " + (d == null ? "KHONG" : d.size() + " cong" + s) + " | MAP_THU co den: " + BotXuyenSuot.MAP_THU.contains(den)
+                    + " load " + BotXuyenSuot.LOAD.get(den) + " hang " + BotXuyenSuot.hang(den) + " canh " + BotXuyenSuot.canh(den).size());
+        }
+        for (String n : System.getProperty("thuNpc", "").split(",")) {
+            if (n.isEmpty()) continue;
+            int npc = Integer.parseInt(n.trim());
+            for (int mid : mapTim()) {
+                Integer l = BotXuyenSuot.LOAD.get(mid);
+                if (l != null && KichBanHuongDan.oNpc(l, npc) != null) System.out.println("NPC " + npc + " o map " + mid + " (load " + l + ", MAP_THU " + BotXuyenSuot.MAP_THU.contains(mid) + ") duong tu 0: " + (BotXuyenSuot.duong(0, mid) == null ? "KHONG" : BotXuyenSuot.duong(0, mid).size()));
+            }
+        }
+        HoiQuy.thoat(gmb);
+    }
+
+    /**
+     * Ban do de tim NPC / dich: ban sao 0 cua moi nhom goi 105 (MAP_THU) + ban do chuan (id = load) khong nam trong nhom nao.
+     * Truoc 30/10/2026 chi MAP_THU: lang Cao nguyen Indigo (201, MapTown) khong o nhom nao -> "khong ban do nao co NPC
+     * loai 24" (Sableye) / 25 (Heracross giu Gym) du nguoi choi di bo toi duoc.
+     */
+    static volatile Set<Integer> MAP_TIM;
+
+    static Set<Integer> mapTim() {
+        Set<Integer> s = MAP_TIM;
+        if (s != null) return s;
+        s = new TreeSet<>(BotXuyenSuot.MAP_THU);
+        for (Map.Entry<Integer, Integer> e : BotXuyenSuot.LOAD.entrySet())
+            if (e.getKey().equals(e.getValue()) && BotXuyenSuot.hang(e.getKey()) < 0) s.add(e.getKey());
+        MAP_TIM = s;
+        return s;
+    }
+
     static final int CAP_DICH = Integer.getInteger("capDich", 40);
+    /**
+     * Luot phu kin nhiem vu phu (-DuuTienPhu=1): nhu nguoi choi thich lam het viec phu o moi thi tran - nhiem vu phu dang lam
+     * di TRUOC nhiem vu chinh (phu chi moi trong dai 10 cap: len cap nhanh qua la mat). Chinh van lam khi phu ket / het phu.
+     */
+    static final boolean UU_TIEN_PHU = Boolean.getBoolean("uuTienPhu") || "1".equals(System.getProperty("uuTienPhu"));
     static volatile int SO_NGUOI_CHOI = 0;
     static final double GIO = Double.parseDouble(System.getProperty("gioCap140", "10"));
     static final File CP = new File(System.getProperty("cp", System.getProperty("java.io.tmpdir") + "/cap140"));
@@ -112,7 +160,7 @@ final class KichBanCap140 {
         Integer load = LOAD_THEO_TEN.get(ten.trim());
         if (load == null) return -1;
         int tot = -1, ds = Integer.MAX_VALUE;
-        for (int mid : BotXuyenSuot.MAP_THU) {
+        for (int mid : mapTim()) {
             Integer l = BotXuyenSuot.LOAD.get(mid);
             if (l == null || !l.equals(load)) continue;
             List<int[]> d = BotXuyenSuot.duongUocTinh(tu, mid);
@@ -341,6 +389,7 @@ final class KichBanCap140 {
             ptTruoc = b.pt;
             lanVaoLai = System.currentTimeMillis();
             congDiem(); // diem huan luyen con du (vao lai / lan dau che do huan luyen)
+            napDangMac();
             ghi("vao game map " + b.mapId + " (" + b.tenMap + ") xu " + b.xu);
         }
 
@@ -461,14 +510,14 @@ final class KichBanCap140 {
                 if (dich < 0 || KichBanHuongDan.oNpc(BotXuyenSuot.LOAD.getOrDefault(dich, -1), npc) == null) {
                     // ban do khong ghi / ghi sai: NPC loai nay o ban do gan nhat (lang ve truoc)
                     int ds = Integer.MAX_VALUE;
-                    for (int mid : BotXuyenSuot.MAP_THU) {
+                    for (int mid : mapTim()) {
                         Integer l = BotXuyenSuot.LOAD.get(mid);
                         if (l == null || KichBanHuongDan.oNpc(l, npc) == null) continue;
                         List<int[]> d = BotXuyenSuot.duong(b.mapId, mid);
                         // cum Johto / khu xa: lang ve duoc qua Arcanine "Về làng" (toi() lo), du khong co duong di bo
                         boolean quaArc = d == null && KichBanDS.laLang(mid) && (BotXuyenSuot.Dong.CUM_JOHTO.contains(b.mapId) || BotXuyenSuot.Dong.KHU_XA_ARCANINE.contains(b.mapId));
                         // khong co duong tu day nhung co tu lang: toi() ve lang (Arcanine / So tay) roi di tiep
-                        boolean quaLang = d == null && !quaArc && !KichBanDS.laLang(b.mapId) && BotXuyenSuot.duong(0, mid) != null;
+                        boolean quaLang = d == null && !quaArc && !BotXuyenSuot.cungBanDo(b.mapId, 0) && BotXuyenSuot.duong(0, mid) != null;
                         int s = quaArc ? 1000 : quaLang ? 2000 + BotXuyenSuot.duong(0, mid).size() : d == null ? Integer.MAX_VALUE : d.size() - (KichBanDS.laLang(mid) ? 1 : 0);
                         if (s < ds) { ds = s; dich = mid; }
                     }
@@ -632,7 +681,12 @@ final class KichBanCap140 {
                     Matcher mc = Pattern.compile("Cần đạt cấp (\\d+)").matcher(t);
                     if (q.ms == 0 && mc.find()) { capChan = Integer.parseInt(mc.group(1)); ghi("chinh '" + q.ten + "' can cap " + capChan); continue; }
                     String bt = BotChucNang.khongDau(t);
-                    if (q.ms == 0 && (bt.contains("ve chuong") || bt.contains("mo sau"))) { choNgayMoi("nhan '" + q.ten + "': " + t); return true; }
+                    if (q.ms == 0 && (bt.contains("ve chuong") || bt.contains("mo sau"))) {
+                        // nguoi choi het ve chuong lam nhiem vu phu trong luc cho (truoc 30/10/2026 bot tua ngay ngay)
+                        if (coViecPhu()) { ghi("chinh '" + q.ten + "' cho ve chuong -> lam nhiem vu phu truoc"); continue; }
+                        choNgayMoi("nhan '" + q.ten + "': " + t);
+                        return true;
+                    }
                     if (q.ms == 1) { phuBo.add(q.id); ghi("phu '" + q.ten + "' khong nhan duoc: " + t); continue; }
                     ketLai("nhan '" + q.ten + "' #" + q.id + " khong duoc: " + t);
                     continue;
@@ -648,10 +702,18 @@ final class KichBanCap140 {
             return false;
         }
 
+        /** Con nhiem vu phu dang lam / co the nhan (chua bo) de lam trong luc chinh cho ve chuong. */
+        boolean coViecPhu() {
+            for (KichBanTienDoNhiemVu.Dong x : l2) if (x.ms == 1 && !phuBo.contains(x.id)) return true;
+            for (KichBanTienDoNhiemVu.Dong x : l0) if (x.ms == 1 && !phuBo.contains(x.id)) return true;
+            return false;
+        }
+
         // ---------------------------------------------------------------- lam muc tieu
         boolean lamDangLam() throws Exception {
+            dangNangCap = l2.stream().anyMatch(x -> (x.muc + " " + x.moTa).contains("Nâng 1 món trang bị"));
             List<KichBanTienDoNhiemVu.Dong> thuTu = new ArrayList<>();
-            for (int ms : new int[]{0, 2, 1}) for (KichBanTienDoNhiemVu.Dong q : l2) if (q.ms == ms) thuTu.add(q);
+            for (int ms : UU_TIEN_PHU ? new int[]{1, 2, 0} : new int[]{0, 2, 1}) for (KichBanTienDoNhiemVu.Dong q : l2) if (q.ms == ms) thuTu.add(q);
             for (KichBanTienDoNhiemVu.Dong q : thuTu) {
                 String chu = (q.muc.isEmpty() ? q.moTa : q.muc + " " + q.moTa);
                 String kq = lamMot(q, chu);
@@ -852,6 +914,9 @@ final class KichBanCap140 {
         }
 
         final Map<Integer, Integer> lanHanhDong = new HashMap<>();
+        final Map<Integer, Integer> nangDaDat = new HashMap<>();
+        /** Dang co buoc "Nâng 1 món trang bị lên +N": mon da nang do dang giu trong tui (khong ban, khong mac). */
+        boolean dangNangCap;
 
         /**
          * Buoc noi chuyen co hanh dong kiem that (nhanh sua-buoc-hanh-dong, kiem_hanh_dong=1): chu muc tieu
@@ -931,6 +996,11 @@ final class KichBanCap140 {
             }
             Matcher mn = Pattern.compile("Nâng 1 món trang bị lên \\+(\\d+)").matcher(chu);
             if (mn.find()) {
+                // tien do "(+3/+6)" tang -> dem lai (nang tung bac, that bai roi ngau nhien la binh thuong)
+                Matcher mt2 = Pattern.compile("\\(\\+(\\d+)/\\+\\d+\\)").matcher(chu);
+                int daDat = mt2.find() ? Integer.parseInt(mt2.group(1)) : 0;
+                if (daDat > nangDaDat.getOrDefault(q.id * 10 + q.ms, -1)) { nangDaDat.put(q.id * 10 + q.ms, daDat); lanHanhDong.put(q.id * 10 + q.ms, 1); lan = 1; }
+                dangNangCap = true;
                 if (lan > 12) return "nang cap khong xong sau 12 lan: " + chu;
                 KichBanCap140TinhNang.veLangDiBo(this);
                 String l = KichBanHuongDan.toiNpc(b, 2);
@@ -1177,12 +1247,72 @@ final class KichBanCap140 {
             if (t != null) ghi(t);
         }
 
+        @Override
+        boolean veLangKhac() throws Exception {
+            return KichBanCap140TinhNang.dungVe(this);
+        }
+
+        /**
+         * Do dang mac (nhu nguoi choi nhin o Trang bi) luc vao game: may chu luu tob_char.equip khi thoat, nen sau khi vao lai
+         * doc o day la dung. Truoc 30/10/2026 bot chi biet mon dang mac qua goi 15 (khong gui lai khi vao game): vao lai la
+         * "khong cam gi" -> mua vu khi re hon, mac vao (thao vu khi tot ra tui) roi "ban mon cu" ban luon vu khi tot (d290 cap
+         * 85: vu khi cap 66 -> cap 21 -> cap 1, guc lien tuc).
+         */
+        void napDangMac() {
+            capDaMac.clear();
+            String eq = BotChucNang.sql1("SELECT equip FROM tob_char WHERE id=" + b.charDb);
+            if (eq == null) return;
+            for (String it : eq.split(">")) {
+                String[] f = it.split("\\|")[0].split(",");
+                if (f.length < 3) continue;
+                try {
+                    int tpl = Integer.parseInt(f[1].trim());
+                    int[] tt = ttDo(tpl);
+                    if (tt != null && tt[0] < 28) capDaMac.merge(tt[0], tt[1], Math::max);
+                } catch (NumberFormatException ignored) { }
+            }
+            Integer vk = capDaMac.get(loaiVuKhi());
+            if (vk != null) vuKhiMac = BotXuyenSuot.vuKhiShop(lop, vk);
+            ghi("dang mac (theo o): " + capDaMac);
+        }
+
+        int loaiVuKhi() {
+            int[] t = ttDo(BotXuyenSuot.vuKhiShop(lop, 1));
+            return t == null ? -1 : t[0];
+        }
+
         // ---------------------------------------------------------------- mac do roi tot hon
         /** o trang bi (khoa gan dung) -> cap mon da mac: vu khi theo dong (tpl 79.. moi lop 7 bac), mon khac theo tpl. */
         final Map<Integer, Integer> capDaMac = new HashMap<>();
 
+        /** o trang bi = data_item.type (moi o mot mon); vat pham dung (type >= 28) theo tpl nhu cu. */
         static int oDo(int tpl) {
-            return tpl >= 79 && tpl < 79 + 7 * 5 ? -1 - (tpl - 79) / 7 : tpl;
+            int[] t = ttDo(tpl);
+            return t != null && t[0] < 28 ? t[0] : 1000 + tpl;
+        }
+
+        static final Map<Integer, int[]> TT_DO = new java.util.concurrent.ConcurrentHashMap<>();
+
+        /** {type, level, clazz} cua mau vat pham (data_item), null = khong co. */
+        static int[] ttDo(int tpl) {
+            if (TT_DO.isEmpty()) {
+                synchronized (TT_DO) {
+                    if (TT_DO.isEmpty()) for (String d : BotChucNang.sql("SELECT id, type, level, clazz FROM data_item")) {
+                        String[] f = d.split("\t");
+                        if (f.length < 4) continue;
+                        try { TT_DO.put(Integer.parseInt(f[0].trim()), new int[]{Integer.parseInt(f[1].trim()), Integer.parseInt(f[2].trim()), Integer.parseInt(f[3].trim())}); } catch (NumberFormatException ignored) { }
+                    }
+                }
+            }
+            return TT_DO.get(tpl);
+        }
+
+        /** Mon trong tui la trang bi TOT HON mon dang mac cung o (dung duoc: dung dong, du cap) - khong ban. */
+        boolean totHonDangMac(int[] x) {
+            int[] t = ttDo(x[1]);
+            if (t == null || t[0] >= 28) return false;
+            if (t[2] >= 0 && t[2] != lop) return false;
+            return t[1] <= b.lv && t[1] > capDaMac.getOrDefault(t[0], 0);
         }
 
         void macDoTot() throws IOException {
@@ -1191,6 +1321,9 @@ final class KichBanCap140 {
             for (int[] d : ds) {
                 if (d.length < 4 || d[3] > b.lv || d[3] <= 0) continue;
                 int o = oDo(d[1]);
+                int[] tt = ttDo(d[1]);
+                if (tt != null && tt[0] < 28 && tt[2] >= 0 && tt[2] != lop) continue; // trang bi dong khac
+                if (dangNangCap && d[2] > 0) continue; // mon dang nang do dang (buoc "Nâng +N"): de trong tui
                 if (capDaMac.getOrDefault(o, 0) >= d[3]) continue; // chi mac mon cap CAO HON mon da mac cung o
                 int m = b.moc();
                 b.gui(29, (short) d[0]);
@@ -1281,6 +1414,7 @@ final class KichBanCap140 {
                 String l = BotChucNang.sql1("SELECT level FROM data_item WHERE id=" + t);
                 try { if (l != null) capCam = Math.max(capCam, Integer.parseInt(l.trim())); } catch (NumberFormatException ignored) { }
             }
+            capCam = Math.max(capCam, capDaMac.getOrDefault(loaiVuKhi(), 0));
             for (int lv = b.lv; lv >= 1; lv -= 5) {
                 int t = BotXuyenSuot.vuKhiShop(lop, lv);
                 String l = BotChucNang.sql1("SELECT level FROM data_item WHERE id=" + t);
@@ -1325,6 +1459,8 @@ final class KichBanCap140 {
                     b.bom(800);
                     b.lamMoi();
                     ghi("mua + mac vu khi tpl " + tplVk + " (xu " + x1 + " -> " + b.xu + ")");
+                    int[] tt = ttDo(tplVk);
+                    if (tt != null) capDaMac.put(tt[0], tt[1]);
                 }
                 vuKhiMac = tplVk; // khong mua duoc (het hang): khong thu lai cung bac
             }
@@ -1334,7 +1470,8 @@ final class KichBanCap140 {
                 int ban = 0;
                 long xb = b.xu;
                 for (int[] x : new ArrayList<>(b.doDung)) {
-                    if (ban >= 20 || x.length < 4 || x[3] <= 0 || x[3] > b.lv - 6 || x[1] == tplVk) continue;
+                    // khong ban: mon da nang (+N, dang lam buoc "Nâng +N") / mon tot hon mon dang mac cung o
+                    if (ban >= 20 || x.length < 4 || x[3] <= 0 || x[3] > b.lv - 6 || x[1] == tplVk || x[2] > 0 || totHonDangMac(x)) continue;
                     b.gui(28, (short) x[0]);
                     b.bom(250);
                     ban++;
@@ -1357,6 +1494,8 @@ final class KichBanCap140 {
                     if (b.soThuoc(loai) < t0 + sl) loi("mua " + sl + " thuoc " + loai + " (gia " + GIA_THUOC[loai] + ", co " + xu0 + " xu) khong duoc: " + b.chuTu(m));
                 }
             }
+            // Vé dịch chuyển du phong (het luot Ve lang mien phi o ban do xa khong co duong di bo): gia ~ 56 xu x cap
+            if (b.soThuoc(162) < 2 && b.xu > DU_TRU_XU + 3L * 60 * b.lv) KichBanCap140TinhNang.muaVe(this, 2);
             if (giap != null && b.xu - giap[2] >= DU_TRU_XU) {
                 final int tpl = giap[0];
                 Set<Integer> cu = new HashSet<>();
@@ -1396,7 +1535,7 @@ final class KichBanCap140 {
                 // do cu da nang (+N) / khoa cung ban khi da qua 6 cap (choi 5 dong 30/10: tui 28 o day vu khi cu da nang o
                 // buoc "Nâng +N" + 8 Huy chuong Gym -> khong mua duoc thuoc, vao Gym Celadon voi 0 binh)
                 boolean cu = x.length >= 4 && x[3] > 0 && x[3] <= b.lv - 6;
-                if (x.length < 5 || x[1] == tplVk || x[3] <= 0 || !cu && (x[4] != 0 || x[2] > 0)) continue;
+                if (x.length < 5 || x[1] == tplVk || x[3] <= 0 || !cu && (x[4] != 0 || x[2] > 0) || totHonDangMac(x) || x[2] > 0 && dangNangCap) continue;
                 b.gui(28, (short) x[0]);
                 b.bom(250);
                 ban++;
