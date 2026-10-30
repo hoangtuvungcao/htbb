@@ -32040,3 +32040,20 @@ UPDATE `data_nhiem_vu_noi_dung` SET `thuong_khac` = 'pet_dong_hanh:1', `dong_thu
   WHERE `ma` = 'C07.3' AND `thuong_khac` = '' AND `dong_thuong` = 'Thưởng: 89.646 EXP, 1.923 xu, 2 lượng khoá';
 UPDATE `data_huong_dan_tan_thu` SET `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá - trong hành trang hoặc đang dắt theo), không phải Pokémon chiến đấu. Chưa có pet: Menu → Hệ sinh thái → Nhà trẻ và trứng → Nhận pet đồng hành đầu tiên (miễn phí, 1 lần) - chọn Hoothoot, Zubat hoặc Cleffa (người chơi mới còn được tặng ở nhiệm vụ chính "Bánh mật ong thơm lừng" của Chansey, cấp 14). Muốn thêm pet: Mua pet đồng hành (giá bằng 1,5 giờ thu nhập ở cấp bạn), hoặc trứng pet rơi khi hạ Pokémon chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc Chợ sinh thái → Mua: Trứng. Lấy trứng: Nhà trẻ và trứng → Gửi pet đang sở hữu (1-2 pet), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái).'
   WHERE `ma` = 'npc.19_trung' AND `sua_boi` = '' AND `noi_dung` = 'Trứng không bán ở cửa hàng NPC. Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá - trong hành trang hoặc đang dắt theo), không phải Pokémon chiến đấu. Lấy trứng: Menu → Hệ sinh thái → Nhà trẻ và trứng → Gửi pet đang sở hữu (1-2 pet), rồi Trả phí hôm nay. Cứ hạ 300 quái được 1 trứng (tối đa 2 trứng mỗi ngày, giữ 6 trứng). Ấp: Nhà trẻ và trứng → Xem trứng → chọn trứng → Cho trứng nở (cần hạ thêm quái). Chưa có pet: trứng pet thỉnh thoảng rơi khi hạ Pokémon chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc mua trứng người khác rao: Hệ sinh thái → Chợ sinh thái → Mua: Trứng.';
+-- >>> them_ve_treo.sql
+-- ==================================================================================
+--  VE TREO 10 GIO (yeu cau chu game 31/10/2026: giftcode "400 giờ treo game" + 1.000 xu cho nguoi choi hien tai).
+--  Truoc day khong co vat pham nao them gio Tu dong danh (tran tu_dong.gio_moi_ngay = 5 gio/ngay + 2 gio the thang).
+--  Vat pham 1260 "Vé treo 10 giờ" (type 28, icon 14293 = Phieu uy thac): dung trong hanh trang (ca client cu 0.9.21 /
+--  0.9.22 / J2ME - xu ly o may chu, goi dung vat pham 29) -> +10 gio vao KHO GIO TREO cua nhan vat (tob_char_lau_dai
+--  .du_lieu khoa a3, khong het han, toi da 500 gio), Tu dong danh tru kho SAU khi het gio mien phi hom nay
+--  (com.htbb.pokemon.TuDong, real.TuDongGame.dungVeTreo). 400 gio = 40 ve. Ve tu giftcode luon KHOA (khong giao dich /
+--  ky gui), xep chong mot o (Item.quanlity). price = 0 (khong ban NPC ra xu). Nam trong danh sach trang giftcode an toan
+--  (dai 1201..1260), ITEM:1260:n cho n <= 50, gia tri 1 / ve (GiftcodeAnToanLogic).
+--  Ma giftcode TREO400: vps/van_hanh/giftcode_treo400.sql (chay tay, khong nam trong tep nay). Chay lai duoc.
+--  Kiem: server/test/KiemVeTreo.
+-- ----------------------------------------------------------------------------------
+INSERT IGNORE INTO `data_item` (`id`,`name`,`type`,`style`,`he`,`gender`,`level`,`durable`,`atb0`,`atb1`,`atb2`,`atb3`,`atb4`,`atb5`,`atb6`,`atb7`,`atb8`,`atb9`,`price`,`clazz`,`xstart`,`ystart`,`colortype`,`nloan`,`idUpLevel`,`namein`,`ideff`,`pricecu`) VALUES
+(1260,'Vé treo 10 giờ',28,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,14293,0,-1,0,-1,'Vé treo 10 giờ',-1,0);
+INSERT IGNORE INTO `data_vat_pham_lau_dai` (`id_item`,`ma`,`ten`,`nhom`,`hieu_ung`,`gioi_han`,`cap_tu`,`cap_den`) VALUES
+(1260,'ve_treo_10h','Vé treo 10 giờ','tien_ich','gio_treo:10','+10 giờ kho Tự động đánh, kho tối đa 500 giờ',1,100);

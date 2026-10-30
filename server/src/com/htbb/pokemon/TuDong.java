@@ -12,8 +12,9 @@ import com.htbb.cauhinh.CauHinhTrungTam;
  *      khong cong / khong tru lan nhau. Ve treo may vi vay giu nguyen gia tri.
  *   2. KHONG thuong them: EXP / xu / do roi khi tu dong di qua dung duong ha quai thuong, nen chiu nguyen nang
  *      luong huan luyen (NangLuong: 100% -> 50% -> 20% -> 0%). Lop nay khong co ham nao cham toi EXP.
- *   3. Tran gio moi ngay (tu_dong.gio_moi_ngay, + tu_dong.gio_them_the_thang khi con the thang). Het gio may chu
- *      tat va bao client.
+ *   3. Tran gio moi ngay (tu_dong.gio_moi_ngay, + tu_dong.gio_them_the_thang khi con the thang). Het gio mien phi
+ *      thi tru tiep vao KHO GIO TREO cua nhan vat (Phien.msKho, nap tu "Ve treo N gio" - real.TuDongGame.dungVeTreo,
+ *      tran {@link #KHO_GIO_TOI_DA} gio); het ca hai may chu tat va bao client.
  *   4. May chu tu kiem dieu kien bat (chi bai luyen tap, khong PvP / san dau / Gym / boss neu cau hinh) va tat khi
  *      gap PvP / boss / doi khu vuc / ra khoi ban kinh.
  *   5. Chong bot: luc dang tu dong, nhip danh / uong thuoc / nhat do bi chan o muc nguoi that (cua so truot);
@@ -118,6 +119,19 @@ public final class TuDong {
     public static final int BAN_KINH_MAX = 960;
     /** Lech them (px) truoc khi coi la ra khoi vung: do tre mang + day lui khi trung don. */
     public static final int BAN_KINH_LE = 64;
+    /**
+     * KHO GIO TREO (yeu cau 31/10/2026, giftcode TREO400): gio Tu dong danh mua / tang qua vat pham "Ve treo N gio"
+     * (id {@link #ID_VE_TREO}, so gio = hieu_ung gio_treo:N cua data_vat_pham_lau_dai). Kho chi bi tru SAU khi het gio
+     * mien phi hom nay (gio_moi_ngay + the thang), khong het han, luu trong HoSoLauDai (khoa "a3", ms). Tran kho de
+     * khong ai tich hang nghin gio (giftcode / nhieu nguon cong lai).
+     */
+    public static final int KHO_GIO_TOI_DA = 500;
+    public static final long KHO_MS_TOI_DA = KHO_GIO_TOI_DA * 3600000L;
+    /** data_item cua "Ve treo 10 gio" (type 28, khoa, xep chong theo Item.quanlity). */
+    public static final int ID_VE_TREO = 1260;
+    /** So gio moi ve (mac dinh khi dong data_vat_pham_lau_dai thieu so). 400 gio = 40 ve. */
+    public static final int GIO_MOI_VE_TREO = 10;
+
     /** Hai lan ghi nhan cach nhau qua lau (client treo / mat mang) chi tinh toi da ngan nay. */
     public static final long KHOANG_TICH_TOI_DA_MS = 90000L;
 
@@ -314,6 +328,8 @@ public final class TuDong {
         public int ngay;
         /** Mili-giay tu dong da dung trong ngay (ban sao cua HoSoLauDai a1/a2 neu co). */
         public long msDung;
+        /** Kho gio treo con lai (ms, ban sao HoSoLauDai a3): tru sau khi msDung cham tran ngay. */
+        public long msKho;
         /** Diem neo (luc bat), id map luc bat. */
         public int neoMap = -1;
         public int neoX;
@@ -375,13 +391,60 @@ public final class TuDong {
         }
     }
 
-    /** Giay con lai hom nay. */
+    /** Giay con lai: gio mien phi hom nay + kho gio treo. */
     public static int giayConLai(final CauHinh c, final Phien p, final boolean theThang, final int homNay) {
         synchronized (p) {
             lamMoiNgay(p, homNay);
-            final long con = giayToiDa(c, theThang) * 1000L - p.msDung;
-            return (int) Math.max(0L, con / 1000L);
+            final long con = Math.max(0L, giayToiDa(c, theThang) * 1000L - p.msDung) + Math.max(0L, p.msKho);
+            return (int) Math.min(Integer.MAX_VALUE, con / 1000L);
         }
+    }
+
+    /** Giay mien phi con lai hom nay (khong tinh kho). */
+    public static int giayMienPhiConLai(final CauHinh c, final Phien p, final boolean theThang, final int homNay) {
+        synchronized (p) {
+            lamMoiNgay(p, homNay);
+            return (int) Math.max(0L, (giayToiDa(c, theThang) * 1000L - p.msDung) / 1000L);
+        }
+    }
+
+    /**
+     * "Toi da" gui client (goi -100): tran ngay + kho hien co, de client cu (0.9.21/0.9.22, J2ME) ve "con X / Y" khong
+     * bao gio X &gt; Y.
+     */
+    public static int giayToiDaHien(final CauHinh c, final Phien p, final boolean theThang) {
+        synchronized (p) {
+            return (int) Math.min(Integer.MAX_VALUE, giayToiDa(c, theThang) + Math.max(0L, p.msKho) / 1000L);
+        }
+    }
+
+    /** Kiem them {@code ms} vao kho: null = duoc, nguoc lai cau bao (vuot tran). */
+    public static String kiemThemKho(final Phien p, final long ms) {
+        synchronized (p) {
+            if (ms <= 0L) {
+                return "Vé treo không hợp lệ.";
+            }
+            if (p.msKho + ms > KHO_MS_TOI_DA) {
+                return "Kho giờ treo tối đa " + KHO_GIO_TOI_DA + " giờ (đang có " + gioPhut(p.msKho)
+                        + "). Dùng bớt Tự động đánh rồi dùng vé sau.";
+            }
+            return null;
+        }
+    }
+
+    /** Cong {@code ms} vao kho (kep tran). @return kho sau khi cong (ms). */
+    public static long themKho(final Phien p, final long ms) {
+        synchronized (p) {
+            p.msKho = Math.max(0L, Math.min(KHO_MS_TOI_DA, p.msKho + Math.max(0L, ms)));
+            return p.msKho;
+        }
+    }
+
+    /** "12 giờ 05 phút" / "40 phút". */
+    public static String gioPhut(final long ms) {
+        final long phut = Math.max(0L, ms) / 60000L;
+        final long h = phut / 60L, m = phut % 60L;
+        return h > 0 ? h + " giờ" + (m > 0 ? " " + (m < 10 ? "0" : "") + m + " phút" : "") : m + " phút";
     }
 
     /** Ngu canh may chu cung cap khi kiem dieu kien (de lop nay thuan). */
@@ -491,8 +554,17 @@ public final class TuDong {
             } else {
                 p.msDung += them;
             }
-            if (p.msDung >= giayToiDa(c, theThang) * 1000L) {
-                p.msDung = giayToiDa(c, theThang) * 1000L;
+            final long tran = giayToiDa(c, theThang) * 1000L;
+            if (p.msDung > tran) {
+                // het gio mien phi: phan vuot tru vao kho gio treo
+                final long vuot = p.msDung - tran;
+                final long tru = Math.min(vuot, Math.max(0L, p.msKho));
+                p.msKho -= tru;
+                p.msDung = tran;
+            }
+            if (p.msDung >= tran && p.msKho <= 0L) {
+                p.msDung = tran;
+                p.msKho = 0L;
                 tat(p, TAT_HET_GIO);
                 return true;
             }
@@ -597,20 +669,22 @@ public final class TuDong {
             synchronized (p) {
                 p.ngay = h.tdNgay;
                 p.msDung = h.tdMsDung;
+                p.msKho = h.tdMsKho;
             }
         }
     }
 
-    /** Ghi bo dem ngay vao ho so (luu CSDL theo chu ky cua LauDaiNhanVat). */
+    /** Ghi bo dem ngay + kho gio treo vao ho so (luu CSDL theo chu ky cua LauDaiNhanVat). */
     public static void ghiHoSo(final Phien p, final HoSoLauDai h) {
         if (h == null) {
             return;
         }
         synchronized (h) {
             synchronized (p) {
-                if (h.tdNgay != p.ngay || h.tdMsDung != p.msDung) {
+                if (h.tdNgay != p.ngay || h.tdMsDung != p.msDung || h.tdMsKho != p.msKho) {
                     h.tdNgay = p.ngay;
                     h.tdMsDung = p.msDung;
+                    h.tdMsKho = p.msKho;
                     h.ban = true;
                 }
             }

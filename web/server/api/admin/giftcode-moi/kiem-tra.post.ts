@@ -4,7 +4,7 @@ export default defineAdminHandler(async (event) => {
   const b = await bodyObj(event)
   const chuan = gcChuanHoaThuong(b.phanThuong)
   const gioiHan = await gcGioiHan()
-  if (!chuan) return { ok: false, loi: 'Phần thưởng chỉ được gồm LUONGKHOA:n, GEM:id:n, ITEM:id:n (n ≤ 10), cách nhau dấu phẩy.' }
+  if (!chuan) return { ok: false, loi: 'Phần thưởng chỉ được gồm LUONGKHOA:n, XU:n (≤ 50 000), GEM:id:n, ITEM:id:n (n ≤ 10; Vé treo 1260: n ≤ 50), cách nhau dấu phẩy.' }
   const giaTri = gcGiaTri(chuan)
   // body.capToiThieu (nếu có) = cấp tối thiểu của mã: trang bị không được cao hơn
   const capRaw = Number((b as Record<string, unknown>).capToiThieu)

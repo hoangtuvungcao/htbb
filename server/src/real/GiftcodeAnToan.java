@@ -16,7 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *  1. chong do ma: tai khoan nhap sai 5 lan -> khoa 10 phut (cung voi gian cach Char.GIFTCODE_COOLDOWN_MS);
  *  2. toi da giftcode.toi_da_thang ma / thang / nhan vat (GiftcodeLauDai);
  *  3. ma ton tai, dang bat, chua het han, du cap;
- *  4. phan thuong chi gom vat pham khoa / luong khoa, gia tri <= tran ma (giftcode.gia_tri_toi_da);
+ *  4. phan thuong chi gom vat pham khoa / luong khoa / xu (XU:n, tran XU_TOI_DA), gia tri <= tran ma
+ *     (giftcode.gia_tri_toi_da; cach tinh: GiftcodeAnToanLogic.giaTri);
  *  5. ngan sach toan may chu / thang (giftcode.ngan_sach_thang);
  *  6. DANH DAU TRUOC (INSERT log - trung khoa = da nhap) roi tru luot CO DIEU KIEN; het luot thi xoa
  *     dong log vua ghi; chi phat khi ca hai buoc thanh cong (muc 5).
@@ -113,7 +114,8 @@ public final class GiftcodeAnToan {
             return;
         }
         // Tui khong du cho: bao ro, KHONG danh dau / tru luot (truoc day ma bi dung het luot ma vat pham roi mat).
-        final int canO = GiftcodeAnToanLogic.soOCan(thuong, id -> id >= 0 && id < p.listGemitemLock.length && p.listGemitemLock[id] > 0);
+        final int canO = GiftcodeAnToanLogic.soOCan(thuong, id -> id >= 0 && id < p.listGemitemLock.length && p.listGemitemLock[id] > 0,
+                n -> TuDongGame.soOCanVe(p, GiftcodeAnToanLogic.ID_VE_TREO, n)); // ve treo xep chong: 1 o / 999 ve
         if (canO > 0 && p.countSlotInventory() < canO) {
             bao(p, "Hành trang không đủ chỗ: cần " + canO + " ô trống để nhận quà của mã này. Dọn bớt rồi nhập lại (mã chưa bị dùng).");
             return;
@@ -130,7 +132,18 @@ public final class GiftcodeAnToan {
         }
         GiftcodeLauDai.ghiNhan(p);
         try {
-            DatabaseGiftCode.applyItemString(p, thuong);
+            DatabaseGiftCode.applyItemString(p, GiftcodeAnToanLogic.phanThuongThuong(thuong));
+            final long xu = GiftcodeAnToanLogic.tongXu(thuong);
+            if (xu > 0L) {
+                p.addXu(xu, "giftcode " + ma, Char.XU_DEM); // xu sinh ra: dem xu_vao kinh te
+            }
+            final int ve = GiftcodeAnToanLogic.soVeTreo(thuong);
+            if (ve > 0) {
+                final int da = TuDongGame.traoVeTreo(p, GiftcodeAnToanLogic.ID_VE_TREO, ve);
+                if (da < ve) {
+                    System.out.println("[GIFTCODE] " + ma + " cho " + p.charname + ": ve treo thieu " + (ve - da) + " (tui day)");
+                }
+            }
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             p.sendMessage(MessageCreator.createCharGemItem(p));
         } catch (final Exception e) {
@@ -141,7 +154,7 @@ public final class GiftcodeAnToan {
         bao(p, "Đổi giftcode thành công: " + moTa(thuong) + ".");
     }
 
-    /** "+5 lượng khoá, +2 Poké Ball" tu chuoi phan thuong da chuan hoa (LUONGKHOA / GEM / ITEM). */
+    /** "+5 lượng khoá, +1.000 xu, +2 Poké Ball" tu chuoi phan thuong da chuan hoa (LUONGKHOA / XU / GEM / ITEM). */
     static String moTa(final String thuong) {
         final StringBuilder b = new StringBuilder();
         for (final String phan : thuong.split(",")) {
@@ -151,6 +164,8 @@ public final class GiftcodeAnToan {
                 final String k = t[0].trim().toUpperCase();
                 if (k.equals("LUONGKHOA")) {
                     muc = "+" + Integer.parseInt(t[1].trim()) + " lượng khoá";
+                } else if (k.equals("XU")) {
+                    muc = "+" + String.format(java.util.Locale.ROOT, "%,d", Long.parseLong(t[1].trim())).replace(',', '.') + " xu";
                 } else if (k.equals("GEM") || k.equals("ITEM")) {
                     final int id = Integer.parseInt(t[1].trim());
                     final int n = Integer.parseInt(t[2].trim());

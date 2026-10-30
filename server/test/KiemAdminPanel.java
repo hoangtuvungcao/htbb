@@ -71,8 +71,9 @@ public final class KiemAdminPanel {
             Kiem.dung("matKhauSql: " + e, false);
         }
 
-        Kiem.sai("tang qua: xu bi tu choi (chi duong giftcode an toan)",
-                server.quantri.ThaoTacMayChu.kiemQua("XU:1000", 50) == null);
+        // 31/10/2026 (ma TREO400): XU:n duoc phat qua giftcode an toan, tran 50.000 / ma, tinh gia tri ceil(n/1000)
+        Kiem.sai("tang qua: xu vuot tran 50.000 / ma bi tu choi",
+                server.quantri.ThaoTacMayChu.kiemQua("XU:100000", 1000) == null);
         Kiem.sai("tang qua: luong mo bi tu choi", server.quantri.ThaoTacMayChu.kiemQua("LUONG:10", 50) == null);
 
         final BufferedImage pb = server.quantri.AnhPokemon.chanDung(9999);

@@ -1548,6 +1548,13 @@ Một tính năng **Tự động đánh** do **máy chủ** điều khiển thay
 1. **Không thưởng thêm**: EXP / xu / đồ rơi đi qua đúng đường hạ quái thường, nên chịu nguyên năng lượng huấn luyện.
 2. **Trần giờ / ngày**: `tu_dong.gio_moi_ngay` (5) + `tu_dong.gio_them_the_thang` (2 khi Thẻ tháng còn hạn); chỉ tính lúc đang
    bật, chỉ khi **online**; đặt lại 00:00; phiên mới luôn tắt.
+   **Kho giờ treo** (31/10/2026): vật phẩm **Vé treo 10 giờ** (id 1260, type 28, `data_vat_pham_lau_dai.hieu_ung =
+   gio_treo:10`) dùng trong hành trang → +10 giờ vào kho của nhân vật (`HoSoLauDai` khoá `a3`, lưu cùng lượt lưu nhân vật
+   với hành trang; không hết hạn). Thứ tự trừ: **giờ miễn phí hôm nay trước, hết mới trừ kho**; hết cả hai thì dừng "hết
+   giờ". Kho tối đa `TuDong.KHO_GIO_TOI_DA` = 500 giờ (vé vượt trần bị từ chối, không mất vé). Gói -100 gửi "còn lại" =
+   miễn phí còn lại + kho, "tối đa" = trần ngày + kho, kèm dòng "Kho giờ treo: …" khi đang tắt — client cũ (0.9.21 /
+   0.9.22 / J2ME) không cần sửa. Vé từ giftcode luôn **khoá**, xếp chồng một ô (`Item.quanlity`), giá NPC 0. Nguồn: giftcode
+   (`TREO400`: 40 vé = 400 giờ); không bán. `real.TuDongGame.dungVeTreo` / `traoVeTreo`, kiểm `server/test/KiemVeTreo`.
 3. **Điều kiện bật**: chỉ ở bãi luyện tập có Pokémon hoang dã (không thành phố, nhà, sàn đấu, chiến trường, khu Chiếm Gym),
    không đang PK, không gục, còn giờ.
 4. **Tự dừng khi**: hết giờ, đổi bản đồ, ra khỏi bán kính (`tu_dong.ban_kinh` 240 px + 64 px), gục, và nếu
@@ -1647,8 +1654,9 @@ bản đồ / sự kiện đó nếu đỏ.
 
 ### 9.5 Giftcode, cửa hàng, nạp tiền
 
-- **Giftcode an toàn** (`GiftcodeAnToanLogic`, bảng `tob_giftcode` / `tob_giftcode_log`): phần thưởng **chỉ** lượng khoá, đá
-  (luôn khoá) và vật phẩm khoá (≤ 10 mỗi loại). Giá trị một mã (lượng khoá + số đá + 5 × số vật phẩm) ≤
+- **Giftcode an toàn** (`GiftcodeAnToanLogic`, bảng `tob_giftcode` / `tob_giftcode_log`): phần thưởng **chỉ** lượng khoá, xu
+  (`XU:n`, ≤ 50.000 / mã, đếm xu vào kinh tế), đá (luôn khoá) và vật phẩm khoá (≤ 10 mỗi loại; Vé treo 1260 xếp chồng ≤ 50).
+  Giá trị một mã (lượng khoá + ⌈xu / 1.000⌉ + số đá + 5 × số vật phẩm, vé treo 1 × số vé) ≤
   `giftcode.gia_tri_toi_da` (30); tổng giá trị phát / tháng toàn máy chủ ≤ `giftcode.ngan_sach_thang` (20.000); mỗi tài khoản 1
   lần / mã, mỗi Pokémon ≤ `giftcode.toi_da_thang` (2) mã / tháng; nhập sai 5 lần khoá 10 phút. Server kiểm lại khi phát.
 - **Cửa hàng** (Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm, `real.CuaHangLauDai`): luật "không vật phẩm mồ côi" — mọi dòng **chỉ ra vật phẩm, không bao

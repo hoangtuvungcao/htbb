@@ -1955,6 +1955,8 @@ public class Item extends Actor {
         newItem.ngocHe = this.ngocHe; // [bo-ngoc] ngoc da khảm di theo mon
         // [khoa-khi-mac] bo dem pha khoa theo MON: ban qua gian hang roi mua lai khong reset duoc tran 3 lan.
         newItem.soLanPhaKhoa = this.soLanPhaKhoa;
+        // [chong-vat-pham] chong type 28 qua gian hang / mua lai / cho: giu so luong (truoc constructor dat lai 1 = mat mon)
+        newItem.quanlity = Math.max(1, this.quanlity);
         return newItem;
     }
 

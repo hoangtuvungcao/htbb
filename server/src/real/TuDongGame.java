@@ -33,6 +33,9 @@ import java.util.concurrent.atomic.AtomicLong;
  *     do, ke ca khi Tien ich "Thong bao: tat" nuot hop thoai).
  *   - EXP / xu / do roi KHONG doi: tu dong ha quai qua dung duong thuong, chiu nang luong (NangLuong).
  *   - Phieu uy thac (treo OFFLINE, TangTocGame) tach rieng: thoat game la phien tu dong ket thuc.
+ *   - "Ve treo N gio" ({@link #dungVeTreo}, tu VatPhamDungLauDai hieu_ung gio_treo:N): cong N gio vao KHO GIO TREO
+ *     (TuDong.Phien.msKho -> HoSoLauDai a3), dung SAU khi het gio mien phi hom nay. Goi -100: "con lai" = mien phi con
+ *     lai + kho, "toi da" = tran ngay + kho (client cu khong can sua).
  */
 public final class TuDongGame {
 
@@ -177,7 +180,7 @@ public final class TuDongGame {
             m.dos.writeByte(0);
             m.dos.writeByte(ph.bat ? 1 : 0);
             m.dos.writeInt(TuDong.giayConLai(c, ph, the, homNay(bay)));
-            m.dos.writeInt(TuDong.giayToiDa(c, the));
+            m.dos.writeInt(TuDong.giayToiDaHien(c, ph, the)); // tran ngay + kho gio treo (con lai <= toi da)
             m.dos.writeShort(ph.bat ? ph.banKinh : c.banKinh);
             m.dos.writeByte(c.co());
             m.dos.writeUTF(thongBao == null ? "" : thongBao);
@@ -301,7 +304,142 @@ public final class TuDongGame {
                 goiYClientCu(p, c, ph, bay);
             }
         }
-        guiTrangThai(p, c, ph, "");
+        guiTrangThai(p, c, ph, ph.bat ? "" : ghiChuKho(c, ph, TangTocGame.coTheThang(p), bay));
+    }
+
+    /** Dong bao kho gio treo cho bang Tu dong (chi khi kho &gt; 0), "" neu kho rong. */
+    static String ghiChuKho(final TuDong.CauHinh c, final TuDong.Phien ph, final boolean the, final long bay) {
+        final long kho;
+        synchronized (ph) {
+            kho = ph.msKho;
+        }
+        if (kho <= 0L) {
+            return "";
+        }
+        final int mp = TuDong.giayMienPhiConLai(c, ph, the, homNay(bay));
+        return "Kho giờ treo: " + TuDong.gioPhut(kho) + (mp > 0 ? " (dùng sau khi hết " + TuDong.gioPhut(mp * 1000L)
+                + " miễn phí hôm nay)." : " (đang dùng - đã hết giờ miễn phí hôm nay).");
+    }
+
+    /** Tran so ve trong MOT chong (bang ChongVatPham.TRAN cua he xep chong type 28). */
+    static final int CHONG_VE_TOI_DA = 999;
+
+    /** So o hanh trang MOI can de nhan {@code n} ve {@code id} (0 neu don het vao chong san co). */
+    public static int soOCanVe(final Char p, final int id, final int n) {
+        int conCho = 0;
+        synchronized (p.iItems) {
+            for (final Item it : p.iItems) {
+                if (it != null && it.getTemplate() != null && it.getTemplate().id == id && it.lock == 1) {
+                    conCho += Math.max(0, CHONG_VE_TOI_DA - Math.max(1, it.quanlity));
+                }
+            }
+        }
+        final int du = Math.max(0, n - conCho);
+        return (du + CHONG_VE_TOI_DA - 1) / CHONG_VE_TOI_DA;
+    }
+
+    /**
+     * Trao {@code n} ve treo KHOA (giftcode): don vao chong ve khoa san co trong tui (Item.quanlity, toi
+     * {@link #CHONG_VE_TOI_DA}), phan con lai thanh chong moi - MOT o cho ca 40 ve (truoc day createItemSoLuong tao
+     * 40 mon rieng = 40 o). Cung cach bieu dien voi he xep chong type 28 (so luong o Item.quanlity, cot 29 cua chuoi
+     * luu). Noi goi da kiem o trong ({@link #soOCanVe}). @return so ve da trao.
+     */
+    public static int traoVeTreo(final Char p, final int id, final int n) {
+        final ItemTemplates t = Map.itemTemplates.get(5).get(Integer.valueOf(id));
+        if (p == null || t == null || n <= 0) {
+            return 0;
+        }
+        int con = n;
+        synchronized (p.iItems) {
+            for (final Item it : p.iItems) {
+                if (con <= 0) {
+                    break;
+                }
+                if (it != null && it.getTemplate() != null && it.getTemplate().id == id && it.lock == 1) {
+                    final int q = Math.max(1, it.quanlity);
+                    final int them = Math.min(con, CHONG_VE_TOI_DA - q);
+                    if (them > 0) {
+                        it.quanlity = q + them;
+                        con -= them;
+                    }
+                }
+            }
+            while (con > 0 && !p.isFullInventory()) {
+                final Item moi = new Item(t, false, 0, 0, id);
+                moi.id = p.getIDItem();
+                moi.owner = p.charDBID;
+                moi.level = t.level;
+                moi.identify = p.charDBID;
+                moi.clazz = -1;
+                moi.lock = 1;
+                moi.dateCreate = Char.getDayTime(0L);
+                moi.quanlity = Math.min(con, CHONG_VE_TOI_DA);
+                con -= moi.quanlity;
+                p.iItems.add(moi);
+            }
+        }
+        return n - con;
+    }
+
+    /**
+     * Dung "Ve treo N gio" (VatPhamDungLauDai, hieu_ung gio_treo:N): kiem tran kho -&gt; tru 1 ve (chong: giam so
+     * luong, le: bo khoi tui) -&gt; cong N gio vao kho -&gt; ghi ho so (luu cung luot luu nhan vat voi hanh trang).
+     * Can ho so dai han (sv.lau_dai=1): khong co thi tu choi, khong mat ve.
+     */
+    public static void dungVeTreo(final Char p, final Item item, final int gio) {
+        if (laNguoi(p) == null || item == null) {
+            return;
+        }
+        if (gio <= 0 || gio > TuDong.KHO_GIO_TOI_DA) {
+            DungVatPham.loi(p, "Vé treo không hợp lệ.");
+            return;
+        }
+        if (LauDaiNhanVat.lay(p) == null) {
+            DungVatPham.loi(p, "Tạm thời không dùng được, thử lại sau.");
+            return;
+        }
+        final TuDong.CauHinh c = TuDong.cauHinh();
+        final TuDong.Phien ph = phien(p, true);
+        final long bay = System.currentTimeMillis();
+        final long ms = gio * 3600000L;
+        if (ph.bat) {
+            tich(p, c, ph, bay); // chot gio da chay truoc khi cong kho
+        }
+        final String loi = TuDong.kiemThemKho(ph, ms);
+        if (loi != null) {
+            DungVatPham.loi(p, loi);
+            return;
+        }
+        // tru ve TRUOC (CODING_CONVENTION muc 5)
+        final int conVe;
+        synchronized (p.iItems) {
+            if (!p.iItems.contains(item)) {
+                return;
+            }
+            if (item.quanlity > 1) {
+                item.quanlity--;
+                conVe = item.quanlity;
+            } else {
+                p.iItems.remove(item);
+                p.removeIDItem(item.id);
+                conVe = 0;
+            }
+        }
+        final long kho = TuDong.themKho(ph, ms);
+        ghiNgay(p, ph);
+        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
+        try {
+            data.Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "ve treo +" + gio + "h id"
+                    + item.getTemplate().id + " dbid" + item.dbid + " kho=" + kho / 60000L + "p conVe=" + conVe, "vetreo");
+        } catch (final Exception ignored) {
+        }
+        Nhat.kiemToan("TU_DONG", "ve treo " + p.charname + " +" + gio + "h kho=" + kho / 60000L + "p");
+        final int mp = TuDong.giayMienPhiConLai(c, ph, TangTocGame.coTheThang(p), homNay(bay));
+        DungVatPham.bao(p, "Đã dùng " + DungVatPham.ten(item) + ": +" + gio + " giờ Tự động đánh. Kho giờ treo: "
+                + TuDong.gioPhut(kho) + " (tối đa " + TuDong.KHO_GIO_TOI_DA + " giờ), dùng sau khi hết "
+                + (mp > 0 ? TuDong.gioPhut(mp * 1000L) + " miễn phí hôm nay" : "giờ miễn phí mỗi ngày")
+                + (conVe > 0 ? ". Còn " + conVe + " vé." : "."));
+        guiTrangThai(p, c, ph, ph.bat ? "" : ghiChuKho(c, ph, TangTocGame.coTheThang(p), bay));
     }
 
     /**

@@ -3,15 +3,28 @@ package com.htbb.pokemon;
 /**
  * Kiem tra phan thuong giftcode an toan (yeu cau 17/10/2026, GD2 5.4). Lop THUAN.
  *
- * Cu phap (giong DatabaseGiftCode.applyItemString nhung CHI cho phep 3 loai, deu KHOA):
+ * Cu phap (giong DatabaseGiftCode.applyItemString nhung CHI cho phep 4 loai):
  *   LUONGKHOA:n        luong khoa (gia tri n)
  *   GEM:id:n           ngoc/nguyen lieu, LUON dat khoa (-1) (gia tri n)
- *   ITEM:id:n          vat pham (Char.createItemSoLuong tao lock = 1) (gia tri 5 x n)
- * Cam: xu, luong (mo), DB/PET/... va moi khoa khac. Ma va phan thuong khong phan biet hoa/thuong.
+ *   ITEM:id:n          vat pham (Char.createItemSoLuong tao lock = 1) (gia tri 5 x n, n &lt;= 10)
+ *                      - ngoai le: "Ve treo" {@link #ID_VE_TREO} (xep chong, 1 o): n &lt;= {@link #VE_TREO_TOI_DA},
+ *                        gia tri {@link #GIA_TRI_VE_TREO} / ve (chi them gio Tu dong danh luc ONLINE, van chiu nang
+ *                        luong huan luyen - khong sinh them EXP/xu/do ngoai cach choi tay; gia 0, khoa)
+ *   XU:n               xu (31/10/2026, yeu cau chu game cho ma TREO400): 1..{@link #XU_TOI_DA} / ma, gia tri
+ *                      ceil(n / {@link #XU_MOI_GIA_TRI}); dem xu_vao kinh te (real.GiftcodeAnToan phat, kieu XU_DEM)
+ * Cam: luong (mo), DB/PET/... va moi khoa khac. Ma va phan thuong khong phan biet hoa/thuong.
+ * Vi du TREO400 "XU:1000,ITEM:1260:40" = 1 + 40 = 41 (&lt;= giftcode.gia_tri_toi_da tren may chu that = 150).
  */
 public final class GiftcodeAnToanLogic {
 
     public static final int GIA_TRI_ITEM = 5;
+    /** Ve treo N gio (com.htbb.pokemon.TuDong.ID_VE_TREO) - xep chong nen phat duoc nhieu hon 10 / ma. */
+    public static final int ID_VE_TREO = TuDong.ID_VE_TREO;
+    public static final int VE_TREO_TOI_DA = 50;
+    public static final int GIA_TRI_VE_TREO = 1;
+    /** XU:n - tran moi ma va ty le quy doi gia tri (1 diem / 1.000 xu, lam tron len). */
+    public static final int XU_TOI_DA = 50000;
+    public static final int XU_MOI_GIA_TRI = 1000;
     /** Tran gia tri 1 ma (doc de: cau_hinh giftcode.gia_tri_toi_da). */
     public static final int GIA_TRI_TOI_DA = 30;
     /** Ngan sach toan may chu / thang (doc de: giftcode.ngan_sach_thang). */
@@ -47,7 +60,13 @@ public final class GiftcodeAnToanLogic {
             final String[] t = phan.trim().split(":");
             try {
                 final String k = t[0].trim().toUpperCase();
-                if (k.equals("LUONGKHOA") && t.length == 2) {
+                if (k.equals("XU") && t.length == 2) {
+                    final int n = Integer.parseInt(t[1].trim());
+                    if (n <= 0 || n > XU_TOI_DA) {
+                        return null;
+                    }
+                    noi(b, "XU:" + n);
+                } else if (k.equals("LUONGKHOA") && t.length == 2) {
                     final int n = Integer.parseInt(t[1].trim());
                     if (n <= 0) {
                         return null;
@@ -63,7 +82,7 @@ public final class GiftcodeAnToanLogic {
                 } else if (k.equals("ITEM") && t.length == 3) {
                     final int id = Integer.parseInt(t[1].trim());
                     final int n = Integer.parseInt(t[2].trim());
-                    if (id < 0 || n <= 0 || n > 10) {
+                    if (id < 0 || n <= 0 || n > (id == ID_VE_TREO ? VE_TREO_TOI_DA : 10)) {
                         return null;
                     }
                     noi(b, "ITEM:" + id + ":" + n);
@@ -90,6 +109,15 @@ public final class GiftcodeAnToanLogic {
      * nhan da co loai ngoc khoa do chua. Server kiem TRUOC khi danh dau ma (tui day = khong tru luot, khong mat qua).
      */
     public static int soOCan(final String chuan, final java.util.function.IntPredicate daCoNgoc) {
+        return soOCan(chuan, daCoNgoc, null);
+    }
+
+    /**
+     * Nhu tren, them ve treo xep chong: {@code oVe}(n) = so o MOI can de nhan n ve (0 neu don vao chong san co); null =
+     * 1 o cho moi ITEM ve treo (chua biet tui).
+     */
+    public static int soOCan(final String chuan, final java.util.function.IntPredicate daCoNgoc,
+            final java.util.function.IntUnaryOperator oVe) {
         if (chuan == null) {
             return 0;
         }
@@ -98,7 +126,9 @@ public final class GiftcodeAnToanLogic {
         for (final String phan : chuan.split(",")) {
             final String[] t = phan.split(":");
             try {
-                if (t[0].equals("ITEM")) {
+                if (t[0].equals("ITEM") && Integer.parseInt(t[1]) == ID_VE_TREO) {
+                    o += oVe == null ? 1 : Math.max(0, oVe.applyAsInt(Integer.parseInt(t[2])));
+                } else if (t[0].equals("ITEM")) {
                     o += Math.max(0L, Long.parseLong(t[2]));
                 } else if (t[0].equals("GEM")) {
                     final int id = Integer.parseInt(t[1]);
@@ -112,6 +142,46 @@ public final class GiftcodeAnToanLogic {
         return (int) Math.min(Integer.MAX_VALUE, o);
     }
 
+    /** Tong XU trong chuoi DA chuan hoa. */
+    public static long tongXu(final String chuan) {
+        long x = 0L;
+        for (final String phan : chuan == null ? new String[0] : chuan.split(",")) {
+            final String[] t = phan.split(":");
+            if (t[0].equals("XU") && t.length == 2) {
+                x += Long.parseLong(t[1]);
+            }
+        }
+        return x;
+    }
+
+    /** Tong so ve treo ({@link #ID_VE_TREO}) trong chuoi DA chuan hoa. */
+    public static int soVeTreo(final String chuan) {
+        int n = 0;
+        for (final String phan : chuan == null ? new String[0] : chuan.split(",")) {
+            final String[] t = phan.split(":");
+            if (t[0].equals("ITEM") && t.length == 3 && Integer.parseInt(t[1]) == ID_VE_TREO) {
+                n += Integer.parseInt(t[2]);
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Phan phat qua DatabaseGiftCode.applyItemString (bo XU va ve treo - noi phat tu xu ly rieng: cong xu va xep
+     * chong ve). "" neu khong con gi.
+     */
+    public static String phanThuongThuong(final String chuan) {
+        final StringBuilder b = new StringBuilder();
+        for (final String phan : chuan == null ? new String[0] : chuan.split(",")) {
+            final String[] t = phan.split(":");
+            if (t[0].equals("XU") || t[0].equals("ITEM") && t.length == 3 && Integer.parseInt(t[1]) == ID_VE_TREO) {
+                continue;
+            }
+            noi(b, phan);
+        }
+        return b.toString();
+    }
+
     /** Gia tri (don vi luong khoa) cua chuoi DA chuan hoa; -1 neu hong. */
     public static int giaTri(final String chuan) {
         if (chuan == null) {
@@ -122,8 +192,12 @@ public final class GiftcodeAnToanLogic {
             final String[] t = phan.split(":");
             if (t[0].equals("LUONGKHOA")) {
                 v += Long.parseLong(t[1]);
+            } else if (t[0].equals("XU")) {
+                v += (Long.parseLong(t[1]) + XU_MOI_GIA_TRI - 1) / XU_MOI_GIA_TRI;
             } else if (t[0].equals("GEM")) {
                 v += Long.parseLong(t[2]);
+            } else if (t[0].equals("ITEM") && Integer.parseInt(t[1]) == ID_VE_TREO) {
+                v += GIA_TRI_VE_TREO * Long.parseLong(t[2]);
             } else if (t[0].equals("ITEM")) {
                 v += GIA_TRI_ITEM * Long.parseLong(t[2]);
             }
@@ -182,7 +256,8 @@ public final class GiftcodeAnToanLogic {
     public static String kiem(final String phanThuong, final int tranMa) {
         final String c = chuanHoaThuong(phanThuong);
         if (c == null) {
-            return "Phần thưởng chỉ được gồm LUONGKHOA:n, GEM:id:n, ITEM:id:n (vật phẩm khoá).";
+            return "Phần thưởng chỉ được gồm LUONGKHOA:n, XU:n (≤ " + XU_TOI_DA + "), GEM:id:n, ITEM:id:n (vật phẩm khoá, n ≤ 10; vé treo "
+                    + ID_VE_TREO + " n ≤ " + VE_TREO_TOI_DA + ").";
         }
         if (giaTri(c) > tranMa) {
             return "Giá trị mã vượt trần " + tranMa + ".";
