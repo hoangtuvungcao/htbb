@@ -992,7 +992,7 @@ final class KichBanCap140 {
                 boolean khungGio = Pattern.compile("\\(\\d+:\\d+").matcher(chu).find();
                 int ha = danh(tpl, Math.max(1, can), (can > 1 ? 7 : 2) * 60000L);
                 ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")");
-                if (khungGio && lan % 2 == 0) choGio("'" + q.ten + "' can dung khung gio: " + chu);
+                if (khungGio) choGio("'" + q.ten + "' can dung khung gio: " + chu);
                 if (lan > 14) return "ha " + tenQ + " " + lan + " lan van khong xong: " + chu;
                 return "-";
             }
@@ -1004,8 +1004,10 @@ final class KichBanCap140 {
             if (System.currentTimeMillis() - lanTuaCuoi < 25000) return;
             lanTuaCuoi = System.currentTimeMillis();
             long truoc = BotXuyenSuot.lanTuaCuoi;
-            BotXuyenSuot.tua("3h", nhanh + ": " + ly);
-            if (BotXuyenSuot.lanTuaCuoi != truoc) ghi("CHO 3 GIO (tua 3h) vi " + ly);
+            // 1 gio moi lan (khung gio 3 tieng): nhieu dong cung tua 3h thi buoc 6h co the khong bao gio roi vao khung
+            // (bo3 / bo4 ket #64 'Hoàng hôn trên cầu' 17 lan)
+            BotXuyenSuot.tua("1h", nhanh + ": " + ly);
+            if (BotXuyenSuot.lanTuaCuoi != truoc) ghi("CHO 1 GIO (tua 1h) vi " + ly);
         }
 
         /** Ban do khoa: nhan cua ai qua Quay doi thuong -> Nhiem vu cua toi -> Thu thach cua ai (neu hop 95 khong hien). */
