@@ -52,7 +52,7 @@ final class KichBanHoiQuy2 {
     static Map<String, Integer> tui(BotChucNang.Bot b) {
         Map<String, Integer> m = new TreeMap<>();
         for (Map.Entry<Integer, Integer> e : b.thuoc.entrySet()) if (e.getValue() > 0) m.put("thuoc" + e.getKey(), e.getValue());
-        for (int[] d : b.doDung) m.merge("do" + d[1], 1, Integer::sum);
+        for (int[] d : b.doDung) m.merge("do" + d[1], BotChucNang.Bot.soO(d), Integer::sum); // chong type 28: cong so luong
         for (int[] g : b.ngoc.values()) m.merge("ngoc" + g[0] + (g[2] == 1 ? "k" : ""), g[1], Integer::sum);
         return m;
     }
@@ -167,11 +167,11 @@ final class KichBanHoiQuy2 {
             c.lamMoi();
             int day = c.doDung.size();
             int dem0 = 0;
-            for (int[] d : c.doDung) if (d[1] == 714) dem0++;
+            dem0 = c.soDo(714); // Keo Poke type 28 chong: cong so luong
             String t3 = KichBanGiftcode.nhap(c, ma2, "thanh cong", "hanh trang", "o trong", "khong");
             c.lamMoi();
             int dem1 = 0;
-            for (int[] d : c.doDung) if (d[1] == 714) dem1++;
+            dem1 = c.soDo(714); // Keo Poke type 28 chong: cong so luong
             String dd = BotChucNang.sql1("SELECT da_dung FROM tob_giftcode WHERE ma='" + ma2 + "'");
             ket("giftcode.tui_day_khong_mat", dem1 - dem0 == 2 || "0".equals(dd), "tui " + truoc + "->" + day + " mon; " + t3 + " | 714: " + dem0 + "->" + dem1 + " da_dung " + dd);
             KichBanDS2.raNgoai(c);
@@ -463,7 +463,7 @@ final class KichBanHoiQuy2 {
         KichBanHoiQuy.boQuaHuongDan(b);
         KichBanGymLang.raPallet(b);
         b.lamMoi();
-        String truoc = "lv" + b.lv + " xu" + b.xu + " lk" + b.lk + " thuoc" + b.soThuoc(1) + " do" + b.doDung.size() + " map" + b.mapId;
+        String truoc = "lv" + b.lv + " xu" + b.xu + " lk" + b.lk + " thuoc" + b.soThuoc(1) + " do" + b.tongMon() + " map" + b.mapId;
         b.close();
         Thread.sleep(3000);
         HoiQuy.ghi("khoi dong lai may chu: " + lenh);
@@ -485,7 +485,7 @@ final class KichBanHoiQuy2 {
         try (BotChucNang.Bot c = HoiQuy.vaoLai(u)) {
             c.lamMoi();
             c.bom(2500);
-            String sau = "lv" + c.lv + " xu" + c.xu + " lk" + c.lk + " thuoc" + c.soThuoc(1) + " do" + c.doDung.size() + " map" + c.mapId;
+            String sau = "lv" + c.lv + " xu" + c.xu + " lk" + c.lk + " thuoc" + c.soThuoc(1) + " do" + c.tongMon() + " map" + c.mapId;
             ket("khoi_dong_lai.giu_du_lieu", truoc.equals(sau), truoc + " => " + sau);
             int moi = 0;
             for (BotChucNang.SuKien e : c.su) if (e.cmd == -30 && e.so != null && e.so[1] == KichBanHuongDan.MENU_MOI && e.so[0] == KichBanHuongDan.NPC_SO_TAY) moi++;

@@ -56,12 +56,16 @@ class KichBanDS3 {
         return moi == null ? KHONG : moi[0];
     }
 
-    /** GM ait: them mon tpl (chi trong RAM) - tra ve id moi hoac -1. */
+    /**
+     * GM ait: them mon tpl (chi trong RAM) - tra ve id moi hoac -1. Vat pham type 28 xep chong (ChongVatPham): mon moi
+     * don vao chong san co (khong co id moi) -&gt; tra id chong vua TANG so luong.
+     */
     static int aitMon(BotChucNang.Bot b, int tpl, int clazz) throws IOException {
-        Set<Integer> cu = new HashSet<>();
-        for (int[] d : b.doDung) cu.add(d[0]);
+        Map<Integer, Integer> cu = new HashMap<>();
+        for (int[] d : b.doDung) cu.put(d[0], BotChucNang.Bot.soO(d));
         b.gm("ait " + b.ten + " " + tpl + " " + clazz + " 0 0", 1000);
-        int[] moi = b.timDo(d -> d[1] == tpl && !cu.contains(d[0]));
+        int[] moi = b.timDo(d -> d[1] == tpl && !cu.containsKey(d[0]));
+        if (moi == null) moi = b.timDo(d -> d[1] == tpl && BotChucNang.Bot.soO(d) > cu.getOrDefault(d[0], Integer.MAX_VALUE));
         return moi == null ? KHONG : moi[0];
     }
 

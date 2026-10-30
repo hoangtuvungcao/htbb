@@ -37,6 +37,7 @@ public final class KiemChongVatPham {
             nhanDien();
             gopDongTrung();
             nhanVaoChong();
+            giftcodeOCan();
             dungTruMot();
             truTheoMau();
             banHuyKho();
@@ -262,6 +263,37 @@ public final class KiemChongVatPham {
         } catch (final Exception e) {
             Kiem.dung("soOThuong(Char, NhiemVuMau) goi duoc: " + e, false);
         }
+    }
+
+    /**
+     * Cong kiem 31/10 (qa_giftcode_tui_day): giftcode "ITEM:714:2" (Keo Poke type 28) bao "can 2 o trong" du 2 mon chi vao
+     * MOT chong (createItemSoLuong xep chong). GiftcodeAnToan dem o qua ChongVatPham.soOCan (soOCanChong).
+     */
+    static void giftcodeOCan() {
+        final java.util.function.IntPredicate khongNgoc = id -> false;
+        final Char p = nhanVat(3);
+        final java.util.function.IntBinaryOperator o = (id, n) -> real.TuDongGame.soOCanVe(p, id, n);
+        Kiem.bang("giftcode ITEM type 28 x2, tui rong: 1 o (khong phai 2)", Integer.valueOf(1),
+                Integer.valueOf(com.htbb.pokemon.GiftcodeAnToanLogic.soOCanChong("ITEM:" + HUY_CHUONG + ":2", khongNgoc, o)));
+        Kiem.bang("hai dong ITEM cung loai cong lai: 1 o", Integer.valueOf(1), Integer.valueOf(
+                com.htbb.pokemon.GiftcodeAnToanLogic.soOCanChong("ITEM:" + HUY_CHUONG + ":1,ITEM:" + HUY_CHUONG + ":1", khongNgoc, o)));
+        Kiem.bang("ITEM khong chong (trang bi) x2 van 2 o + 1 type 28", Integer.valueOf(3), Integer.valueOf(
+                com.htbb.pokemon.GiftcodeAnToanLogic.soOCanChong("ITEM:" + TRANG_BI + ":2,ITEM:" + BUI_SAO + ":5", khongNgoc, o)));
+        p.iItems.add(mon(p, HUY_CHUONG, 1, 8));
+        p.iItems.add(mon(p, VE_KHOA, 1, 1));
+        p.iItems.add(mon(p, BUI_SAO, 1, 1));
+        Kiem.dung("tui 3/3 day", p.isFullInventory());
+        final int can = com.htbb.pokemon.GiftcodeAnToanLogic.soOCanChong("ITEM:" + HUY_CHUONG + ":2,XU:1000", khongNgoc, o);
+        Kiem.bang("tui day, da co chong cung loai: 0 o -> van nhan duoc", Integer.valueOf(0), Integer.valueOf(can));
+        Char.createItemSoLuong(HUY_CHUONG, 2, p);
+        Kiem.bang("nhan 2 vao chong: 10, van 3 dong", "10/3", tong(p.iItems, HUY_CHUONG, 1) + "/" + p.iItems.size());
+        Kiem.bang("tui day, loai chua co: 1 o", Integer.valueOf(1), Integer.valueOf(
+                com.htbb.pokemon.GiftcodeAnToanLogic.soOCanChong("ITEM:" + HUYET + ":2", khongNgoc, o)));
+        Kiem.bang("oItem null = cach cu (n o)", Integer.valueOf(2), Integer.valueOf(
+                com.htbb.pokemon.GiftcodeAnToanLogic.soOCanChong("ITEM:" + HUY_CHUONG + ":2", khongNgoc, null)));
+        final String gc = KiemQaToanGame.doc("src/real/GiftcodeAnToan.java");
+        Kiem.dung("GiftcodeAnToan dem o qua soOCanChong + ChongVatPham (TuDongGame.soOCanVe moi ITEM)",
+                gc.contains("GiftcodeAnToanLogic.soOCanChong(") && gc.contains("(id, n) -> TuDongGame.soOCanVe(p, id, n)"));
     }
 
     static void dungTruMot() {
