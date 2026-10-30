@@ -28,10 +28,12 @@ public class ServerListScr extends Screen {
     public static int cmvy;
     public static int cmyLim;
     public static int index;
-    static String[] nameServer = {"Vạn Xuân(mới)", "Cổ Loa", "Thăng Long", "Hoa Lư", "Kinh Môn", "Hoàng Vương", "Mỹ Sơn", "Tràng An", "Tiên La"};
-    public static String[] address = {"112.213.84.163", "27.0.12.112", "103.77.167.209", "103.77.167.209", "112.213.94.124", "112.213.94.124", "112.213.94.124", "112.213.94.124", "112.213.94.124"};
-    public static short[] port = {19129, 19130, 19129, 19129, 19129, 19129, 19129, 19129, 19129};
-    public static byte[] index_server = {0, 0, 0, 0, 0, 3, 4, 1, 2};
+    // Mặc định = đúng MỘT máy chủ Huyền Thoại Bảo Bối (TaiDanhSach thay bằng "HTBB-May-Chu" của bản build). Trước đây là
+    // danh sách 9 máy chủ của game gốc (IP của người khác) - hiện ra khi trình giả lập không đọc được MANIFEST.
+    static String[] nameServer = {"Huyền Thoại Bảo Bối"};
+    public static String[] address = {"180.93.57.30"};
+    public static short[] port = {19129};
+    public static byte[] index_server = {0};
     boolean trans;
     int pa;
 
@@ -129,17 +131,24 @@ public class ServerListScr extends Screen {
         }
         try {
             int i = dis.readByte();
-            nameServer = new String[i];
-            address = new String[i];
-            port = new short[i];
-            index_server = new byte[i];
+            String[] ten = new String[i];
+            String[] dc = new String[i];
+            short[] cg = new short[i];
+            byte[] ix = new byte[i];
             for (int i2 = 0; i2 < i; i2++) {
-                nameServer[i2] = dis.readUTF();
-                address[i2] = dis.readUTF();
-                port[i2] = dis.readShort();
-                index_server[i2] = dis.readByte();
+                ten[i2] = dis.readUTF();
+                dc[i2] = dis.readUTF();
+                cg[i2] = dis.readShort();
+                ix[i2] = dis.readByte();
             }
             dis.close();
+            // danh sach luu tu game goc cu (nhieu may chu, IP cua nguoi khac) thi bo, giu mac dinh / ban build
+            if (i == 1) {
+                nameServer = ten;
+                address = dc;
+                port = cg;
+                index_server = ix;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

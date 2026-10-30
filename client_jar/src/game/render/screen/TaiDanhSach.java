@@ -18,6 +18,11 @@ final class TaiDanhSach {
         try {
             String s = game.GameMidlet.instance == null ? null : game.GameMidlet.instance.getAppProperty("HTBB-May-Chu");
             if (s == null) {
+                // vai trinh gia lap (chay jar khong JAD, giả lập web) khong tra thuoc tinh MANIFEST qua getAppProperty:
+                // doc thang META-INF/MANIFEST.MF trong jar
+                s = docManifest("HTBB-May-Chu");
+            }
+            if (s == null) {
                 return null;
             }
             s = s.trim();
@@ -30,6 +35,46 @@ final class TaiDanhSach {
         } catch (Throwable e) {
             return null;
         }
+    }
+
+    /** Đọc một thuộc tính trong /META-INF/MANIFEST.MF của jar (CLDC: không có java.util.jar). null nếu không có. */
+    static String docManifest(String khoa) {
+        java.io.InputStream in = null;
+        try {
+            in = "".getClass().getResourceAsStream("/META-INF/MANIFEST.MF");   // CLDC: khong co class literal
+            if (in == null) {
+                return null;
+            }
+            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+            byte[] b = new byte[512];
+            int n;
+            while ((n = in.read(b)) > 0) {
+                bo.write(b, 0, n);
+            }
+            String t = new String(bo.toByteArray(), "UTF-8");
+            String dau = khoa + ":";
+            int i = 0;
+            while (i < t.length()) {
+                int j = t.indexOf('\n', i);
+                if (j < 0) {
+                    j = t.length();
+                }
+                String dong = t.substring(i, j).trim();
+                if (dong.startsWith(dau)) {
+                    return dong.substring(dau.length()).trim();
+                }
+                i = j + 1;
+            }
+        } catch (Throwable e) {
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Throwable e) {
+            }
+        }
+        return null;
     }
 
     /**
