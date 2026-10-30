@@ -87,7 +87,7 @@ public class BotChucNang {
         final List<int[]> thu = new ArrayList<>(), vatNuoi = new ArrayList<>();
         final Map<Integer, String> tenThu = new HashMap<>();
         int soMac = -1;
-        final List<Integer> dangMac = new ArrayList<>(), dangMacTpl = new ArrayList<>();
+        final List<Integer> dangMac = new ArrayList<>(), dangMacTpl = new ArrayList<>(), dangMacPlus = new ArrayList<>();
         final Map<Integer, int[]> quai = new HashMap<>(); // id -> {x,y,hp,lv,maxhp,tpl}
         final Map<Integer, int[]> hoangDa = new java.util.concurrent.ConcurrentHashMap<>(); // id quai -> {dex, bac} (-125)
         final Map<Integer, int[]> nguoi = new HashMap<>(); // actor -> {x,y}
@@ -602,12 +602,24 @@ public class BotChucNang {
                             int n = r.readByte();
                             soMac = n;
                             dangMac.clear();
+                            dangMacTpl.clear();
+                            dangMacPlus.clear();
+                            // MessageCreator.createCharWearingMessage: clazz, id, tpl, plus, level, mDur, dur, mau, pos, he, beKick,
+                            // hang, mp, khoa, UTF niem, phut thue, nAtb x (id byte, gia tri short). Doc het (30/10/2026: bot can id +
+                            // +N cua vu khi dang cam de nang cap); goi lech phien ban -> giu phan da doc.
                             for (int i = 0; i < n; i++) {
                                 r.readByte();
-                                dangMac.add((int) r.readShort());
+                                int idm = r.readShort();
                                 int tpl = r.readShort();
+                                int plus = r.readByte();
+                                dangMac.add(idm);
                                 dangMacTpl.add(tpl);
-                                break; // chi can so luong + mon dau; truong con lai thay doi theo phien ban
+                                dangMacPlus.add(plus);
+                                r.readByte(); r.readShort(); r.readShort();
+                                for (int k = 0; k < 7; k++) r.readByte();
+                                r.readUTF(); r.readShort();
+                                int na = r.readByte();
+                                for (int k = 0; k < na; k++) { r.readByte(); r.readShort(); }
                             }
                             e.so = new int[]{n};
                         }

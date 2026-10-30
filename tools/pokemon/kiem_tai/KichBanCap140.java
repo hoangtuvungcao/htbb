@@ -585,6 +585,7 @@ final class KichBanCap140 {
             if (nhanMoi()) return;
             muaThuoc();
             macDoTot();
+            nangVuKhi();
             if (lamDangLam()) return;
             nvPhu();
             if (capChan > b.lv) { luyen(4); return; }
@@ -1121,8 +1122,15 @@ final class KichBanCap140 {
                 if (!toi(dich)) { hop95(0); nhanCuaAiNeuKhoa(); return "khong toi duoc " + tenBd; }
                 int can = Integer.parseInt(mh.group(1));
                 boolean khungGio = Pattern.compile("\\(\\d+:\\d+").matcher(chu).find();
+                long t0 = System.currentTimeMillis();
+                int chet0 = soChet;
                 int ha = danh(tpl, Math.max(1, can), (can > 1 ? 7 : 2) * 60000L);
-                ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")");
+                double phut = Math.max(0.1, (System.currentTimeMillis() - t0) / 60000.0);
+                Matcher mtg = Pattern.compile("trong (\\d+) phút").matcher(chu);
+                // toc do ha that cua nhan vat (do can bang buoc ha trong N phut: can / N con/phut)
+                String toc = mtg.find() ? String.format(Locale.ROOT, " | TOC DO %.2f con/phut, can %.2f (%d/%s phut), cap %d, maxhp %d, guc %d",
+                        ha / phut, can / Double.parseDouble(mtg.group(1)), can, mtg.group(1), b.lv, b.maxhp, soChet - chet0) : "";
+                ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")" + toc);
                 if (khungGio) choGio("'" + q.ten + "' can dung khung gio: " + chu);
                 if (lan > 14) return "ha " + tenQ + " " + lan + " lan van khong xong: " + chu;
                 return "-";
@@ -1332,6 +1340,64 @@ final class KichBanCap140 {
         int loaiVuKhi() {
             int[] t = ttDo(BotXuyenSuot.vuKhiShop(lop, 1));
             return t == null ? -1 : t[0];
+        }
+
+        long lanNangVk;
+
+        /** +N vu khi nguoi choi that thuong co o cap nay: +2 o cap 24, +3 / 36, +4 / 48, +5 / 60, +6 tu 72. */
+        static int plusMucTieu(int lv) {
+            return Math.max(0, Math.min(6, lv / 12));
+        }
+
+        /**
+         * Nang vu khi dang cam o Machamp (nha 103) nhu nguoi choi that dung da luyen kim roi tu quai: thao ra, nang tung bac
+         * (dung bua bao ho neu co), mac lai. Yeu cau chu game 30/10/2026: nhan vat doan phai manh nhu nguoi choi that cung cap
+         * (truoc day bot chi nang khi nhiem vu bat buoc "Nâng ... +N" - moi bot cam vu khi +0).
+         */
+        void nangVuKhi() throws Exception {
+            if (b.lv < 20 || dangNangCap || System.currentTimeMillis() - lanNangVk < 20 * 60000L) return;
+            int loai = loaiVuKhi();
+            int k = -1;
+            for (int i = 0; i < b.dangMac.size() && i < b.dangMacTpl.size() && i < b.dangMacPlus.size(); i++) {
+                int[] t = ttDo(b.dangMacTpl.get(i));
+                if (t != null && t[0] == loai) { k = i; break; }
+            }
+            if (k < 0) return; // chua biet vu khi dang cam (goi 15 chua toi - sau lan qua cong dau)
+            int muc = plusMucTieu(b.lv), dau = b.dangMacPlus.get(k);
+            if (dau >= muc) return;
+            lanNangVk = System.currentTimeMillis();
+            final int idVk = b.dangMac.get(k), tplVk = b.dangMacTpl.get(k);
+            KichBanCap140TinhNang.veLangDiBo(this);
+            if (!KichBanDS2.vaoNha(b, 103)) return;
+            Set<Integer> truoc = new HashSet<>();
+            b.lamMoi();
+            for (int[] x : b.doDung) truoc.add(x[0]);
+            b.gui(30, (short) idVk);
+            b.bom(800);
+            b.lamMoi();
+            int[] vk = b.timDo(x -> x[1] == tplVk && !truoc.contains(x[0]));
+            if (vk == null) vk = b.timDo(x -> x[1] == tplVk);
+            if (vk == null) { ghi("nang vu khi: khong thay vu khi trong tui sau khi thao"); KichBanDS2.raNgoai(b); return; }
+            final int idN = vk[0];
+            int lan = 0, plus = vk[2];
+            String t = "";
+            long xu0 = b.xu;
+            while (plus < muc && lan < 25) {
+                lan++;
+                t = KichBanDS3.moNangCap(b, idN, true);
+                b.gui(77, (byte) -1); b.bom(200);
+                b.lamMoi();
+                int[] sau = b.timDo(x -> x[0] == idN);
+                if (sau == null) { ghi("nang vu khi: mat mon sau khi nang (" + t + ")"); break; }
+                plus = sau[2];
+                if (t.contains("het da") || t.contains("cần") && !t.contains("Thành công") && !t.contains("Thất bại")) break;
+            }
+            b.gui(29, (short) idN);
+            b.bom(800);
+            b.lamMoi();
+            if (b.xu < xu0) xuTieu += xu0 - b.xu;
+            ghi("NANG VU KHI tpl " + tplVk + ": +" + dau + " -> +" + plus + " (muc +" + muc + ", " + lan + " lan, xu " + xu0 + " -> " + b.xu + ") | " + t);
+            KichBanDS2.raNgoai(b);
         }
 
         // ---------------------------------------------------------------- mac do roi tot hon
