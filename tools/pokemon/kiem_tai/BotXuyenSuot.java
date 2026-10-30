@@ -650,6 +650,25 @@ public class BotXuyenSuot {
                 if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
                 if (cungBanDo(tu, dich)) return true;
             }
+            // khong co duong di bo ve lang (ban do cap cao ngoai do thi: 19 / 20 / 26 ...): "Về làng miễn phí" o So tay
+            // (nguoi choi that; het luot thi Day thoat hiem / Ve dich chuyen - bot chiu)
+            if (KichBanDS.laLang(dich) && duong(tu, dich) == null && !KichBanDS.laLang(tu)) {
+                int m = KichBanHoiQuy.soTay(b, "Về làng");
+                if (m >= 0) {
+                    b.cho(x -> x.coLenh(m, 12), 5000);
+                    if (b.coLenh(m, 12)) { b.gui(12, (short) -500, (short) 0, (short) 0); b.bom(1200); }
+                    b.px = b.tx * 16 + 8;
+                    b.py = b.ty * 16 + 8;
+                    ghi("ve lang bang So tay (khong co duong tu " + tu + "): -> " + b.mapId + " | " + b.chuTu(m));
+                    tu = b.mapId;
+                    if (cungBanDo(tu, dich)) return true;
+                }
+            }
+            // ban do khong co duong toi dich (bot doan / ban do cap cao ngoai do thi): ve lang truoc roi di tu lang
+            if (duong(tu, dich) == null && !KichBanDS.laLang(tu) && !KichBanDS.laLang(dich) && !CUM_JOHTO.contains(tu)
+                    && (duong(0, dich) != null || duong(10, dich) != null)) {
+                if (toi(0)) tu = b.mapId;
+            }
             // cum Johto 10/11/13/14/15 khong di bo toi duoc truoc cap 69 (chi qua 118 / 23 / 24): Arcanine "Đến New Bark"
             if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {
                 if (quaArcanine("New Bark")) tu = b.mapId;
