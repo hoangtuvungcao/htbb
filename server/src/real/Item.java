@@ -571,6 +571,37 @@ public class Item extends Actor {
         return -1;
     }
 
+    /**
+     * 31/10/2026 (chu game: "do vat cam tay bi hong, thoat game vao lai thi lai treo binh thuong"): noi nap trang bi /
+     * hanh trang / thu cuoi goi setTemplate LAN NUA sau initInfoFromDB -> durable / mDurable ve toi da cua mau = dang
+     * nhap lai la SUA DO MIEN PHI (Tu dong lai danh duoc). Nay nap lai mau nhung GIU do ben da luu (kep trong
+     * [0, toi da cua mau]); hong thi van hong toi khi Tho ren sua (Char.repairItem).
+     */
+    public void napLaiTemplateGiuDoBen() {
+        final short ben = this.durable, benNho = this.mDurable;
+        this.setTemplate(this.tempateID, this.clazz, this.clazz, this.tempateID);
+        final int[] kq = doBenSauNap(ben, benNho, this.durable);
+        this.durable = (short) kq[0];
+        this.mDurable = (short) kq[1];
+    }
+
+    /**
+     * Do ben sau khi nap lai mau: {durable, mDurable}. {@code toiDaMau} = durable cua mau (mDurable toi da = x10). Mau
+     * khong co do ben (0) -> giu nhu mau; mDurable chua tung luu (-1) -> day; con lai kep vao [0, toi da] va durable
+     * = tran(mDurable / 10) nhu HoiSinhGame.truDoBen.
+     */
+    public static int[] doBenSauNap(final int durable, final int mDurable, final int toiDaMau) {
+        if (toiDaMau <= 0) {
+            return new int[]{toiDaMau, toiDaMau * 10};
+        }
+        if (mDurable < 0) {
+            return new int[]{toiDaMau, toiDaMau * 10};
+        }
+        final int md = Math.min(mDurable, toiDaMau * 10);
+        // durable da luu = 0 (hong) giu hong du mDurable le (Char.checkDurableWeapone xet ca hai)
+        return new int[]{durable <= 0 ? 0 : (md + 9) / 10, md};
+    }
+
     public void setTemplate(final int template_id, final int clazz, final int classTemplate, final int idtemplate) {
         try {
             ItemTemplates template = null;

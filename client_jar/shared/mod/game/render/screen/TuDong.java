@@ -149,6 +149,17 @@ public final class TuDong {
                 m.writer().writeByte(tuHoiSinh && hoiSinhLuong ? 1 : 0);
             } else if (loai == 2 && banKinh > 0) {
                 m.writer().writeByte(banKinh); // lý do tắt
+            } else if (loai == 4) {
+                // 0.9.24 (chủ game: "jar bật auto không dùng các chiêu đã gán à?"): kèm chiêu đánh đã gán để máy chủ chỉ
+                // chọn trong đó (máy chủ cũ bỏ qua phần thừa): byte 1, byte cờ (1 = Thứ tự chiêu tự đặt), byte n, n chiêu
+                MainChar mc = Canvas.gameScr == null ? null : Canvas.gameScr.mainChar;
+                byte[] ds = chieuGan(mc);
+                m.writer().writeByte(1);
+                m.writer().writeByte(coThuTu() ? 1 : 0);
+                m.writer().writeByte(ds.length);
+                for (int i = 0; i < ds.length; ++i) {
+                    m.writer().writeByte(ds[i]);
+                }
             }
             GameService.gI().session.sendMessage(m);
             m.cleanup();
@@ -501,6 +512,16 @@ public final class TuDong {
                     return;
                 }
                 byte sk = (byte) keSo;
+                if (sk != 0 && !coTrong(chieuGan(mc), sk)) {
+                    // máy chủ cũ (chưa biết chiêu đã gán) chọn chiêu người chơi không gán: dùng chiêu đã gán của mình
+                    sk = chonChieu(mc, l);
+                    if (sk < 0 && l - mc.timeLastUseSkills[0] > mc.coolDownSkill[0]) {
+                        sk = 0;   // chiêu đã gán đang hồi / thiếu PP: đánh thường
+                    }
+                    if (sk < 0) {
+                        return;
+                    }
+                }
                 if (ppChieu(mc, sk) > mc.mp) {
                     // máy chủ chọn chiêu mà PP trên client không đủ (game sẽ từ chối "Không đủ PP" = đứng im):
                     // dùng chiêu đủ PP của mình (chiêu 0 PP), chờ bình / gói PP thật của máy chủ
@@ -809,6 +830,9 @@ public final class TuDong {
             return;
         }
         byte sk = chonChieu(mc, l);
+        if (sk < 0 && chieuGan(mc).length > 0 && ppChieu(mc, (byte) 0) <= mc.mp && l - mc.timeLastUseSkills[0] > mc.coolDownSkill[0]) {
+            sk = 0;   // 0.9.24: chiêu đã gán đang hồi / thiếu PP: đánh thường (như máy chủ)
+        }
         if (sk < 0) {
             return;
         }
@@ -835,15 +859,34 @@ public final class TuDong {
         return -1;
     }
 
-    /** Danh sách chiêu sẽ dùng theo thứ tự. */
+    /** Danh sách chiêu sẽ dùng theo thứ tự: chiêu đã gán; chưa gán chiêu đánh nào thì mọi chiêu đánh đã học. */
     static byte[] dsChieu(MainChar mc) {
-        int n = 0;
+        byte[] t = chieuGan(mc);
+        return t.length > 0 ? t : chieuDanh(mc);
+    }
+
+    /** Người chơi tự đặt "Thứ tự chiêu" (ít nhất một ô khác Tự chọn). */
+    static boolean coThuTu() {
         for (int i = 0; i < thuTu.length; ++i) {
             if (thuTu[i] >= 0) {
-                ++n;
+                return true;
             }
         }
-        if (n > 0) {
+        return false;
+    }
+
+    /**
+     * 0.9.24: chiêu đánh người chơi ĐÃ GÁN cho Tự động theo thứ tự: "Thứ tự chiêu" nếu tự đặt, không thì chiêu đánh trên
+     * trang chiêu tự động dùng (ô nhanh, theo thứ tự ô); rỗng = chưa gán chiêu đánh nào. Gửi máy chủ kèm lệnh 4.
+     */
+    static byte[] chieuGan(MainChar mc) {
+        if (coThuTu()) {
+            int n = 0;
+            for (int i = 0; i < thuTu.length; ++i) {
+                if (thuTu[i] >= 0) {
+                    ++n;
+                }
+            }
             byte[] r = new byte[n];
             n = 0;
             for (int i = 0; i < thuTu.length; ++i) {
@@ -853,8 +896,19 @@ public final class TuDong {
             }
             return r;
         }
-        byte[] t = chieuTrang(mc, trangDung());
-        return t.length > 0 ? t : chieuDanh(mc);
+        return chieuTrang(mc, trangDung());
+    }
+
+    static boolean coTrong(byte[] ds, byte s) {
+        if (ds.length == 0) {
+            return true;   // chưa gán chiêu đánh nào: mọi chiêu đã học
+        }
+        for (int i = 0; i < ds.length; ++i) {
+            if (ds[i] == s) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Trang chiêu tự động dùng (chỉ số 0..). */

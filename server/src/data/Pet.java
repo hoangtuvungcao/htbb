@@ -151,7 +151,7 @@ public class Pet extends Actor {
             Item item = new Item();
             item.dbInfo = dtitem[0];
             item.initInfoFromDB();
-            item.setTemplate(item.tempateID, item.clazz, item.clazz, item.tempateID);
+            item.napLaiTemplateGiuDoBen();
             String[] data = Char.split(dtitem[1], ",");
             String countnguhanh = "";
 

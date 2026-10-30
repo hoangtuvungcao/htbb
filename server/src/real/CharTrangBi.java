@@ -496,7 +496,7 @@ class CharTrangBi {
                 item.dbInfo = dtitem[0];
                 item.initInfoFromDB();
                 item.owner = self.charDBID;
-                item.setTemplate(item.tempateID, item.clazz, item.clazz, item.tempateID);
+                item.napLaiTemplateGiuDoBen();
                 if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                     try {
                         com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");
@@ -698,7 +698,7 @@ class CharTrangBi {
                     final Item item = new Item();
                     item.dbInfo = dtitem[0];
                     item.initInfoFromDB();
-                    item.setTemplate(item.tempateID, item.clazz, item.clazz, item.tempateID);
+                    item.napLaiTemplateGiuDoBen();
                     if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
                         try {
                             com.htbb.thongbao.ThongBao.rieng(self, "Thời gian sử dụng " + item.getTemplate().name + " đã hết");

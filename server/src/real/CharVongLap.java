@@ -985,7 +985,7 @@ class CharVongLap {
                     item.dbInfo = dtitem[0];
                     item.initInfoFromDB();
                     item.owner = self.charDBID;
-                    item.setTemplate(item.tempateID, item.clazz, item.clazz, item.tempateID);
+                    item.napLaiTemplateGiuDoBen();
     
                     // Only keep essential time-based checks
                     if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0) {
