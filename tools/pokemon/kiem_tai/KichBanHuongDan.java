@@ -426,7 +426,13 @@ class KichBanHuongDan {
     static String hanhDong(BotChucNang.Bot b, int vat, int m) throws Exception {
         switch (vat) {
             case 53: { // dung thuoc khi mau voi: ra dong danh toi khi mat mau roi uong
-                if (!quaCong(b, 0) || b.mapLoad != 1) return "khong ra duoc dong Pallet";
+                // di bo ra cong co the bi quai / nguoi chan duong: thu lai vai lan (nguoi choi that cung di lai)
+                boolean ra = false;
+                for (int lan = 0; lan < 4 && !ra; lan++) {
+                    ra = quaCong(b, 0) && b.mapLoad == 1;
+                    if (!ra) b.bom(1500);
+                }
+                if (!ra) return "khong ra duoc dong Pallet (map " + b.mapId + ")";
                 for (int lan = 0; lan < 30 && chinh(b, m, 1) == null; lan++) {
                     haMotCon(b, 2);
                     b.gui(22, (byte) 1); // HP / PP day thi server tu choi ("HP đã đầy"), khong tinh
