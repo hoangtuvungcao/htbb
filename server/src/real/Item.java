@@ -1032,7 +1032,9 @@ public class Item extends Actor {
                 }
             }
         }
-        return ChiSoTrangBiGame.locHienThi(this, allAtb, null); // bat: an dong ngung, so hien = so tinh
+        final Vector<InfoItemAttribute> hien = ChiSoTrangBiGame.locHienThi(this, allAtb, null); // bat: an dong ngung, so hien = so tinh
+        com.htbb.pokemon.ChongVatPham.themDongSoLuong(this, hien); // [chong-vat-pham] "Số lượng: N" cua chong type 28
+        return hien;
     }
 
     /**
@@ -1254,6 +1256,9 @@ public class Item extends Actor {
                 this.CaiTao = Integer.parseInt(data[32]);
                 this.soLanTinhLuyenThatBai = Integer.parseInt(data[33]);
             } catch (final Exception ex) {
+            }
+            if (this.quanlity < 1) {
+                this.quanlity = 1; // [chong-vat-pham] so luong chong (truong 29); dong cu ghi 0 / loi doc = 1 mon
             }
             // [khoa-khi-mac] truong moi o cuoi, rieng mot khoi: chuoi cu (34 truong tro xuong) giu mac dinh 0.
             try {
@@ -1955,6 +1960,8 @@ public class Item extends Actor {
         newItem.ngocHe = this.ngocHe; // [bo-ngoc] ngoc da khảm di theo mon
         // [khoa-khi-mac] bo dem pha khoa theo MON: ban qua gian hang roi mua lai khong reset duoc tran 3 lan.
         newItem.soLanPhaKhoa = this.soLanPhaKhoa;
+        // [chong-vat-pham] chong type 28 qua gian hang / mua lai / cho: giu so luong (truoc constructor dat lai 1 = mat mon)
+        newItem.quanlity = Math.max(1, this.quanlity);
         return newItem;
     }
 

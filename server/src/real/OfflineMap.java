@@ -1328,6 +1328,12 @@ public class OfflineMap extends Map {
                         return;
                      }
 
+                     // [chong-vat-pham] chong > 1: ban MOT don vi (gia mot mon), chong giam 1; mua lai = ban sao 1 don vi.
+                     if (com.htbb.pokemon.ChongVatPham.so(item) > 1) {
+                        banMotTrongChong(player, item, giaThap);
+                        return;
+                     }
+
                      if (item.dbid != 0) {
                         Database.instance.deleteItem(item.dbid);
                      }
@@ -1378,6 +1384,46 @@ public class OfflineMap extends Map {
                var10.printStackTrace();
             }
          }
+      }
+   }
+
+   /** [chong-vat-pham] Ban 1 don vi cua chong cho NPC (cung gia / luat khoa nhu ban mon le o doSellItem). */
+   public static void banMotTrongChong(Char player, Item item, boolean giaThap) {
+      final int kq = com.htbb.pokemon.ChongVatPham.truMot(player.iItems, item);
+      if (kq == com.htbb.pokemon.ChongVatPham.KHONG_CO) { // luong khac vua lay mat: khong ban, lam moi tui
+         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+         return;
+      }
+      if (kq == com.htbb.pokemon.ChongVatPham.DA_LAY_RA) { // chong vua con 1 (luong khac vua dung): ban mon cuoi
+         player.removeIDItem(item.id);
+      }
+      long xu = (long)(item.getTemplate().price / 5 + item.plus * 1000);
+      if (Char.up_px_xu_vip != null && player.vip >= 0 && player.vip < Char.up_px_xu_vip.length) {
+         xu += xu * (long)Char.up_px_xu_vip[player.vip] / 100L;
+      }
+      if (com.htbb.pokemon.LauDai.bat()) {
+         xu = com.htbb.pokemon.KinhTeLauDai.giaBanNpc(item.getTemplate().price);
+      }
+      if (giaThap) {
+         xu = com.htbb.pokemon.BanDoKhoa.gia(xu);
+      }
+      player.addXu(xu, giaThap ? com.htbb.pokemon.BanDoKhoa.LOG_BAN : "offline map 4");
+      final int con = kq == com.htbb.pokemon.ChongVatPham.DA_LAY_RA ? 0 : com.htbb.pokemon.ChongVatPham.so(item);
+      try {
+         Database.instance.saveLogItemSellShop(player.charname, player.charDBID, player.lvDetail.lv + " ITEM x1 (chong con " + con + ") | "
+               + item.getTemplate().name + " | " + item.getDBInfo() + "|" + item.getAttribute()
+               + "_" + (giaThap ? com.htbb.pokemon.BanDoKhoa.LOG_BAN + " " + xu : String.valueOf(xu)));
+      } catch (Exception ignored) {
+      }
+      final Item mot = com.htbb.pokemon.ChongVatPham.banSao(item, 1);
+      player.doAddItemSellShop(mot);
+      mot.prizeSell = (item.getTemplate().price / 5 + item.plus * 1000) * 2;
+      player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+      player.sendMessage(MessageCreator.createServerAlertMessage("Đã bán 1 " + item.getTemplate().name + ": +" + xu + " xu (còn "
+            + con + ").", ""));
+      try {
+         Database.instance.saveCharAuto(player);
+      } catch (Exception ignored) {
       }
    }
 

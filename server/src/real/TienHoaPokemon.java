@@ -131,7 +131,7 @@ public final class TienHoaPokemon {
         }
         // Tru vat pham TRUOC (CODING_CONVENTION muc 5). Vector.remove la dong bo va tra
         // false neu luong khac vua lay mat mon nay (giao dich, ban...) -> khong tien hoa.
-        if (!p.iItems.remove(item)) {
+        if (!com.htbb.pokemon.ChongVatPham.tieuMot(p, item)) { // [chong-vat-pham] chong: tru 1 vien
             return true;
         }
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));

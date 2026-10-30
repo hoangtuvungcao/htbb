@@ -262,10 +262,33 @@ public class BotXuyenSuot {
     static volatile long tongTuaPhut = 0;
     static final List<String> NHAT_KY_TUA = Collections.synchronizedList(new ArrayList<>());
 
-    /** Tua dong ho ao (moi lan toi da 1 lan / 20 giay cho tat ca cac dong). */
+    /**
+     * Danh dau "dang danh Gym" chung moi JVM bot tren may (tep trong thu muc tam): tua dong ho ao trong luc co tran Gym lam
+     * het gio tran (BossLauDai het gio theo DongHo ao) -> may chu go boss, bot tuong thang. Choi 30/10/2026: bot doan
+     * d130 "thang" Gym Celadon o giay 60 dung luc bo2 tua 1 ngay (ve chuong), cua ai khong duoc tinh.
+     */
+    static final File GYM_DANG = new File(System.getProperty("gymDang", System.getProperty("java.io.tmpdir") + "/htbb_gym_dang"));
+
+    static void gymBatDau(String ai) {
+        try { GYM_DANG.mkdirs(); new FileOutputStream(new File(GYM_DANG, ai)).close(); } catch (IOException ignored) { }
+    }
+
+    static void gymXong(String ai) {
+        new File(GYM_DANG, ai).delete();
+    }
+
+    static boolean coTranGym() {
+        File[] ds = GYM_DANG.listFiles();
+        if (ds == null) return false;
+        for (File f : ds) if (System.currentTimeMillis() - f.lastModified() < 11 * 60000L) return true;
+        return false;
+    }
+
+    /** Tua dong ho ao (moi lan toi da 1 lan / 20 giay cho tat ca cac dong; khong tua khi co bot dang danh Gym). */
     static void tua(String thamSo, String lyDo) {
         synchronized (KHOA_DH) {
             if (dieuPhoi == null || System.currentTimeMillis() - lanTuaCuoi < 20000) return;
+            if (coTranGym()) { System.out.println("[DIEU PHOI] hoan tua " + thamSo + " (" + lyDo + "): co bot dang danh Gym"); return; }
             try {
                 int m = dieuPhoi.moc();
                 dieuPhoi.chat("tua " + thamSo);
@@ -616,7 +639,8 @@ public class BotXuyenSuot {
                 for (int c : new int[]{0, 301, 70, 80, 1701, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
                 if (tot < 0 || !toi(tot)) return false;
             }
-            if (KichBanHuongDan.toiNpc(b, 4) != null) return false;
+            String khong = KichBanHuongDan.toiNpc(b, 4);
+            if (khong != null) { ghi("Arcanine '" + noi + "': " + khong); return false; }
             int m = b.moc();
             b.gui(23, (byte) 4);
             if (b.doiMenu(m, 4, 0, 3000) <= 0) return false;
@@ -634,6 +658,8 @@ public class BotXuyenSuot {
 
         /** Khu xa co Arcanine gac cong ("Về làng" mien phi): New Bark 10 (tu 30/10/2026), Chan nui Silver 41, Nui Silver 42, Duong Victory 118. */
         static final Set<Integer> KHU_XA_ARCANINE = new HashSet<>(Arrays.asList(10, 41, 42, 118));
+        /** Cum Johto mo cap 27..40 (New Bark 10 + 11 / 13 / 14 / 15): chi noi voi 113 / 114 (cap 72+). */
+        static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15));
 
         // ---------------------------------------------------------------- di chuyen giua cac map
         boolean toi(int dich) throws Exception {
@@ -641,13 +667,30 @@ public class BotXuyenSuot {
             int tu = b.mapId;
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
             // cum Johto -> lang: di bo toi New Bark roi Arcanine "Về làng" (truoc 30/10/2026 duong mot chieu)
-            if (duong(tu, dich) == null && KichBanDS.laLang(dich) && dich != 10) {
-                for (int k : KHU_XA_ARCANINE) {
-                    if (cungBanDo(tu, k) || duong(tu, k) != null) {
-                        if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
-                        break;
-                    }
+            // (duong() bo qua khoa cap: tu cum Johto "co duong" qua 113 / 114 cap 72+ nhung cong bi chan)
+            if (KichBanDS.laLang(dich) && (KHU_XA_ARCANINE.contains(tu) || CUM_JOHTO.contains(tu))) {
+                int k = KHU_XA_ARCANINE.contains(tu) ? tu : 10;
+                if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
+                if (cungBanDo(tu, dich)) return true;
+            }
+            // khong co duong di bo ve lang (ban do cap cao ngoai do thi: 19 / 20 / 26 ...): "Về làng miễn phí" o So tay
+            // (nguoi choi that; het luot thi Day thoat hiem / Ve dich chuyen - bot chiu)
+            if (KichBanDS.laLang(dich) && duong(tu, dich) == null && !KichBanDS.laLang(tu)) {
+                int m = KichBanHoiQuy.soTay(b, "Về làng");
+                if (m >= 0) {
+                    b.cho(x -> x.coLenh(m, 12), 5000);
+                    if (b.coLenh(m, 12)) { b.gui(12, (short) -500, (short) 0, (short) 0); b.bom(1200); }
+                    b.px = b.tx * 16 + 8;
+                    b.py = b.ty * 16 + 8;
+                    ghi("ve lang bang So tay (khong co duong tu " + tu + "): -> " + b.mapId + " | " + b.chuTu(m));
+                    tu = b.mapId;
+                    if (cungBanDo(tu, dich)) return true;
                 }
+            }
+            // ban do khong co duong toi dich (bot doan / ban do cap cao ngoai do thi): ve lang truoc roi di tu lang
+            if (duong(tu, dich) == null && !KichBanDS.laLang(tu) && !KichBanDS.laLang(dich) && !CUM_JOHTO.contains(tu)
+                    && (duong(0, dich) != null || duong(10, dich) != null)) {
+                if (toi(0)) tu = b.mapId;
             }
             // cum Johto 10/11/13/14/15 khong di bo toi duoc truoc cap 69 (chi qua 118 / 23 / 24): Arcanine "Đến New Bark"
             if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {

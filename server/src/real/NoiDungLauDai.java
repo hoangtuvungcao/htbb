@@ -262,7 +262,10 @@ public final class NoiDungLauDai {
         return true;
     }
 
-    /** Phat 1 dong roi: ngoc -> doAddGemItem; item type 28 -> createItemSoLuong (khoa); khac: bo qua. */
+    /**
+     * Phat 1 dong roi: ngoc -> doAddGemItem; item type 28 -> createItemSoLuong (khoa, don vao chong - ChongVatPham);
+     * khac: bo qua.
+     */
     static void phat(final Char p, final String loai, final int id, final int sl, final boolean khoa) {
         try {
             if ("ngoc".equals(loai)) {
@@ -270,7 +273,7 @@ public final class NoiDungLauDai {
                 p.sendMessage(MessageCreator.createCharGemItem(p));
             } else if ("item".equals(loai)) {
                 final ItemTemplates t = Map.itemTemplates.get(5).get(Integer.valueOf(id));
-                if (t != null && t.type == 28 && !p.isFullInventory()) {
+                if (t != null && t.type == 28 && com.htbb.pokemon.ChongVatPham.conCho(p, id, 1)) { // [chong-vat-pham] tui day van don vao chong
                     Char.createItemSoLuong(id, sl, p);
                 }
             }

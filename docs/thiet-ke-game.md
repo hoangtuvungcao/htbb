@@ -466,6 +466,24 @@ một trần**.
 - Phân biệt với **Tự động đánh** (mục 8.2): Tự động đánh chỉ chạy khi online và chịu nguyên luật năng lượng; phiếu ủy
   thác là treo offline có trần riêng.
 
+### 3.4b Chồng vật phẩm tiêu hao (type 28)
+
+Vật phẩm `data_item.type = 28` giống hệt (Huy chương Gym 1039, vé / bùa tăng tốc 1250..1257, Bụi sao 1034, đá tiến hoá,
+quả mọng, hộp, quà…) **gộp thành một ô có số lượng**, tối đa **999 / ô** (vượt thì sang ô mới), thay vì mỗi món một ô
+(`com.htbb.pokemon.ChongVatPham`, 30/10/2026).
+
+- Chỉ gộp khi cùng template, cùng khoá (khoá / không khoá tách riêng) và **không có dữ liệu riêng**: món có hạn dùng,
+  +cường hoá, khảm ngọc / ngọc hệ, dòng chỉ số riêng, đang rao bán thì vẫn mỗi món một ô.
+- Số lượng lưu ở trường `quanlity` (vị trí 29 chuỗi vật phẩm). Lúc đăng nhập máy chủ gộp các dòng trùng có sẵn (hành
+  trang + kho), tổng không đổi.
+- Nhận (Gym, nhiệm vụ, đổi thưởng, rơi): dồn vào chồng có sẵn trước — **túi đầy vẫn nhận** nếu chồng còn chỗ; kiểm ô
+  trống chỉ tính phần tràn chồng.
+- Dùng / cho thú cưng ăn / mở hộp: trừ **1**. Bán NPC, Huỷ / bỏ: **1 món mỗi lần bấm** (giá một món). Đổi thưởng, chế
+  tạo, nâng cấp: trừ đúng số cần qua các chồng. Kho Kangaskhan: gửi cả chồng, rút ra dồn vào chồng trong túi. Giao dịch
+  vật phẩm đang tắt; gian hàng / chợ / mua lại giữ nguyên số lượng của chồng.
+- Client: chi tiết vật phẩm có dòng "Số lượng: N" (mọi bản); bản client sau 0.9.22 thêm số ở góc ô. Xem
+  [van-hanh.md](van-hanh.md) mục 9.8.
+
 ### 3.5 Trần cấp theo mùa và ngày khai trương
 
 Mặc định **tắt** (`sv.tran_cap_theo_mua=0`): trần = cấp 100, tinh thông mở đủ, mọi `ngay_mo` của nội dung bị bỏ qua

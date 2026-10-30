@@ -693,7 +693,7 @@ public final class HoiSinhGame {
             return true;
         }
         final Item it = layVatPham(p);
-        if (it == null || !p.iItems.remove(it)) {
+        if (it == null || !com.htbb.pokemon.ChongVatPham.tieuMot(p, it)) { // [chong-vat-pham] chong: tru 1
             bao(p, "Không có Thuốc hồi sinh tối đa.");
             return false;
         }
@@ -869,7 +869,7 @@ public final class HoiSinhGame {
             hp = c.hpThuoc;
         } else {
             final Item it = layVatPham(h);
-            if (it == null || !h.iItems.remove(it)) {
+            if (it == null || !com.htbb.pokemon.ChongVatPham.tieuMot(h, it)) { // [chong-vat-pham] chong: tru 1
                 bao(h, "Bạn không còn Thuốc hồi sinh tối đa.");
                 return;
             }

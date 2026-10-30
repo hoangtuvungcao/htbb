@@ -14308,6 +14308,54 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     
 
+    /**
+     * [chong-vat-pham] Mon MAU giong het mon createItemSoLuong tao (khoa, clazz -1, chi so co dinh 835 / 911), chua co id
+     * va chua vao tui - de tinh cho chong (com.htbb.pokemon.ChongVatPham.soOCan). null neu khong co template.
+     */
+    public static Item mauSoLuong(final int idtemplate, final Char p) {
+        final ItemTemplates t = (ItemTemplates) Map.itemTemplates.get(5).get(idtemplate);
+        if (t == null) {
+            return null;
+        }
+        final Item mau = new Item(t, false, 0, 0, idtemplate);
+        mau.owner = p == null ? 0 : p.charDBID;
+        mau.level = t.level;
+        mau.identify = mau.owner;
+        mau.clazz = -1;
+        mau.lock = 1;
+        if (idtemplate == 835) {
+            mau.createAttributeNhanhHoaDaoGiftcode();
+        }
+        mau.createAttributeSkinKimCangLong();
+        return mau;
+    }
+
+    /**
+     * [chong-vat-pham] Nhanh chong cua createItemSoLuong: type 28 khong du lieu rieng don vao chong san co (toi 999),
+     * phan thua thanh chong moi khi con o (com.htbb.pokemon.ChongVatPham.nhan). Truoc 30/10/2026 moi mon mot o.
+     */
+    static Item nhanChongSoLuong(final Item newItem, final int soLuong, final Char p) {
+        final int muon = Math.max(1, soLuong);
+        final int[] kq = com.htbb.pokemon.ChongVatPham.nhan(p, newItem, muon);
+        if (kq[1] == 0) {
+            p.removeIDItem(newItem.id); // mon mau khong vao tui (don het vao chong cu): tra id
+        }
+        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
+        final String ten = newItem.getName();
+        if (kq[0] <= 0) {
+            p.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy, không nhận được " + ten + ".", ""));
+        } else {
+            p.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã nhận được " + kq[0] + " " + ten
+                    + (kq[0] < muon ? " (hành trang đầy, thiếu " + (muon - kq[0]) + ")" : ""), ""));
+        }
+        try {
+            Database.instance.saveOrtherLog("", p.getName(), newItem.getTemplate().id + "|" + newItem.getName() + " x" + kq[0] + "/" + muon,
+                    "item_soluong");
+        } catch (final Exception ignored) {
+        }
+        return newItem;
+    }
+
     public static Item createItemSoLuong(final int idtemplate, int soLuong, final Char p) {
         final Item newItem = new Item((ItemTemplates) Map.itemTemplates.get(5).get(idtemplate), false, 0, 0, idtemplate);
         newItem.id = p.getIDItem();
@@ -14325,6 +14373,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
         // mon voi 0 chi so. Ham tu return neu khong phai 911 nen goi vo dieu kien.
         newItem.createAttributeSkinKimCangLong();
         newItem.dateCreate = getDayTime(0L);
+        if (com.htbb.pokemon.ChongVatPham.chongDuoc(newItem)) {
+            return nhanChongSoLuong(newItem, soLuong, p); // [chong-vat-pham] type 28 giong het: mot o co so luong
+        }
         if (newItem.isManhSuuTap()) {
             boolean found = false;
             for (Item item : p.iItems) {
@@ -14679,6 +14730,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     public void removeIDItem(final short id) {
         this.ALL_ID_USE.remove(id);
+    }
+
+    /**
+     * [chong-vat-pham] Danh dau id dang dung (lay lai id cu cho chong sau khi tach 1 don vi de dung - giu o phim tat /
+     * man hinh client dang tro dung chong). @return false neu id dang thuoc mon khac.
+     */
+    public synchronized boolean giuIDItem(final short id) {
+        if (this.ALL_ID_USE.get(id) != null) {
+            return false;
+        }
+        this.ALL_ID_USE.put(id, id);
+        return true;
     }
 
     public boolean isMasterClan() {

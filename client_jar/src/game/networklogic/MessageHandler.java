@@ -1948,6 +1948,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                                 cii.allAttribute.addElement(info8);
                             }
                             cii.isItemDrop = msg.reader().readByte();
+                            cii.number = ItemInInventory.soLuongChong(cii); // chồng vật phẩm (máy chủ 30/10/2026)
                             cii.isEnoughData = true;
                             items.addElement(cii);
                         }

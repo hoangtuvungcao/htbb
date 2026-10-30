@@ -153,7 +153,7 @@ public final class DungVatPham {
         synchronized (p.iItems) {
             for (final Item it : p.iItems) {
                 if (it != null && it.getTemplate() != null) {
-                    m.merge(Integer.valueOf(it.getTemplate().id), Integer.valueOf(1), Integer::sum);
+                    m.merge(Integer.valueOf(it.getTemplate().id), Integer.valueOf(com.htbb.pokemon.ChongVatPham.so(it)), Integer::sum);
                 }
             }
         }
@@ -256,6 +256,9 @@ public final class DungVatPham {
         final Phien ph = chup(p);
         ph.mon = mon;
         ph.ten = mon == null ? "" : ten(mon);
+        // [chong-vat-pham] chong > 1: tach 1 don vi (giu id client gui) cho moi duong dung cu (Map.doUseItemGoc,
+        // VatPhamDungLauDai, TienHoaPokemon...) - cac duong do lay CA mon ra khoi tui khi dung; dung xong gop lai.
+        final Item conLai = mon == null ? null : tachDeDung(p, mon);
         p.phienDung = ph;
         try {
             map.doUseItemGoc(p, message);
@@ -268,7 +271,44 @@ public final class DungVatPham {
         if (!ph.daNoi && mon != null) {
             ketLuanItem(p, ph);
         }
+        if (conLai != null) {
+            gopSauDung(p, mon, conLai);
+        }
         dongBoHpPp(p, ph);
+    }
+
+    /** [chong-vat-pham] Tach 1 don vi cua chong de dung (null neu mon le). */
+    static Item tachDeDung(final Char p, final Item mon) {
+        if (com.htbb.pokemon.ChongVatPham.so(mon) <= 1 || !com.htbb.pokemon.ChongVatPham.chongDuoc(mon)) {
+            return null;
+        }
+        synchronized (p.iItems) {
+            final short idMoi = p.getIDItem();
+            final Item con = com.htbb.pokemon.ChongVatPham.tachMot(p.iItems, mon, idMoi);
+            if (con == null) {
+                p.removeIDItem(idMoi);
+            }
+            return con;
+        }
+    }
+
+    /** [chong-vat-pham] Sau khi dung: mon 1 don vi con nguyen -> gop phan con lai ve (giu id cu); gui lai tui. */
+    static void gopSauDung(final Char p, final Item mon, final Item conLai) {
+        if (com.htbb.pokemon.ChongVatPham.gopLai(p.iItems, mon, conLai)) {
+            p.removeIDItem(conLai.id);
+        } else {
+            synchronized (p.iItems) {
+                // mon 1 don vi da tieu: chong con lai lay lai id cu (phim tat / the vat pham o client van tro dung chong)
+                if (!p.iItems.contains(mon) && p.iItems.contains(conLai) && p.getItemFormVector(p.iItems, mon.id) == null) {
+                    p.removeIDItem(mon.id);
+                    if (p.giuIDItem(mon.id)) {
+                        p.removeIDItem(conLai.id);
+                        conLai.id = mon.id;
+                    }
+                }
+            }
+        }
+        guiTui(p);
     }
 
     /** So goi dong bo HP / PP da gui ngay sau khi dung (kiem thu / thong ke). */

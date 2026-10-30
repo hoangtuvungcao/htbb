@@ -996,7 +996,7 @@ public final class NhiemVuEngine {
             }
             // 0.9.7.1: thuong co vat pham ma tui day -> chua trao (truoc day vat pham bi bo im lang, nhiem vu van "đã nhận")
             // 23/10/2026: can DU o cho MOI mon (item:1039x3 = 3 o) - truoc chi kiem "con 1 o" nen thieu o thi mat phan con lai.
-            final int canO = soOThuong(m);
+            final int canO = soOThuong(p, m); // [chong-vat-pham] type 28 don vao chong san co: can it o hon
             if (canO > 0 && p.countSlotInventory() < canO) {
                 return canO <= 1 ? Char.TUI_DAY_NHIEM_VU
                         : "Hành trang không đủ chỗ. Hãy dọn bớt để còn " + canO + " ô trống rồi nhận thưởng nhiệm vụ.";
@@ -1024,7 +1024,7 @@ public final class NhiemVuEngine {
                 try {
                     final int i = Integer.parseInt(id.trim());
                     final ItemTemplates tp = Map.itemTemplates.get(5).get(Integer.valueOf(i));
-                    if (tp != null && !p.isFullInventory()) {
+                    if (tp != null && (tp.type == 28 ? com.htbb.pokemon.ChongVatPham.conCho(p, i, 1) : !p.isFullInventory())) {
                         if (tp.type == 28) {
                             Char.createItemSoLuong(i, 1, p);
                         } else {
@@ -1065,6 +1065,49 @@ public final class NhiemVuEngine {
      * So o hanh trang can de nhan du vat pham thuong: moi id trong vat_pham 1 o, moi "item:&lt;id&gt;xN" cua thuong_khac
      * N o (Char.createItemSoLuong tao N mon rieng).
      */
+    /**
+     * [chong-vat-pham] Nhu {@link #soOThuong(NhiemVuMau)} nhung theo tui THAT cua nguoi choi: vat pham type 28 (qua
+     * Char.createItemSoLuong) don vao chong san co nen chi can o cho phan tran chong (ChongVatPham.soOCan).
+     */
+    static int soOThuong(final Char p, final NhiemVuMau m) {
+        final java.util.LinkedHashMap<Integer, Integer> can = new java.util.LinkedHashMap<Integer, Integer>();
+        int o = 0;
+        if (m.vatPham != null) {
+            for (final String id : m.vatPham.split("[,;|]")) {
+                if (id.trim().length() > 0) {
+                    try {
+                        can.merge(Integer.valueOf(Integer.parseInt(id.trim())), Integer.valueOf(1), Integer::sum);
+                    } catch (final RuntimeException e) {
+                        o++;
+                    }
+                }
+            }
+        }
+        if (m.thuongKhac != null) {
+            for (final String phan : m.thuongKhac.split(";")) {
+                final String t = phan.trim();
+                if (!t.startsWith("item:")) {
+                    continue;
+                }
+                final String v = t.substring(5).trim();
+                final int x = v.indexOf('x');
+                try {
+                    final int id = Integer.parseInt((x > 0 ? v.substring(0, x) : v).trim());
+                    final int n = x > 0 ? Math.max(0, Integer.parseInt(v.substring(x + 1).trim())) : 1;
+                    can.merge(Integer.valueOf(id), Integer.valueOf(n), Integer::sum);
+                } catch (final RuntimeException e) {
+                    o++;
+                }
+            }
+        }
+        for (final java.util.Map.Entry<Integer, Integer> e : can.entrySet()) {
+            final ItemTemplates tp = Map.itemTemplates.get(5).get(e.getKey());
+            o += tp != null && tp.type == 28 ? com.htbb.pokemon.ChongVatPham.soOCan(p, e.getKey().intValue(), e.getValue().intValue())
+                    : e.getValue().intValue();
+        }
+        return o;
+    }
+
     static int soOThuong(final NhiemVuMau m) {
         int o = 0;
         if (m.vatPham != null) {

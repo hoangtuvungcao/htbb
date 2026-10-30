@@ -1919,6 +1919,12 @@ public class Database {
                 ItemTemplates.ALL_NAME_ATTRIBUTE_ITEM.add(new NameAttributeItem(i, name, rs.getByte("ispercent"), rs.getByte("idcolor")));
                 ++i;
             }
+            // [chong-vat-pham] dong ten "Số lượng" o CUOI bang (khong phai dong CSDL): so luong chong type 28 gui bang id nay.
+            // Client 0.9.x an id 126 ("Số lượng" goi cua hang) o the vat pham nen can mot dong rieng moi ban client hien.
+            if (!ItemTemplates.ALL_NAME_ATTRIBUTE_ITEM.isEmpty()) {
+                com.htbb.pokemon.ChongVatPham.themTenThuocTinh(ItemTemplates.ALL_NAME_ATTRIBUTE_ITEM,
+                        id -> new NameAttributeItem((byte) id, com.htbb.pokemon.ChongVatPham.TEN_SO_LUONG, (byte) 0, (byte) 2));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -781,8 +781,8 @@ public final class TheVatPham extends Dialog {
         ManNhanVat.themId(ids, it);
         for (int i = 0; i < ids.size(); i++) {
             int id = ((Integer) ids.elementAt(i)).intValue();
-            if (id == 125 || id == 126) {
-                continue;   // giá lượng / số lượng gói của danh sách máy chủ: hiện ở hàng giá, không phải chỉ số
+            if (id == 125 || id == 126 || ItemInInventory.laDongSoLuongChong(id)) {
+                continue;   // giá lượng / số lượng gói của danh sách máy chủ: hiện ở hàng giá; số lượng chồng: hàng "Số lượng"
             }
             int moi = ManNhanVat.giaTri(it, id);
             String d = null;
