@@ -369,6 +369,26 @@ final class KichBanHoiQuy2 {
         }
     }
 
+    /** Hai bot cung ban do di bo toi canh nhau toi khi ca hai thay nhau (toi da 3 luot). */
+    static boolean gapNhau(BotChucNang.Bot a, BotChucNang.Bot c) throws Exception {
+        final BotChucNang.Bot aa = a, cc = c;
+        boolean thay = false;
+        for (int lan = 0; lan < 3 && !thay; lan++) {
+            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(a.mapLoad);
+            KichBanHuongDan.dongBoViTri(a);
+            KichBanHuongDan.dongBoViTri(c);
+            if (a.mapId == c.mapId && bd != null) {
+                BotChucNang.Bot di = lan % 2 == 0 ? a : c, dich = lan % 2 == 0 ? c : a;
+                int[] o = bd.oGan(dich.px / 16 + 1, dich.py / 16, 3);
+                if (o != null) di.diDuong(bd, o[0], o[1]);
+            }
+            a.bom(800);
+            c.bom(800);
+            thay = a.mapId == c.mapId && a.cho(x -> x.nguoi.containsKey(cc.actor) && cc.nguoi.containsKey(aa.actor), 5000);
+        }
+        return thay;
+    }
+
     // ================================================================== chat
     static void chat() throws Exception {
         BotChucNang.Bot a = HoiQuy.nguoiChoiMoi("ch", 0, 0);
@@ -377,6 +397,9 @@ final class KichBanHoiQuy2 {
             KichBanHoiQuy.boQuaHuongDan(a);
             KichBanHoiQuy.boQuaHuongDan(c);
             a.bom(500);
+            // chat ban do chi toi nguoi DANG THAY (cung ban do, trong tam nhin); lang dat nguoi moi o 4 diem ngau nhien nen hai
+            // bot co the o xa nhau (cong kiem 30/10: "map 0/0 |"). Di bo sat nhau toi khi hai ben thay nhau, nhu giao_dich.
+            gapNhau(a, c);
             int m = c.moc();
             a.chat("xin chao " + c.ten);
             String t = c.doiChu(m, 3000, "xin chao");
