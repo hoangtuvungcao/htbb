@@ -51,14 +51,12 @@ public final class HdCau {
         return null;
     }
 
-    /** Bản đồ lớn của vùng (như mục Cài đặt -> Bản đồ lớn của Menu: PauseMenu.doBigMap). */
+    /** Bản đồ vùng (chạm bản đồ nhỏ HD; như Menu › Bản đồ vùng: game.pokemon.ManBanDoVung). */
     public static void moBanDoLon() {
         try {
-            java.lang.reflect.Method m = PauseMenu.class.getDeclaredMethod("doBigMap");
-            m.setAccessible(true);
-            m.invoke(PauseMenu.gI());
+            game.pokemon.HanhDong.moBanDoLon();
         } catch (Throwable e) {
-            android.util.Log.w(javax.microedition.lcdui.NenAndroid.TAG, "khong mo duoc ban do lon", e);
+            android.util.Log.w(javax.microedition.lcdui.NenAndroid.TAG, "khong mo duoc ban do vung", e);
         }
     }
 

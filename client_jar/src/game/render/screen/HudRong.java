@@ -414,7 +414,13 @@ public final class HudRong {
             }
             b.tron(33, "hud-cai-dat", xCaiDat(), Y_TREN, R_TREN, R_TREN + 2);
             b.hop(10, "hud-the", 0, 0, rongThe(), caoThe(), 0);
-            // 0.9.5: bản đồ nhỏ không còn là nút (trùng nút Bản đồ)
+            // 30/10/2026 (người chơi: "thêm cái mở bản đồ vùng để xem cho tiện"): chạm bản đồ nhỏ = BẢN ĐỒ VÙNG (Kanto /
+            // Johto / Hoenn, game.pokemon.ManBanDoVung) - khác nút "Bản đồ" (cả map đang đứng). 0.9.5-0.9.22 bản đồ nhỏ không
+            // là nút. Vùng = ảnh + khung gỗ dưới, không gồm biển tên (sát hàng nút trên).
+            Position p = gs.posMiniMapHud();
+            if (p != null && coMiniMap() && GameScr.wMiniMap > 0 && GameScr.hMiniMap > 0) {
+                b.hop(11, "hud-ban-do-nho", p.x - 4, p.y, GameScr.wMiniMap + 8, GameScr.hMiniMap + 4, 0);
+            }
         }
         if (!hienDuoi(gs)) {
             return;
@@ -1094,6 +1100,16 @@ public final class HudRong {
         g.fillRect(mx - 1, my - 1, 3, 3);
         Canvas.resetTrans(g);
         // 0.9.5: bỏ dòng "vùng + toạ độ" dưới bản đồ nhỏ (trông như chữ gỡ lỗi) - tên map đã ở viên trên
+        // nhãn "Bản đồ vùng" trên mép gỗ dưới: cho biết chạm bản đồ nhỏ mở bản đồ vùng
+        String nh = "Bản đồ vùng";
+        int hn = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN_NHO) + 2;
+        int wn = game.pokemon.ChuDe.rong(nh, game.pokemon.ChuDe.NHAN_NHO) + 10;
+        if (wn <= w) {
+            int xn = x0 + w - wn, yn = y0 + h + 2 - hn;
+            GiaoDien.khoi(g, xn - 1, yn - 1, wn + 2, hn + 2, 4, game.pokemon.ChuDe.VIEN);
+            GiaoDien.khoi(g, xn, yn, wn, hn, 3, 0x2B1A10);
+            game.pokemon.ChuDe.chuGiua(g, nh, xn + wn / 2, yn, hn, game.pokemon.ChuDe.NHAN_NHO, 0xF6E6C0, 2);
+        }
     }
 
     private static int tdX = -1, tdY = -1;
@@ -1343,7 +1359,7 @@ public final class HudRong {
                 HanhDong.moHoSo();
                 break;
             case 11:
-                banDoTo = anhBanDoTo() != null;
+                HanhDong.moBanDoLon();   // bản đồ vùng (nút "Bản đồ" = cả map)
                 break;
             case 20:
             case 21:

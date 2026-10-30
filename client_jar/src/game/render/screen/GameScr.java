@@ -1734,7 +1734,14 @@ public class GameScr extends Screen {
             this.changeSinceLastUpdate = false;
         }
         if (Canvas.isKeyPressed(10)) {
-            doParty();
+            // 30/10/2026 phím * (máy J2ME bấm phím, không HUD màn rộng): không nhắm người chơi / không cưỡi thú = BẢN ĐỒ VÙNG
+            // (game.pokemon.ManBanDoVung; trước: không làm gì). Nhắm người chơi = menu tổ đội như cũ; PC (phím P) giữ tổ đội.
+            if (!HudRong.bat() && !(this.focusedActor != null && this.focusedActor.catagory == 0)
+                    && this.mainChar.useHorse == -1 && this.mainChar.idhorse <= -1) {
+                game.pokemon.ManBanDoVung.mo();
+            } else {
+                doParty();
+            }
             Canvas.clearKeyHold();
             return;
         }
@@ -3668,6 +3675,17 @@ public class GameScr extends Screen {
             g.fillRect((p.x / 16) + addx, (p.y / 16) + addy, 3, 3);
         }
         Canvas.resetTrans(g);
+        // 30/10/2026: máy J2ME (font ảnh) - nhãn "* Vùng" góc trái trên bản đồ nhỏ: phím * mở bản đồ vùng
+        if (game.pokemon.ChuUI.bo == null) {
+            String nh = "* V\u00f9ng";
+            int hn = Font.borderFont.getHeight() + 1;
+            int wn = game.pokemon.ChuDe.rongVien(nh, game.pokemon.ChuDe.NHAN_NHO, 0xF6E6C0) + 6;
+            if (wn <= wMiniMap - 4) {
+                game.pokemon.GiaoDien.khoi(g, this.posMiniMap.x + 3, this.posMiniMap.y + 3, wn, hn, 3, 0x2B1A10);
+                game.pokemon.ChuDe.chuVienGiua(g, nh, this.posMiniMap.x + 3 + wn / 2, this.posMiniMap.y + 3, hn, game.pokemon.ChuDe.NHAN_NHO,
+                        0xF6E6C0, game.pokemon.ChuDe.VIEN, 2);
+            }
+        }
         // pokemon: tên vùng trong viên xanh ngay trên bản đồ nhỏ (không bị ô phím tắt che)
         if (nameMap != null && nameMap.length() > 0) {
             int wTen = Font.borderFont.getWidth(nameMap) + 10;

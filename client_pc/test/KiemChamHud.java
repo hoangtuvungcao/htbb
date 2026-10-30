@@ -830,6 +830,9 @@ public class KiemChamHud {
             case "hud-cai-dat":
                 kiem(k.caiDat && k.hop == null, nhan + " -> bang Cai dat (" + k + ")");
                 break;
+            case "hud-ban-do-nho":
+                kiem("ManBanDoVung".equals(k.man) && k.hop == null, nhan + " (ban do nho) -> Ban do vung (" + k + ")");
+                break;
             case "hud-thoi-tiet":
                 kiem(k.theTT != the && k.hop == null && "the_gioi".equals(k.man), nhan + " -> bat / tat the thoi tiet (" + k + ")");
                 break;
@@ -932,6 +935,9 @@ public class KiemChamHud {
                     break;
                 case "Pokédex":
                     kiem("ManPokedex".equals(k.man), nhan + " -> Pokedex (" + k + ")");
+                    break;
+                case "Bản đồ vùng":
+                    kiem("ManBanDoVung".equals(k.man) && k.hop == null, nhan + " -> Ban do vung (" + k + ")");
                     break;
                 case "Đội/Bạn bè":
                     kiem("ManDoi".equals(k.man), nhan + " -> Doi / Ban be (" + k + ")");
@@ -1112,7 +1118,7 @@ public class KiemChamHud {
         return f.get(o);
     }
 
-    static final String[] NUT_HUD = {"hud-the", "hud-tren-0", "hud-tren-1", "hud-tren-2", "hud-tren-3", "hud-cai-dat", "hud-thoi-tiet",
+    static final String[] NUT_HUD = {"hud-the", "hud-tren-0", "hud-tren-1", "hud-tren-2", "hud-tren-3", "hud-cai-dat", "hud-thoi-tiet", "hud-ban-do-nho",
         "hud-chat", "hud-tu-dong", "hud-thuoc-hp", "hud-thuoc-pp", "hud-danh", "hud-chieu0", "hud-chieu1",
         "hud-chieu2", "hud-chieu3", "hud-doi-bo", "hud-ngu-canh", "hud-nem-bong"};
 

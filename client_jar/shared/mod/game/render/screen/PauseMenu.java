@@ -22,7 +22,7 @@ import javax.microedition.lcdui.Graphics;
 public class PauseMenu
 extends Screen {
     public static PauseMenu me;
-    private String[][] name = new String[][]{{"", "T\u1ef1 \u0111\u1ed9ng \u0111\u00e1nh", "Hi\u1ec7u \u1ee9ng", "Ti\u1ec7n \u00edch", "Ngo\u1ea1i h\u00ecnh"}, {"C\u00e0i \u0111\u1eb7t", "C\u1ea5u h\u00ecnh", "B\u1ea3n \u0111\u1ed3 l\u1edbn", "B\u1eadt/t\u1eaft giao di\u1ec7n", "H\u01b0\u1edbng d\u1eabn", "\u00c2m thanh", "B\u1eadt/t\u1eaft l\u1eddi m\u1eddi", "B\u1eadt/t\u1eaft auto \u0111\u00e1nh", "Ch\u1ebf \u0111\u1ed9 ch\u1ecdn m\u1ee5c ti\u00eau", "Gi\u1ea5y ph\u00e9p"}, {"B\u1ea3n th\u00e2n", "H\u00e0nh trang", "K\u1ef9 n\u0103ng", "Ti\u1ec1m n\u0103ng", "Trang b\u1ecb", "Th\u00f4ng tin", "Trang b\u1ecb th\u00fa", "C\u00e2y th\u1ea7n", "C\u1ed5 v\u1eadt", "Kho & ti\u1ec7n \u00edch", "T\u00fai sinh th\u00e1i"}, {"N\u1ea1p xu"}, {"Nhi\u1ec7m v\u1ee5", "S\u1ed5 nhi\u1ec7m v\u1ee5", "Nhi\u1ec7m v\u1ee5 c\u1ee7a t\u00f4i", "S\u1ed5 tay hu\u1ea5n luy\u1ec7n", "S\u1ef1 ki\u1ec7n"}, {"PK"}, {"Kh\u00e1c", "Tin nh\u1eafn", "Nh\u00f3m", "B\u1ea1n b\u00e8", "Top nh\u00e0 v\u00f4 \u0111\u1ecbch", "Top \u0111\u1ea1i gia", "B\u1ea3ng Top", "K\u00eanh th\u1ebf gi\u1edbi", "Di\u1ec5n \u0111\u00e0n", "R\u1eddi \u0111\u1ed9i"}, {""}, {"C\u1eeda h\u00e0ng"}, {""}};
+    private String[][] name = new String[][]{{"", "T\u1ef1 \u0111\u1ed9ng \u0111\u00e1nh", "Hi\u1ec7u \u1ee9ng", "Ti\u1ec7n \u00edch", "Ngo\u1ea1i h\u00ecnh"}, {"C\u00e0i \u0111\u1eb7t", "C\u1ea5u h\u00ecnh", "B\u1ea3n \u0111\u1ed3 v\u00f9ng", "B\u1eadt/t\u1eaft giao di\u1ec7n", "H\u01b0\u1edbng d\u1eabn", "\u00c2m thanh", "B\u1eadt/t\u1eaft l\u1eddi m\u1eddi", "B\u1eadt/t\u1eaft auto \u0111\u00e1nh", "Ch\u1ebf \u0111\u1ed9 ch\u1ecdn m\u1ee5c ti\u00eau", "Gi\u1ea5y ph\u00e9p"}, {"B\u1ea3n th\u00e2n", "H\u00e0nh trang", "K\u1ef9 n\u0103ng", "Ti\u1ec1m n\u0103ng", "Trang b\u1ecb", "Th\u00f4ng tin", "Trang b\u1ecb th\u00fa", "C\u00e2y th\u1ea7n", "C\u1ed5 v\u1eadt", "Kho & ti\u1ec7n \u00edch", "T\u00fai sinh th\u00e1i"}, {"N\u1ea1p xu"}, {"Nhi\u1ec7m v\u1ee5", "S\u1ed5 nhi\u1ec7m v\u1ee5", "Nhi\u1ec7m v\u1ee5 c\u1ee7a t\u00f4i", "S\u1ed5 tay hu\u1ea5n luy\u1ec7n", "S\u1ef1 ki\u1ec7n"}, {"PK"}, {"Kh\u00e1c", "Tin nh\u1eafn", "Nh\u00f3m", "B\u1ea1n b\u00e8", "Top nh\u00e0 v\u00f4 \u0111\u1ecbch", "Top \u0111\u1ea1i gia", "B\u1ea3ng Top", "K\u00eanh th\u1ebf gi\u1edbi", "Di\u1ec5n \u0111\u00e0n", "R\u1eddi \u0111\u1ed9i"}, {""}, {"C\u1eeda h\u00e0ng"}, {""}};
     int selected = 0;
     int index = -1;
     int Limit;
@@ -68,9 +68,9 @@ extends Screen {
         switch (hang) {
             case 0:   // Tự động đánh = viên AUTO + bánh răng HUD; Ngoại hình = tab Ngoại hình màn Pokémon
                 return muc == 0 || muc == 3;
-            case 1:   // Bản đồ lớn = nút Bản đồ / bản đồ nhỏ HUD; auto đánh = nút Tự động HUD;
+            case 1:   // Bản đồ vùng = Menu › Bản đồ vùng / chạm bản đồ nhỏ HUD; auto đánh = nút Tự động HUD;
                       // âm thanh = Cài đặt -> Âm thanh (bảng Cài đặt PC; HUD APK giữ)
-                return muc == 1 || muc == 6 || muc == 4 && HudRong.bat();
+                return muc == 1 && game.pokemon.ManMenu.coBanDoVung() || muc == 6 || muc == 4 && HudRong.bat();
             case 2:   // Hành trang (HUD), Kỹ năng / Tiềm năng / Trang bị / Thông tin / Trang bị thú (màn Pokémon),
                       // Túi sinh thái (= Menu -> Hệ sinh thái). 0.9.17: "Kho & tiện ích" (menu Khác -10000 của máy chủ)
                       // HIỆN - Menu › Sự kiện không còn mở menu này
@@ -841,61 +841,14 @@ extends Screen {
         ShopNew.gI().setImageCharWear();
     }
 
-    /** Bản đồ lớn của vùng (HUD: nút bản đồ / game.pokemon.HanhDong.moBanDoLon). */
+    /** Bản đồ vùng (chạm bản đồ nhỏ HUD / Menu › Bản đồ vùng / phím * / game.pokemon.HanhDong.moBanDoLon). */
     public static void moBanDoLon() {
-        gI().doBigMap();
+        game.pokemon.ManBanDoVung.mo();
     }
 
+    /** Cài đặt › Bản đồ vùng (APK: HdCau.moBanDoLon gọi qua phản chiếu - giữ tên). */
     private void doBigMap() {
-        final short[][] sArrayArray = new short[][]{{28, 105}, {55, 100}, {24, 138}, {61, 148}, {105, 76}, {80, 128}, {112, 132}, {136, 111}, {76, 60}, {129, 158}, {173, 155}, {153, 160}, {145, 60}, {127, 87}, {126, 62}, {35, 60}, {35, 60}};
-        short[] sArray = new short[17];
-        sArray[1] = 1;
-        sArray[2] = 2;
-        sArray[3] = 3;
-        sArray[4] = 4;
-        sArray[5] = 5;
-        sArray[6] = 6;
-        sArray[7] = 7;
-        sArray[8] = 8;
-        sArray[9] = 9;
-        sArray[10] = 10;
-        sArray[11] = 11;
-        sArray[12] = 110;
-        sArray[13] = 111;
-        sArray[14] = 112;
-        sArray[15] = 202;
-        sArray[16] = 104;
-        short[] sArray2 = sArray;
-        int n = 0;
-        for (int i = 0; i < sArray2.length; ++i) {
-            if (Canvas.gameScr.map != sArray2[i]) continue;
-            n = i;
-            break;
-        }
-        final int n2 = n;
-        // khung vừa màn (máy 176 px: khung 197 px cũ tràn mép)
-        final int wBd = Math.min(197, Canvas.w - 6);
-        final int hBd = Math.min(168, Canvas.h - 40);
-        // vung Hoenn (nam 2): tieu de rieng, BanDoVung ve ban do Hoenn (Nen.veBanDoLon)
-        final String tieuDeBd = Nen.tieuDeBanDoLon(Res.nameBigMap[n2]);
-        PageScr.gI().setInfo(Canvas.hw - wBd / 2, Canvas.hh - hBd / 2 - Screen.deltaY, wBd, hBd, tieuDeBd, null);
-        PageScr.gI().indexFont = 1;
-        PageScr.gI().left = new Command("Tr\u1edf l\u1ea1i", new IAction(){
-
-            public void perform() {
-                Canvas.gameScr.switchToMe();
-            }
-        });
-        PageScr.gI().layer = new Layer(){
-            public void paint(Graphics graphics, int n, int n22) {
-                if (Nen.veBanDoLon(graphics, sArrayArray, n2, wBd, hBd)) {
-                    return;
-                }
-                GameData.paintIconCayThan(graphics, (short)800, 98, 95);
-                Res.getCharPartInfo(2, Canvas.gameScr.mainChar.currentHead).paint(graphics, sArrayArray[n2][0], sArrayArray[n2][1], 0, 1);
-            }
-        };
-        PageScr.gI().switchToMe();
+        game.pokemon.ManBanDoVung.mo();
     }
 
     public void switchToMe() {

@@ -85,7 +85,7 @@ public class KiemTrungLap {
         int[] hien = (int[]) truong(p, "hien");
         kiem(((Integer) truong(p, "Limit")) == hien.length, "Limit = số dòng hiện");
         // mục đã có lối vào ở Menu GO / HUD: không được hiện trong menu chữ
-        String[] trung = {"Tự động đánh", "Bật/tắt auto đánh", "Bản đồ lớn", "Hành trang", "Kỹ năng", "Tiềm năng", "Trang bị",
+        String[] trung = {"Tự động đánh", "Bật/tắt auto đánh", "Bản đồ lớn", "Bản đồ vùng", "Hành trang", "Kỹ năng", "Tiềm năng", "Trang bị",
             "Thông tin", "Trang bị thú", "Túi sinh thái", "Ngoại hình", "Nhiệm vụ", "Cửa hàng", "Tin nhắn", "Bạn bè",
             "Top nhà vô địch", "Top đại gia", "Bảng Top", "Cài đặt"};
         HashSet<String> cam = new HashSet<String>();
@@ -164,7 +164,7 @@ public class KiemTrungLap {
         String[][] canCham = {{"Hành trang", "HUD"}, {"Nhiệm vụ", "HUD"}, {"Bản đồ", "HUD"}, {"Nhiệm vụ của tôi", "Menu"},
             {"Sổ tay huấn luyện", "Menu"}, {"Sự kiện", "Menu"}, {"Tự động đánh", "Menu"}, {"Cài đặt", "Menu"}, {"Pokémon", "Menu"},
             {"Cửa hàng", "Menu"}, {"Pokédex", "Menu"}, {"Thư/Quà", "Menu"}, {"Xếp hạng", "Menu"}, {"Hệ sinh thái", "Menu"},
-            {"Đội/Bạn bè", "Menu"}};
+            {"Đội/Bạn bè", "Menu"}, {"Bản đồ vùng", "Menu"}};
         for (String[] c : canCham) {
             kiem(("HUD".equals(c[1]) ? tren : menu).contains(c[0]), "cay menu (cam ung): '" + c[0] + "' o " + c[1]);
         }
@@ -193,6 +193,9 @@ public class KiemTrungLap {
         java.util.List<String> dau = chu.isEmpty() ? null : chu.values().iterator().next();   // hàng đầu (tên Pokémon)
         kiem(dau != null && dau.contains("Tự động đánh"), "menu chu J2ME: hang dau co Tu dong danh: " + dau);
         kiem(chu.containsKey("Cửa hàng"), "menu chu J2ME: co Cua hang " + chu.keySet());
+        // 30/10/2026: bản đồ vùng - menu chữ J2ME (Cài đặt › Bản đồ vùng), tên mới (không còn "Bản đồ lớn")
+        java.util.List<String> cd = chu.get("Cài đặt");
+        kiem(cd != null && cd.contains("Bản đồ vùng") && !cd.contains("Bản đồ lớn"), "menu chu J2ME: Cai dat co Ban do vung: " + cd);
         for (java.util.Map.Entry<String, java.util.List<String>> e : chu.entrySet()) {
             java.util.Set<String> mot = new java.util.HashSet<String>();
             for (String m : e.getValue()) kiem(mot.add(m), "menu chu J2ME: hang '" + e.getKey() + "' lap muc " + m);
