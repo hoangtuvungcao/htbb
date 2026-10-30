@@ -821,7 +821,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `hoi_sinh.hp_tra_phi` | HP khi trả xu / lượng khoá / tân thủ (%) | Cố định (ẩn) | `50` | ngay | game |  |
 | `hoi_sinh.exp_mat_phan_nghin` | Mất EXP khi về Trung tâm (phần nghìn) | Cố định (ẩn) | `20` | ngay | game | Phần nghìn EXP lên cấp hiện tại (20 = 2%). Không bao giờ tụt cấp: chỉ trừ trong tiến độ cấp. |
 | `hoi_sinh.exp_mat_toi_da_phut` | Trần mất EXP (phút cày) | Cố định (ẩn) | `15` | ngay | game | Không mất quá ngần này phút EXP đánh quái ở cấp đó. 0 = không chặn. |
-| `hoi_sinh.do_ben_mat_phan_tram` | Mất độ bền khi về Trung tâm (%) | Cố định (ẩn) | `5` | ngay | game | % độ bền tối đa của mỗi trang bị đang mặc (không làm vỡ đồ). |
+| `hoi_sinh.do_ben_mat_phan_tram` | Mất độ bền khi về Trung tâm (%) | Cố định (ẩn) | `2` | ngay | game | % độ bền tối đa của mỗi trang bị đang mặc (không làm vỡ đồ). |
 | `hoi_sinh.met_moi_phut` | Mệt mỏi (phút) | Cố định (ẩn) | `5` | ngay | game | Sau khi về Trung tâm. 0 = tắt. |
 | `hoi_sinh.met_moi_exp` | Mệt mỏi: giảm EXP (%) | Cố định (ẩn) | `20` | ngay | game | EXP hạ quái. |
 | `hoi_sinh.met_moi_tan_cong` | Mệt mỏi: giảm tấn công (%) | Cố định (ẩn) | `10` | ngay | game |  |
