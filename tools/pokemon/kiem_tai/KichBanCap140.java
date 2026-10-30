@@ -1045,6 +1045,10 @@ final class KichBanCap140 {
             // thach dau o lang (Quay doi thuong o lang; boss danh duoc trong lang tu 24/10/2026): truoc day bot ra bai luyen
             // nen vua danh Gym vua bi quai hoang da danh - so lan guc o Gym khong phan anh suc boss
             if (KichBanDS2.laOffline(b.mapId)) KichBanDS2.raNgoai(b);
+            // nguoi choi ve lang hoi day o Chansey (mien phi) roi moi thach dau - truoc day bot danh Gym ngay giua bai quai voi
+            // 60% HP (dong Nuoc thua Celadon 4 lan, vao tran voi ~5.000 / 7.851 HP)
+            KichBanCap140TinhNang.veLangDiBo(this);
+            hoiChansey();
             b.lamMoi();
             hoiMau("truoc tran Gym"); // khong vao tran 1 dau 1 khi con it mau
             KichBanDS.timQuai(b, 0, 260);
