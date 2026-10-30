@@ -335,6 +335,7 @@ public final class Kiem {
         KiemVaoNhaNhiemVu.chay(); // bao loi 30/10/2026: vao nha (C05.2 Bao tang Pewter) xong ngay - client khong gui goi di chuyen trong nha; chu Nha tre
         KiemCanBangCap.chay(); // can bang cap 15-45: duong quai / gia do cua hang, #29 luon lam duoc, EXP thang Gym theo cap
         KiemPetDongHanh.chay(); // chu game 30/10/2026 "có": pet dong hanh mien phi 1 lan + mua bang xu (Nha tre dung duoc)
+        KiemQuaiNam2.chay(); // cong kiem bot 31/10/2026: quai nam 2 chi lech cap goc <= 2 (Mahogany 84 moc Wailord / Banette 91-92)
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

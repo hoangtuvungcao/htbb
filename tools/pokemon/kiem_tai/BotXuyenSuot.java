@@ -369,6 +369,8 @@ public class BotXuyenSuot {
         final long hetGio;
         // thong ke
         int soVaoLai, capDau, capCao, soNvChinh, soNvPhu, soGym, soTienHoa, soChet, soHaQuai, soBuoc, soDoiMap;
+        /** Do TTK (thoi gian tu don dau toi khi quai guc, chi tinh luc dung danh - khong tinh di bo / hoi sinh): tong ms, so quai, tong cap quai. */
+        long ttkMs; int ttkSo, ttkCap;
         final Set<String> huyHieu = new TreeSet<>();
         final List<String> ket = new ArrayList<>();      // ly do ket (lap lai = 1 dong)
         final List<String> loi = new ArrayList<>();      // vi pham kiem tra
@@ -761,7 +763,7 @@ public class BotXuyenSuot {
                 // nguoi choi that uong thuoc khi di duong voi it mau (bao cao can bang 29/10/2026: bot di qua 3-4 ban do quai
                 // voi 20% HP roi guc giua duong - ket qua do bot, khong phai do game)
                 b.lamMoi();
-                if (b.hp <= 0) { hoiSinh(); return false; }
+                if (b.hp <= 0) { ghi("guc khi qua cong " + truoc + "->" + e[1] + " (map " + b.mapId + " o " + b.px / 16 + "," + b.py / 16 + "): " + b.chuTu(m)); hoiSinh(); return false; }
                 uongThuoc();
                 if (b.mapId == truoc) {
                     String t = b.chuTu(m);
@@ -816,6 +818,8 @@ public class BotXuyenSuot {
                 }
                 int m = b.moc();
                 int don = 0;
+                long tDau = System.currentTimeMillis();
+                int capQ = q[3];
                 for (; don < 120 && !b.dut; don++) {
                     int[] qt = b.quai.get(chon);
                     b.gui(9, (short) (int) chon, (byte) chieuTheoHe(b, lop, qt == null ? -1 : qt[5], don));
@@ -832,7 +836,7 @@ public class BotXuyenSuot {
                     if (don % 10 == 9) { b.lamMoi(); uongThuoc(); if (b.hp <= 0) break; }
                 }
                 int[] q3 = b.quai.get(chon);
-                if (q3 != null && q3[2] == 0) { ha++; soHaQuai++; nhatDo(m); }
+                if (q3 != null && q3[2] == 0) { ha++; soHaQuai++; ttkMs += System.currentTimeMillis() - tDau; ttkSo++; ttkCap += capQ; nhatDo(m); }
                 kiem();
                 if (b.hp <= 0) { hoiSinh(); return ha; }
             }

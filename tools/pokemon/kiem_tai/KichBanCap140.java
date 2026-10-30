@@ -586,6 +586,7 @@ final class KichBanCap140 {
             muaThuoc();
             macDoTot();
             nangVuKhi();
+            muaGiapIndigo();
             if (lamDangLam()) return;
             nvPhu();
             if (capChan > b.lv) { luyen(4); return; }
@@ -1124,12 +1125,16 @@ final class KichBanCap140 {
                 boolean khungGio = Pattern.compile("\\(\\d+:\\d+").matcher(chu).find();
                 long t0 = System.currentTimeMillis();
                 int chet0 = soChet;
+                long ttk0 = ttkMs; int ttkSo0 = ttkSo, ttkCap0 = ttkCap;
                 int ha = danh(tpl, Math.max(1, can), (can > 1 ? 7 : 2) * 60000L);
                 double phut = Math.max(0.1, (System.currentTimeMillis() - t0) / 60000.0);
                 Matcher mtg = Pattern.compile("trong (\\d+) phút").matcher(chu);
                 // toc do ha that cua nhan vat (do can bang buoc ha trong N phut: can / N con/phut)
                 String toc = mtg.find() ? String.format(Locale.ROOT, " | TOC DO %.2f con/phut, can %.2f (%d/%s phut), cap %d, maxhp %d, guc %d",
                         ha / phut, can / Double.parseDouble(mtg.group(1)), can, mtg.group(1), b.lv, b.maxhp, soChet - chet0) : "";
+                // TTK (design: ~4/5/6 giay quai thuong o cap 1-30/31-60/61-100 voi do +6) - mau cho can bang
+                if (ttkSo > ttkSo0) toc += String.format(Locale.ROOT, " | TTK %.1fs (cap %d, cap quai %.0f, %d con, vu khi +%d, guc %d)",
+                        (ttkMs - ttk0) / 1000.0 / (ttkSo - ttkSo0), b.lv, (ttkCap - ttkCap0) / (double) (ttkSo - ttkSo0), ttkSo - ttkSo0, vuKhiPlus(), soChet - chet0);
                 ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")" + toc);
                 if (khungGio) choGio("'" + q.ten + "' can dung khung gio: " + chu);
                 if (lan > 14) return "ha " + tenQ + " " + lan + " lan van khong xong: " + chu;
@@ -1342,7 +1347,73 @@ final class KichBanCap140 {
             return t == null ? -1 : t[0];
         }
 
-        long lanNangVk;
+        long lanNangVk, lanIndigo;
+
+        /**
+         * Giap / phu kien cap 64-79 (bo "chuyên gia" / "tinh anh", tpl 467..506) chi ban o Bronzong ban giap (NPC 27) Cao
+         * nguyen Indigo (201) / nha Indigo (260): tiem Pewter het o cap 59. Nguoi choi that cap 64+ len Indigo mua; truoc
+         * 31/10/2026 bot cap 72 / 85 van mac giap cap 59 (d290 guc o map 28 vi Galvantula danh 27% HP).
+         */
+        void muaGiapIndigo() throws Exception {
+            if (b.lv < 64 || System.currentTimeMillis() - lanIndigo < 30 * 60000L) return;
+            List<int[]> mua = new ArrayList<>();
+            long con = b.xu - DU_TRU_XU - (long) MUC * GIA_THUOC[3];
+            for (int type : O_GIAP) {
+                String r = BotChucNang.sql1("SELECT CONCAT(id,',',level,',',price) FROM data_item WHERE id BETWEEN 467 AND 506 AND clazz=-1 AND type=" + type
+                        + " AND level<=" + b.lv + " ORDER BY level DESC, price LIMIT 1");
+                if (r == null || !r.contains(",")) continue;
+                String[] f = r.trim().split(",");
+                int tpl = Integer.parseInt(f[0]), cap = Integer.parseInt(f[1]), gia = Integer.parseInt(f[2]);
+                if (capDaMac.getOrDefault(type, 0) >= cap || giapMac.getOrDefault(type, 0) >= cap) continue;
+                mua.add(new int[]{tpl, cap, gia, type});
+            }
+            mua.sort((x, y) -> x[2] - y[2]); // re truoc: nhieu o nhat voi so xu dang co
+            List<int[]> duTien = new ArrayList<>();
+            for (int[] g : mua) if (g[2] <= con) { duTien.add(g); con -= g[2]; }
+            if (duTien.isEmpty()) return;
+            lanIndigo = System.currentTimeMillis();
+            if (!toi(201)) { ghi("giap Indigo: khong toi duoc Cao nguyen Indigo (201)"); return; }
+            String l = KichBanHuongDan.toiNpc(b, 27);
+            boolean nha = false;
+            if (l != null && KichBanDS2.vaoNha(b, 260)) { nha = true; l = KichBanHuongDan.toiNpc(b, 27); }
+            if (l != null) { ghi("giap Indigo: " + l); if (nha) KichBanDS2.raNgoai(b); return; }
+            int m = b.moc();
+            b.gui(23, (byte) 27, (byte) lop);
+            if (b.doiMenu(m, 27, 0, 3000) > 0) { b.menu(27, 0, 0); final int mm = m; b.cho(x -> x.coLenh(mm, 23), 3000); }
+            long xu0 = b.xu;
+            StringBuilder kq = new StringBuilder();
+            for (int[] g : duTien) {
+                final int tpl = g[0];
+                Set<Integer> cu = new HashSet<>();
+                b.lamMoi();
+                for (int[] x : b.doDung) cu.add(x[0]);
+                int m2 = b.moc();
+                b.gui(24, (byte) 1, (byte) 3, (short) tpl, (short) 1, (byte) lop);
+                b.bom(1000);
+                b.lamMoi();
+                int[] moi = b.timDo(x -> x[1] == tpl && !cu.contains(x[0]));
+                giapMac.put(g[3], g[1]);
+                if (moi == null) { kq.append(" tpl ").append(tpl).append(" KHONG MUA DUOC: ").append(b.chuTu(m2)); continue; }
+                b.gui(29, (short) moi[0]);
+                b.bom(700);
+                capDaMac.put(g[3], g[1]);
+                kq.append(" tpl ").append(tpl).append("(o ").append(g[3]).append(", cap ").append(g[1]).append(")");
+            }
+            b.lamMoi();
+            if (b.xu < xu0) xuTieu += xu0 - b.xu;
+            ghi("GIAP INDIGO: xu " + xu0 + " -> " + b.xu + ":" + kq);
+            if (nha) KichBanDS2.raNgoai(b);
+        }
+
+        /** +N cua vu khi dang cam (goi 15), -1 = chua biet. */
+        int vuKhiPlus() {
+            int loai = loaiVuKhi();
+            for (int i = 0; i < b.dangMac.size() && i < b.dangMacTpl.size() && i < b.dangMacPlus.size(); i++) {
+                int[] t = ttDo(b.dangMacTpl.get(i));
+                if (t != null && t[0] == loai) return b.dangMacPlus.get(i);
+            }
+            return -1;
+        }
 
         /** +N vu khi nguoi choi that thuong co o cap nay: +2 o cap 24, +3 / 36, +4 / 48, +5 / 60, +6 tu 72. */
         static int plusMucTieu(int lv) {
