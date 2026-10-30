@@ -326,7 +326,7 @@ public class Region {
             if (this.isSkelonton) {
                 listmonster = this.temp_monsters.get(1).values();
             }
-            for (Monster mt : listmonster) {
+            for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 try {
                     mt.update();
                     if (mt.target != null && mt.target.exit) {
@@ -434,7 +434,7 @@ public class Region {
             if (this.isSkelonton) {
                 listmonster = this.temp_monsters.get(2).values();
             }
-            for (Monster mt2 : listmonster) {
+            for (Monster mt2 : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 try {
                     mt2.update();
                     if (mt2.target != null && mt2.target.exit) {
@@ -530,7 +530,9 @@ public class Region {
                 listmonster = this.temp_monsters.get(0).values();
             }
             try {
-                for (Monster mt2 : listmonster) {
+                // ban sao: luong khac (goi de Gym / hoi sinh / don quai) co the them / xoa trong luc duyet -> truoc
+                // ConcurrentModificationException o Hashtable$Enumerator (cong kiem 31/10)
+                for (Monster mt2 : new java.util.ArrayList<Monster>(listmonster)) {
                     try {
                         mt2.update();
                         if (mt2.target != null && mt2.target.exit) {
@@ -1882,7 +1884,7 @@ public class Region {
             short i = (short)country;
             this.temp_monsters.get(i).clear();
             Collection<Monster> listmonster = monsters.get(i).values();
-            for (Monster mt : listmonster) {
+            for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 if (!mt.isBoss) {
                     if (Map.random((int)100) < 50) {
                         Monster_Clone mons = new Monster_Clone((byte)1);
@@ -2088,7 +2090,7 @@ public class Region {
             }
         } else if (cat == 1) {
             java.util.Collection<Monster> listmonster = this.monsters.get(from.inCountry).values();
-            for (Monster mons : listmonster) {
+            for (Monster mons : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 if (mons.isDead || !Map.near((Actor)from, (Actor)mons) || mons.isMonsterVantieu()) continue;
                 c.add((LiveActor)mons);
             }
