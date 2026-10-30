@@ -1089,10 +1089,21 @@ public final class HeSinhThaiMenu {
                 + " bước, " + h.deHomNay + "/" + HeSinhThai.TRUNG_TOI_DA_NGAY + " trứng hôm nay)");
         m.add("Gửi pet đang sở hữu");
         m.add("Đón pet về (huỷ gửi)");
-        m.add(h.ngayPhiNhaTre == h.ngay ? "Đã trả phí hôm nay" : "Trả phí hôm nay (" + phi + " xu)");
+        m.add(h.ngayPhiNhaTre == h.ngay ? "Đã trả phí hôm nay"
+                : h.nhaTre1 <= 0 && h.nhaTre2 <= 0 ? "Trả phí hôm nay (gửi pet trước)" : "Trả phí hôm nay (" + phi + " xu)");
         m.add("Xem trứng (" + h.trung.size() + "/" + HeSinhThai.TRUNG_TOI_DA_TUI + ")");
         menu(p, M_NHA_TRE, m);
     }
+
+    /**
+     * Nguoi choi khong co pet nhan giong duoc (pet dong hanh / item pet - KHONG phai Pokemon chien dau cua nhan vat): noi
+     * ro pet la gi va cach co (trung pet roi khi co Poke Ball trong tui - Monster.droptrungPet; trung Cho sinh thai no ra pet).
+     */
+    public static final String CHUA_CO_PET = "Nhà trẻ chỉ nhận pet đồng hành (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, "
+            + "Pachirisu, Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá) trong hành trang hoặc đang dắt theo, "
+            + "không phải Pokémon chiến đấu. Bạn chưa có pet nào như vậy. Có pet: trứng pet thỉnh thoảng rơi khi hạ Pokémon "
+            + "chênh không quá 5 cấp lúc trong túi có Poké Ball, hoặc mua trứng ở Hệ sinh thái → Chợ sinh thái → Mua: Trứng "
+            + "rồi cho nở. Có pet rồi: Gửi pet đang sở hữu → Trả phí hôm nay.";
 
     static String tenGui(final int dex) {
         return dex > 0 ? SuuTamSinhThai.tenLoai(dex) : "(trống)";
@@ -1141,8 +1152,7 @@ public final class HeSinhThaiMenu {
             case 1: {
                 final List<Integer> ds = petSoHuu(p);
                 if (ds.isEmpty()) {
-                    bao(p, "Bạn chưa có pet nào nhân giống được (Hoothoot, Dratini, Cleffa, Zubat, Rufflet, Ponyta, Pachirisu, "
-                            + "Delibird, Litleo, Growlithe, Deerling, Bidoof và dạng tiến hoá).");
+                    bao(p, CHUA_CO_PET);
                     return;
                 }
                 final NguCanh c = nc(p);
@@ -1166,7 +1176,10 @@ public final class HeSinhThaiMenu {
                 break;
             case 3: {
                 if (h.nhaTre1 <= 0 && h.nhaTre2 <= 0) {
-                    bao(p, "Chưa gửi pet nào.");
+                    // bao loi 30/10/2026 (J2ME, "đây là khi ấn trả phí hôm nay"): truoc chi "Chưa gửi pet nào." - nguoi choi
+                    // khong co pet nao khong biet phai lam gi; khong tru xu.
+                    bao(p, petSoHuu(p).isEmpty() ? "Chưa gửi pet nào nên chưa cần trả phí. " + CHUA_CO_PET
+                            : "Chưa gửi pet nào nên chưa cần trả phí. Chọn \"Gửi pet đang sở hữu\" trước, rồi mới trả phí.");
                     return;
                 }
                 if (h.ngayPhiNhaTre == h.ngay) {

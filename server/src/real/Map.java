@@ -16943,6 +16943,7 @@ public class Map implements Runnable {
             player.doFinishAutoInbue();
             player.doChangeMapCharHire();
             player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+            KhuVucNhiemVuGame.sauKhiVaoBanDo(player); // trong nha client khong gui goi di chuyen (bao loi 30/10)
         } catch (Exception var11) {
             var11.printStackTrace();
         }
