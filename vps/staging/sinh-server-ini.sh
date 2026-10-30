@@ -69,6 +69,9 @@ DOI=(
     "sv.choPhepTaoTenGM=1"
     # Khong tu bao tri / khoi dong lai giua luc bot chay.
     "sv.gioBaoTri=tat"
+    # Lich su kien nam doi trang thai (vd 04:00 31/10 Halloween) -> may chu tu khoi dong lai sau 60s: tat tren staging
+    # (cong kiem 31/10/2026: staging tu tat giua nhom bot cuoi -> cot_truyen / hon_loan / bang_thong hong oan).
+    "sv.suKienTuKhoiDongLai=0"
     "bao_tri.bat=0"
     # Bot gui so ban rieng (907/908/915...) - khong chan theo ban toi thieu cua production.
     "sv.banToiThieu=0"
