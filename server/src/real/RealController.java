@@ -980,7 +980,7 @@ public class RealController extends ServerController {
         if (p == null || p.hp > 0 || p.isAdmin || p.map == null) {
             return false;
         }
-        if (!com.htbb.pokemon.ChanKhiGuc.chan(message.command, com.htbb.pokemon.ChanKhiGuc.docDau(message))) {
+        if (!com.htbb.pokemon.ChanKhiGuc.chan(message.command, com.htbb.pokemon.ChanKhiGuc.docDau(message), p.id)) {
             return false;
         }
         try {
