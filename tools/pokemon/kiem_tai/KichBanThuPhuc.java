@@ -141,6 +141,9 @@ public class KichBanThuPhuc {
         try (BotChucNang.Bot b = KichBanDS3.botLang(3)) {
             String l = muaBong(b);
             ket("tp.mua_bong", l == null, l == null ? "mua 10 Poke Ball" : l);
+            // bat la ngau nhien (Pidgey thoat 4 lan roi bo chay = het 10 bong co the xay ra ~1/5 lan chay): mua du du
+            // phong de ket qua khong phu thuoc van may - luat bat/thoat khong doi
+            for (int k = 0; k < 2 && l == null; k++) l = muaBong(b);
             int con0 = soCon(b);
             ket("tp.hop_pc_mo", con0 >= 0, "Hop PC " + con0 + " con");
             String dex0 = BotChucNang.sql1("SELECT COALESCE(SUM(so_bat),0) FROM tob_pokedex WHERE id_char=" + b.charDb);
@@ -159,7 +162,7 @@ public class KichBanThuPhuc {
             }
             StringBuilder ghi = new StringBuilder();
             boolean duoc = false;
-            for (int i = 0; i < ds.size() && i < 5 && !duoc; i++) {
+            for (int i = 0; i < ds.size() && i < 10 && !duoc; i++) {
                 int id = ds.get(i);
                 if (!b.hoangDa.containsKey(id) && !hoangDa(b, id)) { ghi.append("[khong bien duoc ").append(id).append(" thanh hoang da] "); continue; }
                 duoc = batMot(b, id, ghi);
