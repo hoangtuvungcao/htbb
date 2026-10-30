@@ -56,8 +56,10 @@ public class BotChucNang {
 
     /** Tai khoan ke tiep trong [tu, den], quay vong (moi kich ban mot tai khoan, khong dung chung cung luc). */
     static synchronized String tkMoi() {
-        if (soTk > TK_CUOI) soTk = TK_DAU;
-        return String.format("%s%03d", TIEN_TO, soTk++);
+        if (soTk > TK_CUOI) { soTk = TK_DAU; System.out.println("[TK] QUAY VONG gm " + TK_DAU + ".." + TK_CUOI); }
+        String t = String.format("%s%03d", TIEN_TO, soTk++);
+        System.out.println("[TK] gm " + t); // chay_hoi_quy.sh song song: dem tai khoan moi nhom dung (khong trung lan)
+        return t;
     }
 
     // =========================================================== mot ket noi bot
@@ -1073,8 +1075,10 @@ public class BotChucNang {
 
     /** Tai khoan KHONG GM ke tiep (mac dinh kt101..kt120; admin bo qua mot so kiem tra). */
     static synchronized String tkThuong() {
-        if (soThuong > THUONG_CUOI) soThuong = Integer.getInteger("tuThuong", 101);
-        return String.format("%s%03d", TIEN_TO, soThuong++);
+        if (soThuong > THUONG_CUOI) { soThuong = Integer.getInteger("tuThuong", 101); System.out.println("[TK] QUAY VONG thuong"); }
+        String t = String.format("%s%03d", TIEN_TO, soThuong++);
+        System.out.println("[TK] thuong " + t);
+        return t;
     }
 
     /**

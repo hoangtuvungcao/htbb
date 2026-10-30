@@ -1,0 +1,19 @@
+# MUC BAT DINH DA BIET - chay_hoi_quy.sh cho chay lai MOT lan nhom HONG khi va chi khi MOI muc FAIL cua nhom khop
+# mot dong cua DUNG nhom do o day (va co it nhat mot muc "goc" hong). Moi lan chay lai duoc ghi "thu_lai=1 lan1=..."
+# trong tong_ket.txt, ket qua ky cong kiem (truong thu_lai=) va tom tat; log lan 1 giu o <nhom>.lan1.log.
+#
+# KHONG BAO GIO chay lai (chay_hoi_quy.sh tu chan, ke ca khi co dong o day): het gio / sap (LOI), muc ten chua log /
+# bat_bien / ngoai_le / may_chu / con_song / csdl / bao_toan / exception, dong FAIL co "ngoai le" / Exception / loi SQL,
+# Exception moi trong log may chu trong luc nhom chay.
+#
+# Chi them muc ma KET QUA phu thuoc may rui cua GAME (ti le bat, roi do ngau nhien, quai hoang da xuat hien) hoac nguoi
+# choi khac tren cung ban do (quai bi bot lan khac ha truoc) - KHONG them muc kiem luat / so lieu / tien. Ghi ly do + ngay.
+#
+#   <nhom>  <regex ten muc (bash =~)>  [phu]      phu = chi hong KEO THEO muc goc (vd Hop PC them con khi bat hong)
+
+# thu_phuc: bat Pokemon hoang da la ngau nhien (KichBanThuPhuc.bat: Pidgey thoat / bo chay; quai Pallet co the bi bot lan
+# khac ha truoc khi kip bien thanh hoang da). Luat bat / thoat da kiem rieng (tp.quai_thuong_tu_choi, tp.mua_bong). 30/10/2026
+thu_phuc   ^tp\.bat$
+thu_phuc   ^tp\.cho$
+thu_phuc   ^tp\.hop_pc_them$         phu
+thu_phuc   ^tp\.pokedex_da_bat$      phu

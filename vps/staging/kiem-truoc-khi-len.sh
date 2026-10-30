@@ -16,7 +16,10 @@
 #  Tuy chon:  --nguon D (tai nguyen server cua ban ung vien, mac dinh /opt/htbb)   --giu-csdl (khong nap lai CSDL)
 #             --nhom "a b" (chi chay cac nhom bot nay - KET QUA KHONG DUNG DUOC de len production)
 #             --giu-chay (de staging chay sau khi kiem)   --ghi-chu "..." (ghi vao ket qua)
-#  Thoi gian: ~10 phut nap CSDL + 30-90 phut bot (tuy so nhom). Chay luc it nguoi choi.
+#  Thoi gian: ~10 phut nap CSDL + ~1 gio bot (cac lan song song + pha rieng, xem @lan trong hoi_quy.conf; truoc 30/10/2026
+#  chay tuan tu ~3 gio). Chay luc it nguoi choi. Nhom hong vi loi BAT DINH da biet (tools/pokemon/kiem_tai/
+#  hoi_quy_bat_dinh.txt) duoc chay lai MOT lan - ghi ro "thu_lai=" trong ket qua ky + tom tat; loi log / bat bien /
+#  Exception khong bao gio duoc chay lai.
 # ============================================================================
 set -uo pipefail
 DIR_SCRIPT=$(cd "$(dirname "$0")" && pwd)
@@ -92,7 +95,7 @@ if [ ${#HONG[@]} -eq 0 ]; then
     KN_LOG="$KQ/ket_noi_csdl.txt"; : > "$KN_LOG"
     KN_DINH=0; KN_GAN=0; KN_DUNG=0
     setsid env HOI_QUY_RA="$KQ/bot" HOI_QUY_NOI="$STG_GOC" HOI_QUY_LOG_GAME="$LOG_GAME" HOI_QUY_TIEN_TO="$STG_BOT_TIEN_TO" \
-        HOI_QUY_NHOM="$NHOM" \
+        HOI_QUY_NHOM="$NHOM" HOI_QUY_LAN_TOI_DA="$STG_BOT_LAN" HOI_QUY_JAVA="$STG_BOT_JAVA" \
         bash "${HOI_QUY_LENH:-$REPO_SCRIPT/tools/pokemon/kiem_tai/chay_hoi_quy.sh}" 127.0.0.1 "$STG_CONG_GAME" "$STG_CONG_LOGIN" \
             "cnf=$CNF,db=$STG_DB,dbtk=$STG_DB_TK" &
     PID_HQ=$!
@@ -113,7 +116,11 @@ if [ ${#HONG[@]} -eq 0 ]; then
     done
     wait "$PID_HQ"
     MA=$?
-    echo "   ket noi CSDL: dinh Threads_connected=$KN_DINH (nhat ky $KN_LOG)"
+    echo "   ket noi CSDL: dinh Threads_connected=$KN_DINH, dinh cua staging=$(sed -n 's/.* staging=\([0-9]*\).*/\1/p' "$KN_LOG" | sort -n | tail -1) (nhat ky $KN_LOG)"
+    if [ -s "$KQ/bot/thu_lai.txt" ]; then
+        echo "   THU LAI (loi bat dinh da biet, moi nhom toi da 1 lan):"
+        sed 's/^/     /' "$KQ/bot/thu_lai.txt"
+    fi
     [ "$KN_DUNG" = 0 ] || HONG+=("csdl_gan_het_ket_noi")
     [ "$MA" = 0 ] || HONG+=("bot_hoi_quy(ma=$MA)")
 
@@ -153,7 +160,7 @@ KET=DAT; [ ${#HONG[@]} -eq 0 ] || KET=HONG
 [ -n "$NHOM" ] && [ "$KET" = DAT ] && KET=DAT_MOT_PHAN   # chi chay mot so nhom -> khong cho len production
 # Bo hoi quy bi thay / cat bang bien moi truong -> cung khong du de len production (tru che do thu cuc bo, ghi ro).
 DOI_BO=""
-for B in HOI_QUY_CONF HOI_QUY_BO HOI_QUY_LENH HOI_QUY_NHOM; do [ -n "${!B:-}" ] && DOI_BO="$DOI_BO $B"; done
+for B in HOI_QUY_CONF HOI_QUY_BO HOI_QUY_LENH HOI_QUY_NHOM HOI_QUY_BAT_DINH; do [ -n "${!B:-}" ] && DOI_BO="$DOI_BO $B"; done
 THU_CK=0
 if [ -n "$DOI_BO" ] && [ "$KET" = DAT ]; then
     if [ "${HTBB_CONG_KIEM_THU:-0}" = 1 ]; then THU_CK=1; else KET=DAT_MOT_PHAN; fi
@@ -169,9 +176,11 @@ luc=$LUC
 luc_doc=$(date -d "@$LUC" '+%F %T %z')
 hong=${HONG[*]:-}
 bo_hoi_quy_sha256=$SHA_CONF
+bat_dinh_sha256=$(sha "$REPO_SCRIPT/tools/pokemon/kiem_tai/hoi_quy_bat_dinh.txt" 2>/dev/null || echo "-")
 doi_bo=${DOI_BO# }
 thu=$THU_CK
 nhom_bot=$(tr '\n' ';' < "$KQ/bot/tong_ket.txt" 2>/dev/null)
+thu_lai=$(awk '/ thu_lai=1/ {print $2}' "$KQ/bot/tong_ket.txt" 2>/dev/null | paste -sd' ' -)
 jar=$JAR
 sql=$SQL
 nhat_ky=$KQ
@@ -191,6 +200,10 @@ ls -1dt "$CONG_KIEM_DIR"/nhat_ky/*/ 2>/dev/null | tail -n +31 | xargs -r rm -rf
     echo "sql sha256 $SHA_SQL"
     [ ${#HONG[@]} -eq 0 ] || echo "hong: ${HONG[*]}"
     [ -s "$KQ/bot/tong_ket.txt" ] && sed 's/^/  /' "$KQ/bot/tong_ket.txt"
+    if grep -q ' thu_lai=1' "$KQ/bot/tong_ket.txt" 2>/dev/null; then
+        echo "CHAY LAI (lan 1 hong vi loi bat dinh da biet, lan 2 la ket qua): $(awk '/ thu_lai=1/ {print $2}' "$KQ/bot/tong_ket.txt" | paste -sd' ' -)"
+        echo "  log lan 1: $KQ/bot/<nhom>.lan1.log"
+    fi
     echo "ket qua ky: $F_KQ"
     echo "nhat ky   : $KQ"
     [ "$KET" = DAT ] && echo "-> len production:  sudo bash $HTBB_GOC/vps/len-production.sh --jar $JAR --sql $SQL --co-sql   (hoac --chi-jar)"
