@@ -22,18 +22,21 @@ public final class ManMenu extends Screen {
      * 0.9.9: viên "Tự động đánh" luôn hiện (0.9.6.1 - 0.9.8 ẩn khi HUD màn rộng có bánh răng: người chơi không tìm thấy).
      */
     static final String[] TEN = {"Pokémon", "Pokédex", "Đội/Bạn bè", "Sự kiện", "Hệ sinh thái", "Cửa hàng", "Thư/Quà",
-        "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh", "Nhiệm vụ của tôi", "Sổ tay huấn luyện"};
+        "Xếp hạng", "Cài đặt", "Tiện ích & PK", "Tự động đánh", "Nhiệm vụ của tôi", "Sổ tay huấn luyện", "Bản đồ vùng"};
     /** màu ô (nền nhạt + biểu tượng màu) */
     static final int[] MAU = {ChuDe.DO, ChuDe.TIM, ChuDe.LA, ChuDe.HONG, 0x6DAA2C, ChuDe.CAM, ChuDe.XANH, 0xE09B00, ChuDe.XAM,
-        0x5C6BC0, ChuDe.CHINH_TOI, ChuDe.CAM, ChuDe.LA};
+        0x5C6BC0, ChuDe.CHINH_TOI, ChuDe.CAM, ChuDe.LA, ChuDe.NUT_BAN_DO};
     static final int[] HINH = {BieuTuong.POKEBALL, BieuTuong.DEX, BieuTuong.DOI, BieuTuong.SU_KIEN, BieuTuong.SINH_THAI,
         BieuTuong.CUA_HANG, BieuTuong.THU, BieuTuong.XEP_HANG, BieuTuong.CAI_DAT, BieuTuong.TIEN_ICH, BieuTuong.TU_DONG,
-        BieuTuong.NHIEM_VU, BieuTuong.TIN};
+        BieuTuong.NHIEM_VU, BieuTuong.TIN, BieuTuong.BAN_DO};
     static final int I_POKEMON = 0, I_DEX = 1, I_DOI = 2, I_SU_KIEN = 3, I_SINH_THAI = 4, I_CUA_HANG = 5, I_THU = 6,
         I_XEP_HANG = 7, I_CAI_DAT = 8, I_KHAC = 9, I_TU_DONG = 10,
         // 0.9.16 (chủ dự án: "mỗi lần về làng có về trực tiếp được đâu, đi mất thời gian lắm"): Nhiệm vụ của tôi + Sổ tay
         // huấn luyện mở ở mọi nơi (trước chỉ qua Quầy đổi thưởng trong làng / nút trong sổ Nhiệm vụ)
-        I_NV_CUA_TOI = 11, I_SO_TAY = 12;
+        I_NV_CUA_TOI = 11, I_SO_TAY = 12,
+        // 30/10/2026 (người chơi: "thêm cái mở bản đồ vùng để xem cho tiện"): bản đồ vùng Kanto / Johto / Hoenn - trước chỉ
+        // ở Cài đặt › Bản đồ lớn của menu chữ, không ai tìm thấy. Nút "Bản đồ" HUD PC = bản đồ CẢ MAP đang đứng (khác việc).
+        I_BAN_DO_VUNG = 13;
 
     /** Chấm đỏ ô i (dữ liệu client có): nhiệm vụ mới / đủ để trả, thư chưa đọc, điểm kỹ năng chưa cộng. */
     public static boolean cham(int i) {
@@ -152,6 +155,10 @@ public final class ManMenu extends Screen {
                 ve();
                 game.render.screen.GameScr.moSoTay();
                 break;
+            case I_BAN_DO_VUNG:
+                ve();
+                ManBanDoVung.mo();
+                break;
             case I_CAI_DAT:
                 ve();
                 CauGiaoDien.moCaiDat();
@@ -209,7 +216,7 @@ public final class ManMenu extends Screen {
      * dùng). Không còn bảng trắng to với ô nhỏ trôi nổi.
      */
     static final int[] CHINH = {I_POKEMON, I_DEX, I_CUA_HANG, I_DOI, I_SU_KIEN};
-    static final int[] PHU = {I_NV_CUA_TOI, I_SO_TAY, I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
+    static final int[] PHU = {I_NV_CUA_TOI, I_SO_TAY, I_BAN_DO_VUNG, I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
     static final int[] PHU_HUD_RONG = {I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
 
     /**
@@ -219,7 +226,44 @@ public final class ManMenu extends Screen {
     public static int[] phu() {
         // 0.9.9: chủ game - "Tự động đánh" LUÔN có ở Menu (0.9.8 bỏ trên HUD màn rộng -> người chơi PC / J2ME báo mất
         // menu AUTO); viên AUTO + bánh răng HUD vẫn giữ (lối tắt). PHU_HUD_RONG giữ cho kiểm thử cũ.
+        // 30/10/2026: màn thấp (J2ME cảm ứng 320x240) - viên "Bản đồ vùng" thêm một hàng làm hàng viên đè vòng cung: bỏ viên
+        // này (lối vào còn ở Tiện ích & PK › Cài đặt › Bản đồ vùng - PauseMenu.an hiện lại mục đó, phím *)
+        if (conCho(PHU) < toiThieuCung() && conCho(PHU_GON) > conCho(PHU)) {
+            return PHU_GON;
+        }
         return PHU;
+    }
+
+    static final int[] PHU_GON = {I_NV_CUA_TOI, I_SO_TAY, I_TU_DONG, I_SINH_THAI, I_THU, I_XEP_HANG, I_CAI_DAT, I_KHAC};
+
+    /** Menu này có viên "Bản đồ vùng" (màn thấp bỏ - PauseMenu không ẩn mục Cài đặt › Bản đồ vùng). */
+    public static boolean coBanDoVung() {
+        int[] p = phu();
+        for (int i = 0; i < p.length; i++) {
+            if (p[i] == I_BAN_DO_VUNG) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Chỗ dọc còn cho vòng cung khi hàng viên phụ là phu. */
+    static int conCho(int[] phu) {
+        int r = rNut();
+        int k = Math.max(ChuDe.KHE, Bang.cach()), hv = caoVienPhu();
+        int[] wv = new int[phu.length];
+        for (int q = 0; q < phu.length; q++) {
+            wv[q] = ChuDe.rongVien(TEN[phu[q]], ChuDe.NHAN, 0xF6E6C0) + 34;
+        }
+        int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
+        return yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
+    }
+
+    /** Bán kính vòng cung tối thiểu (nhãn dưới nút không chạm nút kế bên). */
+    static int toiThieuCung() {
+        int r = rNut();
+        // 0.9.7: đủ xa để nhãn dưới nút (vuông NRO) không chạm nút kế bên trên cung (sin128 - sin166 = 0,546)
+        return Math.max(2 * r + 30, (2 * r + ChuDe.cao(ChuDe.SO) + 12) * 1000 / 546);
     }
     static final int[] GOC = {166, 128, 90, 52, 14};
 
@@ -252,18 +296,7 @@ public final class ManMenu extends Screen {
 
     /** Bán kính vòng cung (theo cao màn: đủ chỗ hàng phụ phía trên). */
     static int banKinhCung() {
-        int r = rNut();
-        int k = Math.max(ChuDe.KHE, Bang.cach()), hv = caoVienPhu();
-        int[] phu = phu();
-        int[] wv = new int[phu.length];
-        for (int q = 0; q < phu.length; q++) {
-            wv[q] = ChuDe.rongVien(TEN[phu[q]], ChuDe.NHAN, 0xF6E6C0) + 34;
-        }
-        int nh = soHangPhu(wv, k, Bang.phai() - Bang.trai() - 8);
-        int conCho = yBong() - Bang.tren() - (hv + 14) - (nh - 1) * (hv + k) - r - 6;
-        // 0.9.7: đủ xa để nhãn dưới nút (vuông NRO) không chạm nút kế bên trên cung (sin128 - sin166 = 0,546)
-        int toiThieu = (2 * r + ChuDe.cao(ChuDe.SO) + 12) * 1000 / 546;
-        return Math.max(Math.max(2 * r + 30, toiThieu), Math.min(ChuDe.dt() ? 150 : 132, conCho));
+        return Math.max(toiThieuCung(), Math.min(ChuDe.dt() ? 150 : 132, conCho(phu())));
     }
 
     static int soHangPhu(int[] wv, int k, int wMax) {

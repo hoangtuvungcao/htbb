@@ -73,7 +73,8 @@ public class ChupTrongGame {
      * người chơi giả lập Android ngang dùng đủ các màn này. Cỡ J2ME không đặt cỡ chạm tối thiểu (MIN = 0).
      */
     static final String MAN_J2ME_GIA_LAP = ",the_gioi,menu,nv_ky_nang,nv_hanh_trang,tu_dong,tu_dong_dang,xac_nhan,hop_thong_bao,"
-        + "hop_len_cap,menu_ngu_canh,nhiem_vu,cua_hang_thuoc,pokedex,hop_dang_xuat,hst_vuon_gieo,menu_chu_vuon_gieo,";
+        + "hop_len_cap,menu_ngu_canh,nhiem_vu,cua_hang_thuoc,pokedex,hop_dang_xuat,hst_vuon_gieo,menu_chu_vuon_gieo,"
+        + "ban_do_vung,ban_do_vung_johto,ban_do_vung_hoenn,";
 
     /** Máy J2ME thật: màn logic đúng W x H, x1 (không phóng). */
     static void datCoJ2me(int W, int H) {
@@ -255,8 +256,11 @@ public class ChupTrongGame {
         kiem(so > 0, nhan + " co vung cham");
     }
 
+    /** nhiệm vụ gốc trước màn ban_do_vung (đặt nhiệm vụ giả có bản đồ đích) */
+    static Object[] QUEST_GOC;
+
     static boolean tron(String t) {
-        return t != null && t.startsWith("hud-") && !t.equals("hud-the") && !t.equals("hud-tu-dong");
+        return t != null && t.startsWith("hud-") && !t.equals("hud-the") && !t.equals("hud-tu-dong") && !t.equals("hud-ban-do-nho");
     }
 
     public static void main(String[] a) throws Exception {
@@ -352,7 +356,10 @@ public class ChupTrongGame {
             // 0.9.14: thẻ vật phẩm dạng thuốc theo bảng máy chủ (-104 kiểu 9) - Sáo gọi Tauros / nguyên liệu sự kiện
             "tui_sao_goi", "tui_nguyen_lieu_su_kien",
             // main 3e7649b0: Vé dịch chuyển (thuốc 162, bảng 163 dòng) - thẻ "Vé / thẻ" + nút Sử dụng
-            "tui_ve_dich_chuyen"};
+            "tui_ve_dich_chuyen",
+            // 30/10/2026: bản đồ vùng (Menu › Bản đồ vùng / chạm bản đồ nhỏ / phím *) - Kanto có dấu sao nhiệm vụ, Johto (đang
+            // đứng ở vùng khác), Hoenn
+            "ban_do_vung", "ban_do_vung_johto", "ban_do_vung_hoenn"};
         kiemMenuNhiemVu();
         chay(new Runnable() {
             public void run() {
@@ -1557,7 +1564,26 @@ public class ChupTrongGame {
             }
             dat(nv, "loaiThu", Integer.valueOf(bo));
         }
-        if ("menu_so_tay".equals(ten) || "menu_su_kien".equals(ten)) {
+        if (QUEST_GOC != null) {
+            game.render.screen.GameScr.mainQuest = (game.model.Quest) QUEST_GOC[0];
+            QUEST_GOC = null;
+        }
+        if (ten.startsWith("ban_do_vung")) {
+            // nhiệm vụ có bản đồ đích Cerulean (id 4) -> dấu sao ở Kanto
+            QUEST_GOC = new Object[]{game.render.screen.GameScr.mainQuest};
+            game.model.Quest q = new game.model.Quest(14);
+            q.stateQuest = 2;
+            q.dichMap = 4;
+            q.dichNoi = "Cerulean";
+            game.render.screen.GameScr.mainQuest = q;
+            game.render.Canvas.gameScr.switchToMe();
+            game.pokemon.ManBanDoVung.mo();
+            if (ten.endsWith("_johto")) {
+                game.pokemon.ManBanDoVung.gI().vung(1);
+            } else if (ten.endsWith("_hoenn")) {
+                game.pokemon.ManBanDoVung.gI().vung(2);
+            }
+        } else if ("menu_so_tay".equals(ten) || "menu_su_kien".equals(ten)) {
             if ("menu_su_kien".equals(ten)) {
                 game.pokemon.ThoiTiet.datTrangThai(0, "Quang đãng", "Quang đãng. Trời đẹp, không ảnh hưởng chiêu.", 17370, 0, 3,
                         "Hoàng hôn Halloween", 0, "", 0, false, "");

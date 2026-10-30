@@ -19,17 +19,6 @@ final class Nen {
         return MenuNhanh.ve(g);
     }
 
-    /** pokemon: "Bản đồ lớn" vẽ bằng code (game.pokemon.BanDoVung) thay ảnh bản đồ kiếm hiệp. true = đã vẽ. */
-    static boolean veBanDoLon(Object g, short[][] diem, int hienTai, int w, int h) {
-        final int map = game.render.Canvas.gameScr != null ? game.render.Canvas.gameScr.map : -1;
-        if (game.pokemon.BanDoVung.chiSoHoenn(map) >= 0) {
-            game.pokemon.BanDoVung.veHoenn((javax.microedition.lcdui.Graphics) g, map, w, h);
-            return true;
-        }
-        game.pokemon.BanDoVung.ve((javax.microedition.lcdui.Graphics) g, diem, hienTai, w, h);
-        return true;
-    }
-
     /** Túi sinh thái (hệ sinh thái server, NPC ảo -528, lựa chọn 4 của menu gốc). */
     static void moTuiSinhThai() {
         TuiSinhThaiScr.xin();
@@ -125,11 +114,5 @@ final class Nen {
     /** Thanh trạng thái Tự động đánh (viên thuốc xanh dưới khung HP). */
     static void veThanhTuDong(javax.microedition.lcdui.Graphics g, String s, int y) {
         BangTuDong.veThanh(g, s, y);
-    }
-
-    /** Tiêu đề "Bản đồ lớn": vùng Hoenn (năm 2) có tiêu đề riêng. */
-    static String tieuDeBanDoLon(String macDinh) {
-        return game.render.Canvas.gameScr != null
-                && game.pokemon.BanDoVung.chiSoHoenn(game.render.Canvas.gameScr.map) >= 0 ? "Vùng Hoenn" : macDinh;
     }
 }
