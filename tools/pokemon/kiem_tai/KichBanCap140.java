@@ -136,6 +136,9 @@ final class KichBanCap140 {
         return s;
     }
 
+    /** Ban do trong lang khoi dau phe 0 (vao bang cua o lang 0 / 301): KiemSuaTuyen.NHA_LANG cot 0. */
+    static final Set<Integer> NHA_LANG_0 = new HashSet<>(Arrays.asList(29, 102, 103, 104, 108, 109));
+
     static final int CAP_DICH = Integer.getInteger("capDich", 40);
     /**
      * Luot phu kin nhiem vu phu (-DuuTienPhu=1): nhu nguoi choi thich lam het viec phu o moi thi tran - nhiem vu phu dang lam
@@ -839,8 +842,18 @@ final class KichBanCap140 {
                     return BotChucNang.khongDau(chu).contains("noi chuyen") ? "" : "buoc noi chuyen dang lam khong ghi o dich: " + chu;
                 }
                 int dich = tenBd == null ? b.mapId : mapTheoTen(b.mapId, tenBd);
-                if (dich < 0) return "khong biet ban do '" + tenBd + "'";
-                if (!toi(dich)) return "khong toi duoc " + tenBd;
+                Integer nha = tenBd == null ? null : LOAD_THEO_TEN.get(tenBd.trim());
+                if (dich < 0 && nha != null && NHA_LANG_0.contains(nha)) {
+                    // ban do trong lang (nha / khu noi bo cua lang khoi dau, vd 29 "Rừng Ilex (cạnh làng khởi đầu)"): ve lang
+                    // roi vao cua nhu nguoi choi (truoc 30/10/2026 bot d210 ket "khong biet ban do 'Rừng Ilex'" o C34.4)
+                    if (b.mapId != nha) {
+                        KichBanCap140TinhNang.veLangDiBo(this);
+                        if (!KichBanDS2.vaoNha(b, nha) || b.mapId != nha) return "khong vao duoc " + tenBd + " (" + nha + ") tu lang " + b.mapId;
+                    }
+                } else {
+                    if (dich < 0) return "khong biet ban do '" + tenBd + "'";
+                    if (!toi(dich)) return "khong toi duoc " + tenBd;
+                }
                 BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
                 int x = Integer.parseInt(mo.group(1)), y = Integer.parseInt(mo.group(2));
                 int[] o = bd == null ? null : bd.oGan(x, y, 2);
@@ -902,6 +915,12 @@ final class KichBanCap140 {
                 if (dich < 0 && co != null) {
                     int ds = Integer.MAX_VALUE;
                     for (int mid : co) { List<int[]> d = BotXuyenSuot.duongUocTinh(b.mapId, mid); if (d != null && d.size() < ds) { ds = d.size(); dich = mid; } }
+                }
+                if (dich < 0 && co != null && co.stream().anyMatch(BotXuyenSuot::dangChan)) {
+                    // ban do cua quai dang khoa (cua ai / cap): nhan cua ai nhu nguoi choi doc hop "Để vào X cần xong cửa ải"
+                    hop95(0);
+                    nhanCuaAiNeuKhoa();
+                    return "ban do cua " + HoiQuy.TEN_QUAI.get(tpl) + " dang khoa (cua ai / cap)";
                 }
                 if (dich < 0) return "khong biet ban do cua quai " + tpl + " (" + HoiQuy.TEN_QUAI.get(tpl) + ")";
                 Integer cq = BotXuyenSuot.CAP_QUAI.get(tpl);
