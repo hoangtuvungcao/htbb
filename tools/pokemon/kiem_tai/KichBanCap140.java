@@ -1296,7 +1296,7 @@ final class KichBanCap140 {
                 int ban = 0;
                 long xb = b.xu;
                 for (int[] x : new ArrayList<>(b.doDung)) {
-                    if (ban >= 20 || x.length < 4 || x[3] <= 0 || x[3] > b.lv - 6 || x[4] != 0) continue;
+                    if (ban >= 20 || x.length < 4 || x[3] <= 0 || x[3] > b.lv - 6 || x[1] == tplVk) continue;
                     b.gui(28, (short) x[0]);
                     b.bom(250);
                     ban++;
@@ -1355,13 +1355,26 @@ final class KichBanCap140 {
             int ban = 0;
             long x0 = b.xu;
             for (int[] x : new ArrayList<>(b.doDung)) {
-                if (x.length < 5 || x[4] != 0 || x[1] == tplVk || x[2] > 0 || x[3] <= 0) continue;
+                // do cu da nang (+N) / khoa cung ban khi da qua 6 cap (choi 5 dong 30/10: tui 28 o day vu khi cu da nang o
+                // buoc "Nâng +N" + 8 Huy chuong Gym -> khong mua duoc thuoc, vao Gym Celadon voi 0 binh)
+                boolean cu = x.length >= 4 && x[3] > 0 && x[3] <= b.lv - 6;
+                if (x.length < 5 || x[1] == tplVk || x[3] <= 0 || !cu && (x[4] != 0 || x[2] > 0)) continue;
                 b.gui(28, (short) x[0]);
                 b.bom(250);
                 ban++;
             }
             b.lamMoi();
-            ghi("tui day -> ban " + ban + " mon (xu " + x0 + " -> " + b.xu + ", tui con " + b.doDung.size() + ")");
+            // ve / bua dung ngay (Vé EXP 1251, Bùa thể lực 1255 - moi cai mot o, khong chong): nguoi choi dung khi tui chat
+            String dung = "";
+            for (int[] x : new ArrayList<>(b.doDung)) {
+                if (x[1] != 1251 && x[1] != 1255) continue;
+                int m = b.moc();
+                b.gui(29, (short) x[0]);
+                b.bom(400);
+                if (dung.isEmpty()) dung = " | dung " + x[1] + ": " + b.chuTu(m);
+            }
+            b.lamMoi();
+            ghi("tui day -> ban " + ban + " mon (xu " + x0 + " -> " + b.xu + ", tui con " + b.doDung.size() + ")" + dung);
             KichBanDS2.raNgoai(b);
         }
 
