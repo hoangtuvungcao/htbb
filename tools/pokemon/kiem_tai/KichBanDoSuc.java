@@ -22,7 +22,7 @@ import java.util.concurrent.*;
  *          (boss guc) va luc co "Chiến thắng" - kiem "boss ket o 0,2-0,5% HP toi het gio" (bao cao can bang 29/10/2026).
  *
  * -DdoSucCap=15,20,25  -DdoSucLop=0,1,2,3,4  -DdoSucMap=8,9  -DdoSucGym=2,3  -DdoSucGiap=1  -DdoSucThuoc=12  -DdoSucLoaiThuoc=3  -DdoSucSo=15
- * -DdoSucSongSong=6  -DdoSucRa=<tep tsv>  -DdoSucNangCap=6 (vu khi +N truoc khi cam; cot ttk_tran = giay danh thuan moi con)
+ * -DdoSucQuai=74 (cung -DdoSucMap: chi danh mau quai nay)  -DdoSucSongSong=6  -DdoSucRa=<tep tsv>  -DdoSucNangCap=6 (vu khi +N truoc khi cam; cot ttk_tran = giay danh thuan moi con)
  */
 final class KichBanDoSuc {
 
@@ -322,6 +322,10 @@ final class KichBanDoSuc {
             map = -1;
         }
         if (mapEp >= 0) { map = mapEp; tpl = -1; capQ = -1; }
+        // -DdoSucQuai=N (kem -DdoSucMap): chi danh mau quai N o ban do do (buoc giet bat buoc: quai muc tieu co the cao hon
+        // nguoi choi > 4 cap, vd Golem 54 o cua ai CA-09.1 cap 49)
+        final int quaiEp = Integer.getInteger("doSucQuai", -1);
+        if (mapEp >= 0 && quaiEp >= 0) { tpl = quaiEp; capQ = BotXuyenSuot.CAP_QUAI.getOrDefault(quaiEp, -1); }
         if (map < 0) System.out.println("  do suc L" + L + " lop" + lop + ": khong co bai quai di toi duoc tu map " + b.mapId + " (" + ung.size() + " mau cap " + (L - 8) + ".." + L + ")");
         // ban sao lang (0 / 301 ...) co do thi cong khac nhau: bai Johto chi co duong tu mot so ban sao - vao lai toi da 8
         // lan cho toi ban sao co duong (nguoi choi that: vao lai / doi khu)
