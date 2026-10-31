@@ -62,8 +62,13 @@ export function giaTrungBinh(tongXu: number, tongLuong: number): number {
 }
 
 /** Mô tả một dòng lệnh đổi lượng (bảng "Yêu cầu đổi"). */
-export function moTaLenhDoi(loai: string, so: number): string {
+export function moTaLenhDoi(loai: string, so: number, nhan?: number | null): string {
   const n = Math.trunc(Number(so) || 0).toLocaleString('vi-VN')
+  if (nhan != null && nhan > 0) {
+    const nhanStr = Math.trunc(Number(nhan)).toLocaleString('vi-VN')
+    if (loai === LENH_DOI_LUONG_KHOA) return `${n} lượng → ${nhanStr} lượng khoá`
+    if (loai === LENH_DOI_LUONG_XU) return `${n} lượng → ${nhanStr} xu`
+  }
   if (loai === LENH_DOI_LUONG_KHOA) return `${n} lượng → lượng khoá`
   if (loai === LENH_DOI_LUONG_XU) return `${n} lượng → xu`
   return loai

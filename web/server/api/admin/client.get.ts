@@ -17,7 +17,7 @@
 const BANG_CLIENT = 'tob_client_dang_nhap'
 const LOAI = ['pc', 'android', 'jar', 'khac'] as const
 type Loai = typeof LOAI[number]
-const LA_BOT = /^(tbot\d+|user\d+|kiemtrabot)$/i
+const LA_BOT = /^(tbot\d+|user\d+|kiemtrabot|hlvai.*|bot\d+|ai_.*)$/i
 
 interface DongClient {
   tai_khoan: string

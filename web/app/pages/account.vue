@@ -122,7 +122,6 @@ const columns = [
   { accessorKey: 'lastLv', header: 'Cấp' },
   { accessorKey: 'xu', header: 'Xu' },
   { accessorKey: 'luong', header: 'Lượng' },
-  { accessorKey: 'mapTen', header: 'Đang ở' },
 ]
 </script>
 
@@ -240,10 +239,6 @@ const columns = [
                     <dt class="text-xs text-dimmed">Lượng</dt>
                     <dd class="tabular-nums">{{ soVn(c.luong) }}<span class="block text-xs text-muted">khoá {{ soVn(c.luongKhoa) }}<template v-if="c.khoLuong || c.khoLuongKhoa"> · kho {{ soVn(c.khoLuong) }} / {{ soVn(c.khoLuongKhoa) }}</template></span></dd>
                   </div>
-                  <div class="col-span-2">
-                    <dt class="text-xs text-dimmed">Đang ở</dt>
-                    <dd class="break-words">{{ c.mapTen ?? '—' }}<span v-if="c.lanCuoi" class="block text-xs text-muted">chơi lúc {{ c.lanCuoi }}</span></dd>
-                  </div>
                 </dl>
               </li>
             </ul>
@@ -273,10 +268,6 @@ const columns = [
               <template #luong-cell="{ row }">
                 <span class="num">{{ soVn(row.original.luong) }}</span>
                 <span class="block text-xs text-muted">khoá {{ soVn(row.original.luongKhoa) }}<template v-if="row.original.khoLuong || row.original.khoLuongKhoa"> · kho {{ soVn(row.original.khoLuong) }} / {{ soVn(row.original.khoLuongKhoa) }}</template></span>
-              </template>
-              <template #mapTen-cell="{ row }">
-                <span>{{ row.original.mapTen ?? '—' }}</span>
-                <span v-if="row.original.lanCuoi" class="block text-xs text-muted">chơi lúc {{ row.original.lanCuoi }}</span>
               </template>
             </UTable>
             <div v-else-if="data" class="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-dashed border-default p-10 text-center">

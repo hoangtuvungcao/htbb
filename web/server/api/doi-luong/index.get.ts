@@ -41,6 +41,23 @@ export default defineEventHandler(async (event) => {
     tranSan,
     conSan: Math.max(0, tranSan - daDatSan),
     san: san ? { ...san, giaTb24h: giaTrungBinh(san.tongXu24h, san.tongLuong24h) } : null,
-    yeuCau: yeuCau.map(y => ({ ...y, moTa: moTaLenhDoi(y.loai, y.so), tenTrangThai: tenTrangThaiLenh(y.trangThai), dangCho: laDangCho(y.trangThai) })),
+    yeuCau: yeuCau.map(y => {
+      const nhanDuoc = y.nhan != null ? y.nhan : (
+        y.loai === LENH_DOI_LUONG_XU
+          ? (tiGia?.giaTri ? y.so * tiGia.giaTri : 0)
+          : (tiLe > 0 ? y.so * tiLe : 0)
+      )
+      const tiGiaHien = y.tiGia != null && y.tiGia > 0 ? y.tiGia : (
+        y.loai === LENH_DOI_LUONG_XU ? (tiGia?.giaTri ?? 0) : tiLe
+      )
+      return {
+        ...y,
+        nhan: nhanDuoc,
+        tiGia: tiGiaHien,
+        moTa: moTaLenhDoi(y.loai, y.so, nhanDuoc),
+        tenTrangThai: y.nguon === 'npc' ? 'Đã xong (NPC)' : tenTrangThaiLenh(y.trangThai),
+        dangCho: y.id > 0 && laDangCho(y.trangThai),
+      }
+    }),
   }
 })

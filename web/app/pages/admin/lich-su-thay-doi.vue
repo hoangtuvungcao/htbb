@@ -10,6 +10,21 @@ async function xem(id: number) {
   chiTiet.value = r.dong
 }
 const dep = (s: string) => { try { return JSON.stringify(JSON.parse(s), null, 2) } catch { return s } }
+
+const trang = ref(1)
+const moiTrang = ref(20)
+const tongSo = computed(() => data.value?.ds?.length ?? 0)
+const dsHienThi = computed(() => {
+  const list = data.value?.ds ?? []
+  if (moiTrang.value >= list.length) return list
+  const start = (trang.value - 1) * moiTrang.value
+  return list.slice(start, start + moiTrang.value)
+})
+watch(loc, () => { trang.value = 1 })
+watch(tongSo, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrang.value))
+  if (trang.value > max) trang.value = max
+})
 </script>
 
 <template>
@@ -21,7 +36,7 @@ const dep = (s: string) => { try { return JSON.stringify(JSON.parse(s), null, 2)
         <table class="bang-wiki">
           <thead><tr><th>Lúc</th><th>Người làm</th><th>Hành động</th><th>Đối tượng</th><th>IP</th><th /></tr></thead>
           <tbody>
-            <tr v-for="r in data?.ds ?? []" :key="r.id">
+            <tr v-for="r in dsHienThi" :key="r.id">
               <td class="whitespace-nowrap text-xs">{{ r.thoi_gian }}</td>
               <td class="font-semibold">{{ r.admin_user }}</td>
               <td><UBadge color="neutral" variant="subtle">{{ r.hanh_dong }}</UBadge></td>
@@ -29,9 +44,15 @@ const dep = (s: string) => { try { return JSON.stringify(JSON.parse(s), null, 2)
               <td class="text-xs">{{ r.ip }}</td>
               <td><UButton size="xs" color="neutral" variant="ghost" icon="i-lucide-git-compare" label="Trước/sau" @click="xem(r.id)" /></td>
             </tr>
+            <tr v-if="!data?.ds?.length"><td colspan="6" class="text-center text-muted">Chưa có lịch sử thay đổi.</td></tr>
           </tbody>
         </table>
       </div>
+      <template v-if="tongSo > moiTrang" #footer>
+        <div class="flex justify-center">
+          <UPagination v-model:page="trang" :total="tongSo" :items-per-page="moiTrang" />
+        </div>
+      </template>
     </UCard>
     <USlideover :open="!!chiTiet" :title="`${chiTiet?.hanh_dong} · ${chiTiet?.doi_tuong}`" :ui="{ content: 'sm:max-w-4xl' }" @update:open="(v: boolean) => { if (!v) chiTiet = null }">
       <template #body>

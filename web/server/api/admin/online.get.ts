@@ -17,6 +17,7 @@
  * Query: ?locTen=&locMap= (gần đúng, LIKE), ?banNgoai=1 (chỉ người dùng client ngoài)
  */
 const BANG_VI_TRI = 'tob_vi_tri_online'
+const LA_BOT = /^(tbot\d+|user\d+|kiemtrabot|hlvai.*|bot\d+|ai_.*)$/i
 
 async function boSungTaiKhoanClient(dong: DongViTri[]): Promise<void> {
   const thieuTk = [...new Set(dong.filter(r => !r.tai_khoan).map(r => String(r.charname)))]
@@ -74,6 +75,7 @@ export default defineAdminHandler(async (event) => {
   const locTen = str(query.locTen)
   const locMap = str(query.locMap)
   const banNgoai = str(query.banNgoai) === '1'
+  const anBot = str(query.anBot, '1') !== '0'
 
   let dong: DongViTri[] = []
   let loiDoc = ''
@@ -108,6 +110,10 @@ export default defineAdminHandler(async (event) => {
   // client của lần đăng nhập gần nhất trong tob_client_dang_nhap. Hỏng ở bước nào thì để trống, không lỗi.
   await boSungTaiKhoanClient(dong)
 
+  const isBot = (r: DongViTri) => LA_BOT.test(String(r.tai_khoan ?? '')) || LA_BOT.test(String(r.charname ?? ''))
+  const soBotOnline = dong.filter(isBot).length
+  if (anBot) dong = dong.filter(r => !isBot(r))
+
   const coCotClient = dong.length > 0 && dong.some(r => (r.client ?? '') !== '')
   // Đếm theo client / bản ngoài trên TOÀN BỘ người đang online (trước khi lọc bản ngoài)
   const theoClient = { pc: 0, android: 0, jar: 0, khac: 0, chinhChu: 0, banNgoai: 0 }
@@ -128,5 +134,5 @@ export default defineAdminHandler(async (event) => {
   }
   const theoMap = [...dem.entries()].map(([ten, sl]) => ({ ten, sl })).sort((a, b) => b.sl - a.sl)
 
-  return { dong, theoMap, theoClient, coCotClient, bangChuaCo, loiDoc, locTen, locMap, banNgoai }
+  return { dong, theoMap, theoClient, coCotClient, bangChuaCo, loiDoc, locTen, locMap, banNgoai, anBot, soBotOnline }
 })

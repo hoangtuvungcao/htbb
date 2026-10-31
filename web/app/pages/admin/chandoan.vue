@@ -74,6 +74,20 @@ async function saoChep(s: string) {
   }
 }
 
+const trangLoiWeb = ref(1)
+const moiTrangLoiWeb = ref(15)
+const tongLoiWeb = computed(() => data.value?.loiWeb?.length ?? 0)
+const loiWebHienThi = computed(() => {
+  const list = data.value?.loiWeb ?? []
+  if (moiTrangLoiWeb.value >= list.length) return list
+  const start = (trangLoiWeb.value - 1) * moiTrangLoiWeb.value
+  return list.slice(start, start + moiTrangLoiWeb.value)
+})
+watch(tongLoiWeb, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrangLoiWeb.value))
+  if (trangLoiWeb.value > max) trangLoiWeb.value = max
+})
+
 // ---------------------------------------------------------------------------
 //  Xem cuối file log
 // ---------------------------------------------------------------------------
@@ -378,7 +392,7 @@ const cotLoiWeb: TableColumn<LoiWeb>[] = [
       <p v-else-if="!data.loiWeb.length" class="p-4 text-sm text-muted sm:p-6">
         Chưa có lỗi nào được ghi. Tốt.
       </p>
-      <UTable v-else :data="data.loiWeb" :columns="cotLoiWeb" class="w-full">
+      <UTable v-else :data="loiWebHienThi" :columns="cotLoiWeb" class="w-full">
         <template #thoi_gian-cell="{ row }">
           <span class="whitespace-nowrap text-xs text-muted">{{ row.original.thoi_gian }}</span>
         </template>
@@ -393,6 +407,12 @@ const cotLoiWeb: TableColumn<LoiWeb>[] = [
           <span class="block min-w-64 max-w-2xl whitespace-pre-wrap break-words text-sm">{{ row.original.chi_tiet }}</span>
         </template>
       </UTable>
+      <template v-if="tongLoiWeb > moiTrangLoiWeb" #footer>
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+          <span>Hiển thị {{ (trangLoiWeb - 1) * moiTrangLoiWeb + 1 }} - {{ Math.min(trangLoiWeb * moiTrangLoiWeb, tongLoiWeb) }} trên {{ tongLoiWeb }} lỗi</span>
+          <UPagination v-model:page="trangLoiWeb" :total="tongLoiWeb" :items-per-page="moiTrangLoiWeb" />
+        </div>
+      </template>
     </UCard>
   </AdminPage>
 </template>

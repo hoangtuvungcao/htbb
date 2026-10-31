@@ -60,6 +60,18 @@ const conLai = computed(() => {
   return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
 })
 const lichSu = ref<DonHienThi[]>([])
+const trangLs = ref(1)
+const moiTrangLs = ref(5)
+const tongLs = computed(() => lichSu.value.length)
+const lichSuHienThi = computed(() => {
+  if (moiTrangLs.value >= lichSu.value.length) return lichSu.value
+  const start = (trangLs.value - 1) * moiTrangLs.value
+  return lichSu.value.slice(start, start + moiTrangLs.value)
+})
+watch(tongLs, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrangLs.value))
+  if (trangLs.value > max) trangLs.value = max
+})
 const loi = ref('')
 const dangTai = ref(false)
 const dangTao = ref<string | null>(null)
@@ -433,7 +445,7 @@ const cotLichSu = [
               Chưa có đơn nào.
             </p>
             <ul v-else class="divide-y divide-default md:hidden">
-              <li v-for="d in lichSu" :key="d.ma_don" class="py-3 first:pt-0 last:pb-0">
+              <li v-for="d in lichSuHienThi" :key="d.ma_don" class="py-3 first:pt-0 last:pb-0">
                 <div class="flex items-center justify-between gap-2">
                   <NuxtLink :to="{ query: { ma_don: d.ma_don } }" class="font-mono lien-ket">
                     {{ d.ma_don }}
@@ -453,7 +465,7 @@ const cotLichSu = [
                 </div>
               </li>
             </ul>
-            <UTable :data="lichSu" :columns="cotLichSu" empty="Chưa có đơn nào." class="hidden md:block">
+            <UTable :data="lichSuHienThi" :columns="cotLichSu" empty="Chưa có đơn nào." class="hidden md:block">
               <template #ma_don-cell="{ row }">
                 <NuxtLink :to="{ query: { ma_don: row.original.ma_don } }" class="font-mono lien-ket">
                   {{ row.original.ma_don }}
@@ -473,6 +485,12 @@ const cotLichSu = [
                 </div>
               </template>
             </UTable>
+            <template v-if="tongLs > moiTrangLs" #footer>
+              <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+                <span>Hiển thị {{ (trangLs - 1) * moiTrangLs + 1 }} - {{ Math.min(trangLs * moiTrangLs, tongLs) }} trên {{ tongLs }} đơn</span>
+                <UPagination v-model:page="trangLs" :total="tongLs" :items-per-page="moiTrangLs" />
+              </div>
+            </template>
           </UCard>
 
           <UCard>

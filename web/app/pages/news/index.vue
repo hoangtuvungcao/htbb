@@ -12,6 +12,15 @@ const ds = computed(() => dsTin.value ?? [])
 const dau = computed(() => ds.value[0] ?? null)
 const conLai = computed(() => ds.value.slice(1))
 
+const trangTin = ref(1)
+const moiTrangTin = 10
+const tongSoTin = computed(() => conLai.value.length)
+const tinHienThi = computed(() => {
+  if (moiTrangTin >= conLai.value.length) return conLai.value
+  const start = (trangTin.value - 1) * moiTrangTin
+  return conLai.value.slice(start, start + moiTrangTin)
+})
+
 const skNam = useSuKienNam(45)
 const skHien = computed(() => [
   ...skNam.dang.value.map(l => ({ l, dang: true })),
@@ -60,7 +69,7 @@ watch(lich, l => { suKien.value = suKienTuTuan(tuanTrongNam(new Date()), 3, l) }
           </article>
 
           <ul v-if="conLai.length" class="khung mt-6 divide-y divide-[var(--ui-border-muted)] overflow-hidden">
-            <li v-for="a in conLai" :key="a.slug">
+            <li v-for="a in tinHienThi" :key="a.slug">
               <NuxtLink :to="`/news/${a.slug}`" class="group flex gap-4 p-4 hover:bg-elevated/60 sm:p-5">
                 <img v-if="a.anhBia" :src="a.anhBia" alt="" width="160" height="90" loading="lazy" class="hidden aspect-video w-36 shrink-0 rounded border-2 border-[var(--khung-vien)] object-cover sm:block">
                 <span class="min-w-0">
@@ -75,6 +84,9 @@ watch(lich, l => { suKien.value = suKienTuTuan(tuanTrongNam(new Date()), 3, l) }
               </NuxtLink>
             </li>
           </ul>
+          <div v-if="tongSoTin > moiTrangTin" class="mt-6 flex justify-center">
+            <UPagination v-model:page="trangTin" :total="tongSoTin" :items-per-page="moiTrangTin" />
+          </div>
           <p v-if="!ds.length" class="khung p-8 text-center text-muted">
             Chưa có tin nào. Quay lại sau nhé!
           </p>

@@ -27,7 +27,23 @@ interface KetQua {
 const TEN: Record<Loai, string> = { pc: 'PC', android: 'Android', jar: 'Jar (J2ME)', khac: 'Khác' }
 const ICON: Record<Loai, string> = { pc: 'i-lucide-monitor', android: 'i-lucide-smartphone', jar: 'i-lucide-cpu', khac: 'i-lucide-circle-help' }
 
-const anBot = ref(true)
+const props = withDefaults(defineProps<{
+  modelValue?: boolean
+}>(), {
+  modelValue: undefined,
+})
+const emit = defineEmits<{
+  'update:modelValue': [val: boolean]
+}>()
+
+const localAnBot = ref(true)
+const anBot = computed({
+  get: () => (props.modelValue !== undefined ? props.modelValue : localAnBot.value),
+  set: (val: boolean) => {
+    localAnBot.value = val
+    emit('update:modelValue', val)
+  },
+})
 const { data, status, error, refresh } = useAsyncData<KetQua>(
   'admin-client',
   () => api<KetQua>('/api/admin/client', { query: { anBot: anBot.value ? '1' : '0' } }),
@@ -55,6 +71,34 @@ const cotTaiKhoan = [
   { id: 'khoa', header: '' },
 ]
 const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)}`
+
+const trangBn = ref(1)
+const moiTrangBn = ref(15)
+const tongBn = computed(() => data.value?.banNgoai?.length ?? 0)
+const banNgoaiHienThi = computed(() => {
+  const list = data.value?.banNgoai ?? []
+  if (moiTrangBn.value >= list.length) return list
+  const start = (trangBn.value - 1) * moiTrangBn.value
+  return list.slice(start, start + moiTrangBn.value)
+})
+watch(tongBn, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrangBn.value))
+  if (trangBn.value > max) trangBn.value = max
+})
+
+const trangGd = ref(1)
+const moiTrangGd = ref(25)
+const tongGd = computed(() => data.value?.ganDay?.length ?? 0)
+const ganDayHienThi = computed(() => {
+  const list = data.value?.ganDay ?? []
+  if (moiTrangGd.value >= list.length) return list
+  const start = (trangGd.value - 1) * moiTrangGd.value
+  return list.slice(start, start + moiTrangGd.value)
+})
+watch(tongGd, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrangGd.value))
+  if (trangGd.value > max) trangGd.value = max
+})
 </script>
 
 <template>
@@ -99,7 +143,7 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
           </p>
         </div>
       </template>
-      <UTable :data="data?.banNgoai ?? []" :columns="cotTaiKhoan" :loading="dangTai">
+      <UTable :data="banNgoaiHienThi" :columns="cotTaiKhoan" :loading="dangTai">
         <template #empty>
           <span class="text-muted">Chưa có ai dùng bản ngoài.</span>
         </template>
@@ -128,6 +172,12 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
           </UButton>
         </template>
       </UTable>
+      <template v-if="tongBn > moiTrangBn" #footer>
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+          <span>Hiển thị {{ (trangBn - 1) * moiTrangBn + 1 }} - {{ Math.min(trangBn * moiTrangBn, tongBn) }} trên {{ tongBn }} tài khoản</span>
+          <UPagination v-model:page="trangBn" :total="tongBn" :items-per-page="moiTrangBn" />
+        </div>
+      </template>
     </UCard>
 
     <UCard v-if="!data?.bangChuaCo" :ui="{ body: 'p-0 sm:p-0' }">
@@ -179,7 +229,7 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
           Đăng nhập gần đây <span class="text-sm font-normal text-muted">(200 dòng mới nhất)</span>
         </h3>
       </template>
-      <UTable :data="data?.ganDay ?? []" :columns="cotTaiKhoan" :loading="dangTai">
+      <UTable :data="ganDayHienThi" :columns="cotTaiKhoan" :loading="dangTai">
         <template #empty>
           <span class="text-muted">Chưa có ai đăng nhập từ khi có tính năng này.</span>
         </template>
@@ -213,6 +263,12 @@ const linkTaiKhoan = (tk: string) => `/admin/taikhoan?q=${encodeURIComponent(tk)
           <span />
         </template>
       </UTable>
+      <template v-if="tongGd > moiTrangGd" #footer>
+        <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+          <span>Hiển thị {{ (trangGd - 1) * moiTrangGd + 1 }} - {{ Math.min(trangGd * moiTrangGd, tongGd) }} trên {{ tongGd }} lượt đăng nhập gần đây</span>
+          <UPagination v-model:page="trangGd" :total="tongGd" :items-per-page="moiTrangGd" />
+        </div>
+      </template>
     </UCard>
   </div>
 </template>

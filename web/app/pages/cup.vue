@@ -19,6 +19,16 @@ const TEN_LOAI: Record<string, string> = {
   nhi: 'Cúp Nhí', he_lua: 'Cúp hệ Lửa', he_nuoc: 'Cúp hệ Nước', he_co: 'Cúp hệ Cỏ', he_dien: 'Cúp hệ Điện', doi: 'Cúp Đôi', thuan: 'Cúp Không trang bị',
 }
 const khoang = computed(() => data.value?.mo ? `${gioDep(msTuChuoi(data.value.mo))} → ${gioDep(msTuChuoi(data.value.dong))}` : '')
+
+const trangBang = ref(1)
+const moiTrangBang = 15
+const tongBang = computed(() => data.value?.bang?.length ?? 0)
+const bangHienThi = computed(() => {
+  const list = data.value?.bang ?? []
+  if (moiTrangBang >= list.length) return list
+  const start = (trangBang.value - 1) * moiTrangBang
+  return list.slice(start, start + moiTrangBang)
+})
 </script>
 
 <template>
@@ -81,9 +91,9 @@ const khoang = computed(() => data.value?.mo ? `${gioDep(msTuChuoi(data.value.mo
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(d, i) in data.bang" :key="d.doiId" class="border-t border-default">
+                <tr v-for="(d, i) in bangHienThi" :key="d.doiId" class="border-t border-default">
                   <td class="py-2 pr-3 font-semibold">
-                    {{ d.hang > 0 ? d.hang : i + 1 }}
+                    {{ d.hang > 0 ? d.hang : (trangBang - 1) * moiTrangBang + i + 1 }}
                   </td>
                   <td class="py-2 pr-3 break-words">
                     {{ d.ten }} <span class="text-xs text-muted">cấp {{ d.cap }}</span>
@@ -97,6 +107,9 @@ const khoang = computed(() => data.value?.mo ? `${gioDep(msTuChuoi(data.value.mo
                 </tr>
               </tbody>
             </table>
+            <div v-if="tongBang > moiTrangBang" class="mt-4 flex justify-center">
+              <UPagination v-model:page="trangBang" :total="tongBang" :items-per-page="moiTrangBang" />
+            </div>
           </div>
         </div>
 

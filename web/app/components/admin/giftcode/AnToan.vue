@@ -48,6 +48,35 @@ async function xoa(m: Ma) {
 
 const locLog = ref('')
 const { data: log } = useAsyncData('admin-gc-log', () => api<{ ds: Record<string, any>[] }>('/api/admin/giftcode-moi/log', { query: { ma: locLog.value || undefined } }), { server: false, watch: [refDebounced(locLog, 300)] })
+
+const trangMa = ref(1)
+const moiTrangMa = ref(15)
+const tongMa = computed(() => data.value?.ds?.length ?? 0)
+const dsMaHienThi = computed(() => {
+  const list = data.value?.ds ?? []
+  if (moiTrangMa.value >= list.length) return list
+  const start = (trangMa.value - 1) * moiTrangMa.value
+  return list.slice(start, start + moiTrangMa.value)
+})
+watch(tongMa, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrangMa.value))
+  if (trangMa.value > max) trangMa.value = max
+})
+
+const trangLog = ref(1)
+const moiTrangLog = ref(20)
+const tongLog = computed(() => log.value?.ds?.length ?? 0)
+const dsLogHienThi = computed(() => {
+  const list = log.value?.ds ?? []
+  if (moiTrangLog.value >= list.length) return list
+  const start = (trangLog.value - 1) * moiTrangLog.value
+  return list.slice(start, start + moiTrangLog.value)
+})
+watch(locLog, () => { trangLog.value = 1 })
+watch(tongLog, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrangLog.value))
+  if (trangLog.value > max) trangLog.value = max
+})
 const phanTram = computed(() => data.value?.nganSach ? Math.min(100, (data.value.nganSach.daDung / Math.max(1, data.value.nganSach.toiDa)) * 100) : 0)
 const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Date()
 </script>
@@ -122,7 +151,7 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
         <table class="bang-wiki">
           <thead><tr><th>Mã</th><th>Phần thưởng</th><th class="so">Giá trị</th><th class="so">Đã dùng</th><th>Hạn</th><th class="so">Cấp</th><th>Trạng thái</th><th /></tr></thead>
           <tbody>
-            <tr v-for="m in data?.ds ?? []" :key="m.ma">
+            <tr v-for="m in dsMaHienThi" :key="m.ma">
               <td class="font-mono font-semibold">{{ m.ma }}<span v-if="m.ghi_chu" class="block font-sans text-xs font-normal text-dimmed">{{ m.ghi_chu }}</span></td>
               <td class="text-xs">{{ m.moTa.join(' · ') }}</td>
               <td class="so">{{ m.giaTri ?? '—' }}</td>
@@ -147,6 +176,11 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
           </tbody>
         </table>
       </div>
+      <template v-if="tongMa > moiTrangMa" #footer>
+        <div class="flex justify-center">
+          <UPagination v-model:page="trangMa" :total="tongMa" :items-per-page="moiTrangMa" />
+        </div>
+      </template>
     </UCard>
 
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
@@ -156,17 +190,22 @@ const hetHan = (m: Ma) => !!m.han && new Date(m.han.replace(' ', 'T')) < new Dat
           <UInput v-model="locLog" size="sm" icon="i-lucide-filter" placeholder="Lọc theo mã" class="w-48" />
         </div>
       </template>
-      <div class="max-h-96 overflow-auto">
+      <div class="overflow-auto">
         <table class="bang-wiki">
           <thead><tr><th>Lúc</th><th>Mã</th><th>Pokémon</th><th class="so">TK #</th><th>Phần thưởng</th><th class="so">Giá trị</th></tr></thead>
           <tbody>
-            <tr v-for="(r, i) in log?.ds ?? []" :key="i">
+            <tr v-for="(r, i) in dsLogHienThi" :key="i">
               <td class="whitespace-nowrap text-xs">{{ r.luc }}</td><td class="font-mono">{{ r.ma }}</td><td>{{ r.charname }}</td><td class="so">{{ r.user_id }}</td><td class="text-xs">{{ r.phan_thuong }}</td><td class="so">{{ r.gia_tri }}</td>
             </tr>
             <tr v-if="!log?.ds?.length"><td colspan="6" class="text-center text-muted">Chưa có lượt nhận.</td></tr>
           </tbody>
         </table>
       </div>
+      <template v-if="tongLog > moiTrangLog" #footer>
+        <div class="flex justify-center">
+          <UPagination v-model:page="trangLog" :total="tongLog" :items-per-page="moiTrangLog" />
+        </div>
+      </template>
     </UCard>
   </AdminPage>
 </template>

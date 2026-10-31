@@ -29,24 +29,61 @@ export async function docDaDung(db: Ex, userId: number, loai: string, ngay: stri
   return Math.max(0, Math.trunc(Number(v ?? 0)))
 }
 
-export interface YeuCauDoi { id: number, loai: string, charname: string, so: number, trangThai: number, ketQua: string, taoLuc: string | null }
+export interface YeuCauDoi {
+  id: number
+  loai: string
+  charname: string
+  so: number
+  trangThai: number
+  ketQua: string
+  taoLuc: string | null
+  nhan?: number | null
+  tiGia?: number | null
+  lucXong?: string | null
+  nguon?: string
+}
 
 /** Yêu cầu đổi gần đây của mọi Pokémon thuộc tài khoản (mới nhất trước). */
-export async function docYeuCau(db: Ex, userId: number, toiDa = 15): Promise<YeuCauDoi[]> {
+export async function docYeuCau(db: Ex, userId: number, toiDa = 50): Promise<YeuCauDoi[]> {
   if (!(await coBang(db, 'web_lenh_nhan_vat'))) return []
-  const ds = await q<Record<string, unknown>>(db,
-    `SELECT l.id, l.loai, l.charname, l.cap_do, l.trang_thai, l.ket_qua, l.tao_luc
-       FROM web_lenh_nhan_vat l JOIN tob_char c ON c.id = l.char_id
-      WHERE c.userId = ? AND l.loai IN (?, ?) ORDER BY l.id DESC LIMIT ${Math.max(1, Math.min(50, Math.trunc(toiDa)))}`,
-    [userId, ...DOI_LOAI_LENH])
+  const limit = Math.max(1, Math.min(50, Math.trunc(toiDa)))
+  const coLog = await coBang(db, 'tob_doi_luong_log')
+  let ds: Record<string, unknown>[] = []
+  if (coLog) {
+    ds = await q<Record<string, unknown>>(db,
+      `(SELECT l.id, l.loai, l.charname, l.cap_do AS so, l.trang_thai, l.ket_qua, l.tao_luc,
+               g.nhan, g.ti_gia, g.luc AS luc_xong, COALESCE(g.nguon, 'web') AS nguon
+          FROM web_lenh_nhan_vat l
+          JOIN tob_char c ON c.id = l.char_id
+     LEFT JOIN tob_doi_luong_log g ON g.lenh_id = l.id
+         WHERE c.userId = ? AND l.loai IN (?, ?))
+       UNION ALL
+       (SELECT -g.id AS id, g.loai, g.charname, g.so_luong AS so, 1 AS trang_thai, 'NPC đổi thành công' AS ket_qua, g.luc AS tao_luc,
+               g.nhan, g.ti_gia, g.luc AS luc_xong, 'npc' AS nguon
+          FROM tob_doi_luong_log g
+         WHERE g.user_id = ? AND g.lenh_id IS NULL)
+       ORDER BY tao_luc DESC LIMIT ${limit}`,
+      [userId, ...DOI_LOAI_LENH, userId])
+  } else {
+    ds = await q<Record<string, unknown>>(db,
+      `SELECT l.id, l.loai, l.charname, l.cap_do AS so, l.trang_thai, l.ket_qua, l.tao_luc,
+              NULL AS nhan, NULL AS ti_gia, NULL AS luc_xong, 'web' AS nguon
+         FROM web_lenh_nhan_vat l JOIN tob_char c ON c.id = l.char_id
+        WHERE c.userId = ? AND l.loai IN (?, ?) ORDER BY l.id DESC LIMIT ${limit}`,
+      [userId, ...DOI_LOAI_LENH])
+  }
   return ds.map(r => ({
     id: Math.trunc(Number(r.id)),
     loai: String(r.loai ?? ''),
     charname: String(r.charname ?? ''),
-    so: Math.trunc(Number(r.cap_do) || 0),
+    so: Math.trunc(Number(r.so) || 0),
     trangThai: Math.trunc(Number(r.trang_thai) || 0),
     ketQua: String(r.ket_qua ?? ''),
     taoLuc: r.tao_luc instanceof Date ? r.tao_luc.toISOString() : (r.tao_luc ? String(r.tao_luc) : null),
+    nhan: r.nhan != null ? Math.trunc(Number(r.nhan)) : null,
+    tiGia: r.ti_gia != null ? Math.trunc(Number(r.ti_gia)) : null,
+    lucXong: r.luc_xong instanceof Date ? r.luc_xong.toISOString() : (r.luc_xong ? String(r.luc_xong) : null),
+    nguon: String(r.nguon ?? 'web'),
   }))
 }
 

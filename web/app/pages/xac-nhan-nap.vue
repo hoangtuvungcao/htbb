@@ -29,6 +29,18 @@ const matKhau = ref('')
 const dangVao = ref(false)
 const loiVao = ref('')
 const dons = ref<DonCho[]>([])
+const trang = ref(1)
+const moiTrang = ref(10)
+const tong = computed(() => dons.value.length)
+const donsHienThi = computed(() => {
+  if (moiTrang.value >= dons.value.length) return dons.value
+  const start = (trang.value - 1) * moiTrang.value
+  return dons.value.slice(start, start + moiTrang.value)
+})
+watch(tong, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrang.value))
+  if (trang.value > max) trang.value = max
+})
 const dangTai = ref(true)
 const dangXacNhan = ref<number | null>(null)
 const choXacNhan = ref<DonCho | null>(null)
@@ -197,7 +209,7 @@ onMounted(async () => {
         </div>
 
         <div v-if="dons.length" class="overflow-hidden rounded-2xl glass">
-          <UTable :data="dons" :columns="columns">
+          <UTable :data="donsHienThi" :columns="columns">
             <template #so_tien-cell="{ row }">
               <span class="tabular-nums">{{ vnd(row.original.so_tien) }}</span>
             </template>
@@ -214,6 +226,10 @@ onMounted(async () => {
               </UButton>
             </template>
           </UTable>
+          <div v-if="tong > moiTrang" class="flex items-center justify-between border-t border-default/60 px-4 py-3 text-xs text-muted">
+            <span>Hiển thị {{ (trang - 1) * moiTrang + 1 }} - {{ Math.min(trang * moiTrang, tong) }} trên {{ tong }} đơn</span>
+            <UPagination v-model:page="trang" :total="tong" :items-per-page="moiTrang" />
+          </div>
         </div>
       </template>
     </UContainer>

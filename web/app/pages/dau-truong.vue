@@ -17,6 +17,26 @@ interface KetQua { bayGio: string | null, mua: number, tuan: number, mo: string,
 const { data } = await useFetch<KetQua>('/api/dau-truong', { key: 'htbb-dau-truong' })
 const tab = ref<'tuan' | 'mua'>('tuan')
 const khoang = computed(() => data.value?.mo ? `${gioDep(msTuChuoi(data.value.mo))} → ${gioDep(msTuChuoi(data.value.dong))}` : '')
+
+const trangTuan = ref(1)
+const moiTrangTuan = 20
+const tongTuan = computed(() => data.value?.bangTuan?.length ?? 0)
+const bangTuanHienThi = computed(() => {
+  const list = data.value?.bangTuan ?? []
+  if (moiTrangTuan >= list.length) return list
+  const start = (trangTuan.value - 1) * moiTrangTuan
+  return list.slice(start, start + moiTrangTuan)
+})
+
+const trangMua = ref(1)
+const moiTrangMua = 20
+const tongMua = computed(() => data.value?.bangMua?.length ?? 0)
+const bangMuaHienThi = computed(() => {
+  const list = data.value?.bangMua ?? []
+  if (moiTrangMua >= list.length) return list
+  const start = (trangMua.value - 1) * moiTrangMua
+  return list.slice(start, start + moiTrangMua)
+})
 </script>
 
 <template>
@@ -54,50 +74,60 @@ const khoang = computed(() => data.value?.mo ? `${gioDep(msTuChuoi(data.value.mo
             <p v-if="!data?.bangTuan?.length" class="text-sm text-muted">
               Tuần này chưa có trận nào.
             </p>
-            <table v-else class="w-full text-left text-sm">
-              <thead class="text-xs uppercase text-muted">
-                <tr>
-                  <th class="py-2 pr-3">#</th>
-                  <th class="py-2 pr-3">Huấn luyện viên</th>
-                  <th class="py-2 pr-3 text-right">Điểm tuần</th>
-                  <th class="py-2 text-right">Thắng / trận</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="d in data.bangTuan" :key="d.idChar" class="border-t border-default">
-                  <td class="py-2 pr-3 font-semibold">{{ d.hang }}</td>
-                  <td class="py-2 pr-3 break-words">{{ d.ten }}</td>
-                  <td class="py-2 pr-3 text-right font-semibold">{{ d.diemDoi > 0 ? '+' : '' }}{{ d.diemDoi }}</td>
-                  <td class="py-2 text-right text-muted">{{ d.thang }} / {{ d.tran }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <template v-else>
+              <table class="w-full text-left text-sm">
+                <thead class="text-xs uppercase text-muted">
+                  <tr>
+                    <th class="py-2 pr-3">#</th>
+                    <th class="py-2 pr-3">Huấn luyện viên</th>
+                    <th class="py-2 pr-3 text-right">Điểm tuần</th>
+                    <th class="py-2 text-right">Thắng / trận</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="d in bangTuanHienThi" :key="d.idChar" class="border-t border-default">
+                    <td class="py-2 pr-3 font-semibold">{{ d.hang }}</td>
+                    <td class="py-2 pr-3 break-words">{{ d.ten }}</td>
+                    <td class="py-2 pr-3 text-right font-semibold">{{ d.diemDoi > 0 ? '+' : '' }}{{ d.diemDoi }}</td>
+                    <td class="py-2 text-right text-muted">{{ d.thang }} / {{ d.tran }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-if="tongTuan > moiTrangTuan" class="mt-4 flex justify-center">
+                <UPagination v-model:page="trangTuan" :total="tongTuan" :items-per-page="moiTrangTuan" />
+              </div>
+            </template>
           </div>
 
           <div v-else class="mt-4 overflow-x-auto">
             <p v-if="!data?.bangMua?.length" class="text-sm text-muted">
               Mùa này chưa có ai đấu.
             </p>
-            <table v-else class="w-full text-left text-sm">
-              <thead class="text-xs uppercase text-muted">
-                <tr>
-                  <th class="py-2 pr-3">#</th>
-                  <th class="py-2 pr-3">Huấn luyện viên</th>
-                  <th class="py-2 pr-3 text-right">Điểm</th>
-                  <th class="py-2 pr-3">Bậc</th>
-                  <th class="py-2 text-right">Thắng – thua</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="d in data.bangMua" :key="d.idChar" class="border-t border-default">
-                  <td class="py-2 pr-3 font-semibold">{{ d.hang }}</td>
-                  <td class="py-2 pr-3 break-words">{{ d.ten }}</td>
-                  <td class="py-2 pr-3 text-right font-semibold">{{ d.diem }}</td>
-                  <td class="py-2 pr-3 text-muted">{{ d.bac }}</td>
-                  <td class="py-2 text-right text-muted">{{ d.thang }} – {{ d.thua }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <template v-else>
+              <table class="w-full text-left text-sm">
+                <thead class="text-xs uppercase text-muted">
+                  <tr>
+                    <th class="py-2 pr-3">#</th>
+                    <th class="py-2 pr-3">Huấn luyện viên</th>
+                    <th class="py-2 pr-3 text-right">Điểm</th>
+                    <th class="py-2 pr-3">Bậc</th>
+                    <th class="py-2 text-right">Thắng – thua</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="d in bangMuaHienThi" :key="d.idChar" class="border-t border-default">
+                    <td class="py-2 pr-3 font-semibold">{{ d.hang }}</td>
+                    <td class="py-2 pr-3 break-words">{{ d.ten }}</td>
+                    <td class="py-2 pr-3 text-right font-semibold">{{ d.diem }}</td>
+                    <td class="py-2 pr-3 text-muted">{{ d.bac }}</td>
+                    <td class="py-2 text-right text-muted">{{ d.thang }} – {{ d.thua }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-if="tongMua > moiTrangMua" class="mt-4 flex justify-center">
+                <UPagination v-model:page="trangMua" :total="tongMua" :items-per-page="moiTrangMua" />
+              </div>
+            </template>
           </div>
         </div>
 

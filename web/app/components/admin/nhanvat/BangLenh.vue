@@ -47,45 +47,64 @@ const columns = computed<TableColumn<DongLenhGiaoDien>[]>(() => {
   c.push({ id: 'thao_tac', header: '' })
   return c
 })
+
+const trang = ref(1)
+const moiTrang = ref(15)
+const tong = computed(() => props.lenh.length)
+const lenhHienThi = computed(() => {
+  if (moiTrang.value >= props.lenh.length) return props.lenh
+  const start = (trang.value - 1) * moiTrang.value
+  return props.lenh.slice(start, start + moiTrang.value)
+})
+watch(tong, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrang.value))
+  if (trang.value > max) trang.value = max
+})
 </script>
 
 <template>
-  <UTable :data="lenh" :columns="columns" :empty="empty" class="rounded-lg border border-default">
-    <template #id-cell="{ row }">
-      <span class="text-xs text-muted tabular-nums">#{{ row.original.id }}</span>
-    </template>
-    <template #charname-cell="{ row }">
-      <NuxtLink :to="`/admin/nhanvat?q=${encodeURIComponent(row.original.charname ?? '')}`" class="font-medium text-primary hover:underline">
-        {{ row.original.charname }}
-      </NuxtLink>
-    </template>
-    <template #ten_trang_thai-cell="{ row }">
-      <UBadge :color="row.original.mau" variant="subtle" :label="row.original.ten_trang_thai" />
-    </template>
-    <template #ket_qua-cell="{ row }">
-      <span class="block min-w-48 max-w-sm whitespace-normal text-xs">{{ row.original.ket_qua }}</span>
-    </template>
-    <template #admin_user-cell="{ row }">
-      <span class="text-xs">{{ row.original.admin_user }}</span>
-    </template>
-    <template #tao_luc-cell="{ row }">
-      <div class="whitespace-nowrap text-xs text-muted">
-        <div>{{ row.original.tao_luc }}</div>
-        <div v-if="row.original.xu_ly_luc">→ {{ row.original.xu_ly_luc }}</div>
-      </div>
-    </template>
-    <template #thao_tac-cell="{ row }">
-      <span v-if="!row.original.huy_duoc" />
-      <UButton
-        v-else
-        size="xs"
-        color="neutral"
-        variant="outline"
-        icon="i-lucide-x"
-        label="Huỷ"
-        :loading="dangHuy === row.original.id"
-        @click="emit('huy', row.original)"
-      />
-    </template>
-  </UTable>
+  <div class="space-y-2">
+    <UTable :data="lenhHienThi" :columns="columns" :empty="empty" class="rounded-lg border border-default">
+      <template #id-cell="{ row }">
+        <span class="text-xs text-muted tabular-nums">#{{ row.original.id }}</span>
+      </template>
+      <template #charname-cell="{ row }">
+        <NuxtLink :to="`/admin/nhanvat?q=${encodeURIComponent(row.original.charname ?? '')}`" class="font-medium text-primary hover:underline">
+          {{ row.original.charname }}
+        </NuxtLink>
+      </template>
+      <template #ten_trang_thai-cell="{ row }">
+        <UBadge :color="row.original.mau" variant="subtle" :label="row.original.ten_trang_thai" />
+      </template>
+      <template #ket_qua-cell="{ row }">
+        <span class="block min-w-48 max-w-sm whitespace-normal text-xs">{{ row.original.ket_qua }}</span>
+      </template>
+      <template #admin_user-cell="{ row }">
+        <span class="text-xs">{{ row.original.admin_user }}</span>
+      </template>
+      <template #tao_luc-cell="{ row }">
+        <div class="whitespace-nowrap text-xs text-muted">
+          <div>{{ row.original.tao_luc }}</div>
+          <div v-if="row.original.xu_ly_luc">→ {{ row.original.xu_ly_luc }}</div>
+        </div>
+      </template>
+      <template #thao_tac-cell="{ row }">
+        <span v-if="!row.original.huy_duoc" />
+        <UButton
+          v-else
+          size="xs"
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-x"
+          label="Huỷ"
+          :loading="dangHuy === row.original.id"
+          @click="emit('huy', row.original)"
+        />
+      </template>
+    </UTable>
+    <div v-if="tong > moiTrang" class="flex items-center justify-between text-xs text-muted px-1">
+      <span>Hiển thị {{ (trang - 1) * moiTrang + 1 }} - {{ Math.min(trang * moiTrang, tong) }} trên {{ tong }} lệnh</span>
+      <UPagination v-model:page="trang" :total="tong" :items-per-page="moiTrang" />
+    </div>
+  </div>
 </template>

@@ -104,6 +104,18 @@ async function taiLienKet() {
 // --- nhật ký ---
 const nkTen = ref('')
 const nk = ref<any[]>([])
+const trangNk = ref(1)
+const moiTrangNk = ref(20)
+const tongNk = computed(() => nk.value.length)
+const nkHienThi = computed(() => {
+  if (moiTrangNk.value >= nk.value.length) return nk.value
+  const start = (trangNk.value - 1) * moiTrangNk.value
+  return nk.value.slice(start, start + moiTrangNk.value)
+})
+watch(tongNk, (m) => {
+  const max = Math.max(1, Math.ceil(m / moiTrangNk.value))
+  if (trangNk.value > max) trangNk.value = max
+})
 async function taiNk() {
   try {
     nk.value = (await api<{ ds: any[] }>('/api/admin/thanh-vien/nhat-ky', { query: { tai_khoan: nkTen.value.trim() } })).ds
@@ -279,7 +291,13 @@ onMounted(taiTq)
         </form>
       </UCard>
       <UCard :ui="{ body: 'p-0 sm:p-0' }">
-        <UTable :data="nk" empty="Chưa có." />
+        <UTable :data="nkHienThi" empty="Chưa có." />
+        <template v-if="tongNk > moiTrangNk" #footer>
+          <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+            <span>Hiển thị {{ (trangNk - 1) * moiTrangNk + 1 }} - {{ Math.min(trangNk * moiTrangNk, tongNk) }} trên {{ tongNk }} dòng nhật ký</span>
+            <UPagination v-model:page="trangNk" :total="tongNk" :items-per-page="moiTrangNk" />
+          </div>
+        </template>
       </UCard>
     </template>
   </AdminPage>
