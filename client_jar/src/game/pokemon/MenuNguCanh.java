@@ -349,6 +349,11 @@ public final class MenuNguCanh extends Dialog {
                     wNhan = Math.max(wNhan, ChuDe.rong(ds1[i] < 0 ? "Thêm" : chu(ds1[i]), ChuDe.NHAN));
                 }
                 int wc1 = Math.max(ChuDe.dt() ? 170 : 140, Math.min(ChuDe.dt() ? 260 : 220, wNhan + ic + 30));
+                // 31/10/2026 (soi giao diện: Machamp 11 lệnh ở điện thoại 20:9 chỉ 3 lệnh / trang - 4 trang): bề ngang cột khi
+                // 2 cột KHÔNG cần ôm tiêu đề (biển tên trải cả hai cột) - chỉ cả thẻ phải đủ rộng cho tiêu đề
+                int wcHai = Math.min(wc1, wMax / 2);
+                int wTieuCan = tieu == null ? 0 : Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36));
+                wcHai = Math.max(wcHai, (wTieuCan - k - 12 + 1) / 2);
                 if (tieu != null) {
                     wc1 = Math.max(wc1, Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36)));
                 }
@@ -381,6 +386,17 @@ public final class MenuNguCanh extends Dialog {
                             nh1 = nh2;
                         }
                     }
+                }
+                if (hTieu + hang1 * (nh1 + k) + 6 > B - T - 4 && ds1.length > 1 && 2 * wc1 + k + 12 > wMax && 2 * wcHai + k + 12 <= wMax
+                        && !ne) {
+                    int nh2 = nh;
+                    for (int i = 0; i < ds1.length; i++) {
+                        if (ds1[i] >= 0) {
+                            nh2 = Math.max(nh2, caoNut(chu(ds1[i]), wcHai, nh));
+                        }
+                    }
+                    wc1 = wcHai;
+                    nh1 = nh2;
                 }
                 if (hTieu + hang1 * (nh1 + k) + 6 > B - T - 4 && ds1.length > 1 && 2 * wc1 + k + 12 <= wMax) {
                     cot1 = 2;

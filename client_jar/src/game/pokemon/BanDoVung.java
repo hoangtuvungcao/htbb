@@ -285,17 +285,22 @@ public final class BanDoVung {
             boolean uuTien = lan < 3;
             // 31/10/2026: 4 chỗ sát chấm, (ưu tiên: 4 chỗ bỏ luật chấm khác), rồi 4 chỗ XA hơn một bậc có đường dẫn về chấm -
             // nhãn không bị bỏ khi chỗ sát chấm vướng ổ khoá / nhãn khác (J2ME: Vermilion, Fuchsia)
-            for (int thu = 0; thu < 24; thu++) {
+            for (int thu = 0; thu < 40; thu++) {
                 if (thu >= 4 && thu < 8 && !uuTien) {
                     continue;
                 }
                 int vt = thu & 3;
-                boolean noi = thu >= 4 && thu < 8;
-                int xa = thu >= 8 ? hn + 2 : 0;
+                // cuối cùng (bản đồ hẹp, mọi chỗ khác đã kín): 4 chỗ sát chấm, được đè mép chấm điểm khác (không đè nhãn)
+                boolean noi = thu >= 4 && thu < 8 || thu >= 24 && w < 360;
+                int thuX = thu >= 28 ? thu - 16 : thu;   // 28..39: vòng ngoài (như 12..23) được đè mép chấm khác
+                if (thu >= 24 && w >= 360) {
+                    break;
+                }
+                int xa = thu >= 8 && thu < 24 || thu >= 28 ? hn + 2 : 0;
                 int lx, ly;
-                if (thu >= 12) {
+                if (thuX >= 12 && thuX < 24) {
                     // vòng ngoài: nhãn cách chấm 2-3 hàng (trên / dưới, lệch trái / giữa / phải), đường dẫn về chấm
-                    int kk = thu - 12, dyI = kk % 4, dxI = kk / 4;
+                    int kk = thuX - 12, dyI = kk % 4, dxI = kk / 4;
                     int dy = (dyI < 2 ? 2 : 3) * (hn + 1) * (dyI % 2 == 0 ? 1 : -1);
                     int dx = dxI == 0 ? 0 : (dxI == 1 ? -1 : 1) * (tw / 2 + r);
                     lx = VX[i] + dx - tw / 2;

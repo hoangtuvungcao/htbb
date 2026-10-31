@@ -35,6 +35,57 @@ public final class ManCu {
         void cham(int i);
     }
 
+    /** Hàng có ô vật phẩm bên trái (ItemInInventory / GemTemplate / Integer bình...; null = không ô). */
+    public interface DongIcon extends Dong {
+        Object mon(int i);
+    }
+
+    /**
+     * Hàng ô cố định (không cuộn): n ô cạnh s canh giữa trong (x, w), nhãn dưới ô; o.cham(i) khi chạm. Không vừa một hàng ở
+     * cỡ chạm tối thiểu thì xuống hàng. Trả tổng cao các hàng (không gồm nhãn dưới hàng cuối).
+     */
+    public static int hangO(Graphics g, int x, int y, int w, int n, int sMuon, final O o, String tenVung) {
+        int k = Bang.cach();
+        int s = Math.max(Math.max(VungCham.MIN, 24), Math.min(sMuon, (w - (n - 1) * k) / Math.max(1, n)));
+        int cot = Math.max(1, Math.min(n, (w + k) / (s + k)));
+        int hang = (n + cot - 1) / cot;
+        int x0 = x + (w - (cot * s + (cot - 1) * k)) / 2;
+        int hn = 0;
+        for (int i = 0; i < n; i++) {
+            if (o.chu(i) != null) {
+                hn = ChuDe.cao(ChuDe.PHU) + 1;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            final int ii = i;
+            int xx = x0 + (i % cot) * (s + k);
+            y = i > 0 && i % cot == 0 ? y + s + k + hn : y;
+            Bang.oDo(g, xx, y, s, true, false, new IAction() {
+                public void perform() {
+                    o.cham(ii);
+                }
+            }, tenVung + i);
+            o.ve(g, i, xx, y, s);
+            String t = o.chu(i);
+            if (t != null) {
+                ChuDe.chu(g, ChuDe.cat(t, ChuDe.PHU, s + k - 2), xx + s / 2, y + s + 1, ChuDe.PHU, ChuDe.CHU, 2);
+            }
+        }
+        return hang * s + (hang - 1) * (k + hn);
+    }
+
+    /** Cao một hàng danh sách kiểu chung. */
+    public static int caoHang() {
+        return ManXemTrangBi.caoHangMon();
+    }
+
+    /** Vẽ vật phẩm m vào ô (x, y, s) như ô hành trang (không đăng ký chạm thêm). */
+    public static void veMon(Graphics g, Object m, int x, int y, int s) {
+        if (m != null) {
+            LuoiTui.veO(g, m, x, y, s, false, null, null);
+        }
+    }
+
     /**
      * Phủ nền + tấm đầy đủ (tiêu đề, X = dong) + hàng nút đáy (lenh: null bỏ qua; nút cuối = nút chính). Trả {x, y, w, h}
      * vùng nội dung còn lại. Đổi màn / tiêu đề = cuộn về đầu.
@@ -157,10 +208,20 @@ public final class ManCu {
                 }, "cu-hang-" + i);
                 String a = d.chinh(i), b = d.phu(i);
                 game.render.screen.Font f = game.render.screen.Font.blackFont, f2 = game.render.screen.Font.arialFont;
+                int xt = x + 8;
+                if (d instanceof DongIcon) {
+                    Object m = ((DongIcon) d).mon(i);
+                    if (m != null) {
+                        int s = h - 6;
+                        LuoiTui.veO(g, m, x + 3, y + 3, s, false, null, null);
+                        xt = x + s + 9;
+                    }
+                }
+                int wt = x + w - 8 - xt;
                 if (b == null) {
-                    ChuDe.chuGiua(g, ChuDe.cat(a, ChuDe.NHAN, w - 16), x + 8, y, h, ChuDe.NHAN, ChuDe.CHU, 0);
+                    ChuDe.chuGiua(g, ChuDe.cat(a, ChuDe.NHAN, wt), xt, y, h, ChuDe.NHAN, ChuDe.CHU, 0);
                 } else {
-                    GiaoDien.tenHaiDong(g, f, f2, a, b, x + 8, y + 2, w - 16, y + 3 + f.getHeight(), w - 16);
+                    GiaoDien.tenHaiDong(g, f, f2, a, b, xt, y + 2, wt, y + 3 + f.getHeight(), wt);
                 }
             }
         });
