@@ -414,6 +414,15 @@ public final class TienTe {
         final int ax = x + (g == null ? 0 : g.getTranslateX());
         final int ay = y + (g == null ? 0 : g.getTranslateY());
         final int ah = h;
+        // 31/10/2026: chữ số nhỏ (chợ cũ - font nhỏ 10 px): vùng chạm nới tới cỡ chạm tối thiểu quanh tâm
+        if (h < VungCham.MIN) {
+            y -= (VungCham.MIN - h) / 2;
+            h = VungCham.MIN;
+        }
+        if (w < VungCham.MIN) {
+            x -= (VungCham.MIN - w) / 2;
+            w = VungCham.MIN;
+        }
         VungCham.them(g, x, y, w, h, new IAction() {
             public void perform() {
                 hienGoiY(loai, v, ax, ay + ah);

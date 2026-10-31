@@ -14,6 +14,12 @@ import javax.microedition.lcdui.Graphics;
 import network.Message;
 
 public class TuBinhScr extends Screen {
+    /** 31/10/2026: đang chạy updateKey không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_updateKey;
+
+    /** 31/10/2026: đang chạy update không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_update;
+
     public static TuBinhScr me;
     public static int wCell;
     public static int hCell;
@@ -211,10 +217,68 @@ public class TuBinhScr extends Screen {
         }
     }
 
-    @Override
+    /** 31/10/2026: máy có con trỏ - tấm chung: chip trang, danh sách cổ vật (chạm = chọn), chi tiết chỉ số. */
+    void veCham(Graphics g) {
+        this.anNutLenh = true;
+        int[] c = game.pokemon.ManCu.tam(g, this, this.tile, game.pokemon.ManCu.viec(this.cmdClose), null);
+        int k = game.pokemon.Bang.cach();
+        if (this.arraySubTile != null && this.arraySubTile.length > 1) {
+            Object[] vc = new Object[this.arraySubTile.length];
+            for (int i = 0; i < vc.length; i++) {
+                final int t = i;
+                vc[i] = new IAction() {
+                    public void perform() {
+                        TuBinhScr.this.indexTab = t;
+                        TuBinhScr.this.index = 0;
+                    }
+                };
+            }
+            int hc = game.pokemon.Bang.hangChip(g, c[0], c[1], c[2], this.arraySubTile, this.indexTab, vc) + k;
+            c[1] += hc;
+            c[3] -= hc;
+        }
+        final Vector l = allTuBinh.size() > 0 && this.indexTab >= 0 && this.indexTab < allTuBinh.size() ? (Vector) allTuBinh.elementAt(this.indexTab) : new Vector();
+        this.saveIndexTab = this.indexTab;
+        int[][] v = game.pokemon.ManCu.chia(c, 50);
+        game.pokemon.ManCu.danhSach(g, v[0], l.size(), this.index, new game.pokemon.ManCu.Dong() {
+            public String chinh(int i) {
+                return ((ObjTuBinh) l.elementAt(i)).name;
+            }
+
+            public String phu(int i) {
+                String[] a = ((ObjTuBinh) l.elementAt(i)).arrayInfo;
+                return a != null && a.length > 1 ? a[1] : null;
+            }
+
+            public void cham(int i) {
+                TuBinhScr.this.index = i;
+            }
+        }, "Chưa có cổ vật");
+        if (this.index >= 0 && this.index < l.size()) {
+            ObjTuBinh o = (ObjTuBinh) l.elementAt(this.index);
+            String[] d = game.render.Util.split(o.infoDetail, "|");
+            int[] kk = new int[d.length + (o.arrayInfo == null ? 0 : o.arrayInfo.length - 1)];
+            String[] all = new String[kk.length];
+            for (int i = 0; i < d.length; i++) {
+                all[i] = d[i];
+            }
+            kk[0] = 1;
+            for (int i = 1; o.arrayInfo != null && i < o.arrayInfo.length; i++) {
+                all[d.length + i - 1] = o.arrayInfo[i];
+            }
+            game.pokemon.ManCu.vanBanPhu(g, v[1], all, kk);
+        } else {
+            game.pokemon.ManCu.vanBanPhu(g, v[1], new String[]{"Khám phá hang động và đào khảo cổ để tìm cổ vật quý."}, null);
+        }
+    }
+
     public void paint(Graphics g) {
         if (this.last != null) {
             this.last.paint(g);
+        }
+        if (game.pokemon.ManCu.bat()) {
+            veCham(g);
+            return;
         }
         int w0 = (Canvas.isSmartPhone && wCell == 300) ? wCell / 2 : wCell;
         Res.paintDlgFull(g, xDr, yDr, wCell, hCell, 25, this.tile, false, 0);
@@ -262,6 +326,19 @@ public class TuBinhScr extends Screen {
 
     @Override
     public void update() {
+        if (game.pokemon.ManCu.bat() && !this.boc_update && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_update = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        TuBinhScr.this.update();
+                    }
+                });
+            } finally {
+                this.boc_update = false;
+            }
+            return;
+        }
         if (this.last != null) {
             this.last.update();
         }
@@ -311,6 +388,19 @@ public class TuBinhScr extends Screen {
 
     @Override
     public void updateKey() {
+        if (game.pokemon.ManCu.bat() && !this.boc_updateKey && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_updateKey = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        TuBinhScr.this.updateKey();
+                    }
+                });
+            } finally {
+                this.boc_updateKey = false;
+            }
+            return;
+        }
         if (this.isShowText) {
             if (Canvas.keyPressed[2]) {
                 Canvas.keyPressed[2] = false;
