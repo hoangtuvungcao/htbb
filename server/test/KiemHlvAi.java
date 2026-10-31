@@ -33,23 +33,11 @@ public final class KiemHlvAi {
         }
     }
 
-    public static void main(final String[] args) {
-        try {
-            com.htbb.dulieu.DuLieuSql.napTuDumpDayDu();
-        } catch (final Throwable ignored) {
-        }
-        chay();
-        final int code = Kiem.tongKet();
-        System.exit(code);
-    }
-
     static void tenHienThi() {
         HlvAi.datLaTenBot(t -> t.equalsIgnoreCase("minhanh"));
-        HlvAi.datTienTo("");
-        Kiem.bang("tien to mac dinh '' (ten nhu nguoi that)", "minhanh", HlvAi.hienThi("minhanh", true));
-        Kiem.bang("ten nguoi giu nguyen", "minhanh", HlvAi.hienThi("minhanh", false));
         HlvAi.datTienTo("ai ");
-        Kiem.bang("tien to 'ai '", "ai minhanh", HlvAi.hienThi("minhanh", true));
+        Kiem.bang("tien to mac dinh 'ai '", "ai minhanh", HlvAi.hienThi("minhanh", true));
+        Kiem.bang("ten nguoi giu nguyen", "minhanh", HlvAi.hienThi("minhanh", false));
         Kiem.bang("khong them tien to hai lan", "ai minhanh", HlvAi.hienThi("ai minhanh", true));
         Kiem.bang("bo tien to (tra loi tin rieng)", "minhanh", HlvAi.boTienTo("ai minhanh"));
         Kiem.bang("bo tien to khong phan biet hoa thuong", "minhanh", HlvAi.boTienTo("AI minhanh"));
@@ -60,16 +48,16 @@ public final class KiemHlvAi {
         Kiem.bang("tien to CU van bo duoc (ten client con giu)", "minhanh", HlvAi.boTienTo("ai minhanh"));
         // tien to dinh lien: nguoi choi that "aikhanh" (khong phai bot) KHONG bi cat thanh "khanh"
         Kiem.bang("ten nguoi bat dau bang 'ai' khong bi cat", "aikhanh", HlvAi.boTienTo("aikhanh"));
-        for (final String dung : new String[]{"", "   ", "ai ", "AI", "[Bot] ", "BOT-", "bạn ai ", "robot_", "pk ", "abc "}) {
+        for (final String dung : new String[]{"ai ", "AI", "[Bot] ", "BOT-", "bạn ai ", "robot_"}) {
             Kiem.dung("tien to hop le: '" + dung + "'", HlvAi.tienToHopLe(dung));
         }
-        for (final String sai : new String[]{"ai:", "qua dai hon 12 ai", "\t"}) {
-            Kiem.sai("tien to bi tu choi (khong ':' hoac ky tu dieu khien, <= 12): '" + sai + "'", HlvAi.tienToHopLe(sai));
+        for (final String sai : new String[]{"", "   ", "abc ", "ai:", "qua dai hon 12 ai", "\t", "pk "}) {
+            Kiem.sai("tien to bi tu choi (phai co AI / BOT, khong ':'): '" + sai + "'", HlvAi.tienToHopLe(sai));
         }
-        HlvAi.datTienTo("sai:tien:to");
-        Kiem.bang("gia tri sai luu trong CSDL -> mac dinh ''", "minhanh", HlvAi.hienThi("minhanh", true));
+        HlvAi.datTienTo("xyz");
+        Kiem.bang("gia tri sai luu trong CSDL -> mac dinh 'ai '", "ai minhanh", HlvAi.hienThi("minhanh", true));
         Kiem.dung("ten bot dai nhat (tien to 12 + ten 10) <= 22 ky tu cho J2ME", HlvAi.TIEN_TO_TOI_DA + 10 <= 22);
-        HlvAi.datTienTo("");
+        HlvAi.datTienTo("ai ");
         HlvAi.datLaTenBot(null);
     }
 
