@@ -287,6 +287,7 @@ final class KiemHlvAiSoak {
                     b.gui(-10, (short) (((e.d[2] & 255) << 8) | (e.d[3] & 255)), "DoiNguoiThat");
                     chuDoi = b.cho(x -> x.coLenh(m2, -10), 5000);
                 }
+                if (!chuDoi && b.doiChu(m, 0, "đang ở trong đội") != null) chuDoi = true; // lan chay truoc da lap
                 GHI_CHU.add("kt109 lap doi (100 trieu xu GM): " + chuDoi);
             }
             b.lamMoi();
@@ -474,6 +475,16 @@ final class KiemHlvAiSoak {
      * lap: giao dich thuoc, thach dau cuoc 5.000, trao doi Pokemon, PK (ca hai deo khan, ra bai canh lang), chu doi moi bot vao
      * doi (bot gop quy). Han muc bot -> moi nguoi dat thap (5.000) tu dau -> moi lan sau lan dau phai bi chan.
      */
+    /** Cho + gui nhip; rot ket noi thi vao lai (khong de mot loi mang dung ca phan khai thac). */
+    static void choAnToan(NguoiThat n, long ms) {
+        try {
+            if (n.b == null || n.b.dut) n.vao();
+            else n.cho(ms);
+        } catch (Exception e) {
+            try { if (n.b != null) n.b.close(); Thread.sleep(3000); n.vao(); } catch (Exception x) { System.out.println("[KHAI THAC] vao lai " + n.user + ": " + x); }
+        }
+    }
+
     static void khaiThacTapTrung() throws Exception {
         ghi("# Khai thác tập trung - " + new Date());
         Thread.sleep(60000);
@@ -499,10 +510,10 @@ final class KiemHlvAiSoak {
                     bots.add(p);
                 }
             }
-            Thread.sleep(5000);
+            for (NguoiThat n : nt) choAnToan(n, 5000);
         }
         ghi("\nBot đứng yên: " + bots.size() + " ở bản đồ " + nt.get(0).b.mapId + "; người thật: kt116..kt118 (kt116 chủ đội).\n");
-        Thread.sleep(90000); // bot ve lang
+        for (int k = 0; k < 18; k++) for (NguoiThat n : nt) choAnToan(n, 1700); // bot ve lang (nguoi that van gui nhip)
         long ketThuc = System.currentTimeMillis() + Long.getLong("hlv.khaiThacPhut", 25L) * 60000L;
         int vong = 0;
         while (System.currentTimeMillis() < ketThuc) {
@@ -510,7 +521,7 @@ final class KiemHlvAiSoak {
                 NguoiThat n = nt.get(i);
                 if (n.b == null || n.b.dut) { try { n.vao(); } catch (Exception e) { System.out.println("[KHAI THAC] vao lai " + n.user + ": " + e); } continue; }
                 for (HlvAiNguoiChoi bot : bots.subList(Math.min(i, bots.size()), bots.size())) {
-                    if (bot.b == null || bot.b.dut || bot.b.mapId != n.b.mapId) { bot.dungYen = n.b.mapId; n.cho(3000); continue; }
+                    if (bot.b == null || bot.b.dut || bot.b.mapId != n.b.mapId) { bot.dungYen = n.b.mapId; choAnToan(n, 3000); continue; }
                     try {
                         switch (vong % 5) {
                             case 0: n.gdLap(bot, true); break;
@@ -523,7 +534,7 @@ final class KiemHlvAiSoak {
                         khaiThac("loi", 0, false);
                         System.out.println("[KHAI THAC] " + n.user + ": " + e);
                     }
-                    n.cho(5000);
+                    choAnToan(n, 5000);
                 }
             }
             vong++;
