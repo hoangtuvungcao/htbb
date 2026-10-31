@@ -99,6 +99,18 @@ public final class HoTongNhiemVu {
         return luot < 1 && dangLam && ngayDaCap != homNay;
     }
 
+    /**
+     * Chu game 31/10/2026 (bot cb2: giao xe nhiem vu L49 nhan ca 3.000.000 EXP + giap thu cuoi van tieu): xe tu LUOT MIEN PHI
+     * cua nhiem vu ho tong chi tra thuong nhiem vu (buoc ho_tong van tinh) - KHONG thuong van tieu (EXP / do / luong), bi
+     * cuop cung khong roi vat pham van tieu. Xe tu luot van tieu thuong trong ngay: thuong van tieu nhu cu + buoc van tinh.
+     */
+    public static boolean traThuongVanTieu(final boolean xeMienPhi) {
+        return !xeMienPhi;
+    }
+
+    /** Cau bao khi giao xe mien phi cua nhiem vu. */
+    public static final String BAO_GIAO_MIEN_PHI = "Giao hàng nhiệm vụ thành công. Xe hàng từ lượt miễn phí của nhiệm vụ chỉ nhận thưởng nhiệm vụ (không kèm thưởng giao hàng thường).";
+
     /** Chi so bang HP / thu xe hang theo cap ((cap - 40) / 10), kep vao [0, n-1] - cap &lt; 40 (nhiem vu) va cap 100. */
     public static int chiSoCap(final int cap, final int n) {
         final int i = (cap - CAP_TOI_THIEU) / 10;

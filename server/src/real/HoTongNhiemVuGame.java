@@ -108,11 +108,12 @@ public final class HoTongNhiemVuGame {
                 return;
             }
             final boolean dang = dangLam(p);
-            if (dang) {
-                capMienPhi(p);
-            }
+            final boolean mienPhi = dang && capMienPhi(p);
             final MonsterVantieu truoc = p.monster;
             Char.doInitMonter(p, typetieu);
+            if (mienPhi && p.monster != null && p.monster != truoc) {
+                p.monster.mienPhiNhiemVu = true; // chu game 31/10: chi thuong nhiem vu
+            }
             if (dang && p.monster != null && p.monster != truoc) {
                 p.sendMessage(MessageCreator.createServerAlertMessage("Hàng nhiệm vụ. " + chiDan(p), ""));
             }
