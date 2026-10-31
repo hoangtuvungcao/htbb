@@ -346,6 +346,7 @@ public final class Kiem {
         KiemGucLapLai.chay(); // cong kiem bot 31/10/2026: client guc van gui di chuyen / danh -> khong tinh them lan guc
         KiemBossLangThang.chay(); // chu game 31/10/2026: boss lang thang cu bi dong - chi danh nguoi da danh no
         KiemHoTong.chay(); // bao loi kazuhas4 31/10/2026 N-3.36: nhan hang o Tong tieu dau (bo dieu kien nuoc / luot), giao Kecleon, dem buoc, chi dan
+        KiemXeHangDiTheo.chay(); // bot cb2 31/10/2026: xe hang ket o goc nha (Pewter) - di theo vet nguoi choi
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);
