@@ -2947,6 +2947,11 @@ public class MessageCreator {
                 break;
             }
         }
+        if (type == 1 || type == 2) {
+            // chu game 31/10/2026: buoc phu nhan o So tay cung hien o danh sach NPC (mot nguon: tien do engine)
+            allQuest = new Vector<NewCharQuest>(allQuest);
+            allQuest.addAll(NhiemVuEngine.phuSoTayChoNpc(p, type));
+        }
         // sua-tien-do-nv: muc tieu / tra / khoa tung dong (MucTieuNhiemVuGame); cua ai dang lam o khe doi (main_sub 2)
         final boolean moi = MucTieuNhiemVuGame.clientMoi(p);
         final MucTieuNhiemVuGame.DongCuaAi cuaAi = type == 0 ? null : MucTieuNhiemVuGame.cuaAiTrongSo(p, type);

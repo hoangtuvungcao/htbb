@@ -7,17 +7,27 @@ import java.util.List;
  * Nhiem vu theo thiet ke dai han (docs/thiet-ke-game.md, GD2 buoc 4). Lop THUAN.
  *
  *   - ve chuong: 2 ve / tuan (reset thu Hai 05:00), tich toi da 4, bat dau 4 ve;
- *   - loc nhiem vu phu theo cap truoc khi gui (danh sach ghi so luong bang 1 byte <= 127): nhiem vu co lv <= cap + 10
- *     (KHONG chan duoi tu 30/10/2026 - truoc day lv <= cap < lv + 10: len cap nhanh qua 10 cap la mat han nhiem vu phu),
- *     xep gan cap nguoi choi nhat truoc, cung do lech thi thap truoc, roi theo thu tu nhiem vu (thi tran); toi da 20;
+ *   - loc nhiem vu phu theo cap truoc khi gui (danh sach ghi so luong bang 1 byte <= 127): nhiem vu co
+ *     cap - 15 <= lv <= cap + 3 (chu game 31/10/2026, ca nhiem vu da vuot cap ma chua lam), xep gan cap nguoi choi nhat
+ *     truoc, cung do lech thi thap truoc, roi theo thu tu nhiem vu (thi tran); gui het (toi da PHU_TOI_DA). Nhan theo hopCap (truoc
+ *     toi 10 cap, khong chan duoi - So tay).
  *   - bang tuan: 2 nhiem vu / tuan theo bac cap.
  */
 public final class NhiemVuLauDai {
 
-    /** So nhiem vu phu toi da gui xuong client cung luc. */
-    public static final int PHU_TOI_DA = 20;
-    /** Gioi han cung cua goi (writeByte(size)). */
+    /** Gioi han cung cua goi (writeByte(size); client J2ME doc byte CO DAU -> toi da 127). */
     public static final int GOI_TOI_DA = 127;
+    /**
+     * So nhiem vu phu toi da gui xuong client cung luc (danh sach NPC -64). Chu game 31/10/2026: gui HET cua so cap - 15 ..
+     * cap + 3 (bang that toi da 117 / cap) - chi chua cho dong chinh + doi trong goi; moi NPC giao chi hien nhiem vu cua minh.
+     */
+    public static final int PHU_TOI_DA = GOI_TOI_DA - 2;
+    /**
+     * Danh sach NPC (-64) hien nhiem vu phu cap {@code cap - NPC_DUOI .. cap + NPC_TREN} (chu game 31/10/2026, bot cb2: truoc day
+     * 20 nhiem vu gan cap nhat trong khoang toi cap + 10 - nguoi choi vuot cap nhiem vu ~3 cap la khong thay o NPC nua, chi
+     * con trong So tay). Nhan van theo {@link #hopCap} (truoc toi 10 cap, khong chan duoi).
+     */
+    public static final int NPC_TREN = 3, NPC_DUOI = 15;
     public static final int DAI_CAP = 10;
 
     /** Moc tuan: thu Hai 05:00 (gio may). */
@@ -58,6 +68,11 @@ public final class NhiemVuLauDai {
         return lv <= cap + DAI_CAP;
     }
 
+    /** Danh sach NPC (-64) co hien nhiem vu phu cap {@code lv} cho nguoi choi cap {@code cap} khong (ke ca nhiem vu da vuot cap). */
+    public static boolean hienNpc(final int lv, final int cap) {
+        return lv <= cap + NPC_TREN && lv >= cap - NPC_DUOI;
+    }
+
     /** Thu tu hien: gan cap nguoi choi nhat truoc; cung do lech -> nhiem vu thap hon truoc; roi thu tu goc (thi tran). */
     public static List<Integer> xepGanCap(final int[] lv, final int cap, final List<Integer> chiSo) {
         final List<Integer> kq = new ArrayList<Integer>(chiSo);
@@ -85,7 +100,7 @@ public final class NhiemVuLauDai {
     public static List<Integer> locPhu(final int[] lv, final int cap, final int toiDa) {
         final List<Integer> hop = new ArrayList<Integer>();
         for (int i = 0; i < lv.length; i++) {
-            if (hopCap(lv[i], cap)) {
+            if (hienNpc(lv[i], cap)) { // chu game 31/10/2026: cap - 15 .. cap + 3 (truoc: hopCap, toi cap + 10, 20 gan nhat)
                 hop.add(Integer.valueOf(i));
             }
         }

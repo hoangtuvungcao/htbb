@@ -13160,6 +13160,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
         } else if (main_sub == 1) {
             InfoQuestTemplate info = null;
+            // chu game 31/10/2026: dong NPC cua buoc phu nhan o So tay (NhiemVuEngine.phuSoTayChoNpc) - tra = nhan thuong engine
+            final String maSoTay = type == 1 || type == 2 ? NhiemVuEngine.maPhuSoTay(this, questID) : null;
+            if (maSoTay != null && this.subQuest.id_quest != questID) {
+                if (type == 1) {
+                    NhiemVuEngine.traPhuSoTayQuaNpc(this, maSoTay);
+                } else {
+                    this.sendMessage(MessageCreator.createServerAlertMessage("Nhiệm vụ này nhận ở " + com.htbb.pokemon.DuongMenu.SO_TAY + ": xem tiến độ ở " + com.htbb.pokemon.DuongMenu.DUONG_NHIEM_VU + com.htbb.pokemon.DuongMenu.DANG_LAM + ".", ""));
+                }
+                MessageCreator.createMsgCharQuest(this, 0);
+                MessageCreator.createMsgCharQuest(this, 1);
+                MessageCreator.createMsgCharQuest(this, 2);
+                return;
+            }
             if (type == 0) {
                 // 0.9.7.1: moi lan tu choi deu co ly do + gui lai danh sach (truoc day return im lang: bam "Đồng ý" ma
                 // khong co gi xay ra, nhiem vu van nam trong "Có thể nhận" cua client).

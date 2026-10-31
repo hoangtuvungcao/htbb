@@ -206,6 +206,7 @@ public final class Kiem {
         KiemChongVatPham.chay(); // 30/10/2026: vat pham type 28 giong het chong mot o (ChongVatPham: gop / nhan / dung / ban / kho / luu)
         KiemPhuQuaNgay.chay(); // 30/10/2026: nhiem vu phu lau dai (P-*) giu tien do qua ngay (truoc day xoa im lang luc 0h)
         KiemPhuMoRong.chay(); // 30/10/2026: phu moi khi cap nv <= cap + 10 (khong chan duoi), xep gan cap, trang So tay
+        KiemPhuNpcMotNguon.chay(); // chu game 31/10/2026: NPC phu cap -15..+3 / 30 muc; buoc nhan o So tay hien o NPC
         KiemQuaiNhiemVuToiDuoc.chay(); // 30/10/2026: quai nhiem vu sinh o ban do toi duoc (Dong co phia tay 21 / Tau S.S. Anne 22 qua Arcanine)
         KiemVeTreo.chay(); // Ve treo 10 gio: kho gio Tu dong danh + giftcode TREO400 (XU + ve xep chong)
         KiemLuongKhoaShop.chay(); // cua hang dac biet: dong tra bang luong khoa ghi ro / goi 25 noi them / khong tru luong thay
