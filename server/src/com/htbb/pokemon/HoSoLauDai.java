@@ -23,6 +23,13 @@ public final class HoSoLauDai {
     public int nlPhut100 = ThongSoLauDai.NANG_LUONG_PHUT_NGAY;
     /** Lan cuoi ghi nhan danh quai (ms) - de cong thoi gian lien tuc. */
     public long nlLanCuoi;
+    /**
+     * Phut 100% thuong thanh vien da cong vao nlPhut100 cua ngay nlNgay (NangLuong.doiNgay, chu game 31/10/2026):
+     * Thanh vien HTBB / The thang / Ve mua cao cap. Khong tich sang hom sau, chi EXP.
+     */
+    public int nlThuongTv;
+    public int nlThuongThe;
+    public int nlThuongVe;
 
     // ---- tinh thong (1.6) ----
     public int ttDiem;
@@ -114,6 +121,9 @@ public final class HoSoLauDai {
     public int tgBuaNgay;
     public int tgBuaChoNgay;
     public int tgBuaCongNgay;
+    /** Tong phut bua da cong hom tgBuaCongNgay / dang cho cong hom tgBuaChoNgay (bua cong don, 31/10/2026). */
+    public int tgBuaPhut;
+    public int tgBuaChoPhut;
     /** Uy thac: ms da dat truoc (chua chay), ms da nhan hom nay, luc thoat game gan nhat (ms). */
     public long tgUtMs;
     public long tgUtMsNgay;
@@ -140,6 +150,9 @@ public final class HoSoLauDai {
         dat(b, "nn", nlNgay);
         dat(b, "nm", nlMsDung);
         dat(b, "np", nlPhut100);
+        dat(b, "n1", nlThuongTv);
+        dat(b, "n2", nlThuongThe);
+        dat(b, "n3", nlThuongVe);
         dat(b, "td", ttDiem);
         dat(b, "tq", ttQuy);
         dat(b, "tl", ttLoai);
@@ -188,6 +201,8 @@ public final class HoSoLauDai {
         dat(b, "z8", tgBuaNgay);
         dat(b, "z9", tgBuaChoNgay);
         dat(b, "za", tgBuaCongNgay);
+        dat(b, "ze", tgBuaPhut);
+        dat(b, "zf", tgBuaChoPhut);
         dat(b, "zb", tgUtMs);
         dat(b, "zc", tgUtMsNgay);
         dat(b, "zd", tgThoat);
@@ -252,6 +267,12 @@ public final class HoSoLauDai {
                 h.nlMsDung = v;
             } else if (k.equals("np")) {
                 h.nlPhut100 = iv;
+            } else if (k.equals("n1")) {
+                h.nlThuongTv = iv;
+            } else if (k.equals("n2")) {
+                h.nlThuongThe = iv;
+            } else if (k.equals("n3")) {
+                h.nlThuongVe = iv;
             } else if (k.equals("td")) {
                 h.ttDiem = iv;
             } else if (k.equals("tq")) {
@@ -349,6 +370,10 @@ public final class HoSoLauDai {
                 h.tgBuaChoNgay = iv;
             } else if (k.equals("za")) {
                 h.tgBuaCongNgay = iv;
+            } else if (k.equals("ze")) {
+                h.tgBuaPhut = iv;
+            } else if (k.equals("zf")) {
+                h.tgBuaChoPhut = iv;
             } else if (k.equals("zb")) {
                 h.tgUtMs = v;
             } else if (k.equals("zc")) {

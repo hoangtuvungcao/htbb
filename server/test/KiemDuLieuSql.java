@@ -55,7 +55,10 @@ public final class KiemDuLieuSql {
      *  hlv-ai (31/10/2026, chu game): +nhom hlv_ai 16 khoa (huan luyen vien AI, chinh, thu_tu 375..390; tien to ten,
      *  doi bot, tran_xu 300000) = 388 / 22; sua mac dinh tien_to_ten = "" = 388 / 22;
      *  doi-luong (31/10/2026, chu game): +5 khoa doi_luong.ti_le, doi_luong_xu.phan_tram_gio / tran_ngay, san_luong.phi_phan_tram /
-     *  tran_ngay (nhom kinh_te, chinh, ca_hai, thu_tu 391..395) = 393 / 22.
+     *  tran_ngay (nhom kinh_te, chinh, ca_hai, thu_tu 391..395) = 393 / 22;
+     *  nang-luong-thanh-vien (31/10/2026, chu game): +3 khoa exp.nang_luong_{thanh_vien,the_thang,ve_mua}_phut (kinh_te,
+     *  chinh, thu_tu 396..398) = 396 / 22; +tang_toc.bua_ngay_toi_da (Bua the luc khong gioi han, 0, thu_tu 399) = 397 / 22;
+     *  +tang_toc.bua_exp_phan_tram / bua_xu_phan_tram (bac bua 50 / 50, chinh, thu_tu 400..401) = 399 / 22 (gop sau doi-luong).
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
     static final String VT_DANH_MUC = "d2b9e31d342bf5d2f2e54bbc9fb9e9535fc31f7c71fd92fb411f674dd3c72490";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
@@ -219,6 +222,11 @@ public final class KiemDuLieuSql {
                     || t.equals("DROP TABLE IF EXISTS `tob_chat_cho`")
                     // dong bo 0.9.8: doi ten mon cua hang cu CHI khi con ten mac dinh cu (giu ten admin da sua)
                     || t.startsWith("UPDATE `nap_cua_hang` SET `ten` = ") && t.matches("(?s).* WHERE `ma` = '[a-z_]+' AND `ten` = '[^']+'$")
+                    // 31/10/2026: mo ta goi nap ghi them +phut nang luong CHI khi con mo ta mac dinh cu (giu ban admin sua)
+                    || t.startsWith("UPDATE `nap_goi` SET `mo_ta` = ") && t.matches("(?s).* WHERE `ma` = '[A-Z_0-9]+' AND `mo_ta` = '[^']+'$")
+                    // 31/10/2026 Bua the luc khong gioi han + gia moi: CHI khi dong con gia / gioi han mac dinh cu
+                    || t.equals("UPDATE `nap_cua_hang` SET `gia_luong` = 30, `gioi_han` = 0 WHERE `ma` = 'bua_the_luc'"
+                            + " AND `gia_luong` = 60 AND `gioi_han` = 4")
                     // bang CONG TAC su kien (khong phai du lieu nguoi choi): lich su kien nam 0.9.5
                     || t.startsWith("UPDATE tob_su_kien SET mo_luc = NULL") || t.startsWith("DELETE FROM tob_su_kien WHERE ma IN")
                     || (t.startsWith("ALTER TABLE tob_su_kien") && t.contains("ADD COLUMN IF NOT EXISTS"))

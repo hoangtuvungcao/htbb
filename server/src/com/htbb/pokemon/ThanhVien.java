@@ -54,6 +54,23 @@ public final class ThanhVien {
         return ThanhVienLogic.conHan(n[0], t, n[1] == 1L);
     }
 
+    /**
+     * Tài khoản CÓ gói Thành viên còn hạn (dùng để TẶNG quyền lợi, ví dụ +phút năng lượng - NangLuong): khác
+     * {@link #laThanhVien}, CSDL lỗi = KHÔNG (không tặng nhầm). Không phụ thuộc thanh_vien.bat (khoá tính năng).
+     */
+    public static boolean coGoiConHan(final int userId) {
+        final long t = System.currentTimeMillis();
+        long[] n = NHO.get(userId);
+        if (n == null || t - n[2] > NHO_MS) {
+            n = docCsdl(userId, t);
+            if (n == null) {
+                return false;
+            }
+            NHO.put(userId, n);
+        }
+        return n[1] == 1L && ThanhVienLogic.conHan(n[0], t, true);
+    }
+
     static long[] docCsdl(final int userId, final long t) {
         try {
             // Dung chung nguon ket noi cua NapTienDb (pool game; test / harness thay duoc).

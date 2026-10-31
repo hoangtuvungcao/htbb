@@ -346,17 +346,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **393 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **399 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 102 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 108 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 252 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (97)
+### Khoá chỉnh trên web (108)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -375,6 +375,12 @@ Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, ph�
 | `roi.xu.phan_tram` | Tỉ lệ một quái rơi xu (%) — dài hạn | số | `30` | 0..100 | ngay | game | Xác suất rơi xu; số xu mỗi lần tự chia ngược để kỳ vọng xu/quái không đổi. |
 | `roi.da_nang_cap.phan_nghin` | Tỉ lệ rơi đá nâng cấp (‰) | số | `15` | 0..200 | ngay | game | Phần nghìn mỗi quái khi lệch cấp ≤ 5. |
 | `exp.nang_luong_phut` | Phút năng lượng 100% / ngày | số | `90` | 0..1440 | ngay | game | Số phút EXP/rơi đầy đủ mỗi ngày. |
+| `exp.nang_luong_thanh_vien_phut` | Năng lượng: phút thưởng Thành viên HTBB | số | `30` | 0..180 | ngay | game | Phút năng lượng 100% cộng thêm mỗi ngày khi tài khoản có Thành viên HTBB còn hạn lúc bắt đầu ngày. Chỉ EXP, không tích sang hôm sau; cộng dồn với Thẻ tháng và Vé mùa cao cấp. 0 = tắt. |
+| `exp.nang_luong_the_thang_phut` | Năng lượng: phút thưởng Thẻ tháng | số | `30` | 0..180 | ngay | game | Phút năng lượng 100% cộng thêm mỗi ngày khi Pokémon có Thẻ tháng còn hạn lúc bắt đầu ngày. Chỉ EXP, không tích sang hôm sau; cộng dồn với Thành viên và Vé mùa cao cấp. 0 = tắt. |
+| `exp.nang_luong_ve_mua_phut` | Năng lượng: phút thưởng Vé mùa cao cấp | số | `30` | 0..180 | ngay | game | Phút năng lượng 100% cộng thêm mỗi ngày khi Pokémon đã mở Vé mùa cao cấp của mùa hiện tại lúc bắt đầu ngày. Chỉ EXP, không tích sang hôm sau; cộng dồn với Thành viên và Thẻ tháng. 0 = tắt. |
+| `tang_toc.bua_ngay_toi_da` | Bùa thể lực: số bùa tối đa / ngày | số | `0` | 0..100 | ngay | game | Số Bùa thể lực một Pokémon dùng được mỗi ngày. 0 = không giới hạn (mặc định 31/10/2026). Bùa không tính vào trần 60 / 210 điểm tăng tốc; mỗi bùa +60 phút bậc bùa (EXP / xu theo tang_toc.bua_exp_phan_tram / tang_toc.bua_xu_phan_tram). |
+| `tang_toc.bua_exp_phan_tram` | Bùa thể lực: EXP ở bậc bùa (%) | số | `50` | 0..100 | ngay | game | Mỗi Bùa thể lực thêm 60 phút bậc bùa ngay sau phần năng lượng 100% của ngày; ở bậc này EXP từ quái nhận mức này (%). Mặc định 50. Không giới hạn số bùa, không tích sang hôm sau. |
+| `tang_toc.bua_xu_phan_tram` | Bùa thể lực: xu / đá / đồ rơi ở bậc bùa (%) | số | `50` | 0..100 | ngay | game | Xu, đá và đồ rơi từ quái ở bậc bùa (%). Mặc định 50: 60 phút bậc bùa thay 60 phút mức 20% nên một bùa 30 lượng thêm ~0,3 giờ thu nhập xu = 1% / lượng (đúng tỷ giá tham chiếu). |
 | `thu.o_co_ban` | Ô thú cơ bản | số | `20` | 1..120 | ngay | game | Số ô thú (thú cưỡi + Pokémon đi theo, chung một danh sách) mỗi người chơi trước khi dùng Vé mở ô thú. Đầy ô: không nhận thêm thú; người chơi cũ đang vượt giữ nguyên, chỉ không nhận thêm. |
 | `thu.o_toi_da` | Ô thú tối đa | số | `60` | 1..120 | ngay | game | Trần ô thú mở bằng Vé mở ô thú (+1 ô mỗi vé). Dùng vé khi đã tối đa bị từ chối, không mất vé; cửa hàng không bán vé thừa. |
 | `thu.tha_xu_co_ban` | Thả thú: xu cơ bản | số | `20` | 0..1000 | ngay | game | Xu khi thả một thú VĨNH VIỄN về tự nhiên = (cơ bản + mỗi cấp × cấp) × bậc hiếm, không quá trần mỗi con. Thú có hạn: 0 xu. |

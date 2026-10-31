@@ -614,6 +614,22 @@ public final class NapTienGame implements Runnable {
         return coTheNho(p) ? NapTienLogic.THE_THANG_BAN_KINH_NHAT_THEM * 16 : 0;
     }
 
+    /**
+     * Ve mua CAO CAP cua mua hien tai da mo (NangLuong: +phut nang luong 100% / ngay). Goi MOT lan / ngay / nhan vat
+     * (luc khoi tao nang luong cua ngay). Tat nap / loi CSDL = false.
+     */
+    public static boolean coVeMuaCaoCap(final Char p) {
+        if (!NapTien.bat() || p == null) {
+            return false;
+        }
+        try {
+            final Object[] v = NapTienDb.veMua(p.charDBID, NapTienLogic.muaVe(LauDai.ngayHienTai()));
+            return (Integer) v[0] == 1;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
     /** Nho the thang 60 giay (doGetItem goi rat nhieu, khong hoi CSDL moi lan). */
     private static final ConcurrentHashMap<Integer, long[]> THE_NHO = new ConcurrentHashMap<Integer, long[]>();
 
@@ -926,8 +942,11 @@ public final class NapTienGame implements Runnable {
                 + (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) ? " Xem trong Tủ đồ trang trí." : "")
                 + (veMoRong ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + MoRongHanhTrang.O_MOI_VE + " ô." : "")
                 + (veOThu ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + OThu.O_MOI_VE + " ô thú." : "")
-                + (tangToc ? " Vật phẩm đã vào hành trang; dùng chung giới hạn " + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, "
-                        + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "")
+                + (tangToc && TangToc.loaiCuaMa(m.ma) == TangToc.BUA
+                        ? " Bùa đã vào hành trang: mỗi bùa +" + TangToc.BUA_PHUT + " phút năng lượng mức " + TangToc.buaHeSoExp()
+                                + "% EXP, " + TangToc.buaHeSoXu() + "% xu hôm nay, dùng bao nhiêu tuỳ ý, không tính vào giới hạn tăng tốc." : "")
+                + (tangToc && TangToc.loaiCuaMa(m.ma) != TangToc.BUA ? " Vật phẩm đã vào hành trang; dùng chung giới hạn "
+                        + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, " + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "")
                 + (datTen ? " Thẻ đã vào hành trang: bấm Sử dụng để đặt tên cho Pokémon đi theo." : "");
     }
 

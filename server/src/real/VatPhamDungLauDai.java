@@ -359,7 +359,8 @@ public final class VatPhamDungLauDai {
 
     /** EXP = {@code phut} phut danh quai o cap hien tai; tru {@code truPhut} phut nang luong 100% (khong vuot tran ngay). */
     static void keoHiem(final Char p, final int phut, final int truPhut) {
-        final HoSoLauDai h = LauDaiNhanVat.lay(p);
+        // khoi tao ngay moi (cau hinh + thuong thanh vien) truoc khi tru phut 100%
+        final HoSoLauDai h = LauDaiNhanVat.chuanBiNgay(p);
         if (h == null) {
             return;
         }

@@ -37,9 +37,17 @@ public final class TangToc {
     /** Diem tang toc = so phut EXP o toc do 100% ma mon cho TOI DA. */
     public static final int[] DIEM = {15, 30, 45, 12, 30};
     /** Gia ban cao cap (luong; luong bi dot khi mua). */
-    public static final int[] GIA_LUONG = {20, 40, 60, 15, 40};
-    /** Mua cao cap toi da / tuan / tai khoan (de nguoi choi khong mua thua so voi tran dung). */
-    public static final int[] MUA_TUAN_TOI_DA = {14, 7, 4, 17, 2};
+    public static final int[] GIA_LUONG = {20, 40, 30, 15, 40};
+    /**
+     * Mua cao cap toi da / tuan / tai khoan (de nguoi choi khong mua thua so voi tran dung). 0 = KHONG gioi han (Bua the
+     * luc, chu game 31/10/2026: "khong gioi han su dung"); admin van dat lai duoc gioi_han cua dong cua hang.
+     */
+    public static final int[] MUA_TUAN_TOI_DA = {14, 7, 0, 17, 2};
+    /**
+     * Mon co tinh vao tran diem chung ngay / tuan khong. Bua the luc: KHONG (chu game 31/10/2026) - dung bao nhieu tuy
+     * thich, khong an diem cua ve / uy thac / keo. DIEM[BUA] chi con la gia tri danh nghia (mo phong, dinh gia ve mua).
+     */
+    public static final boolean[] TINH_TRAN = {true, true, false, true, true};
 
     /** Tong diem dung moi ngay / moi tuan (ban cao cap + ban khoa CHUNG). */
     public static final int DIEM_NGAY_TOI_DA = 60;
@@ -53,9 +61,41 @@ public final class TangToc {
     public static final int VE_PHUT_NGAY_TOI_DA = 60;
 
     // ---- bua the luc ----
-    /** +60 phut toc do 100% cho hom nay (khong tich sang hom sau). */
+    /**
+     * +60 phut BAC BUA cho hom nay MOI LAN dung (cong don, khong tich sang hom sau). Chu game 31/10/2026: bac bua cho
+     * EXP 50% VA xu 50% (khoa danh muc tang_toc.bua_exp_phan_tram / tang_toc.bua_xu_phan_tram, sua tren web). Xu: 60 phut
+     * bac bua thay 60 phut le ra o bac met 20% -> xu tang them 0,3 gio thu nhap / bua 30 luong = 1% / luong (dung ty gia
+     * tham chieu 1 luong = 1% thu nhap 1 gio). Da / do roi theo cung he so voi xu (RoiLauDai dung mot he so).
+     */
     public static final int BUA_PHUT = 60;
-    public static final int BUA_NGAY_TOI_DA = 1;
+    public static final int BUA_HE_SO_EXP = 50;
+    public static final int BUA_HE_SO_XU = 50;
+    public static final String K_BUA_EXP = "tang_toc.bua_exp_phan_tram";
+    public static final String K_BUA_XU = "tang_toc.bua_xu_phan_tram";
+
+    /** He so EXP (%) cua bac bua: danh muc tang_toc.bua_exp_phan_tram (kep 0..100), mac dinh 50. */
+    public static int buaHeSoExp() {
+        return docPhanTram(K_BUA_EXP, BUA_HE_SO_EXP);
+    }
+
+    /** He so xu / da / do roi (%) cua bac bua: danh muc tang_toc.bua_xu_phan_tram (kep 0..100), mac dinh 50. */
+    public static int buaHeSoXu() {
+        return docPhanTram(K_BUA_XU, BUA_HE_SO_XU);
+    }
+
+    static int docPhanTram(final String khoa, final int macDinh) {
+        try {
+            return (int) Math.max(0L, Math.min(100L, com.htbb.cauhinh.CauHinhTrungTam.so(khoa, macDinh)));
+        } catch (final Throwable t) {
+            return macDinh;
+        }
+    }
+    /**
+     * So bua toi da / ngay: 0 = KHONG gioi han (mac dinh tu 31/10/2026). Admin dat lai qua khoa danh muc
+     * {@link #K_BUA_NGAY_TOI_DA} (real.TangTocGame doc, truyen vao {@link #kiemDung}).
+     */
+    public static final int BUA_NGAY_TOI_DA = 0;
+    public static final String K_BUA_NGAY_TOI_DA = "tang_toc.bua_ngay_toi_da";
 
     // ---- uy thac luyen tap (treo offline) ----
     /** EXP / gio uy thac = 20% EXP 1 gio danh quai o cap luc thoat. CHI EXP. */
@@ -125,6 +165,12 @@ public final class TangToc {
      */
     public static String kiemDung(final HoSoLauDai h, final int loai, final int cap, final int capToiDa,
             final boolean coTheThang, final int ngay, final int tuan) {
+        return kiemDung(h, loai, cap, capToiDa, coTheThang, ngay, tuan, BUA_NGAY_TOI_DA);
+    }
+
+    /** Nhu tren; {@code buaNgayToiDa} = so Bua the luc toi da / ngay (0 = khong gioi han). */
+    public static String kiemDung(final HoSoLauDai h, final int loai, final int cap, final int capToiDa,
+            final boolean coTheThang, final int ngay, final int tuan, final int buaNgayToiDa) {
         if (loai < 0 || loai >= SO_LOAI) {
             return "Không phải vật phẩm tăng tốc.";
         }
@@ -134,6 +180,13 @@ public final class TangToc {
         synchronized (h) {
             lamMoi(h, ngay, tuan);
             final int diem = DIEM[loai];
+            if (!TINH_TRAN[loai]) {
+                // Bua the luc: ngoai tran diem chung; chi con tran so bua / ngay neu admin dat (> 0)
+                if (buaNgayToiDa > 0 && h.tgBuaNgay >= buaNgayToiDa) {
+                    return "Mỗi ngày chỉ dùng " + buaNgayToiDa + " Bùa thể lực.";
+                }
+                return null;
+            }
             if (h.tgDiemTuan + diem > DIEM_TUAN_TOI_DA) {
                 // Chu "Chua dung duoc" dung dau: cau cu "Da dung 57/60..." doc nhu dung thanh cong (bao 0.9.2)
                 return "Chưa dùng được: tuần này đã dùng " + h.tgDiemTuan + "/" + DIEM_TUAN_TOI_DA + " điểm tăng tốc, vật phẩm này cần "
@@ -151,10 +204,6 @@ public final class TangToc {
                 }
                 if (h.tgVePhutNgay + VE_PHUT > VE_PHUT_NGAY_TOI_DA) {
                     return "Mỗi ngày tối đa " + VE_PHUT_NGAY_TOI_DA + " phút vé EXP.";
-                }
-            } else if (loai == BUA) {
-                if (h.tgBuaNgay >= BUA_NGAY_TOI_DA) {
-                    return "Mỗi ngày chỉ dùng " + BUA_NGAY_TOI_DA + " Bùa thể lực.";
                 }
             } else if (loai == UY_THAC) {
                 final long toiDa = (UY_THAC_GIO_NGAY + (coTheThang ? UY_THAC_GIO_THE_THANG : 0)) * GIO_MS;
@@ -182,8 +231,10 @@ public final class TangToc {
     public static void ghiDung(final HoSoLauDai h, final int loai, final int ngay, final int tuan) {
         synchronized (h) {
             lamMoi(h, ngay, tuan);
-            h.tgDiemNgay += DIEM[loai];
-            h.tgDiemTuan += DIEM[loai];
+            if (TINH_TRAN[loai]) {
+                h.tgDiemNgay += DIEM[loai];
+                h.tgDiemTuan += DIEM[loai];
+            }
             if (loai == VE_15 || loai == VE_2) {
                 h.tgVeHeSo = VE_HE_SO[loai];
                 h.tgVeMs += VE_PHUT * PHUT_MS;
@@ -198,32 +249,70 @@ public final class TangToc {
         }
     }
 
-    /** Bua the luc: +60 phut 100% cho ngay {@code ngay} (yyyyMMdd), khong tich sang hom sau. */
+    /**
+     * Bua the luc: +60 phut BAC BUA (EXP {@link #BUA_HE_SO_EXP}%, xu / da / do roi {@link #BUA_HE_SO_XU}%) cho ngay
+     * {@code ngay} (yyyyMMdd) MOI LAN dung (cong don), khong tich sang hom sau. Bac bua nam SAU phut 100% va TRUOC bac
+     * met (NangLuong.heSo). tgBuaPhut / tgBuaChoPhut = tong phut bua cua ngay / dang cho cong.
+     * Ho so cu (truoc 31/10/2026: bua cong thang 60 phut vao nlPhut100, tgBuaPhut = 0) -> {@link #buaCu}.
+     */
     static void congBua(final HoSoLauDai h, final int ngay) {
         if (h.nlNgay != ngay) {
             // chua danh quai hom nay: luu de NangLuong cong khi doi ngay
-            h.tgBuaChoNgay = ngay;
+            if (h.tgBuaChoNgay != ngay) {
+                h.tgBuaChoNgay = ngay;
+                h.tgBuaChoPhut = 0;
+            } else if (h.tgBuaChoPhut <= 0) {
+                h.tgBuaChoPhut = BUA_PHUT; // ho so cu: da cho 1 bua
+            }
+            h.tgBuaChoPhut += BUA_PHUT;
             return;
         }
-        h.nlPhut100 += BUA_PHUT;
-        h.tgBuaCongNgay = ngay;
+        if (buaCu(h) > 0) {
+            // doi ho so cu sang bac bua: rut 60 phut khoi phut 100%
+            h.nlPhut100 -= BUA_PHUT;
+            h.tgBuaPhut = BUA_PHUT;
+        }
+        if (h.tgBuaCongNgay != ngay) {
+            h.tgBuaCongNgay = ngay;
+            h.tgBuaPhut = 0;
+        }
+        h.tgBuaPhut += BUA_PHUT;
+    }
+
+    /** Phut bua kieu CU (da nam trong nlPhut100) cua ngay nlNgay: 60 hoac 0. */
+    static int buaCu(final HoSoLauDai h) {
+        return h.tgBuaCongNgay != 0 && h.tgBuaCongNgay == h.nlNgay && h.tgBuaPhut <= 0 ? BUA_PHUT : 0;
+    }
+
+    /** Tong phut bac bua (Bua the luc) cua ngay nlNgay (khong tinh bua kieu cu da nam trong nlPhut100). */
+    public static int buaPhutHomNay(final HoSoLauDai h) {
+        if (h.tgBuaCongNgay == 0 || h.tgBuaCongNgay != h.nlNgay) {
+            return 0;
+        }
+        return Math.max(0, h.tgBuaPhut);
+    }
+
+    /** So bua da dung cho ngay nlNgay (tinh ca bua kieu cu). */
+    public static int soBuaHomNay(final HoSoLauDai h) {
+        return (buaPhutHomNay(h) + buaCu(h)) / BUA_PHUT;
     }
 
     /**
-     * NangLuong.ghiNhan goi ngay sau khi doi ngay: bua da dung truoc lan danh quai dau tien cua ngay thi cong
-     * vao phut 100% bay gio. Phan bua khong dung het KHONG tich sang hom sau (NangLuong.phut100NgayMoi tru ra).
+     * NangLuong.doiNgay goi ngay sau khi doi ngay: bua da dung truoc lan danh quai dau tien cua ngay thi vao bac bua
+     * bay gio. Phan bua khong dung het KHONG tich sang hom sau.
      */
     public static void sauDoiNgay(final HoSoLauDai h, final int ngay) {
         if (h.tgBuaChoNgay == ngay) {
-            h.nlPhut100 += BUA_PHUT;
             h.tgBuaCongNgay = ngay;
+            h.tgBuaPhut = h.tgBuaChoPhut > 0 ? h.tgBuaChoPhut : BUA_PHUT;
             h.tgBuaChoNgay = 0;
+            h.tgBuaChoPhut = 0;
         }
     }
 
-    /** Phut 100% "that" (khong tinh bua) cua ngay da qua - de tinh tich luy sang hom sau. */
+    /** Phut 100% "that" (khong tinh bua kieu cu) cua ngay - de tinh tich luy sang hom sau va he so xu. */
     public static int phut100KhongBua(final HoSoLauDai h) {
-        return h.tgBuaCongNgay == h.nlNgay && h.tgBuaCongNgay != 0 ? h.nlPhut100 - BUA_PHUT : h.nlPhut100;
+        return h.nlPhut100 - buaCu(h);
     }
 
     // ================================================================== ve EXP khi ha quai
@@ -296,6 +385,9 @@ public final class TangToc {
             if (h.tgVeMs > 0L) {
                 b.append("; vé EXP x").append(h.tgVeHeSo == 200 ? "2" : "1,5").append(" còn ")
                         .append(h.tgVeMs / PHUT_MS + 1).append(" phút đánh quái");
+            }
+            if (h.tgBuaNgay > 0) {
+                b.append("; Bùa thể lực hôm nay: ").append(h.tgBuaNgay).append(" (không tính điểm)");
             }
             if (h.tgUtMs > 0L) {
                 b.append("; ủy thác chờ ").append(h.tgUtMs / PHUT_MS).append(" phút (chạy khi thoát game)");

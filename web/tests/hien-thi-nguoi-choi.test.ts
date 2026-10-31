@@ -213,6 +213,23 @@ test('Tự động đánh: 5 giờ / +2 giờ thẻ tháng / 15 ô trên cẩm n
   assert.equal(so(/<b>(\d+) ô<\/b><span>vùng đánh/), macDinh('tu_dong.ban_kinh') / 16)
 })
 
+test('Năng lượng: +phút Thành viên / Thẻ tháng / Vé mùa + giá Bùa thể lực trên cẩm nang Cấp độ == danh mục / cửa hàng', () => {
+  const vue = doc('../app/pages/cam-nang/cap-do.vue')
+  const so = (re: RegExp) => Number(re.exec(vue)?.[1])
+  assert.equal(so(/<b>\+(\d+) phút<\/b> Thành viên HTBB/), macDinh('exp.nang_luong_thanh_vien_phut'))
+  assert.equal(so(/<b>\+(\d+) phút<\/b> Thẻ tháng/), macDinh('exp.nang_luong_the_thang_phut'))
+  assert.equal(so(/<b>\+(\d+) phút<\/b> Vé mùa cao cấp/), macDinh('exp.nang_luong_ve_mua_phut'))
+  const cao = bang('nap_cua_hang').find(r => r.ma === 'bua_the_luc')
+  assert.ok(cao, 'nap_cua_hang thiếu bua_the_luc')
+  assert.equal(so(/Bùa thể lực<\/strong>: bản cao cấp <b>(\d+) lượng<\/b>/), Number(cao.gia_luong))
+  assert.equal(Number(cao.gioi_han), 0, 'bùa thể lực: không giới hạn mua')
+  assert.match(vue, /Mua và dùng không giới hạn/)
+  const khoa = bang('data_cua_hang_lau_dai').find(r => r.thuong === 'ITEM:1255:1')
+  assert.ok(khoa, 'Kecleon thiếu Bùa thể lực khoá')
+  assert.equal(so(/bản khoá <b>(\d+) lượng khoá<\/b>/), Number(String(khoa.chi_phi).split(':')[1]))
+  assert.equal(Number(khoa.gioi_han_tuan), 0, 'bùa khoá Kecleon: không giới hạn tuần')
+})
+
 test('hạn mức đăng ký: mặc định = quy-tac-dang-ky.json, open test (mo_han_muc_dang_ky.sql) = 6 / giờ, 30 / 24 giờ; trang không ghi số cố định', () => {
   assert.equal(macDinh('dang_ky.toi_da_gio'), QUY_TAC_DANG_KY.hanMuc.moiGio)
   assert.equal(macDinh('dang_ky.toi_da_ngay'), QUY_TAC_DANG_KY.hanMuc.moiNgay)

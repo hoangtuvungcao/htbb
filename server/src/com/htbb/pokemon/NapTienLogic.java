@@ -498,7 +498,7 @@ public final class NapTienLogic {
         // Tang toc (TangToc): gioi_han = lan mua / TUAN; han 0; khong giao dich; gia co dinh.
         new Mon("ve_exp_15", "Vé EXP x1,5 (30 phút)", "tang_toc", TRAO_TANG_TOC, 20, 0, 14, 0, false),
         new Mon("ve_exp_2", "Vé EXP x2 (30 phút)", "tang_toc", TRAO_TANG_TOC, 40, 0, 7, 0, false),
-        new Mon("bua_the_luc", "Bùa thể lực (+60 phút)", "tang_toc", TRAO_TANG_TOC, 60, 0, 4, 0, false),
+        new Mon("bua_the_luc", "Bùa thể lực (+60 phút)", "tang_toc", TRAO_TANG_TOC, 30, 0, 0, 0, false),
         new Mon("uy_thac", "Phiếu ủy thác luyện tập (1 giờ)", "tang_toc", TRAO_TANG_TOC, 15, 0, 17, 0, false),
         new Mon("keo_hiem", "Kẹo hiếm", "tang_toc", TRAO_TANG_TOC, 40, 0, 2, 0, false),
         // Ve +10 o hanh trang (real.MoRongTuiGame): trao mo_rong_tui + ma nay = 1 ve KHOA vao tui. Toi da 9 lan (84 o
@@ -593,7 +593,12 @@ public final class NapTienLogic {
         if (m.giaLuong != TangToc.GIA_LUONG[loai]) {
             return "gia " + m.ma + " co dinh " + TangToc.GIA_LUONG[loai] + " luong (TangToc.GIA_LUONG)";
         }
-        if (m.gioiHan < 1 || m.gioiHan > TangToc.MUA_TUAN_TOI_DA[loai]) {
+        if (TangToc.MUA_TUAN_TOI_DA[loai] == 0) {
+            // khong gioi han mac dinh (Bua the luc): 0 = khong gioi han, admin dat lai so > 0 tuy y
+            if (m.gioiHan < 0) {
+                return "gioi han tuan " + m.ma + " phai >= 0 (0 = khong gioi han)";
+            }
+        } else if (m.gioiHan < 1 || m.gioiHan > TangToc.MUA_TUAN_TOI_DA[loai]) {
             return "gioi han tuan " + m.ma + " phai trong 1.." + TangToc.MUA_TUAN_TOI_DA[loai];
         }
         if (m.giaoDichDuoc || m.hanNgay != 0 || m.nhomXoay != 0) {

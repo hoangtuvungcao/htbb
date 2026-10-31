@@ -60,49 +60,180 @@ public final class NangLuong {
 
     /** He so (%) khi da dung {@code msDung} ms trong ngay co {@code phut100} phut 100%. */
     public static int heSo(final long msDung, final int phut100) {
+        return heSo(msDung, phut100, 0, 0);
+    }
+
+    /**
+     * He so (%) voi bac bua: {@code phut100} phut 100%, roi {@code phutBua} phut o {@code heSoBua}% (Bua the luc), roi
+     * bac met (120 phut 20%, 120 phut 5%, 0%).
+     */
+    public static int heSo(final long msDung, final int phut100, final int phutBua, final int heSoBua) {
         final long phut = msDung / 60000L;
         if (phut < phut100) {
             return 100;
         }
-        return ThongSoLauDai.heSoMet((int) Math.min(Integer.MAX_VALUE, phut - phut100));
+        if (phut < (long) phut100 + Math.max(0, phutBua)) {
+            return heSoBua;
+        }
+        return ThongSoLauDai.heSoMet((int) Math.min(Integer.MAX_VALUE, phut - phut100 - Math.max(0, phutBua)));
+    }
+
+    /** He so EXP hien tai cua ho so (khong kiem ngay). */
+    static int heSoExp(final HoSoLauDai h) {
+        return heSo(h.nlMsDung, h.nlPhut100, TangToc.buaPhutHomNay(h), TangToc.buaHeSoExp());
+    }
+
+    // ================================================================== thuong thanh vien (31/10/2026)
+
+    /**
+     * Chu game 31/10/2026: phut nang luong 100% CONG THEM moi ngay khi dang co Thanh vien HTBB / The thang / Ve mua cao
+     * cap (cong don, mac dinh 30 + 30 + 30, toi da 90). Tinh MOT lan luc khoi tao nang luong cua ngay (lan ha quai /
+     * xem So tay dau tien trong ngay) theo goi dang con han luc do; KHONG tich sang hom sau, CHI EXP (nhu Bua the luc:
+     * xu / da / do roi van theo phut goc - nap tien khong ban xu). Khoa danh muc nhom kinh_te, ap dung ngay.
+     */
+    public static final String K_THUONG_THANH_VIEN = "exp.nang_luong_thanh_vien_phut";
+    public static final String K_THUONG_THE_THANG = "exp.nang_luong_the_thang_phut";
+    public static final String K_THUONG_VE_MUA = "exp.nang_luong_ve_mua_phut";
+    public static final String[] K_THUONG = {K_THUONG_THANH_VIEN, K_THUONG_THE_THANG, K_THUONG_VE_MUA};
+    public static final int THUONG_MAC_DINH = 30;
+    /** Tran moi khoa (phut) - khop gioi_han cua danh muc. */
+    public static final int THUONG_TOI_DA = 180;
+    public static final int TV = 0, THE = 1, VE = 2;
+    /** Ten nguon cho So tay (cung thu tu TV / THE / VE). */
+    public static final String[] TEN_THUONG = {"Thành viên HTBB", "Thẻ tháng", "Vé mùa cao cấp"};
+
+    /** Phut moi nguon tu cau hinh (kep 0..180). {@code co[i]} = goi i dang con han. */
+    public static int[] thuongTheoCo(final boolean[] co) {
+        final int[] r = new int[3];
+        for (int i = 0; i < 3; i++) {
+            if (co != null && i < co.length && co[i]) {
+                long v = THUONG_MAC_DINH;
+                try {
+                    v = com.htbb.cauhinh.CauHinhTrungTam.so(K_THUONG[i], THUONG_MAC_DINH);
+                } catch (final Throwable t) {
+                    // danh muc chua nap: mac dinh
+                }
+                r[i] = (int) Math.max(0L, Math.min(THUONG_TOI_DA, v));
+            }
+        }
+        return r;
+    }
+
+    /** Tong phut thuong thanh vien da cong vao nlPhut100 cua ngay nlNgay. */
+    public static int thuongTong(final HoSoLauDai h) {
+        return Math.max(0, h.nlThuongTv) + Math.max(0, h.nlThuongThe) + Math.max(0, h.nlThuongVe);
+    }
+
+    /** Phut 100% "goc" cua ngay (khong tinh Bua the luc, khong tinh thuong thanh vien) - dung cho tich luy va xu. */
+    public static int phut100Goc(final HoSoLauDai h) {
+        return TangToc.phut100KhongBua(h) - thuongTong(h);
+    }
+
+    /**
+     * Dong "Phut 100% hom nay" cho So tay, kem chi tiet: goc (+ tich luy), Bua the luc, tung goi thanh vien. Neu chua
+     * co goi nao: goi y so phut moi goi (theo cau hinh hien tai).
+     */
+    public static String moTaPhut100(final HoSoLauDai h) {
+        synchronized (h) {
+            final StringBuilder b = new StringBuilder();
+            b.append("Phút 100% hôm nay: ").append(h.nlPhut100).append(" phút (cơ bản + tích luỹ ").append(phut100Goc(h));
+            final int buaCu = h.nlPhut100 - TangToc.phut100KhongBua(h);
+            if (buaCu > 0) {
+                b.append(", Bùa thể lực +").append(buaCu);
+            }
+            final int[] t = {h.nlThuongTv, h.nlThuongThe, h.nlThuongVe};
+            for (int i = 0; i < 3; i++) {
+                if (t[i] > 0) {
+                    b.append(", ").append(TEN_THUONG[i]).append(" +").append(t[i]);
+                }
+            }
+            b.append(')');
+            final int bua = TangToc.buaPhutHomNay(h);
+            if (bua > 0) {
+                b.append("\nBùa thể lực hôm nay: ").append(TangToc.soBuaHomNay(h)).append(" bùa, +").append(bua)
+                        .append(" phút ở mức ").append(TangToc.buaHeSoExp()).append("% EXP, ").append(TangToc.buaHeSoXu())
+                        .append("% xu/đồ rơi (sau phần 100%, không tích sang hôm sau).");
+            }
+            if (thuongTong(h) > 0) {
+                b.append("\nPhút thưởng gói chỉ tính EXP, không cộng dồn sang hôm sau.");
+            } else {
+                final int[] goiY = thuongTheoCo(new boolean[]{true, true, true});
+                if (goiY[TV] + goiY[THE] + goiY[VE] > 0) {
+                    b.append("\nMỗi ngày cộng thêm phút 100% (chỉ EXP): ").append(TEN_THUONG[TV]).append(" +").append(goiY[TV])
+                            .append(", ").append(TEN_THUONG[THE]).append(" +").append(goiY[THE]).append(", ")
+                            .append(TEN_THUONG[VE]).append(" +").append(goiY[VE]).append(" (cộng dồn, tính lúc bắt đầu ngày).");
+                }
+            }
+            return b.toString();
+        }
+    }
+
+    /** Ngay {@code bayGio} da khoi tao nang luong chua (false = lan dau trong ngay se tinh thuong thanh vien). */
+    public static boolean daKhoiTao(final HoSoLauDai h, final long bayGio) {
+        synchronized (h) {
+            return h.nlNgay == ngay(bayGio);
+        }
+    }
+
+    /**
+     * Doi ngay neu can (khong ghi nhan lan ha quai). {@code thuong} = phut cong them hom nay {TV, THE, VE} (null = 0).
+     * @return true neu vua khoi tao ngay moi.
+     */
+    public static boolean doiNgay(final HoSoLauDai h, final long bayGio, final int phutNgay, final int phutTichToiDa,
+            final int[] thuong) {
+        synchronized (h) {
+            final int hn = ngay(bayGio);
+            if (h.nlNgay == hn) {
+                return false;
+            }
+            final int cach = h.nlNgay <= 0 ? 2 : cachNgay(h.nlNgay, hn);
+            // Bua the luc (TangToc) va thuong thanh vien chi cho hom do: tru ra truoc khi tinh phan tich sang hom sau.
+            final int goc = h.nlNgay <= 0 ? phutNgay : phut100NgayMoi(phut100Goc(h), h.nlMsDung, cach, phutNgay, phutTichToiDa);
+            h.nlThuongTv = thuong == null || thuong.length < 1 ? 0 : Math.max(0, thuong[TV]);
+            h.nlThuongThe = thuong == null || thuong.length < 2 ? 0 : Math.max(0, thuong[THE]);
+            h.nlThuongVe = thuong == null || thuong.length < 3 ? 0 : Math.max(0, thuong[VE]);
+            h.nlPhut100 = goc + thuongTong(h);
+            h.nlNgay = hn;
+            h.nlMsDung = 0L;
+            h.nlLanCuoi = 0L;
+            TangToc.sauDoiNgay(h, hn);
+            h.ban = true;
+            return true;
+        }
     }
 
     /**
      * Ghi nhan mot lan ha quai luc {@code bayGio} va tra ve he so (%) ap cho lan do.
-     * Doi ngay tu dong (theo gio may).
+     * Doi ngay tu dong (theo gio may), khong co thuong thanh vien.
      */
     public static int ghiNhan(final HoSoLauDai h, final long bayGio, final int phutNgay, final int phutTichToiDa) {
+        return ghiNhan(h, bayGio, phutNgay, phutTichToiDa, null);
+    }
+
+    /** Nhu tren; {@code thuong} = phut thuong thanh vien {TV, THE, VE} dung NEU lan nay khoi tao ngay moi. */
+    public static int ghiNhan(final HoSoLauDai h, final long bayGio, final int phutNgay, final int phutTichToiDa,
+            final int[] thuong) {
         synchronized (h) {
-            final int hn = ngay(bayGio);
-            if (h.nlNgay != hn) {
-                final int cach = h.nlNgay <= 0 ? 2 : cachNgay(h.nlNgay, hn);
-                // Bua the luc (TangToc) chi cho hom do: tru ra truoc khi tinh phan tich sang hom sau.
-                h.nlPhut100 = h.nlNgay <= 0 ? phutNgay
-                        : phut100NgayMoi(TangToc.phut100KhongBua(h), h.nlMsDung, cach, phutNgay, phutTichToiDa);
-                h.nlNgay = hn;
-                h.nlMsDung = 0L;
-                h.nlLanCuoi = 0L;
-                TangToc.sauDoiNgay(h, hn);
-            }
+            doiNgay(h, bayGio, phutNgay, phutTichToiDa, thuong);
             if (h.nlLanCuoi > 0L && bayGio > h.nlLanCuoi) {
                 h.nlMsDung += Math.min(KHOANG_TOI_DA_MS, bayGio - h.nlLanCuoi);
             }
             h.nlLanCuoi = bayGio;
             h.ban = true;
-            return heSo(h.nlMsDung, h.nlPhut100);
+            return heSoExp(h);
         }
     }
 
     /**
-     * He so cho XU / da / vat pham roi (khong ghi nhan): KHONG tinh Bua the luc (TangToc) - vat pham tang toc
-     * chi cho EXP, khong lam tang tien / do roi.
+     * He so cho XU / da / vat pham roi (khong ghi nhan): KHONG tinh thuong thanh vien (goi nap chi cho EXP); bac Bua the
+     * luc cho xu / da / do roi o TangToc.buaHeSoXu() (mac dinh 50%, chu game 31/10/2026).
      */
     public static int heSoXuHienTai(final HoSoLauDai h, final long bayGio) {
         synchronized (h) {
             if (h.nlNgay != ngay(bayGio)) {
                 return 100;
             }
-            return heSo(h.nlMsDung, TangToc.phut100KhongBua(h));
+            return heSo(h.nlMsDung, phut100Goc(h), TangToc.buaPhutHomNay(h), TangToc.buaHeSoXu());
         }
     }
 
@@ -112,7 +243,7 @@ public final class NangLuong {
             if (h.nlNgay != ngay(bayGio)) {
                 return 100;
             }
-            return heSo(h.nlMsDung, h.nlPhut100);
+            return heSoExp(h);
         }
     }
 }
