@@ -22,7 +22,7 @@ import java.util.concurrent.*;
  *          (boss guc) va luc co "Chiến thắng" - kiem "boss ket o 0,2-0,5% HP toi het gio" (bao cao can bang 29/10/2026).
  *
  * -DdoSucCap=15,20,25  -DdoSucLop=0,1,2,3,4  -DdoSucMap=8,9  -DdoSucGym=2,3  -DdoSucGiap=1  -DdoSucThuoc=12  -DdoSucLoaiThuoc=3  -DdoSucSo=15
- * -DdoSucSongSong=6  -DdoSucRa=<tep tsv>
+ * -DdoSucSongSong=6  -DdoSucRa=<tep tsv>  -DdoSucNangCap=6 (vu khi +N truoc khi cam; cot ttk_tran = giay danh thuan moi con)
  */
 final class KichBanDoSuc {
 
@@ -81,7 +81,7 @@ final class KichBanDoSuc {
         return da;
     }
 
-    static final String TIEU_DE_QUAI = "loai\tcap\tlop\tmaxhp\ttan_cong\tthu_vl\tthu_pt\tquai@map\tcap_quai\tha\tgiay_moi_con\tdon_trung\tdon_tb\tdon_max\tdon_de_guc\tguc\tthuoc\txu_moi_con\tmua";
+    static final String TIEU_DE_QUAI = "loai\tcap\tlop\tmaxhp\ttan_cong\tthu_vl\tthu_pt\tquai@map\tcap_quai\tha\tgiay_moi_con\tdon_trung\tdon_tb\tdon_max\tdon_de_guc\tguc\tthuoc\txu_moi_con\tmua\tttk_tran";
     static final String TIEU_DE_GYM = "loai\tcap\tlop\tmaxhp\ttan_cong\tthu_vl\tthu_pt\tgym\tket\tgiay\tboss_con_pt\tst_moi_giay\tdon_trung\tdon_tb\tdon_max\tguc\tthuoc\tgiay_90\tgiay_thang\tmua";
 
     static void chay() throws Exception {
@@ -200,7 +200,8 @@ final class KichBanDoSuc {
                 List<String> ids = type == 3
                         ? Collections.singletonList(String.valueOf(BotXuyenSuot.vuKhiShop(lop, L)))
                         : BotChucNang.sql("SELECT id FROM data_item WHERE type=" + type + " AND clazz=-1 AND level<=" + L
-                                + " AND id<174 AND price>=500 AND level=(SELECT MAX(level) FROM data_item WHERE type=" + type + " AND clazz=-1 AND id<174 AND level<=" + L + " AND price>=500) ORDER BY id");
+                                + " AND (" + GIAP_PEWTER + " OR " + GIAP_INDIGO + ") AND price>=500 AND level=(SELECT MAX(level) FROM data_item WHERE type=" + type
+                                + " AND clazz=-1 AND (" + GIAP_PEWTER + " OR " + GIAP_INDIGO + ") AND level<=" + L + " AND price>=500) ORDER BY id");
                 for (String sid : ids) {
                     int tpl = Integer.parseInt(sid.trim());
                     Set<Integer> cu = new HashSet<>();
@@ -209,11 +210,16 @@ final class KichBanDoSuc {
                     b.bom(500);
                     // byte cuoi = dong (tab lop o tiem giap, client gui WindowInfoScr.idClass): giap mua voi 0 thanh "do cua Dong
                     // Charmander" - 4 dong kia khong mac duoc (do suc truoc 29/10/2026 chi dong 0 co giap)
-                    b.gui(24, (byte) 1, (byte) 3, (short) tpl, (short) 1, (byte) lop);
+                    // do suc: mon chi ban o Cao nguyen Indigo (vu khi 174+, giap 54-79) -> GM them (= nguoi choi da len Indigo mua),
+                    // con lai mua o tiem Pewter nhu client (may chu kiem dung NPC tu 31/10/2026)
+                    boolean indigo = tpl >= 174 || BotChucNang.sql1("SELECT id FROM data_item WHERE id=" + tpl + " AND " + GIAP_INDIGO) != null;
+                    if (indigo) HoiQuy.gm().gm("ait " + b.ten + " " + tpl + " " + lop + " 0 0", 1200);
+                    else b.gui(24, (byte) 1, (byte) 3, (short) tpl, (short) 1, (byte) lop);
                     b.bom(1000);
                     b.lamMoi();
                     int[] moi = b.timDo(x -> x[1] == tpl && !cu.contains(x[0]));
                     if (moi == null) { mua.add(tpl + ":khong_mua"); continue; }
+                    if (type == 3 && NANG > 0) mua.add("+" + nangVuKhi(b, moi[0], NANG));
                     int mm = b.moc();
                     b.gui(29, (short) moi[0]);
                     b.bom(700);
@@ -250,6 +256,40 @@ final class KichBanDoSuc {
         };
         return don;
     }
+
+    /** -DdoSucNangCap=N: vu khi vua mua nang len +N o Machamp (nha 103) TRUOC khi cam, nhu nguoi choi dung da luyen kim. */
+    static final int NANG = Integer.getInteger("doSucNangCap", 0);
+
+    /** Nang mon {@code id} (trong tui, dang o nha 103) toi +n: GM cap da luyen kim + bua bao ho. @return +N dat duoc. */
+    static int nangVuKhi(BotChucNang.Bot b, int id, int n) throws Exception {
+        BotChucNang.Bot g = HoiQuy.gm();
+        synchronized (g) {
+            g.gm("gem " + b.ten + " 8 " + (8 * n + 10) + " 0", 800);
+            g.gm("gem " + b.ten + " 0 " + (3 * n + 5) + " 0", 800);
+        }
+        b.lamMoi();
+        int plus = 0;
+        for (int lan = 0; lan < 6 * n + 10 && plus < n; lan++) {
+            String t = KichBanDS3.moNangCap(b, id, true);
+            b.gui(77, (byte) -1);
+            b.bom(200);
+            b.lamMoi();
+            int[] sau = b.timDo(x -> x[0] == id);
+            if (sau == null) break;
+            plus = sau[2];
+            if (t.contains("het da")) break;
+        }
+        return plus;
+    }
+
+    /**
+     * Danh sach ban cua Bronzong (NpcTinhBanDo.dsBan): Pewter / lang Kanto (NPC 3, ban do &lt; 200) va Indigo (NPC 27); bac giap
+     * cap 54-79 chi ban o Indigo (chep tu nhanh phu-kin KichBanCap140.NguoiChoi).
+     */
+    static final String GIAP_PEWTER = "(id BETWEEN 3 AND 20 OR id BETWEEN 27 AND 46 OR id BETWEEN 53 AND 72 OR id BETWEEN 114 AND 122"
+            + " OR id BETWEEN 126 AND 134 OR id BETWEEN 138 AND 146 OR id BETWEEN 150 AND 158 OR id BETWEEN 162 AND 170)";
+    static final String GIAP_INDIGO = "(id BETWEEN 21 AND 26 OR id BETWEEN 47 AND 52 OR id BETWEEN 73 AND 78 OR id BETWEEN 123 AND 125"
+            + " OR id BETWEEN 135 AND 137 OR id BETWEEN 147 AND 149 OR id BETWEEN 159 AND 161 OR id BETWEEN 171 AND 173 OR id BETWEEN 467 AND 506)";
 
     static int soThuoc(BotChucNang.Bot b) {
         return b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3);
@@ -319,10 +359,10 @@ final class KichBanDoSuc {
         b.lamMoi();
         int thuoc = thuoc0 - soThuoc(b);
         double tb = don[0] == 0 ? 0 : (double) don[1] / don[0];
-        String dong = String.format(Locale.ROOT, "quai\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%d\t%d\t%.1f\t%d\t%.0f\t%d\t%.1f\t%d\t%d\t%.0f\t%s",
+        String dong = String.format(Locale.ROOT, "quai\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%d\t%d\t%.1f\t%d\t%.0f\t%d\t%.1f\t%d\t%d\t%.0f\t%s\t%.1f",
                 L, lop, b.maxhp, b.tanCong, b.thuVl, b.thuPt, (tpl < 0 ? "*" : HoiQuy.TEN_QUAI.getOrDefault(tpl, "?")) + "@" + map + (toi ? "" : "(khong toi)"), capQ, ha,
                 ha == 0 ? 0 : giay / ha, don[0], tb, don[2], tb == 0 ? 0 : b.maxhp / tb, d.soChet - guc0, thuoc,
-                ha == 0 ? 0 : (double) (b.xu - xu0) / ha, mua);
+                ha == 0 ? 0 : (double) (b.xu - xu0) / ha, mua, d.ttkSo == 0 ? 0 : d.ttkMs / 1000.0 / d.ttkSo); // ttk_tran: giay danh thuan moi con (khong tinh tim / di)
         System.out.println("DO SUC " + dong);
         DONG.add(dong);
         HoiQuy.thoat(b);
