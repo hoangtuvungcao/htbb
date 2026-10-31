@@ -94,7 +94,7 @@ public final class TangTocGame {
         }
         final String them;
         if (loai == TangToc.BUA) {
-            them = "+" + TangToc.BUA_PHUT + " phút năng lượng mức " + TangToc.BUA_HE_SO_EXP + "% EXP, " + TangToc.BUA_HE_SO_XU
+            them = "+" + TangToc.BUA_PHUT + " phút năng lượng mức " + TangToc.buaHeSoExp() + "% EXP, " + TangToc.buaHeSoXu()
                     + "% xu hôm nay (sau phần 100%, cộng dồn, không giới hạn, không tính điểm tăng tốc).";
         } else if (loai == TangToc.UY_THAC) {
             them = "Đặt trước 1 giờ ủy thác: thoát game để Pokémon tự luyện (" + TangToc.UY_THAC_PHAN_TRAM

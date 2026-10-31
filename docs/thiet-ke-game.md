@@ -563,7 +563,7 @@ tính). `NangLuong` + `ThongSoLauDai.NANG_LUONG_PHUT_NGAY` / `BAC_MET`:
 
 Mua **thời gian**, không mua sức mạnh: chỉ cho EXP — không xu, không đá, không vật phẩm, không đổi tỉ lệ rơi, không chỉ
 số (`com.htbb.pokemon.TangToc`, `real.TangTocGame`). Ngoại lệ từ 31/10/2026: **Bùa thể lực** cho bậc bùa EXP 50% + xu / đá /
-đồ rơi 30%, không giới hạn, ngoài trần điểm (xem cuối mục). Mỗi món có **bản cao cấp** (bán bằng lượng ở Cửa hàng lượng, lượng
+đồ rơi 50%, không giới hạn, ngoài trần điểm (xem cuối mục). Mỗi món có **bản cao cấp** (bán bằng lượng ở Cửa hàng lượng, lượng
 bị đốt; tắt bằng `nap.tang_toc.bat`) và **bản khoá** (kiếm bằng chơi). Cả hai đều khoá (không giao dịch) và **dùng chung
 một trần**.
 
@@ -571,7 +571,7 @@ một trần**.
 |---|---|---|---|---|
 | Vé EXP ×1,5 (30 phút) | 1250 / 1251 | 15 | EXP hạ quái ×1,5 trong 30 phút **đánh quái**, nhân sau năng lượng | 60 phút vé / ngày; không trộn ×1,5 với ×2 đang chạy |
 | Vé EXP ×2 (30 phút) | 1252 / 1253 | 30 | như trên, ×2 | chung 60 phút vé |
-| Bùa thể lực | 1254 / 1255 | — (không tính) | +60 phút **bậc bùa** hôm nay (EXP 50%, xu / đá / đồ rơi 30%), cộng dồn, không tích sang hôm sau | **không giới hạn** |
+| Bùa thể lực | 1254 / 1255 | — (không tính) | +60 phút **bậc bùa** hôm nay (EXP 50%, xu / đá / đồ rơi 50%), cộng dồn, không tích sang hôm sau | **không giới hạn** |
 | Phiếu ủy thác luyện tập (1 giờ) | 1256 / 1257 | 12 | Treo offline: thoát game, đăng nhập lại nhận 20% EXP của 1 giờ đánh quái ở cấp lúc thoát | 3 giờ / ngày (+1 với Thẻ tháng), đặt trước ≤ 4 giờ |
 | Kẹo hiếm | 1214 | 30 | EXP bằng 30 phút đánh quái, **trừ 30 phút năng lượng 100%** | 2 / tuần |
 
@@ -591,16 +591,17 @@ một trần**.
     vào trần 60 / 210 điểm (`TangToc.TINH_TRAN`) — vé / ủy thác / kẹo giữ nguyên trần. Vẫn không dùng ở cấp tối đa (EXP vượt
     cấp thành tinh thông).
   - **Hiệu ứng**: mỗi bùa +60 phút **bậc bùa** của hôm nay, nằm **sau** phần 100% và **trước** bậc mệt (100% → bậc bùa →
-    120 phút 20% → 120 phút 5% → 0%). Ở bậc bùa: **EXP 50%** (`TangToc.BUA_HE_SO_EXP`), **xu 30%** (`BUA_HE_SO_XU`); đá
+    120 phút 20% → 120 phút 5% → 0%). Ở bậc bùa: **EXP 50%** (khoá `tang_toc.bua_exp_phan_tram`), **xu 50%** (`tang_toc.bua_xu_phan_tram`; cả hai
+    chỉnh trên web, áp dụng ngay, 0..100); đá
     và đồ rơi dùng chung hệ số với xu (`RoiLauDai` lấy một hệ số cho xu / đá / bảng rơi). Bùa cộng dồn, phần chưa đánh hết
     **không tích** sang hôm sau. Bùa dùng trước lần hạ quái đầu tiên trong ngày được giữ chờ, vào bậc bùa khi ngày khởi tạo.
     Lưu `HoSoLauDai` `ze` / `zf` (phút bậc bùa / phút chờ); hồ sơ cũ (bùa 60 phút đã nằm trong phần 100%) được đổi sang bậc
     bùa ở lần dùng bùa kế tiếp.
-  - **Vì sao xu 30% chứ không 50%**: một bùa 30 lượng cho tối đa 60 phút × 30% = **0,3 giờ thu nhập xu** = 1% thu nhập 1
-    giờ / lượng — đúng bằng, không rẻ hơn, tỷ giá tham chiếu của hệ thống (1 lượng = 1% thu nhập 1 giờ). Ở 50% sẽ ra 0,5 giờ
-    = 1,67% / lượng (rẻ hơn tỷ giá ~67%), muốn giữ 50% thì giá phải ≥ 50 lượng. Thực nhận còn thấp hơn: 60 phút đó nếu không
-    có bùa vẫn được 20% (bậc mệt), nên phần xu tăng thêm chỉ ≈ 0,1 giờ / bùa. Bản khoá 25 lượng khoá ra cùng 0,3 giờ (lượng
-    khoá không mua được bằng tiền; cần 1 giờ đánh quái thật cho mỗi bùa).
+  - **Kiểm giá xu** (tỷ giá tham chiếu 1 lượng = 1% thu nhập 1 giờ): 60 phút bậc bùa **thay** 60 phút lẽ ra ở bậc mệt 20%,
+    nên xu **tăng thêm** mỗi bùa = 60 phút × (50% − 20%) = **0,3 giờ thu nhập** cho 30 lượng = đúng 1% / lượng (không rẻ
+    hơn). Tính thô (không trừ phần 20%) là 0,5 giờ = 1,67% / lượng — chỉ xảy ra khi người chơi vốn không đánh tiếp sau phần
+    100%; vẫn cần 1 giờ đánh quái thật cho mỗi bùa. Bản khoá 25 lượng khoá ra cùng lượng xu (lượng khoá không mua được bằng
+    tiền). Nếu thực tế lệch: hạ `tang_toc.bua_xu_phan_tram` trên web.
   - EXP: bùa 30 lượng = 30 phút EXP tương đương (60 × 50%) — 1 lượng / phút EXP, đắt hơn vé ×1,5 (20 lượng ≈ 15 phút EXP
     thêm) một chút nhưng không bị trần.
 - Mục tiêu đã kiểm bằng mô phỏng: mua tối đa nhanh hơn người không dùng ≤ 40% cùng giờ chơi; sức mạnh cùng cấp chênh

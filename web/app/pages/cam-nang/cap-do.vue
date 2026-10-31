@@ -13,7 +13,7 @@ const gioToiDa = C.bang.find(r => r.cap === C.capToiDa)?.gioTichLuy ?? 0
 const TANG_TOC = [
   { ten: 'Vé EXP x1,5 (30 phút)', diem: 15, tacDung: 'EXP hạ quái ×1,5 trong 30 phút đánh quái (đứng yên không mất)', gioiHan: '60 phút vé/ngày' },
   { ten: 'Vé EXP x2 (30 phút)', diem: 30, tacDung: 'EXP hạ quái ×2 trong 30 phút đánh quái', gioiHan: 'chung 60 phút vé/ngày' },
-  { ten: 'Bùa thể lực', diem: 0, tacDung: '+60 phút bậc bùa hôm nay: 50% EXP, 30% xu và đồ rơi (sau phần 100%, cộng dồn)', gioiHan: 'không giới hạn, không tính điểm' },
+  { ten: 'Bùa thể lực', diem: 0, tacDung: '+60 phút bậc bùa hôm nay: 50% EXP, 50% xu và đồ rơi (sau phần 100%, cộng dồn)', gioiHan: 'không giới hạn, không tính điểm' },
   { ten: 'Phiếu ủy thác luyện tập (1 giờ)', diem: 12, tacDung: 'Thoát game, Pokémon tự luyện: 20% EXP 1 giờ đánh quái', gioiHan: '3 giờ/ngày (+1 giờ với Thẻ tháng)' },
   { ten: 'Kẹo hiếm', diem: 30, tacDung: '30 phút EXP, trừ 30 phút năng lượng 100%', gioiHan: '2/tuần' },
 ]
@@ -72,7 +72,7 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
         <li>Vé EXP, ủy thác và kẹo hiếm dùng chung giới hạn <strong>60 điểm mỗi ngày</strong> và <strong>210 điểm mỗi tuần</strong> (khoảng 3,5 giờ EXP).</li>
         <li><strong>Bản khoá</strong> kiếm được khi chơi: xong 2 nhiệm vụ tuần (2 vé x1,5 + 1 phiếu ủy thác), lịch đăng nhập ngày 3 (vé x1,5) và ngày 7 (bùa thể lực), vé mùa miễn phí, đổi lượng khoá ở Kecleon.</li>
         <li><strong>Bản cao cấp</strong> (cửa hàng lượng) có cùng công dụng và cùng giới hạn — chỉ tiết kiệm thời gian, không mạnh hơn người cùng cấp.</li>
-        <li><strong>Bùa thể lực</strong>: bản cao cấp <b>30 lượng</b> ở NPC Tổng Quản → Cửa hàng và nạp → Cửa hàng lượng; bản khoá <b>25 lượng khoá</b> ở Kecleon. Mua và dùng không giới hạn, không tính vào 60 / 210 điểm; mỗi bùa thêm 60 phút ở mức 50% EXP, 30% xu và đồ rơi ngay sau phần 100% của hôm nay (không tích sang hôm sau).</li>
+        <li><strong>Bùa thể lực</strong>: bản cao cấp <b>30 lượng</b> ở NPC Tổng Quản → Cửa hàng và nạp → Cửa hàng lượng; bản khoá <b>25 lượng khoá</b> ở Kecleon. Mua và dùng không giới hạn, không tính vào 60 / 210 điểm; mỗi bùa thêm 60 phút ở mức <b>50% EXP</b>, <b>50% xu</b> và đồ rơi ngay sau phần 100% của hôm nay (không tích sang hôm sau).</li>
       </ul>
     </WikiSection>
 

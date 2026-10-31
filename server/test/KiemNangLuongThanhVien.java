@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * Chu game 31/10/2026 - nang luong huan luyen (giu nguyen duong cong 90 phut 100%, bac met 120:20,120:5, roi 0%):
- *   1. Bua the luc (+60 phut BAC BUA: EXP 50%, xu 30%, cong don, KHONG gioi han mua / dung, khong tinh tran diem): Cua hang
+ *   1. Bua the luc (+60 phut BAC BUA: EXP 50%, xu 50% - khoa danh muc, cong don, KHONG gioi han mua / dung, khong tinh tran diem): Cua hang
  *      luong (1254, 30 luong) + Kecleon (1255, 25 luong khoa). Truoc (cung ngay 31/10): Cua hang luong 1254 + Kecleon (ban khoa
  *      1255, 45 luong khoa, 2 / tuan); dung = 45 diem tang toc (chung tran 60 / ngay, 210 / tuan), 1 / ngay.
  *   2. Thanh vien HTBB / The thang / Ve mua cao cap: moi goi +30 phut 100% / ngay (khoa danh muc), cong don toi da +90,
@@ -77,11 +77,22 @@ public final class KiemNangLuongThanhVien {
         Kiem.bang("bua: khong gioi han mua / tuan (0)", 0, TangToc.MUA_TUAN_TOI_DA[b]);
         Kiem.sai("bua: khong tinh tran diem chung", TangToc.TINH_TRAN[b]);
         Kiem.bang("bua: khong gioi han / ngay (mac dinh 0)", 0, TangToc.BUA_NGAY_TOI_DA);
-        Kiem.bang("bac bua: EXP 50%, xu 30%", "50/30", TangToc.BUA_HE_SO_EXP + "/" + TangToc.BUA_HE_SO_XU);
-        // xu / bua (0,3 gio thu nhap) khong re hon ty gia he thong 1 luong = 1% thu nhap 1 gio
-        final double gioXu = TangToc.BUA_PHUT / 60.0 * TangToc.BUA_HE_SO_XU / 100.0;
-        Kiem.dung("xu tu 1 bua (" + gioXu + " gio thu nhap) <= 1% x " + TangToc.GIA_LUONG[b] + " luong",
-                gioXu <= 0.01 * TangToc.GIA_LUONG[b] + 1e-9);
+        Kiem.bang("bac bua mac dinh: EXP 50%, xu 50%", "50/50", TangToc.BUA_HE_SO_EXP + "/" + TangToc.BUA_HE_SO_XU);
+        Kiem.bang("bac bua doc danh muc: 50 / 50", "50/50", TangToc.buaHeSoExp() + "/" + TangToc.buaHeSoXu());
+        // xu THEM / bua: 60 phut bac bua thay 60 phut bac met 20% -> (50 - 20)% x 1 gio = 0,3 gio thu nhap
+        // <= ty gia tham chieu 1 luong = 1% thu nhap 1 gio (30 luong -> 0,3 gio)
+        final double gioXuThem = TangToc.BUA_PHUT / 60.0 * (TangToc.BUA_HE_SO_XU - 20) / 100.0;
+        Kiem.dung("xu them tu 1 bua (" + gioXuThem + " gio thu nhap) <= 1% x " + TangToc.GIA_LUONG[b] + " luong",
+                gioXuThem <= 0.01 * TangToc.GIA_LUONG[b] + 1e-9);
+        final java.util.Map<String, String> dbBua = new java.util.HashMap<String, String>();
+        dbBua.put(TangToc.K_BUA_EXP, "70");
+        dbBua.put(TangToc.K_BUA_XU, "150");
+        CauHinhTrungTam.datChoTest(null, dbBua, false);
+        try {
+            Kiem.bang("danh muc: EXP 70, xu 150 sai khoang -> giu 50", "70/50", TangToc.buaHeSoExp() + "/" + TangToc.buaHeSoXu());
+        } finally {
+            CauHinhTrungTam.datChoTest(null, null, false);
+        }
         // cua hang luong (nap_cua_hang): dang ban, 30 luong, gioi_han 0 (khong gioi han)
         final Map<String, String> r = DayDu.tim("nap_cua_hang", "ma", "bua_the_luc");
         Kiem.dung("nap_cua_hang bua_the_luc: dang ban, trao tang_toc, 30 luong, gioi_han 0, khong giao dich",
@@ -131,7 +142,7 @@ public final class KiemNangLuongThanhVien {
         Kiem.dung("het tran: ve x1,5 bi chan (tran khong doi)", TangToc.kiemDung(h3, TangToc.VE_15, 50, 100, false, NGAY, tuan) != null);
         Kiem.dung("cap toi da: bua van khong dung duoc (EXP vuot cap = tinh thong)", TangToc.kiemDung(new HoSoLauDai(), b, 100, 100, false, NGAY, tuan) != null);
         Kiem.dung("TangTocGame doc tran bua / ngay tu danh muc", doc("src/real/TangTocGame.java").contains("TangToc.K_BUA_NGAY_TOI_DA"));
-        // bac bua: 3 bua = 180 phut o 50% EXP / 30% xu, sau phut 100%
+        // bac bua: 3 bua = 180 phut o 50% EXP / 50% xu, sau phut 100%
         final HoSoLauDai n = new HoSoLauDai();
         final long t0 = luc(2026, 10, 31, 8);
         NangLuong.doiNgay(n, t0, 90, 180, null);
@@ -141,14 +152,14 @@ public final class KiemNangLuongThanhVien {
         Kiem.bang("3 bua: 90 phut 100% + 180 phut bac bua", "90/180", n.nlPhut100 + "/" + TangToc.buaPhutHomNay(n));
         n.nlMsDung = 200 * PHUT;
         Kiem.bang("phut 200: EXP 50%", 50, NangLuong.heSoHienTai(n, t0 + 4 * GIO));
-        Kiem.bang("phut 200: xu 30%", 30, NangLuong.heSoXuHienTai(n, t0 + 4 * GIO));
+        Kiem.bang("phut 200: xu 50%", 50, NangLuong.heSoXuHienTai(n, t0 + 4 * GIO));
         n.nlMsDung = 270 * PHUT;
         Kiem.bang("phut 270: het bac bua -> bac met 20% (EXP)", 20, NangLuong.heSoHienTai(n, t0 + 5 * GIO));
         Kiem.bang("phut 270: xu 20%", 20, NangLuong.heSoXuHienTai(n, t0 + 5 * GIO));
         NangLuong.doiNgay(n, t0 + 24 * GIO, 90, 180, null);
         Kiem.bang("hom sau: bua khong tich (90 phut, bac bua 0)", "90/0", n.nlPhut100 + "/" + TangToc.buaPhutHomNay(n));
         final String mt = NangLuong.moTaPhut100(HoSoLauDai.giaiMa(nMa(t0)));
-        Kiem.dung("So tay: dong Bua the luc '3 bùa, +180 phút ở mức 50% EXP, 30% xu'", mt.contains("Bùa thể lực hôm nay: 3 bùa, +180 phút ở mức 50% EXP, 30% xu/đồ rơi"));
+        Kiem.dung("So tay: dong Bua the luc '3 bùa, +180 phút ở mức 50% EXP, 50% xu'", mt.contains("Bùa thể lực hôm nay: 3 bùa, +180 phút ở mức 50% EXP, 50% xu/đồ rơi"));
     }
 
     static String nMa(final long t0) {
@@ -261,6 +272,17 @@ public final class KiemNangLuongThanhVien {
             }
         }
         Kiem.dung("danh muc: tang_toc.bua_ngay_toi_da (0 = khong gioi han, chinh tren web)", coBua);
+        for (final String khoa : new String[]{TangToc.K_BUA_EXP, TangToc.K_BUA_XU}) {
+            boolean co = false;
+            for (final DinhNghiaKhoa k : CauHinhTrungTam.danhMuc()) {
+                co |= khoa.equals(k.khoa) && "kinh_te".equals(k.nhom) && "50".equals(k.macDinh) && k.min() == 0 && k.max() == 100
+                        && DinhNghiaKhoa.LOP_CHINH.equals(k.lop()) && k.apDungNgay;
+            }
+            Kiem.dung("danh muc: " + khoa + " (50, 0..100, chinh, ap dung ngay)", co);
+            Kiem.dung("phan B / gen.ts / docs co " + khoa, DayDu.nangCap().contains("VALUES ('" + khoa + "', 'kinh_te'")
+                    && doc("../web/shared/utils/cauHinhTrungTam.gen.ts").contains("khoa: \"" + khoa + "\"")
+                    && doc("../docs/cau-hinh.md").contains("| `" + khoa + "` |"));
+        }
         Kiem.dung("gen.ts / docs co tang_toc.bua_ngay_toi_da", doc("../web/shared/utils/cauHinhTrungTam.gen.ts").contains("khoa: \"tang_toc.bua_ngay_toi_da\"")
                 && doc("../docs/cau-hinh.md").contains("| `tang_toc.bua_ngay_toi_da` |"));
         final String b = DayDu.nangCap();

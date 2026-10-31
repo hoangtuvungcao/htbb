@@ -80,7 +80,7 @@ public final class NangLuong {
 
     /** He so EXP hien tai cua ho so (khong kiem ngay). */
     static int heSoExp(final HoSoLauDai h) {
-        return heSo(h.nlMsDung, h.nlPhut100, TangToc.buaPhutHomNay(h), TangToc.BUA_HE_SO_EXP);
+        return heSo(h.nlMsDung, h.nlPhut100, TangToc.buaPhutHomNay(h), TangToc.buaHeSoExp());
     }
 
     // ================================================================== thuong thanh vien (31/10/2026)
@@ -151,7 +151,7 @@ public final class NangLuong {
             final int bua = TangToc.buaPhutHomNay(h);
             if (bua > 0) {
                 b.append("\nBùa thể lực hôm nay: ").append(TangToc.soBuaHomNay(h)).append(" bùa, +").append(bua)
-                        .append(" phút ở mức ").append(TangToc.BUA_HE_SO_EXP).append("% EXP, ").append(TangToc.BUA_HE_SO_XU)
+                        .append(" phút ở mức ").append(TangToc.buaHeSoExp()).append("% EXP, ").append(TangToc.buaHeSoXu())
                         .append("% xu/đồ rơi (sau phần 100%, không tích sang hôm sau).");
             }
             if (thuongTong(h) > 0) {
@@ -226,14 +226,14 @@ public final class NangLuong {
 
     /**
      * He so cho XU / da / vat pham roi (khong ghi nhan): KHONG tinh thuong thanh vien (goi nap chi cho EXP); bac Bua the
-     * luc cho xu / da / do roi o TangToc.BUA_HE_SO_XU (30%, chu game 31/10/2026).
+     * luc cho xu / da / do roi o TangToc.buaHeSoXu() (mac dinh 50%, chu game 31/10/2026).
      */
     public static int heSoXuHienTai(final HoSoLauDai h, final long bayGio) {
         synchronized (h) {
             if (h.nlNgay != ngay(bayGio)) {
                 return 100;
             }
-            return heSo(h.nlMsDung, phut100Goc(h), TangToc.buaPhutHomNay(h), TangToc.BUA_HE_SO_XU);
+            return heSo(h.nlMsDung, phut100Goc(h), TangToc.buaPhutHomNay(h), TangToc.buaHeSoXu());
         }
     }
 

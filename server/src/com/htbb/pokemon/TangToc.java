@@ -63,12 +63,33 @@ public final class TangToc {
     // ---- bua the luc ----
     /**
      * +60 phut BAC BUA cho hom nay MOI LAN dung (cong don, khong tich sang hom sau). Chu game 31/10/2026: bac bua cho
-     * EXP 50% VA xu 50%; xu ha xuong 30% de 1 bua (30 luong) ra <= 0,3 gio thu nhap xu = 1% / luong (khong re hon ty
-     * gia he thong 1 luong = 1% thu nhap 1 gio). Da / do roi theo cung he so voi xu (RoiLauDai dung mot he so).
+     * EXP 50% VA xu 50% (khoa danh muc tang_toc.bua_exp_phan_tram / tang_toc.bua_xu_phan_tram, sua tren web). Xu: 60 phut
+     * bac bua thay 60 phut le ra o bac met 20% -> xu tang them 0,3 gio thu nhap / bua 30 luong = 1% / luong (dung ty gia
+     * tham chieu 1 luong = 1% thu nhap 1 gio). Da / do roi theo cung he so voi xu (RoiLauDai dung mot he so).
      */
     public static final int BUA_PHUT = 60;
     public static final int BUA_HE_SO_EXP = 50;
-    public static final int BUA_HE_SO_XU = 30;
+    public static final int BUA_HE_SO_XU = 50;
+    public static final String K_BUA_EXP = "tang_toc.bua_exp_phan_tram";
+    public static final String K_BUA_XU = "tang_toc.bua_xu_phan_tram";
+
+    /** He so EXP (%) cua bac bua: danh muc tang_toc.bua_exp_phan_tram (kep 0..100), mac dinh 50. */
+    public static int buaHeSoExp() {
+        return docPhanTram(K_BUA_EXP, BUA_HE_SO_EXP);
+    }
+
+    /** He so xu / da / do roi (%) cua bac bua: danh muc tang_toc.bua_xu_phan_tram (kep 0..100), mac dinh 50. */
+    public static int buaHeSoXu() {
+        return docPhanTram(K_BUA_XU, BUA_HE_SO_XU);
+    }
+
+    static int docPhanTram(final String khoa, final int macDinh) {
+        try {
+            return (int) Math.max(0L, Math.min(100L, com.htbb.cauhinh.CauHinhTrungTam.so(khoa, macDinh)));
+        } catch (final Throwable t) {
+            return macDinh;
+        }
+    }
     /**
      * So bua toi da / ngay: 0 = KHONG gioi han (mac dinh tu 31/10/2026). Admin dat lai qua khoa danh muc
      * {@link #K_BUA_NGAY_TOI_DA} (real.TangTocGame doc, truyen vao {@link #kiemDung}).

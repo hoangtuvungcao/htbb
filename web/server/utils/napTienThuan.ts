@@ -38,7 +38,7 @@ export const NHOM_CUA_HANG = ['trang_phuc', 'hao_quang', 'skin_thu', 'the_dong_h
 export const TANG_TOC: Record<string, { gia: number, tuanToiDa: number, diem: number }> = {
   ve_exp_15: { gia: 20, tuanToiDa: 14, diem: 15 },
   ve_exp_2: { gia: 40, tuanToiDa: 7, diem: 30 },
-  bua_the_luc: { gia: 30, tuanToiDa: 0, diem: 45 }, // 31/10/2026: không giới hạn mua (0); diem 45 chỉ danh nghĩa — bùa không tính trần điểm, bậc 50% EXP / 30% xu
+  bua_the_luc: { gia: 30, tuanToiDa: 0, diem: 45 }, // 31/10/2026: không giới hạn mua (0); diem 45 chỉ danh nghĩa — bùa không tính trần điểm, bậc 50% EXP / 50% xu
   uy_thac: { gia: 15, tuanToiDa: 17, diem: 12 },
   keo_hiem: { gia: 40, tuanToiDa: 2, diem: 30 },
 }

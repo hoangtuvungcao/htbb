@@ -129,7 +129,7 @@ public final class KiemTangToc {
         Kiem.bang("ve nhan SAU nang luong: 200 x met 5% = 10, x ve x2 = 20", 20,
                 TangToc.nhanVe(CapDoLauDai.expHaQuai(200, 100, 0, 5, 100, 100), 200));
 
-        // bua the luc (31/10/2026): +60 phut BAC BUA (EXP 50%, xu 30%) sau phut 100%, cong don, khong tich sang hom sau
+        // bua the luc (31/10/2026): +60 phut BAC BUA (EXP 50%, xu 50% - khoa danh muc) sau phut 100%, cong don, khong tich sang hom sau
         final HoSoLauDai b = moi();
         final long t0 = ngay(2026, 10, 19, 8);
         NangLuong.ghiNhan(b, t0, 90, 180);
@@ -141,7 +141,7 @@ public final class KiemTangToc {
             heSo = NangLuong.ghiNhan(b, t0 + i * 60000L, 90, 180);
         }
         Kiem.bang("phut 120 co bua: EXP 50% (bac bua)", 50, heSo);
-        Kiem.bang("phut 120 co bua: xu/do roi 30% (bac bua)", 30, NangLuong.heSoXuHienTai(b, t0 + 120 * 60000L));
+        Kiem.bang("phut 120 co bua: xu/do roi 50% (bac bua)", 50, NangLuong.heSoXuHienTai(b, t0 + 120 * 60000L));
         Kiem.bang("phut 89: EXP 100%", 100, NangLuong.heSo(89 * 60000L, 90, 60, 50));
         Kiem.bang("phut 150 (het bac bua): vao bac met 20%", 20, NangLuong.heSo(150 * 60000L, 90, 60, 50));
         NangLuong.ghiNhan(b, ngay(2026, 10, 20, 8), 90, 180);
