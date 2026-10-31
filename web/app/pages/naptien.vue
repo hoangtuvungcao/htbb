@@ -373,8 +373,9 @@ const cotLichSu = [
             <USelect v-model="charId" :items="nhanVatItems" placeholder="Chọn Pokémon" class="w-full md:w-80" />
           </UFormField>
           <p v-if="dm" class="text-sm text-muted">
-            Đã nạp tuần này {{ vnd(dm.tran.daTuan) }} / {{ vnd(Math.min(dm.tran.tuan, tranThang)) }} ·
+            Hạn mức đã dùng tuần này {{ vnd(dm.tran.daTuan) }} / {{ vnd(Math.min(dm.tran.tuan, tranThang)) }} ·
             tháng này {{ vnd(dm.tran.daThang) }} / {{ vnd(tranThang) }}
+            <span class="block text-xs">Gồm cả đơn đang chờ thanh toán (đơn chưa trả tự huỷ sau 24 giờ và trả lại hạn mức).</span>
           </p>
         </div>
 
@@ -436,7 +437,14 @@ const cotLichSu = [
                 {{ vnd(row.original.so_tien) }}
               </template>
               <template #trang_thai-cell="{ row }">
-                <UBadge :color="MAU_TRANG_THAI_NAP[row.original.trang_thai] ?? 'neutral'" variant="subtle" :label="TEN_TRANG_THAI_NAP[row.original.trang_thai] ?? row.original.trang_thai" />
+                <div class="flex items-center gap-2">
+                  <UBadge :color="MAU_TRANG_THAI_NAP[row.original.trang_thai] ?? 'neutral'" variant="subtle" :label="TEN_TRANG_THAI_NAP[row.original.trang_thai] ?? row.original.trang_thai" />
+                  <UButton
+                    v-if="row.original.trang_thai === 'cho_thanh_toan'"
+                    size="xs" color="primary" variant="soft" icon="i-lucide-qr-code" label="Xem QR"
+                    :to="{ query: { ma_don: row.original.ma_don } }"
+                  />
+                </div>
               </template>
             </UTable>
           </UCard>
