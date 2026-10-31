@@ -628,7 +628,9 @@ public class BotXuyenSuot {
          * 30% thi guc tren duong ra (dong Co o Cinnabar 29-30/10: "het thuoc -> ve lang" roi guc sau 10 giay).
          */
         boolean veHoiNeuCan() throws Exception {
-            if (b.hp <= 0 || b.hp >= b.maxhp / 2 || b.soThuoc(2) + b.soThuoc(3) > 0 || b.soThuoc(1) * 80 > b.maxhp / 4) return false;
+            // nguong 1/3 HP (truoc 1/2): di bo qua cum Johto toi bai da mat ~50% HP - bot het thuoc ve lang / quay lai mai khong
+            // danh duoc con nao (bo1 #143 31/10/2026)
+            if (b.hp <= 0 || b.hp >= b.maxhp / 3 || b.soThuoc(2) + b.soThuoc(3) > 0 || b.soThuoc(1) * 80 > b.maxhp / 4) return false;
             int tot = -1, ds = 999;
             for (int c : new int[]{70, 0, 80, 1701, 301, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
             // cum Johto (10 / 11 / 13 ...) khong co duong di bo ve lang: toi(0) tu di New Bark roi Arcanine "Về làng" (truoc
