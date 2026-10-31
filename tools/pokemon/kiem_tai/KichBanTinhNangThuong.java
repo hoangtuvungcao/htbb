@@ -195,10 +195,39 @@ public final class KichBanTinhNangThuong {
      * may chu tra -121 ket qua 0/1/2 (truoc truBong moi duong bo qua deu KHONG tra loi va KHONG tru bong: nhip nem 1,5 giay,
      * BoNgocGame.coClient); khong tra loi -> cho het nhip nem roi nem lai (toi da 2 lan).
      */
+    /** Ket qua danhVaNem: nhan vat da guc (HP 0) - may chu bo moi don danh (MapDanhNhau: hp <= 0 -> actorDie). */
+    static final int GUC = -3;
+
+    /**
+     * Nhu nguoi choi bam thuoc: HP duoi {@code phanTram}% thi uong binh tot nhat dang co (toi da 3 binh lien). false = da guc.
+     *
+     * <p>Cong kiem 01/11/2026: quai thuong ha nguoi cung cap ~12-15 don (thiet-ke-game 2.4) va bat Pokemon keo dai tran
+     * (danh cho yeu + toi 4 lan nem, nhip 1,5 giay) -> sau con Pidgey dau bo chay bot da gan het mau, guc giua con thu hai;
+     * moi don sau do may chu bo qua (khong khiDanh / giao chien) nen moi lan nem deu "Hãy tự giao chiến..." (khong phai loi
+     * may chu).
+     */
+    static boolean hoiMauNeuCan(BotChucNang.Bot b, int phanTram, StringBuilder ghi) throws IOException {
+        if (b.maxhp <= 0) return true;
+        if (b.hp <= 0) return false;
+        int hp0 = b.hp, uong = 0;
+        for (int lan = 0; lan < 3 && b.hp > 0 && b.hp * 100 < b.maxhp * phanTram; lan++) {
+            int t = b.soThuoc(3) > 0 ? 3 : b.soThuoc(2) > 0 ? 2 : b.soThuoc(1) > 0 ? 1 : -1;
+            if (t < 0) break;
+            b.gui(22, (byte) t);
+            b.bom(400);
+            KichBanBatThuong.lamMoi(b);
+            uong++;
+        }
+        if (uong > 0) ghi.append("{uong ").append(uong).append(" binh: HP ").append(hp0).append(" -> ").append(b.hp).append('/').append(b.maxhp).append("} ");
+        return b.hp > 0;
+    }
+
     static int[] danhVaNem(BotChucNang.Bot b, int id, StringBuilder ghi) throws IOException {
         int[] q;
         long danhCuoi = 0;
+        if (!hoiMauNeuCan(b, 70, ghi)) { ghi.append("[guc truoc khi danh ").append(id).append("] "); return new int[]{GUC, 0}; }
         for (int lan = 0; lan < 60; lan++) {
+            if (!hoiMauNeuCan(b, 50, ghi)) { ghi.append("[guc khi danh ").append(id).append("] "); return new int[]{GUC, 0}; }
             b.gui(7, (short) id);
             b.bom(200);
             q = b.quai.get(id);
@@ -213,6 +242,7 @@ public final class KichBanTinhNangThuong {
         if (q == null || q[2] <= 0) return new int[]{-1, 0};
         int nem = 0, khongTraLoi = 0;
         for (int k = 0; k < 8; k++) {
+            if (!hoiMauNeuCan(b, 50, ghi)) { ghi.append("[guc khi nem ").append(id).append("] "); return new int[]{GUC, nem}; }
             if (danhCuoi > 0 && System.currentTimeMillis() - danhCuoi > 20000L) {
                 b.gui(9, (short) id, (byte) 0); // giao chien sap het (30 giay): danh lai mot don nhu nguoi choi
                 danhCuoi = System.currentTimeMillis();
@@ -261,6 +291,8 @@ public final class KichBanTinhNangThuong {
             ket("tn_bat.trang_thai", t0 != null, t0 == null ? "khong co goi -121/0" : "bong " + t0[0] + ", hop " + t0[2] + "/" + t0[3]);
             if (t0 == null) return;
             KichBanBatThuong.datXu(p, 20000);
+            // chuan bi canh nhu datXu: nguoi choi ra dong co san thuoc hoi mau (bat Pokemon = tran dai, quai danh tra)
+            KichBanBatThuong.datThuoc(p, 2, 10);
             String muc = moMenuBong(p);
             long gia = giaTrongChu(muc);
             if (muc == null || gia <= 0) { ket("tn_bat.mua_bong", false, "khong mo / doc duoc menu bong: " + muc + " " + p.chuTu(0)); return; }
@@ -319,6 +351,7 @@ public final class KichBanTinhNangThuong {
                 if (!toiGanQuai(p, id)) { ghi.append("[khong toi gan ").append(id).append("] "); continue; }
                 kq = danhVaNem(p, id, ghi);
                 daNem += kq[1];
+                if (kq[0] == GUC) break; // da guc: moi don / lan nem sau deu vo nghia
             }
             ket("tn_bat.bat", kq[0] == 1, ghi.toString());
             int[] t3 = trangThai(p);
