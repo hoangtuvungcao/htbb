@@ -671,8 +671,8 @@ public final class KiemLauDaiGd2 {
             lv[i] = 20;
         }
         final List<Integer> chon = NhiemVuLauDai.locPhu(lv, 25, NhiemVuLauDai.PHU_TOI_DA);
-        Kiem.bang("300 nhiem vu cung dai -> chi gui 20", Integer.valueOf(20), Integer.valueOf(chon.size()));
-        Kiem.dung("20 <= 127 (goi ghi so luong bang 1 byte)", NhiemVuLauDai.PHU_TOI_DA + 2 <= NhiemVuLauDai.GOI_TOI_DA);
+        Kiem.bang("300 nhiem vu cung dai -> chi gui toi da PHU_TOI_DA", Integer.valueOf(NhiemVuLauDai.PHU_TOI_DA), Integer.valueOf(chon.size()));
+        Kiem.dung("PHU_TOI_DA + 2 <= 127 (goi ghi so luong bang 1 byte co dau)", NhiemVuLauDai.PHU_TOI_DA + 2 <= NhiemVuLauDai.GOI_TOI_DA);
         int[] v = NhiemVuLauDai.capNhatVe(1, 100, 101);
         Kiem.bang("sang tuan moi +2 ve", Integer.valueOf(3), Integer.valueOf(v[0]));
         v = NhiemVuLauDai.capNhatVe(3, 100, 110);

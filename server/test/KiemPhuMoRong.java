@@ -51,13 +51,14 @@ public final class KiemPhuMoRong {
         for (final Integer i : chon) {
             capChon.add(Integer.valueOf(lv[i.intValue()]));
         }
-        Kiem.bang("xep gan cap 40 nhat truoc (cung lech: thap truoc), bo 51", "[39, 41, 38, 45, 15, 1]", capChon.toString());
+        // chu game 31/10/2026: danh sach NPC chi cap 25..43 (cap - 15 .. cap + 3); 45 / 51 (truoc) va 15 / 1 (qua xa) o So tay
+        Kiem.bang("xep gan cap 40 nhat truoc (cung lech: thap truoc), chi cap 25..43", "[39, 41, 38]", capChon.toString());
         final int[] nhieu = new int[300];
         for (int i = 0; i < nhieu.length; i++) {
             nhieu[i] = 1 + i % 60;
         }
         final List<Integer> c2 = NhiemVuLauDai.locPhu(nhieu, 40, NhiemVuLauDai.PHU_TOI_DA);
-        Kiem.bang("300 phu -> gui 20", Integer.valueOf(20), Integer.valueOf(c2.size()));
+        Kiem.bang("300 phu (5 / cap 1..60) -> gui het cua so cap 25..43 (95)", Integer.valueOf(95), Integer.valueOf(c2.size()));
         Kiem.bang("muc dau la phu cap 40", Integer.valueOf(40), Integer.valueOf(nhieu[c2.get(0).intValue()]));
 
         // ---- trang So tay
@@ -105,8 +106,9 @@ public final class KiemPhuMoRong {
                     id.add(Short.valueOf(q.id_quest));
                 }
             }
-            Kiem.bang("cap 40: -64 moi phu 39 roi 15, khong 51", "[31702, 31701]", id.toString());
-            Kiem.dung("cap 40 nhan duoc phu cap 15 (co trong danh sach nhan)", id.contains(Short.valueOf((short) 31701)));
+            // chu game 31/10/2026: NPC chi cap 25..43 -> 15 (vuot 25 cap) nhan o So tay (kiem o tren), 51 khong
+            Kiem.bang("cap 40: -64 moi phu 39, khong 15 (So tay) / 51", "[31702]", id.toString());
+            Kiem.sai("cap 40: phu cap 15 khong o danh sach NPC (vuot qua 15 cap)", id.contains(Short.valueOf((short) 31701)));
 
             LauDai.dat(false);
             final Vector<NewCharQuest> dsCu = p.getAllQuestCanReceive();

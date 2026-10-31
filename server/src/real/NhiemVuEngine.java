@@ -158,6 +158,131 @@ public final class NhiemVuEngine {
         }
     }
 
+    // ------------------------------------------------------------------ phu nhan o So tay hien o NPC (-64)
+
+    /**
+     * Chu game 31/10/2026 (bot cb2): buoc phu P-* nhan qua So tay -> Nhan nhiem vu phu nam o tien do engine nen KHONG hien
+     * trong danh sach NPC "Đang làm" / "Hoàn thành" (-64) - nguoi choi tuong mat nhiem vu. Nay mot nguon: tien do engine,
+     * danh sach NPC hien them dong cung nhiem vu (mau NPC cu cung ma), tra o NPC = nhan thuong engine (traThuong).
+     */
+    static data.InfoQuestTemplate mauNpc(final String ma) {
+        if (ma == null || ma.isEmpty() || Map.allSubQuest == null) {
+            return null;
+        }
+        for (final data.InfoQuestTemplate t : Map.allSubQuest.values()) {
+            if (t != null && ma.equals(t.ma)) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    /** Buoc phu (loai phu) nhan o So tay chua nhan thuong; khong tinh buoc dang giu o khe NPC cu (p.subQuest). */
+    static boolean laPhuSoTay(final Char p, final NhiemVuMau m, final long[] v) {
+        if (m == null || v == null || v[1] >= 2 || !"phu".equals(m.loai)) {
+            return false;
+        }
+        try {
+            if (p.subQuest != null && p.subQuest.id_quest >= 0 && p.subQuest.getTemplate() != null && m.ma.equals(p.subQuest.getTemplate().ma)) {
+                return false;
+            }
+        } catch (final Exception ignored) {
+        }
+        return true;
+    }
+
+    /**
+     * Dong hien them trong danh sach NPC -64: {@code type} 2 = dang lam (engine v[1] == 0), 1 = xong cho tra (v[1] == 1). Tien
+     * do engine (mot so dem) dat vao o dau cua mau NPC. Client (J2ME GameScr.onQuest / Unity) chi co MOT o nhiem vu phu
+     * (subQuest): chi them khi o NPC cu trong, va chi MOT buoc (uu tien buoc xong cho tra, roi theo ma) - cac buoc So tay
+     * con lai xem o So tay -> Nhiem vu cua toi -> Dang lam.
+     */
+    public static List<NewCharQuest> phuSoTayChoNpc(final Char p, final int type) {
+        final List<NewCharQuest> ds = new ArrayList<NewCharQuest>();
+        if (!LauDai.bat() || p == null || p.charDBID <= 0 || (type != 1 && type != 2)) {
+            return ds;
+        }
+        if (p.subQuest != null && p.subQuest.id_quest >= 0) {
+            return ds; // o phu NPC dang dung
+        }
+        try {
+            final ConcurrentHashMap<String, long[]> t = td(p);
+            if (t == null) {
+                return ds;
+            }
+            String chon = null;
+            long[] vChon = null;
+            for (final Entry<String, long[]> e : t.entrySet()) {
+                final NhiemVuMau m = MAU.get(e.getKey());
+                final long[] v = e.getValue();
+                if (!laPhuSoTay(p, m, v) || mauNpc(m.ma) == null) {
+                    continue;
+                }
+                if (chon == null || v[1] > vChon[1] || v[1] == vChon[1] && m.ma.compareTo(chon) < 0) {
+                    chon = m.ma;
+                    vChon = v;
+                }
+            }
+            for (final Entry<String, long[]> e : t.entrySet()) {
+                final NhiemVuMau m = MAU.get(e.getKey());
+                final long[] v = e.getValue();
+                if (m == null || !m.ma.equals(chon) || (type == 2 ? v[1] != 0 : v[1] != 1)) {
+                    continue;
+                }
+                final data.InfoQuestTemplate info = mauNpc(m.ma);
+                if (info == null) {
+                    continue;
+                }
+                final NewCharQuest q = new NewCharQuest(info.id, (byte) 1);
+                q.state_quest = type == 2 ? NewCharQuest.WORKING : NewCharQuest.FINISH;
+                final short da = (short) Math.min(Short.MAX_VALUE, Math.max(0L, v[0]));
+                if (q.monsterKilled != null && q.monsterKilled.length > 0) {
+                    q.monsterKilled[0] = da;
+                }
+                if (q.nItem != null && q.nItem.length > 0) {
+                    q.nItem[0] = da;
+                }
+                ds.add(q);
+            }
+        } catch (final Exception e) {
+            System.out.println("NhiemVuEngine.phuSoTayChoNpc: " + e);
+        }
+        return ds;
+    }
+
+    /** Ma buoc phu nhan o So tay ung voi id nhiem vu NPC {@code questID}; null = khong phai. */
+    public static String maPhuSoTay(final Char p, final int questID) {
+        if (!LauDai.bat() || p == null || p.charDBID <= 0 || Map.allSubQuest == null) {
+            return null;
+        }
+        try {
+            final data.InfoQuestTemplate info = Map.allSubQuest.get(Short.valueOf((short) questID));
+            final ConcurrentHashMap<String, long[]> t = td(p);
+            if (info == null || t == null || info.ma == null) {
+                return null;
+            }
+            final NhiemVuMau m = MAU.get(info.ma);
+            return laPhuSoTay(p, m, t.get(info.ma)) ? info.ma : null;
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    /** NPC -64 "tra" mot buoc phu nhan o So tay: xong -> nhan thuong engine (mot lan); chua xong -> chu dang lam. */
+    public static void traPhuSoTayQuaNpc(final Char p, final String ma) {
+        final NhiemVuMau m = MAU.get(ma);
+        final ConcurrentHashMap<String, long[]> t = td(p);
+        final long[] v = t == null ? null : t.get(ma);
+        if (m == null || v == null) {
+            return;
+        }
+        if (v[1] == 1) {
+            SoTayLauDai.bao(p, traThuong(p, m, v));
+        } else {
+            SoTayLauDai.bao(p, chuDangLam(m, v[0]));
+        }
+    }
+
     /** 0.9.7.1: tra nhiem vu phu cu (-64) xong -> ghi tien do engine "da nhan thuong" (khong lam lai o ca hai noi). */
     public static void ghiXongPhuCu(final Char p, final String ma) {
         if (!LauDai.bat() || p == null || ma == null || ma.isEmpty() || p.charDBID <= 0) {
