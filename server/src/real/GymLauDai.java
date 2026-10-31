@@ -182,7 +182,8 @@ public final class GymLauDai {
                 if (hc < 0) {
                     continue;
                 }
-                final int hs = com.htbb.pokemon.HePokemon.heSoTrongGame(hc, t.he, t.he2);
+                // he so DA KEP PvE (KhacHePve 60..150): HP boss chi bu phan con thieu sau tran
+                final int hs = com.htbb.pokemon.KhacHePve.ra(com.htbb.pokemon.HePokemon.heSoTrongGame(hc, t.he, t.he2));
                 if (k == 0) {
                     goc = hs; // don Cao (o 0, he Thuong, suc yeu): chi tinh khi chua hoc chieu he nao
                 } else {

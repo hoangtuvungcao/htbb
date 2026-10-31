@@ -45,33 +45,15 @@ class CharChiSo {
                 }
             }
         }
-        switch (self.charClass) {
-            case 0: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.upAbility[0] + self.abilityKham[3] + self.secondHealth + ((animalRide != null) ? animalRide.att[6] : 0)) * 80;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
-                break;
-            }
-            case 1: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.secondHealth + self.abilityKham[3] + self.upAbility[0] + ((animalRide != null) ? animalRide.att[6] : 0)) * 70;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
-                break;
-            }
-            case 2: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.secondHealth + self.abilityKham[3] + self.upAbility[0] + ((animalRide != null) ? animalRide.att[6] : 0)) * 60;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 50;
-                self.maxmp += self.maxmp * self.buffPass[0] / 100;
-                break;
-            }
-            case 3: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.upAbility[0] + self.secondHealth + self.abilityKham[3] + ((animalRide != null) ? animalRide.att[6] : 0)) * 70;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
-                break;
-            }
-            case 4: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.secondHealth + self.upAbility[0] + self.abilityKham[3] + ((animalRide != null) ? animalRide.att[6] : 0)) * 60;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
-                break;
-            }
+        // Can bang dong (31/10/2026, quyet dinh chu game): HP goc trung tinh theo cap x ti le dong thiet ke (ChiSoDong), moi
+        // dong cung he so 70 (truoc 80/70/60/70/60 va Suc khoe goc khac nhau theo dong). PP giu nhu cu.
+        self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0)
+                + com.htbb.pokemon.ChiSoDong.voiTiemNang(com.htbb.pokemon.ChiSoDong.donViHp(self.charClass, self.lvDetail == null ? 1 : self.lvDetail.lv), SkinThuCuoi.pcTiemNang(self))
+                + self.getEffSkillClan(3) + self.upAbility[0] + self.abilityKham[3] + self.secondHealth + ((animalRide != null) ? animalRide.att[6] : 0)) * com.htbb.pokemon.ChiSoDong.HE_SO_HP;
+        final int heSoPp = self.charClass == 2 ? 50 : 20;
+        self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * heSoPp;
+        if (self.charClass == 2) {
+            self.maxmp += self.maxmp * self.buffPass[0] / 100;
         }
         self.maxhp += ((animalRide != null) ? animalRide.att[3] : 0) + self.newAtb[0] * 1000;
         self.maxmp += ((animalRide != null) ? animalRide.att[4] : 0) + self.newAtb[1] * 1000;
@@ -225,28 +207,13 @@ class CharChiSo {
                 animalRide = null;
             }
         }
-        int defend1 = ((petUsing != null) ? petUsing.getagitity() : 0) + (self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
-        int defen4 = (self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[2] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[8] : 0);
+        // Can bang dong (31/10/2026): phong thu goc trung tinh theo cap x ti le dong (ChiSoDong) thay cho Kheo leo (Charmander
+        // / Eevee khong tang Kheo leo theo cap); bo Squirtle x4/3 va Pichu x11/10.
+        final int thuGoc = com.htbb.pokemon.ChiSoDong.voiTiemNang(com.htbb.pokemon.ChiSoDong.thu(self.charClass, self.lvDetail == null ? 1 : self.lvDetail.lv), SkinThuCuoi.pcTiemNang(self));
+        int defend1 = ((petUsing != null) ? petUsing.getagitity() : 0) + thuGoc + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
+        int defen4 = thuGoc + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[2] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[8] : 0);
         int defendVat = 0;
         int defendMa = 0;
-        if (self.charClass == 3) {
-            defend1 = defend1 * 4 / 3;
-        }
-        if (self.charClass == 4) {
-            if (self.isSaTang() ) {
-                int lv = self.getLevelCaiTrang();
-                if (lv >= 1 && lv <= 15) {
-                    defen4 = (self.agitity + self.tnKheoLeo()) + lv + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
-                    defend1 = defend1 * 11 / 10;
-                    defen4 = defen4 * 11 / 10;
-                 
-                }
-            } else {
-            defen4 = (self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
-            defend1 = defend1 * 11 / 10;
-            defen4 = defen4 * 11 / 10;
-            }
-        }
         int upMa = 0;
         int upVat = 0;
         int upPTma = 0;
@@ -446,7 +413,9 @@ class CharChiSo {
         self.defend_magic = defen4 + defendMa;
         self.defendVatPlayer = defend1 + defendVat;
         self.defendMaPlayer = defen4 + defendMa;
-        if (self.charClass == 3) {
+        // noi tai chieu o 5 cua Squirtle (buffPass) - chi khi da hoc chieu (nhu Bulbasaur; truoc ap ca o cap chieu 0: +10% thu
+        // mien phi - can bang dong 31/10/2026)
+        if (self.charClass == 3 && self.skill[5] + self.addMoreLevelSkill[5] > 0) {
             self.defend_physic += self.defend_physic * self.buffPass[0] / 100;
             self.defend_magic += self.defend_magic * self.buffPass[0] / 100;
             upvP += self.buffPass[0];
@@ -569,12 +538,7 @@ class CharChiSo {
         self.defend_physic += atkTubinh;
         self.defendMaPlayer += defThumaP + defendMa * upmP / 100 + atkTubinh + defendMa * upThuTbChar / 1000;
         self.defendVatPlayer += defThuvatP + defendVat * upvP / 100 + atkTubinh + defendVat * upThuTbChar / 1000;
-        if (self.charClass == 3) {
-            self.defend_physic += defend1 + defendVat;
-            self.defend_magic += defen4 + defendMa;
-            self.defendVatPlayer += defend1 + defendVat;
-            self.defendMaPlayer += defen4 + defendMa;
-        }
+        // (bo: Squirtle cong phong thu goc + do LAN HAI - can bang dong 31/10/2026)
         // The dat ten (pet dang di theo): dong Phong thu phan nghin - TRUOC kep ben duoi.
         {
             final int ptTen = DatTenPetGame.phanNghin(self, com.htbb.pokemon.DatTenPet.PHONG_THU);
@@ -588,7 +552,7 @@ class CharChiSo {
         // Gioi han chi so (sv.lau_dai): tong % cong them (pet, thu cuoi, thoi trang, bo, VIP, chuc vu, skin...)
         // <= +50% tren phong thu goc (nhan vat + do da kep + do thu cuoi + tu binh). Tat co: khong doi.
         {
-            final int nhan = self.charClass == 3 ? 2 : 1;
+            final int nhan = 1; // truoc Squirtle 2 (cong hai lan)
             final long gocVat = (long) (defend1 + defendVat) * nhan + defThuvatGoc + atkTubinh;
             final long gocMa = (long) (defen4 + defendMa) * nhan + defThumaGoc + atkTubinh;
             self.defend_physic = ChiSoTrangBiGame.kepPhanTram(self.defend_physic, gocVat);
@@ -876,10 +840,14 @@ class CharChiSo {
                         // Chi mang x1,5 do noi goi ap (Region...). Ghi co/he cho goi -95.
                         final int heC = HocChieuGame.heChieu(self, idSkill); // nhanh Eevee: he o 2/8/10 theo learnset
                         final int heDung = heC >= 0 ? heC : self.hePokemon1();
+                        // PvE (muc tieu la quai / boss / truong Gym): he so khac he kep 60..150 (KhacHePve, chu game
+                        // 31/10/2026); PvP giu nguyen
+                        final boolean pve = actor.cat == 1;
                         final int[] kqLd = com.htbb.pokemon.SatThuongLauDai.tinh(att, def, 100, heDung,
                                 self.hePokemon1(), self.hePokemon2(), actor.hePokemon1(), actor.hePokemon2(),
                                 ChiSoTrangBiGame.doHePhanTram(self, heDung), false, // ST he + phien da (<= 20%)
-                                95 + Map.r.nextInt(11));
+                                95 + Map.r.nextInt(11), pve ? com.htbb.pokemon.KhacHePve.raToiThieu() : 0,
+                                pve ? com.htbb.pokemon.KhacHePve.raToiDa() : 0);
                         dam = kqLd[0];
                         if (idSkill == 0) {
                             dam += dam * VatPhamDungLauDai.donThuong(self) / 100; // Dai luc si
@@ -1316,47 +1284,36 @@ class CharChiSo {
         //
         // Bo ep kieu la het: khong so hang nao can 16 bit, va ca ham tu day tro xuong
         // (attack2, cac moc %, thu cuoi, pet, noi luc) deu tinh bang int.
-        switch (self.charClass) {
-            case 0:
-                attack1 += ((self.strength + self.tnSucManh()) + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0)) * 4 / 3;
-                break;
-            case 1:
-                attack1 += ((self.strength + self.tnSucManh()) + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0)) * 11 / 10;
-                if (self.skill[5] + self.addMoreLevelSkill[5] > 0) {
-                    int pc = attack1 * self.buffPass[0] / 100;
-                    if (pc <= 0) {
-                        pc = 0;
-                    }
-                    attack1 += pc;
+        // Can bang dong (31/10/2026, quyet dinh chu game): tan cong goc trung tinh theo cap x ti le dong (ChiSoDong), moi dong
+        // x4/3; truoc moi dong mot cong thuc (Bulbasaur x11/10 x1,5, Eevee Tinh than x5/3 + Suc manh/15, Squirtle x2/3 khi Suc
+        // manh >= Kheo leo, Pichu Kheo leo x5/3). Chi so phu (ngoc, kham, thu cuoi, cai trang Sa Tang) giu dung o cua dong.
+        {
+            final int capNv = self.lvDetail == null ? 1 : self.lvDetail.lv;
+            int phu;
+            int lvSaTang = 0;
+            if (self.isSaTang() && (self.charClass == 2 || self.charClass == 4)) {
+                final int lv = self.getLevelCaiTrang();
+                if (lv >= 1 && lv <= 15) {
+                    lvSaTang = lv;
                 }
-                attack1 += attack1 / 2;
-                break;
-            case 2:
-                if (self.isSaTang() && (self.charClass == 2)) {
-                    int lv = self.getLevelCaiTrang();
-                    if (lv >= 1 && lv <= 15) {
-                    attack1 += ((self.spirit + self.tnTinhThan()) + lv + self.getEffSkillClan(3) + self.newAtb[4] + self.upAbility[3] + self.abilityKham[2]) * 5 / 3 + ((animalRide != null) ? animalRide.att[8] : 0) + ((self.strength + self.tnSucManh()) + self.abilityKham[0]) / 15;
-                    }
-                } else {
-                    attack1 += ((self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.newAtb[4] + self.upAbility[3] + self.abilityKham[2]) * 5 / 3 + ((animalRide != null) ? animalRide.att[8] : 0) + ((self.strength + self.tnSucManh()) + self.abilityKham[0]) / 15;
-                }
-                break;
-            case 3:
-                attack1 += (self.strength + self.tnSucManh()) + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0);
-                if ((self.strength + self.tnSucManh()) >= (self.agitity + self.tnKheoLeo())) {
-                    attack1 = attack1 * 2 / 3;
-                }
-                break;
-            case 4:
-                if (self.isSaTang() && (self.charClass == 4 )) {
-                    int lv = self.getLevelCaiTrang();
-                    if (lv >= 1 && lv <= 15) {
-                        attack1 += ((self.agitity + self.tnKheoLeo()) + lv+ self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + ((animalRide != null) ? animalRide.att[7] : 0) + self.abilityKham[1]) * 5 / 3;
-                    }
-                } else {
-                    attack1 += ((self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + ((animalRide != null) ? animalRide.att[7] : 0) + self.abilityKham[1]) * 5 / 3;
-                }
-                break;
+            }
+            switch (self.charClass) {
+                case 2:
+                    phu = self.getEffSkillClan(3) + self.newAtb[4] + self.upAbility[3] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0) + lvSaTang;
+                    break;
+                case 4:
+                    phu = self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0) + lvSaTang;
+                    break;
+                default:
+                    phu = self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0);
+                    break;
+            }
+            final int donVi = com.htbb.pokemon.ChiSoDong.voiTiemNang(com.htbb.pokemon.ChiSoDong.donViTanCong(self.charClass, capNv), SkinThuCuoi.pcTiemNang(self));
+            attack1 += (donVi + phu) * com.htbb.pokemon.ChiSoDong.TC_TU / com.htbb.pokemon.ChiSoDong.TC_MAU;
+            if (self.charClass == 1 && self.skill[5] + self.addMoreLevelSkill[5] > 0) {
+                // noi tai chieu o 5 cua Bulbasaur (buffPass) - giu nhu cu
+                attack1 += Math.max(0, attack1 * self.buffPass[0] / 100);
+            }
         }
         int attack2 = 0;
         int upAttack = 0;
@@ -1369,7 +1326,8 @@ class CharChiSo {
             if (t == 6 || t == 7
                     || t == 4 || t == 5
                     || t == 3) {
-                final int a0 = ChiSoTrangBiGame.atb(self, item, 0); // bat: kep ngan sach o/cap/nang cap
+                // can bang dong 31/10/2026: vu khi tiem moi dong cung tan cong goc o cung bac (truoc Squirtle +60, Pichu -10...)
+                final int a0 = Math.max(0, ChiSoTrangBiGame.atb(self, item, 0) + com.htbb.pokemon.ChiSoDong.lechVuKhi(t, item.getTemplate().level, self.charClass)); // bat: kep ngan sach o/cap/nang cap
                 attack2 += a0 + item.getValueUpByVuKhiThoiTrang(a0, self.itemVukhiThoiTrang);
                 upAttack += item.lockAtb[0];
                 upatkP += item.lockAtb[0];
@@ -1473,10 +1431,7 @@ class CharChiSo {
         }
         self.attack += atkTubinh;
         self.attackPlayer += self.attackPlayer * upatkP / 100 + atkTubinh;
-        if (self.charClass == 3) {
-            self.attack += attack1 + attack2;
-            self.attackPlayer += attack1 + attack2;
-        }
+        // (bo: Squirtle cong tan cong goc + vu khi LAN HAI - can bang dong 31/10/2026)
         if (self.map != null && self.map.isMapChienTruongMoba()) {
             CharChienTruong c = MapChienTruongMoba.getCharChienTruong(self.charname);
             if (c != null) {
@@ -1498,7 +1453,7 @@ class CharChiSo {
         // Gioi han chi so (sv.lau_dai): tong % cong them tu MOI nguon ngoai do (pet, thu cuoi, thoi trang, bo,
         // VIP, chuc vu, skin, bao vat %) <= +50% so voi tan cong goc (nhan vat + do da kep). Tat co: khong doi.
         {
-            final long gocTc = (long) (attack1 + attack2) * (self.charClass == 3 ? 2 : 1) + atkTubinh;
+            final long gocTc = (long) (attack1 + attack2) + atkTubinh; // truoc Squirtle x2 (cong hai lan)
             self.attack = ChiSoTrangBiGame.kepPhanTram(self.attack, gocTc);
             self.attackPlayer = ChiSoTrangBiGame.kepPhanTram(self.attackPlayer, gocTc);
         }

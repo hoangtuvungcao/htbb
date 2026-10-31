@@ -76,6 +76,37 @@ public final class NhiemVuEngine {
                 + THUONG_CU.size() + " thuong khac chuoi chinh");
     }
 
+    private static LinkedHashMap<String, NhiemVuMau> mauTruocKiem;
+    private static HashMap<String, List<NhiemVuMau>> kieuTruocKiem;
+
+    /** Test (khong CSDL): dat mau nhiem vu + bang tien do cua nhan vat {@code idChar}; {@link #xoaKiem} tra lai nhu cu. */
+    public static synchronized void datKiem(final java.util.Collection<NhiemVuMau> mau, final int idChar,
+            final ConcurrentHashMap<String, long[]> tienDo) {
+        if (mauTruocKiem == null) {
+            mauTruocKiem = MAU;
+            kieuTruocKiem = THEO_KIEU;
+        }
+        final LinkedHashMap<String, NhiemVuMau> m = new LinkedHashMap<String, NhiemVuMau>();
+        final HashMap<String, List<NhiemVuMau>> k = new HashMap<String, List<NhiemVuMau>>();
+        for (final NhiemVuMau x : mau) {
+            m.put(x.ma, x);
+            k.computeIfAbsent(x.kieu, z -> new ArrayList<NhiemVuMau>()).add(x);
+        }
+        MAU = m;
+        THEO_KIEU = k;
+        TD.put(Integer.valueOf(idChar), tienDo);
+    }
+
+    public static synchronized void xoaKiem(final int idChar) {
+        TD.remove(Integer.valueOf(idChar));
+        if (mauTruocKiem != null) {
+            MAU = mauTruocKiem;
+            THEO_KIEU = kieuTruocKiem;
+            mauTruocKiem = null;
+            kieuTruocKiem = null;
+        }
+    }
+
     // ------------------------------------------------------------------ chuoi chinh cu (data_quest_moi) / nam 2
 
     /** ma chuoi chinh cu -> thuong_khac (phat khi tra nhiem vu o Char, engine cu khong doc cot nay). */
@@ -934,7 +965,8 @@ public final class NhiemVuEngine {
             t.put(ma, v);
             luu(p, ma, v);
         }
-        return NhiemVuMau.hoiThoai(m.hoiThoaiBatDau, 0, m.soLuong) + (m.mucTieuText.isEmpty() ? "" : "\n\nMục tiêu: " + m.mucTieuText);
+        return NhiemVuMau.hoiThoai(m.hoiThoaiBatDau, 0, m.soLuong) + (m.mucTieuText.isEmpty() ? "" : "\n\nMục tiêu: " + m.mucTieuText)
+                + HoTongNhiemVuGame.duoi(p, m); // sua-ho-tong: noi nhan / noi giao xe hang
     }
 
     static void chonDangLam(final Char p, final String ma) {
@@ -967,7 +999,7 @@ public final class NhiemVuEngine {
         if (GymLauDai.hoiNeuGym(p, m, v, m.ten + " (" + v[0] + "/" + m.soLuong + ")")) {
             return;
         }
-        SoTayLauDai.bao(p, chuDangLam(m, v[0]));
+        SoTayLauDai.bao(p, chuDangLam(m, v[0]) + HoTongNhiemVuGame.duoi(p, m)); // sua-ho-tong: noi nhan / giao + chi duong
     }
 
     /**

@@ -447,8 +447,11 @@ public class LiveActor extends Actor {
 
       dam -= def;
       dam = dam * (30 + UtilHTBB.random(80)) / 100;
-      // Khac he: 18 he Pokemon.
+      // Khac he: 18 he Pokemon. Quai danh nguoi choi (PvE): he so <= chi_so.khac_he_pve_vao_toi_da (x1,3, KhacHePve).
       dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+      if (this.cat != 0 && actor.cat == 0) {
+         dam = com.htbb.pokemon.KhacHePve.doiVao(dam, SatThuongHe.heSo(this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2()));
+      }
 
       dam = dam * (this.percentDam + Map.r.nextInt(20)) / 100;
       if (dam < 5) {

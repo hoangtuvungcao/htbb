@@ -346,12 +346,12 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **369 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **372 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 81 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 249 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 252 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
@@ -488,7 +488,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
 
-### Khoá ẩn: cố định & luôn bật (290)
+### Khoá ẩn: cố định & luôn bật (293)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -758,6 +758,9 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `chi_so.tran_khang_he` | Trần kháng một hệ (‰) | Cố định (ẩn) | `600` | ngay | game | Kháng hệ + kháng mọi hệ + phiến đá. |
 | `chi_so.san_sat_thuong` | Sàn sát thương mỗi đòn (‰) | Cố định (ẩn) | `400` | ngay | game | Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử). |
 | `chi_so.tran_phan_tram_cong` | Trần tổng % cộng thêm (‰) | Cố định (ẩn) | `500` | ngay | game | Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc. |
+| `chi_so.khac_he_pve_ra_toi_thieu` | Khắc hệ PvE: hệ số đòn người chơi tối thiểu (%) | Cố định (ẩn) | `60` | ngay | game | Đòn người chơi vào quái / boss / trưởng Gym bị kháng (×0,7 / ×0,5) hoặc miễn nhiễm (×0,3) không thấp hơn mức này - dòng chỉ có chiêu bị khắc (Pichu chỉ có chiêu Điện gặp quái Đất) vẫn đi tiếp bước hạ quái bắt buộc. 30 = như Pokémon gốc. PvP không đổi. |
+| `chi_so.khac_he_pve_ra_toi_da` | Khắc hệ PvE: hệ số đòn người chơi tối đa (%) | Cố định (ẩn) | `150` | ngay | game | Đòn người chơi vào quái / boss / trưởng Gym có lợi thế khắc hệ (×1,5 / ×2) không vượt mức này. 200 = như Pokémon gốc. PvP không đổi. |
+| `chi_so.khac_he_pve_vao_toi_da` | Khắc hệ PvE: hệ số đòn quái vào người chơi tối đa (%) | Cố định (ẩn) | `130` | ngay | game | Đòn quái / boss / trưởng Gym có lợi thế khắc hệ vào người chơi (×1,5 / ×2) không vượt mức này; kháng / miễn nhiễm giữ nguyên. Trưởng Gym còn trần riêng gym.he_toi_da. 200 = như Pokémon gốc. PvP không đổi. |
 | `danh_hieu.bat` | Bật danh hiệu thành tựu | Cố định (ẩn) | `1` | ngay | game | 0 = ngừng tự mở khoá danh hiệu và tắt dòng chỉ số của danh hiệu đang đeo (danh hiệu đã có vẫn giữ, vẫn hiện trên đầu). Danh mục + điều kiện ở bảng data_danh_hieu. |
 | `danh_hieu.tran_phan_nghin` | Trần chỉ số ô danh hiệu (‰) | Cố định (ẩn) | `10` | ngay | game | Ngân sách ô danh hiệu (thiết kế cân bằng 4.5, đề xuất 1%): chỉ một danh hiệu đang đeo được tính, giá trị từng danh hiệu (data_danh_hieu.phan_nghin) bị kẹp về trần này và vào trần tổng trang trí. 10 = +1%. |
 

@@ -609,7 +609,12 @@ public final class KiemSkinThuCuoi {
         // "if (self.strength >= self.agitity)" va cong thuc tan cong cua Phap su.
         final int soChoChiSo = dem(chiSo, "tnSucManh()") + dem(chiSo, "tnKheoLeo()")
                 + dem(chiSo, "tnTinhThan()") + dem(chiSo, "tnSucKhoe()");
-        Kiem.bang("CharChiSo cong du 25 cho", Integer.valueOf(25), Integer.valueOf(soChoChiSo));
+        // Can bang dong 31/10/2026 (ChiSoDong): HP / tan cong / phong thu goc khong con doc Suc khoe / Suc manh / Kheo leo /
+        // Tinh than ma tu cong thuc trung tinh theo cap - tiem nang skin cong qua ChiSoDong.voiTiemNang(.., pcTiemNang) o
+        // 3 cho; con 1 cho tnTinhThan() cho PP.
+        Kiem.bang("CharChiSo: con 1 cho tn*() (PP)", Integer.valueOf(1), Integer.valueOf(soChoChiSo));
+        Kiem.bang("CharChiSo: HP / tan cong / thu goc deu cong tiem nang skin (3 cho voiTiemNang + pcTiemNang)", Integer.valueOf(3),
+                Integer.valueOf(dem(chiSo, "ChiSoDong.voiTiemNang(") ));
         Kiem.bang("Char cong du 2 cho (ne tranh + chinh xac)",
                 Integer.valueOf(2), Integer.valueOf(dem(ch, "this.agitity + this.tnKheoLeo()")));
 

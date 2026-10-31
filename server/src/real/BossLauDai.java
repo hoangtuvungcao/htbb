@@ -275,7 +275,9 @@ public final class BossLauDai {
         if (muc == null || dam <= 0) {
             return dam;
         }
-        final int he = com.htbb.pokemon.SatThuongHe.heSo(m.hePokemon1(), muc.hePokemon1(), muc.hePokemon2());
+        final int goc = com.htbb.pokemon.SatThuongHe.heSo(m.hePokemon1(), muc.hePokemon1(), muc.hePokemon2());
+        // don da qua tran PvE (LiveActor.attackDam: KhacHePve.vao) -> chia cho he so DA AP, khong chia hai lan
+        final int he = muc.cat == 0 ? com.htbb.pokemon.KhacHePve.vao(goc) : goc;
         return GiaiDoanBoss.giamKhacHeGym(dam, he, LauDai.so("gym.he_toi_da", GiaiDoanBoss.GYM_HE_TOI_DA));
     }
 
