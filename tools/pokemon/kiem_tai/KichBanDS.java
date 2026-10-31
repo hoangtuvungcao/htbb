@@ -15,6 +15,7 @@ class KichBanDS {
     static void dangKy() {
         BotChucNang.dk("kham_pha", false, KichBanDS::khamPha);
         BotChucNang.dk("dang_nhap", false, KichBanDS::dangNhap);
+        BotChucNang.dk("dang_nhap_khoa", false, KichBanDS::dangNhapKhoa); // 31/10/2026: login server HTBB (ban 1 / 3)
         BotChucNang.dk("thu_mto", true, KichBanDS::thuMto);
         BotChucNang.dk("roi_sanh", false, KichBanDS::roiSanh);
         BotChucNang.dk("di_chuyen", true, KichBanDS::diChuyen);
@@ -233,6 +234,48 @@ class KichBanDS {
             ket("dang_nhap.lan_hai", l == null && cuDut, "phien cu dut=" + cuDut + " moi=" + (l == null ? "ok" : l));
         } finally {
             b1.close();
+        }
+    }
+
+    /**
+     * Tai khoan bi khoa (team_user.ban=1 -> login server tra -2) va chua kich hoat email (ban=3 -> -5): nguoi choi nhan
+     * DUNG cau bao cua game, khong vao duoc; mo khoa (ban=0) thi vao lai binh thuong. Ngu nghia nay do login server
+     * (htbb-login.jar, giu y CheckLoginSocket.jar cu - docs/dang-nhap.md) quyet dinh. Can -Ddb (sua CSDL tai khoan thu).
+     */
+    static void dangNhapKhoa() throws Exception {
+        if (BotChucNang.DB.isEmpty()) {
+            ket("dang_nhap_khoa", null, "can -Ddb (doi cot ban tren CSDL thu)");
+            return;
+        }
+        String u = BotChucNang.tkMoi();
+        String dk = "UPDATE account.team_user SET ban = %d WHERE username = '" + u + "'";
+        try {
+            BotChucNang.sql(String.format(dk, 1));
+            try (BotChucNang.Bot b = new BotChucNang.Bot(u)) {
+                String l = b.dangNhap("123456");
+                ket("dang_nhap_khoa.bi_khoa", l != null && BotChucNang.khongDau(l).contains("bi khoa") && b.charDb < 0, l);
+            }
+            BotChucNang.sql(String.format(dk, 3));
+            try (BotChucNang.Bot b = new BotChucNang.Bot(u)) {
+                String l = b.dangNhap("123456");
+                ket("dang_nhap_khoa.chua_kich_hoat", l != null && BotChucNang.khongDau(l).contains("chua kich hoat") && b.charDb < 0, l);
+            }
+            BotChucNang.sql(String.format(dk, 1));
+            try (BotChucNang.Bot b = new BotChucNang.Bot(u)) {
+                // mat khau chi chu + so: game chuyen sang login server (co '_' thi game chan truoc "khong hop le")
+                String l = b.dangNhap("saiMatKhau9");
+                ket("dang_nhap_khoa.sai_mk_khong_lo_khoa", l != null && BotChucNang.khongDau(l).contains("sai ten dang nhap hoac mat khau"), l);
+            }
+        } finally {
+            BotChucNang.sql(String.format(dk, 0));
+        }
+        try (BotChucNang.Bot b = new BotChucNang.Bot(u)) {
+            String l = b.dangNhap("saiMatKhau9");
+            ket("dang_nhap_khoa.sai_mat_khau_qua_login", l != null && BotChucNang.khongDau(l).contains("sai ten dang nhap hoac mat khau"), l);
+        }
+        try (BotChucNang.Bot b = new BotChucNang.Bot(u)) {
+            String l = b.dangNhap("123456");
+            ket("dang_nhap_khoa.mo_khoa_vao_lai", l == null, l == null ? "ds " + b.dsTen : l);
         }
     }
 
