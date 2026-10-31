@@ -663,6 +663,9 @@ class MapDanhNhau {
      * tri doc goi tin. {@code nhieu}: goi 106 (skill byte, so quai byte, id short...); khong: goi 9 (id short, skill byte).
      */
     static boolean choDanhQuai(final Map map, final Char p, final Message message, final boolean nhieu) {
+        if (!bossLangThang(map, p, message, nhieu)) {
+            return false; // boss lang thang: lan dau chi canh bao (BossLangThang)
+        }
         if (!Map.isMapLang(map)) {
             return true;
         }
@@ -689,6 +692,33 @@ class MapDanhNhau {
             }
         } catch (final Exception e) {
             return false;
+        }
+    }
+
+    /** Muc tieu goi danh co boss lang thang: canh bao lan dau (false = bo don) / ghi vao danh sach thu. */
+    static boolean bossLangThang(final Map map, final Char p, final Message message, final boolean nhieu) {
+        if (map == null || p == null || message == null || message.dis == null) {
+            return true;
+        }
+        final DataInputStream dis = message.dis;
+        try {
+            dis.mark(64);
+            try {
+                if (nhieu) {
+                    dis.readByte();
+                    final int n = dis.readByte();
+                    boolean cho = true;
+                    for (int i = 0; i < n; i++) {
+                        cho &= BossLangThang.khiDanh(map.getMonster(dis.readShort(), p.inCountry, p.region), p);
+                    }
+                    return cho;
+                }
+                return BossLangThang.khiDanh(map.getMonster(dis.readShort(), p.inCountry, p.region), p);
+            } finally {
+                dis.reset();
+            }
+        } catch (final Exception e) {
+            return true;
         }
     }
 

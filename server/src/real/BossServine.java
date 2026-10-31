@@ -52,6 +52,11 @@ public class BossServine extends Boss {
     }
 
     public void attack() {
+        // boss lang thang bi dong (BossLangThang): chi danh nguoi da danh no
+        if (this.target != null && !real.BossLangThang.duocDanh(this, this.target)) {
+            this.target = null;
+            return;
+        }
         if (this.target == null || this.target.map.equals(this.map) && this.target.region == this.region && this.target.inCountry == this.inCountry) {
             long now = System.currentTimeMillis();
             if (now - this.lastTimeAttack > this.attackDelay) {
@@ -136,7 +141,7 @@ public class BossServine extends Boss {
                         if (this.findPos == 0) {
                             for(int i = 0; i < players.size(); ++i) {
                                 Char c = (Char)players.get(i);
-                                if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
+                                if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
                                     charid.add(c);
                                     int dam = this.attackDam(c);
                                     if (idSkill == 1) {
@@ -185,7 +190,7 @@ public class BossServine extends Boss {
                             if (this.findPos == 2) {
                                 for(int i = players.size() - 1; i >= 0; --i) {
                                     Char c = (Char)players.get(i);
-                                    if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
+                                    if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
                                         charid.add(c);
                                         int dam = this.attackDam(c);
                                         if (idSkill == 1) {
@@ -234,7 +239,7 @@ public class BossServine extends Boss {
                         } else {
                             for(int i = players.size() / 2; i >= 0; --i) {
                                 Char c = (Char)players.get(i);
-                                if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
+                                if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
                                     charid.add(c);
                                     int dam = this.attackDam(c);
                                     if (idSkill == 1) {
@@ -283,7 +288,7 @@ public class BossServine extends Boss {
                             if (charid.size() < nplayer) {
                                 for(int i = players.size() / 2; i < players.size(); ++i) {
                                     Char c = (Char)players.get(i);
-                                    if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
+                                    if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id && !c.isAdmin && c.region == this.region && c.isBot == -1) {
                                         charid.add(c);
                                         int dam = this.attackDam(c);
                                         if (idSkill == 1) {
