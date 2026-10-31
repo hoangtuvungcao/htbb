@@ -48,7 +48,7 @@ class KichBanHoTong {
         }
         for (int lan = 0; lan < 30 && idx == -1; lan++) {
             if (b != null) b.close();
-            b = HoiQuy.nguoiChoiMoi("ht", lan % 5, lan % 2);
+            b = HoiQuy.nguoiChoiMoi("ht", lan % 5, Integer.getInteger("htVung", lan % 2));
             KichBanDS.veLang(b);
             g.gm("slv " + b.ten + " " + CAP + " 0", 1200);
             b.lamMoi();
@@ -112,7 +112,8 @@ class KichBanHoTong {
             int iDang = -1;
             if (dang != null) for (int i = 0; i < dang.size(); i++) if (BotChucNang.khongDau(dang.get(i)).contains(BotChucNang.khongDau(tenNv))) iDang = i;
             String dong = iDang >= 0 ? dang.get(iDang) : String.valueOf(dang);
-            ket("ho_tong.giao_tinh_buoc", dong.contains("1/1"), "Kecleon: " + String.valueOf(giao).replace('\n', ' ') + " | dang lam: " + dong);
+            String tt0 = BotChucNang.sql1("SELECT l.trang_thai FROM tob_nhiem_vu_lau_dai l WHERE l.id_char=" + b.charDb + " AND l.ma='" + MA + "'");
+            ket("ho_tong.giao_tinh_buoc", dong.contains("1/1") || "1".equals(tt0) || "2".equals(tt0), "CSDL trang_thai=" + tt0 + " | Kecleon: " + String.valueOf(giao).replace('\n', ' ') + " | dang lam: " + dong);
             if (iDang >= 0 && dong.contains("1/1")) {
                 m = b.moc();
                 b.menu(-527, 11, iDang);
