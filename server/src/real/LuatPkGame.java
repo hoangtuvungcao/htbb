@@ -131,6 +131,10 @@ public final class LuatPkGame {
         }
         // theo DONG HO THAT (5 / phut online): nhip CharVongLap la 300 vong x ~300 ms (~90 giay, cham hon khi tai nang),
         // truoc tru 5 moi nhip -> nghiep giam cham hon thiet ke ~1,5 lan tro len.
+        if (com.htbb.pokemon.CoPk.dangGiaoTranh(p.lucDanhNguoiPk, bay)) {
+            p.lucPhaiNghiep = bay; // dang danh nguoi: nghiep dung (khong tat ten do / PK giua tran), tinh lai tu luc ngung
+            return;
+        }
         if (p.lucPhaiNghiep <= 0L) {
             p.lucPhaiNghiep = bay - 60_000L;
         }
