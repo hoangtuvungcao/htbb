@@ -936,7 +936,8 @@ systemctl enable --now htbb-hlv-ai
 Sau đó bật / tắt và chỉnh ở **/admin/hlv-ai** (nhóm cấu hình `hlv_ai`, cũng hiện ở Cấu hình hệ thống, có lịch sử / hoàn
 tác): `hlv_ai.bat` (tắt = mọi bot thoát dần, tiến trình vẫn chạy), số bot, lịch online 24 giờ, tỉ lệ dòng / tính cách
 (cày cấp, PvP, buôn bán, xã hội, chơi thường), cấp mục tiêu, bãi luyện ưu tiên, từng hoạt động. Dịch vụ đọc lại cấu hình
-mỗi 20 giây, tự tạo tài khoản bot còn thiếu (mật khẩu = HMAC của `HLV_AI_BI_MAT`, không lưu chữ rõ), ghi
+mỗi 20 giây, tự tạo tài khoản bot còn thiếu (số bot = số **online** lúc lịch 100%; mỗi bot nghỉ 20–320 phút sau một
+phiên như người chơi, nên khi mọi tài khoản đều đang nghỉ dịch vụ tạo thêm tài khoản dự phòng, tối đa gấp đôi số bot; mật khẩu = HMAC của `HLV_AI_BI_MAT`, không lưu chữ rõ), ghi
 `tob_hlv_ai_trang_thai` mỗi phút (danh sách bot online trên trang). Log: `/opt/htbb/logs/hlv-ai.out` (mỗi 5 phút một dòng
 online / heap / số việc).
 
