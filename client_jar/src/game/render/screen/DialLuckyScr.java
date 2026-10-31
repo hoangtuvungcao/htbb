@@ -312,6 +312,10 @@ public class DialLuckyScr extends Screen {
     @Override
     public void paint(Graphics g) {
         ItemLuckyDraw item;
+        // 31/10/2026 (soi giao diện): tâm vòng quay theo cỡ màn hiện tại (trước cố định lúc tạo = mép phải: màn rộng chỉ
+        // thấy nửa vòng sát mép, đổi cỡ thì lệch). Màn hẹp giữ nửa vòng ở mép phải như bản gốc.
+        this.posCenter.x = Canvas.w >= 2 * this.radius + 160 ? Canvas.hw + this.radius / 2 : Canvas.w;
+        this.posCenter.y = Canvas.hh + 1;
         if (this.lastScr != null) {
             this.lastScr.paint(g);
         }

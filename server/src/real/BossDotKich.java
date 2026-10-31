@@ -44,6 +44,11 @@ public class BossDotKich extends Boss {
     }
 
     public void attack() {
+        // boss lang thang bi dong (BossLangThang): chi danh nguoi da danh no
+        if (this.target != null && !real.BossLangThang.duocDanh(this, this.target)) {
+            this.target = null;
+            return;
+        }
         long now = System.currentTimeMillis();
         if (now - this.lastTimeAttack > this.attackDelay) {
             this.lastTimeAttack = now;
@@ -118,7 +123,7 @@ public class BossDotKich extends Boss {
                     if (this.findPos == 0) {
                         for(int i = 0; i < players.size(); ++i) {
                             Char c = (Char)players.get(i);
-                            if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id) {
+                            if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id) {
                                 charid.add(c);
                                 int dam = this.attackDam(c);
                                 if (idSkill == 1) {
@@ -167,7 +172,7 @@ public class BossDotKich extends Boss {
                         if (this.findPos == 2) {
                             for(int i = players.size() - 1; i >= 0; --i) {
                                 Char c = (Char)players.get(i);
-                                if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id) {
+                                if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id) {
                                     charid.add(c);
                                     int dam = this.attackDam(c);
                                     if (idSkill == 1) {
@@ -216,7 +221,7 @@ public class BossDotKich extends Boss {
                     } else {
                         for(int i = players.size() / 2; i >= 0; --i) {
                             Char c = (Char)players.get(i);
-                            if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id) {
+                            if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id) {
                                 charid.add(c);
                                 int dam = this.attackDam(c);
                                 if (idSkill == 1) {
@@ -265,7 +270,7 @@ public class BossDotKich extends Boss {
                         if (charid.size() < nplayer) {
                             for(int i = players.size() / 2; i < players.size(); ++i) {
                                 Char c = (Char)players.get(i);
-                                if (c.hp > 0 && this.near(c, 220) && c.id != this.target.id) {
+                                if (c.hp > 0 && this.near(c, 220) && real.BossLangThang.duocDanh(this, c) && c.id != this.target.id) {
                                     charid.add(c);
                                     int dam = this.attackDam(c);
                                     if (idSkill == 1) {

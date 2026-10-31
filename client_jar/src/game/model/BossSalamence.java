@@ -36,7 +36,7 @@ public class BossSalamence extends Monster {
             return;
         }
         this.monster_type = (short) 39;
-        if (this.totalExp < 15) {
+        if (this.totalExp < 15 && mauHienTai() != null) {
             if (Res.monsterTemplates[this.monster_type].imageObj != null) {
                 if (Canvas.gameTick % 2 == 1) {
                     this.count = (byte) (this.count + this.dirdau);
@@ -126,7 +126,7 @@ public class BossSalamence extends Monster {
 
     @Override
     public void paintCorner(Graphics g, int xCorner, int yCorner) {
-        if (this.maxhp != 0 && Res.monsterTemplates[this.monster_type].imageObj != null) {
+        if (this.maxhp != 0 && mauHienTai() != null && mauHienTai().imageObj != null) {
             Res.monsterTemplates[this.monster_type].imageObj.paint(g, xCorner, yCorner, 4, 0, 1, 1);
         }
     }
@@ -257,7 +257,9 @@ public class BossSalamence extends Monster {
     @Override
     public void setInfo(MonsterInfo monsterInfo) {
         super.setInfo(monsterInfo);
-        Res.monsterTemplates[this.monster_type].w = (byte) 50;
+        if (mauHienTai() != null) {
+            Res.monsterTemplates[this.monster_type].w = (byte) 50;
+        }
         this.timeGetImage = System.currentTimeMillis() + 10000;
         this.height = (short) 100;
     }

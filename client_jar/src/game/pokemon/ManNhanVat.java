@@ -2480,7 +2480,7 @@ public final class ManNhanVat extends Screen {
                 DungDo.bao("Thẻ mở trang chiêu 3: Cửa hàng lượng > Tiện ích. Mở xong đổi trang bằng nút 1/3 cạnh chiêu.", DungDo.TIN);
             }
         }));
-        game.render.Canvas.menu.startAt(v, 3);
+        MenuNguCanh.mo(v, "Mở trang chiêu 3");   // 31/10/2026: thẻ lệnh chung (trước menu chữ cũ, không vùng chạm)
     }
 
     /**

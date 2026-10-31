@@ -3981,6 +3981,10 @@ public class GameScr extends Screen {
         paintTime(g);
         if (msgWorld.size() > 0) {
             MsgInfo ms = (MsgInfo) msgWorld.elementAt(0);
+            // 31/10/2026 (soi giao diện J2ME): dải tin kênh thế giới chạy ngang mép trên đè chữ khung HP ("45.5%", "Lv24") -
+            // máy bấm phím hạ dải xuống dưới khung trạng thái
+            int dyTin = HudRong.bat() ? 0 : 34;
+            g.translate(0, dyTin);
             int width = 0;
             while (true) {
                 int i9 = width;
@@ -4000,6 +4004,7 @@ public class GameScr extends Screen {
                 g.fillRect(0, 18, Canvas.w, 1);
             }
             ms.paint(g);
+            g.translate(0, -dyTin);
         }
     }
 

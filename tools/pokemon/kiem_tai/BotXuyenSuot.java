@@ -221,6 +221,29 @@ public class BotXuyenSuot {
      * Uoc luong duong de CHON ban do (khong dung de di): duong cong, hoac Arcanine "Đến New Bark" (+6 buoc) roi di bo trong
      * cum Johto 10/11/13/14/15 - Dong.toi tu dung Arcanine khi can.
      */
+    /** Cap toi thieu cua ban do (data_ban_do_mo_khoa), nap mot lan. */
+    static final Map<Integer, Integer> CAP_KHOA = new ConcurrentHashMap<>();
+
+    /** Duong {@code d} qua ban do co cap toi thieu > {@code lv} hoac dang bi chan (cong tu choi gan day). */
+    static boolean quaKhoa(List<int[]> d, int lv) {
+        if (d == null) return false;
+        if (CAP_KHOA.isEmpty()) {
+            synchronized (CAP_KHOA) {
+                if (CAP_KHOA.isEmpty()) {
+                    for (String r : BotChucNang.sql("SELECT map_id, cap_toi_thieu FROM data_ban_do_mo_khoa")) {
+                        String[] f = r.split("\t");
+                        try { CAP_KHOA.put(Integer.parseInt(f[0].trim()), Integer.parseInt(f[1].trim())); } catch (Exception ignored) { }
+                    }
+                    CAP_KHOA.putIfAbsent(-1, 0);
+                }
+            }
+        }
+        for (int[] e : d) {
+            if (dangChan(e[1]) || CAP_KHOA.getOrDefault(e[1], 0) > lv) return true;
+        }
+        return false;
+    }
+
     static List<int[]> duongUocTinh(int tu, int den) {
         for (int k : Dong.CHI_ARCANINE.keySet()) {
             if (cungBanDo(den, k) && !cungBanDo(tu, den)) {
@@ -542,7 +565,16 @@ public class BotXuyenSuot {
             soChet++;
             lucGuc.addLast(System.currentTimeMillis());
             while (lucGuc.size() > 10) lucGuc.removeFirst();
-            ghi("chet -> ve lang | maxhp " + b.maxhp + " | don cuoi: " + tomTatDon());
+            int mapGuc = b.mapId;
+            String don = tomTatDon();
+            ghi("chet -> ve lang | maxhp " + b.maxhp + " | don cuoi: " + don);
+            // guc khong co don quai thuong nao (goi 10) ngoai lang: boss lang thang (danh lan, goi khac) - nguoi choi that thay
+            // thong bao "... đã xuất hiện ở X" / mat mang thi tranh ban do do mot luc (truoc 31/10/2026 bot di qua Fuchsia 8 guc
+            // moi 30 phut khi Lopunny dung o 40,40)
+            if (don.trim().isEmpty() && mapGuc >= 0 && !KichBanDS.laLang(mapGuc) && !KichBanDS2.laOffline(mapGuc)) {
+                MAP_CHAN.put(mapGuc, System.currentTimeMillis() + 30 * 60000L);
+                ghi("guc khong ro don o map " + mapGuc + " (boss lang thang?) -> tranh 60 phut");
+            }
             int m = b.moc();
             b.gui(31, new byte[0]);
             b.cho(x -> x.coLenh(m, 12), 6000);
@@ -587,7 +619,9 @@ public class BotXuyenSuot {
             if (b.hp <= 0 || b.hp >= b.maxhp / 2 || b.soThuoc(2) + b.soThuoc(3) > 0 || b.soThuoc(1) * 80 > b.maxhp / 4) return false;
             int tot = -1, ds = 999;
             for (int c : new int[]{70, 0, 80, 1701, 301, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
-            if (tot < 0) return false;
+            // cum Johto (10 / 11 / 13 ...) khong co duong di bo ve lang: toi(0) tu di New Bark roi Arcanine "Về làng" (truoc
+            // 31/10/2026 tra false -> bot het thuoc danh toi guc: luyen o Rung Viridian cap 33-35 moi phien deu ket thuc bang guc)
+            if (tot < 0) tot = 0;
             ghi("het thuoc, HP " + b.hp + "/" + b.maxhp + " -> ve lang hoi o Chansey");
             if (!toi(tot)) return false;
             return hoiChansey();
@@ -657,6 +691,8 @@ public class BotXuyenSuot {
          * Arcanine gac cong (NPC loai 4, o lang): "Đến {noi}". Ve lang gan nhat co duong truoc. true = da toi ban do khac.
          */
         boolean quaArcanine(String noi) throws Exception {
+            // dang guc: may chu tu choi NPC (ChanKhiGuc, 31/10/2026) - hoi sinh truoc, khong thi ban do bi danh dau chan 30 phut
+            if (b.hp <= 0) hoiSinh();
             if (!KichBanDS.laLang(b.mapId) && !KHU_XA_ARCANINE.contains(b.mapId)) {
                 int tot = -1, ds = 999;
                 for (int c : new int[]{0, 301, 70, 80, 1701, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
@@ -687,8 +723,12 @@ public class BotXuyenSuot {
             CHI_ARCANINE.put(21, "Đồng cỏ phía tây");
             CHI_ARCANINE.put(22, "Tàu S.S. Anne");
         }
-        /** Cum Johto mo cap 27..40 (New Bark 10 + 11 / 13 / 14 / 15): chi noi voi 113 / 114 (cap 72+). */
-        static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15));
+        /**
+         * Cum Johto (New Bark 10 + 11 / 13 / 14 / 15, Hang Toi 113 cap 43, Ho Phan No 114 cap 46): khong co duong di bo ve
+         * lang Kanto - di New Bark roi Arcanine "Về làng". Truoc 31/10/2026 thieu 113 / 114: bot guc / het thuoc o Hang Toi
+         * het luot Ve lang mien phi thi ket "khong co duong tu map 113 toi 0" (d090 26 lan / gio).
+         */
+        static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15, 113, 114));
 
         /** Het luot Ve lang mien phi: cach ve lang khac (bot choi: Vé dịch chuyển). */
         boolean veLangKhac() throws Exception {
@@ -698,6 +738,7 @@ public class BotXuyenSuot {
         // ---------------------------------------------------------------- di chuyen giua cac map
         boolean toi(int dich) throws Exception {
             if (cungBanDo(b.mapId, dich)) return true;
+            if (b.hp <= 0) hoiSinh(); // guc giua duong (vd boss lang thang danh lan): hoi sinh truoc khi di tiep
             int tu = b.mapId;
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
             // cum Johto -> lang: di bo toi New Bark roi Arcanine "Về làng" (truoc 30/10/2026 duong mot chieu)
@@ -728,7 +769,10 @@ public class BotXuyenSuot {
                 if (toi(0)) tu = b.mapId;
             }
             // cum Johto 10/11/13/14/15 khong di bo toi duoc truoc cap 69 (chi qua 118 / 23 / 24): Arcanine "Đến New Bark"
-            if (duong(tu, dich) == null && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)) {
+            // ... va khi duong di bo co qua ban do khoa voi minh (BFS bo qua khoa: bo bot cap 41 di 481 -> 118 Duong Victory
+            // cap 69 moi lan toi Nui Mat Trang 13, 31/10/2026)
+            if ((duong(tu, dich) == null || quaKhoa(duong(tu, dich), b.lv)) && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)
+                    && !quaKhoa(duong(10, dich), b.lv)) {
                 if (quaArcanine("New Bark")) tu = b.mapId;
                 else MAP_CHAN.put(10, System.currentTimeMillis());
             }
@@ -769,6 +813,13 @@ public class BotXuyenSuot {
                 uongThuoc();
                 if (b.mapId == truoc) {
                     String t = b.chuTu(m);
+                    if (t.contains("hạ gục")) {
+                        // may chu bao dang guc (bot khong thay don cua boss lang thang - goi khac lenh 10): hoi sinh, KHONG
+                        // danh dau ban do dich bi chan (truoc 31/10/2026: chan 30 phut -> 'khong co ban do co Luxray' cho d290)
+                        ghi("guc (may chu bao) khi qua cong " + truoc + "->" + e[1] + ": " + (t.length() > 120 ? t.substring(0, 120) : t));
+                        hoiSinh();
+                        return false;
+                    }
                     MAP_CHAN.put(e[1], System.currentTimeMillis());
                     ketLyDo("cong " + truoc + "->" + e[1] + " khong cho qua: " + (t.length() > 160 ? t.substring(0, 160) : t));
                     return false;

@@ -553,9 +553,39 @@ final class KichBanCap140 {
         }
 
         // ---------------------------------------------------------------- vong choi
+        int boSuBoss;
+
+        /**
+         * Thong bao may chu "<boss> đã xuất hiện ở <ban do>!" / "... đã rời <ban do>. Hẹn lần sau!" (ThongBao.bossXuatHien /
+         * bossBienMat): nguoi choi that tranh ban do co boss lang thang (danh lan 220 px, 27.000 tan cong) - chan 3 gio / mo lai.
+         */
+        void xemBoss() {
+            int n = b.su.size();
+            if (boSuBoss > n) boSuBoss = 0;
+            for (int i = boSuBoss; i < n; i++) {
+                String c = b.su.get(i).chu;
+                if (c == null) continue;
+                Matcher co = Pattern.compile("đã xuất hiện ở ([^!|]+)!").matcher(c);
+                Matcher roi = Pattern.compile("đã rời ([^.|]+)\\. Hẹn").matcher(c);
+                String ten = co.find() ? co.group(1).trim() : roi.find() ? roi.group(1).trim() : null;
+                if (ten == null) continue;
+                Integer load = LOAD_THEO_TEN.get(ten);
+                if (load == null) continue;
+                boolean xuatHien = c.contains("đã xuất hiện");
+                for (int mid : mapTim()) {
+                    if (!load.equals(BotXuyenSuot.LOAD.get(mid)) || KichBanDS.laLang(mid)) continue;
+                    if (xuatHien) BotXuyenSuot.MAP_CHAN.put(mid, System.currentTimeMillis() + 3 * 3600000L);
+                    else BotXuyenSuot.MAP_CHAN.remove(mid);
+                }
+                ghi("boss " + (xuatHien ? "o " : "roi ") + ten + " (load " + load + ") -> " + (xuatHien ? "tranh ban do" : "mo lai"));
+            }
+            boSuBoss = n;
+        }
+
         void vong() throws Exception {
             BotXuyenSuot.quetLog();
             b.lamMoi();
+            xemBoss();
             // trong nha / khu khong co cong di bo (Bao tang 100 sau Arcanine): ra cua nhu nguoi choi truoc khi tim duong
             if (b.mapId >= 0 && !BotXuyenSuot.LOAD.containsKey(b.mapId)) {
                 int truoc = b.mapId;
@@ -808,7 +838,15 @@ final class KichBanCap140 {
             if (mid < 0) mid = mapCaoNhat(); // da vuot moi bai ngang cap: luyen o bai cao nhat da mo
             if (mid < 0) { ketLai("khong con ban do luyen mo cho cap " + b.lv + " (da khoa: " + mapKhoa + ")"); b.bom(5000); return; }
             if (!toi(mid)) { mapKhoa.add(mid); hop95(0); return; }
+            // do can bang kinh te thuoc (thiet ke: thuoc <= 12% thu nhap): binh / quai, xu / quai, guc khi luyen
+            long t0 = System.currentTimeMillis(), xu0 = b.xu;
+            int binh0 = b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3), so0 = ttkSo, chet0 = soChet;
+            long ttk0 = ttkMs;
             danh(-1, 40, phut * 60000L);
+            int ha = ttkSo - so0;
+            if (ha > 0) ghi(String.format(Locale.ROOT, "LUYEN map %d: %d quai / %.1f phut, TTK %.1fs, BINH %.2f/quai, XU %+d, guc %d, cap %d maxhp %d",
+                    mid, ha, (System.currentTimeMillis() - t0) / 60000.0, (ttkMs - ttk0) / 1000.0 / ha,
+                    Math.max(0, binh0 - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3))) / (double) ha, b.xu - xu0, soChet - chet0, b.lv, b.maxhp));
         }
         final Map<Integer, Integer> lanToiDich = new HashMap<>();
 
@@ -1123,13 +1161,20 @@ final class KichBanCap140 {
                 if (tpl < 0) return "khong biet quai '" + tenQ + "'";
                 int dich = tenBd == null ? -1 : mapTheoTen(b.mapId, tenBd);
                 if (dich < 0) { Set<Integer> co = BotXuyenSuot.QUAI_MAP.get(tpl); if (co != null) for (int x : co) { if (BotXuyenSuot.duong(b.mapId, x) != null) { dich = x; break; } } }
-                if (dich < 0) return "khong co ban do co " + tenQ;
+                if (dich < 0) {
+                    Integer ld = tenBd == null ? null : LOAD_THEO_TEN.get(tenBd.trim());
+                    StringBuilder ly = new StringBuilder();
+                    if (ld != null) for (int mid : mapTim()) if (ld.equals(BotXuyenSuot.LOAD.get(mid)))
+                        ly.append(" map ").append(mid).append(" chan=").append(BotXuyenSuot.dangChan(mid)).append(" duong=").append(BotXuyenSuot.duongUocTinh(b.mapId, mid) != null);
+                    return "khong co ban do co " + tenQ + " (ban do '" + tenBd + "' load " + ld + ":" + ly + ", chan10=" + BotXuyenSuot.dangChan(10) + ", dang chan " + BotXuyenSuot.MAP_CHAN.keySet().stream().filter(BotXuyenSuot::dangChan).collect(java.util.stream.Collectors.toList()) + ")";
+                }
                 if (!toi(dich)) { hop95(0); nhanCuaAiNeuKhoa(); return "khong toi duoc " + tenBd; }
                 int can = Integer.parseInt(mh.group(1));
                 boolean khungGio = Pattern.compile("\\(\\d+:\\d+").matcher(chu).find();
                 long t0 = System.currentTimeMillis();
                 int chet0 = soChet;
                 long ttk0 = ttkMs; int ttkSo0 = ttkSo, ttkCap0 = ttkCap;
+                int binh0 = b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3);
                 int ha = danh(tpl, Math.max(1, can), (can > 1 ? 7 : 2) * 60000L);
                 double phut = Math.max(0.1, (System.currentTimeMillis() - t0) / 60000.0);
                 Matcher mtg = Pattern.compile("trong (\\d+) phút").matcher(chu);
@@ -1138,7 +1183,8 @@ final class KichBanCap140 {
                         ha / phut, can / Double.parseDouble(mtg.group(1)), can, mtg.group(1), b.lv, b.maxhp, soChet - chet0) : "";
                 // TTK (design: ~4/5/6 giay quai thuong o cap 1-30/31-60/61-100 voi do +6) - mau cho can bang
                 if (ttkSo > ttkSo0) toc += String.format(Locale.ROOT, " | TTK %.1fs (cap %d, cap quai %.0f, %d con, vu khi +%d, guc %d)",
-                        (ttkMs - ttk0) / 1000.0 / (ttkSo - ttkSo0), b.lv, (ttkCap - ttkCap0) / (double) (ttkSo - ttkSo0), ttkSo - ttkSo0, vuKhiPlus(), soChet - chet0);
+                        (ttkMs - ttk0) / 1000.0 / (ttkSo - ttkSo0), b.lv, (ttkCap - ttkCap0) / (double) (ttkSo - ttkSo0), ttkSo - ttkSo0, vuKhiPlus(), soChet - chet0)
+                        + String.format(Locale.ROOT, " BINH %.2f/quai", Math.max(0, binh0 - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3))) / (double) (ttkSo - ttkSo0));
                 ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")" + toc);
                 if (khungGio) choGio("'" + q.ten + "' can dung khung gio: " + chu);
                 if (lan > 14) return "ha " + tenQ + " " + lan + " lan van khong xong: " + chu;

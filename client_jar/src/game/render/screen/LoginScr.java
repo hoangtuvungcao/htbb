@@ -265,41 +265,72 @@ public class LoginScr extends Screen {
         ServerListScr.gI().paintBg(g);
         int hb = game.pokemon.KhungVao.caoNut(), k = game.pokemon.KhungVao.khe();
         int hn = game.pokemon.KhungVao.caoNhan(), ho = game.pokemon.KhungVao.caoO();
-        int hDong = Math.max(20, game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + 6);
+        // 31/10/2026: hàng "Nhớ mật khẩu" / "Quên mật khẩu?" cao đủ cỡ chạm (trước 20 px ~ 26 dp, chữ "Nhớ mật k..")
+        int hDong = Math.max(game.pokemon.VungCham.MIN, Math.max(20, game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + 6));
         int dau = game.pokemon.ChuDe.caoDau() + 2 * game.pokemon.ChuDe.DEM;
+        String nho = "Nhớ mật khẩu", quen = "Quên mật khẩu?";
+        int s = Math.max(14, Math.min(22, hDong * 9 / 20));
+        int wNhoDu = s + 10 + game.pokemon.ChuDe.rong(nho, game.pokemon.ChuDe.PHU);
+        int wQuen = game.pokemon.ChuDe.rong(quen, game.pokemon.ChuDe.PHU) + 8;
+        int gap = Math.max(8, game.pokemon.VungCham.CACH);
         int than = 2 * (hn + ho) + k + k + hDong + k;
+        // màn thấp (điện thoại ngang): nhãn vào trong ô -> bảng vừa dải trên đội hình / cột bên, không tràn đáy
+        boolean gon = Canvas.h - Screen.deltaY < dau + than + hb + 150;
+        if (gon) {
+            than -= 2 * hn;
+        }
+        // vẫn không vừa dưới logo gọn (màn 16:9 mật độ cao, không bố cục ngang): bỏ biển tiêu đề - nút chính đã ghi "Đăng nhập"
+        int H = Canvas.h - Screen.deltaY;
+        boolean khongDau = gon && Canvas.w * 10 < H * 19 && H - 76 < dau + than + hb;
+        if (khongDau) {
+            dau = 2 * game.pokemon.ChuDe.DEM + 4;
+        }
         int hRong = dau + than + hb;
-        int hHep = dau + than + 2 * hb + k;
+        // bảng hẹp: hai nút xếp dọc; "Nhớ" + "Quên" không vừa một hàng ở bề ngang tối thiểu thì thêm một hàng
+        int hHep = dau + than + 2 * hb + k + (wNhoDu + gap + wQuen > 150 ? hDong + k : 0);
+        // màn thấp: bảng được che một phần đội hình khởi đầu (ô / nút đủ cỡ chạm quan trọng hơn hình trang trí)
+        game.pokemon.KhungVao.cheDoiHinh = gon;
         int[] r = game.pokemon.KhungVao.logoVaBang(g, 300, hRong, hHep, 150);
-        int[] n = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], "Đăng nhập", null, 0, null, null);
-        int x = n[0] + 2, w = n[2] - 4, y = n[1];
-        y = game.pokemon.KhungVao.oNhap(g, this.tfUser, "Tài khoản", x, y, w, false) + k;
-        y = game.pokemon.KhungVao.oNhap(g, this.tfPass, "Mật khẩu", x, y, w, false) + k;
-        // nhớ mật khẩu (trái) + "Quên mật khẩu?" (phải, mở trang web)
-        int xo = x + 1, s = 14, yo = y + (hDong - s) / 2;
+        game.pokemon.KhungVao.cheDoiHinh = false;
+        int[] n = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], khongDau ? null : "Đăng nhập", null, 0, null, null);
+        int x = n[0] + 2, w = n[2] - 4, y = khongDau ? r[1] + game.pokemon.ChuDe.DEM + 4 : n[1];
+        if (gon) {
+            y = game.pokemon.KhungVao.oNhapGon(g, this.tfUser, "Tài khoản", x, y, w, false) + k;
+            y = game.pokemon.KhungVao.oNhapGon(g, this.tfPass, "Mật khẩu", x, y, w, false) + k;
+        } else {
+            y = game.pokemon.KhungVao.oNhap(g, this.tfUser, "Tài khoản", x, y, w, false) + k;
+            y = game.pokemon.KhungVao.oNhap(g, this.tfPass, "Mật khẩu", x, y, w, false) + k;
+        }
+        // nhớ mật khẩu (trái) + "Quên mật khẩu?" (phải, mở trang web); bảng hẹp: hai hàng (chữ đủ, không "Nhớ mật k..")
+        boolean motHang = wNhoDu + gap + wQuen <= w;
+        int xo = x + 1, yo = y + (hDong - s) / 2;
         game.pokemon.GiaoDien.khoi(g, xo, yo, s, s, 3, this.focus == 2 ? game.pokemon.ChuDe.DO : game.pokemon.ChuDe.VIEN);
         game.pokemon.GiaoDien.khoi(g, xo + 1, yo + 1, s - 2, s - 2, 2, this.isRememPass ? game.pokemon.ChuDe.LA : 0xFAEECF);
         if (this.isRememPass) {
             g.setColor(0xFFFFFF);
             for (int d = 0; d < 2; d++) {
-                g.drawLine(xo + 3, yo + 7 + d, xo + 6, yo + 10 + d);
-                g.drawLine(xo + 6, yo + 10 + d, xo + 11, yo + 4 + d);
+                g.drawLine(xo + s / 5, yo + s / 2 + d, xo + s * 3 / 7, yo + s * 3 / 4 + d);
+                g.drawLine(xo + s * 3 / 7, yo + s * 3 / 4 + d, xo + s * 4 / 5, yo + s * 2 / 7 + d);
             }
         }
-        String quen = "Quên mật khẩu?";
-        int wQuen = game.pokemon.ChuDe.rong(quen, game.pokemon.ChuDe.PHU) + 8;
-        // 0.9.22: hai vùng chạm cách nhau >= cỡ cách tối thiểu (8 dp - APK) - trước sát 4 px, chạm mép dễ nhầm
-        int wNho = Math.min(w - wQuen - Math.max(4, game.pokemon.VungCham.CACH), s + 10 + game.pokemon.ChuDe.rong("Nhớ mật khẩu", game.pokemon.ChuDe.PHU));
-        game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat("Nhớ mật khẩu", game.pokemon.ChuDe.PHU, wNho - s - 8), xo + s + 6, y, hDong,
+        int wNho = motHang ? wNhoDu + 4 : w;
+        game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(nho, game.pokemon.ChuDe.PHU, wNho - s - 8), xo + s + 8, y, hDong,
                 game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU, 0);
         game.pokemon.VungCham.them(g, x, y, wNho, hDong, this.cmdRemem, "nho-mat-khau");
+        if (!motHang) {
+            y += hDong + k;
+        }
         game.pokemon.ChuDe.chuGiua(g, quen, x + w - 2, y, hDong, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.XANH, 1);
         game.pokemon.VungCham.them(g, x + w - wQuen, y, wQuen, hDong, this.viecQuen, "quen-mat-khau");
         y += hDong + k;
         int kieuP = game.pokemon.Bang.CHINH, kieuT = game.pokemon.Bang.TRUNG;
         if (w >= 220) {
-            y = game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Đăng ký", "Đăng nhập"}, new int[]{kieuT, kieuP},
-                    new Object[]{this.viecDangKy, this.viecDangNhap}, "dang-nhap") + k;
+            // 31/10/2026: tên vùng theo việc ("dang-nhap-0" = Đăng nhập, "dang-ky-0" = Đăng ký) ở mọi bố cục - trước bảng rộng
+            // đặt "dang-nhap-0" cho nút Đăng ký (kịch bản / bot chạm nhầm)
+            int wn = (w - k) / 2;
+            game.pokemon.Bang.nut(g, x, y, wn, hb, "Đăng ký", kieuT, this.viecDangKy, "dang-ky-0");
+            game.pokemon.Bang.nut(g, x + wn + k, y, w - wn - k, hb, "Đăng nhập", kieuP, this.viecDangNhap, "dang-nhap-0");
+            y += hb + k;
         } else {
             y = game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Đăng nhập"}, new int[]{kieuP}, new Object[]{this.viecDangNhap}, "dang-nhap") + k;
             y = game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Đăng ký"}, new int[]{kieuT}, new Object[]{this.viecDangKy}, "dang-ky") + k;

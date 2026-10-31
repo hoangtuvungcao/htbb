@@ -268,7 +268,102 @@ extends Screen {
         });
     }
 
+    /**
+     * 31/10/2026 (soi giao diện: Menu › Tiện ích & PK mở menu chữ cũ - hàng 24 px, không vùng chạm, phím mềm góc tí hon):
+     * máy cảm ứng / PC vẽ thành TẤM chung (Bang.khungTam canh giữa, hàng >= 48 dp có vùng chạm, mũi tên mục con, nút lùi
+     * về cấp trên, X đóng). Cùng mục / cùng việc (doSelect) như menu chữ; phím 2 / 8 / 5 / phím mềm vẫn chạy. J2ME bấm phím
+     * giữ menu chữ.
+     */
+    static boolean cham() {
+        return game.pokemon.MenuNguCanh.bat();
+    }
+
+    final game.pokemon.Cuon cuonCham = new game.pokemon.Cuon();
+    /** vừa đi bằng phím (2 / 8): tô hàng đang chọn */
+    boolean diPhim;
+
+    String tieuDeCham() {
+        if (this.index == -1) {
+            return this.gonLan ? "Ti\u1ec7n \u00edch & PK" : "Menu";
+        }
+        return this.name[this.index][0];
+    }
+
+    void veCham(Graphics g) {
+        Canvas.gameScr.paint(g);
+        Canvas.resetTrans(g);
+        game.pokemon.Bang.phuNen(g);
+        final int n = Math.min(this.Limit, this.hien.length);
+        int rh = game.pokemon.Bang.caoHang(), k = game.pokemon.Bang.cach();
+        int wChu = 0;
+        for (int i = 0; i < n; ++i) {
+            wChu = Math.max(wChu, game.pokemon.ChuDe.rong(muc(i), game.pokemon.ChuDe.NHAN));
+        }
+        int hMuon = game.pokemon.Bang.caoDauTam(false) + n * (rh + k) + game.pokemon.ChuDe.DEM;
+        int[] c = game.pokemon.Bang.khungTam(g, wChu + 120, hMuon, tieuDeCham(), null, 0, null, new IAction() {
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+            }
+        });
+        if (this.index != -1) {
+            int hd = game.pokemon.Bang.caoDau();
+            int[] t = game.pokemon.Bang.VUA_TAM;
+            game.pokemon.Bang.nutLui(g, t[0] + game.pokemon.ChuDe.DEM, t[1] + 3, hd, this.right.action);
+        }
+        game.pokemon.Bang.danhSach(g, this.cuonCham, c[0], c[1], c[2], c[3], n, rh, new game.pokemon.Bang.Hang() {
+            public void ve(Graphics g, int i, int x, int y, int w, int h) {
+                final int dong = i;
+                game.pokemon.Bang.hang(g, x, y, w, h, i, PauseMenu.this.diPhim && i == PauseMenu.this.selected, new IAction() {
+                    public void perform() {
+                        PauseMenu.this.chamDong(dong);
+                    }
+                }, "pm-" + i);
+                String m = muc(i);
+                boolean con = coCon(i);
+                int wHinh = Nen.rongHinhMuc(m);
+                Nen.veHinhMuc(g, x + 10, y + (h - 13) / 2, m);
+                int xc = x + 12 + wHinh;
+                game.pokemon.ChuDe.chuGiua(g, game.pokemon.ChuDe.cat(m, game.pokemon.ChuDe.NHAN, w - (xc - x) - (con ? 30 : 10)), xc, y, h,
+                        game.pokemon.ChuDe.NHAN, game.pokemon.ChuDe.CHU, 0);
+                if (con) {
+                    game.pokemon.GiaoDien.muiTab(g, x + w - 12, y + h / 2, false);
+                }
+            }
+        });
+    }
+
+    /** Chữ dòng hiện i. */
+    String muc(int i) {
+        int gi = i < this.hien.length ? this.hien[i] : i;
+        String m = this.index == -1 ? this.name[gi][0] : this.name[this.index][gi + 1];
+        return m == null ? "" : m;
+    }
+
+    /** Dòng hiện i mở cấp con (hàng gốc có mục con, trừ hàng tự làm việc ngay). */
+    boolean coCon(int i) {
+        if (this.index != -1) {
+            return false;
+        }
+        int gi = i < this.hien.length ? this.hien[i] : i;
+        return this.name[gi].length > 1;
+    }
+
+    void chamDong(int i) {
+        this.selected = i;
+        int cap = this.index;
+        this.doSelect();
+        if (this.index != cap) {
+            this.cuonCham.den(0);
+        }
+        game.pokemon.AmThanh.phat(game.pokemon.AmThanh.XAC_NHAN);
+    }
+
     public void paint(Graphics graphics) {
+        if (cham()) {
+            this.anNutLenh = true;
+            veCham(graphics);
+            return;
+        }
         Canvas.gameScr.paint(graphics);
         Canvas.gameScr.paintServerInfo(graphics);
         Res.paintDlgDragonFull(graphics, this.x - 5, this.y - 10, this.w + 10, this.h + 20);
@@ -307,6 +402,19 @@ extends Screen {
     }
 
     public void update() {
+        if (cham()) {
+            // thế giới sau tấm chạy tiếp nhưng không nhận chạm (chạm ngoài tấm không làm nhân vật đi)
+            boolean c = Canvas.isPointerClick, d = Canvas.isPointerDown;
+            Canvas.isPointerClick = false;
+            Canvas.isPointerDown = false;
+            try {
+                Canvas.gameScr.update();
+            } finally {
+                Canvas.isPointerClick = c;
+                Canvas.isPointerDown = d;
+            }
+            return;
+        }
         Canvas.gameScr.update();
         this.moveCamera();
         if (Math.abs(this.cmtoY - this.cmy) < 15 && this.cmy < 0) {
@@ -360,6 +468,20 @@ extends Screen {
     }
 
     public void updateKey() {
+        if (cham()) {
+            if (Canvas.isKeyPressed(8) && this.Limit > 0) {
+                this.selected = (this.selected + 1) % this.Limit;
+                this.diPhim = true;
+            } else if (Canvas.isKeyPressed(2) && this.Limit > 0) {
+                this.selected = (this.selected + this.Limit - 1) % this.Limit;
+                this.diPhim = true;
+            }
+            if (Canvas.isPointerDown) {
+                this.diPhim = false;
+            }
+            super.updateKey();
+            return;
+        }
         if (keoThanh()) {
             super.updateKey();
             return;
