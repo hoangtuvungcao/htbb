@@ -1327,7 +1327,7 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
   5–7, thu lá phong 8–10, đông 11–1) hoặc sự kiện đang bật ưu tiên cao nhất (Halloween hoàng hôn, Tết, Noel, Trung Thu),
   kèm vài hạt (cánh hoa, lá, tàn lửa, lấp lánh); trong nhà / hang không phủ. Vẽ trước phủ đêm và HUD nên chữ HUD không đổi.
 - **Thay loài khi hồi sinh**: 15% số lần hồi sinh đổi sang ứng viên cùng dải cấp ±4 (tối đa 6 loài / điểm); một phần ba là
-  **loài di cư** (chỉ có 6 tháng liền mỗi năm); **quái hiếm** cấp +3..+8 chỉ ra trong một kiểu thời tiết (có thể chỉ ban
+  **loài di cư** (chỉ có 6 tháng liền mỗi năm); **quái hiếm** chỉ ra trong một kiểu thời tiết (có thể chỉ ban
   đêm), báo kênh thế giới tối đa 1 lần / 10 phút mỗi loài. Không đổi: mục tiêu nhiệm vụ chính, boss, vật thể, bản đồ đặc
   biệt. Không đổi số lượng, vị trí, id quái.
 - **Loài đổi giữ chỉ số của bãi** (31/10/2026, `HeSinhThaiGame.doiLoai` / `mauChiSo`). Khi thay loài, quái hiếm, bùng phát
@@ -1340,6 +1340,14 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
   - Đo thật ở cấp 49: đòn 3.000–8.000, gục sau 2–3 đòn.
   - Hoenn cấp 82–92 thành Ursaluna (tấn công 75.000).
   - `test/KiemDoiLoaiQuai` kiểm.
+- **Thưởng cấp cho quái đặc biệt** (chủ game 31/10/2026, `HeSinhThaiGame.mauCongCap`, `DuongQuaiChuan`):
+  - Quái hiếm, loài bùng phát và loài ngày cộng đồng có cấp = cấp gốc của ô sinh + 2. Vì cấp gốc không vượt cấp quái thường
+    cao nhất của bản đồ, cấp mới cũng không vượt mức đó + 2.
+  - HP, tấn công, thủ, EXP, xu lấy từ đường quái thường chuẩn ở cấp đó: nội suy `data_monster_lau_dai` và quái Hoenn
+    139..174, nạp lúc khởi động. Không dùng chỉ số gốc cũ của loài. Bảng rơi theo cấp mới.
+  - Từ cấp 10 trở lên, +2 cấp nghĩa là tấn công ×1–1,15 và HP ×1–1,2. Chênh 2 cấp không kích luật chênh cấp ×2 (chỉ áp từ
+    5 cấp).
+  - Thay loài theo thời tiết / giờ thường giữ đúng cấp gốc.
 - **Bùng phát**: 4 khung / ngày (11h, 17h, 20h, 22h), mỗi khung 1 giờ, một cặp (tuyến, loài của tuyến); 40% số lần hồi sinh
   trên tuyến đó thành loài bùng phát; có thông báo đầu / cuối.
 - Client cũ: hiệu ứng qua gói có sẵn `-39` (0 mưa, 1 lá rơi = bão cát / gió, 2 tuyết, 6 sương mù, 7 nắng gắt). Client

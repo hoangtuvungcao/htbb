@@ -491,11 +491,13 @@ public final class HeSinhThaiGame {
             final int goc = g == null ? m.idTemplate : g.intValue();
             int moi = goc;
             int dacBiet = 0;
+            boolean congCap = false; // quai hiem / bung phat / ngay cong dong: cap goc + 2 (CONG_CAP_DAC_BIET)
             if (!quaiBaoVe.contains(goc)) {
                 final int[] bp = bungPhat;
                 final int cd = NgayCongDongGame.loaiNoiBat(mapId, goc); // ngay cong dong: gio vang, ban do cua dong
                 if (cd > 0) {
                     moi = cd;
+                    congCap = true;
                 } else if (bp != null && bp[0] == mapId && SinhThaiTheGioi.doiThanhBungPhat(goc, bp[1], R)) {
                     moi = bp[1];
                     dacBiet = 2;
@@ -524,6 +526,17 @@ public final class HeSinhThaiGame {
                 GOC.put(m, goc);
             } else {
                 GOC.remove(m);
+            }
+            // quai hiem / bung phat / ngay cong dong: cap goc + 2, chi so + EXP + xu theo duong quai chuan o cap do (khong
+            // theo chi so goc cu cua loai); thay theo thoi tiet / gio giu dung cap goc
+            PHU_CAP.remove(m);
+            if (congCap || dacBiet != 0) {
+                final MonsterTemplate p = mauCongCap(real.Map.monsterTemplates.get(Integer.valueOf(m.idTemplate)),
+                        real.Map.monsterTemplates.get(Integer.valueOf(goc)));
+                if (p != null) {
+                    PHU_CAP.put(m, p);
+                    giuChiSo(m, p);
+                }
             }
             if (dacBiet != 0) {
                 DAC_BIET.put(m, dacBiet);
@@ -569,6 +582,10 @@ public final class HeSinhThaiGame {
      * hien tai. Dung o NoiDungLauDai.khiHoiSinh (HP / tan cong / quai tinh anh) va Monster (EXP / xu khi ha).
      */
     public static MonsterTemplate mauChiSo(final Monster m) {
+        final MonsterTemplate pc = m == null ? null : PHU_CAP.get(m);
+        if (pc != null) {
+            return pc;
+        }
         final Integer g = m == null ? null : GOC.get(m);
         if (g != null) {
             final MonsterTemplate t = real.Map.monsterTemplates.get(g);
@@ -577,6 +594,46 @@ public final class HeSinhThaiGame {
             }
         }
         return m == null ? null : m.getMonsterTemplate();
+    }
+
+    /** Quai hiem / bung phat / ngay cong dong hon cap goc chung nay (khong kich luat chenh cap x2 cua LiveActor: >= 5). */
+    public static final int CONG_CAP_DAC_BIET = 2;
+
+    /** Quai dang mang mau "cong cap" (hiem / bung phat / ngay cong dong) -> mau chi so tong hop. */
+    static final Map<Monster, MonsterTemplate> PHU_CAP = Collections.synchronizedMap(new IdentityHashMap<Monster, MonsterTemplate>());
+
+    /**
+     * Mau chi so tong hop cho quai dac biet: loai / hinh / he cua {@code loai}, cap = cap mau goc {@code goc} + 2, HP / tan cong
+     * / thu / EXP / xu theo DuongQuaiChuan o cap do, chinh xac / ne cua mau goc; id = id mau goc (bang quai tinh anh / roi theo
+     * o sinh). null neu thieu mau / duong chua nap.
+     */
+    public static MonsterTemplate mauCongCap(final MonsterTemplate loai, final MonsterTemplate goc) {
+        if (loai == null || goc == null) {
+            return null;
+        }
+        final int cap = goc.level + CONG_CAP_DAC_BIET;
+        final int[] c = DuongQuaiChuan.taiCap(cap);
+        if (c == null) {
+            return null;
+        }
+        final MonsterTemplate t = new MonsterTemplate();
+        t.id = goc.id;
+        t.name = loai.name;
+        t.he = loai.he;
+        t.he2 = loai.he2;
+        t.dex = loai.dex;
+        t.shiny = loai.shiny;
+        t.type = loai.type;
+        t.dmove = loai.dmove;
+        t.level = (byte) Math.min(Byte.MAX_VALUE, cap);
+        t.maxhp = c[0];
+        t.attack = c[1];
+        t.defend = c[2];
+        t.rcvXp = c[3];
+        t.rcvGold = c[4];
+        t.accurate = goc.accurate;
+        t.dodge = goc.dodge;
+        return t;
     }
 
     /** Doi template cua quai (giu vi tri, id, quoc gia, vung). hp/xp do Monster.update dat ngay sau. */
