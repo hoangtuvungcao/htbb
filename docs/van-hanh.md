@@ -940,6 +940,11 @@ mỗi 20 giây, tự tạo tài khoản bot còn thiếu (mật khẩu = HMAC c�
 `tob_hlv_ai_trang_thai` mỗi phút (danh sách bot online trên trang). Log: `/opt/htbb/logs/hlv-ai.out` (mỗi 5 phút một dòng
 online / heap / số việc).
 
+**Bot làm gì.** Nhiệm vụ chính / phụ / cửa ải, cày, treo máy (Tự động đánh), Gym, boss, bắt Pokémon hoang dã, Đấu trường
+(khi đủ 3 loài), mua khăn PK rồi chỉ đánh người đang đeo khăn, thách đấu cược nhỏ (cấp 40+), phó bản nhóm (cấp 45+),
+học chiêu ở NPC, lập / vào đội, góp quỹ, chat, kết bạn, giao dịch thuốc và trao đổi Pokémon 1 đổi 1, chợ ký gửi, hệ sinh
+thái, vườn, nhà trẻ. Không đụng lượng / nạp / vòng quay lượng / xổ số / giftcode.
+
 **Chống lạm phát (máy chủ game, `real.HlvAiGame`, áp ngay):**
 
 | Khoá | Mặc định | Luật |

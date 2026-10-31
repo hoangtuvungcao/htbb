@@ -167,7 +167,7 @@ const gioHienTai = new Date().getHours()
         <AdminBieuDoDuong tieu-de="Xu bot theo ngày" :nhan="ngay.map(d => d.ngay.slice(5))"
           :chuoi="[{ ten: 'Tạo', gt: ngay.map(d => d.xuTao) }, { ten: 'Đốt (trần)', gt: ngay.map(d => d.xuDot) }, { ten: 'Tiêu', gt: ngay.map(d => d.xuTieu) }]" />
         <AdminBieuDoDuong tieu-de="Giá trị bot → người thật / ngày" :nhan="ngay.map(d => d.ngay.slice(5))"
-          :chuoi="[{ ten: 'Giá trị', gt: ngay.map(d => d.giaTriChoNguoi) }]" :nguong="f.chuyenTong" />
+          :chuoi="[{ ten: 'Giá trị', gt: ngay.map(d => d.giaTriChoNguoi) }]" :nguong="{ gt: f.chuyenTong, nhan: 'Hạn mức ngày' }" />
         <AdminBieuDoDuong tieu-de="Online (ảnh chụp 10 phút)" :nhan="moc.map(m => m.luc.slice(5, 16))"
           :chuoi="[{ ten: 'Bot', gt: moc.map(m => m.soBotOnline) }, { ten: 'Người thật', gt: moc.map(m => m.soNguoiOnline) }]" />
       </div>
