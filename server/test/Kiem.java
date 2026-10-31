@@ -90,6 +90,7 @@ public final class Kiem {
         KiemPokemonClient.chay();
         KiemChuPokemon.chay();
         KiemThuatNgu.chay();
+        KiemDangNhapKhac.chay();
         KiemHieuUngPokemon.chay();
         KiemTilePokemon.chay();
         KiemMapPokemon.chay();
