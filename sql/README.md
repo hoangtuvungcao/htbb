@@ -132,6 +132,9 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
     rơi khi có Poké Ball, trứng Chợ sinh thái); `UPDATE … AND sua_boi = '' AND noi_dung = <cũ>`. Chữ menu / thông báo Nhà
     trẻ ở mã (`HeSinhThaiMenu.CHUA_CO_PET`). Cùng đợt (mã, không SQL): bước địa điểm trong nhà (C05.2 "Bảo tàng thiên thạch")
     xong ngay lúc vào nhà - client không gửi gói di chuyển trong nhà. `server/test/KiemVaoNhaNhiemVu`.
+17. `them_chi_so_vps.sql` (31/10/2026, trang `/admin/he-thong` thẻ VPS): bảng `tob_chi_so_vps` — web lấy mẫu CPU / RAM / swap /
+    đĩa / mạng toàn máy mỗi 2 giây, ghi một dòng mỗi phút mỗi máy (`may` = hostname), giữ 7 ngày. Web tự tạo bảng nếu thiếu
+    (`SQL_TAO_BANG_VPS` ở `web/server/utils/vpsThuan.ts`, `web/tests/chi-so-vps.test.ts` so khớp với phần A + B). Phần A cũng có.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

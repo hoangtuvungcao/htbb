@@ -137,11 +137,11 @@ const gioHienTai = new Date().getHours()
   <AdminPage title="Bot / Huấn luyện viên AI">
     <template #right>
       <UBadge :color="f.bat ? 'success' : 'neutral'" variant="subtle" :icon="f.bat ? 'i-lucide-play' : 'i-lucide-pause'">
-        {{ f.bat ? 'Đang bật' : 'Đang tắt' }} · {{ online.length }}/{{ tong }} online
+        <span class="hidden sm:inline">{{ f.bat ? 'Đang bật' : 'Đang tắt' }} · </span>{{ online.length }}/{{ tong }}<span class="hidden sm:inline"> online</span>
       </UBadge>
       <UButton v-if="!f.bat" color="success" icon="i-lucide-play" label="Bật" :loading="dangLuu" @click="luu(true)" />
       <UButton v-else color="error" variant="soft" icon="i-lucide-square" label="Tắt" :loading="dangLuu" @click="luu(false)" />
-      <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" :loading="status === 'pending'" @click="refresh()" />
+      <UButton color="neutral" variant="ghost" icon="i-lucide-refresh-cw" :loading="status === 'pending'" aria-label="Tải lại" @click="refresh()" />
     </template>
 
     <UAlert v-if="error" color="error" :title="loiApi(error)" class="mb-4" />
@@ -163,7 +163,7 @@ const gioHienTai = new Date().getHours()
         </div>
       </template>
       <p v-if="!ngay.length && !moc.length" class="text-sm text-muted">Chưa có số liệu - máy chủ game ghi khi có bot chơi.</p>
-      <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         <AdminBieuDoDuong tieu-de="Tổng xu đang giữ (ảnh chụp 10 phút)" :nhan="moc.map(m => m.luc.slice(5, 16))"
           :chuoi="[{ ten: 'Bot', gt: moc.map(m => m.tongXuBot) }, { ten: 'Người thật', gt: moc.map(m => m.tongXuNguoi) }]" />
         <AdminBieuDoDuong tieu-de="Xu bot theo ngày" :nhan="ngay.map(d => d.ngay.slice(5))"
@@ -195,11 +195,26 @@ const gioHienTai = new Date().getHours()
         <div class="flex flex-wrap items-center gap-3">
           <b>Bot đang online ({{ online.length }})</b>
           <span class="text-xs text-muted">{{ demViec.map(([v, n]) => `${VIEC[v] ?? v} ${n}`).join(' · ') }}</span>
-          <UInput v-model="loc" size="sm" icon="i-lucide-search" placeholder="Lọc tên / bản đồ / việc" class="ml-auto w-56" />
+          <UInput v-model="loc" size="sm" icon="i-lucide-search" placeholder="Lọc tên / bản đồ / việc" class="w-full sm:ml-auto sm:w-56" />
         </div>
       </template>
       <p v-if="!dsOnline.length" class="text-sm text-muted">Không có bot online.</p>
-      <div v-else class="max-h-96 overflow-auto">
+      <!-- Điện thoại: mỗi bot một dòng thẻ (bảng 8 cột phải cuộn ngang) -->
+      <ul v-if="dsOnline.length" class="max-h-[32rem] divide-y divide-default overflow-y-auto text-sm sm:hidden">
+        <li v-for="b in dsOnline" :key="b.taiKhoan" class="py-2">
+          <div class="flex items-baseline justify-between gap-2">
+            <span class="min-w-0 truncate font-semibold text-highlighted">{{ b.ten }}</span>
+            <span class="shrink-0 tabular-nums">cấp {{ b.cap }} / {{ b.capMucTieu }}</span>
+          </div>
+          <p class="mt-0.5 text-xs text-muted">
+            {{ VIEC[b.hoatDong] ?? b.hoatDong }} · {{ b.tenMap || b.mapId }}
+          </p>
+          <p class="text-xs text-dimmed">
+            {{ LOP[b.lop] ?? b.lop }} · {{ TINH_CACH[b.tinhCach] ?? b.tinhCach }} · {{ fmt(b.xu) }} xu<template v-if="b.vaoLuc"> · vào {{ b.vaoLuc.slice(11, 16) }}</template>
+          </p>
+        </li>
+      </ul>
+      <div v-if="dsOnline.length" class="hidden max-h-96 overflow-auto sm:block">
         <table class="bang-wiki">
           <thead><tr><th>Tên</th><th class="so">Cấp / mục tiêu</th><th>Dòng</th><th>Tính cách</th><th>Bản đồ</th><th>Đang làm</th><th class="so">Xu</th><th>Vào lúc</th></tr></thead>
           <tbody>
@@ -220,7 +235,7 @@ const gioHienTai = new Date().getHours()
           <span class="text-xs text-muted">Lưu vào bảng cau_hinh (nhóm hlv_ai) - dịch vụ bot đọc lại mỗi 20 giây, máy chủ game ≤ 10 giây. Lịch sử / hoàn tác: trang Cấu hình hệ thống.</span>
         </div>
       </template>
-      <div class="grid gap-6 lg:grid-cols-2" @input="dangSua = true" @change="dangSua = true">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2" @input="dangSua = true" @change="dangSua = true">
         <section class="space-y-3">
           <h3 class="font-semibold">Số lượng và lịch</h3>
           <UFormField label="Số Huấn luyện viên AI (giờ 100% = ngần này bot online)">
@@ -231,19 +246,19 @@ const gioHienTai = new Date().getHours()
             <div class="flex h-24 items-end gap-0.5 rounded border border-default p-1">
               <div v-for="(v, g) in f.lich" :key="g" class="flex-1 rounded-t" :class="g === gioHienTai ? 'bg-primary' : 'bg-primary/40'" :style="{ height: `${Math.max(2, Math.min(100, v))}%` }" :title="`${g}h: ${v}%`" />
             </div>
-            <div class="mt-2 grid grid-cols-6 gap-1 sm:grid-cols-12">
+            <div class="mt-2 grid grid-cols-4 gap-1 min-[400px]:grid-cols-6 sm:grid-cols-12">
               <UInput v-for="(_, g) in f.lich" :key="g" v-model.number="f.lich[g]" type="number" :min="0" :max="100" size="xs">
                 <template #leading><span class="text-[10px] text-muted">{{ g }}h</span></template>
               </UInput>
             </div>
           </div>
           <h3 class="pt-2 font-semibold">Dòng khởi đầu (trọng số) - tổng {{ tongPhanTram(f.lop) }}</h3>
-          <div class="grid grid-cols-5 gap-2">
-            <UFormField v-for="(t, i) in LOP" :key="t" :label="t"><UInput v-model.number="f.lop[i]" type="number" :min="0" :max="100" size="sm" /></UFormField>
+          <div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            <UFormField v-for="(t, i) in LOP" :key="t" :label="t" class="min-w-0" :ui="{ label: 'truncate' }"><UInput v-model.number="f.lop[i]" type="number" :min="0" :max="100" size="sm" /></UFormField>
           </div>
           <h3 class="pt-2 font-semibold">Tính cách (trọng số) - tổng {{ tongPhanTram(f.tinhCach) }}</h3>
-          <div class="grid grid-cols-5 gap-2">
-            <UFormField v-for="(t, i) in Object.values(TINH_CACH)" :key="t" :label="t"><UInput v-model.number="f.tinhCach[i]" type="number" :min="0" :max="100" size="sm" /></UFormField>
+          <div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            <UFormField v-for="(t, i) in Object.values(TINH_CACH)" :key="t" :label="t" class="min-w-0" :ui="{ label: 'truncate' }"><UInput v-model.number="f.tinhCach[i]" type="number" :min="0" :max="100" size="sm" /></UFormField>
           </div>
           <h3 class="pt-2 font-semibold">Tên bot</h3>
           <UFormField label="Tiền tố tên bot (để trống = tên như người thật; tối đa 12 ký tự, không dùng dấu :)" :error="loiTienTo ?? undefined">

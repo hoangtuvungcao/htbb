@@ -42,21 +42,21 @@ const o = computed(() => {
 </script>
 
 <template>
-  <div class="relative mx-auto w-fit rounded-2xl bg-white p-3 shadow-[0_20px_60px_rgba(10,26,51,.14)]">
+  <div class="relative mx-auto w-fit max-w-full rounded-2xl bg-white p-3 shadow-[0_20px_60px_rgba(10,26,51,.14)]">
     <svg
       :width="kichThuoc"
       :height="kichThuoc"
       :viewBox="`0 0 ${N} ${N}`"
       role="img"
       aria-label="Hình minh hoạ mã QR — BẢN DEMO, không quét được, không chuyển tiền"
-      class="block opacity-40"
+      class="block h-auto max-w-full opacity-40"
       shape-rendering="crispEdges"
     >
       <rect width="100%" height="100%" fill="#fff" />
       <rect v-for="(c, i) in o" :key="i" :x="c.x" :y="c.y" width="1" height="1" fill="#475569" />
     </svg>
     <div class="pointer-events-none absolute inset-0 grid place-items-center">
-      <span class="-rotate-[28deg] select-none rounded-xl border-[6px] border-red-600 bg-white/85 px-5 py-1 font-display text-6xl font-black tracking-widest text-red-600">
+      <span class="-rotate-[28deg] select-none rounded-xl border-[6px] border-red-600 bg-white/85 px-5 py-1 font-display text-5xl font-black sm:text-6xl tracking-widest text-red-600">
         DEMO
       </span>
     </div>
