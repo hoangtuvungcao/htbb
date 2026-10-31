@@ -261,6 +261,11 @@ const columns = [
         </FxReveal>
       </div>
 
+      <!-- Đổi lượng → lượng khoá / xu (game đổi trên RAM; xem components/tai-khoan/DoiLuong.vue) -->
+      <FxReveal v-if="data?.chars.length" :delay="0.12">
+        <TaiKhoanDoiLuong :chars="data.chars" @da-doi="refresh()" />
+      </FxReveal>
+
       <!-- Bảo mật -->
       <FxReveal :delay="0.15">
         <div class="mt-6 overflow-hidden rounded-3xl glass ring-gilded p-8">
