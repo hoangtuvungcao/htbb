@@ -80,6 +80,8 @@ public class BotChucNang {
         byte[] key;
         int curR, curW;
         boolean dut;
+        /** Ly do mat ket noi (chan doan "ket_noi_lai" cua HLV AI). */
+        volatile String lyDoDut;
         final ArrayDeque<Long> guiGan = new ArrayDeque<>();
         // trang thai
         int mapCu = -1;
@@ -214,12 +216,19 @@ public class BotChucNang {
                         continue;
                     }
                     Object[] m = doc();
-                    xuLy((Integer) m[0], (byte[]) m[1]);
+                    try {
+                        xuLy((Integer) m[0], (byte[]) m[1]);
+                    } catch (RuntimeException ex) {
+                        // goi da doc tron (doc() readFully) -> luong van dong bo: loi phan tich mot goi khong phai mat ket noi
+                        ghi(0, "loi xu ly goi " + m[0] + ": " + ex);
+                    }
                 }
             } catch (EOFException | java.net.SocketException e) {
+                if (lyDoDut == null) lyDoDut = "doc: " + e;
                 dut = true;
             } catch (Exception e) {
                 ghi(0, "loi doc: " + e);
+                if (lyDoDut == null) lyDoDut = "loi doc: " + e;
                 dut = true;
             }
         }
@@ -236,9 +245,10 @@ public class BotChucNang {
                 } catch (java.net.SocketTimeoutException t) {
                     b = -2;
                 }
-                if (b == -1) { dut = true; return false; }
+                if (b == -1) { if (lyDoDut == null) lyDoDut = "may chu dong ket noi (EOF)"; dut = true; return false; }
                 if (b >= 0) in.reset();
             } catch (IOException e) {
+                if (lyDoDut == null) lyDoDut = "kiem song: " + e;
                 dut = true;
                 return false;
             } finally {

@@ -150,6 +150,8 @@ public final class KiemHlvAi {
                 && doc("src/real/CharChuyenLuong.java").split("Huấn luyện viên AI không nhận lượng", -1).length - 1 == 2);
         Kiem.dung("tien that: giftcode chan bot", doc("src/real/GiftcodeAnToan.java").contains("HlvAiGame.chanTienThat(p)"));
         Kiem.dung("gop quy doi: tinh han muc bot -> nguoi", doc("src/real/Map.java").contains("HlvAiGame.MA_BANG + clandata.id"));
+        Kiem.dung("hoc chieu NPC: bot mien xu, nguoi choi tra du", doc("src/real/HocChieuGame.java").contains("final long gia = HlvAiGame.laBot(p) ? 0L : r.giaXu;")
+                && doc("src/real/HocChieuGame.java").contains("p.subXu(gia, true, \"map 80\")"));
         Kiem.dung("co bot doc luc chon nhan vat", doc("src/real/cmd/SelectCharHandler.java").contains("real.HlvAiGame.vaoGame(p)"));
         Kiem.dung("ten goi 5 (vao tam nhin) co tien to", doc("src/real/MessageCreator.java").contains("HlvAi.hienThi(ch.getName(), ch.laHlvAi)"));
         Kiem.dung("tra cuu ten bo tien to (CharManager + kenh chat)", doc("src/real/CharManager.java").contains("HlvAi.boTienTo(name)")
