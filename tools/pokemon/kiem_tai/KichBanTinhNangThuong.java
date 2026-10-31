@@ -203,7 +203,8 @@ public final class KichBanTinhNangThuong {
             b.bom(200);
             q = b.quai.get(id);
             if (q == null || q[2] == 0) return new int[]{-1, 0};
-            if (q[2] > 0 && q[4] > 0 && q[2] * 100 <= q[4] * 35) break;
+            // quai da bi luong khac danh thap san: van phai tu giao chien it nhat 1 don (luat may chu) moi duoc nem
+            if (danhCuoi > 0 && q[2] > 0 && q[4] > 0 && q[2] * 100 <= q[4] * 35) break;
             b.gui(9, (short) id, (byte) 0);
             danhCuoi = System.currentTimeMillis();
             b.bom(450);
