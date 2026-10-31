@@ -96,7 +96,9 @@ async function luu(chiBat?: boolean) {
   const thayDoi: Record<string, string> = {}
   for (const [k, v] of Object.entries(moi)) if ((cu[k]?.giaTri ?? '') !== v && (chiBat === undefined || k === 'hlv_ai.bat')) thayDoi[k] = v
   if (!Object.keys(thayDoi).length) { toast.add({ title: 'Không có gì thay đổi.', color: 'neutral' }); return }
-  const ly = chiBat !== undefined ? (chiBat ? 'Bật Huấn luyện viên AI' : 'Tắt Huấn luyện viên AI') : lyDo.value
+  const ly = chiBat !== undefined 
+    ? (chiBat ? 'Bật Huấn luyện viên AI' : 'Tắt Huấn luyện viên AI') 
+    : (lyDo.value.trim().length >= 3 ? lyDo.value.trim() : 'Cập nhật cấu hình bot')
   dangLuu.value = true
   try {
     const kq = await api<{ message: string }>('/api/admin/cau-hinh-he-thong/luu', { method: 'POST', body: { thayDoi, lyDo: ly } })
@@ -272,8 +274,8 @@ const gioHienTai = new Date().getHours()
             <UFormField label="Số đội do bot làm chủ tối đa" help="Bot cấp 50 lập đội miễn 100 triệu xu khi còn dưới số này"><UInput v-model.number="f.doiBot" type="number" :min="0" :max="50" /></UFormField>
           </div>
           <div class="flex flex-wrap items-end gap-2 pt-2">
-            <UFormField label="Lý do thay đổi (ghi lịch sử)" class="grow"><UInput v-model="lyDo" placeholder="vd: tăng bot giờ tối" /></UFormField>
-            <UButton icon="i-lucide-save" label="Lưu cấu hình" :loading="dangLuu" :disabled="lyDo.trim().length < 3 || !!loiTienTo" @click="luu()" />
+            <UFormField label="Lý do thay đổi (ghi lịch sử)" class="grow" help="Để trống sẽ tự động ghi 'Cập nhật cấu hình bot'"><UInput v-model="lyDo" placeholder="vd: đổi tên bot, tăng bot giờ tối..." /></UFormField>
+            <UButton icon="i-lucide-save" label="Lưu cấu hình" :loading="dangLuu" :disabled="!!loiTienTo" @click="luu()" />
             <UButton color="neutral" variant="ghost" label="Bỏ thay đổi" @click="dangSua = false; napForm()" />
           </div>
         </section>

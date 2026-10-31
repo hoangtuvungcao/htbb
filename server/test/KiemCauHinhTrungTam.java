@@ -203,6 +203,14 @@ public final class KiemCauHinhTrungTam {
         }
     }
 
+    static List<String> docDong(final String f) {
+        try {
+            return Files.readAllLines(Paths.get(f), StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            return new ArrayList<String>();
+        }
+    }
+
     public static void main(final String[] args) {
         try {
             com.htbb.dulieu.DuLieuSql.napTuDumpDayDu();
