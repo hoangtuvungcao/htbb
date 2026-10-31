@@ -3782,7 +3782,7 @@ public class Map implements Runnable {
                 Collection<Monster> listmonster = ((Hashtable) monsters.get(i)).values();
                 ((Hashtable) this.temp_monsters.get(i)).clear();
 
-                for (Monster mt : listmonster) {
+                for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                     if (!mt.isBoss) {
                         if (random(100) < 50) {
                             Monster_Clone mons = new Monster_Clone((byte) 1);

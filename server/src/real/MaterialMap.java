@@ -347,7 +347,7 @@ public class MaterialMap extends Map {
     public void update() {
         if (this.players.size() > 1) {
             Collection<Monster> listmonster = this.monsters.values();
-            for (Monster mt : listmonster) {
+            for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 try {
                     mt.update();
                     if (mt.target != null && mt.target.exit) {
