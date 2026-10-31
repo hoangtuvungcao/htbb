@@ -1,4 +1,4 @@
-# Cau hinh login server tren VPS Linux.
+# Cau hinh login server tren VPS Linux (htbb-login.jar; jar quay lui CheckLoginSocket.jar doc cung tep).
 # loginServer/server.ini cung bi .gitignore chan -> tao tay MOT LAN (db.password = DB_PASSWORD
 # trong /etc/htbb/htbb.env; doi mat khau CSDL thi sua ca tep nay):
 #     cp /opt/htbb/vps/loginServer.server.ini.example /opt/htbb/server/loginServer/server.ini
@@ -10,3 +10,18 @@ db.url=jdbc:mysql://127.0.0.1:3306/account?characterEncoding=UTF-8
 db.user=htbb
 db.password=DOI_MAT_KHAU_DB
 port=8023
+
+# ---- Tuy chon (chi htbb-login.jar doc; jar cu bo qua). Mac dinh da hop VPS - chi bo '#' khi can.
+# Properties KHONG co chu thich cuoi dong: ghi chu de dong rieng. Bang day du: docs/dang-nhap.md muc 5.
+# bind chi noi bo (khoi dua vao ufw):
+#login.diaChi=127.0.0.1
+# ket noi CSDL toi da (= so luong xu ly); yeu cau cho toi da (day -> tra -3 ngay):
+#login.csdl.toiDa=8
+#login.hangDoi.toiDa=2000
+# han moi yeu cau, PHAI < 15000 (htbb.choLoginMs cua game):
+#login.hanXuLyMs=13000
+# IP game server duoc noi (trong = moi IP):
+#login.ipChoPhep=127.0.0.1
+# dong [NHIP] moi N giay (0 = tat); 0 = khong ghi tung lan dang nhap:
+#login.nhipGiay=60
+#login.logMoiLan=1

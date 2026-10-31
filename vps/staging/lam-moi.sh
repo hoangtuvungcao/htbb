@@ -7,7 +7,8 @@
 #  Tuy chon:
 #    --jar F            jar ung vien (bat buoc, tru khi --giu-jar)
 #    --sql F            sql/htbb.sql ung vien (mac dinh /opt/htbb/sql/htbb.sql)
-#    --nguon D          thu muc monorepo lay tai nguyen server (map/ cMap/ lib/ loginServer/CheckLoginSocket.jar);
+#    --nguon D          thu muc monorepo lay tai nguyen server (map/ cMap/ lib/ loginServer/htbb-login.jar +
+#                       CheckLoginSocket.jar);
 #                       mac dinh /opt/htbb. Ban ung vien doi tai nguyen thi tro toi ban checkout cua no.
 #    --ban-sao F        ban sao luu htbb_db_*.sql.gz cu the (account_* cung moc tu tim); mac dinh MOI NHAT
 #    --tu-csdl-song     khong dung ban sao luu: mysqldump --single-transaction thang tu htbb_db / account (ton IO hon)
@@ -77,11 +78,29 @@ for D in map cMap lib; do
     rsync -a --delete "$NGUON/server/$D/" "$STG_GOC/server/$D/"
 done
 install -d -o "$STG_USER" -g "$STG_USER" -m 750 "$STG_GOC/server/loginServer"
-install -o "$STG_USER" -g "$STG_USER" -m 644 "$NGUON/server/loginServer/CheckLoginSocket.jar" "$STG_GOC/server/loginServer/"
+# Login server: htbb-login.jar (unit chay mac dinh) + CheckLoginSocket.jar (quay lui: /etc/htbb/staging-login.env).
+# Nguon cu chua co htbb-login.jar (truoc 31/10/2026) -> chi chep jar cu va ep unit chay jar cu.
+for J in htbb-login.jar CheckLoginSocket.jar; do
+    [ -f "$NGUON/server/loginServer/$J" ] && install -o "$STG_USER" -g "$STG_USER" -m 644 "$NGUON/server/loginServer/$J" "$STG_GOC/server/loginServer/"
+done
+[ -f "$STG_GOC/server/loginServer/htbb-login.jar" ] || [ -f "$STG_GOC/server/loginServer/CheckLoginSocket.jar" ] \
+    || loi "$NGUON/server/loginServer thieu ca htbb-login.jar lan CheckLoginSocket.jar"
+STG_LOGIN_ENV=${STG_LOGIN_ENV:-/etc/htbb/staging-login.env}
+if [ ! -f "$NGUON/server/loginServer/htbb-login.jar" ]; then
+    echo "   [CANH BAO] nguon chua co htbb-login.jar -> staging chay CheckLoginSocket.jar ($STG_LOGIN_ENV)"
+    rm -f "$STG_GOC/server/loginServer/htbb-login.jar"
+    if [ -d "$(dirname "$STG_LOGIN_ENV")" ]; then
+        printf '# TU DONG (lam-moi.sh): nguon chua co htbb-login.jar\nHTBB_LOGIN_JAR=CheckLoginSocket.jar\n' > "$STG_LOGIN_ENV"
+    fi
+elif [ -f "$STG_LOGIN_ENV" ] && grep -q '^# TU DONG (lam-moi.sh)' "$STG_LOGIN_ENV"; then
+    rm -f "$STG_LOGIN_ENV"   # tep do lan truoc tu ghi (nguon cu) - nguon nay co jar moi. Tep nguoi dat tay thi giu.
+elif [ -f "$STG_LOGIN_ENV" ]; then
+    echo "   [CHU Y] $STG_LOGIN_ENV dat tay: $(grep -v '^#' "$STG_LOGIN_ENV" | head -1)"
+fi
 chown -R "$STG_USER:$STG_USER" "$STG_GOC/server/map" "$STG_GOC/server/cMap" "$STG_GOC/server/lib"
 # Tep trang thai cua lan chay truoc (bao tri / nhip / log .txt) - staging moi bat dau sach.
 rm -f "$STG_GOC/server/bao_tri.txt" "$STG_GOC/server/trang_thai.json"
-echo "   ok (map, cMap, lib, CheckLoginSocket.jar)"
+echo "   ok (map, cMap, lib, $(cd "$STG_GOC/server/loginServer" && ls -1 ./*.jar | xargs -n1 basename | paste -sd -))"
 
 buoc "3/8 CSDL staging"
 nap_dump() { # $1 = tep .sql.gz, $2 = CSDL dich

@@ -1,7 +1,12 @@
-# /etc/systemd/system/htbb-login.service - HTBB login server (CheckLoginSocket, TCP 8023).
+# /etc/systemd/system/htbb-login.service - HTBB login server (TCP 8023). Dac ta + van hanh: docs/dang-nhap.md.
 # Chi lang nghe noi bo: ufw KHONG mo 8023 (server.ini: sv.iplogin=127.0.0.1).
+#
+# Jar chay = bien HTBB_LOGIN_JAR: mac dinh htbb-login.jar (login server HTBB, ma nguon server/src/com/htbb/dangnhap).
+# QUAY LUI ve jar cu (CheckLoginSocket.jar, van nam trong server/loginServer/) - MOT dong, khong sua unit:
+#     echo HTBB_LOGIN_JAR=CheckLoginSocket.jar | sudo tee /etc/htbb/login.env && sudo systemctl restart htbb-login
+# Ve lai ban moi:  sudo rm /etc/htbb/login.env && sudo systemctl restart htbb-login
 [Unit]
-Description=HTBB login server (CheckLoginSocket, 127.0.0.1-only via ufw, TCP 8023)
+Description=HTBB login server (htbb-login.jar, 127.0.0.1-only via ufw, TCP 8023)
 After=network.target mariadb.service
 Requires=mariadb.service
 StartLimitIntervalSec=300
@@ -11,14 +16,21 @@ StartLimitBurst=10
 Type=simple
 User=htbb
 Group=htbb
-# Doc ./server.ini (db.url, db.user, db.password, port=8023) - xem vps/loginServer.server.ini.example
+# Doc ./server.ini (db.url, db.user, db.password, port=8023, khoa login.* tuy chon) - xem vps/loginServer.server.ini.example
 WorkingDirectory=/opt/htbb/server/loginServer
 Environment=LANG=en_US.UTF-8
+Environment=HTBB_LOGIN_JAR=htbb-login.jar
+# Tep quay lui (tuy chon, '-' = khong co cung duoc). Dat SAU dong Environment tren nen ghi de duoc.
+EnvironmentFile=-/etc/htbb/login.env
 UMask=0027
 MemoryMax=256M
-ExecStart=/usr/bin/java -Xms32m -Xmx128m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar CheckLoginSocket.jar
+ExecStart=/usr/bin/java -Xms32m -Xmx128m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar ${HTBB_LOGIN_JAR}
 Restart=always
 RestartSec=5
+# SIGTERM: htbb-login.jar ngung nhan, tra loi not yeu cau dang xu ly (login.dungChoMs, mac dinh 10 s) roi thoat.
+# JVM thoat bang ma 143 khi bi SIGTERM - khong phai loi.
+TimeoutStopSec=30
+SuccessExitStatus=143
 # systemd mo tep append: bang quyen ROOT nen tep moi tao thuoc root:root 0640 -> web (User=htbb) khong doc duoc
 # (/admin/chandoan, /admin/log bao 'khong doc duoc'). '+' = chay bang root; idempotent.
 ExecStartPre=+/bin/sh -c 'touch /opt/htbb/logs/login.out && chown htbb:htbb /opt/htbb/logs/login.out && chmod 0640 /opt/htbb/logs/login.out'

@@ -7,4 +7,7 @@ REM Ban cu ghi "Checkloginsocket.jar" - chay duoc tren Windows vi Windows khong 
 REM hoa/thuong, nhung ai chep dong lenh nay sang Linux la an "Unable to access jarfile".
 REM vps/htbb-login.service dung dung ten, nen production khong bao gio dinh loi nay.
 
-java -jar CheckLoginSocket.jar
+REM 31/10/2026: login server HTBB (htbb-login.jar, ma nguon server\src\com\htbb\dangnhap, build: sh build.sh).
+REM QUAY LUI ve ban cu: dat bien truoc khi chay  set HTBB_LOGIN_JAR=CheckLoginSocket.jar
+if "%HTBB_LOGIN_JAR%"=="" set HTBB_LOGIN_JAR=htbb-login.jar
+java -Dfile.encoding=UTF-8 -jar %HTBB_LOGIN_JAR%

@@ -233,11 +233,11 @@ public final class MayChuDangNhap {
             } catch (final Throwable e) {
                 lyDo = "loi: " + e;
             } finally {
-                MayChuDangNhap.this.ketNoi.remove(this);
                 MayChuDangNhap.this.gioiHan.nha(this.ip);
                 if (MayChuDangNhap.this.dangChay) {
+                    MayChuDangNhap.this.ketNoi.remove(this);
                     dongIm(this.s);
-                }
+                } // dang tat: giu trong tap - dung() tra loi not roi moi dong socket
                 NhatKy.thongTin("KET_NOI", "dong ket noi " + this.tu + ": " + lyDo + " (con " + MayChuDangNhap.this.ketNoi.size() + ")");
             }
         }

@@ -12,7 +12,7 @@ Tài liệu này không ghi địa chỉ IP của VPS hay của WAF, không ghi 
 ```
 Người chơi (jar / APK / PC)  ── TCP 19129 ──►  WAF / Nova agent ──►  htbb-game (Java, /opt/htbb/server)
                                                                          │ 127.0.0.1:8023
-                                                                         ├──► htbb-login (CheckLoginSocket.jar)
+                                                                         ├──► htbb-login (htbb-login.jar)
                                                                          └──► MariaDB 127.0.0.1:3306 (htbb_db, account)
 Trình duyệt ── HTTPS ──► WAF ──► nginx 80/443 ──► htbb-web (Nuxt, 127.0.0.1:3000) ──► MariaDB
                                        └── /downloads/ ──► /opt/htbb/downloads (bản tải game)
@@ -87,7 +87,7 @@ Máy nhỏ thì tạo swap 1–2 GB với `vm.swappiness=10` (chỉ để chốn
 
 ### 3.2 MariaDB
 
-**Phải là MariaDB** (hoặc MySQL 5.7), không phải MySQL 8: login server `CheckLoginSocket.jar` so mật khẩu bằng
+**Phải là MariaDB** (hoặc MySQL 5.7), không phải MySQL 8: login server (`htbb-login.jar`, cả jar cũ `CheckLoginSocket.jar`) so mật khẩu bằng
 `PASSWORD()`, hàm này MySQL 8 đã bỏ — cài MySQL 8 là không ai đăng nhập được. Kiểm:
 `mysql -u root -e "SELECT PASSWORD('abc');"` phải ra chuỗi `*…`.
 
@@ -104,7 +104,7 @@ Các điểm chính của [`vps/htbb-mariadb.cnf`](../vps/htbb-mariadb.cnf):
 | Thiết lập | Vì sao |
 |---|---|
 | `bind-address = 127.0.0.1` | không mở 3306 ra ngoài |
-| `character-set-server = utf8`, `collation-server = utf8_general_ci` | **không dùng utf8mb4**: Connector/J 5.0.8 trong `CheckLoginSocket.jar` gặp collation utf8mb4 (id 45 / 224) là báo `Unknown initial character set index` và không ai đăng nhập được. Bảng nào cần utf8mb4 tự khai trong DDL |
+| `character-set-server = utf8`, `collation-server = utf8_general_ci` | **không dùng utf8mb4**: Connector/J 5.0.8 trong `CheckLoginSocket.jar` (jar quay lui của login server) gặp collation utf8mb4 (id 45 / 224) là báo `Unknown initial character set index` và không ai đăng nhập được. `htbb-login.jar` (5.1.49) không bị, nhưng còn giữ đường quay lui thì giữ `utf8`. Bảng nào cần utf8mb4 tự khai trong DDL |
 | `lower_case_table_names = 1` | mã nguồn dùng tên bảng lẫn hoa/thường |
 | `skip-name-resolve` | không tra DNS ngược; user CSDL khai theo IP / `localhost` |
 | `performance_schema = OFF` | tiết kiệm RAM |
@@ -174,7 +174,8 @@ SELECT COUNT(*) FROM data_potion;                                  -- phải đ�
 2. `server.ini` của game: `sudo /opt/htbb/vps/sinh-server-ini.sh` (đọc bí mật từ biến môi trường hoặc
    `/etc/htbb/htbb.env`, thử kết nối CSDL rồi mới ghi `/opt/htbb/server/server.ini`). Chi tiết: [cau-hinh.md](cau-hinh.md).
 3. Login server: chép [`vps/loginServer.server.ini.example`](../vps/loginServer.server.ini.example) thành
-   `/opt/htbb/server/loginServer/server.ini`, điền mật khẩu, `chown htbb:htbb`, `chmod 640`.
+   `/opt/htbb/server/loginServer/server.ini`, điền mật khẩu, `chown htbb:htbb`, `chmod 640`. Unit chạy
+   `htbb-login.jar`; quay lui về `CheckLoginSocket.jar` bằng `/etc/htbb/login.env` ([dang-nhap.md](dang-nhap.md) mục 7).
 
 ### 3.6 systemd, nginx, cron
 
@@ -232,7 +233,9 @@ chạy khi biến repo `HTBB_VPS_MONOREPO=1`; địa chỉ SSH nằm ở biến 
 2. `git pull --ff-only`, kiểm `unzip -t server/htbb-server.jar` (hỏng thì khôi phục jar cũ, server vẫn chạy bản cũ).
 3. Sinh lại `server.ini` (`vps/sinh-server-ini.sh`; mã thoát 3 = đã đổi).
 4. Nếu commit đổi `server/htbb-server.jar`, `server/lib/`, `server/map/`, `server/cMap/`, `server/loginServer/`,
-   bản mẫu cấu hình hoặc `server.ini` đổi: **không** khởi động lại ngay mà để lần bảo trì tự động kế tiếp
+   bản mẫu cấu hình hoặc `server.ini` đổi (unit systemd thì **không** tự cài lại — đổi
+   [`htbb-login.service`](../vps/htbb-login.service) phải `install` + `daemon-reload` tay, xem
+   [dang-nhap.md](dang-nhap.md) mục 7): **không** khởi động lại ngay mà để lần bảo trì tự động kế tiếp
    (`BaoTriDaily`) nạp bản mới. Đổi tài liệu, SQL, `.java` chỉ kéo code, không ai bị kick.
 5. Cần lên ngay: chạy workflow bằng tay (*workflow_dispatch*) và tích **deploy_now**, hoặc bấm "Bảo trì" trên web
    admin. Khi đó script đặt cờ `5h_systems.baotri_thongbao` (báo người chơi 60 giây), `systemctl stop htbb-game`

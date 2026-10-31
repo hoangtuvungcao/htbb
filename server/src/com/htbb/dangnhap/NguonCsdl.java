@@ -69,9 +69,9 @@ public final class NguonCsdl implements XacThuc.Nguon {
     }
 
     /**
-     * Muon ket noi, chay, tra. Loi KET NOI (SQLState 08xxx - ket noi bi MariaDB cat, mang rot) xay ra NHANH (duoi
-     * {@link #THU_LAI_NEU_DUOI_MS}) thi thu lai MOT lan tren ket noi moi: nguoi choi khong phai nhan "Có lỗi xảy ra"
-     * chi vi ket noi cu da chet trong luc ranh. Loi cau truy van / het gio thi khong thu lai.
+     * Muon ket noi, chay, tra - moi buoc deu trong {@code hanChot}. Loi KET NOI (SQLState 08xxx - ket noi bi MariaDB
+     * cat, mang rot) ma con hon {@link #THU_LAI_KHI_CON_MS} truoc han thi thu lai MOT lan tren ket noi moi: nguoi choi
+     * khong phai nhan "Có lỗi xảy ra" chi vi ket noi cu da chet trong luc ranh. Loi cau truy van thi khong thu lai.
      */
     private <T> T voiKetNoi(final long hanChot, final Truy<T> t) throws SQLException {
         for (int lan = 0; ; lan++) {

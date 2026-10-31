@@ -31,6 +31,7 @@ Monorepo gồm máy chủ, bốn client, website và công cụ. Website: `https
 | [docs/build.md](docs/build.md) | build và kiểm thử từng thành phần, phát hành client |
 | [docs/trien-khai.md](docs/trien-khai.md) | dựng VPS và deploy (MariaDB, systemd, nginx, WAF, sao lưu) |
 | [docs/van-hanh.md](docs/van-hanh.md) | vận hành: dịch vụ, log, sao lưu, bảo trì, sổ tay GM, sự kiện, giftcode, nạp tiền, email |
+| [docs/dang-nhap.md](docs/dang-nhap.md) | login server: giao thức game ↔ login, mã kết quả, cấu hình, số đo cũ/mới, lên bản và quay lui |
 | [docs/cau-hinh.md](docs/cau-hinh.md) | mọi khoá cấu hình (`server.ini` + bảng `cau_hinh`), một phần sinh tự động |
 | [docs/thiet-ke-game.md](docs/thiet-ke-game.md) | thiết kế game: Pokémon, hệ, chiêu, Gym, kinh tế, hệ sinh thái, thuật ngữ |
 | [docs/giay-phep.md](docs/giay-phep.md) | giấy phép và ghi công tài nguyên |
@@ -48,7 +49,7 @@ cp vps/server.ini.linux.example server/server.ini
 cp vps/loginServer.server.ini.example server/loginServer/server.ini
 
 # 3. Login server rồi game server (chạy ở server/)
-(cd server/loginServer && java -Djava.awt.headless=true -jar CheckLoginSocket.jar) &
+(cd server/loginServer && java -Djava.awt.headless=true -jar htbb-login.jar) &   # jar cũ: CheckLoginSocket.jar
 (cd server && java -Djava.awt.headless=true -jar htbb-server.jar)
 
 # 4. Website

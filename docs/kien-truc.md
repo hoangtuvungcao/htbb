@@ -38,7 +38,7 @@ ghi rõ khác. Server và bộ kiểm thử server chạy với thư mục làm 
                  ▼
  ┌───────────────────────────────┐   TCP 8023 (chỉ nội bộ)   ┌───────────────────────┐
  │ Game server (Java)            │ ────────────────────────▶ │ Login server          │
- │ server/htbb-server.jar        │   kiểm tài khoản/mật khẩu │ CheckLoginSocket.jar  │
+ │ server/htbb-server.jar        │   kiểm tài khoản/mật khẩu │ htbb-login.jar        │
  │ systemd: htbb-game            │ ◀──────────────────────── │ systemd: htbb-login   │
  │ đọc server/server.ini         │       trả userId          └──────────┬────────────┘
  └──────────────┬────────────────┘                                     │
@@ -232,11 +232,15 @@ bị chặn, giới hạn số kết nối mỗi IP và tốc độ mở kết n
 
 ### 3.1 Login server
 
-- [server/loginServer/CheckLoginSocket.jar](../server/loginServer/CheckLoginSocket.jar) là jar có sẵn từ game gốc,
-  **không có mã nguồn**. Nó nghe TCP 8023 và đọc CSDL `account` qua JDBC (Connector/J rất cũ đóng gói bên trong).
-- Cấu hình ở `server/loginServer/server.ini` (`db.url`, `db.user`, `db.password`, `port`). Tệp này không vào git, mẫu ở
-  [loginServer.server.ini.example](../vps/loginServer.server.ini.example). URL JDBC phải có `characterEncoding=UTF-8`,
-  thiếu thì driver cũ gặp collation `utf8mb4` sẽ báo lỗi và không ai đăng nhập được.
+- `server/loginServer/htbb-login.jar` (31/10/2026, mã nguồn
+  [com.htbb.dangnhap](../server/src/com/htbb/dangnhap/MayChuDangNhap.java)) nghe TCP 8023 và đọc CSDL `account` qua
+  JDBC (Connector/J 5.1.49 đóng gói bên trong). Nó thay [CheckLoginSocket.jar](../server/loginServer/CheckLoginSocket.jar)
+  — jar có sẵn từ game gốc, không có mã nguồn — với **cùng giao thức và ngữ nghĩa**; jar cũ giữ làm bản quay lui.
+  Giao thức, mã kết quả, cấu hình, số đo, quay lui: [dang-nhap.md](dang-nhap.md).
+- Cấu hình ở `server/loginServer/server.ini` (`db.url`, `db.user`, `db.password`, `port`, khoá `login.*` tuỳ chọn). Tệp
+  này không vào git, mẫu ở [loginServer.server.ini.example](../vps/loginServer.server.ini.example). URL JDBC phải có
+  `characterEncoding=UTF-8`; thiếu thì driver cũ trong jar quay lui gặp collation `utf8mb4` sẽ báo lỗi và không ai
+  đăng nhập được.
 - Mật khẩu so bằng hàm `PASSWORD()` của MySQL/MariaDB trên cột `team_user.password`. Mọi chỗ tạo hoặc đổi mật khẩu
   (web đăng ký, đổi mật khẩu, quản trị, đăng ký trong game) đều phải ghi bằng `PASSWORD(?)` để khớp với login server.
   Khi chạy trên NovaDB (không có `PASSWORD()`), web tự tính giá trị tương đương.
