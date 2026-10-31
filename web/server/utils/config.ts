@@ -422,7 +422,8 @@ export function publicSiteConfig() {
     siteUrl: c.site.siteUrl,
     choIndex: c.site.choIndex,
     // Quên mật khẩu chỉ chạy khi đã cấu hình gửi mail (cùng điều kiện mailDaCauHinh() ở guiMail.ts).
-    quenMatKhau: c.mail.gmailClientId !== '' && c.mail.gmailClientSecret !== ''
-      && c.mail.gmailRefreshToken !== '' && c.mail.gmailSender !== '',
+    quenMatKhau: (c.mail.gmailClientId !== '' && c.mail.gmailClientSecret !== ''
+      && c.mail.gmailRefreshToken !== '' && c.mail.gmailSender !== '')
+      || (c.mail.smtpUser !== '' && c.mail.smtpPass !== ''),
   }
 }
