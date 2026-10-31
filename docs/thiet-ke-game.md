@@ -340,7 +340,7 @@ mỗi con ≥ ×2,5 so với trung tính:
   - Eevee hạ 8 con, 6,1 giây mỗi con;
   - Squirtle chỉ hạ 2 con, 15,7 giây mỗi con, tốn 8 bình thuốc mỗi con;
   - Charmander (Nước đánh Lửa ×1,5, 10 đòn để gục) không hạ được con nào và hết 12 bình;
-  - Pichu (×0,3) không hạ được con nào.
+  - Pichu (×0,3) không hạ được con nào; cùng bài với vũ khí +6 thì hạ 7 con, 11,2 giây mỗi con, 2,3 bình mỗi con.
 
 Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **chưa sửa**):
 
@@ -348,6 +348,10 @@ Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **ch�
   bình thuốc mỗi con. Phần lớn sát thương đến lúc đi tìm (2 quái cùng đánh).
 - Bản đồ Arcanine (20, cấp 60): mọi dòng nhận 26–40 đòn mỗi con, đa số là đòn nhỏ 22–126 cách nhau 0,3 giây, và 3/4 dòng
   gục. Cần kiểm riêng.
+- Gym Goldenrod (Tauros, cấp 61) đo ở cấp 62, đồ +0: cả 5 dòng gục sau 56–110 giây, boss còn 10–63% HP, mỗi dòng dùng
+  15–19 bình. Sát thương lên boss 1.400–2.400 mỗi giây, tức cần ~100–150 giây để hạ, đúng cửa sổ thiết kế. Thua là do đòn
+  boss (tới 6.285 một đòn), không phải do HP / thủ boss. Khối `sua_can_bang_cap.sql` chỉ hạ tấn công Gym cấp 13–59 (stt
+  2..10); Gym stt 11..16 vẫn là số thiết kế cho đồ +6.
 
 ### 2.5 Trạng thái
 
