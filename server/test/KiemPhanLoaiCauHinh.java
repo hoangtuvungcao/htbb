@@ -49,7 +49,8 @@ public final class KiemPhanLoaiCauHinh {
         // <= 105: +3 khoa exp.nang_luong_{thanh_vien,the_thang,ve_mua}_phut (chu game 31/10/2026: thuong nang luong theo goi)
         // <= 106: +tang_toc.bua_ngay_toi_da (Bua the luc khong gioi han, admin dat lai tran)
         // <= 108: +tang_toc.bua_exp_phan_tram / bua_xu_phan_tram (bac bua 50% / 50%, chinh tren web)
-        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 108), con lai an", chinh <= 108 && chinh >= 40);
+        // <= 109: hlv_ai.cap_theo_nguoi (cap muc tieu bot theo nguoi choi that, 31/10/2026)
+        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 109), con lai an", chinh <= 109 && chinh >= 40);
         Kiem.dung("phan loai: co khoa co dinh + luon bat", coDinh > 100 && luonBat >= 15);
         Kiem.dung("luon_bat: moi khoa la co, gia tri 1", luonBatDung);
 

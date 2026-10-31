@@ -193,9 +193,73 @@ public final class DichVuHlvAi {
     }
 
     static int capMucTieuMoi() {
+        if (CAP_CAO > 0) return com.htbb.pokemon.HlvAi.mucTieuMoi(CAP_THAP, CAP_CAO, RD); // hlv_ai.cap_theo_nguoi
         int[] c = dsSo("hlv_ai.cap_muc_tieu", 2, 0);
         int lo = c[0] > 0 ? c[0] : 10, hi = c[1] >= lo ? c[1] : lo + 50;
         return lo + RD.nextInt(hi - lo + 1);
+    }
+
+    // ================================================================== cap muc tieu theo nguoi choi that
+    /** Khoang cap muc tieu hien hanh theo nguoi that (0 = tat / chua co nguoi that -> dung hlv_ai.cap_muc_tieu). */
+    static volatile int CAP_THAP, CAP_CAO;
+    static int ngayCap = -1;
+    static final String SQL_CAP = "CREATE TABLE IF NOT EXISTS `tob_hlv_ai_cap_nguoi` (`ngay` DATE NOT NULL, `thap` INT NOT NULL DEFAULT 0,"
+            + " `cao` INT NOT NULL DEFAULT 0, `so_nguoi` INT NOT NULL DEFAULT 0, `tb_nguoi` INT NOT NULL DEFAULT 0, `cao_nhat_nguoi` INT NOT NULL DEFAULT 0,"
+            + " `tb_top` INT NOT NULL DEFAULT 0, `tb_bot` INT NOT NULL DEFAULT 0, `cao_nhat_bot` INT NOT NULL DEFAULT 0, `bot_nang` INT NOT NULL DEFAULT 0,"
+            + " `cap_nhat` DATETIME NOT NULL, PRIMARY KEY (`ngay`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+    /**
+     * hlv_ai.cap_theo_nguoi (mac dinh 1): moi ngay (va luc khoi dong) tinh khoang cap muc tieu tu nguoi choi that hoat dong
+     * 7 ngay (la_bot = 0, bo tai khoan sv.adminAccounts) - HlvAi.khoangCap; bot cu duoi muc thap nang dan +3 / ngay (mot
+     * lan / ngay: ngay da co dong tob_hlv_ai_cap_nguoi thi chi tinh lai khoang), khong bot nao co muc tieu tren muc cao.
+     * Ghi tob_hlv_ai_cap_nguoi (trang /admin/hlv-ai). Bot van chi len cap bang cach choi.
+     */
+    static void capTheoNguoi() {
+        boolean bat = !"0".equals(CH.getOrDefault(com.htbb.pokemon.HlvAi.K_CAP_THEO_NGUOI, "1").trim());
+        if (!bat) { CAP_THAP = 0; CAP_CAO = 0; ngayCap = -1; return; }
+        int hom = com.htbb.pokemon.HlvAi.ngay(Calendar.getInstance());
+        if (hom == ngayCap) return;
+        BotChucNang.sql(SQL_CAP);
+        String gm = BotChucNang.sql1("SELECT gia_tri FROM cau_hinh WHERE khoa = 'sv.adminAccounts'");
+        StringBuilder bo = new StringBuilder();
+        if (gm != null) for (String t : gm.split(",")) if (t.trim().matches("[0-9A-Za-z_]{1,32}")) bo.append(bo.length() == 0 ? "" : ",").append('\'').append(t.trim()).append('\'');
+        List<String> r = BotChucNang.sql("SELECT c.lastLv FROM tob_char c JOIN account.team_user u ON u.id = c.userId WHERE u.la_bot = 0"
+                + " AND c.lastLog >= NOW() - INTERVAL 7 DAY" + (bo.length() == 0 ? "" : " AND u.username NOT IN (" + bo + ")"));
+        List<Integer> ds = new ArrayList<>();
+        for (String d : r) {
+            if (d.startsWith("LOI SQL")) { loi("cap theo nguoi: " + d); return; } // CSDL loi: giu khoang cu, thu lai nhip sau
+            try { ds.add(Integer.parseInt(d.trim())); } catch (NumberFormatException ignored) { }
+        }
+        ngayCap = hom;
+        int[] cap = new int[ds.size()];
+        long tong = 0;
+        int max = 0;
+        for (int i = 0; i < cap.length; i++) { cap[i] = ds.get(i); tong += cap[i]; max = Math.max(max, cap[i]); }
+        int[] k = com.htbb.pokemon.HlvAi.khoangCap(cap, dsSo("hlv_ai.cap_muc_tieu", 2, 0)[1]);
+        if (k == null) { CAP_THAP = 0; CAP_CAO = 0; System.out.println("[HLV AI] cap theo nguoi: chua co nguoi choi that hoat dong 7 ngay -> dung hlv_ai.cap_muc_tieu"); return; }
+        CAP_THAP = k[0];
+        CAP_CAO = k[1];
+        // nang dan: mot lan / ngay (khoi dong lai trong ngay khong nang them)
+        String daCo = BotChucNang.sql1("SELECT COUNT(*) FROM tob_hlv_ai_cap_nguoi WHERE ngay = CURDATE()");
+        boolean nang = daCo == null || daCo.trim().equals("0");
+        int doi = 0;
+        for (Ho h : HO) {
+            int moi = nang ? com.htbb.pokemon.HlvAi.nangDan(h.capMucTieu, k[0], k[1]) : Math.min(h.capMucTieu, k[1]);
+            if (moi != h.capMucTieu) { h.capMucTieu = moi; luuHo(h); doi++; }
+        }
+        int[] top = cap.clone();
+        java.util.Arrays.sort(top);
+        long tTop = 0;
+        int nTop = Math.min(com.htbb.pokemon.HlvAi.SO_TOP, top.length);
+        for (int i = top.length - nTop; i < top.length; i++) tTop += top[i];
+        String bot = BotChucNang.sql1("SELECT CONCAT(IFNULL(ROUND(AVG(c.lastLv)),0), ',', IFNULL(MAX(c.lastLv),0)) FROM tob_char c JOIN account.team_user u ON u.id = c.userId WHERE u.la_bot = 1");
+        String[] b = bot == null ? new String[]{"0", "0"} : bot.trim().split(",");
+        BotChucNang.sql("INSERT INTO tob_hlv_ai_cap_nguoi (ngay,thap,cao,so_nguoi,tb_nguoi,cao_nhat_nguoi,tb_top,tb_bot,cao_nhat_bot,bot_nang,cap_nhat) VALUES (CURDATE(),"
+                + k[0] + "," + k[1] + "," + cap.length + "," + (tong / cap.length) + "," + max + "," + (tTop / nTop) + "," + b[0] + "," + (b.length > 1 ? b[1] : "0") + "," + doi + ",NOW())"
+                + " ON DUPLICATE KEY UPDATE thap=VALUES(thap), cao=VALUES(cao), so_nguoi=VALUES(so_nguoi), tb_nguoi=VALUES(tb_nguoi), cao_nhat_nguoi=VALUES(cao_nhat_nguoi),"
+                + " tb_top=VALUES(tb_top), tb_bot=VALUES(tb_bot), cao_nhat_bot=VALUES(cao_nhat_bot), bot_nang=bot_nang+VALUES(bot_nang), cap_nhat=NOW()");
+        System.out.println("[HLV AI] cap theo nguoi: " + cap.length + " nguoi that 7 ngay (tb " + (tong / cap.length) + ", cao nhat " + max + ", top " + nTop + " tb " + (tTop / nTop)
+                + ") -> muc tieu bot " + k[0] + ".." + k[1] + (nang ? ", nang dan" : ", chi chan tren") + " " + doi + " bot");
     }
 
     static Ho timHo(String tk) {
@@ -260,6 +324,7 @@ public final class DichVuHlvAi {
 
     static void nhip() {
         docCauHinh();
+        capTheoNguoi(); // mot lan / ngay (doi ngay hoac vua bat lai)
         boolean bat = "1".equals(CH.getOrDefault("hlv_ai.bat", "0").trim());
         int soLuong = (int) Math.max(0, Math.min(500, so("hlv_ai.so_luong", 30)));
         if (bat && HO.size() < soLuong) taoThem(soLuong);
@@ -482,6 +547,7 @@ public final class DichVuHlvAi {
         }));
         docCauHinh();
         napHo();
+        capTheoNguoi(); // luc khoi dong (sau do mot lan / ngay trong nhip)
         System.out.println("[HLV AI] bat dau: " + HO.size() + " tai khoan bot, ban client " + BotChucNang.BAN + ", cau hinh " + CH);
         if ("1".equals(System.getProperty("hlv.soak"))) KiemHlvAiSoak.batDau();
         if ("1".equals(System.getProperty("hlv.khaiThac"))) KiemHlvAiSoak.batDauKhaiThac();

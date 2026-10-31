@@ -99,19 +99,67 @@ public final class KiemHlvAi {
         }
         Kiem.dung("lap 1000 lan chuyen 7000: dung truoc han muc nguoi (" + da + ")", da <= HlvAi.CHUYEN_NGUOI && lan < 1000);
         Kiem.bang("ngay khoa han muc", 20261031, HlvAi.ngay(new java.util.GregorianCalendar(2026, 9, 31)));
+        capTheoNguoi();
+    }
+
+    /** hlv_ai.cap_theo_nguoi: khoang cap muc tieu bot theo nguoi choi that (HlvAi.khoangCap / mucTieuMoi / nangDan). */
+    static void capTheoNguoi() {
+        Kiem.dung("chua co nguoi that -> null (dung hlv_ai.cap_muc_tieu)", HlvAi.khoangCap(new int[0], 60) == null && HlvAi.khoangCap(null, 60) == null);
+        // so lieu production 31/10/2026: 156 nguoi that 7 ngay, trung binh cap 10, cao nhat 54
+        final int[] nguoi = new int[156];
+        for (int i = 0; i < nguoi.length; i++) {
+            nguoi[i] = i < 100 ? 2 + i % 9 : (i < 146 ? 8 + (i - 100) / 3 : 40 + (i - 146) * 14 / 9);
+        }
+        nguoi[155] = 54;
+        final int[] sx = nguoi.clone();
+        java.util.Arrays.sort(sx);
+        int tTop = 0;
+        for (int i = sx.length - 10; i < sx.length; i++) {
+            tTop += sx[i];
+        }
+        final int[] k = HlvAi.khoangCap(nguoi, 60);
+        Kiem.bang("thap = phan vi 25% (hang ceil(n/4))", sx[(int) Math.ceil(156 * 0.25) - 1], k[0]);
+        Kiem.bang("cao = trung binh top 10 - 2", tTop / 10 - 2, k[1]);
+        Kiem.dung("cao < cap nguoi that cao nhat (top nguoi that van dung dau): " + k[1], k[1] < 54);
+        Kiem.dung("khoang hop le: thap + 5 <= cao", k[0] + HlvAi.KHOANG_TOI_THIEU <= k[1]);
+        Kiem.bang("cao khong qua tran cap_muc_tieu", 30, HlvAi.khoangCap(nguoi, 30)[1]);
+        final int[] it = HlvAi.khoangCap(new int[]{5, 5, 6}, 60);
+        Kiem.bang("it nguoi, top thap: cao keo len thap + 5", it[0] + 5, it[1]);
+        Kiem.bang("tran thap hon thap + 5: van giu thap + 5", 15, HlvAi.khoangCap(new int[]{10, 10, 10, 10}, 12)[1]);
+        Kiem.bang("mot nguoi that cap 1: thap toi thieu 1", 1, HlvAi.khoangCap(new int[]{1}, 60)[0]);
+        final java.util.Random rd = new java.util.Random(7);
+        boolean trong = true;
+        for (int i = 0; i < 2000; i++) {
+            final int m = HlvAi.mucTieuMoi(k[0], k[1], rd);
+            trong &= m >= k[0] && m <= k[1];
+        }
+        Kiem.dung("bot moi: muc tieu trong [thap, cao]", trong);
+        Kiem.bang("bot cu duoi thap: +3 / ngay", 13, HlvAi.nangDan(10, 20, 40));
+        Kiem.bang("bot cu sat thap: khong vuot thap", 20, HlvAi.nangDan(19, 20, 40));
+        Kiem.bang("bot cu trong khoang: giu nguyen", 30, HlvAi.nangDan(30, 20, 40));
+        Kiem.bang("bot cu tren cao: chan ve cao", 40, HlvAi.nangDan(55, 20, 40));
+        int m = 1;
+        int ngay = 0;
+        while (m < 20 && ngay < 100) {
+            m = HlvAi.nangDan(m, 20, 40);
+            ngay++;
+        }
+        Kiem.bang("tu muc tieu 1 len 20: 7 ngay (+3 / ngay)", 7, ngay);
     }
 
     static void danhMuc() throws Exception {
         final String[] khoa = {HlvAi.K_HE_SO, HlvAi.K_TRAN_XU, HlvAi.K_TRAN_VAT_PHAM, HlvAi.K_GIA_BAN, HlvAi.K_CHUYEN_NGUOI,
             HlvAi.K_CHUYEN_TONG, "hlv_ai.bat", "hlv_ai.so_luong", "hlv_ai.lich_gio", "hlv_ai.ty_le_lop", "hlv_ai.ty_le_tinh_cach",
-            "hlv_ai.cap_muc_tieu", "hlv_ai.ban_do", "hlv_ai.hoat_dong", HlvAi.K_DOI_BOT, HlvAi.K_TIEN_TO};
+            "hlv_ai.cap_muc_tieu", "hlv_ai.ban_do", "hlv_ai.hoat_dong", HlvAi.K_DOI_BOT, HlvAi.K_TIEN_TO, HlvAi.K_CAP_THEO_NGUOI};
         int chinh = 0;
         for (final DinhNghiaKhoa d : CauHinhTrungTam.danhMuc()) {
             if ("hlv_ai".equals(d.nhom)) {
                 chinh += "chinh".equals(d.lop()) ? 1 : 0;
             }
         }
-        Kiem.bang("danh muc: nhom hlv_ai co 16 khoa chinh", 16, chinh);
+        Kiem.bang("danh muc: nhom hlv_ai co 17 khoa chinh", 17, chinh);
+        Kiem.bang("cap theo nguoi: mac dinh bat (chu game 31/10/2026)", "1", CauHinhTrungTam.dinhNghia(HlvAi.K_CAP_THEO_NGUOI).macDinh);
+        Kiem.bang("cap theo nguoi: kieu co", "co", CauHinhTrungTam.dinhNghia(HlvAi.K_CAP_THEO_NGUOI).kieu);
         for (final String k : khoa) {
             Kiem.dung("danh muc co khoa " + k, CauHinhTrungTam.dinhNghia(k) != null);
         }
@@ -167,7 +215,7 @@ public final class KiemHlvAi {
         final String sql = doc("../sql/htbb.sql");
         final String khoi = sql.substring(sql.indexOf("-- >>> them_hlv_ai.sql"));
         Kiem.dung("sql: cot la_bot (them neu chua co)", khoi.contains("ALTER TABLE `account`.`team_user` ADD COLUMN IF NOT EXISTS `la_bot`"));
-        for (final String b : new String[]{"tob_hlv_ai_kinh_te_ngay", "tob_hlv_ai_moc", "tob_hlv_ai_chuyen", "tob_hlv_ai_gia", "tob_hlv_ai_trang_thai"}) {
+        for (final String b : new String[]{"tob_hlv_ai_kinh_te_ngay", "tob_hlv_ai_moc", "tob_hlv_ai_chuyen", "tob_hlv_ai_gia", "tob_hlv_ai_trang_thai", "tob_hlv_ai_cap_nguoi"}) {
             Kiem.dung("sql: bang " + b, khoi.contains("CREATE TABLE IF NOT EXISTS `" + b + "`"));
         }
         final String unit = doc("../vps/htbb-hlv-ai.service");
@@ -189,6 +237,15 @@ public final class KiemHlvAi {
         Kiem.dung("bot nap ten ban do (LOAD_THEO_TEN) moi lan vao game, khong chi trong kiem soak",
                 vao > 0 && napTg > vao && nc.indexOf("KichBanCap140.napTen();", napTg) > napTg
                         && nc.indexOf("KichBanCap140.napTen();", napTg) < nc.indexOf("ngheXaHoi();", napTg));
+        final String dv = doc("../tools/pokemon/hlv_ai/DichVuHlvAi.java");
+        Kiem.dung("cap theo nguoi: dich vu tinh luc khoi dong + moi nhip (mot lan / ngay), nguoi that = la_bot 0 hoat dong 7 ngay",
+                dv.split("capTheoNguoi\\(\\);", -1).length - 1 == 2 && dv.contains("u.la_bot = 0") && dv.contains("INTERVAL 7 DAY")
+                        && dv.contains("HlvAi.khoangCap(") && dv.contains("HlvAi.nangDan(") && dv.contains("HlvAi.mucTieuMoi("));
+        final String nc2 = doc("../tools/pokemon/hlv_ai/HlvAiNguoiChoi.java");
+        Kiem.dung("cap theo nguoi: bot thoi viec ra EXP khi toi muc cao", nc2.contains("DichVuHlvAi.CAP_CAO > 0 && b.lv >= DichVuHlvAi.CAP_CAO")
+                && nc2.contains("else if (tran && VIEC_EXP.contains(VIEC[i])) w[i] = 0;"));
+        Kiem.dung("cap theo nguoi: trang /admin/hlv-ai hien khoang + 'theo người chơi thật'",
+                doc("../web/app/pages/admin/hlv-ai.vue").contains("theo người chơi thật") && doc("../web/server/api/admin/hlv-ai/index.get.ts").contains("tob_hlv_ai_cap_nguoi"));
     }
 
     public static void main(final String[] args) {

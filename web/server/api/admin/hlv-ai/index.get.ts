@@ -25,11 +25,23 @@ export default defineAdminHandler(async () => {
   const chuyen = coNgay
     ? await q(game, `SELECT luc, huong, kieu, bot_ten, nguoi_ten, xu, gia_tri, bi_chan, chi_tiet FROM tob_hlv_ai_chuyen ORDER BY id DESC LIMIT 60`)
     : []
+  // cấp mục tiêu theo người chơi thật (hlv_ai.cap_theo_nguoi): dịch vụ bot tính mỗi ngày, ghi tob_hlv_ai_cap_nguoi
+  const capNguoi = await coBang(game, 'tob_hlv_ai_cap_nguoi')
+    ? (await q(game, `SELECT * FROM tob_hlv_ai_cap_nguoi ORDER BY ngay DESC LIMIT 1`))[0] ?? null
+    : null
   const dongNay = Date.now()
   const tienTo = cauHinh['hlv_ai.tien_to_ten']?.giaTri ?? ''
   return {
     coBang: coTrangThai && coNgay,
     cauHinh,
+    capTheoNguoi: capNguoi
+      ? {
+          ngay: String(capNguoi.ngay).slice(0, 10), thap: Number(capNguoi.thap), cao: Number(capNguoi.cao), soNguoi: Number(capNguoi.so_nguoi),
+          tbNguoi: Number(capNguoi.tb_nguoi), caoNhatNguoi: Number(capNguoi.cao_nhat_nguoi), tbTop: Number(capNguoi.tb_top),
+          tbBot: Number(capNguoi.tb_bot), caoNhatBot: Number(capNguoi.cao_nhat_bot), botNang: Number(capNguoi.bot_nang),
+          capNhat: capNguoi.cap_nhat ? String(capNguoi.cap_nhat) : null,
+        }
+      : null,
     bot: bot.map(r => ({
       taiKhoan: String(r.tai_khoan), charId: Number(r.char_id), ten: tenHienThiHlvAi(String(r.ten ?? ''), true, tienTo), lop: Number(r.lop),
       tinhCach: String(r.tinh_cach), cap: Number(r.cap), capMucTieu: Number(r.cap_muc_tieu), mapId: Number(r.map_id),
