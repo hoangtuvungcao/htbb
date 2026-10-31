@@ -328,6 +328,8 @@ final class KichBanCap140 {
         }
 
         String user;
+        /** Hang doi muc tieu (dich.py): nhiem vu phu uu tien (chi so server = id - 2001) / buoc chinh, -1 = khong. */
+        int dichPhu = -1, dichChinh = -1;
 
         @Override
         void ghi(String s) {
@@ -344,6 +346,8 @@ final class KichBanCap140 {
                 // ngoac cho moi vong for: truoc 30/10/2026 "else if" sau "chinh=" gan vao if TRONG vong for (dangling else) ->
                 // phu= / ket= / gd= / moc= / tn= / so= khong bao gio doc: moi lan chay lai bot di lai vong tinh nang ~10 phut
                 if (l.startsWith("user=")) user = l.substring(5);
+                else if (l.startsWith("dich=phu:")) dichPhu = Integer.parseInt(l.substring(9).trim());
+                else if (l.startsWith("dich=chinh:")) dichChinh = Integer.parseInt(l.substring(11).trim());
                 else if (l.startsWith("phut=")) phutCongDon = Double.parseDouble(l.substring(5));
                 else if (l.startsWith("ngayAo=")) soNgayAo = Integer.parseInt(l.substring(7));
                 else if (l.startsWith("tg=")) dongThoiGian.add(l.substring(3));
@@ -365,6 +369,8 @@ final class KichBanCap140 {
         synchronized void luuCp() {
             StringBuilder s = new StringBuilder();
             s.append("user=").append(user).append('\n');
+            if (dichPhu >= 0) s.append("dich=phu:").append(dichPhu).append('\n');
+            if (dichChinh >= 0) s.append("dich=chinh:").append(dichChinh).append('\n');
             s.append("phut=").append(String.format(Locale.ROOT, "%.1f", phutThat())).append('\n');
             s.append("ngayAo=").append(soNgayAo).append('\n');
             s.append("so=").append(soCuaAi).append(',').append(soChet).append(',').append(xuKiem).append(',').append(xuTieu).append(',').append(soGymThang).append(',').append(soLanVaoLai).append('\n');
@@ -438,6 +444,12 @@ final class KichBanCap140 {
                 user = b0.user;
                 b = b0;
                 luuCp();
+                if (Boolean.getBoolean("chiTao")) { // dich.py: chi tao nhan vat (dung trang thai doan offline sau)
+                    ghi("TAO xong " + user);
+                    HoiQuy.thoat(b);
+                    b = null;
+                    return;
+                }
                 huongDan();
                 HoiQuy.thoat(b);
                 b = null;
@@ -447,7 +459,9 @@ final class KichBanCap140 {
             vao();
             capDau = b.lv;
             long hetGio = System.currentTimeMillis() + (long) (GIO * 3600000L - phutCongDon * 60000L);
+            final File dung = new File(CP, "dung_" + nhanh);
             while (System.currentTimeMillis() < hetGio && !xong) {
+                if (dung.exists()) { xong = true; ghi("DUNG theo dich.py"); break; }
                 try {
                     vong();
                 } catch (java.net.SocketException | EOFException e) {
@@ -593,6 +607,7 @@ final class KichBanCap140 {
             if (b.su.size() > 20000) b.su.subList(0, 15000).clear(); // gioi han bo nho (moc cu khong con dung)
             if (System.currentTimeMillis() - lanVaoLai > 30 * 60000L) { vaoLaiCheckpoint(); return; }
             for (int moc : new int[]{5, 10, 15, 20, 25, 30, 35, 40}) {
+                if (dichPhu >= 0 || dichChinh >= 0) break; // bot muc tieu (dich.py): khong chay vong tinh nang
                 if (b.lv >= moc && mocTinhNang.add(moc)) {
                     luuCp();
                     if (moc < 40 && b.lv >= moc + 5) continue; // nhay qua nhieu moc cung luc: chi chay moc cao nhat
@@ -715,7 +730,9 @@ final class KichBanCap140 {
         // ---------------------------------------------------------------- nhan nhiem vu moi
         boolean nhanMoi() throws Exception {
             boolean coPhuDang = l2.stream().anyMatch(x -> x.ms == 1);
-            for (KichBanTienDoNhiemVu.Dong q : l0) {
+            List<KichBanTienDoNhiemVu.Dong> ds0 = new ArrayList<>(l0);
+            if (dichPhu >= 0) ds0.sort((x, y) -> Boolean.compare(!(x.ms == 1 && x.id == dichPhu), !(y.ms == 1 && y.id == dichPhu)));
+            for (KichBanTienDoNhiemVu.Dong q : ds0) {
                 if (q.ms == 1 && (coPhuDang || phuBo.contains(q.id))) continue;
                 if (q.ms == 0 && capChan > b.lv) continue;
                 String l = toiNpc(q.npc, q.tra);
