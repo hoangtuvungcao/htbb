@@ -200,7 +200,8 @@ final class KichBanDoSuc {
                 List<String> ids = type == 3
                         ? Collections.singletonList(String.valueOf(BotXuyenSuot.vuKhiShop(lop, L)))
                         : BotChucNang.sql("SELECT id FROM data_item WHERE type=" + type + " AND clazz=-1 AND level<=" + L
-                                + " AND id<174 AND price>=500 AND level=(SELECT MAX(level) FROM data_item WHERE type=" + type + " AND clazz=-1 AND id<174 AND level<=" + L + " AND price>=500) ORDER BY id");
+                                + " AND (" + KichBanCap140.NguoiChoi.GIAP_PEWTER + " OR " + KichBanCap140.NguoiChoi.GIAP_INDIGO + ") AND price>=500 AND level=(SELECT MAX(level) FROM data_item WHERE type=" + type
+                                + " AND clazz=-1 AND (" + KichBanCap140.NguoiChoi.GIAP_PEWTER + " OR " + KichBanCap140.NguoiChoi.GIAP_INDIGO + ") AND level<=" + L + " AND price>=500) ORDER BY id");
                 for (String sid : ids) {
                     int tpl = Integer.parseInt(sid.trim());
                     Set<Integer> cu = new HashSet<>();
@@ -209,7 +210,11 @@ final class KichBanDoSuc {
                     b.bom(500);
                     // byte cuoi = dong (tab lop o tiem giap, client gui WindowInfoScr.idClass): giap mua voi 0 thanh "do cua Dong
                     // Charmander" - 4 dong kia khong mac duoc (do suc truoc 29/10/2026 chi dong 0 co giap)
-                    b.gui(24, (byte) 1, (byte) 3, (short) tpl, (short) 1, (byte) lop);
+                    // do suc: mon chi ban o Cao nguyen Indigo (vu khi 174+, giap 54-79) -> GM them (= nguoi choi da len Indigo mua),
+                    // con lai mua o tiem Pewter nhu client (may chu kiem dung NPC tu 31/10/2026)
+                    boolean indigo = tpl >= 174 || BotChucNang.sql1("SELECT id FROM data_item WHERE id=" + tpl + " AND " + KichBanCap140.NguoiChoi.GIAP_INDIGO) != null;
+                    if (indigo) HoiQuy.gm().gm("ait " + b.ten + " " + tpl + " " + lop + " 0 0", 1200);
+                    else b.gui(24, (byte) 1, (byte) 3, (short) tpl, (short) 1, (byte) lop);
                     b.bom(1000);
                     b.lamMoi();
                     int[] moi = b.timDo(x -> x[1] == tpl && !cu.contains(x[0]));

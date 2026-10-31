@@ -1406,12 +1406,15 @@ final class KichBanCap140 {
          * 31/10/2026 bot cap 72 / 85 van mac giap cap 59 (d290 guc o map 28 vi Galvantula danh 27% HP).
          */
         void muaGiapIndigo() throws Exception {
-            if (b.lv < 64 || System.currentTimeMillis() - lanIndigo < 30 * 60000L) return;
+            if (b.lv < 36 || System.currentTimeMillis() - lanIndigo < 30 * 60000L) return;
+            // vu khi bac cap 36+ (174..213): chi NPC 28 o Cao nguyen Indigo ban
+            int vk = vuKhiMuaDuoc(true);
+            boolean muaVk = vk >= 174 && vk != vuKhiMac && b.xu >= gia(vk) + DU_TRU_XU;
             List<int[]> mua = new ArrayList<>();
-            long con = b.xu - DU_TRU_XU - (long) MUC * GIA_THUOC[3];
+            long con = b.xu - DU_TRU_XU - (long) MUC * GIA_THUOC[3] - (muaVk ? gia(vk) : 0);
             for (int type : O_GIAP) {
-                String r = BotChucNang.sql1("SELECT CONCAT(id,',',level,',',price) FROM data_item WHERE id BETWEEN 467 AND 506 AND clazz=-1 AND type=" + type
-                        + " AND level<=" + b.lv + " ORDER BY level DESC, price LIMIT 1");
+                String r = BotChucNang.sql1("SELECT CONCAT(id,',',level,',',price) FROM data_item WHERE " + GIAP_INDIGO + " AND clazz=-1 AND type=" + type
+                        + " AND price>=500 AND level<=" + b.lv + " ORDER BY level DESC, price LIMIT 1");
                 if (r == null || !r.contains(",")) continue;
                 String[] f = r.trim().split(",");
                 int tpl = Integer.parseInt(f[0]), cap = Integer.parseInt(f[1]), gia = Integer.parseInt(f[2]);
@@ -1421,9 +1424,39 @@ final class KichBanCap140 {
             mua.sort((x, y) -> x[2] - y[2]); // re truoc: nhieu o nhat voi so xu dang co
             List<int[]> duTien = new ArrayList<>();
             for (int[] g : mua) if (g[2] <= con) { duTien.add(g); con -= g[2]; }
-            if (duTien.isEmpty()) return;
+            if (duTien.isEmpty() && !muaVk) return;
             lanIndigo = System.currentTimeMillis();
             if (!toi(201)) { ghi("giap Indigo: khong toi duoc Cao nguyen Indigo (201)"); return; }
+            if (muaVk) {
+                String lv = KichBanHuongDan.toiNpc(b, 28);
+                if (lv != null) ghi("vu khi Indigo: " + lv);
+                else {
+                    final int tpl = vk;
+                    long x0 = b.xu;
+                    int m0 = b.moc();
+                    b.gui(23, (byte) 28);
+                    final int mm0 = m0;
+                    b.cho(x -> x.coLenh(mm0, 23), 3000);
+                    Set<Integer> cu = new HashSet<>();
+                    b.lamMoi();
+                    for (int[] x : b.doDung) cu.add(x[0]);
+                    b.gui(24, (byte) 1, (byte) 3, (short) tpl, (short) 1, (byte) 0);
+                    b.bom(1200);
+                    b.lamMoi();
+                    int[] moi = b.timDo(x -> x[1] == tpl && !cu.contains(x[0]));
+                    vuKhiMac = tpl;
+                    if (moi != null) {
+                        b.gui(29, (short) moi[0]);
+                        b.bom(800);
+                        b.lamMoi();
+                        int[] tt = ttDo(tpl);
+                        if (tt != null) capDaMac.put(tt[0], tt[1]);
+                        lanNangVk = 0; // nang lai vu khi moi
+                        ghi("VU KHI INDIGO: mua + mac tpl " + tpl + " (xu " + x0 + " -> " + b.xu + ")");
+                    } else ghi("vu khi Indigo: KHONG MUA DUOC tpl " + tpl + ": " + b.chuTu(m0));
+                }
+                if (duTien.isEmpty()) return;
+            }
             String l = KichBanHuongDan.toiNpc(b, 27);
             boolean nha = false;
             if (l != null && KichBanDS2.vaoNha(b, 260)) { nha = true; l = KichBanHuongDan.toiNpc(b, 27); }
@@ -1642,7 +1675,7 @@ final class KichBanCap140 {
 
         /** Mon giap / phu kien tiem cap cao nhat <= cap minh cho o {@code type}: {tpl, cap, gia} hoac null. */
         int[] giapTiem(int type) {
-            String r = BotChucNang.sql1("SELECT CONCAT(id,',',level,',',price) FROM data_item WHERE type=" + type + " AND clazz=-1 AND id<174 AND price>=500 AND level<=" + b.lv
+            String r = BotChucNang.sql1("SELECT CONCAT(id,',',level,',',price) FROM data_item WHERE type=" + type + " AND clazz=-1 AND " + GIAP_PEWTER + " AND price>=500 AND level<=" + b.lv
                     + " ORDER BY level DESC, id LIMIT 1");
             if (r == null || !r.contains(",")) return null;
             String[] f = r.trim().split(",");
@@ -1650,6 +1683,14 @@ final class KichBanCap140 {
         }
 
         static final int[] O_GIAP = {0, 1, 2, 8, 9, 10, 11};
+        /**
+         * Danh sach ban cua Bronzong (NpcTinhBanDo.dsBan, may chu kiem dung NPC tu 31/10/2026): Pewter / lang Kanto (NPC 3,
+         * ban do < 200) va Indigo (NPC 27). Bac giap cap 54-59 (21-26, 47-52, ...) chi ban o Indigo.
+         */
+        static final String GIAP_PEWTER = "(id BETWEEN 3 AND 20 OR id BETWEEN 27 AND 46 OR id BETWEEN 53 AND 72 OR id BETWEEN 114 AND 122"
+                + " OR id BETWEEN 126 AND 134 OR id BETWEEN 138 AND 146 OR id BETWEEN 150 AND 158 OR id BETWEEN 162 AND 170)";
+        static final String GIAP_INDIGO = "(id BETWEEN 21 AND 26 OR id BETWEEN 47 AND 52 OR id BETWEEN 73 AND 78 OR id BETWEEN 123 AND 125"
+                + " OR id BETWEEN 135 AND 137 OR id BETWEEN 147 AND 149 OR id BETWEEN 159 AND 161 OR id BETWEEN 171 AND 173 OR id BETWEEN 467 AND 506)";
 
         /**
          * Vu khi tiem tot nhat mua NGAY duoc (gia + du tru <= xu) va hon vu khi dang cam; khong co thi bac dung cap (de danh).
@@ -1657,7 +1698,16 @@ final class KichBanCap140 {
          * vu khi cap 21 - nguoi that mua bac 31 (28.800) ngay.
          */
         int vuKhiMuaDuoc() {
+            return vuKhiMuaDuoc(false);
+        }
+
+        /**
+         * {@code indigo} = false: chi bac ban o Machamp Pewter / lang Kanto (79..113, cap 1-31); bac cap 36+ (174..213) chi
+         * ban o NPC 28 / Machamp ban do > 200 (Cao nguyen Indigo) - may chu kiem dung NPC tu 31/10/2026 (goi 24).
+         */
+        int vuKhiMuaDuoc(boolean indigo) {
             int dich = BotXuyenSuot.vuKhiShop(lop, b.lv);
+            if (!indigo && dich >= 174) dich = BotXuyenSuot.vuKhiShop(lop, 35);
             int capCam = 0;
             for (int t : new ArrayList<>(b.dangMacTpl)) {
                 boolean vk = t >= 79 + 7 * lop && t < 86 + 7 * lop || t >= 174 + 8 * lop && t < 182 + 8 * lop;
@@ -1668,6 +1718,8 @@ final class KichBanCap140 {
             capCam = Math.max(capCam, capDaMac.getOrDefault(loaiVuKhi(), 0));
             for (int lv = b.lv; lv >= 1; lv -= 5) {
                 int t = BotXuyenSuot.vuKhiShop(lop, lv);
+                if (!indigo && t >= 174) continue;
+                if (indigo && t < 174) break;
                 String l = BotChucNang.sql1("SELECT level FROM data_item WHERE id=" + t);
                 int c;
                 try { c = l == null ? 0 : Integer.parseInt(l.trim()); } catch (NumberFormatException e) { c = 0; }
