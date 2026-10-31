@@ -625,6 +625,7 @@ public class ChupTrongGame {
 
     /** Nhân vật + hành trang + đồ đang mặc giả (không máy chủ). */
     static void giaLap() {
+        game.pokemon.ThoiTiet.hanThe = Long.MAX_VALUE;   // ảnh tĩnh: thẻ thời tiết không tự đóng giữa các khung kiểm
         // 0.9.8: ảnh / kiểm KHÔNG phụ thuộc giờ máy (lớp phủ đêm 19h-6h đổi màu thế giới - KiemNgamTay đếm màu vạch ngắm
         // trượt sau 19h): giữa trưa cố định
         game.pokemon.SinhThai.gioThu = 12;

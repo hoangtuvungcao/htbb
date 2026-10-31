@@ -575,7 +575,7 @@ public class GameScr extends Screen {
     }
 
     /** pokemon: vị trí bản đồ nhỏ (HudRong). */
-    Position posMiniMapHud() {
+    public Position posMiniMapHud() {
         return this.posMiniMap;
     }
 
