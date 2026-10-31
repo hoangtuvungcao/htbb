@@ -280,6 +280,13 @@ public final class DichVuHlvAi {
         if (on < dich) {
             List<Ho> cho = new ArrayList<>();
             for (Ho h : HO) if (h.dang == null && h.henVao <= bay) cho.add(h);
+            // hlv_ai.so_luong = so bot ONLINE luc lich 100% (docs/cau-hinh.md). Moi bot nghi 20..320 phut sau phien nhu nguoi
+            // choi -> neu ai cung dang nghi thi them tai khoan du phong (toi da 2 x so_luong, <= 500) thay vi de online tut dan
+            if (bat && cho.size() < dich - on && HO.size() < Math.min(500, soLuong * 2)) {
+                int truoc = HO.size();
+                taoThem(Math.min(Math.min(500, soLuong * 2), HO.size() + (dich - on - cho.size())));
+                for (int i = truoc; i < HO.size(); i++) if (HO.get(i).dang == null) cho.add(HO.get(i));
+            }
             Collections.shuffle(cho, RD);
             for (int i = 0; i < Math.min(3, Math.min(cho.size(), dich - on)); i++) batDau(cho.get(i));
         } else if (on > dich + (bat ? 1 : 0)) {

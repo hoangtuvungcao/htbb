@@ -293,11 +293,11 @@ final class KiemHlvAiSoak {
                 BotChucNang.SuKien e = b.layLenh(m, -9);
                 if (e != null && e.d.length >= 4) {
                     int m2 = b.moc();
-                    b.gui(-10, (short) (((e.d[2] & 255) << 8) | (e.d[3] & 255)), "DoiNguoiThat");
+                    b.gui(-10, (short) (((e.d[2] & 255) << 8) | (e.d[3] & 255)), "DoiNT" + user); // ten rieng: kt109 + kt116 cung lap
                     chuDoi = b.cho(x -> x.coLenh(m2, -10), 5000);
                 }
                 if (!chuDoi && b.doiChu(m, 0, "đang ở trong đội") != null) chuDoi = true; // lan chay truoc da lap
-                GHI_CHU.add("kt109 lap doi (100 trieu xu GM): " + chuDoi);
+                GHI_CHU.add(user + " lap doi (100 trieu xu GM): " + chuDoi + (chuDoi ? "" : " | " + b.chuTu(m)));
             }
             b.lamMoi();
         }
