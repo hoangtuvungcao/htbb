@@ -2,8 +2,10 @@ import com.htbb.pokemon.ChiSoDong;
 import com.htbb.pokemon.ChieuPokemon;
 import com.htbb.pokemon.HePokemon;
 import com.htbb.pokemon.HuanLuyen;
+import com.htbb.pokemon.KhacHePve;
 import com.htbb.pokemon.LoaiPokemon;
 import com.htbb.pokemon.NangCapLauDai;
+import com.htbb.pokemon.SatThuongLauDai;
 import com.htbb.pokemon.ThongSoLauDai;
 
 import java.util.ArrayList;
@@ -31,7 +33,8 @@ import java.util.TreeMap;
  *       do that theo dong ({@link #K_DONG}; Charmander cham nhat); "khong mot don" dung vong xoay nhanh nhat = K x 1,5.</li>
  * </ul>
  * Kiem: moi dong x cap 10..100 x vu khi +0 / +6 / +10 (quai thuong dung cap, trung tinh he); Gym 16 truong Gym (cua so
- * thiet ke 90-120 giay danh mot minh dung cap); quai tinh anh HP x4; khac he cuc doan tren buoc giet bat buoc (bao chu game).
+ * thiet ke 90-120 giay danh mot minh dung cap); quai tinh anh HP x4; khac he tren buoc giet bat buoc: truoc / sau tran khac
+ * he PvE (KhacHePve, chu game 31/10/2026: nguoi danh quai x0,6..x1,5, quai danh nguoi &lt;= x1,3, PvP giu nguyen).
  */
 public final class KiemTtkQuai {
 
@@ -65,7 +68,7 @@ public final class KiemTtkQuai {
             ttkQuai(bac, quai);
             gym(bac);
             tinhAnh();
-            khacHe();
+            khacHe(bac);
         } catch (final Throwable e) {
             e.printStackTrace();
             Kiem.dung("KiemTtkQuai khong nem loi: " + e, false);
@@ -377,19 +380,77 @@ public final class KiemTtkQuai {
 
     // ------------------------------------------------------------------ khac he cuc doan
 
+    /** Buoc giet bat buoc chu game neu (31/10/2026): Pichu gap quai Dat, Charmander gap quai Nuoc / Da. */
+    static final String[] BUOC_KHAC_HE = {"CA-03.1", "CA-09.1", "CA-10.1", "C12.4", "C25.4", "C37.5", "C42.3", "C70.3", "C77.3", "C85.3"};
+
     /**
-     * Buoc giet bat buoc (chinh / cua ai): moi dong, he so DPS (vong xoay chieu, trong so % / hoi chieu, STAB) vao he quai va he
-     * so don quai vao minh. In cac buoc ma sat thuong NHAN moi con (= vao / ra) >= x2,5 so voi trung tinh - bao chu game.
+     * He so DPS vong xoay chieu (trong so % / hoi chieu, STAB) cua dong {@code d} o cap {@code cap} vao he (h1, h2), moi chieu
+     * kep [raMin, raMax] (0, 0 = he so goc).
      */
-    static void khacHe() {
+    static double heRa(final List<Map<String, String>> chieu, final int d, final int cap, final int h1, final int h2,
+            final int raMin, final int raMax) {
+        final int dex = LoaiPokemon.dangTheoCap(LoaiPokemon.KHOI_DAU_THEO_CLASS[d], cap);
+        final int p1 = LoaiPokemon.he1(dex), p2 = LoaiPokemon.he2(dex);
+        double w = 0, wf = 0;
+        for (final Map<String, String> c : chieu) {
+            final String k = c.get("kieu");
+            if (so(c.get("dong")) != d || so(c.get("cap_mo")) > cap
+                    || !("thuong".equals(k) || "tan_cong".equals(k) || "nhieu_don".equals(k) || "toi_thuong".equals(k) || "khong_che".equals(k))) {
+                continue;
+            }
+            final int hc = ChieuPokemon.heChieu(d, so(c.get("so_hieu")));
+            final double hoi = Double.parseDouble(c.get("hoi_chieu_giay"));
+            if (hc < 0 || hoi <= 0) {
+                continue;
+            }
+            final double ww = so(c.get("phan_tram_cap10")) / hoi * ChieuPokemon.heSoStab(hc, p1, p2) / 100.0;
+            w += ww;
+            wf += ww * KhacHePve.kep(HePokemon.heSoTrongGame(hc, h1, h2), raMin, raMax) / 100.0;
+        }
+        return w == 0 ? 1 : wf / w;
+    }
+
+    /**
+     * Khac he tren buoc giet bat buoc (chinh / cua ai), moi dong: he so DPS vao he quai (ra) va he so don quai vao minh (vao),
+     * TRUOC va SAU tran PvE (KhacHePve: ra 60..150, vao &lt;= 130, chu game 31/10/2026). Sat thuong nhan moi con so voi trung
+     * tinh = vao / ra; TTK = mo hinh voi chi so quai muc tieu dang chay.
+     */
+    static void khacHe(final Bac bac) {
+        Kiem.bang("tran PvE mac dinh (danh muc): ra 60..150, vao <= 130", "60/150/130",
+                KhacHePve.raToiThieu() + "/" + KhacHePve.raToiDa() + "/" + KhacHePve.vaoToiDa());
+        Kiem.bang("kep: mien nhiem 30 -> 60, x0,5 (70) -> 70, x2 (200) -> 150, trung tinh giu", "60/70/150/100",
+                KhacHePve.kep(30, 60, 150) + "/" + KhacHePve.kep(70, 60, 150) + "/" + KhacHePve.kep(200, 60, 150) + "/" + KhacHePve.kep(100, 60, 150));
+        Kiem.bang("vao: x2 (200) -> 130, x1,5 (150) -> 130, mien nhiem 30 giu (san nhu cu)", "130/130/30",
+                KhacHePve.kep(200, 0, 130) + "/" + KhacHePve.kep(150, 0, 130) + "/" + KhacHePve.kep(30, 0, 130));
+        Kiem.bang("doiVao: don 1500 da nhan x1,5 -> 1300 (x1,3)", Integer.valueOf(1300), Integer.valueOf(KhacHePve.doiVao(1500, 150)));
+        Kiem.bang("doiVao: trung tinh / khang giu nguyen", "1000/700", KhacHePve.doiVao(1000, 100) + "/" + KhacHePve.doiVao(700, 70));
+        // PvP: cong thuc goc (khong tran) giu nguyen tung so
+        final int[] pvp = SatThuongLauDai.tinh(1000, 200, 100, 3, 3, -1, 8, -1, 0, false, 100);
+        final int[] pvp0 = SatThuongLauDai.tinh(1000, 200, 100, 3, 3, -1, 8, -1, 0, false, 100, 0, 0);
+        final int[] pve = SatThuongLauDai.tinh(1000, 200, 100, 3, 3, -1, 8, -1, 0, false, 100, 60, 150);
+        Kiem.bang("SatThuongLauDai: Dien vao Dat (x0,3) PvP giu 288 = 800 x 0,3 x STAB 1,2", Integer.valueOf(288), Integer.valueOf(pvp[0]));
+        Kiem.dung("SatThuongLauDai: ban khong tran == ban cu (PvP)", pvp[0] == pvp0[0] && pvp[1] == pvp0[1]);
+        Kiem.bang("SatThuongLauDai: PvE kep x0,6 -> 576, co -95 van 'gan mien'", "576/" + SatThuongLauDai.CO_GAN_MIEN,
+                pve[0] + "/" + (pve[1] & SatThuongLauDai.CO_GAN_MIEN));
+        final int[] pve2 = SatThuongLauDai.tinh(1000, 200, 100, 4, 4, -1, 2, 8, 0, false, 100, 60, 150);
+        Kiem.bang("SatThuongLauDai: Co vao Nuoc/Dat (x2 -> 200) PvE kep x1,5: 800 x 1,5 x 1,2 = 1440", Integer.valueOf(1440), Integer.valueOf(pve2[0]));
+        nguon();
+
         final List<Map<String, String>> chieu = KiemMucTieuNhiemVu.dongThuong("data_noi_dung_chieu");
         final Map<String, Map<String, String>> mon = new HashMap<String, Map<String, String>>();
-        for (final Map<String, String> m : DayDu.dong("data_monster")) {
+        for (final Map<String, String> m : trangThaiCuoi().get("data_monster")) {
             mon.put(m.get("id"), m);
         }
-        final List<String> xau = new ArrayList<String>();
-        boolean pichuDat = false;
-        int buoc = 0;
+        final Map<String, Map<String, String>> ld = new HashMap<String, Map<String, String>>();
+        for (final Map<String, String> m : trangThaiCuoi().get("data_monster_lau_dai")) {
+            ld.put(m.get("id"), m);
+        }
+        final int raMin = KhacHePve.raToiThieu(), raMax = KhacHePve.raToiDa(), vaoMax = KhacHePve.vaoToiDa();
+        final List<String> xauTruoc = new ArrayList<String>(), xauSau = new ArrayList<String>(), chamSau = new ArrayList<String>();
+        final StringBuilder bangIn = new StringBuilder();
+        boolean pichuDatTruoc = false;
+        int buoc = 0, nguoiBuoc = 0;
+        double ttkMaxSau = 0;
         for (final Map<String, String> q : KiemMucTieuNhiemVu.dongThuong("data_quest_lau_dai")) {
             final String loai = q.get("loai"), kieu = q.get("kieu_muc_tieu");
             if (!("chinh".equals(loai) || "cua_ai".equals(loai)) || !("giet".equals(kieu) || "giet_tinh_anh".equals(kieu))) {
@@ -400,36 +461,69 @@ public final class KiemTtkQuai {
                 continue;
             }
             buoc++;
+            final boolean neu = java.util.Arrays.asList(BUOC_KHAC_HE).contains(q.get("ma"));
             final int cap = so(q.get("cap_toi_thieu")), h1 = so(m.get("he")), h2 = m.get("he2") == null || m.get("he2").isEmpty() ? -1 : so(m.get("he2"));
+            final Map<String, String> c = ld.get(q.get("muc_tieu_id"));
+            final double hp = so((c != null ? c : m).get("maxhp")), thu = so((c != null ? c : m).get("defent"));
             for (int d = 0; d < 5; d++) {
                 final int dex = LoaiPokemon.dangTheoCap(LoaiPokemon.KHOI_DAU_THEO_CLASS[d], cap);
-                final int p1 = LoaiPokemon.he1(dex), p2 = LoaiPokemon.he2(dex);
-                double w = 0, wf = 0;
-                for (final Map<String, String> c : chieu) {
-                    final String k = c.get("kieu");
-                    if (so(c.get("dong")) != d || so(c.get("cap_mo")) > cap
-                            || !("thuong".equals(k) || "tan_cong".equals(k) || "nhieu_don".equals(k) || "toi_thuong".equals(k) || "khong_che".equals(k))) {
-                        continue;
-                    }
-                    final int hc = ChieuPokemon.heChieu(d, so(c.get("so_hieu")));
-                    final double hoi = Double.parseDouble(c.get("hoi_chieu_giay"));
-                    if (hc < 0 || hoi <= 0) {
-                        continue;
-                    }
-                    final double ww = so(c.get("phan_tram_cap10")) / hoi * ChieuPokemon.heSoStab(hc, p1, p2) / 100.0;
-                    w += ww;
-                    wf += ww * HePokemon.heSoTrongGame(hc, h1, h2) / 100.0;
+                final int vaoGoc = HePokemon.heSoTrongGame(h1, LoaiPokemon.he1(dex), LoaiPokemon.he2(dex));
+                final double ra0 = heRa(chieu, d, cap, h1, h2, 0, 0), ra1 = heRa(chieu, d, cap, h1, h2, raMin, raMax);
+                final double vao0 = vaoGoc / 100.0, vao1 = KhacHePve.kep(vaoGoc, 0, vaoMax) / 100.0;
+                final String nhan = q.get("ma") + "(" + cap + " " + m.get("name") + ")/" + TEN[d];
+                if (vao0 / ra0 >= 2.5) {
+                    xauTruoc.add(nhan + String.format(Locale.ROOT, " x%.1f", vao0 / ra0));
+                    pichuDatTruoc |= d == 4 && ra0 <= 0.31;
                 }
-                final double ra = w == 0 ? 1 : wf / w, vao = HePokemon.heSoTrongGame(h1, p1, p2) / 100.0;
-                if (vao / ra >= 2.5) {
-                    xau.add(q.get("ma") + "(" + cap + " " + m.get("name") + ")/" + TEN[d] + String.format(Locale.ROOT, " ra x%.2f vao x%.1f", ra, vao));
-                    pichuDat |= d == 4 && ra <= 0.31;
+                if (vao1 / ra1 > 2.2) {
+                    xauSau.add(nhan + String.format(Locale.ROOT, " x%.1f", vao1 / ra1));
+                }
+                if (neu && (d == 4 || d == 0)) {
+                    nguoiBuoc++;
+                    final double a = tanCong(bac, d, cap, 0), co = Math.max(0.05 * a, a - thu) * K_DONG[d];
+                    final double t0 = hp / (co * ra0), t1 = hp / (co * ra1);
+                    ttkMaxSau = Math.max(ttkMaxSau, t1);
+                    bangIn.append(String.format(Locale.ROOT, "   %-34s ra x%.2f -> x%.2f  vao x%.1f -> x%.1f  TTK %5.1f -> %4.1f giay  nhan / con x%.1f -> x%.1f%n",
+                            nhan, ra0, ra1, vao0, vao1, t0, t1, vao0 / ra0, vao1 / ra1));
+                    if (t1 > 2.5 * mucTieu(cap) || vao1 / ra1 > 2.2) {
+                        chamSau.add(nhan + String.format(Locale.ROOT, " %.1fs x%.1f", t1, vao1 / ra1));
+                    }
                 }
             }
         }
-        System.out.println("   Buoc giet bat buoc nhan >= x2,5 sat thuong moi con so voi trung tinh (bao chu game): " + xau);
+        System.out.println("   Truoc tran PvE, buoc giet bat buoc nhan >= x2,5 sat thuong moi con so voi trung tinh: " + xauTruoc);
+        System.out.print("   Buoc chu game neu (do cua hang +0, quai muc tieu dang chay, truoc -> sau tran):\n" + bangIn);
         Kiem.dung("co buoc giet bat buoc chinh / cua ai (" + buoc + ")", buoc >= 50);
-        // Pichu chi co chieu Dien (o 0..8, ke ca don thuong) -> quai Dat (x0,3) la buoc kho nhat game; Nhanh nhen (Sieu linh) la buff
-        Kiem.dung("rui ro da biet (bao chu game): Pichu chi co chieu Dien, quai Dat x0,3 (Golem / Rhydon cua ai CA-09.1 / CA-10.1)", pichuDat);
+        Kiem.dung("truoc tran: Pichu chi co chieu Dien, quai Dat x0,3 (rui ro chu game bao 31/10/2026)", pichuDatTruoc);
+        Kiem.bang("sau tran: khong buoc giet bat buoc nao, moi dong, nhan > x2,2 sat thuong moi con so voi trung tinh", "[]", xauSau.toString());
+        Kiem.dung("du buoc chu game neu x Pichu / Charmander (" + nguoiBuoc + ")", nguoiBuoc >= 20);
+        Kiem.bang(String.format(Locale.ROOT, "sau tran: buoc chu game neu (Pichu / Charmander) TTK <= 2,5 x muc tieu, nhan / con <= x2,2 (TTK lon nhat %.1f giay)",
+                ttkMaxSau), "[]", chamSau.toString());
+    }
+
+    /** Noi vao game: PvE kep, PvP (nguoi danh nguoi) khong qua KhacHePve. */
+    static void nguon() {
+        final String cs = doc("src/real/CharChiSo.java"), la = doc("src/real/LiveActor.java"), bl = doc("src/real/BossLauDai.java");
+        Kiem.dung("CharChiSo.attackDam: kep ra chi khi muc tieu la quai (actor.cat == 1)", cs.contains("final boolean pve = actor.cat == 1;")
+                && cs.contains("pve ? com.htbb.pokemon.KhacHePve.raToiThieu() : 0"));
+        Kiem.dung("LiveActor.attackDam: kep vao chi khi quai danh nguoi choi", la.contains("if (this.cat != 0 && actor.cat == 0) {")
+                && la.contains("KhacHePve.doiVao("));
+        Kiem.dung("truong Gym: tran gym.he_toi_da chia cho he so DA kep (khong giam hai lan)", bl.contains("muc.cat == 0 ? com.htbb.pokemon.KhacHePve.vao(goc) : goc"));
+        Kiem.dung("HP truong Gym bu theo he so da kep", doc("src/real/GymLauDai.java").contains("KhacHePve.ra(com.htbb.pokemon.HePokemon.heSoTrongGame(hc, t.he, t.he2))"));
+        for (final String f : new String[]{"BossDusknoir", "BossMoba", "BossDotKich", "BossSkelontonMoba", "BossSerperior", "BossServine"}) {
+            Kiem.dung(f + ": don vao nguoi choi qua tran PvE", doc("src/real/" + f + ".java").contains("if (actor.cat == 0) { // PvE"));
+        }
+        for (final String f : new String[]{"MapDanhNhau", "Region", "MapLienDau", "RegionVantienTran", "CupGame"}) {
+            Kiem.sai(f + " (PvP) khong dung KhacHePve", doc("src/real/" + f + ".java").contains("KhacHePve"));
+        }
+        Kiem.sai("DauTruongTran (3v3) khong dung KhacHePve", doc("src/com/htbb/pokemon/DauTruongTran.java").contains("KhacHePve"));
+    }
+
+    static String doc(final String f) {
+        try {
+            return new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(f)), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (final Exception e) {
+            return "";
+        }
     }
 }

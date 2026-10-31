@@ -74,6 +74,9 @@ public class BossSkelontonMoba extends Boss {
         dam = dam * (30 + UtilHTBB.random(80)) / 100;
         // Khac he: 18 he Pokemon.
         dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+        if (actor.cat == 0) { // PvE: he so vao nguoi choi <= chi_so.khac_he_pve_vao_toi_da (KhacHePve)
+            dam = com.htbb.pokemon.KhacHePve.doiVao(dam, SatThuongHe.heSo(this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2()));
+        }
 
         CharChienTruong c = MapChienTruongMoba.getCharChienTruong(actor.getName());
         if (this.map.isMapChienTruongMoba()) {

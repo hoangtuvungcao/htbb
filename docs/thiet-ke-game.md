@@ -285,6 +285,15 @@ PvP      = sát thương × 0,30, TRẦN 8% HP tối đa của mục tiêu mỗi
 ```
 
 - Thời tiết (khi bật hệ sinh thái): chiêu hợp trời ±10% (mục 7.1), chỉ áp đòn của người chơi.
+- **Trần khắc hệ PvE** (`com.htbb.pokemon.KhacHePve`, quyết định chủ game 31/10/2026). Áp cho người chơi đánh quái / boss /
+  trưởng Gym và ngược lại; PvP (người đánh người, đấu trường) giữ hệ số gốc.
+  - Hệ số đòn người chơi kẹp vào ×0,6–×1,5: miễn nhiễm ×0,3 và kháng đôi ×0,5 thành ×0,6, ×2 thành ×1,5.
+  - Hệ số đòn quái vào người chơi tối đa ×1,3; mức thấp (kháng, miễn nhiễm) giữ nguyên. Trưởng Gym vẫn có trần riêng ×1,15
+    (`gym.he_toi_da`), chia cho hệ số đã kẹp nên không giảm hai lần.
+  - Ba khoá cố định nhóm `chi_so`: `chi_so.khac_he_pve_ra_toi_thieu` (60), `chi_so.khac_he_pve_ra_toi_da` (150),
+    `chi_so.khac_he_pve_vao_toi_da` (130) (đổi khẩn cấp qua server.ini, [cau-hinh.md](cau-hinh.md)).
+  - Cờ gói -95 (khắc / kém / gần miễn) vẫn theo hệ số gốc, để người chơi vẫn thấy khắc hệ. HP trưởng Gym bù theo hệ số đã kẹp
+    (`gym.he_ra_toi_thieu`, mục 5.6). Bộ não Tự động đánh chấm điểm chiêu theo hệ số đã kẹp.
 - Sau mọi lớp giảm phía bị đánh, đòn còn ít nhất 40% (sàn chống bất tử, mục 4.5).
 - Quái chủ động (`com.htbb.pokemon.ChuDongQuai`, cân bằng 29/10/2026): quái thấp hơn người chơi từ 4 cấp không tự lao vào
   (`quai.xam_cap`); cùng lúc tối đa 2 quái chưa bị đánh được đánh một người (`quai.toi_da_vay`) - quái đã mất máu luôn đánh
@@ -326,8 +335,7 @@ lại trên stack riêng (người chơi không GM, đồ cửa hàng đúng b�
   thường (thiết kế ×1,3; Arbok 1.117 so với 627) và có HP ×4,0–4,84. Khối này đưa 46 dòng về đúng ×4 HP / ×1,3 tấn công /
   thủ template của quái thường đang chạy. Có 30 bước chính "Hạ N quái tinh anh" và 5 bước `ha_alpha` là bắt buộc.
 
-Rủi ro khắc hệ trên bước giết bắt buộc (báo chủ game, **chưa sửa**). `KiemTtkQuai` in danh sách các bước mà sát thương nhận
-mỗi con ≥ ×2,5 so với trung tính:
+Khắc hệ trên bước giết bắt buộc (đo 31/10/2026 trước trần; **đã sửa** bằng trần khắc hệ PvE, mục 2.4). Trước trần:
 
 - Pichu chỉ có chiêu Điện (cả đòn thường ô 0; ô 4 "Nhanh nhẹn" là buff), nên mọi quái Đất chỉ nhận ×0,3: TTK ×3,3, sát thương
   nhận mỗi con ×3,3–5. Các bước bị ảnh hưởng:
@@ -341,6 +349,20 @@ mỗi con ≥ ×2,5 so với trung tính:
   - Squirtle chỉ hạ 2 con, 15,7 giây mỗi con, tốn 8 bình thuốc mỗi con;
   - Charmander (Nước đánh Lửa ×1,5, 10 đòn để gục) không hạ được con nào và hết 12 bình;
   - Pichu (×0,3) không hạ được con nào; cùng bài với vũ khí +6 thì hạ 7 con, 11,2 giây mỗi con, 2,3 bình mỗi con.
+
+Sau trần (mô hình `KiemTtkQuai`, đồ cửa hàng +0, quái mục tiêu đang chạy):
+
+- Pichu trên 10 bước kể trên: TTK 9,7–16,1 giây → 4,9–8,1 giây; sát thương nhận mỗi con so với trung tính ×3,3–5 → ×1,7–2,2.
+- Charmander ở CA-09.1 (Golem): nhận mỗi con ×2,8 → ×1,8; ở C42.3 (Gastrodon) ×1,9 → ×1,6.
+- Không còn bước giết bắt buộc nào, ở dòng nào, nhận quá ×2,2 so với trung tính.
+- Đo thật sau trần (đồ +0, 6–8 phút mỗi lần):
+  - Gastrodon cấp 72: Charmander hạ 8 con, 5,7 giây mỗi con, 0,5 bình mỗi con (trước: 0 con); Pichu hạ 1 con rồi 4 con ở
+    lần đo sau, 7,7–10,5 giây mỗi con, 4,5–12 bình mỗi con (trước: 0 con).
+  - Golem (cấp 54) với người chơi cấp 52: Charmander và Pichu đều hạ 8 con, 2,4 giây mỗi con, 0,1–0,4 bình mỗi con.
+  - Golem với người chơi cấp 49 (đúng cấp mở CA-09.1): cả hai dòng hạ 1 con rồi gục. Lý do là luật chênh cấp cũ
+    (`LiveActor.attackDam`: quái cao hơn 5 cấp đánh ×2 + 70 mỗi cấp), không phải khắc hệ. CA-09.1 (Golem 54, mở cấp 49) và
+    CA-10.1 (Rhydon 62, mở cấp 57) vẫn chênh 5 cấp; các cửa ải trước đã được hạ về ≤ cấp bước + 2 (khối
+    `sua_can_bang_lop.sql`).
 
 Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **chưa sửa**):
 
@@ -1037,7 +1059,7 @@ vào bằng **vé Mê cung**, quái ra theo đợt kèm boss Mê cung, giới h�
 | Báo trước chiêu lớn | gói -96: thời gian niệm 1,5–3 giây + hình vùng (tròn / nón / chữ nhật / vành); chiêu **nổ đúng lúc hết giờ niệm** (`BossLauDai.nhipNiem`), mục tiêu đứng ngoài vùng lúc đó thì không trúng (trước 29/10/2026 xét ở đòn kế tiếp - né rồi quay lại vẫn ăn ×3) |
 | Nộ theo thời gian | boss Gym sau 5 phút, boss thế giới sau 15 phút: sát thương ×3 (chống kéo dài bằng người đông) |
 | Gọi đệ | ở 70% và 40% HP, 2..6 con theo số người đang đánh; **Gym 1 đấu 1: 1 con mỗi pha** (`gym.so_de`) |
-| Gym 1 đấu 1 | boss Gym và đệ chỉ đánh người thách đấu (nhắm nhầm người khác thì quay về người thách đấu); khắc hệ của đòn trưởng Gym vào người chơi trần **×1,15** (`gym.he_toi_da`, `GiaiDoanBoss.giamKhacHeGym`); chiêu hệ tốt nhất của người thách đấu (ô 1..3, không tính đòn Cào ô 0) dưới ×1 vào hệ boss thì HP boss × tốt nhất / 100 (`gym.he_ra_toi_thieu`, `GiaiDoanBoss.hpGymTheoHe`; Lửa gặp Seismitoad, Điện gặp Celadon ×0,7 → 70% HP; Điện gặp Golem ×0,3 → 30%) - dòng bị khắc vẫn khó hơn (đòn boss mạnh hơn, trận dài hơn) nhưng không bị chặn cứng |
+| Gym 1 đấu 1 | boss Gym và đệ chỉ đánh người thách đấu (nhắm nhầm người khác thì quay về người thách đấu); khắc hệ của đòn trưởng Gym vào người chơi trần **×1,15** (`gym.he_toi_da`, `GiaiDoanBoss.giamKhacHeGym`); chiêu hệ tốt nhất của người thách đấu (ô 1..3, không tính đòn Cào ô 0) dưới ×1 vào hệ boss thì HP boss × tốt nhất / 100 (`gym.he_ra_toi_thieu`, `GiaiDoanBoss.hpGymTheoHe`; hệ số đã qua trần khắc hệ PvE ×0,6–×1,5, mục 2.4: Lửa gặp Seismitoad, Điện gặp Celadon ×0,7 → 70% HP; Điện gặp Golem ×0,3 → kẹp ×0,6 → 60%) - dòng bị khắc vẫn khó hơn (đòn boss mạnh hơn, trận dài hơn) nhưng không bị chặn cứng |
 | Thông báo pha | gói -98 (vào pha, nộ, gọi đệ, khiên) |
 
 **Quái tinh anh** (chữ người chơi thấy là "quái tinh anh", không dùng "Alpha"): 1/50 lần hồi sinh, to ×1,3, HP ×4, tấn

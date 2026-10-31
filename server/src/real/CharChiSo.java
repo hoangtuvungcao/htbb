@@ -840,10 +840,14 @@ class CharChiSo {
                         // Chi mang x1,5 do noi goi ap (Region...). Ghi co/he cho goi -95.
                         final int heC = HocChieuGame.heChieu(self, idSkill); // nhanh Eevee: he o 2/8/10 theo learnset
                         final int heDung = heC >= 0 ? heC : self.hePokemon1();
+                        // PvE (muc tieu la quai / boss / truong Gym): he so khac he kep 60..150 (KhacHePve, chu game
+                        // 31/10/2026); PvP giu nguyen
+                        final boolean pve = actor.cat == 1;
                         final int[] kqLd = com.htbb.pokemon.SatThuongLauDai.tinh(att, def, 100, heDung,
                                 self.hePokemon1(), self.hePokemon2(), actor.hePokemon1(), actor.hePokemon2(),
                                 ChiSoTrangBiGame.doHePhanTram(self, heDung), false, // ST he + phien da (<= 20%)
-                                95 + Map.r.nextInt(11));
+                                95 + Map.r.nextInt(11), pve ? com.htbb.pokemon.KhacHePve.raToiThieu() : 0,
+                                pve ? com.htbb.pokemon.KhacHePve.raToiDa() : 0);
                         dam = kqLd[0];
                         if (idSkill == 0) {
                             dam += dam * VatPhamDungLauDai.donThuong(self) / 100; // Dai luc si
