@@ -27,7 +27,7 @@ public class KiemSoNhiemVuThat {
     }
 
     static void chup(String ten) throws Exception {
-        ImageIO.write(ChupTrongGame.ve(NenPc.thatW, NenPc.thatH), "png", new File(RA, ten + ".png"));
+        ImageIO.write(ChupTrongGame.ve(NenPc.thatW, NenPc.thatH), "png", new File(RA, ten.replaceAll("[^A-Za-z0-9_]+", "_") + ".png"));
     }
 
     static String ghiQuest(game.model.Quest q) {
@@ -78,6 +78,162 @@ public class KiemSoNhiemVuThat {
         boolean trong = false;
         for (String t : TRONG) if (chu.contains(t)) trong = true;
         kiem(coTen && !trong, "[" + loi + "] so nhiem vu hien nhiem vu dang lam (" + ten.toString().replace('\n', ';') + ")");
+    }
+
+    /**
+     * 31/10/2026 (báo lỗi 0.9.24 J2ME chạm L49: "chỗ chế tạo trang bị hôm trước có, nay tìm không thấy"): tới NPC như người
+     * chơi (chạm đất cạnh NPC, chạm NPC), menu máy chủ -> MỌI mục phải chạm tới được: máy chạm lật "Thêm" như ngón tay thật
+     * (chữ trên màn), máy phím xuống bằng phím 8 tới mục cuối. Rồi chọn mục cuối ("Chế tạo & khảm ngọc" ở Machamp).
+     */
+    static void kiemMenuNpc(String ten) throws Exception {
+        String mto = System.getProperty("so.mto");
+        if (mto != null) {
+            KiemHanhTrinhUI.chat("mto " + mto);   // tài khoản GM: dịch chuyển tới bản đồ có NPC
+            KiemHanhTrinhUI.ngu(4000);
+            KiemHanhTrinhUI.cho(new KiemHanhTrinhUI.DieuKien() {
+                public boolean dung() {
+                    return !game.pokemon.ManTai.dangVao && game.render.Canvas.currentScreen == game.render.Canvas.gameScr;
+                }
+            }, 20000);
+            KiemHanhTrinhUI.ngu(2000);
+            KiemTaiThat.tren(new Runnable() {
+                public void run() {
+                    game.render.Canvas.endDlg();
+                }
+            });
+        }
+        boolean toi = game.pokemon.MenuNguCanh.bat() && KiemHanhTrinhUI.toiNpc(ten);
+        if (!(game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh) && !game.render.Canvas.menu.showMenu) {
+            // máy phím / chạm trượt: đi bộ tới cạnh NPC (tìm đường), nhắm NPC, phím 5 (nói chuyện) - như người chơi bấm phím
+            final game.model.NPC[] n = {null};
+            final String tenNpc = ten;
+            KiemTaiThat.tren(new Runnable() {
+                public void run() {
+                    n[0] = KiemHanhTrinhUI.timNpc(tenNpc);
+                    if (n[0] != null) {
+                        game.render.Canvas.endDlg();
+                        game.render.Canvas.gameScr.findRoad2(n[0].x, n[0].y + 16);
+                    }
+                }
+            });
+            if (n[0] != null) {
+                KiemHanhTrinhUI.choDungYen(25000);
+                KiemTaiThat.tren(new Runnable() {
+                    public void run() {
+                        game.render.Canvas.gameScr.focusedActor = n[0];
+                    }
+                });
+                KiemHanhTrinhUI.phim(-5, "noi chuyen NPC");
+                KiemHanhTrinhUI.cho(new KiemHanhTrinhUI.DieuKien() {
+                    public boolean dung() {
+                        return game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh || game.render.Canvas.menu.showMenu;
+                    }
+                }, 5000);
+                toi = true;
+            }
+        }
+        KiemHanhTrinhUI.ngu(800);
+        chup("06_menu_" + ten.replace(' ', '_'));
+        kiem(toi, "toi NPC " + ten);
+        if (!toi) {
+            KiemTaiThat.tren(new Runnable() {
+                public void run() {
+                    StringBuilder b = new StringBuilder();
+                    java.util.Vector v = game.render.Canvas.gameScr.actors;
+                    for (int i = 0; v != null && i < v.size(); i++) {
+                        if (v.elementAt(i) instanceof game.model.NPC) {
+                            game.model.NPC n = (game.model.NPC) v.elementAt(i);
+                            b.append(n.name).append('/').append(n.type).append(' ');
+                        }
+                    }
+                    System.out.println("NPC tren ban do " + game.render.screen.GameScr.mapNap + ": " + b);
+                }
+            });
+            return;
+        }
+        String muc = System.getProperty("so.npcMuc");
+        if (muc != null) {
+            // menu con của máy chủ (Machamp › Mua bán -> "Mua đồ cầm tay", ..., "Chế tạo & khảm ngọc")
+            kiemMotMenu(ten, false);
+            if (game.pokemon.MenuNguCanh.bat()) {
+                KiemHanhTrinhUI.chonMenu(muc);
+            } else if (game.render.Canvas.menu.showMenu) {
+                java.util.Vector v = game.render.Canvas.menu.menuItems;
+                int vt = -1;
+                for (int i = 0; i < v.size(); i++) {
+                    if (((game.model.Command) v.elementAt(i)).caption.startsWith(muc)) vt = i;
+                }
+                for (int i = 0; i < 2 * v.size() && vt >= 0 && game.render.Canvas.menu.selected != vt; i++) {
+                    KiemHanhTrinhUI.phim(-2, "xuong");
+                    KiemHanhTrinhUI.ngu(150);
+                }
+                KiemHanhTrinhUI.phim(-5, "chon " + muc);
+            }
+            KiemHanhTrinhUI.ngu(1500);
+            KiemHanhTrinhUI.cho(new KiemHanhTrinhUI.DieuKien() {
+                public boolean dung() {
+                    return game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh || game.render.Canvas.menu.showMenu;
+                }
+            }, 5000);
+            chup("06b_menu_" + ten + "_con");
+            ten = ten + " > " + muc;
+        }
+        kiemMotMenu(ten, true);
+    }
+
+    static void kiemMotMenu(String ten, boolean chonCuoi) throws Exception {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            boolean laThe = game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh;
+            kiem(laThe, "menu NPC " + ten + " la the lenh (" + KiemTaiThat.trangThai() + ")");
+            if (!laThe) {
+                return;
+            }
+            String[] l = game.pokemon.MenuNguCanh.cacLenh();
+            System.out.println("MENU " + ten + ": " + java.util.Arrays.toString(l));
+            java.util.Set<String> thay = new java.util.LinkedHashSet<String>();
+            for (int lat = 0; lat <= l.length + 1; lat++) {
+                String chu = chuDangVe();
+                for (String x : l) {
+                    if (x != null && chu.contains(x.length() > 14 ? x.substring(0, 14) : x)) thay.add(x);
+                }
+                chup("07_menu_" + ten + "_trang" + lat);
+                if (thay.size() == l.length || !chu.contains("|Thêm")) break;
+                KiemHanhTrinhUI.chamTheoChuDung("Thêm");
+                KiemHanhTrinhUI.ngu(400);
+            }
+            for (String x : l) {
+                kiem(thay.contains(x), "menu " + ten + ": muc '" + x + "' cham toi duoc (thay " + thay + ")");
+            }
+            if (!chonCuoi) {
+                return;
+            }
+            String cuoi = l[l.length - 1];
+            for (int lat = 0; lat <= l.length && !chuDangVe().contains(cuoi.length() > 14 ? cuoi.substring(0, 14) : cuoi); lat++) {
+                KiemHanhTrinhUI.chamTheoChuDung("Thêm");
+                KiemHanhTrinhUI.ngu(400);
+            }
+            KiemHanhTrinhUI.chamTheoChu(cuoi.length() > 14 ? cuoi.substring(0, 14) : cuoi);
+        } else {
+            boolean chu = game.render.Canvas.menu.showMenu && game.render.Canvas.menu.menuItems != null;
+            kiem(chu, "menu NPC " + ten + " (may phim) la menu chu (" + KiemTaiThat.trangThai() + ")");
+            if (!chu) {
+                return;
+            }
+            int n = game.render.Canvas.menu.menuItems.size();
+            for (int i = 0; i < 2 * n && game.render.Canvas.menu.selected != n - 1; i++) {
+                KiemHanhTrinhUI.phim(-2, "xuong");
+                KiemHanhTrinhUI.ngu(150);
+            }
+            kiem(game.render.Canvas.menu.selected == n - 1, "menu " + ten + " (may phim): phim xuong toi muc cuoi " + (n - 1) + " (dang " + game.render.Canvas.menu.selected + ")");
+            chup("07_menu_" + ten + "_cuoi");
+            if (!chonCuoi) {
+                return;
+            }
+            KiemHanhTrinhUI.phim(-5, "chon muc cuoi");
+        }
+        KiemHanhTrinhUI.ngu(1500);
+        chup("08_sau_muc_cuoi_" + ten);
+        System.out.println("sau muc cuoi: " + KiemTaiThat.trangThai() + " | " + (chuDangVe().length() > 400 ? chuDangVe().substring(0, 400) : chuDangVe()));
     }
 
     public static void main(String[] a) throws Exception {
@@ -301,6 +457,17 @@ public class KiemSoNhiemVuThat {
         KiemHanhTrinhUI.ngu(800);
         chup("05_so_tu_menu");
         kiemSo("Menu > Nhiem vu > So nhiem vu");
+        String npc = System.getProperty("so.npc");
+        if (npc != null) {
+            KiemTaiThat.tren(new Runnable() {
+                public void run() {
+                    game.render.Canvas.endDlg();
+                    game.render.Canvas.gameScr.switchToMe();
+                }
+            });
+            KiemHanhTrinhUI.ngu(500);
+            kiemMenuNpc(npc);
+        }
         KiemHanhTrinhUI.BAO.close();
         System.out.println("KiemSoNhiemVuThat: hong " + hong);
         System.exit(hong == 0 ? 0 : 1);
