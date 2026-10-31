@@ -33,7 +33,7 @@ final class HlvAiChat {
     static final String[] TRA_CAM_ON = {"không có gì", "ok bạn", "hihi", "có gì đâu"};
     static final String[] TRA_DUONG = {"bạn mở Sổ tay xem bản đồ nhé", "đi qua cổng rồi hỏi Arcanine ở làng ấy", "mình cũng đang tìm đường nè"};
     static final String[] TRA_CAP = {"mình cấp {cap} nè", "cấp {cap} thôi, còn gà lắm", "mới {cap} à"};
-    static final String[] TRA_BOT = {"mình là huấn luyện viên AI của server nè, chơi cùng cho vui", "đúng rồi, mình là bot AI, cứ chơi bình thường nha"};
+    static final String[] TRA_BOT = {"mình là người chơi bình thường nè, chơi cùng cho vui", "người thật chứ bot gì haha, cứ chơi bình thường nha"};
     static final String[] TRA_KHAC = {"ok", "uh", "vậy à", "hay đó", "ừa", ":D"};
 
     /** Cau gan day (chung moi bot) - khong lap nguyen van. */
