@@ -9992,8 +9992,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     /** Gia (luong + hoa thach cap 2) va han (ms) cua "Ao hoa Hoa Ky Lan". Xem doAoHoaHoaKyLan.
-     *  Sua 21/09/2026 theo yeu cau nguoi dung: truoc chi mat 100 luong, gio them 10 hoa thach C2. */
+     *  Sua 21/09/2026 theo yeu cau nguoi dung (commit 56c1dd23): 100 luong -&gt; 5000 luong + 10 hoa thach C2 (5000 la
+     *  CHU Y doi cung luc, khong phai go nham - giu nguyen). 31/10/2026: gia hien ngay tren muc menu
+     *  ({@link #mucMenuAoHoaHoaKyLan}). */
     public static final int GIA_LUONG_AO_HOA_HOA_KY_LAN = 5000;
+
+    /** Muc menu "ảo hóa (5000 lượng + 10 nham thạch C2)" - viet thuong chu dau (font client JAR, xem Map.doUseItem). */
+    public static String mucMenuAoHoaHoaKyLan() {
+        return "ảo hóa (" + GIA_LUONG_AO_HOA_HOA_KY_LAN + " lượng + " + SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN + " nham thạch C2)";
+    }
     public static final int SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN = 10;
     public static final long HAN_AO_HOA_HOA_KY_LAN_MS = 7L * 24 * 60 * 60 * 1000L;
 
@@ -10145,7 +10152,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     /**
      * "ẢO HÓA HỎA KỲ LÂN" - theo yeu cau nguoi dung ngay 02/09/2026.
      *
-     * Cong thuc: Hoa Ky Lan (VINH VIEN, minuteExist <= 0) + 100 luong -> +10% (hoac +10
+     * Cong thuc: Hoa Ky Lan (VINH VIEN, minuteExist <= 0) + GIA_LUONG_AO_HOA_HOA_KY_LAN (5000) luong + 10 nham thach C2 -> +10% (hoac +10
      * neu chi so do la %) MOI chi so cua Hoa Ky Lan (4 khang lan + sat thuong theo chu +
      * sat thuong max hp cua doi thu + suc khoe Than Thu) trong 7 ngay. Het han tu dong
      * tro ve chi so goc, khong can dang nhap lai (xem checkExpireAoHoaHoaKyLan, goi tu
@@ -10166,7 +10173,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return;
         }
         if (this.getLuong() < GIA_LUONG_AO_HOA_HOA_KY_LAN) {
-            this.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+            this.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng: cần " + GIA_LUONG_AO_HOA_HOA_KY_LAN + ".", ""));
             return;
         }
         // Kiem hoa thach C2 (khoa + khong khoa cong lai) TRUOC khi tru bat cu thu gi - giu
@@ -10177,7 +10184,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.sendMessage(MessageCreator.createServerAlertMessage("Không đủ Nham thạch cấp 2", ""));
             return;
         }
-        this.subLuong((long) GIA_LUONG_AO_HOA_HOA_KY_LAN);
+        // Kiem-va-tru luong NGUYEN TU (truoc: getLuong() o tren roi subLuong o day - hai lenh xen nhau ao hoa khi chi du 1 lan).
+        if (!this.truLuongNeuDu((long) GIA_LUONG_AO_HOA_HOA_KY_LAN)) {
+            this.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng: cần " + GIA_LUONG_AO_HOA_HOA_KY_LAN + ".", ""));
+            return;
+        }
         // Tru hoa thach C2: uu tien phan KHONG KHOA truoc, thieu bao nhieu moi tru tiep sang
         // phan da khoa (giu tai san khoa cua nguoi choi it bi dong toi nhat co the).
         {
@@ -14437,13 +14448,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public static Item createItemSoLuong(final int idtemplate, int soLuong, final Char p) {
+        return createItemSoLuong(idtemplate, soLuong, p, true);
+    }
+
+    /** @param khoa false: do mua bang LUONG (Cua hang lau dai, chu game 31/10/2026) - khong khoa, giao dich duoc. */
+    public static Item createItemSoLuong(final int idtemplate, int soLuong, final Char p, final boolean khoa) {
         final Item newItem = new Item((ItemTemplates) Map.itemTemplates.get(5).get(idtemplate), false, 0, 0, idtemplate);
         newItem.id = p.getIDItem();
         newItem.owner = p.charDBID;
         newItem.level = newItem.getTemplate().level;
         newItem.identify = p.charDBID;
         newItem.clazz = -1;
-        newItem.lock = 1;
+        newItem.lock = (byte) (khoa ? 1 : 0);
         // Nhanh hoa dao giftcode: 24.1% ST chuan, 50.1% vu khi, 29.0% ty le.
         if (idtemplate == 835) {
             newItem.createAttributeNhanhHoaDaoGiftcode();
@@ -14490,7 +14506,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 themItem.level = themItem.getTemplate().level;
                 themItem.identify = p.charDBID;
                 themItem.clazz = -1;
-                themItem.lock = 1;
+                themItem.lock = newItem.lock; // cung khoa voi ban goc (khoa = false: mua bang luong)
                 if (idtemplate == 835) {
                     themItem.createAttributeNhanhHoaDaoGiftcode();
                 }
@@ -15180,8 +15196,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     /** Tru luong (mo) neu con du. @return false (khong doi gi) khi thieu hoac so am. */
     public boolean truLuongNeuDu(final long l) {
-        if (doBuySpecialItem.traLuongKhoa()) { // shop luong: mon da chuyen sang luong khoa (GD2 2.10)
-            return this.truLuongKhoaNeuDu(l);
+        if (doBuySpecialItem.traLuongKhoa()) { // shop luong: mon gia luong khoa (GD2 2.10); thieu -> tru luong cung gia
+            return this.truLuongKhoaRoiLuong(l, l) != TRA_KHONG;
         }
         synchronized (KHOA_TIEN) {
             if (l < 0L || this.luong < l) {
@@ -15190,6 +15206,40 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.subLuong(l);
             return true;
         }
+    }
+
+    /** Ket qua {@link #truLuongKhoaRoiLuong}: khong tru gi / da tru luong khoa / da tru luong. */
+    public static final int TRA_KHONG = 0;
+    public static final int TRA_LUONG_KHOA = 1;
+    public static final int TRA_LUONG = 2;
+
+    /**
+     * Mon gia LUONG KHOA (chu game 31/10/2026: luong nap la tien tot nhat, mua duoc moi thu luong khoa mua duoc): tru
+     * luong khoa truoc; thieu thi tru {@code giaLuong} LUONG (luong mo). Kiem-va-tru trong MOT khoi KHOA_TIEN, khong
+     * tru le hai loai. @return {@link #TRA_LUONG_KHOA} / {@link #TRA_LUONG} / {@link #TRA_KHONG} (khong doi gi).
+     * Nguoi goi: do mua bang luong khoa thi KHOA, bang luong thi KHONG khoa (tru do gan tai khoan tu nhien).
+     */
+    public int truLuongKhoaRoiLuong(final long giaKhoa, final long giaLuong) {
+        synchronized (KHOA_TIEN) {
+            final int k = chonTraLuongKhoaRoiLuong(this.lockLuong, this.luong, giaKhoa, giaLuong);
+            if (k == TRA_LUONG_KHOA) {
+                this.subLuongLock(giaKhoa);
+            } else if (k == TRA_LUONG) {
+                this.subLuong(giaLuong);
+            }
+            return k;
+        }
+    }
+
+    /** Thuan de test: con du loai nao (luong khoa truoc). */
+    public static int chonTraLuongKhoaRoiLuong(final long coKhoa, final long coLuong, final long giaKhoa, final long giaLuong) {
+        if (giaKhoa >= 0L && coKhoa >= giaKhoa) {
+            return TRA_LUONG_KHOA;
+        }
+        if (giaLuong >= 0L && coLuong >= giaLuong) {
+            return TRA_LUONG;
+        }
+        return TRA_KHONG;
     }
 
     /** Tru luong khoa neu con du. @return false (khong doi gi) khi thieu hoac so am. */

@@ -1798,8 +1798,14 @@ hồi phục, vùng đánh 4..20 ô, tự hồi sinh (tắt / thuốc thường 
 | Đồng | Giao dịch | Nguồn | Dùng cho |
 |---|---|---|---|
 | **Xu** | được, qua chợ (thuế 6% + phí đăng 1%, đốt) | quái (rơi 30% số lần, theo lệch cấp × năng lượng), nhiệm vụ, ≤ 25% ngân sách sự kiện, phân rã | thuốc, sửa đồ, dịch chuyển, đồ theo bậc, **nâng cấp**, **ngọc hệ**, học chiêu, hồi sinh |
-| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục; **đổi từ lượng** (1 : 1) | bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá |
-| **Lượng** | được: chuyển ở NPC (phí 5%) và **sàn lượng ↔ xu**; không qua cửa sổ giao dịch | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật; mua trên sàn bằng xu | **chỉ** trang trí, tiện ích (đổi tên, mở rộng túi), bản cao cấp tăng tốc; **đổi ra lượng khoá / xu** (một chiều) |
+| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục; **đổi từ lượng** (1 : 1) | bản **kiếm được trong game**: bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá, đổi hệ đồ, hồi sinh tại chỗ; **đồ mua bằng lượng khoá bị khoá** (không giao dịch) |
+| **Lượng** | được: chuyển ở NPC (phí 5%) và **sàn lượng ↔ xu**; không qua cửa sổ giao dịch | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật; mua trên sàn bằng xu | **tiền tốt nhất** (chủ game 31/10/2026): mua được **mọi thứ lượng khoá mua được** (cùng giá, đồ **không khoá**) + đồ đẹp / chỉ số cao cấp (trang bị thuê NPC, nguyên liệu Persian, Shop đặc biệt VIP, thú cưỡi, nâng cấp thú cưỡi, áo hoá Hỏa Kỳ Lân, đồ sự kiện), trang trí, tiện ích; không bao giờ kém lượng khoá; **đổi ra lượng khoá / xu** (một chiều, 9.1 Đổi lượng) |
+
+**Luật lượng ↔ lượng khoá (31/10/2026):** "lượng (nạp) mua được mọi thứ lượng khoá mua được + đồ đẹp / chỉ số cao cấp; lượng
+khoá là bản kiếm được trong game, đồ mua bị khoá". Mọi chỗ giá lượng khoá (Cửa hàng đặc biệt dòng "[Lượng khoá]", Kecleon,
+bùa nâng cấp, đổi hệ, hồi sinh) trừ **lượng khoá trước, thiếu thì trừ lượng cùng giá** (`Char.truLuongKhoaRoiLuong`), báo rõ
+loại tiền đã trừ; đồ mua bằng lượng không khoá (trừ đồ gắn tài khoản tự nhiên, vd Bản đồ khoá). Mọi phép trừ lượng / lượng
+khoá kiểm-và-trừ trong một bước (`Char.truNeuDu`, `real.PhiLuong`).
 
 **Đổi lượng (chủ game 31/10/2026, `real.DoiLuongGame`, luật thuần `com.htbb.pokemon.DoiLuong`)** — NPC Tổng Quản → *Đổi lượng
 (khoá / xu / sàn)*, và web `/account`. Chỉ từ **lượng thường trong người** (không dùng lượng trong kho, không bao giờ dùng
@@ -1830,7 +1836,7 @@ Kiểm: `server/test/KiemDoiLuong`, `web/tests/doi-luong.test.ts`.
 
 | Đồng | Cửa sổ giao dịch 1-1 | NPC chuyển | Sàn | Ghi chú |
 |---|---|---|---|---|
-| Xu | không (cửa sổ hiện chỉ chở thuốc) | không | có (bên mua trả xu) | chợ ký gửi / chợ trang trí / chợ sinh thái trả bằng xu |
+| Xu | **có** (0.9.27: ô xu trong cửa sổ giao dịch, trần ngày `thue.tran_chuyen_xu_gio` × thu nhập 1 giờ / tài khoản, `real.GiaoDichXu`) | không | có (bên mua trả xu) | chợ ký gửi / chợ trang trí / chợ sinh thái trả bằng xu |
 | Lượng | **không** | có (Meowth / Tổng Quản *Chuyển lượng*, phí 5%) | có (lệnh bán / mua) | |
 | Lượng khoá | **không** | **không** | **không** | không đường nào (9.6) |
 
@@ -1899,14 +1905,16 @@ bản đồ / sự kiện đó nếu đỏ.
 - **Cửa hàng** (Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm, `real.CuaHangLauDai`): luật "không vật phẩm mồ côi" — mọi dòng **chỉ ra vật phẩm, không bao
   giờ ra xu / lượng / lượng khoá**. Trang bị bằng xu (Bronzong, 1,5 giờ), thuốc bằng xu (Chansey), bùa / thuốc hiếm bằng lượng
   khoá có giới hạn tuần (Kecleon), trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện
-  lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật).
-- **Nạp tiền không bán sức mạnh** (tắt mặc định, `sv.nap_tien` + cấu hình web): bán gói lượng, Thẻ tháng, Vé mùa cao cấp,
-  Thành viên, và bằng lượng trong game là bản cao cấp vật phẩm tăng tốc (chung trần với bản khoá). **Không bán** chỉ số, đồ,
-  đá, tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Mục tiêu mô phỏng: người nạp chênh sức mạnh cùng giờ chơi
-  ≤ 5%. Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
+  lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật). Dòng giá lượng khoá (Kecleon) thiếu lượng
+  khoá thì trừ lượng cùng số, đồ nhận không khoá (31/10/2026).
+- **Nạp tiền** (tắt mặc định, `sv.nap_tien` + cấu hình web): bán gói lượng, Thẻ tháng, Vé mùa cao cấp, Thành viên. Chủ game
+  31/10/2026 đổi luật: lượng nạp là tiền **tốt nhất** - mua được mọi thứ lượng khoá mua được (đồ không khoá) và đồ đẹp / chỉ
+  số cao cấp đang bán bằng lượng (trang bị thuê NPC 24, nguyên liệu cấp 4-5 Persian, Shop đặc biệt VIP, thú cưỡi và nâng cấp
+  thú cưỡi, ảo hoá Hỏa Kỳ Lân). Cổng nạp không bán trực tiếp tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Lượng nạp **được phép** mua đồ mạnh hơn (đồ chỉ số cao
+  cấp, nâng cấp thú cưỡi...), đồ mua bằng lượng không khoá; còn **xu / cày quái vẫn là đường tiến chính** (nâng cấp +1..+15,
+  ngọc hệ, đồ theo bậc chỉ bằng xu + đá). Bỏ mục tiêu cũ "người nạp chênh sức mạnh cùng giờ chơi ≤ 5%" (31/10/2026). Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
 - **Đổi lượng** (9.1): lượng thường → lượng khoá 1 : 1 không trần; lượng → xu theo tỉ giá chung hằng ngày (≤ 5.000 lượng /
-  tài khoản / ngày); sàn lượng ↔ xu giữa người chơi. Ngân sách "nạp không bán sức mạnh" vẫn bị chặn vì mọi thứ mua bằng
-  lượng khoá có trần tuần, và xu đổi ra bị trần ngày theo tài khoản.
+  tài khoản / ngày); sàn lượng ↔ xu giữa người chơi. Xu đổi ra từ hệ thống bị trần ngày theo tài khoản.
 
 ---
 

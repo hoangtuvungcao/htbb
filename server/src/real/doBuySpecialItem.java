@@ -51,6 +51,14 @@ public class doBuySpecialItem {
     /** Mon dang mua o lenh 85 nay (bao "Đã mua ...: trừ X lượng khoá" sau khi mua). */
     private static final ThreadLocal<ShopTemplate> MON_DANG_MUA = new ThreadLocal<ShopTemplate>();
 
+    /** {id_shop, tuan} khi chanMuaShop vua dem 1 luot gioi han tuan cho lan mua nay (hoan lai neu khong tru tien). */
+    private static final ThreadLocal<int[]> LUOT_TUAN = new ThreadLocal<int[]>();
+
+    /** Keo thu cung (shop 165) chi ban khi dang ky ban VA co gia xu &gt; 0 (khong bao gio ban gia 0). */
+    static boolean banKeoThuCung(final boolean dangKyBan, final int gia) {
+        return dangKyBan && gia > 0;
+    }
+
     /** Dang xu ly lenh 85 cho mon tra bang luong khoa (xem TRA_LUONG_KHOA). */
     static boolean traLuongKhoa() {
         return Boolean.TRUE.equals(TRA_LUONG_KHOA.get());
@@ -62,6 +70,8 @@ public class doBuySpecialItem {
         // moi vao hanh trang = lock 1 (cho ky gui / giao dich da chan lock 1).
         final int[] thuocTruoc = player.potions == null ? null : player.potions.clone();
         final long luongKhoaTruoc = player.getLuongLock();
+        final long luongTruoc = player.getLuong();
+        final long xuTruoc = player.getxu();
         final java.util.Set<Object> doTruoc = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
         try {
             doTruoc.addAll(player.iItems);
@@ -71,9 +81,26 @@ public class doBuySpecialItem {
             doBuySpecialItem0(player, msg);
         } finally {
             TRA_LUONG_KHOA.remove();
+            // Gioi han tuan dem TRUOC buoc tru tien (chanMuaShop): khong tru dong nao (thieu luong khoa, het cho...)
+            // thi tra lai luot - truoc 31/10/2026 bam mua Ve gio vang khi thieu luong khoa van mat luot tuan.
+            final int[] luot = LUOT_TUAN.get();
+            LUOT_TUAN.remove();
+            try {
+                if (luot != null && TienShopDacBiet.khongTruTien(luongKhoaTruoc, player.getLuongLock(), luongTruoc,
+                        player.getLuong(), xuTruoc, player.getxu())) {
+                    data.DatabaseLauDai.hoanMuaTuan(player.charDBID, luot[0], luot[1]);
+                }
+            } catch (Exception ignored) {
+            }
             final ShopTemplate mon = MON_DANG_MUA.get();
             MON_DANG_MUA.remove();
             try {
+                if (player.getLuongLock() >= luongKhoaTruoc && player.getLuong() < luongTruoc && mon != null
+                        && TienShopDacBiet.traLuongKhoa(mon.id)) {
+                    // dong gia luong khoa nhung thieu -> da tru LUONG (do khong khoa): bao ro loai tien that tru
+                    player.sendMessage(MessageCreator.createServerAlertMessage(TienShopDacBiet.daMuaBangLuong(
+                            mon.name, luongTruoc - player.getLuong(), player.getLuong()), ""));
+                }
                 if (player.getLuongLock() < luongKhoaTruoc) {
                     // Bao ro loai tien (client cu ve gia bang bieu tuong luong): "Đã mua X: trừ 30 lượng khoá, còn 12."
                     player.sendMessage(MessageCreator.createServerAlertMessage(TienShopDacBiet.daMua(
@@ -138,10 +165,15 @@ public class doBuySpecialItem {
 
                     // GD2 2.10 (Q10): shop luong chi con do trang tri; kiem o CHINH noi xu ly (muc 11).
                     if (com.htbb.pokemon.LauDai.bat()) {
-                        final String chan = data.DatabaseLauDai.chanMuaShop(player.charDBID, item.id, LauDaiNhanVat.tuanNay());
+                        final int tuan = LauDaiNhanVat.tuanNay();
+                        final String chan = data.DatabaseLauDai.chanMuaShop(player.charDBID, item.id, tuan);
                         if (chan != null) {
                             player.sendMessage(MessageCreator.createServerAlertMessage(chan, ""));
                             return;
+                        }
+                        final int[] g = data.DatabaseLauDai.GIA_SHOP.get(Integer.valueOf(item.id));
+                        if (g != null && g[3] > 0) {
+                            LUOT_TUAN.set(new int[]{item.id, tuan}); // da dem 1 luot: hoan o doBuySpecialItem neu khong tru tien
                         }
                         if (data.DatabaseLauDai.traBangLuongKhoa(item.id)) {
                             TRA_LUONG_KHOA.set(Boolean.TRUE);
@@ -153,12 +185,14 @@ public class doBuySpecialItem {
                         return;
                     }
 
-                    // Dong tra bang LUONG KHOA (tien_moi = 2 hoac do khoa 116..128/150/176): thieu luong khoa thi tu choi
-                    // NGAY, ghi ro can / dang co - KHONG BAO GIO tru luong thuong thay (truLuongNeuDu chuyen sang
-                    // truLuongKhoaNeuDu khi TRA_LUONG_KHOA; nhanh 132 kiem rieng ben duoi).
-                    if ((traLuongKhoa() || player.map.isItemLock(item.id)) && player.getLuongLock() < (long) item.getPrice(isSale)) {
+                    // Dong gia LUONG KHOA (tien_moi = 2 hoac do khoa 116..128/150/176): tru luong khoa truoc, THIEU thi tru
+                    // LUONG cung gia (chu game 31/10/2026: luong nap mua duoc moi thu luong khoa mua duoc, do mua bang luong
+                    // KHONG khoa - Char.truLuongKhoaRoiLuong). Thieu ca hai -> tu choi ngay, ghi ro can / dang co.
+                    if ((traLuongKhoa() || player.map.isItemLock(item.id))
+                            && Char.chonTraLuongKhoaRoiLuong(player.getLuongLock(), player.getLuong(), item.getPrice(isSale),
+                                    item.getPrice(isSale)) == Char.TRA_KHONG) {
                         player.sendMessage(MessageCreator.createServerAlertMessage(
-                                TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock()), ""));
+                                TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock(), player.getLuong()), ""));
                         return;
                     }
 
@@ -181,28 +215,33 @@ public class doBuySpecialItem {
                         // (126/127/128 hoac 116..125/150/176) va nhanh do luon co dung mot
                         // lan subLuongLock, nen gop check+tru vao day la an toan, khong doi
                         // hanh vi khi du tien.
-                        if (!player.truLuongKhoaNeuDu((long) item.getPrice(isSale))) {
+                        final int traBang = player.truLuongKhoaRoiLuong(item.getPrice(isSale), item.getPrice(isSale));
+                        if (traBang == Char.TRA_KHONG) {
                             player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock()), ""));
+                                    TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock(), player.getLuong()), ""));
                             return;
                         }
+                        // tra bang luong khoa -> ra do khoa; tra bang luong -> do KHONG khoa (thuoc: ThuocKhoa chi danh dau
+                        // khi luong khoa giam, xem doBuySpecialItem). Ban do khoa 176 gan tai khoan tu nhien: luon khoa.
+                        final boolean raKhoa = traBang == Char.TRA_LUONG_KHOA;
+                        final String duoi = raKhoa ? "_khoa" : "_luong";
 
-                        moneyType = "luong_lock";
+                        moneyType = raKhoa ? "luong_lock" : "luong";
                         if ((item.id < 116 || item.id > 125) && item.id != 150 && item.id != 176) {
                             if (item.id == 126) {
                                 var10002 = player.potions[35]++;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                nameItem = item.name + "_khoa";
+                                nameItem = item.name + duoi;
                             } else if (item.id == 127) {
                                 var10000 = player.potions;
                                 var10000[94] += item.value;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                nameItem = item.name + "_khoa";
+                                nameItem = item.name + duoi;
                             } else if (item.id == 128) {
                                 var10000 = player.potions;
                                 var10000[96] += item.value;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                nameItem = item.name + "_khoa";
+                                nameItem = item.name + duoi;
                             }
                         } else {
                             if (item.id == 176) {
@@ -211,11 +250,11 @@ public class doBuySpecialItem {
                             } else if (item.id == 150) {
                                 var10000 = player.potions;
                                 var10000[73] += item.value;
-                                nameItem = item.name + "_khoa";
+                                nameItem = item.name + duoi;
                             } else {
                                 int[] idgem = new int[]{71, 72, 78, 79, 85, 86, 92, 93, 99, 100};
-                                player.doAddGemItem(idgem[item.id - 116], item.value, true);
-                                nameItem = item.name;
+                                player.doAddGemItem(idgem[item.id - 116], item.value, raKhoa);
+                                nameItem = item.name + (raKhoa ? "" : duoi);
                             }
 
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -421,19 +460,22 @@ public class doBuySpecialItem {
                         nameItem = item.name;
                         Database.instance.saveOrtherLog("", player.charname, "doi kieu toc tu  " + oldhead + " qua " + player.headStyle, "doitoc");
                     } else if (item.id == 165) {
-                        if (!isSellHuyetLinhThao()) {
-                            return;
-                        }
-
-                        // Khong doi: nhanh nay chua bao gio thuc su subXu (doCreateHuyetLinhThao
-                        // khong tru tien), nen khong co cap kiem-roi-tru can lam atomic o day.
-                        if (player.getxu() < (long) item.getPrice(isSale)) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
+                        // Keo thu cung (data_shop 165: price 0, sell 0). 31/10/2026: an HAN - gia 0 hoac het ky ban thi
+                        // bao "chua ban" (truoc: im lang return; neu co ai bat sell thi nhanh nay KHONG tru dong nao vi
+                        // chi kiem getxu() < 0). Gia > 0: tru xu nguyen tu.
+                        if (!banKeoThuCung(isSellHuyetLinhThao(), item.getPrice(isSale))) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm hiện tại chưa bán.", ""));
                             return;
                         }
 
                         if (player.hlt_buy <= 0) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mua thêm.", ""));
+                            return;
+                        }
+
+                        moneyType = "xu";
+                        if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "keo thu cung")) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu.", ""));
                             return;
                         }
 
@@ -690,36 +732,35 @@ public class doBuySpecialItem {
                                 player.createPet(21, petTemplate[21].timeExpire);
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else if (item.id == 132) {
-                                // Khong doi: subLuong o day chi chay khi doCreateHuyetBoDe(...)
-                                // tra ve true (con cho trong hanh trang). Neu gop check+tru
-                                // len truoc bang truLuongNeuDu thi luc het cho se tru tien ma
-                                // khong co do, va khong the hoan lai trong nhanh nay ma khong
-                                // bay them logic hoan tien moi (ngoai pham vi doi mang tinh
-                                // co hoc cua dot sua nay).
-                                if (traLuongKhoa()) {
-                                    // dong nay tung chuyen sang luong khoa: KHONG kiem / tru luong thuong
-                                    // tru truoc; het cho trong hanh trang thi hoan lai dung so luong khoa vua tru
-                                    if (!player.truLuongKhoaNeuDu((long) item.getPrice(isSale))) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage(
-                                                TienShopDacBiet.khongDu(item.getPrice(isSale), player.getLuongLock()), ""));
-                                        return;
+                                // Bac ha tinh cach: kiem tien + tao do + tru trong MOT khoi Char.truNeuDu (tao that bai vi het
+                                // cho -> khong tru gi, khong can hoan). Dong gia luong khoa: tru luong khoa, thieu thi luong.
+                                final int gia132 = item.getPrice(isSale);
+                                final boolean dongKhoa132 = traLuongKhoa();
+                                final int[] tra132 = {Char.TRA_KHONG};
+                                final boolean ok132 = player.truNeuDu(() -> {
+                                    tra132[0] = dongKhoa132
+                                            ? Char.chonTraLuongKhoaRoiLuong(player.getLuongLock(), player.getLuong(), gia132, gia132)
+                                            : (player.getLuong() >= gia132 ? Char.TRA_LUONG : Char.TRA_KHONG);
+                                    return tra132[0] != Char.TRA_KHONG && doCreateHuyetBoDe(player, 1);
+                                }, () -> {
+                                    if (tra132[0] == Char.TRA_LUONG_KHOA) {
+                                        player.subLuongLock(gia132);
+                                    } else {
+                                        player.subLuong(gia132);
                                     }
-                                    if (!doCreateHuyetBoDe(player, 1)) {
-                                        player.addLuongLock(item.getPrice(isSale));
-                                        return;
+                                });
+                                if (!ok132) {
+                                    if (tra132[0] == Char.TRA_KHONG) {
+                                        player.sendMessage(MessageCreator.createServerAlertMessage(dongKhoa132
+                                                ? TienShopDacBiet.khongDu(gia132, player.getLuongLock(), player.getLuong())
+                                                : "Không đủ lượng.", ""));
                                     }
-                                    nameItem = item.name;
-                                    soluong = 1;
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                } else if (player.getLuong() < item.getPrice(isSale)) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
-                                } else if (doCreateHuyetBoDe(player, 1)) {
-                                    nameItem = item.name;
-                                    soluong = 1;
-                                    player.subLuong((long) item.getPrice(isSale));
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 }
+                                moneyType = tra132[0] == Char.TRA_LUONG_KHOA ? "luong_lock" : "luong";
+                                nameItem = item.name;
+                                soluong = 1;
+                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else {
                                 ShopTemplate spItem;
                                 if (item.id > 1) {

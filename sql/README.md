@@ -141,6 +141,9 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
 19. `them_nang_luong_thanh_vien.sql` (31/10/2026, chủ game): Bùa thể lực không giới hạn (cửa hàng lượng 30 / Kecleon 25
     lượng khoá), mô tả gói nạp +30 phút năng lượng (chỉ đổi dòng còn mô tả mặc định cũ). Khoá `exp.nang_luong_*_phut` /
     `tang_toc.bua_*` ở mục 2. `server/test/KiemNangLuongThanhVien`.
+20. `sua_tien_te_cua_hang.sql` (31/10/2026, kiểm loại tiền mọi vật phẩm đang bán): `data_shop_gia_lau_dai` dòng 116..125
+    (nguyên liệu cấp 4-5 khoá) ghi đúng `tien_moi = 2` (lượng khoá) như máy chủ đang trừ; giá không đổi. Phần A cũng có.
+    `server/test/KiemLoaiTienCuaHang`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

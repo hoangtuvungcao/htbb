@@ -124,15 +124,23 @@ public final class NangCapLauDaiGame {
         final int[] nl = NL_PHU.get(Integer.valueOf(NangCapLauDai.bacTheoCap(capDo) * 100 + k));
         final int mth = k >= 11 && item.colorName == Item.COLOR_GREEN ? ID_MANH_TINH_HOA : -1;
         final boolean[] daKhoa = {false};
+        final boolean[] buaBangLuong = {false};
+        // Bua: luong khoa truoc, thieu thi LUONG cung so (chu game 31/10/2026: luong nap mua duoc moi thu luong khoa mua duoc)
         final boolean du = p.truNeuDu(
-                () -> p.xu >= xu && soDa(p, idLkd, kieu) >= da && p.lockLuong >= bua
+                () -> p.xu >= xu && soDa(p, idLkd, kieu) >= da
+                        && Char.chonTraLuongKhoaRoiLuong(p.lockLuong, p.getLuong(), bua, bua) != Char.TRA_KHONG
                         && (nl == null || VatPhamDungLauDai.demItem(p, nl[0]) >= nl[1])
                         && (mth < 0 || VatPhamDungLauDai.demItem(p, mth) >= 1),
                 () -> {
                     p.subXu(xu, true, "nang cap lau dai +" + k);
                     daKhoa[0] = truDa(p, idLkd, kieu, da);
                     if (bua > 0) {
-                        p.subLuongLock(bua);
+                        if (p.lockLuong >= bua) {
+                            p.subLuongLock(bua);
+                        } else {
+                            p.subLuong(bua);
+                            buaBangLuong[0] = true;
+                        }
                     }
                     if (nl != null) {
                         VatPhamDungLauDai.truItem(p, nl[0], nl[1]);
@@ -142,7 +150,7 @@ public final class NangCapLauDaiGame {
                     }
                 });
         if (!du) {
-            ra[0] = "Lên +" + k + " cần " + xu + " xu, " + da + " đá luyện kim" + (bua > 0 ? ", " + bua + " lượng khoá (bùa)" : "")
+            ra[0] = "Lên +" + k + " cần " + xu + " xu, " + da + " đá luyện kim" + (bua > 0 ? ", " + bua + " lượng khoá hoặc lượng (bùa)" : "")
                     + (nl != null ? ", " + nl[1] + " " + tenItem(nl[0]) : "") + (mth >= 0 ? ", 1 " + tenItem(mth) : "") + ".";
             return THIEU;
         }
@@ -160,7 +168,7 @@ public final class NangCapLauDaiGame {
             if (h != null) {
                 h.datTruot(item.id, 0);
             }
-            ra[0] = "Thành công +" + k + " (tỉ lệ " + tiLe + "%).";
+            ra[0] = "Thành công +" + k + " (tỉ lệ " + tiLe + "%)" + ghiBua(bua, buaBangLuong[0]) + ".";
             NhiemVuEngine.suKien(p, "nang_cap_cong", String.valueOf(k), 1);
             NhiemVuEngine.datMuc(p, "thanh_tuu_nang_cap", k);
         } else {
@@ -179,7 +187,8 @@ public final class NangCapLauDaiGame {
                 h.datTruot(item.id, truot + 1);
             }
             ra[0] = "Thất bại +" + k + " (tỉ lệ " + tiLe + "%, lần sau +" + (NangCapLauDai.tiLe(k, truot + 1) - tiLe) + "%)"
-                    + (sau < cu ? ", giảm còn +" + sau : (giu > 0 && k >= ThongSoLauDai.MAT_CAP_TU && !baoHo ? ", giữ mốc +" + giu : "")) + ".";
+                    + (sau < cu ? ", giảm còn +" + sau : (giu > 0 && k >= ThongSoLauDai.MAT_CAP_TU && !baoHo ? ", giữ mốc +" + giu : ""))
+                    + ghiBua(bua, buaBangLuong[0]) + ".";
         }
         try {
             Database.instance.saveOrtherLog("tob_log_other_kham", p.charname,
@@ -190,6 +199,11 @@ public final class NangCapLauDaiGame {
         // mon dang mac doi +N: vang sang / hat lap lanh tren than doi theo (chi gui khi ngoai hinh doi)
         NgoaiHinhGame.guiNeuDoi(p);
         return thanhCong ? THANH_CONG : TRUOT;
+    }
+
+    /** ", bùa trừ 5 lượng khoá" / ", bùa trừ 5 lượng" - ghi ro loai tien that tru. */
+    public static String ghiBua(final int bua, final boolean bangLuong) {
+        return bua > 0 ? ", bùa trừ " + bua + (bangLuong ? " lượng" : " lượng khoá") : "";
     }
 
     /**
