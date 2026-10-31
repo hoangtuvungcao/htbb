@@ -10,6 +10,9 @@ import javax.microedition.lcdui.Graphics;
 import network.Message;
 
 public class MiniGame extends Screen {
+    /** 31/10/2026: đang chạy update không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_update;
+
     public static MiniGame me;
     private int idCell;
     private boolean isClose;
@@ -283,12 +286,32 @@ public class MiniGame extends Screen {
     @Override
     public void paint(Graphics g) {
         Canvas.gameScr.paint(g);
-        Res.paintDlgFull(g, 10, 20, Canvas.w - 20, Canvas.h - 60);
-        Font.borderFont.drawString(g, "Hộp may mắn", Canvas.hw, 25, 2);
+        boolean cham = game.pokemon.ManCu.bat();
+        if (cham) {
+            // 31/10/2026: tấm chung + nút khối trong tấm; hộp chạm được (vùng >= cỡ chạm) khi đến lượt chọn
+            this.anNutLenh = true;
+            game.pokemon.ManCu.tam(g, this, "Hộp may mắn", null, new Command[]{this.right, this.center});
+            Canvas.resetTrans(g);
+        } else {
+            Res.paintDlgFull(g, 10, 20, Canvas.w - 20, Canvas.h - 60);
+            Font.borderFont.drawString(g, "Hộp may mắn", Canvas.hw, 25, 2);
+        }
         for (int i = 0; i < this.modelCell.size(); i++) {
             ModelCell obj = (ModelCell) this.modelCell.elementAt(i);
             if (obj != null) {
                 obj.paint(g);
+                if (cham && this.isPointer) {
+                    final int id = obj.id;
+                    int s = Math.max(34, game.pokemon.VungCham.MIN);
+                    game.pokemon.VungCham.them(g, obj.x - s / 2, obj.y - s / 2, s, s, new IAction() {
+                        public void perform() {
+                            MiniGame.this.idCell = id;
+                            if (MiniGame.this.center != null && MiniGame.this.center.action != null) {
+                                MiniGame.this.center.action.perform();
+                            }
+                        }
+                    }, "mini-hop-" + i);
+                }
                 if (Canvas.gameTick % 4 == 0 && this.idCell == i && !this.isClose) {
                     g.setColor(16777215);
                     g.drawRect(obj.x - 17, obj.y - 17, 34, 34);
@@ -311,6 +334,19 @@ public class MiniGame extends Screen {
 
     @Override
     public void update() {
+        if (game.pokemon.ManCu.bat() && !this.boc_update && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_update = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        MiniGame.this.update();
+                    }
+                });
+            } finally {
+                this.boc_update = false;
+            }
+            return;
+        }
         for (int i = 0; i < this.modelCell.size(); i++) {
             ModelCell obj = (ModelCell) this.modelCell.elementAt(i);
             if (obj != null) {

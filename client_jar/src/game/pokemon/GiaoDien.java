@@ -694,6 +694,54 @@ public final class GiaoDien {
         return s == null || s.length() == 0 || Font.borderFont == null ? 0 : Font.borderFont.getWidth(s) + 12 + (vt == 1 ? 9 : 0);
     }
 
+    /**
+     * Bản J2ME chạy trên máy cảm ứng (J2ME Loader Android...), màn / hộp cũ (không phải màn chơi): phím mềm vẽ thành nút khối
+     * đủ cỡ chạm (nutMemCham). PC / APK (ChuUI.bo != null) đã có nút ngữ cảnh riêng (htbb.pc.ThanhLenh / HdNut).
+     */
+    public static boolean nutMemTo() {
+        return ChuUI.bo == null && MenuNguCanh.bat() && Canvas.currentScreen != Canvas.gameScr;
+    }
+
+    /** Hộp thoại cũ (MsgDlg / InputDlg) trên máy J2ME cảm ứng - kể cả trên màn chơi. */
+    public static boolean nutMemHop() {
+        return ChuUI.bo == null && MenuNguCanh.bat();
+    }
+
+    static int caoNutMemCham() {
+        return Math.max(22, VungCham.MIN);
+    }
+
+    public static int rongNutMemCham(String s) {
+        return s == null || s.length() == 0 ? 0 : Math.max(ChuDe.rong(s, ChuDe.SO) + 28, caoNutMemCham() * 2);
+    }
+
+    /** Phím mềm vt (0 trái, 1 giữa, 2 phải) = nút khối cao >= cỡ chạm ở góc đáy, chạm = lệnh c. */
+    public static void nutMemCham(Graphics g, final game.model.Command c, int vt, int toiDa) {
+        if (c == null || c.caption == null || c.caption.length() == 0) {
+            return;
+        }
+        int h = caoNutMemCham();
+        int w = Math.min(Math.max(toiDa, 24), rongNutMemCham(c.caption));
+        int x = vt == 0 ? 4 : vt == 2 ? Canvas.w - 4 - w : Canvas.hw - w / 2;
+        int y = Canvas.h - h - 3;
+        Bang.nut(g, x, y, w, h, c.caption, vt == 0 ? Bang.CHINH : vt == 1 ? Bang.XAC_NHAN : Bang.TRUNG, c.action == null ? null : new IActionLenh(c),
+                "mem-" + vt);
+    }
+
+    static final class IActionLenh implements game.model.IAction {
+        final game.model.Command c;
+
+        IActionLenh(game.model.Command c) {
+            this.c = c;
+        }
+
+        public void perform() {
+            if (this.c.action != null) {
+                this.c.action.perform();
+            }
+        }
+    }
+
     public static void nutMem(Graphics g, String s, int vt, boolean nhan, int toiDa) {
         if (s == null || s.length() == 0 || Font.borderFont == null) {
             return;

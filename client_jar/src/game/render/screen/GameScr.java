@@ -1269,6 +1269,11 @@ public class GameScr extends Screen {
     }
 
     public static void addChat(Actor ac, String str, int time) {
+        if (str == null || str.trim().length() == 0) {
+            // 31/10/2026 (soi giao diện hành trình): chạm NPC mở menu thẻ kèm lời chào RỖNG -> dải hộp thoại đáy trống
+            // trơn (chỉ có mũi tên "tiếp") nằm dưới menu. Lời rỗng: không hiện gì.
+            return;
+        }
         if (ac == null) {
             // 0.9.4: mất mục tiêu (NPC đã rời / đổi focus) giữa hội thoại: vẫn hiện lời ở hộp đáy, không ném NPE
             game.pokemon.HopThoaiDuoi.dat("", str, time);
@@ -1402,7 +1407,13 @@ public class GameScr extends Screen {
 
     private boolean doIntro() {
         if (Tilemap.lv == 105) {
-            String[] intro = {"1Cháu của ta", "1Nay con đã lớn", "1đã đến lúc con phải được học hỏi nhiều hơn", "1phải trải nghiệm nhiều hơn từ quê hương đất nước", "1và có nhiều điều để con phải học hỏi nơi biết bao nhà huấn luyện tài ba.", "1Năm xưa ta có người bạn thân là Xatu", "1ông ấy giờ đang là trưởng làng của làng này.", "1con hãy đi xuống phương Nam và tìm gặp người này", "1ông ấy sẽ giúp con gia nhập làng huấn luyện này", "1Con hãy cố gắng để trưởng thành, để có thể giúp được quê hương", "1để có được sự nghiệp riêng và để tìm được nguồn gốc và cha mẹ của con…", "1Hãy lên đường đi", "1..nơi đây ta luôn dõi theo bước chân của con", "0Vâng! thưa nội con đi", "1Uhm, chúc con lên đường bình an."};
+            // 31/10/2026 (soi giao diện hành trình): 15 mẩu lời 2-6 chữ = 15 lần chạm trước khi được chơi -> gộp thành 6
+            // câu trọn ý (cùng nội dung; mỗi câu <= 3 dòng ở màn J2ME 320x240), sửa "Uhm" / viết hoa đầu câu.
+            String[] intro = {"1Cháu của ta, nay con đã lớn. Đã đến lúc con phải học hỏi, trải nghiệm nhiều hơn trên quê hương đất nước.",
+                "1Năm xưa ta có người bạn thân là Xatu, giờ đang là trưởng làng của làng này.",
+                "1Con hãy đi xuống phương Nam tìm gặp ông ấy - ông ấy sẽ giúp con gia nhập làng huấn luyện.",
+                "1Hãy cố gắng trưởng thành, giúp quê hương và tìm lại nguồn gốc, cha mẹ của con… Ta luôn dõi theo bước chân con.",
+                "0Vâng! Thưa nội, con đi.", "1Ừm, chúc con lên đường bình an."};
             if (!(this.focusedActor instanceof NPC)) {
                 // 0.9.4: người chơi khác cùng ở màn mở đầu giành mất mục tiêu (focus = Char) -> trước đây nhân vật đi
                 // lên mãi qua ông nội, không bao giờ vào hội thoại. Tự nhắm ông (NPC) khi đã tới ngang / vượt qua.
@@ -1679,7 +1690,8 @@ public class GameScr extends Screen {
         game.pokemon.HopThoaiDuoi.giu(dangNoi);
         if (game.pokemon.HopThoaiDuoi.dangBat() && Canvas.currentDialog == null && !Canvas.menu.showMenu) {
             boolean cham = Canvas.isPointerClick;
-            if (cham || (!dangNoi && Canvas.isKeyPressed(5))) {
+            // (31/10/2026) phím 5 khi đang trò chuyện mà lời còn trang sau: sang trang (máy bấm phím đọc hết lời dài)
+            if (cham || (!dangNoi || game.pokemon.HopThoaiDuoi.conTrang()) && Canvas.isKeyPressed(5)) {   // isKeyPressed tiêu phím: gọi sau
                 if (!game.pokemon.HopThoaiDuoi.xongChu()) {
                     game.pokemon.HopThoaiDuoi.hienHetChu();
                     Canvas.isPointerClick = false;
@@ -3969,6 +3981,16 @@ public class GameScr extends Screen {
         paintTime(g);
         if (msgWorld.size() > 0) {
             MsgInfo ms = (MsgInfo) msgWorld.elementAt(0);
+            // 31/10/2026 (soi giao diện J2ME): dải tin kênh thế giới chạy ngang mép trên đè chữ khung HP ("45.5%", "Lv24") -
+            // máy bấm phím hạ dải xuống dưới khung trạng thái
+            int dyTin = 34;
+            int[] vTin = HudRong.bat() ? HudRong.vungTin() : null;
+            if (vTin != null) {
+                // PC / APK: khe giữa thẻ trạng thái và hàng nút trên, dưới biển tên mục tiêu (không đè tên NPC / thẻ)
+                dyTin = vTin[1];
+                g.setClip(vTin[0], vTin[1], vTin[2], 32);
+            }
+            g.translate(0, dyTin);
             int width = 0;
             while (true) {
                 int i9 = width;
@@ -3987,7 +4009,21 @@ public class GameScr extends Screen {
                 g.setColor(16777215);
                 g.fillRect(0, 18, Canvas.w, 1);
             }
-            ms.paint(g);
+            if (vTin != null) {
+                // chữ cắt theo khe (GhiChu: không ghi chữ dài hơn khe)
+                String[] goc = ms.arr;
+                String[] cat = new String[goc.length];
+                for (int i = 0; i < goc.length; i++) {
+                    cat[i] = game.pokemon.GiaoDien.catChu(Font.arialFontW, goc[i], vTin[2] - 8);
+                }
+                ms.arr = cat;
+                ms.paint(g);
+                ms.arr = goc;
+            } else {
+                ms.paint(g);
+            }
+            g.translate(0, -dyTin);
+            g.setClip(0, 0, Canvas.w, Canvas.h);
         }
     }
 

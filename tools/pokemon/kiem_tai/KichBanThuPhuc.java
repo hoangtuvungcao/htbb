@@ -180,13 +180,17 @@ public class KichBanThuPhuc {
 
     static void cho() throws Exception {
         try (BotChucNang.Bot a = KichBanDS3.botLang(25); BotChucNang.Bot c = KichBanDS4.botCungQuoc(25, a)) {
-            if (muaBong(a) != null) { ket("tp.cho", false, "A khong mua duoc bong"); return; }
+            String lb = muaBong(a);
+            if (lb != null) { ket("tp.cho", false, "A khong mua duoc bong: " + lb); return; }
+            // bat ngau nhien nhu tp.bat (cong kiem 31/10/2026: "Bạn không còn Poké Ball" sau 10 bong): mua 30 bong, thu toi
+            // 10 con - chi de buoc chuan bi (co mot con trong Hop PC) khong phu thuoc van may; luat cho khong doi
+            for (int k = 0; k < 2 && lb == null; k++) lb = muaBong(a);
             a.den(1, 30, 30);
             a.gm("slv " + a.ten + " 3 0", 800); // quai Pallet cap 1-5: can cap thap de khong ha mot don
             StringBuilder ghi = new StringBuilder();
             boolean duoc = false;
             List<Integer> ds = KichBanDS.timQuai(a, 0, 200);
-            for (int i = 0; i < ds.size() && i < 6 && !duoc; i++) {
+            for (int i = 0; i < ds.size() && i < 10 && !duoc; i++) {
                 if (!a.hoangDa.containsKey(ds.get(i)) && !hoangDa(a, ds.get(i))) continue;
                 duoc = batMot(a, ds.get(i), ghi);
             }

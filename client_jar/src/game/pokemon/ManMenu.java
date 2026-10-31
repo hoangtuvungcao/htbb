@@ -132,7 +132,14 @@ public final class ManMenu extends Screen {
                 int n = game.render.screen.MessageScr.nMSG;
                 v.addElement(new game.model.Command(n > 0 ? "Hộp thư (" + n + " mới)" : "Hộp thư", new IAction() {
                     public void perform() {
-                        game.render.screen.MessageScr.gI().switchToMe();
+                        if (MenuNguCanh.bat()) {
+                            // 31/10/2026 (soi giao diện toàn bộ): màn thư cũ (MessageScr) vẽ trống ở máy cảm ứng (nhãn tab
+                            // trắng, không vùng chạm). Thư riêng / tin đội đã chép sang bảng chat (KenhChat) - mở tab đó.
+                            game.render.screen.MessageScr.nMSG = 0;
+                            ManChat.moTab(KenhChat.RIENG);
+                        } else {
+                            game.render.screen.MessageScr.gI().switchToMe();
+                        }
                     }
                 }));
                 v.addElement(new game.model.Command("Nhập giftcode", new IAction() {

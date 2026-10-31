@@ -115,7 +115,20 @@ final class KichBanHoiQuy {
         BatBien.gan(b);
         try {
             String l = b.dangNhap(HoiQuy.MAT_KHAU);
-            ket("dk.dang_nhap", l == null, String.valueOf(l));
+            // cong kiem 31/10/2026 "dk.dang_nhap khong tra loi" (MariaDB dung chung dinh 195 ket noi): login server cham /
+            // mat yeu cau -> may chu game nay bao "Máy chủ đăng nhập chưa phản hồi" sau 15 giay (io.LogInController) va ghi
+            // canh bao DANG_NHAP. Chi khi CO cau bao do moi dang nhap lai MOT lan (nhu nguoi choi bam lai); lan 1 ghi vao
+            // bang chung. Sai mat khau / tai khoan khong ton tai / khong tra loi gi -> van FAIL ngay.
+            String lan1 = null;
+            if (l != null && l.contains("chưa phản hồi")) {
+                lan1 = l;
+                b.close();
+                Thread.sleep(3000);
+                b = new BotChucNang.Bot(ten);
+                BatBien.gan(b);
+                l = b.dangNhap(HoiQuy.MAT_KHAU);
+            }
+            ket("dk.dang_nhap", l == null, String.valueOf(l) + (lan1 == null ? "" : " | lan 1 (login server cham): " + lan1));
             if (l != null) return;
             l = b.vaoGame(0, 0);
             ket("dk.tao_nhan_vat_vao_game", l == null && b.mapId == 105, l == null ? "map " + b.mapId + " lv " + b.lv + " xu " + b.xu : l);

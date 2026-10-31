@@ -50,6 +50,34 @@ public class MTickets extends Screen {
     public void paint(Graphics g) {
         Canvas.gameScr.paint(g);
         Canvas.resetTrans(g);
+        if (game.pokemon.ManCu.bat()) {
+            // 31/10/2026: tấm chung - lưới số còn bán (ô cỡ chạm), chạm = chọn, nút "Mua số NN"
+            this.anNutLenh = true;
+            boolean co = this.index >= 0 && this.index < this.vVs.size();
+            Command mua = co && this.center != null ? new Command("Mua số " + this.vVs.elementAt(this.index), this.center.action) : null;
+            int[] c = game.pokemon.ManCu.tam(g, this, "Vé số", game.pokemon.ManCu.viec(this.right), new Command[]{mua});
+            String goi = "Chọn một số còn bán rồi bấm Mua.";
+            game.pokemon.ChuDe.chu(g, goi, c[0] + c[2] / 2, c[1], game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 2);
+            int hg = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + game.pokemon.Bang.cach();
+            if (this.vVs.size() == 0) {
+                game.pokemon.Bang.trong(g, c[0], c[1] + hg, c[2], c[3] - hg, "Hết số để bán", "Quay lại kỳ sau nhé.");
+                return;
+            }
+            final Vector v = this.vVs;
+            game.pokemon.ManCu.luoi(g, new int[]{c[0], c[1] + hg, c[2], c[3] - hg}, v.size(), this.index, new game.pokemon.ManCu.O() {
+                public String chu(int i) {
+                    return (String) v.elementAt(i);
+                }
+
+                public void cham(int i) {
+                    MTickets.this.index = (byte) i;
+                }
+
+                public void ve(Graphics g, int i, int x, int y, int s) {
+                }
+            }, 0);
+            return;
+        }
         int xbg = this.x0;
         int ybg = this.y0;
         Res.paintDlgDragonFull(g, xbg - 5, ybg - 5, 171, 171);
@@ -73,6 +101,17 @@ public class MTickets extends Screen {
 
     @Override
     public void updateKey() {
+        if (game.pokemon.ManCu.bat()) {
+            Canvas.isPointerClick = false;   // vùng chạm kiểu chung đã xử lý (lưới cũ 16 px không dùng)
+            if (Canvas.keyPressed[8] || Canvas.keyPressed[2] || Canvas.keyPressed[4] || Canvas.keyPressed[6]) {
+                int d = Canvas.keyPressed[8] ? 5 : Canvas.keyPressed[2] ? -5 : Canvas.keyPressed[4] ? -1 : 1;
+                Canvas.keyPressed[8] = Canvas.keyPressed[2] = Canvas.keyPressed[4] = Canvas.keyPressed[6] = false;
+                int n = Math.max(1, this.vVs.size());
+                this.index = (byte) (((this.index + d) % n + n) % n);
+            }
+            super.updateKey();
+            return;
+        }
         if (Canvas.keyPressed[8]) {
             Canvas.keyPressed[8] = false;
             this.index = (byte) (this.index + 10);

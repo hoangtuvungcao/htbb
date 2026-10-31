@@ -970,7 +970,39 @@ public class BotXuyenSuot {
         }
 
         /** Map tot nhat de luyen o cap hien tai (quai trong [lv-2, lv+3]) - gan nhat theo so cong. */
+        int mocMoBanDo, lanBoChan;
+        long lucBoChan;
+
+        /**
+         * Ban do bi chan (MAP_CHAN, 30 phut) khi cong tu choi vi CHUA xong cua ai; xong cua ai may chu bao "Đã mở bản đồ
+         * mới: ..." nhung bot van coi la chan -> "khong tim duoc map luyen" (cong kiem 31/10/2026, cot_truyen cap 14 / 17:
+         * Vermilion + Cerulean vua mo). Nguoi choi that thay thong bao thi di ngay: bo chan khi co thong bao do.
+         */
+        void boChanKhiMoBanDo() {
+            int moc = b.moc();
+            if (mocMoBanDo < moc && b.doiChu(mocMoBanDo, 0, "mở bản đồ mới") != null && !MAP_CHAN.isEmpty()) {
+                ghi("bo chan ban do " + MAP_CHAN.keySet() + ": may chu bao mo ban do moi");
+                MAP_CHAN.clear();
+            }
+            mocMoBanDo = moc;
+        }
+
         int mapLuyen() {
+            boChanKhiMoBanDo();
+            int tot = mapLuyen0();
+            // het cho luyen ma con ban do bi chan (vd mo khoa qua duong khac khong co thong bao): thu lai mot lan khong chan,
+            // toi da 3 lan / dong va cach nhau >= 2 phut (ban do van khoa thi toi() chan lai, khong vong lap)
+            if (tot < 0 && !MAP_CHAN.isEmpty() && lanBoChan < 3 && System.currentTimeMillis() - lucBoChan > 120000L) {
+                lanBoChan++;
+                lucBoChan = System.currentTimeMillis();
+                ghi("khong co map luyen cap " + b.lv + " ngoai ban do bi chan " + MAP_CHAN.keySet() + " -> thu lai");
+                MAP_CHAN.clear();
+                tot = mapLuyen0();
+            }
+            return tot;
+        }
+
+        int mapLuyen0() {
             int tot = -1, diem = Integer.MAX_VALUE;
             for (int mid : MAP_THU) {
                 Integer l = LOAD.get(mid);
@@ -989,8 +1021,30 @@ public class BotXuyenSuot {
             return tot;
         }
 
+        /**
+         * Khong co bai ngang cap (+-3) di toi duoc: nhu nguoi choi that, luyen o bai CAO NHAT da mo (quai cao nhat <= cap +
+         * 3, gan nhat neu bang nhau) - truoc 31/10/2026 dung han va bao "ket" (cot_truyen cap 14 / 17 khi Vermilion /
+         * Cerulean chua mo qua cua ai).
+         */
+        int mapCaoNhatDaMo() {
+            int tot = -1, capTot = -1, dsTot = Integer.MAX_VALUE;
+            for (int mid : MAP_THU) {
+                Integer l = LOAD.get(mid);
+                if (l == null || KichBanDS2.laOffline(mid)) continue;
+                int top = -1;
+                for (int t : luoiQuai(l)) { Integer c = CAP_QUAI.get(t); if (c != null && c <= b.lv + 3) top = Math.max(top, c); }
+                if (top < 0) continue;
+                List<int[]> d = duong(b.mapId, mid);
+                if (d == null) continue;
+                if (top > capTot || top == capTot && d.size() < dsTot) { tot = mid; capTot = top; dsTot = d.size(); }
+            }
+            if (tot >= 0) ghi("khong co bai ngang cap " + b.lv + " -> luyen o bai cao nhat da mo: map " + tot + " (quai toi cap " + capTot + ")");
+            return tot;
+        }
+
         void luyen(int phut) throws Exception {
             int mid = mapLuyen();
+            if (mid < 0) mid = mapCaoNhatDaMo();
             if (mid < 0) { ketLyDo("khong tim duoc map luyen cho cap " + b.lv); b.bom(5000); return; }
             if (!toi(mid)) return;
             danh(-1, 40, phut * 60000L);

@@ -69,6 +69,34 @@ public class MsgWorld extends Screen {
     @Override
     public void paint(Graphics g) {
         Canvas.gameScr.paint(g);
+        if (game.pokemon.ManCu.bat()) {
+            // 31/10/2026: tấm chung, mỗi tin một hàng (người gửi / nội dung), cuộn bằng ngón
+            this.anNutLenh = true;
+            int[] c = game.pokemon.ManCu.tam(g, this, "Kênh thế giới", game.pokemon.ManCu.viec(this.right), null);
+            final Vector d = this.data;
+            game.pokemon.ManCu.danhSach(g, c, d.size(), this.selected, new game.pokemon.ManCu.Dong() {
+                String tin(int i) {
+                    return ((MsgInfo) d.elementAt(i)).message;
+                }
+
+                public String chinh(int i) {
+                    String t = tin(i);
+                    int p = t == null ? -1 : t.indexOf(": ");
+                    return p > 0 ? t.substring(0, p) : "Thế giới";
+                }
+
+                public String phu(int i) {
+                    String t = tin(i);
+                    int p = t == null ? -1 : t.indexOf(": ");
+                    return p > 0 ? t.substring(p + 2) : t;
+                }
+
+                public void cham(int i) {
+                    MsgWorld.this.selected = i;
+                }
+            }, "Kênh còn yên ắng");
+            return;
+        }
         Res.paintDlgFull(g, 20, 20, Canvas.w - 40, Canvas.h - 60);
         Font.borderFont.drawString(g, "Kênh thế giới", Canvas.w / 2, 26, 2);
         g.setClip(20, 46, Canvas.w - 40, Canvas.h - 90);
@@ -84,7 +112,7 @@ public class MsgWorld extends Screen {
         for (int i = 0; i < this.data.size(); i++) {
             MsgInfo ms = (MsgInfo) this.data.elementAt(i);
             for (int j = 0; j < ms.arr.length; j++) {
-                Font.arialFontW.drawString(g, ms.arr[j], 8, yy, 0);
+                Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, ms.arr[j], Canvas.w - 56), 8, yy, 0);   // 31/10/2026: không tràn khung (J2ME 240)
                 yy += 15;
             }
         }
@@ -95,6 +123,14 @@ public class MsgWorld extends Screen {
 
     @Override
     public void updateKey() {
+        if (game.pokemon.ManCu.bat() && (Canvas.isPointerClick || Canvas.isPointerDown)) {
+            game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                public void run() {
+                    MsgWorld.this.updateKey();
+                }
+            });
+            return;
+        }
         boolean isChange = false;
         if (Canvas.isPointer(20, 20, Canvas.w - 40, Canvas.h - 60)) {
             if (Canvas.isPointerDown) {

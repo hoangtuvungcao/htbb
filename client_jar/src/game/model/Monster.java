@@ -84,7 +84,7 @@ public class Monster extends LiveActor {
                 return t;
             }
         }
-        return (Res.monsterTemplates == null || Res.monsterTemplates[this.monster_type] == null) ? "" : Res.monsterTemplates[this.monster_type].name;
+        return mauHienTai() == null ? "" : mauHienTai().name;
     }
 
     // 1.0: loai RIENG cua con quai nay (lenh -125, client >= 908); 0 = loai mac dinh cua template (-91)
@@ -126,10 +126,24 @@ public class Monster extends LiveActor {
         return MonsterTemplate.laPokemon(this.monster_type);
     }
 
+    /** Mau quai hien tai; null khi bang mau vua bi gui lai (lenh 26 tao mang moi) hoac id ngoai bang. */
+    protected MonsterTemplate mauHienTai() {
+        MonsterTemplate[] ds = Res.monsterTemplates;
+        if (ds == null || this.monster_type < 0 || this.monster_type >= ds.length) {
+            return null;
+        }
+        return ds[this.monster_type];
+    }
+
+    private boolean laBay() {
+        MonsterTemplate m = mauHienTai();
+        return m != null && m.moveType == 4;
+    }
+
     @Override
     public void setType(short type) {
         this.monster_type = type;
-        if (Res.monsterTemplates != null && Res.monsterTemplates[type] == null) {
+        if (Res.monsterTemplates != null && type >= 0 && type < Res.monsterTemplates.length && Res.monsterTemplates[type] == null) {
             Res.monsterTemplates[type] = new MonsterTemplate();
             GameService.gI().sendGetMonsterTEmplate(0, this.monster_type);
         }
@@ -279,7 +293,7 @@ public class Monster extends LiveActor {
             if (this.z != 0) {
                 this.frame = (byte) 3;
             }
-            if (Res.monsterTemplates[this.monster_type] != null) {
+            if (mauHienTai() != null) {
                 byte b = REAL_FRAME[Res.monsterTemplates[this.monster_type].moveType][this.dir][this.frame];
                 int xadd = 0;
                 int yadd = 0;
@@ -378,7 +392,10 @@ public class Monster extends LiveActor {
     @Override
     public void update() {
         updateDataEffect();
-        this.speed = Res.monsterTemplates[this.monster_type].speed;
+        MonsterTemplate mtHt = mauHienTai();
+        if (mtHt != null) {
+            this.speed = mtHt.speed;
+        }
         if ((this.wantDestroy || this.hp <= 0) && this.timeLive != -1 && this.state != 8) {
             this.state = (byte) 8;
         }
@@ -387,7 +404,7 @@ public class Monster extends LiveActor {
             Canvas.gameScr.gameService.requestMonsterInfo(this.ID);
         }
         if (Res.monsterTemplates != null) {
-            if (Res.monsterTemplates[this.monster_type] == null) {
+            if (mauHienTai() == null) {
                 if (!this.getMonsterTemplate && System.currentTimeMillis() > this.timeCreate) {
                     this.getMonsterTemplate = false;
                     GameService.gI().sendGetMonsterTEmplate(0, this.monster_type);
@@ -594,7 +611,7 @@ public class Monster extends LiveActor {
     }
 
     public void setMove(int i, int j) {
-        if (Res.monsterTemplates[this.monster_type].moveType == 4) {
+        if (laBay()) {
             this.p3 = (short) 0;
             this.p2 = (short) 0;
             this.p1 = (short) 0;
@@ -666,7 +683,7 @@ public class Monster extends LiveActor {
     }
 
     public void move() {
-        if (Res.monsterTemplates[this.monster_type].moveType == 4) {
+        if (laBay()) {
             this.p3 = (short) 0;
             this.p2 = (short) 0;
             this.p1 = (short) 0;
@@ -732,7 +749,7 @@ public class Monster extends LiveActor {
                 return;
             }
             this.xTo = xTo;
-            if (Res.monsterTemplates[this.monster_type].moveType == 4) {
+            if (laBay()) {
                 this.yTo = yTo;
             } else {
                 this.yTo = (short) ((yTo - 4) + (Canvas.r.nextInt() % 8));
@@ -773,7 +790,7 @@ public class Monster extends LiveActor {
         this.p2 = (short) 0;
         this.p3 = (short) 0;
         this.monster_type = monsterInfo.monster_type;
-        if (Res.monsterTemplates != null && Res.monsterTemplates[this.monster_type] != null) {
+        if (mauHienTai() != null) {
             this.speed = Res.monsterTemplates[this.monster_type].speed;
             this.height = Res.monsterTemplates[this.monster_type].height;
             if (Res.monsterTemplates[this.monster_type].image == null) {

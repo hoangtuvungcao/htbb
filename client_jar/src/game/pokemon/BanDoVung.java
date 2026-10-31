@@ -225,6 +225,7 @@ public final class BanDoVung {
         for (int i = 0; i < n; i++) {
             int id = ID[v][i];
             boolean khoa = KhoaMap.khoa(id);
+            KHOA_[i] = khoa;
             GiaoDien.khoi(g, VX[i] - 5, VY[i] - 5, 11, 11, 5, GiaoDien.VIEN);
             GiaoDien.khoi(g, VX[i] - 4, VY[i] - 4, 9, 9, 4, i == cur ? GiaoDien.VANG : khoa ? ChuDe.XAM : GiaoDien.DO);
             g.setColor(GiaoDien.TRANG);
@@ -277,22 +278,35 @@ public final class BanDoVung {
             t = ChuDe.cat(t, ChuDe.NHAN_NHO, tw - 8);
             // dưới đảo, trên đảo, phải, trái; nhãn không đè chấm điểm khác (điểm ưu tiên: lần hai bỏ luật này)
             boolean uuTien = lan < 3;
-            for (int thu = 0; thu < (uuTien ? 8 : 4); thu++) {
+            // 31/10/2026: 4 chỗ sát chấm, (ưu tiên: 4 chỗ bỏ luật chấm khác), rồi 4 chỗ XA hơn một bậc có đường dẫn về chấm -
+            // nhãn không bị bỏ khi chỗ sát chấm vướng ổ khoá / nhãn khác (J2ME: Vermilion, Fuchsia)
+            for (int thu = 0; thu < 24; thu++) {
+                if (thu >= 4 && thu < 8 && !uuTien) {
+                    continue;
+                }
                 int vt = thu & 3;
-                boolean noi = thu >= 4;
+                boolean noi = thu >= 4 && thu < 8;
+                int xa = thu >= 8 ? hn + 2 : 0;
                 int lx, ly;
-                if (vt == 0) {
+                if (thu >= 12) {
+                    // vòng ngoài: nhãn cách chấm 2-3 hàng (trên / dưới, lệch trái / giữa / phải), đường dẫn về chấm
+                    int kk = thu - 12, dyI = kk % 4, dxI = kk / 4;
+                    int dy = (dyI < 2 ? 2 : 3) * (hn + 1) * (dyI % 2 == 0 ? 1 : -1);
+                    int dx = dxI == 0 ? 0 : (dxI == 1 ? -1 : 1) * (tw / 2 + r);
+                    lx = VX[i] + dx - tw / 2;
+                    ly = VY[i] + dy - hn / 2;
+                } else if (vt == 0) {
                     lx = VX[i] - tw / 2;
-                    ly = VY[i] + r - 1;
+                    ly = VY[i] + r - 1 + xa;
                 } else if (vt == 1) {
                     lx = VX[i] - tw / 2;
-                    ly = VY[i] - r - hn + 1;
+                    ly = VY[i] - r - hn + 1 - xa;
                 } else if (vt == 2) {
-                    lx = VX[i] + r + 2;
-                    ly = VY[i] - hn / 2;
+                    lx = VX[i] + r + 2 + xa;
+                    ly = VY[i] - hn / 2 + (xa > 0 ? hn / 2 + 2 : 0);
                 } else {
-                    lx = VX[i] - r - 2 - tw;
-                    ly = VY[i] - hn / 2;
+                    lx = VX[i] - r - 2 - tw - xa;
+                    ly = VY[i] - hn / 2 + (xa > 0 ? hn / 2 + 2 : 0);
                 }
                 if (lx < x + 1) {
                     lx = x + 1;
@@ -311,6 +325,12 @@ public final class BanDoVung {
                     continue;
                 }
                 int nen = i == cur ? 0x6A4A00 : i == dich ? 0x7A3E18 : 0x2B1A10;
+                if (xa > 0) {
+                    // đường dẫn mảnh từ chấm tới cạnh nhãn gần nhất
+                    int ex = Math.max(lx, Math.min(lx + tw, VX[i])), ey = Math.max(ly, Math.min(ly + hn, VY[i]));
+                    g.setColor(0x2B1A10);
+                    g.drawLine(VX[i], VY[i], ex, ey);
+                }
                 GiaoDien.khoi(g, lx, ly, tw, hn, 4, nen);
                 ChuDe.chuVienGiua(g, t, lx + tw / 2, ly, hn, ChuDe.NHAN_NHO, i == cur ? GiaoDien.VANG_NHAT : 0xF6E6C0, ChuDe.VIEN, 2);
                 NX[soNhan] = lx;
@@ -325,9 +345,17 @@ public final class BanDoVung {
         g.setClip(cx0, cy0, cw0, ch0);
     }
 
-    /** Nhãn (x, y, w, h) của điểm i đè chấm / lõi đảo của điểm khác. */
+    /** điểm i đang khoá (ổ khoá vẽ ở góc phải trên chấm) - nhãn né ổ khoá (31/10/2026: J2ME "Vermilion" đè khoá) */
+    private static final boolean[] KHOA_ = new boolean[64];
+
+    /** Nhãn (x, y, w, h) của điểm i đè chấm / lõi đảo của điểm khác, hoặc đè ổ khoá của bất kỳ điểm nào. */
     private static boolean deChamKhac(int x, int y, int w, int h, int i, int n, int r) {
         int k = Math.max(5, r * 2 / 3);
+        for (int j = 0; j < n && j < KHOA_.length; j++) {
+            if (KHOA_[j] && x < VX[j] + 13 && x + w > VX[j] + 3 && y < VY[j] - 3 && y + h > VY[j] - 13) {
+                return true;
+            }
+        }
         for (int j = 0; j < n; j++) {
             if (j != i && x < VX[j] + k && x + w > VX[j] - k && y < VY[j] + k && y + h > VY[j] - k) {
                 return true;

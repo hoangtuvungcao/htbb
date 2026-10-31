@@ -16,6 +16,9 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 public class DialLuckyScr extends Screen {
+    /** 31/10/2026: đang chạy updateKey không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_updateKey;
+
     private static DialLuckyScr me;
     private Image imgCau_back;
     private Image imgDo;
@@ -264,6 +267,19 @@ public class DialLuckyScr extends Screen {
 
     @Override
     public void updateKey() {
+        if (game.pokemon.ManCu.bat() && !this.boc_updateKey && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_updateKey = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        DialLuckyScr.this.updateKey();
+                    }
+                });
+            } finally {
+                this.boc_updateKey = false;
+            }
+            return;
+        }
         if (!this.isPaint) {
             if (Canvas.collisionCmdBar() == 1) {
                 if (Canvas.isPointerDown) {
@@ -312,10 +328,24 @@ public class DialLuckyScr extends Screen {
     @Override
     public void paint(Graphics g) {
         ItemLuckyDraw item;
+        // 31/10/2026 (soi giao diện): tâm vòng quay theo cỡ màn hiện tại (trước cố định lúc tạo = mép phải: màn rộng chỉ
+        // thấy nửa vòng sát mép, đổi cỡ thì lệch). Màn hẹp giữ nửa vòng ở mép phải như bản gốc.
+        this.posCenter.x = Canvas.w >= 2 * this.radius + 160 ? Canvas.hw + this.radius / 2 : Canvas.w;
+        this.posCenter.y = Canvas.hh + 1;
         if (this.lastScr != null) {
             this.lastScr.paint(g);
         }
         Canvas.resetTrans(g);
+        if (game.pokemon.ManCu.bat()) {
+            // 31/10/2026: tấm chung sau vòng quay, nút khối trong tấm (Bắt đầu / Chọn lại / Tiếp tục...), X = Đóng
+            this.anNutLenh = true;
+            boolean dong = this.right != null && "Đóng".equals(this.right.caption);
+            int[] c = game.pokemon.ManCu.tam(g, this, "Vòng quay may mắn", dong ? game.pokemon.ManCu.viec(this.right) : null,
+                    new Command[]{dong ? null : this.right, this.left, this.center});
+            this.posCenter.x = c[0] + c[2] - 12;   // nửa vòng (bản gốc): mặt phẳng sát mép phải tấm, phần thưởng toả sang trái
+            this.posCenter.y = c[1] + c[3] / 2;
+            Canvas.resetTrans(g);
+        }
         int deg = this.degree / 20;
         for (int i = 0; i < this.num; i++) {
             int d = deg + (i * this.part);

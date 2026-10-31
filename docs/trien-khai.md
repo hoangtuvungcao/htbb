@@ -347,7 +347,12 @@ khác trên VPS rồi thêm `--nguon <thư mục>` vào lệnh `kiem-truoc-khi-l
    bot + ghi đè `cau_hinh` của staging → cài jar → bật, chờ cổng 29129. Hỏng bước nào = HỎNG.
 2. `tools/pokemon/kiem_tai/chay_hoi_quy.sh 127.0.0.1 29129 28023 cnf=…,db=htbb_staging,dbtk=htbb_staging_account`:
    mỗi nhóm trong `tools/pokemon/kiem_tai/hoi_quy.conf` phải DAT (BotChucNang: mã thoát 0 và `FAIL 0`; BotBangThong:
-   mọi bot vào game, `loi=0`; hết giờ = HỎNG). Bot dùng **một** kết nối JDBC mỗi JVM (`BotChucNang.sql`, thử lại khi
+   mọi bot vào game, `loi=0`; hết giờ = HỎNG). Các nhóm chạy theo **làn** (dòng `@lan` trong `hoi_quy.conf`): pha 1 các
+   làn chạy song song (mỗi làn một khoảng tài khoản `kt0xx` / `kt1xx` riêng, tối đa `STG_BOT_LAN`=4 JVM bot cùng lúc,
+   heap `STG_BOT_JAVA`), pha 2 các nhóm `@rieng` chạy **một mình** (tua đồng hồ ảo, cấu hình toàn máy chủ, chiếm Gym,
+   bản tối thiểu). Nhóm HỎNG chỉ vì mục **bất định đã biết** (`tools/pokemon/kiem_tai/hoi_quy_bat_dinh.txt`, theo từng
+   nhóm) được chạy lại **một** lần, ghi `thu_lai=1 lan1=…` trong `tong_ket.txt` + trường `thu_lai=` của kết quả ký; lỗi
+   log máy chủ / bất biến / ngoại lệ / CSDL không bao giờ chạy lại. Bot dùng **một** kết nối JDBC mỗi JVM (`BotChucNang.sql`, thử lại khi
    CSDL hết kết nối / mất kết nối); trong lúc chạy cổng kiểm đọc `Threads_connected` mỗi 10 giây
    (`<nhật ký>/ket_noi_csdl.txt`), hai lần liền còn dưới 60 chỗ trống cho production → dừng bot, tắt staging, HỎNG
    `csdl_gan_het_ket_noi`.

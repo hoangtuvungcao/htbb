@@ -22,7 +22,8 @@ import javax.microedition.lcdui.Graphics;
  */
 public final class MenuNguCanh extends Dialog {
     static MenuNguCanh me;
-    public static final int TOI_DA = 6;
+    /** 31/10/2026: 6 -> 8 (2 cột x 4 hàng): menu "Nhiệm vụ của tôi" (8 mục) không phải chạm "Thêm". */
+    public static final int TOI_DA = 8;
 
     Vector lenh;
     int trang;
@@ -272,6 +273,14 @@ public final class MenuNguCanh extends Dialog {
      * nhọn chỉ về mục tiêu. Vị trí: thử phải / trái / trên / dưới mục tiêu, chọn chỗ KHÔNG chồng phần HUD nào (thẻ trạng
      * thái, nút trên, bản đồ nhỏ, cụm chiêu, chat...) và nằm trong vùng an toàn; cao quá thì xếp 2 cột.
      */
+    /**
+     * 31/10/2026 (soi giao diện toàn bộ): tiêu đề dài ("Gym Pewter - Thủ lĩnh Brock", "Sự kiện Hoàng hôn Halloween") bị cắt
+     * ở thẻ hẹp - hạ về chữ nhãn trước khi cắt.
+     */
+    static int vaiTieuDe(String t, int w) {
+        return ChuDe.rong(t, ChuDe.TIEU_DE) <= w ? ChuDe.TIEU_DE : ChuDe.NHAN;
+    }
+
     public void paint(Graphics g) {
         if (this.lenh == null) {
             dong();
@@ -329,6 +338,25 @@ public final class MenuNguCanh extends Dialog {
                 }
                 int cot1 = 1;
                 int hang1 = ds1.length;
+                if (hTieu + hang1 * (nh1 + k) + 6 > B - T - 4 && ds1.length > 1 && 2 * wc1 + k + 12 > wMax && !ne && ChuUI.bo != null) {
+                    // 31/10/2026 (soi giao diện hành trình): lệnh dài (menu "Nhiệm vụ của tôi" 8 mục, Pidgeot 7 bến) không
+                    // vừa 2 cột rộng -> trước đây rơi xuống 3 lệnh + "Thêm" (thêm một chạm cho mọi mục sau). Thử 2 cột HẸP
+                    // (lệnh dài ngắt hai dòng như màn hẹp) trước khi chia trang.
+                    // cột hẹp nhất còn đọc được (lệnh dài ngắt 2 dòng) - thẻ 2 cột vẫn lọt khoảng giữa HUD
+                    int wHep = Math.min((wMax - k - 12) / 2, ChuDe.dt() ? 128 : 110);
+                    if (wHep >= (ChuDe.dt() ? 128 : 100)) {
+                        int nh2 = nh;
+                        for (int i = 0; i < ds1.length; i++) {
+                            if (ds1[i] >= 0) {
+                                nh2 = Math.max(nh2, caoNut(chu(ds1[i]), wHep, nh));
+                            }
+                        }
+                        if (hTieu + (ds1.length + 1) / 2 * (nh2 + k) + 6 <= B - T - 4) {
+                            wc1 = wHep;
+                            nh1 = nh2;
+                        }
+                    }
+                }
                 if (hTieu + hang1 * (nh1 + k) + 6 > B - T - 4 && ds1.length > 1 && 2 * wc1 + k + 12 <= wMax) {
                     cot1 = 2;
                     hang1 = (ds1.length + 1) / 2;
@@ -346,6 +374,9 @@ public final class MenuNguCanh extends Dialog {
                         h1 = h2;
                         o1 = o2;
                     }
+                }
+                if (h1 > B - T && td > 2) {
+                    continue;   // 31/10/2026: thẻ cao hơn vùng an toàn (TOI_DA 8 ở J2ME 240 px) - ít lệnh / trang hơn
                 }
                 if (o1[3] < chongTot) {
                     chongTot = o1[3];
@@ -406,11 +437,13 @@ public final class MenuNguCanh extends Dialog {
             int xb = px + sCd + 6, wb = x + w - 8 - xb;
             int yb = py + (sCd - hBien) / 2;
             ChuDe.bien(g, xb, yb, wb, hBien);
-            ChuDe.chuVienGiua(g, ChuDe.cat(tieu, ChuDe.TIEU_DE, wb - 24), xb + wb / 2, yb, hBien, ChuDe.TIEU_DE, 0xFFFFFF, ChuDe.VIEN, 2);
+            int vaiT = vaiTieuDe(tieu, wb - 24);
+            ChuDe.chuVienGiua(g, ChuDe.cat(tieu, vaiT, wb - 24), xb + wb / 2, yb, hBien, vaiT, 0xFFFFFF, ChuDe.VIEN, 2);
         } else if (tieu != null) {
             int wb = Math.min(w - 16, ChuDe.rong(tieu, ChuDe.TIEU_DE) + 40);
             ChuDe.bien(g, x + (w - wb) / 2, y + 6, wb, hBien);
-            ChuDe.chuVienGiua(g, ChuDe.cat(tieu, ChuDe.TIEU_DE, wb - 24), x + w / 2, y + 6, hBien, ChuDe.TIEU_DE, 0xFFFFFF, ChuDe.VIEN, 2);
+            int vaiT = vaiTieuDe(tieu, wb - 24);
+            ChuDe.chuVienGiua(g, ChuDe.cat(tieu, vaiT, wb - 24), x + w / 2, y + 6, hBien, vaiT, 0xFFFFFF, ChuDe.VIEN, 2);
         }
         for (int i = 0; i < ds.length; i++) {
             final int li = ds[i];

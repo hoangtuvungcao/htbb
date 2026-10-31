@@ -656,6 +656,9 @@ public class Char extends LiveActor {
     public Char charHire;
     public CharThanthu charthanthu;
     public long timeRegentHpMp;
+    /** Hoi HP ngoai tran (HoiMauNgoaiTran): luc mat HP gan nhat va HP o nhip truoc (CharVongLap.update). */
+    public long lucMatMauCuoi;
+    public int hpNhipTruoc;
     public boolean isDoChangeMap;
     public byte idCuiDot;
     public byte idRuouUong;
@@ -4087,7 +4090,34 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     // Than method (434 dong) da chuyen sang CharChiSo.java. Chu ky GIU NGUYEN.
     public int attackDam(final LiveActor actor, final int idSkill, final int level, final int bubbAttack) {
-        return CharChiSo.attackDam(this, actor,idSkill,level,bubbAttack);
+        final int d = CharChiSo.attackDam(this, actor,idSkill,level,bubbAttack);
+        // Vu khi hong (31/10/2026, quyet dinh chu game): van danh duoc voi 30% sat thuong thay vi khong danh duoc
+        // (truoc: nguoi choi het xu sua do khong con cach nao kiem xu - cong kiem bot cb2).
+        return d > 1 && this.vuKhiDangHong() ? Math.max(1, d * com.htbb.pokemon.DoBenLogic.PT_SAT_THUONG_VU_KHI_HONG / 100) : d;
+    }
+
+    private long lucBaoVuKhiHong;
+
+    /** Do cam tay dang mac da hong (do ben 0) - khong tinh do thue het han (checkDurableWeapone go mon do). */
+    public boolean vuKhiDangHong() {
+        if (this.luongNap >= 20000 || this.diemNapVip >= 20000) {
+            return false; // nhu checkDurableWeapone: VIP nap khong bi chan vi hong
+        }
+        for (int i = 0; i < this.wItems[this.slotWearing].length; ++i) {
+            final Item item = this.wItems[this.slotWearing][i];
+            if (item == null) {
+                continue;
+            }
+            final int id = item.getTemplate().id;
+            if (id >= 773 && id <= 787) {
+                continue;
+            }
+            final int t = item.getTemplate().type;
+            if ((t == 6 || t == 7 || t == 4 || t == 5 || t == 3 || t == 13) && (item.mDurable == 0 || item.durable == 0)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -4325,7 +4355,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         if (this.luongNap >= 20000 || this.diemNapVip >= 20000) {
                             return true;
                         }
-                        return false;
+                        // 31/10/2026: van danh duoc (30% sat thuong - attackDam), chi nhac (moi 30 giay) thay vi chan
+                        final long bay = System.currentTimeMillis();
+                        if (bay - this.lucBaoVuKhiHong > 30000L) {
+                            this.lucBaoVuKhiHong = bay;
+                            try {
+                                this.sendMessage(MessageCreator.createServerAlertMessage(com.htbb.pokemon.DoBenLogic.CAU_VU_KHI_HONG, ""));
+                            } catch (final Exception ignored) {
+                            }
+                        }
+                        return true;
                     }
                 }
             }
@@ -4343,10 +4382,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
         int total = 0;
         for (int i = 0; i < wItems.size(); ++i) {
             final Item cwi = wItems.elementAt(i);
+            // 31/10/2026 (quyet dinh chu game): gia sua theo phan do ben da mat (truoc: luon 10% gia mon du chi mat 2%)
+            final int giaMon = com.htbb.pokemon.DoBenLogic.giaSua(cwi.getTemplate().price, cwi.getTemplate().durable, cwi.mDurable);
             if (cwi.getTemplate().type == 3 || cwi.getTemplate().type == 4 || cwi.getTemplate().type == 5 || cwi.getTemplate().type == 6 || cwi.getTemplate().type == 7) {
-                pWeapone += cwi.getTemplate().price / 10;
+                pWeapone += giaMon;
             } else if (cwi.getTemplate().type == 0 || cwi.getTemplate().type == 1 || cwi.getTemplate().type == 2 || cwi.getTemplate().type == 11 || cwi.getTemplate().type == 10) {
-                pArmo += cwi.getTemplate().price / 10;
+                pArmo += giaMon;
             }
         }
         if (type == 0) {

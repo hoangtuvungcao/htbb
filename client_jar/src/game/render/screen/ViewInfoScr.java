@@ -200,6 +200,27 @@ public class ViewInfoScr extends Screen {
         if (this.lastScr != null) {
             this.lastScr.paint(g);
         }
+        if (game.pokemon.ManCu.bat() && this.text != null) {
+            // 31/10/2026: tấm chung (Thông tin đội / chữ dài), nút Menu khi là đội
+            this.anNutLenh = true;
+            int[] c = game.pokemon.ManCu.tam(g, this, this.title == null ? "" : game.pokemon.GiaoDien.tieuDe(this.title),
+                    game.pokemon.ManCu.viec(this.right), this.type == 0 ? new Command[]{this.left} : null);
+            game.pokemon.ManCu.tiepQuanMenu(this.title);
+            int n = this.text.size();
+            boolean coKh = this.type == 0 && this.status != null && this.status.length() > 0;
+            String[] d = new String[n + (coKh ? 2 : 0)];
+            int[] k = new int[d.length];
+            for (int i = 0; i < n; i++) {
+                d[i] = (String) this.text.elementAt(i);
+            }
+            if (coKh) {
+                d[n] = "Khẩu hiệu";
+                k[n] = 1;
+                d[n + 1] = this.status;
+            }
+            game.pokemon.ManCu.vanBan(g, c, d, k);
+            return;
+        }
         Canvas.resetTrans(g);
         g.translate(Canvas.hw - (this.w / 2), Canvas.hh - (this.h / 2));
         Res.paintDlgFull(g, 0, 0, this.w, this.h);
@@ -218,7 +239,13 @@ public class ViewInfoScr extends Screen {
     private void paintTextNormal(Graphics g) {
         int y0 = 34;
         if (this.nationID > -1) {
-            g.drawRegion(Res.imgNation, 0, this.nationID * 12, 12, 12, 0, 5, 34, 20);
+            // 31/10/2026: ảnh hệ 11x33 (3 ô 11 px) - vùng 12x12 cũ ngoài ảnh: máy J2ME thật ném IllegalArgumentException
+            javax.microedition.lcdui.Image im = Res.imgNation;
+            int o = im == null ? 0 : Math.min(12, im.getWidth());
+            int ho = im == null ? 0 : Math.min(12, im.getHeight() / 3);
+            if (im != null && ho > 0 && (this.nationID + 1) * ho <= im.getHeight()) {
+                g.drawRegion(im, 0, this.nationID * ho, o, ho, 0, 5, 34, 20);
+            }
             y0 = 34 + 15;
         }
         for (int i = 0; i < this.text.size(); i++) {

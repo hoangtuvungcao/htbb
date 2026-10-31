@@ -2,6 +2,7 @@ package game.render.screen;
 
 import game.model.Actor;
 import game.model.ChatInfo;
+import game.model.IAction;
 import game.model.LiveActor;
 import game.model.MainChar;
 import game.model.PopupName;
@@ -83,6 +84,15 @@ public final class HudRong {
      */
     static int xCaiDat() {
         return xNutTren(0) - BUOC_TREN;
+    }
+
+    /**
+     * 31/10/2026 (soi giao diện PC: dải tin kênh thế giới chạy ngang mép trên đè tên NPC đang nhắm / thẻ trạng thái): dải tin
+     * = khe giữa thẻ trạng thái và hàng nút phải trên, ngay dưới biển tên mục tiêu. {x, y, w}.
+     */
+    public static int[] vungTin() {
+        int xL = rongThe() + 6, xR = xTruocHangTren() - R_TREN - 6;
+        return new int[]{xL, 24, Math.max(40, xR - xL)};
     }
 
     public static int yHangTren() {
@@ -216,6 +226,15 @@ public final class HudRong {
     static final int W_TU_DONG = 46, H_TU_DONG = 18;
 
     static int xTuDong() {
+        // 31/10/2026 (KiemChamHud pc21x9: viên AUTO chồng vùng bản đồ nhỏ ở màn rất thấp): viên AUTO lên tới đáy bản đồ nhỏ
+        // thì dời sang trái bản đồ nhỏ (cùng hàng)
+        GameScr gs = Canvas.gameScr;
+        if (gs != null && coMiniMap() && GameScr.wMiniMap > 0 && yTuDong() < Y_MM + GameScr.hMiniMap + 4 + game.pokemon.Bang.cach()) {
+            Position p = gs.posMiniMapHud();
+            if (p != null) {
+                return p.x - 4 - game.pokemon.Bang.cach() - W_TU_DONG;
+            }
+        }
         return Canvas.w - W_TU_DONG - 4;
     }
 
@@ -878,10 +897,20 @@ public final class HudRong {
         int loai = loaiThuoc(mc, hp);
         int mau = loai < 0 ? 0xB9C1CF : (hp ? game.pokemon.ChuDe.DO : game.pokemon.ChuDe.PP);
         if (loai < 0) {
+            // 31/10/2026 (soi giao diện: nhãn "HP"/"PP" đè biểu tượng bình khi hết thuốc): nhãn khối góc trái như khi còn thuốc,
+            // bình nhỏ ở góc phải dưới - không chồng
             nenMau(g, x, y, r, mau, false);
-            int s = r + 2;
-            game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.THUOC, x - s / 2 - 3, y - s / 2, s, 0xFFFFFF, mau);
-            game.pokemon.ChuDe.chuGiua(g, hp ? "HP" : "PP", x + r / 2 + 1, y - 5, 10, game.pokemon.ChuDe.NHAN_NHO, 0xFFFFFF, 2);
+            int wNh0 = Math.max(14, game.pokemon.ChuDe.rong("HP", game.pokemon.ChuDe.PHU) + 4), hNh0 = Math.max(9, game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU));
+            int s = Math.max(8, r * 3 / 4);
+            if (2 * r < hNh0 + s + 2) {
+                // nút quá nhỏ (J2ME): chỉ nhãn giữa nút, không biểu tượng
+                game.pokemon.ChuDe.chuGiua(g, hp ? "HP" : "PP", x, y - r, 2 * r, game.pokemon.ChuDe.PHU, 0xFFFFFF, 2);
+                return;
+            }
+            int xi = Math.max(x - r - 2 + wNh0 + 1, x - s / 2 + r / 3), yi = Math.max(y - r - 2 + hNh0 + 1, y - s / 2 + r / 3);
+            game.pokemon.BieuTuong.ve(g, game.pokemon.BieuTuong.THUOC, xi, yi, s, 0xFFFFFF, mau);
+            GiaoDien.khoiPixel(g, x - r - 2, y - r - 2, wNh0, hNh0, game.pokemon.GiaoDien.pha(mau, 0, 2, 3));
+            game.pokemon.ChuDe.chuGiua(g, hp ? "HP" : "PP", x - r - 2 + wNh0 / 2, y - r - 2, hNh0, game.pokemon.ChuDe.PHU, 0xFFFFFF, 2);
             return;
         }
         // ảnh thật của bình đang dùng trên nền trắng, vành màu HP (đỏ) / PP (xanh), nhãn nhỏ góc trái
@@ -1198,12 +1227,20 @@ public final class HudRong {
         String ten = GameScr.nameMap == null ? "" : GameScr.nameMap;
         Font.borderFont.drawString(g, ten, Canvas.hw, y0 - 22, Font.CENTER);
         // nút đóng (x) góc phải
-        int xx = x0 + w - 4, yx = y0 - 16;
-        nen(g, xx, yx, 8, 0xFF6A4D, 0x9E1520, false);
-        g.setColor(GiaoDien.TRANG);
-        g.drawLine(xx - 3, yx - 3, xx + 3, yx + 3);
-        g.drawLine(xx - 3, yx + 3, xx + 3, yx - 3);
+        // 31/10/2026 (soi giao diện: bảng bản đồ cả map không có vùng chạm - chỉ dò toạ độ thô): nút X chung cỡ chạm + vùng ảnh
+        // bản đồ (chạm = đi tới chỗ đó)
+        int sx = Math.max(22, game.pokemon.VungCham.MIN);
+        game.pokemon.Bang.nutDong(g, Math.min(Canvas.w - sx, x0 + w + 8 - sx * 3 / 4), Math.max(0, y0 - 26 - sx / 4), sx, new IAction() {
+            public void perform() {
+                banDoTo = false;
+            }
+        });
         g.drawImage(a, x0, y0, 0);
+        game.pokemon.VungCham.them(g, x0, y0, w, h, new IAction() {
+            public void perform() {
+                lam(Canvas.gameScr, 40, Canvas.px, Canvas.py);
+            }
+        }, "ban-do-to");
         g.setClip(x0, y0, w, h);
         int n = gs.actors.size();
         for (int i = 0; i < n; i++) {

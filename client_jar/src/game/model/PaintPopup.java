@@ -137,6 +137,29 @@ public class PaintPopup extends Screen {
     public void paint(Graphics g) {
         this.lastScr.paint(g);
         Canvas.resetTrans(g);
+        if (game.pokemon.ManCu.bat()) {
+            // 31/10/2026: tấm chung - lưới ô cỡ chạm (chạm = chọn ngay), X = Đóng
+            this.anNutLenh = true;
+            String td = "ICON".equals(this.title) ? "Chọn biểu tượng đội" : game.pokemon.GiaoDien.tieuDe(this.title);
+            int[] c = game.pokemon.ManCu.tam(g, this, td, game.pokemon.ManCu.viec(this.right), null);
+            final Vector v = this.cmd;
+            game.pokemon.ManCu.luoi(g, c, v == null ? 0 : v.size(), this.selected, new game.pokemon.ManCu.O() {
+                public String chu(int i) {
+                    Command k = (Command) v.elementAt(i);
+                    return k.caption != null && k.caption.length() > 0 ? k.caption : null;
+                }
+
+                public void cham(int i) {
+                    PaintPopup.this.selected = i;
+                    PaintPopup.this.center.action.perform();
+                }
+
+                public void ve(Graphics g, int i, int x, int y, int s) {
+                    ((Command) v.elementAt(i)).paint(g, x + s / 2, y + s / 2);
+                }
+            }, 0);
+            return;
+        }
         Res.paintDlgFull(g, this.x, this.y, this.w, this.h);
         Font.borderFont.drawString(g, game.pokemon.GiaoDien.tieuDe(this.title), this.x + (this.w / 2) + 6, this.y + 6, 2); // pokemon: chữ trắng viền giữa dải đỏ
         g.translate(this.x + 3 + this.x0, this.y + 26 + this.y0);

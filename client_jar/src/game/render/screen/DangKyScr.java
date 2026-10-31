@@ -233,18 +233,31 @@ public class DangKyScr extends Screen {
             Canvas.loginScr.tfUser.setText(ten);
             Canvas.loginScr.tfPass.setText(mk);
             Canvas.loginScr.switchToMe();
-            Canvas.msgdlg.isIcon = false;
-            Canvas.msgdlg.setInfo("Đăng ký thành công tài khoản " + ten + "! " + tb, new Command("Đóng", new IAction() {
-                public void perform() {
-                    Canvas.endDlg();
-                }
-            }), new Command("Đăng nhập", new IAction() {
+            // 31/10/2026 (soi giao diện hành trình): trước đây hộp này tiêu đề "Xác nhận", nút CHÍNH (cam) là "Đóng" còn
+            // "Đăng nhập" - việc người chơi cần làm tiếp - là nút phụ. Nay: tiêu đề nói kết quả, "Đăng nhập" là nút chính
+            // (máy cảm ứng: nút phải; J2ME: phím mềm trái), "Đóng" = huỷ / phím mềm phải.
+            IAction vao = new IAction() {
                 public void perform() {
                     Canvas.endDlg();
                     Canvas.loginScr.doLogin();
                 }
-            }), (Command) null);
-            Canvas.msgdlg.show();
+            };
+            IAction dong = new IAction() {
+                public void perform() {
+                    Canvas.endDlg();
+                }
+            };
+            String noi = "Tên đăng nhập: " + ten + ". " + tb;
+            if (game.pokemon.MenuNguCanh.bat()) {
+                game.pokemon.HopThongBao.mo("Đăng ký thành công", noi, game.pokemon.HopThongBao.THONG_TIN,
+                        new String[]{"Đóng", "Đăng nhập"}, new int[]{game.pokemon.Bang.TRUNG, game.pokemon.Bang.XAC_NHAN},
+                        new IAction[]{dong, vao}, dong);
+            } else {
+                Canvas.msgdlg.isIcon = false;
+                Canvas.msgdlg.setInfo("Đăng ký thành công! " + noi, new Command("Đăng nhập", vao), (Command) null,
+                        new Command("Đóng", dong));
+                Canvas.msgdlg.show();
+            }
             DangKyScr.me = null;
             return;
         }
@@ -363,22 +376,31 @@ public class DangKyScr extends Screen {
         int hb = game.pokemon.KhungVao.caoNut(), k = game.pokemon.KhungVao.khe();
         int hn = game.pokemon.KhungVao.caoNhan(), ho = game.pokemon.KhungVao.caoO();
         int dau = game.pokemon.ChuDe.caoDau() + 2 * game.pokemon.ChuDe.DEM;
+        // 31/10/2026: ô cao đủ cỡ chạm; màn thấp (điện thoại ngang) -> nhãn vào trong ô, bảng được che một phần đội hình
+        boolean gon = Canvas.h - Screen.deltaY < dau + 2 * (hn + ho) + 2 * k + hb + 150;
+        if (gon) {
+            hn = 0;
+        }
         int hHep = dau + 4 * (hn + ho) + 4 * k + hb;
         int hRong = dau + 2 * (hn + ho) + 2 * k + hb;   // bảng rộng: ô xếp 2 cột
+        game.pokemon.KhungVao.cheDoiHinh = gon;
         int[] r = game.pokemon.KhungVao.logoVaBang(g, 420, hRong, hHep, 150);
+        game.pokemon.KhungVao.cheDoiHinh = false;
         int[] n = game.pokemon.Bang.khung(g, r[0], r[1], r[2], r[3], "Đăng ký tài khoản", null, 0, null, null);
         int x = n[0] + 2, w = n[2] - 4, y = n[1];
         if (r[2] >= 220) {
             int wc = (w - k) / 2;
             int y2 = y;
             for (int i = 0; i < 4; i++) {
-                int yy = game.pokemon.KhungVao.oNhap(g, this.o[i], NHAN[i], x + (i % 2) * (wc + k), y + (i / 2) * (hn + ho + k), wc, i == this.loiO);
+                int yy = gon ? game.pokemon.KhungVao.oNhapGon(g, this.o[i], NHAN[i], x + (i % 2) * (wc + k), y + (i / 2) * (ho + k), wc, i == this.loiO)
+                        : game.pokemon.KhungVao.oNhap(g, this.o[i], NHAN[i], x + (i % 2) * (wc + k), y + (i / 2) * (hn + ho + k), wc, i == this.loiO);
                 y2 = Math.max(y2, yy + k);
             }
             y = y2;
         } else {
             for (int i = 0; i < 4; i++) {
-                y = game.pokemon.KhungVao.oNhap(g, this.o[i], NHAN[i], x, y, w, i == this.loiO) + k;
+                y = (gon ? game.pokemon.KhungVao.oNhapGon(g, this.o[i], NHAN[i], x, y, w, i == this.loiO)
+                        : game.pokemon.KhungVao.oNhap(g, this.o[i], NHAN[i], x, y, w, i == this.loiO)) + k;
             }
         }
         game.pokemon.KhungVao.hangNut(g, x, y, w, new String[]{"Quay lại", "Đăng ký"}, new int[]{game.pokemon.Bang.TRUNG, game.pokemon.Bang.CHINH},
