@@ -28,6 +28,12 @@ import java.util.Vector;
 import real.PotionTemplate2;
 
 public class LoginHandler implements ICommandHandler {
+    /**
+     * 31/10/2026 (nhật ký: hai client cùng tài khoản đá nhau mỗi ~3 s): lý do gửi cho phiên CŨ trước khi đóng khi tài khoản đăng
+     * nhập ở nơi khác - client nhận ra câu này thì không tự nối lại (client cũ: thông báo ngay trước khi rớt cũng chặn tự nối).
+     */
+    public static final String DANG_NHAP_KHAC = "Tài khoản của bạn vừa đăng nhập ở thiết bị khác.";
+
 
     /**
      * Danh sach id thuoc gui xuong client trong goi dang nhap.
@@ -707,7 +713,7 @@ public class LoginHandler implements ICommandHandler {
             final Char p2 = CharManager.instance.getCharByCharName(charname.toLowerCase());
             if (p2 != null) {
                 if (p2.getSession() != null) {
-                    p2.getSession().disconnect(10);
+                    p2.getSession().dongVoiLyDo(DANG_NHAP_KHAC, 10);
                 } else {
                     CharManager.instance.kickPlayer(p2, "loginhandler 1");
                 }
@@ -722,7 +728,7 @@ public class LoginHandler implements ICommandHandler {
                 final Char pp = CharManager.instance.getByUserID(p.userID);
                 if (pp != null) {
                     if (pp.getSession() != null) {
-                        pp.getSession().disconnect(13);
+                        pp.getSession().dongVoiLyDo(DANG_NHAP_KHAC, 13);
                     } else {
                         CharManager.instance.kickPlayer(pp, "loginhandler 2");
                     }

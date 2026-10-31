@@ -506,6 +506,29 @@ public class Session extends Thread {
 
     }
 
+    /**
+     * 31/10/2026: đóng phiên KÈM lý do - gửi thông báo (lệnh 37) trước, đóng socket sau ~0,4 s để gói kịp ra (disconnect ngay
+     * đóng socket, gói còn trong hàng đợi bị mất). Client 0.9.4+ thấy thông báo ngay trước khi rớt thì không tự nối lại
+     * (0.9.25+: nhận ra "đăng nhập ở thiết bị khác" -> chỉ nút Kết nối lại).
+     */
+    public void dongVoiLyDo(final String lyDo, final int cause) {
+        try {
+            this.sendMessage(real.MessageCreator.createServerAlertMessage(lyDo, ""));
+        } catch (Exception ignored) {
+        }
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(400L);
+                } catch (InterruptedException ignored) {
+                }
+                Session.this.disconnect(cause);
+            }
+        }, "dong-ly-do");
+        t.setDaemon(true);
+        t.start();
+    }
+
     public void disconnect(int cause) {
         this.exit = true;
         this.notifySender();
