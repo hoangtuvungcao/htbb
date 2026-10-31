@@ -11,6 +11,9 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 
 public class ItemQsScreen extends Screen {
+    /** 31/10/2026: đang chạy update không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_update;
+
     public static ItemQsScreen me;
     public Screen last;
     public static int xBg;
@@ -49,6 +52,33 @@ public class ItemQsScreen extends Screen {
             this.last.paint(g);
         }
         Canvas.resetTrans(g);
+        if (game.pokemon.ManCu.bat()) {
+            // 31/10/2026: tấm chung - lưới phần thưởng (ô cỡ chạm, chạm = chọn), nút Chi tiết / Quay số
+            this.anNutLenh = true;
+            Command ct = this.center == null ? null : new Command("Chi tiết", this.center.action);
+            int[] c = game.pokemon.ManCu.tam(g, this, "Vòng quay may mắn", game.pokemon.ManCu.viec(this.right), new Command[]{ct, this.left});
+            int n = 0;
+            while (n < allItemLucky.size() && ((ItemLuckyDraw) allItemLucky.elementAt(n)).isSelect == 1) {
+                n++;
+            }
+            game.pokemon.ChuDe.chu(g, game.pokemon.ChuDe.cat("Chọn một phần thưởng rồi bấm Quay số.", game.pokemon.ChuDe.PHU, c[2] - 8), c[0] + c[2] / 2, c[1],
+                    game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 2);
+            int hg = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + game.pokemon.Bang.cach();
+            game.pokemon.ManCu.luoi(g, new int[]{c[0], c[1] + hg, c[2], c[3] - hg}, n, index, new game.pokemon.ManCu.O() {
+                public String chu(int i) {
+                    return null;
+                }
+
+                public void cham(int i) {
+                    ItemQsScreen.index = i;
+                }
+
+                public void ve(Graphics g, int i, int x, int y, int s) {
+                    ((ItemLuckyDraw) allItemLucky.elementAt(i)).paint(g, x + s / 2, y + s / 2);
+                }
+            }, game.pokemon.Bang.coO());
+            return;
+        }
         Res.paintDlgDragonFull(g, xBg, yBg, w, h);
         int aa = total;
         this.mScroll.setStyle(aa / nC, this.sizeCell, xBg + 5, yBg + 5, w, h - 5, true, 8);
@@ -133,6 +163,19 @@ public class ItemQsScreen extends Screen {
 
     @Override
     public void update() {
+        if (game.pokemon.ManCu.bat() && !this.boc_update && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_update = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        ItemQsScreen.this.update();
+                    }
+                });
+            } finally {
+                this.boc_update = false;
+            }
+            return;
+        }
         if (this.last != null) {
             this.last.update();
         }

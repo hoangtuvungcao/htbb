@@ -242,7 +242,7 @@ public final class ChuDe {
         // Kiem lag 10/2026: truoc day nho MOT ket qua / vai - HUD cat ten 4-6 o chieu moi khung (cung vai) nen
         // lan nao cung truot va chay lai vong do chu (substring + noi chuoi moi buoc). Nay nho CAT_SO ket qua.
         for (int i = 0; i < CAT_SO; i++) {
-            if (CAT_V[i] == vai && CAT_W[i] == w && s.equals(CAT_KHOA[i])) {
+            if (CAT_V[i] == vai && CAT_W[i] == w && CAT_B[i] == ChuUI.bo && s.equals(CAT_KHOA[i])) {
                 return CAT_KQ[i];
             }
         }
@@ -273,6 +273,7 @@ public final class ChuDe {
         CAT_KHOA[o] = s;
         CAT_V[o] = vai;
         CAT_W[o] = w;
+        CAT_B[o] = ChuUI.bo;
         CAT_KQ[o] = r;
         return r;
     }
@@ -336,6 +337,8 @@ public final class ChuDe {
     }
 
     private static final int CAT_SO = 24;
+    /** bộ chữ lúc cắt (đổi HD <-> font ảnh J2ME thì kết quả cũ đo bằng font khác - 31/10/2026 chữ biểu ngữ tràn 640x360) */
+    private static final Object[] CAT_B = new Object[CAT_SO];
     private static final String[] CAT_KHOA = new String[CAT_SO];
     private static final String[] CAT_KQ = new String[CAT_SO];
     private static final int[] CAT_W = new int[CAT_SO];

@@ -452,7 +452,10 @@ public final class ManTuDo {
         GiaoDien.khoi(g, xt, y + 4 + lh, wb, lp, lp / 2, GiaoDien.pha(mauTrangThai(m), 0xFFFFFF, 3, 4));
         ChuDe.chuGiua(g, trai, xt + wb / 2, y + 4 + lh, lp, ChuDe.PHU, GiaoDien.pha(mauTrangThai(m), 0, 1, 3), 2);
         String phu = m.tienDo.length() > 0 ? m.tienDo : m.nguon;
-        ChuDe.chu(g, ChuDe.cat(phu, ChuDe.PHU, wt - wb - 6), xt + wb + 6, y + 4 + lh, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+        // 31/10/2026 (J2ME 240x320: còn chỗ ~10 px -> "C.." tràn mép): chỗ quá hẹp thì bỏ dòng phụ (mô tả dưới vẫn có)
+        if (wt - wb - 6 >= ChuDe.rong("Mmm..", ChuDe.PHU)) {
+            ChuDe.chu(g, ChuDe.cat(phu, ChuDe.PHU, wt - wb - 6), xt + wb + 6, y + 4 + lh, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+        }
         if (rh >= lh + 2 * lp + 8) {
             ChuDe.chu(g, ChuDe.cat(m.moTa, ChuDe.PHU, wt), xt, y + 5 + lh + lp, ChuDe.PHU, ChuDe.CHU_NHAT, 0);
         }

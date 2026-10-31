@@ -256,6 +256,14 @@ public class BangAuto extends Screen {
 
     @Override
     public void updateKey() {
+        if (this.isOptionFocus && game.pokemon.ManCu.bat() && (Canvas.isPointerClick || Canvas.isPointerDown)) {
+            game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                public void run() {
+                    BangAuto.this.updateKey();
+                }
+            });
+            return;
+        }
         if (this.isOptionFocus) {
             boolean fc4 = false;
             boolean fc6 = false;
@@ -484,6 +492,26 @@ public class BangAuto extends Screen {
         }
         if (this.countR > 0) {
             this.countR--;
+        }
+        if (this.isOptionFocus && game.pokemon.ManCu.bat()) {
+            // 31/10/2026: tấm chung - mỗi chế độ một hàng (tên + mô tả), chạm = chọn, nút Chọn áp dụng, X = huỷ
+            this.anNutLenh = true;
+            int[] c = game.pokemon.ManCu.tam(g, this, "Chế độ chọn mục tiêu", game.pokemon.ManCu.viec(this.right), new Command[]{this.center});
+            game.pokemon.ManCu.danhSach(g, c, this.optionFC.length, GameScr.typeOptionFocus, new game.pokemon.ManCu.Dong() {
+                public String chinh(int i) {
+                    return BangAuto.this.optionFC[i].trim() + (i == GameScr.typeOptionFocus ? " (đang chọn)" : "");
+                }
+
+                public String phu(int i) {
+                    return BangAuto.this.optionDetail[i].trim();
+                }
+
+                public void cham(int i) {
+                    GameScr.typeOptionFocus = (byte) i;
+                    BangAuto.this.setInfo();
+                }
+            }, null);
+            return;
         }
         if (this.isOptionFocus) {
             Res.paintDlgFull(g, (Canvas.w / 2) - 80, (Canvas.h / 2) - 80, 160, 160);

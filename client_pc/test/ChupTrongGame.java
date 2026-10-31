@@ -3913,7 +3913,7 @@ public class ChupTrongGame {
      * MessageHandler theo đúng thứ tự đọc của bộ xử lý, hoặc hàm mở của màn mà menu / NPC gọi). Chạy ở mọi cỡ kể cả J2ME.
      */
     static final class PhuTrang3 {
-        static final String[] MAN = {"phu_x_quay_so_chon", "phu_x_vong_quay", "phu_x_ve_so", "phu_x_mini_game", "phu_x_cay_than",
+        static final String[] MAN = {"phu_x_ban_do_khoa", "phu_x_quay_so_chon", "phu_x_vong_quay", "phu_x_ve_so", "phu_x_mini_game", "phu_x_cay_than",
             "phu_x_co_vat", "phu_x_cau_do", "phu_x_dang_ky_doi", "phu_x_thong_tin_doi", "phu_x_cho", "phu_x_nap_sms", "phu_x_huong_dan",
             "phu_x_kenh_the_gioi", "phu_x_top_doi", "phu_x_thong_bao_ds", "phu_x_bang_auto", "phu_x_sai_mat_khau", "phu_x_mat_ket_noi",
             "phu_x_loi_tai", "phu_x_doi_ten_pet", "phu_x_moi_trao_doi_pokemon", "phu_x_moi_vao_doi", "phu_x_moi_ket_ban", "phu_x_moi_nhom",
@@ -3967,8 +3967,20 @@ public class ChupTrongGame {
 
         static void mo(String ten) {
             game.render.screen.GameScr G = game.render.Canvas.gameScr;
+            game.pokemon.KhoaMap.xoa();
             try {
-                if ("phu_x_quay_so_chon".equals(ten)) {
+                if ("phu_x_ban_do_khoa".equals(ten)) {
+                    // bản đồ vùng Kanto như người chơi mới (máy chủ thật -108): mọi nơi khoá trừ Pallet / Viridian / Pewter -
+                    // nhãn không đè ổ khoá, không bỏ nhãn (đường dẫn khi xa)
+                    java.lang.reflect.Field f = game.pokemon.BanDoVung.class.getDeclaredField("ID");
+                    f.setAccessible(true);
+                    short[] kanto = ((short[][]) f.get(null))[0];
+                    for (int i = 3; i < kanto.length; i++) {
+                        game.pokemon.KhoaMap.dat(kanto[i], game.pokemon.KhoaMap.CO_KHOA, "Cần cấp 15", null);
+                    }
+                    G.switchToMe();
+                    game.pokemon.ManBanDoVung.mo();
+                } else if ("phu_x_quay_so_chon".equals(ten)) {
                     quaySo();
                 } else if ("phu_x_vong_quay".equals(ten)) {
                     quaySo();

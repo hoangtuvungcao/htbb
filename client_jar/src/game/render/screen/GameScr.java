@@ -3983,7 +3983,13 @@ public class GameScr extends Screen {
             MsgInfo ms = (MsgInfo) msgWorld.elementAt(0);
             // 31/10/2026 (soi giao diện J2ME): dải tin kênh thế giới chạy ngang mép trên đè chữ khung HP ("45.5%", "Lv24") -
             // máy bấm phím hạ dải xuống dưới khung trạng thái
-            int dyTin = HudRong.bat() ? 0 : 34;
+            int dyTin = 34;
+            int[] vTin = HudRong.bat() ? HudRong.vungTin() : null;
+            if (vTin != null) {
+                // PC / APK: khe giữa thẻ trạng thái và hàng nút trên, dưới biển tên mục tiêu (không đè tên NPC / thẻ)
+                dyTin = vTin[1];
+                g.setClip(vTin[0], vTin[1], vTin[2], 32);
+            }
             g.translate(0, dyTin);
             int width = 0;
             while (true) {
@@ -4003,8 +4009,21 @@ public class GameScr extends Screen {
                 g.setColor(16777215);
                 g.fillRect(0, 18, Canvas.w, 1);
             }
-            ms.paint(g);
+            if (vTin != null) {
+                // chữ cắt theo khe (GhiChu: không ghi chữ dài hơn khe)
+                String[] goc = ms.arr;
+                String[] cat = new String[goc.length];
+                for (int i = 0; i < goc.length; i++) {
+                    cat[i] = game.pokemon.GiaoDien.catChu(Font.arialFontW, goc[i], vTin[2] - 8);
+                }
+                ms.arr = cat;
+                ms.paint(g);
+                ms.arr = goc;
+            } else {
+                ms.paint(g);
+            }
             g.translate(0, -dyTin);
+            g.setClip(0, 0, Canvas.w, Canvas.h);
         }
     }
 

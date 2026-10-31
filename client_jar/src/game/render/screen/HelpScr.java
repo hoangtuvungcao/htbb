@@ -43,7 +43,11 @@ public class HelpScr extends Screen {
         Canvas.startWaitDlg();
     }
 
+    /** chữ gốc (đoạn "x0 " = tiêu đề, "x1 " = nội dung) - bản vẽ kiểu chung ngắt lại theo bề ngang tấm */
+    String goc;
+
     public void setInfo(String st) {
+        this.goc = st;
         // pokemon: ngắt dòng theo bề rộng khung (Canvas.w - 30 cũ rộng hơn khung -> chữ tràn mép phải)
         this.stInfo = Font.normalFont[0].splitFontBStrInLine(st, this.w - 20);
         int c = 0;
@@ -70,6 +74,25 @@ public class HelpScr extends Screen {
     @Override
     public void paint(Graphics g) {
         Canvas.gameScr.paint(g);
+        if (game.pokemon.ManCu.bat()) {
+            // 31/10/2026: tấm chung, chữ ngắt theo tấm, cuộn bằng ngón; X = Đóng
+            this.anNutLenh = true;
+            int[] c = game.pokemon.ManCu.tam(g, this, "Hướng dẫn", game.pokemon.ManCu.viec(this.right), null);
+            if (this.goc != null) {
+                String[] d = game.render.Util.split(this.goc, "\n");
+                int[] k = new int[d.length];
+                for (int i = 0; i < d.length; i++) {
+                    if (d[i].startsWith("x0 ")) {
+                        d[i] = d[i].substring(3);
+                        k[i] = 1;
+                    } else if (d[i].startsWith("x1 ")) {
+                        d[i] = d[i].substring(3);
+                    }
+                }
+                game.pokemon.ManCu.vanBan(g, c, d, k);
+            }
+            return;
+        }
         g.translate(this.x, this.y);
         Res.paintDlgFull(g, 0, 0, this.w, this.h);
         Font.borderFont.drawString(g, "Hướng dẫn", this.w / 2, 6, 2);
