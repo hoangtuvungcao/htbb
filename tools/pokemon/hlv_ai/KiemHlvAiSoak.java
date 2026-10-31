@@ -143,8 +143,8 @@ final class KiemHlvAiSoak {
         void vongChinh() throws Exception {
             if (b.su.size() > 3000) b.su.subList(0, 2500).clear();
             kiem();
-            String[] viec0 = {"gd_lap", "gd_khong_dua", "mua_cho_bot", "pk_bot", "dau_truong"};
-            boolean canLang = viec0[luot % viec0.length].startsWith("gd");
+            String[] viec0 = {"gd_lap", "thach_dau_bot", "trao_doi_bot", "gd_khong_dua", "pk_bot", "mua_cho_bot", "moi_doi", "dau_truong"};
+            boolean canLang = !"pk_bot".equals(viec0[luot % viec0.length]);
             HlvAiNguoiChoi bot = chonBot(canLang);
             if (bot == null) { cho(30000); return; } // dung o lang cho bot ghe qua (nguoi that khong roi lang: khong ket ban do)
             String v = viec0[luot++ % viec0.length];
@@ -154,6 +154,9 @@ final class KiemHlvAiSoak {
                     case "gd_khong_dua": gdLap(bot, false); break;
                     case "mua_cho_bot": muaChoBot(); break;
                     case "pk_bot": pkBot(bot); break;
+                    case "thach_dau_bot": thachDauBot(bot); break;
+                    case "trao_doi_bot": traoDoiBot(bot); break;
+                    case "moi_doi": moiDoi(bot); break;
                     default: dauTruong(); break;
                 }
             } catch (java.net.SocketException | java.io.EOFException e) {
@@ -246,16 +249,151 @@ final class KiemHlvAiSoak {
         }
 
         /** Danh bot o ngoai lang: khong rot xu / do cho nguoi danh. */
-        void pkBot(HlvAiNguoiChoi bot) throws Exception {
-            if (KichBanDS.laLang(bot.b.mapId) || bot.b.mapId != b.mapId || !gapBot(bot)) { khaiThac("pk_bot.khong_gap", 0, false); return; }
+        /** Chuan bi (ghi bao cao): cap 45 (kt109: 50 + 100 trieu xu + huy hieu -> lap doi), 300.000 xu, 1 Pokemon trong Hop PC. */
+        void chuanBi() throws Exception {
+            vao();
+            int id = b.charDb;
+            b.close();
+            Thread.sleep(4000);
+            KichBanTinhNangThuong.ganHop(id, 16 + id % 3);
+            GHI_CHU.add("SQL: Hop PC " + user + " 1 con (thu trao doi Pokemon voi bot)");
+            vao();
+            boolean chu = user.equals("kt109");
+            gm("slv " + b.ten + " " + (chu ? 50 : 45) + " 0");
+            gm("smn " + b.ten + " 300000 0 0");
+            if (chu) {
+                gm("smn " + b.ten + " 100000000 0 0");
+                gm("spt " + b.ten + " 31 1");
+                b.lamMoi();
+                int m = b.moc();
+                b.gui(-9, new byte[0]);
+                b.cho(x -> x.coLenh(m, -9), 4000);
+                BotChucNang.SuKien e = b.layLenh(m, -9);
+                if (e != null && e.d.length >= 4) {
+                    int m2 = b.moc();
+                    b.gui(-10, (short) (((e.d[2] & 255) << 8) | (e.d[3] & 255)), "DoiNguoiThat");
+                    chuDoi = b.cho(x -> x.coLenh(m2, -10), 5000);
+                }
+                GHI_CHU.add("kt109 lap doi (100 trieu xu GM): " + chuDoi);
+            }
+            b.lamMoi();
+        }
+
+        /**
+         * PK bot that: mua + deo khan PK, toi ban do ngoai lang co bot DANG DEO khan, danh; doi chieu xu / mon truoc - sau
+         * (PK khong rot gi). Khong bot nao deo khan: danh bot trong lang (may chu chan PK trong lang).
+         */
+        void pkBot(HlvAiNguoiChoi bot0) throws Exception {
+            HlvAiNguoiChoi bot = null;
+            for (DichVuHlvAi.Ho h : DichVuHlvAi.HO) {
+                HlvAiNguoiChoi q = h.dang;
+                if (q != null && q.b != null && !q.b.dut && q.khanMinh >= 14 && !KichBanDS.laLang(q.b.mapId)) bot = q;
+            }
             b.lamMoi();
             long xu0 = b.xu;
             int mon0 = b.tongMon();
-            for (int i = 0; i < 12; i++) { b.gui(6, (short) bot.b.actor, (byte) 0); b.bom(500); }
-            b.bom(2000);
+            if (bot == null) {
+                if (bot0.b.mapId == b.mapId && gapBot(bot0)) {
+                    for (int i = 0; i < 8; i++) { b.gui(6, (short) bot0.b.actor, (byte) 0); b.bom(500); }
+                    b.lamMoi();
+                    khaiThac("pk_bot.trong_lang", Math.max(0, b.xu - xu0), false);
+                } else {
+                    khaiThac("pk_bot.khong_co_bot_deo_khan", 0, false);
+                }
+                return;
+            }
+            int khan = -1;
+            for (int t = 14; t <= 18; t++) if (b.soThuoc(t) > 0) khan = t;
+            if (khan < 0 && KichBanDS2.vaoNha(b, 103)) {
+                khan = bot.khanMinh == 14 ? 15 : 14;
+                b.gui(24, (byte) 1, (byte) 4, (short) khan, (short) 1);
+                b.bom(1200);
+                KichBanDS2.raNgoai(b);
+            }
+            int langCu = b.mapId;
+            if (khan < 0 || !toi(bot.b.mapId)) { khaiThac("pk_bot.khong_toi", 0, false); toi(langCu); return; }
+            b.gui(22, (byte) khan);
+            b.bom(800);
+            int don = 0;
+            for (int lan = 0; lan < 40 && bot.b != null && !bot.b.dut && bot.b.mapId == b.mapId && b.hp > 0; lan++) {
+                int[] vt = b.nguoi.get(bot.b.actor);
+                if (vt != null && lan % 6 == 0) {
+                    BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+                    int[] o = bd == null ? null : bd.oGan(vt[0] / 16, vt[1] / 16, 2);
+                    if (o != null) b.diDuong(bd, o[0], o[1]);
+                }
+                b.gui(6, (short) bot.b.actor, (byte) 0);
+                don++;
+                b.bom(500);
+            }
+            b.bom(11000);
+            b.gui(22, (byte) khan);
+            if (b.hp <= 0) hoiSinh();
             b.lamMoi();
             khaiThac("pk_bot", Math.max(0, b.xu - xu0) + Math.max(0, b.tongMon() - mon0) * 1000L, false);
+            ghi("pk bot " + bot.b.ten + ": " + don + " don");
+            toi(langCu);
         }
+
+        /** Thach dau 1-1 cuoc 5.000 xu voi bot cap 40+ cung lang; doi chieu xu (chan khi het han muc ngay). */
+        void thachDauBot(HlvAiNguoiChoi bot0) throws Exception {
+            HlvAiNguoiChoi bot = null;
+            for (DichVuHlvAi.Ho h : DichVuHlvAi.HO) {
+                HlvAiNguoiChoi q = h.dang;
+                if (q != null && q.b != null && !q.b.dut && q.b.mapId == b.mapId && q.b.lv >= 40) bot = q;
+            }
+            if (bot == null) { khaiThac("thach_dau_bot.khong_co_bot_40", 0, false); return; }
+            b.lamMoi();
+            long xu0 = b.xu;
+            int m = b.moc();
+            b.gui(-31, (short) b.actor, (byte) 5, "5000");
+            b.bom(800);
+            b.gui(-31, (short) b.actor, (byte) 6, bot.b.ten);
+            boolean vao = b.cho(x -> x.mapId == 205 || x.dut, 20000);
+            boolean chan = b.doiChu(m, 0, "giới hạn giao dịch") != null;
+            if (!vao) { khaiThac("thach_dau_bot.khong_vao", 0, chan); ghi("thach dau: " + b.chuTu(m)); return; }
+            long het = System.currentTimeMillis() + 6 * 60000L;
+            while (b.mapId == 205 && !b.dut && System.currentTimeMillis() < het) {
+                if (b.hp > 0) b.gui(6, (short) bot.b.actor, (byte) 0);
+                b.bom(600);
+            }
+            if (b.hp <= 0) hoiSinh();
+            b.bom(3000);
+            b.lamMoi();
+            khaiThac("thach_dau_bot", Math.max(0, b.xu - xu0), false);
+            ghi("thach dau " + bot.b.ten + ": xu " + xu0 + " -> " + b.xu);
+            if (!KichBanDS.laLang(b.mapId)) toi(0);
+        }
+
+        /** Trao doi Pokemon 1-1 voi bot (nguoi dat truoc, bot dat lai, khoa + xac nhan). */
+        void traoDoiBot(HlvAiNguoiChoi bot) throws Exception {
+            if (bot.conDeTrao() == null || !gapBot(bot)) { khaiThac("trao_doi_bot.khong_gap", 0, false); return; }
+            List<int[]> hop = HlvAiNguoiChoi.docHop(b);
+            if (hop == null || hop.isEmpty()) { khaiThac("trao_doi_bot.khong_co_con", 0, false); return; }
+            int m = b.moc();
+            b.gui(-121, (byte) 6, (byte) 0, (short) bot.b.actor);
+            boolean mo = b.cho(x -> HlvAiNguoiChoi.layGoi2(x, m, 2) != null, 15000);
+            if (!mo) { khaiThac("trao_doi_bot.khong_mo", 0, b.doiChu(m, 0, "giới hạn") != null); return; }
+            b.gui(-121, (byte) 6, (byte) 2, (byte) 1, hop.get(0)[0]);
+            b.bom(5000);
+            b.gui(-121, (byte) 6, (byte) 3);
+            b.bom(4000);
+            b.gui(-121, (byte) 6, (byte) 4);
+            boolean xong = b.cho(x -> HlvAiNguoiChoi.layGoi2(x, m, 3) != null, 15000);
+            if (!xong) b.gui(-121, (byte) 6, (byte) 5);
+            khaiThac(xong ? "trao_doi_bot" : "trao_doi_bot.khong_xong", 0, false);
+        }
+
+        /** Nguoi that chu doi (kt109) moi bot cung lang vao doi; bot gop quy -> tinh han muc bot -> nguoi (gop_quy). */
+        void moiDoi(HlvAiNguoiChoi bot) throws Exception {
+            if (!chuDoi) { khaiThac("moi_doi.khong_phai_chu", 0, false); return; }
+            if (!gapBot(bot)) { khaiThac("moi_doi.khong_gap", 0, false); return; }
+            b.gui(-11, (byte) 0, (short) bot.b.actor);
+            b.bom(1500);
+            khaiThac("moi_doi", 0, false);
+        }
+
+        boolean chuDoi;
 
         void dauTruong() throws Exception {
             if (KichBanDauTruong.chonDauTruong(b, "Đấu trường Bảo Bối") < 0) { khaiThac("dau_truong.khong_mo", 0, false); return; }
@@ -319,11 +457,11 @@ final class KiemHlvAiSoak {
         Thread.sleep(90000);
         // ---- chuan bi: nguoi that + mot nua bot len cap 20..40 (gia lap quan the bot da choi lau)
         List<NguoiThat> nt = new ArrayList<>();
-        for (int i = 105; i <= 108; i++) { // tai khoan moi tinh moi lan chay (kt101..104 da dung o lan thu truoc)
+        for (int i = 109; i <= 112; i++) { // tai khoan moi tinh moi lan chay
             NguoiThat n = new NguoiThat(String.format("kt%03d", i));
             nt.add(n);
             Thread t = new Thread(() -> {
-                try { n.vao(); gm("slv " + n.b.ten + " 30 0"); gm("smn " + n.b.ten + " 300000 0 0"); n.b.lamMoi(); } catch (Exception e) { System.out.println("[SOAK] chuan bi " + n.user + ": " + e); }
+                try { n.chuanBi(); } catch (Exception e) { System.out.println("[SOAK] chuan bi " + n.user + ": " + e); }
                 n.run2();
             }, "soak-" + n.user);
             t.setDaemon(true);
@@ -333,12 +471,12 @@ final class KiemHlvAiSoak {
         int len = 0;
         for (DichVuHlvAi.Ho h : DichVuHlvAi.HO) {
             HlvAiNguoiChoi p = h.dang;
-            if (p != null && p.b != null && !p.b.dut && len < DichVuHlvAi.HO.size() / 2 && p.b.lv < 15) {
-                gm("slv " + p.b.ten + " " + (20 + DichVuHlvAi.RD.nextInt(21)) + " 0");
+            if (p != null && p.b != null && !p.b.dut && len < DichVuHlvAi.HO.size() / 2 && p.b.lv < 40) {
+                gm("slv " + p.b.ten + " " + (40 + DichVuHlvAi.RD.nextInt(16)) + " 0");
                 len++;
             }
         }
-        ghi("\nChuẩn bị: 4 người thật kt105..kt108 (cấp 30, 300.000 xu qua GM), " + len + " bot đang online lên cấp 20..40 (GM, giả lập bot chơi lâu).\n");
+        ghi("\nChuẩn bị: 4 người thật kt109..kt112 (cấp 45-50, 300.000 xu, 1 Pokémon trong Hộp PC; kt109 lập đội bằng 100 triệu xu GM), " + len + " bot đang online lên cấp 40..55 (GM, giả lập bot chơi lâu: thách đấu, lập đội, phó bản nhóm).\n");
         ghi("| Phút | Bot online | Tổng xu bot | Tổng xu người | Ảnh chụp máy chủ bot/người (gồm online) | Xu bot tạo / đốt / tiêu (ngày) | Vật huỷ | Bot→người max/người (hạn mức) | Chuyển / chặn | Trung vị chợ | Kẹt | Kết nối lại | Chat (lặp) | Tick p99 / lỗi log | Kết nối CSDL |");
         ghi("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
         long batDau = System.currentTimeMillis();

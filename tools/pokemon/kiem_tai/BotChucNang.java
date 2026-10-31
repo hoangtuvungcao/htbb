@@ -64,6 +64,15 @@ public class BotChucNang {
 
     // =========================================================== mot ket noi bot
     static class Bot implements Closeable {
+        /**
+         * Di lai GIONG CLIENT THAT (dich vu Huan luyen vien AI bat; bo hoi quy giu nhip cu): moi goi 4 ve minh = may chu keo
+         * lai; het duong thi doi xac nhan vi tri (88 -> 3) truoc khi xin qua cong; khong xin qua cong / di khi dang guc; chi
+         * gui "vao map xong" (12/-500) sau khi THAT SU nhan ban do moi; it nhat 5,2 giay giua hai lan qua cong (may chu ghi
+         * CONG_SAI_O / NAP_MAP_LAP khi lech - kiem ngam HLV AI 31/10/2026).
+         */
+        static volatile boolean CHUAN_CLIENT = false;
+        long lucVaoMap;
+        boolean coMapMoi;
         final String user;
         Socket s;
         DataInputStream in;
@@ -130,6 +139,18 @@ public class BotChucNang {
         }
 
         void gui(int cmd, byte[] d) throws IOException {
+            if (CHUAN_CLIENT && cmd == 12 && d.length >= 2) {
+                short v = (short) (((d[0] & 255) << 8) | (d[1] & 255));
+                if (v == -500) {
+                    if (!coMapMoi) return; // khong co ban do moi: client that khong bao "vao map xong"
+                    coMapMoi = false;
+                    lucVaoMap = System.currentTimeMillis();
+                } else {
+                    if (hp <= 0 && maxhp > 0) return; // dang guc: may chu tu choi, client that khong gui
+                    long cho = 5200 - (System.currentTimeMillis() - lucVaoMap);
+                    if (cho > 0) bom(cho);
+                }
+            }
             // tu gioi han 200 goi / 5 giay (server chan 300)
             long bay = System.currentTimeMillis();
             while (!guiGan.isEmpty() && bay - guiGan.peekFirst() > 5000) guiGan.pollFirst();
@@ -466,6 +487,7 @@ public class BotChucNang {
                         mapLoad = r.readShort();
                         tenMap = r.readUTF();
                         coBanDo = true;
+                        coMapMoi = true;
                         quai.clear();
                         nguoi.clear();
                         e.so = new int[]{mapId, tx, ty, mapLoad};
@@ -767,6 +789,7 @@ public class BotChucNang {
             for (int c = dich; c != bdau; c = truoc[c]) duong.add(c);
             Collections.reverse(duong);
             int m = moc();
+            if (CHUAN_CLIENT && hp <= 0 && maxhp > 0) return false;
             for (int c : duong) {
                 int mb = moc();
                 int gx = (c % bd.w) * 16 + 8, gy = (c / bd.w) * 16 + 8;
@@ -775,12 +798,26 @@ public class BotChucNang {
                 if (dut) return false;
                 for (int i = mb; i < su.size(); i++) {
                     SuKien k = su.get(i);
-                    if (k.cmd == 4 && k.chu != null && k.so != null && (Math.abs(k.so[0] - gx) > 16 || Math.abs(k.so[1] - gy) > 16)) {
+                    // may chu chi gui goi 4 ve minh khi TU CHOI buoc di (keo lai) - CHUAN_CLIENT: moi goi deu la sua vi tri
+                    if (k.cmd == 4 && k.chu != null && k.so != null && (CHUAN_CLIENT || Math.abs(k.so[0] - gx) > 16 || Math.abs(k.so[1] - gy) > 16)) {
                         px = k.so[0];
                         py = k.so[1];
                         return lanThu > 0 && diDuong(bd, dx, dy, lanThu - 1);
                     }
                 }
+            }
+            if (CHUAN_CLIENT) {
+                // rao chan: 88 -> 3 cung luong goi -> moi tu choi buoc truoc da toi
+                int mc = moc();
+                gui(88, new byte[0]);
+                cho(x -> x.coLenh(mc, 3) || x.dut, 3000);
+                for (int i = mc; i < su.size(); i++) {
+                    SuKien k = su.get(i);
+                    if (k.cmd == 4 && k.chu != null && k.so != null) { px = k.so[0]; py = k.so[1]; }
+                }
+                if (hp <= 0 && maxhp > 0) return false;
+                if (px / 16 != dx || py / 16 != dy) return lanThu > 0 && diDuong(bd, dx, dy, lanThu - 1);
+                return true;
             }
             bom(300);
             for (int i = m; i < su.size(); i++) if (su.get(i).cmd == 4 && su.get(i).chu != null) {
@@ -1286,7 +1323,7 @@ public class BotChucNang {
         /** O dung truoc cong nhu client (Tilemap.toOtherMapAt o phia truoc): o di duoc, KHONG phai o cong, ke 4 huong. */
         int[] oTruocCong(int x, int y) {
             int[][] hg = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-            for (int k = 1; k <= 3; k++)
+            for (int k = 1; k <= (Bot.CHUAN_CLIENT ? 2 : 3); k++) // may chu nhan dung canh cong <= 2 o (Map.dungCanhCong)
                 for (int[] d : hg) {
                     int nx = x + d[0] * k, ny = y + d[1] * k;
                     if (diDuoc(nx, ny) && !laCong(nx, ny)) return new int[]{nx, ny};

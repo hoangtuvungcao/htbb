@@ -438,6 +438,7 @@ public final class DichVuHlvAi {
         BotChucNang.HOST = a[0];
         BotChucNang.PORT = Integer.parseInt(a[1]);
         BotChucNang.TIEN_TO = TIEN_TO_TK;
+        BotChucNang.Bot.CHUAN_CLIENT = true; // di lai / qua cong giong client that (khong CONG_SAI_O / NAP_MAP_LAP)
         BI_MAT = System.getenv("HLV_AI_BI_MAT");
         if (BI_MAT == null || BI_MAT.length() < 16) {
             if (!"1".equals(System.getProperty("hlv.thu"))) {
