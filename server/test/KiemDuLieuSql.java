@@ -53,7 +53,7 @@ public final class KiemDuLieuSql {
      *  gioi-han-khac-he-pve (31/10/2026, chu game): +3 khoa chi_so.khac_he_pve_ra_toi_thieu / _ra_toi_da / _vao_toi_da (nhom
      *  chi_so, co_dinh, thu_tu 372..374) = 372 / 21.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "396267d72903fa8b76156872f00fb92c457d24ef20a82d5acf450e25928ed5b1";
+    static final String VT_DANH_MUC = "4a7621562ce1551440f897cad60f6de25c47c1b23f3086a57c76636b12992fce";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */
