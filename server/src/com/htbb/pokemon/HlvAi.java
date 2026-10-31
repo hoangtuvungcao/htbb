@@ -222,6 +222,54 @@ public final class HlvAi {
         return soO - tran;
     }
 
+    // ================================================================== cap muc tieu theo nguoi choi that
+    /** Khoa bat / tat: cap muc tieu cua bot theo nguoi choi that (chu game 31/10/2026). */
+    public static final String K_CAP_THEO_NGUOI = "hlv_ai.cap_theo_nguoi";
+    /** Bot cu duoi muc thap: moi ngay nang muc tieu toi da ngan nay cap (van phai tu cay len). */
+    public static final int NANG_MOI_NGAY = 3;
+    /** Muc cao = trung binh top 10 nguoi that tru ngan nay (top nguoi that luon tren bot o bang xep hang). */
+    public static final int CACH_TOP = 2, SO_TOP = 10, KHOANG_TOI_THIEU = 5;
+
+    /**
+     * Khoang cap muc tieu {thap, cao} tu cap nguoi choi that hoat dong 7 ngay: thap = phan vi 25% (hang gan nhat), cao =
+     * trung binh {@link #SO_TOP} nguoi cao nhat tru {@link #CACH_TOP}, khong qua {@code caoToiDa} (muc cao cua
+     * hlv_ai.cap_muc_tieu, &lt;= 0 = khong chan), khong duoi thap + {@link #KHOANG_TOI_THIEU}. null = chua co nguoi that.
+     */
+    public static int[] khoangCap(final int[] capNguoi, final int caoToiDa) {
+        if (capNguoi == null || capNguoi.length == 0) {
+            return null;
+        }
+        final int[] c = capNguoi.clone();
+        Arrays.sort(c);
+        final int n = c.length;
+        final int thap = Math.max(1, c[Math.max(0, (int) Math.ceil(n * 0.25) - 1)]);
+        long tong = 0;
+        final int k = Math.min(SO_TOP, n);
+        for (int i = n - k; i < n; i++) {
+            tong += c[i];
+        }
+        int cao = (int) (tong / k) - CACH_TOP;
+        if (caoToiDa > 0) {
+            cao = Math.min(cao, caoToiDa);
+        }
+        cao = Math.max(cao, thap + KHOANG_TOI_THIEU);
+        return new int[]{thap, cao};
+    }
+
+    /** Cap muc tieu bot moi trong [thap, cao]. */
+    public static int mucTieuMoi(final int thap, final int cao, final java.util.Random rd) {
+        return thap + rd.nextInt(Math.max(1, cao - thap + 1));
+    }
+
+    /**
+     * Muc tieu bot cu sau mot ngay: duoi {@code thap} thi nang toi da {@link #NANG_MOI_NGAY} (khong vuot thap); khong bao
+     * gio tren {@code cao}.
+     */
+    public static int nangDan(final int muc, final int thap, final int cao) {
+        int m = muc < thap ? Math.min(thap, muc + NANG_MOI_NGAY) : muc;
+        return Math.min(m, cao);
+    }
+
     /** Ngay (yyyyMMdd) cua mot moc thoi gian theo lich may chu - khoa bo dem han muc ngay. */
     public static int ngay(final java.util.Calendar c) {
         return c.get(java.util.Calendar.YEAR) * 10000 + (c.get(java.util.Calendar.MONTH) + 1) * 100

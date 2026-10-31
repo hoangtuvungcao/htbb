@@ -306,9 +306,12 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         int[] w = TRONG_SO[ho.tinhCach].clone();
         long bay = System.currentTimeMillis();
         boolean duCap = b.lv >= ho.capMucTieu;
+        // hlv_ai.cap_theo_nguoi: toi muc cao (top nguoi that - 2) thi thoi han viec ra EXP - top nguoi that van dung dau
+        boolean tran = DichVuHlvAi.CAP_CAO > 0 && b.lv >= DichVuHlvAi.CAP_CAO;
         int tong = 0;
         for (int i = 0; i < VIEC.length; i++) {
             if (!DichVuHlvAi.bat(VIEC[i]) || !moKhoa(VIEC[i]) || nghiViec.getOrDefault(VIEC[i], 0L) > bay) w[i] = 0;
+            else if (tran && VIEC_EXP.contains(VIEC[i])) w[i] = 0;
             else if (duCap && VIEC_EXP.contains(VIEC[i])) w[i] = Math.max(w[i] / 10, w[i] > 0 ? 1 : 0);
             tong += w[i];
         }

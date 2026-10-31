@@ -30,7 +30,8 @@ test('phân loại: ít khoá chỉnh trên web, phần lớn ẩn', () => {
   // <= 81: thêm 3 khoá Về làng miễn phí (ve_lang.moi_ngay / thang_gym / toi_da — chủ game chỉnh lượt trên web).
   // <= 95: thêm nhóm hlv_ai 14 khoá (Huấn luyện viên AI: số lượng / lịch / tỉ lệ / cấp / bản đồ / hoạt động + 6 luật chống lạm phát).
   // <= 97: thêm hlv_ai.doi_bot_toi_da + hlv_ai.tien_to_ten.
-  assert.ok(d.chinh >= 40 && d.chinh <= 97, `chỉnh trên web: ${d.chinh}`)
+  // <= 98: thêm hlv_ai.cap_theo_nguoi.
+  assert.ok(d.chinh >= 40 && d.chinh <= 98, `chỉnh trên web: ${d.chinh}`)
   assert.ok(d.co_dinh > 100, `cố định: ${d.co_dinh}`)
   assert.ok(d.luon_bat >= 15, `luôn bật: ${d.luon_bat}`)
 })

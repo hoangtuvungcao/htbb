@@ -964,6 +964,12 @@ mỗi 20 giây, tự tạo tài khoản bot còn thiếu (mật khẩu = HMAC c�
 `tob_hlv_ai_trang_thai` mỗi phút (danh sách bot online trên trang). Log: `/opt/htbb/logs/hlv-ai.out` (mỗi 5 phút một dòng
 online / heap / số việc).
 
+**Cấp mục tiêu theo người chơi thật** (`hlv_ai.cap_theo_nguoi`, mặc định bật): lúc khởi động và mỗi ngày dịch vụ lấy cấp
+người chơi thật hoạt động 7 ngày (`la_bot = 0`, bỏ tài khoản `sv.adminAccounts`): thấp = phân vị 25%, cao = trung bình
+top 10 trừ 2 (không quá mức cao của `hlv_ai.cap_muc_tieu`, không dưới thấp + 5). Bot mới nhận mục tiêu trong khoảng; bot
+cũ dưới mức thấp được nâng mục tiêu tối đa +3 / ngày (vẫn phải tự cày); tới mức cao bot thôi các việc ra EXP (top người
+thật luôn trên bot). Kết quả ghi `tob_hlv_ai_cap_nguoi`, hiện ở /admin/hlv-ai. Tắt = dùng khoảng cố định `hlv_ai.cap_muc_tieu`.
+
 **Bot làm gì.** Nhiệm vụ chính / phụ / cửa ải, cày, treo máy (Tự động đánh), Gym, boss, bắt Pokémon hoang dã, Đấu trường
 (khi đủ 3 loài), mua khăn PK rồi chỉ đánh người đang đeo khăn, thách đấu cược nhỏ (cấp 40+), phó bản nhóm (cấp 45+),
 học chiêu ở NPC, lập / vào đội, góp quỹ, chat, kết bạn, giao dịch thuốc và trao đổi Pokémon 1 đổi 1, chợ ký gửi, hệ sinh

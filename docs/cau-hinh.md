@@ -346,17 +346,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **388 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **389 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 97 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 98 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 252 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (97)
+### Khoá chỉnh trên web (98)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -510,6 +510,7 @@ Bot lấp máy chủ chơi như người (mặc định không tiền tố): s�
 | `hlv_ai.chuyen_tong_ngay` | Hạn mức bot → người thật / ngày (cả máy chủ) | số | `500000` | 0..2000000000 | ngay | game | Tổng giá trị mọi bot chuyển cho người chơi thật mỗi ngày (kể cả góp quỹ đội có người thật). |
 | `hlv_ai.doi_bot_toi_da` | Số đội do bot làm chủ tối đa | số | `3` | 0..50 | ngay | game | Bot cấp 50 lập đội không mất 100.000.000 xu / huy hiệu khi số đội do bot làm chủ còn dưới ngần này (0 = bot không lập đội). Lương đội của bot cho người thật vẫn tính vào hạn mức ngày. |
 | `hlv_ai.tien_to_ten` | Tiền tố tên bot | chuỗi | *(trống)* | ≤ 12 ký tự | ngay | game | Để trống để bot hiện tên như người chơi bình thường ở mọi chỗ; nếu muốn vẫn có thể đặt tiền tố tối đa 12 ký tự, không dùng dấu ":". Giá trị sai: máy chủ dùng mặc định rỗng. |
+| `hlv_ai.cap_theo_nguoi` | Cấp mục tiêu theo người chơi thật | cờ 0/1 | `1` |  | ngay | game | 1 = mỗi ngày (và lúc dịch vụ khởi động) tính khoảng cấp từ người chơi thật hoạt động 7 ngày: thấp = phân vị 25%, cao = trung bình top 10 trừ 2 (không quá mức cao của hlv_ai.cap_muc_tieu, không dưới thấp + 5). Bot mới nhận cấp mục tiêu trong khoảng này; bot cũ dưới mức thấp được nâng dần (tối đa +3 / ngày); bot không cày quá mức cao. 0 = dùng hlv_ai.cap_muc_tieu. |
 
 ### Khoá ẩn: cố định & luôn bật (293)
 

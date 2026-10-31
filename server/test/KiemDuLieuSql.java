@@ -53,9 +53,10 @@ public final class KiemDuLieuSql {
      *  gioi-han-khac-he-pve (31/10/2026, chu game): +3 khoa chi_so.khac_he_pve_ra_toi_thieu / _ra_toi_da / _vao_toi_da (nhom
      *  chi_so, co_dinh, thu_tu 372..374) = 372 / 21;
      *  hlv-ai (31/10/2026, chu game): +nhom hlv_ai 16 khoa (huan luyen vien AI, chinh, thu_tu 375..390; tien to ten,
-     *  doi bot, tran_xu 300000) = 388 / 22; sua mac dinh tien_to_ten = "" = 388 / 22.
+     *  doi bot, tran_xu 300000) = 388 / 22; sua mac dinh tien_to_ten = "" = 388 / 22; +hlv_ai.cap_theo_nguoi (thu_tu 391,
+     *  cap muc tieu bot theo nguoi choi that) = 389 / 22.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "7e571e5de1d386eab9ed31c89a7222c651606b2e10358443a13a303a6e38b826";
+    static final String VT_DANH_MUC = "ff085b6d3215a583074d8ed932e4b8bd983fac4d3f4a316cb65ff9aaeabcb608";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */
