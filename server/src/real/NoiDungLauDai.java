@@ -129,11 +129,13 @@ public final class NoiDungLauDai {
                     }
                 }
             }
-            final MonsterTemplate t = m.getMonsterTemplate();
+            // chi so theo mau GOC cua o sinh khi he sinh thai doi loai (HeSinhThaiGame.mauChiSo): loai hiem / bung phat khong
+            // mang chi so mau cap cao vao bai quai thap (31/10/2026)
+            final MonsterTemplate t = com.htbb.pokemon.HeSinhThaiGame.mauChiSo(m);
             m.maxhp = t.maxhp;
             m.attack = t.attack;
             LA_ALPHA.remove(m);
-            final int[] a = ALPHA.get(Integer.valueOf(m.idTemplate));
+            final int[] a = ALPHA.get(Integer.valueOf(t.id));
             if (a != null && Map.random(ALPHA_MAU) == 0) {
                 m.maxhp = a[0] > 0 ? a[0] : t.maxhp * 4;
                 m.attack = a[1] > 0 ? a[1] : t.attack * 13 / 10;

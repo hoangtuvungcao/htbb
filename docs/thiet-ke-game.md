@@ -1330,6 +1330,16 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
   **loài di cư** (chỉ có 6 tháng liền mỗi năm); **quái hiếm** cấp +3..+8 chỉ ra trong một kiểu thời tiết (có thể chỉ ban
   đêm), báo kênh thế giới tối đa 1 lần / 10 phút mỗi loài. Không đổi: mục tiêu nhiệm vụ chính, boss, vật thể, bản đồ đặc
   biệt. Không đổi số lượng, vị trí, id quái.
+- **Loài đổi giữ chỉ số của bãi** (31/10/2026, `HeSinhThaiGame.doiLoai` / `mauChiSo`). Khi thay loài, quái hiếm, bùng phát
+  hay ngày cộng đồng đổi loài lúc hồi sinh, chỉ loài, hình và hệ theo mẫu mới. Cấp, HP, tấn công, thủ, chính xác / né, EXP
+  và xu vẫn theo mẫu **gốc** của ô sinh; quái tinh anh cũng tính trên mẫu gốc.
+  - Trước đó quái mang hết chỉ số của mẫu mới. Nhiều mẫu thay thế còn chỉ số gốc cũ (không có dòng `data_monster_lau_dai`),
+    nên quái vào bãi quá mạnh: 118 cặp đánh mạnh hơn ×1,5 quái gốc.
+  - Ví dụ: Golem 51 / Breloom 52 ở Goldenrod (cửa ải CA-09.1) thành Liepard 57, Krokorok 60 hoặc Feraligatr 62 (HP
+    160.000–200.000, tấn công ~3.050, ×2,8). Cao hơn người chơi 6–11 cấp nên còn bị thêm luật chênh cấp ×2.
+  - Đo thật ở cấp 49: đòn 3.000–8.000, gục sau 2–3 đòn.
+  - Hoenn cấp 82–92 thành Ursaluna (tấn công 75.000).
+  - `test/KiemDoiLoaiQuai` kiểm.
 - **Bùng phát**: 4 khung / ngày (11h, 17h, 20h, 22h), mỗi khung 1 giờ, một cặp (tuyến, loài của tuyến); 40% số lần hồi sinh
   trên tuyến đó thành loài bùng phát; có thông báo đầu / cuối.
 - Client cũ: hiệu ứng qua gói có sẵn `-39` (0 mưa, 1 lá rơi = bão cát / gió, 2 tuyết, 6 sương mù, 7 nắng gắt). Client

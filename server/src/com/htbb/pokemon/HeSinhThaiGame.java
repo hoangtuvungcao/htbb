@@ -515,7 +515,7 @@ public final class HeSinhThaiGame {
                 if (t == null) {
                     return;
                 }
-                apTemplate(m, t);
+                doiLoai(m, t, real.Map.monsterTemplates.get(Integer.valueOf(goc)));
             }
             if (moi != goc) {
                 (dacBiet == 2 ? DEM_BUNG_PHAT : dacBiet == 1 ? DEM_HIEM : DEM_THAY).incrementAndGet();
@@ -536,6 +536,47 @@ public final class HeSinhThaiGame {
         } catch (final Exception e) {
             System.out.println("[HE SINH THAI] khiHoiSinh: " + e);
         }
+    }
+
+    /**
+     * Doi loai quai khi hoi sinh (thay loai theo thoi tiet / gio, quai hiem, bung phat, ngay cong dong): HINH / loai / he theo
+     * mau moi {@code thay}, nhung CAP + HP + tan cong + thu + chinh xac / ne + EXP theo mau GOC {@code goc} cua o sinh (bai quai
+     * dung dai cap). Truoc 31/10/2026 lay het chi so cua mau moi: Golem 51 o Goldenrod (cua ai CA-09.1) hoi sinh thanh Krokorok /
+     * Feraligatr cap 60-62 con chi so goc cu (HP 183.000-200.000, tan cong ~3.050, thu ~720, khong co dong
+     * data_monster_lau_dai) - cao hon nguoi choi cap 49-51 tu 9 cap nen them luat chenh cap x2: don 3.000-8.000, guc trong 2-3
+     * don (do suc stack rieng). {@code goc} null / trung {@code thay}: chi so theo {@code thay} (nhu cu).
+     */
+    public static void doiLoai(final Monster m, final MonsterTemplate thay, final MonsterTemplate goc) {
+        apTemplate(m, thay);
+        if (goc != null && goc != thay) {
+            giuChiSo(m, goc);
+        }
+    }
+
+    /** Dat cap / chi so chien dau / EXP cua {@code m} theo mau {@code t} (loai hien thi giu nguyen). */
+    public static void giuChiSo(final Monster m, final MonsterTemplate t) {
+        m.level = t.level;
+        m.maxhp = t.maxhp;
+        m.maxxp = t.rcvXp;
+        m.attack = t.attack;
+        m.defend_physic = t.defend;
+        m.accurate = t.accurate;
+        m.dodge = t.dodge;
+    }
+
+    /**
+     * Mau chi so (cap, HP, tan cong, thu, EXP, xu) cua quai: mau GOC cua o sinh neu he sinh thai dang doi loai no, khong thi mau
+     * hien tai. Dung o NoiDungLauDai.khiHoiSinh (HP / tan cong / quai tinh anh) va Monster (EXP / xu khi ha).
+     */
+    public static MonsterTemplate mauChiSo(final Monster m) {
+        final Integer g = m == null ? null : GOC.get(m);
+        if (g != null) {
+            final MonsterTemplate t = real.Map.monsterTemplates.get(g);
+            if (t != null) {
+                return t;
+            }
+        }
+        return m == null ? null : m.getMonsterTemplate();
     }
 
     /** Doi template cua quai (giu vi tri, id, quoc gia, vung). hp/xp do Monster.update dat ngay sau. */
