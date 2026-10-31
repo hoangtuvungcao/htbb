@@ -203,11 +203,13 @@ public final class KiemCauHinhTrungTam {
         }
     }
 
-    static List<String> docDong(final String f) {
+    public static void main(final String[] args) {
         try {
-            return Files.readAllLines(Paths.get(f), StandardCharsets.UTF_8);
-        } catch (final IOException e) {
-            return new ArrayList<String>();
+            com.htbb.dulieu.DuLieuSql.napTuDumpDayDu();
+        } catch (final Throwable ignored) {
         }
+        chay();
+        final int code = Kiem.tongKet();
+        System.exit(code);
     }
 }
