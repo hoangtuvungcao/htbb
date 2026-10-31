@@ -1,13 +1,15 @@
 # server — game server + login server Huyền Thoại Bảo Bối
 
-Game server Java (cổng TCP 19129) và login server `CheckLoginSocket` (cổng 8023, chỉ nội bộ). Chạy ở thư mục này:
+Game server Java (cổng TCP 19129) và login server `htbb-login.jar` (cổng 8023, chỉ nội bộ — mã nguồn
+`src/com/htbb/dangnhap/`, build `sh loginServer/build.sh`, đặc tả [docs/dang-nhap.md](../docs/dang-nhap.md); jar cũ
+`CheckLoginSocket.jar` giữ để quay lui). Chạy ở thư mục này:
 mọi đường dẫn trong mã nguồn (`map/`, `cMap/`, `server.ini`, các tệp `.txt` log) là tương đối với `server/`.
 
 ```
 src/            mã nguồn (package real, data, io, server, com.htbb.*)    test/        bộ kiểm thử (Kiem.java + Kiem*.java)
 lib/            thư viện bên thứ ba: jxl, mysql-connector (lõi cũ htbb-core.jar đã thành mã nguồn ở P3)
 map/            tài nguyên: ảnh, tile pokemon_tile/, trang trí , dữ liệu hiệu ứng
-cMap/   bản đồ Pokémon                                            loginServer/ CheckLoginSocket.jar + server.ini (tạo tay)
+cMap/   bản đồ Pokémon                                            loginServer/ htbb-login.jar, CheckLoginSocket.jar, server.ini (tạo tay)
 htbb-server.jar jar đang chạy (nằm trong git — VPS chạy đúng tệp này)    chay_novadb/ chạy thử trên NovaDB
 ```
 
@@ -17,7 +19,8 @@ htbb-server.jar jar đang chạy (nằm trong git — VPS chạy đúng tệp n�
 |---|---|---|
 | Build jar | lệnh `javac --release 8` + `jar` trong [docs/build.md](../docs/build.md) | `build.bat` → `HTBB_NEW.jar`, rồi `capnhat.bat` |
 | Kiểm thử | `java … Kiem` (xem [docs/build.md](../docs/build.md)) | `test.bat` |
-| Chạy thử | `cd loginServer && java -jar CheckLoginSocket.jar`, rồi `java -jar htbb-server.jar` | `loginServer\run.bat`, rồi `run.bat` |
+| Build login server | `sh loginServer/build.sh` → `loginServer/htbb-login.jar` | (Git Bash) như Linux |
+| Chạy thử | `cd loginServer && java -jar htbb-login.jar`, rồi `java -jar htbb-server.jar` | `loginServer\run.bat`, rồi `run.bat` |
 
 Sửa `src/` xong phải build lại **và commit `htbb-server.jar`**: VPS không tự biên dịch. Chạy đúng thì log in
 `CONNECTED TO SERVER LOGIN` rồi `Listen on port 19129`; thiếu login server thì log kêu `CONNECT TO SERVER LOG IN FAIL`

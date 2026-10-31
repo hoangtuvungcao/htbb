@@ -75,10 +75,12 @@ sed -e "s/^db\.host\(1\?\)=.*/db.host\1=127.0.0.1:$NOVA_PORT/" -e "s/^db\.user\(
     -e "s|^sv\.pathLog=.*|sv.pathLog=$CHAY/log/|" -e "s|^db\.run=.*|db.run=/bin/true|" ../vps/server.ini.tmpl > server.ini
 
 # 5. Login server (cong 8023) + game server (cong 19129).
-cp loginServer/CheckLoginSocket.jar "$CHAY/login/"
+# Login server: htbb-login.jar (quay lui: HTBB_LOGIN_JAR=CheckLoginSocket.jar sh tools/pokemon/chay_tren_novadb.sh)
+LOGIN_JAR=${HTBB_LOGIN_JAR:-htbb-login.jar}
+cp "loginServer/$LOGIN_JAR" "$CHAY/login/"
 printf 'db.url=jdbc:mysql://127.0.0.1:%s/account?useSSL=false\ndb.user=%s\ndb.password=%s\nport=8023\n' \
     "$NOVA_PORT" "$NOVA_USER" "$NOVA_PASS" > "$CHAY/login/server.ini"
-(cd "$CHAY/login" && nohup java -jar CheckLoginSocket.jar > "$CHAY/log/login.log" 2>&1 & echo $! > "$CHAY/login.pid")
+(cd "$CHAY/login" && nohup java -Dfile.encoding=UTF-8 -jar "$LOGIN_JAR" > "$CHAY/log/login.log" 2>&1 & echo $! > "$CHAY/login.pid")
 sleep 2
 nohup java -Dfile.encoding=UTF-8 -cp "$CP" server.TeamServer > "$CHAY/log/game.log" 2>&1 &
 echo $! > "$CHAY/game.pid"

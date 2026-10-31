@@ -136,7 +136,10 @@ javac -d /tmp/htbb-tools tools/pokemon/DungBoTileMoi.java && java -cp /tmp/htbb-
 ## 7. Phần mềm
 
 - `server/loginServer/CheckLoginSocket.jar` là thư viện đóng của game gốc, không có mã nguồn: không phát hành lại
-  riêng, giữ repo private.
+  riêng, giữ repo private. Từ 31/10/2026 nó chỉ còn là bản quay lui; login server đang dùng là `htbb-login.jar`, viết
+  mới trong repo (`server/src/com/htbb/dangnhap/`, không chép mã của jar cũ — jar cũ chỉ được đọc bytecode để làm
+  tương thích giao thức, [dang-nhap.md](dang-nhap.md)). `htbb-login.jar` gói kèm Connector/J 5.1.49 (GPLv2 kèm
+  FOSS License Exception của Oracle), cùng bản trong `server/lib`.
 - Thư viện bên thứ ba còn lại trong `server/lib`: Connector/J 5.1.49, `jxl-2.6.jar`, `json-20250107.jar`. Bản
   Connector/J 5.0.8 và `jxl` mà jar lõi cũ gói kèm đã bỏ cùng jar (Connector/J 5.0.8 vốn bị 5.1.49 che trên classpath,
   `jxl` gói kèm giống hệt `lib/jxl-2.6.jar`).

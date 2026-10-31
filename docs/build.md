@@ -41,8 +41,12 @@ Linux là `:`, trên Windows là `;`.
 `htbb-server.jar` nằm trong git: VPS chạy đúng tệp jar đã commit, sửa `.java` mà không build lại jar thì deploy không
 có tác dụng. Chạy thử trên máy dev: tạo `server/server.ini` từ [`vps/server.ini.linux.example`](../vps/server.ini.linux.example)
 (xem [cau-hinh.md](cau-hinh.md)), nạp CSDL theo [sql/README.md](../sql/README.md), chạy login server
-(`cd server/loginServer && java -jar CheckLoginSocket.jar`) rồi `cd server && java -jar htbb-server.jar`
+(`cd server/loginServer && java -jar htbb-login.jar`) rồi `cd server && java -jar htbb-server.jar`
 (hoặc `server\run.bat`). Thiếu màn hình thì thêm `-Djava.awt.headless=true` (AdminPanel Swing tự bỏ qua).
+
+**Login server** (`server/src/com/htbb/dangnhap/`): `sh server/loginServer/build.sh` → `server/loginServer/htbb-login.jar`
+(`javac --release 8`, gói kèm Connector/J 5.1.49 như jar cũ, chạy độc lập). Jar này cũng nằm trong git: sửa mã thì build
+lại và commit jar. Đặc tả, cấu hình, quay lui về `CheckLoginSocket.jar`: [dang-nhap.md](dang-nhap.md).
 
 ### Kiểm thử server
 
