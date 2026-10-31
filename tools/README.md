@@ -76,6 +76,16 @@ tên nhân vật trong `sv.adminAccounts` và `pInfo[16]=1` — chỉ làm trên
 tài khoản thử nên có `regdate` lùi ≥ 24 giờ (chống clone) — bot tự cộng giờ chơi `tob_char.totalTimePlay` khi có `-Ddb`. Sau khi chạy: log server không có
 `Exception`, dữ liệu đã lưu (`tob_char`, `tob_pokedex`). Máy dùng chung: ≤ 100 bot, server headless.
 
+### `pokemon/hlv_ai/` — Huấn luyện viên AI (bot lấp máy chủ)
+
+Dịch vụ chạy lâu dài (`DichVuHlvAi`, unit `vps/htbb-hlv-ai.service`, không tự bật) giữ N bot online theo lịch, mỗi bot là
+`HlvAiNguoiChoi` (kế thừa người chơi tự nhiên `KichBanCap140.NguoiChoi` của `kiem_tai/`: nhiệm vụ, Gym, mua thuốc / vũ khí,
+nâng cấp, mặc đồ) cộng hoạt động theo tính cách: cày, treo máy (Tự động đánh -100), boss, PK, Đấu trường, Phó bản, đội, chat
+(`HlvAiChat`: câu ngữ cảnh + trả lời chào / hỏi, không lặp), kết bạn, giao dịch, chợ ký gửi, hệ sinh thái, vườn, nhà trẻ,
+bắt Pokémon, khám phá. Tên nhân vật `HlvAiTen` (kiểu game thủ Việt, máy chủ kiểm từ cấm). `KiemHlvAiSoak` (`-Dhlv.soak=1`,
+chỉ máy thử): người thật cố ý khai thác bot + bảng kiểm toán kinh tế mỗi 10 phút. `xay.sh <gốc> <ra>` biên dịch (lớp máy chủ +
+`kiem_tai` + `hlv_ai`). Vận hành: [docs/van-hanh.md](../docs/van-hanh.md) mục 15.
+
 ## `phat-hanh/` — phát hành client
 
 `phat-hanh.sh` (build jar / Android / PC và đẩy lên GitHub Releases), `day-len.sh`, `phienban.py`

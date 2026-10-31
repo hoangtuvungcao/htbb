@@ -1,0 +1,46 @@
+# /etc/systemd/system/htbb-hlv-ai.service - Huan luyen vien AI (bot lap may chu, tools/pokemon/hlv_ai).
+# KHONG tu cai / tu bat: deploy khong dung toi tep nay. Cai tay khi chu game quyet dinh bat bot:
+#   install -m 644 vps/htbb-hlv-ai.service /etc/systemd/system/ && systemctl daemon-reload
+#   (1) /etc/htbb/hlv-ai.env  (0640 root:htbb): HLV_AI_BI_MAT=<chuoi ngau nhien >= 32 ky tu> (sinh mat khau tai khoan bot)
+#   (2) /etc/htbb/hlv-ai.cnf  (0640 root:htbb): [client] host=127.0.0.1 port=3306 user=... password=... (user CSDL game,
+#       dich vu dung MOT ket noi; can SELECT/INSERT/UPDATE htbb_db + account.team_user, 5h_active)
+#   (3) systemctl enable --now htbb-hlv-ai   ; bat / tat bot that su: /admin/hlv-ai (khoa hlv_ai.bat) - tien trinh van chay.
+# Bien dich (ExecStartPre): lop may chu + bo bot tools/pokemon/kiem_tai + tools/pokemon/hlv_ai tu ban checkout /opt/htbb
+# vao /var/lib/htbb-hlv-ai/cls (can javac: openjdk-17-jdk-headless). Tai nguyen: ~3-6 MB heap / bot online, 1 ket noi CSDL.
+[Unit]
+Description=HTBB Huan luyen vien AI (bot lap may chu)
+After=network-online.target mariadb.service htbb-game.service
+Wants=network-online.target
+Requires=mariadb.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=htbb
+Group=htbb
+WorkingDirectory=/opt/htbb
+StateDirectory=htbb-hlv-ai
+EnvironmentFile=/etc/htbb/hlv-ai.env
+Environment=LANG=en_US.UTF-8
+UMask=0027
+# 100 bot ~ 250 luong (moi bot 1 luong + doc goi), heap ~400 MB
+TasksMax=1024
+MemoryHigh=700M
+MemoryMax=900M
+CPUQuota=60%
+ExecStartPre=/bin/sh /opt/htbb/tools/pokemon/hlv_ai/xay.sh /opt/htbb /var/lib/htbb-hlv-ai/cls
+ExecStart=/usr/bin/java -Xms64m -Xmx512m -Xss512k -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError \
+  -Djava.awt.headless=true -Dfile.encoding=UTF-8 \
+  -cp /var/lib/htbb-hlv-ai/cls:/opt/htbb/server/lib/mysql-connector-java-5.1.49.jar \
+  -Ddb=htbb_db -Ddbcnf=/etc/htbb/hlv-ai.cnf -Dnoi=/opt/htbb -Dgoc=/opt/htbb -Dcp=/var/lib/htbb-hlv-ai/cp \
+  -Dban=915 DichVuHlvAi 127.0.0.1 19129
+KillSignal=SIGTERM
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=30
+StandardOutput=append:/opt/htbb/logs/hlv-ai.out
+StandardError=append:/opt/htbb/logs/hlv-ai.out
+
+[Install]
+WantedBy=multi-user.target
