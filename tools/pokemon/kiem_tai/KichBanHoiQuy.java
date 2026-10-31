@@ -602,7 +602,8 @@ final class KichBanHoiQuy {
         BotChucNang.Bot b = HoiQuy.nguoiChoiMoi("sx", 0, 0);
         try {
             boQuaHuongDan(b);
-            if (!KichBanDS2.vaoNha(b, 103)) { ket("shop_xu.vao_nha", false, "map " + b.mapId); return; }
+            // nha Kecleon 102 (01/11/2026: goi 24 thuoc chi mua canh Chansey / Kecleon, nha Machamp 103 bi tu choi)
+            if (!KichBanDS2.vaoNha(b, 102)) { ket("shop_xu.vao_nha", false, "map " + b.mapId); return; }
             b.lamMoi();
             long xu0 = b.xu;
             int t0 = b.soThuoc(1);

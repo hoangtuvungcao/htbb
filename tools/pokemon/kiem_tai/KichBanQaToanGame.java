@@ -588,7 +588,7 @@ public class KichBanQaToanGame {
      * BINH THUONG ngay; ghi trang thai mong doi vao {@link #TEP_KDL}. Sau khi khoi dong lai: {@code qa_khoi_dong_lai_kiem}.
      */
     static void khoiDongLaiGhi() throws Exception {
-        try (BotChucNang.Bot b = KichBanDS3.botNha(10)) {
+        try (BotChucNang.Bot b = KichBanDS3.botNha(10, 102)) { // nha Kecleon: goi 24 thuoc chi mua canh Chansey / Kecleon
             b.gui(23, (byte) 1);
             b.bom(800);
             b.gui(24, (byte) 1, (byte) 4, (short) 1, (short) 7);

@@ -245,6 +245,15 @@ public final class KiemTrangThaiVatPham {
         soSanh("binh khi HP thap", p);
         // 3) mua xN binh o cua hang NPC (OfflineMap.doBuyItem, lenh 24 loai 4): ham cu im lang -> "Đã mua X ×N (−gia)"
         final real.Map om = banDo();
+        // 01/11/2026: goi 24 thuoc chi mua canh Chansey / Kecleon (NpcTinhBanDo.thuocBanTaiCho) - dung trong nha 100 (Chansey)
+        final real.Map mapCu = p.map;
+        final int mapIdCu = p.mapID;
+        final real.Map nhaChansey = new real.Map();
+        nhaChansey.mapId = 100;
+        nhaChansey.mapIDLoadMap = -1;
+        nhaChansey.isMapOffline = true;
+        p.map = nhaChansey;
+        p.mapID = 100;
         p.setxu(100000L);
         p.potions[2] = 0;
         KiemDungVatPham.GOI.clear();
@@ -275,6 +284,18 @@ public final class KiemTrangThaiVatPham {
         Kiem.dung("mua khi o thuoc day: hop thoai cu -> -104 LOI kieu MUA (" + chu(b) + ")", b != null && "LOI".equals(b[0])
                 && String.valueOf(HanhDongVatPham.MUA).equals(b[2]) && !KiemDungVatPham.coGoi(37));
         soSanh("mua khi o thuoc day", p);
+        // dung trong nha Machamp 103: tu choi co ly do, khong tru, khong them binh
+        nhaChansey.mapId = 103;
+        p.mapID = 103;
+        p.potions[2] = 7;
+        KiemDungVatPham.GOI.clear();
+        final long xuNha103 = p.getxu();
+        HanhDongVatPham.boc(p, HanhDongVatPham.MUA, () -> om.doBuyItem(p, goi(24, than((byte) 1, (byte) 4, (short) 2, (short) 3))));
+        b = baoCuoi();
+        Kiem.dung("mua trong nha Machamp 103: bao chi ban o Chansey / Kecleon (" + chu(b) + ")", b != null && b[1].contains("Chansey"));
+        Kiem.dung("mua trong nha 103: khong tru xu, khong them binh", p.getxu() == xuNha103 && p.potions[2] == 7);
+        p.map = mapCu;
+        p.mapID = mapIdCu;
         p.potions[2] = 7;
         // 4) ban mot mon (OfflineMap.doSellItem): "Đã bán X (+gia xu)"
         p.setxu(500L);

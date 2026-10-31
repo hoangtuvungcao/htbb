@@ -114,6 +114,12 @@ public final class KichBanBatThuong {
 
     /** Mo Kecleon (NPC 1) -> "Mua thuoc" nhu client. */
     static boolean moKecleon(BotChucNang.Bot b) throws IOException {
+        // 01/11/2026: goi 24 thuoc chi mua canh Chansey / Kecleon - sang nha Kecleon 102 (Pewter) neu dang o nha khac (103)
+        if (b.mapId != 102 && b.mapId != 72 && b.mapId != 82) {
+            if (KichBanDS2.laOffline(b.mapId)) KichBanDS2.raNgoai(b);
+            KichBanDS2.vaoNha(b, KichBanDS2.nhaKecleon(b.mapId));
+            onDinh(b);
+        }
         int m = b.moc();
         b.gui(23, (byte) 1);
         b.cho(x -> x.coLenh(m, 23) || x.coLenh(m, -30), 5000);

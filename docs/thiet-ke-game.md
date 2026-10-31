@@ -1813,8 +1813,10 @@ thuốc HP + PP ≈ 9,5% / 6,5% / 6,4% thu nhập ở cấp 30 / 50 / 70 (cấp 
 (cấp 100: bình 15.000 HP ~152 xu) nên vẫn là hố hút xu nhỏ. `data_potion.price` của các bình này giữ 0: gói 24 (cửa sổ
 thuốc giá cố định, client chỉ biết giá 20 dòng đầu) không mua được, chỉ qua menu máy chủ (mọi client cũ / mới) - kiểm
 cấp mở, đứng cạnh Chansey / Kecleon (trong nhà: nhà có NPC đó, nhà Machamp không; ngoài trời ≤ 7 ô -
-`NpcTinhBanDo.dungCanh`, cùng ý gói 24 chỉ mua ở NPC đang đứng cạnh), giá không đổi từ lúc xem, ô ≤ 999 bình. Kiểm:
-`server/test/KiemThuocCapCao`.
+`NpcTinhBanDo.dungCanh`, cùng ý gói 24 chỉ mua ở NPC đang đứng cạnh), giá không đổi từ lúc xem, ô ≤ 999 bình. Cửa sổ
+thuốc (gói 24 loại 4) cũng vậy từ 01/11/2026: chỉ món trong cửa sổ (`NpcDichVu.THUOC_BAN`) và chỉ khi đứng cạnh Chansey /
+Kecleon (`NpcTinhBanDo.thuocBanTaiCho`) - trước đó trong bất kỳ nhà nào (vd nhà Machamp) mua được mọi thuốc có giá, kể cả
+Kẹo kinh nghiệm S (id 10, 500 xu) không NPC nào bán. Kiểm: `server/test/KiemThuocCapCao`.
 
 Bot: xu, đá, đồ rơi đều theo năng lượng; thuốc và sửa đồ tính theo giờ thật, nên treo máy lâu bị lỗ. Tín hiệu nghi bot: năng
 lượng = 0 liên tục nhiều ngày, nhặt đồ đều hơn 20 giờ / ngày, nhịp đánh bất thường (kết hợp cấm theo máy).

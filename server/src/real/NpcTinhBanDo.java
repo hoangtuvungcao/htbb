@@ -193,6 +193,18 @@ public final class NpcTinhBanDo {
         return false;
     }
 
+    /**
+     * Goi 24 mua thuoc (loai 4): {@code id} co trong cua so thuoc (NpcDichVu.THUOC_BAN - Chansey 0 va Kecleon 1 / 26
+     * cung mot danh sach) va nguoi choi {@link #dungCanh} mot NPC ban thuoc.
+     */
+    public static boolean thuocBanTaiCho(final Char p, final int id) {
+        boolean co = false;
+        for (final int t : NpcDichVu.THUOC_BAN) {
+            co |= t == id;
+        }
+        return co && dungCanh(p, NPC_BAN_THUOC);
+    }
+
     /** Thay "player.map.isMapOffline" o cac ham dich vu NPC: trong nha (luat cu) HOAC dung canh NPC dung loai. */
     public static boolean oNoiDichVu(final Char p, final int... loai) {
         if (p == null || p.map == null) {

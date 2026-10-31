@@ -407,6 +407,22 @@ public final class KiemThuocCapCao {
         dung("lang 0 xa moi NPC: khong mo danh sach", xa.menuCuoi() == null);
         dung("lang 0 xa: goi mua tu che bi chan", !ThuocCapCaoGame.mua(xa, 1, 10) && xa.potions[93] == 0);
         bang("lang 0 xa: khong tru xu", Long.valueOf(1000000L), Long.valueOf(xa.getxu()));
+        // goi 24 cua so thuoc (01/11/2026): chi mon THUOC_BAN, chi canh Chansey / Kecleon
+        dung("goi 24 thuoc: nha 100 (Chansey) mua thuoc 3", NpcTinhBanDo.thuocBanTaiCho(trongNha(1, 100), 3));
+        dung("goi 24 thuoc: nha 102 (Kecleon) mua thuoc 1 / Ether 4", NpcTinhBanDo.thuocBanTaiCho(trongNha(1, 102), 1)
+                && NpcTinhBanDo.thuocBanTaiCho(trongNha(1, 102), 4));
+        dung("goi 24 thuoc: nha 103 (Machamp) KHONG mua thuoc 1", !NpcTinhBanDo.thuocBanTaiCho(trongNha(1, 103), 1));
+        dung("goi 24 thuoc: Keo kinh nghiem S (10, gia 500) khong ban o dau", !NpcTinhBanDo.thuocBanTaiCho(trongNha(1, 100), 10)
+                && !NpcTinhBanDo.thuocBanTaiCho(trongNha(1, 102), 10));
+        dung("goi 24 thuoc: thuoc cap cao 93 khong qua cua so", !NpcTinhBanDo.thuocBanTaiCho(trongNha(1, 100), 93));
+        dung("goi 24 thuoc: lang 0 canh Chansey mua duoc, xa thi khong", NpcTinhBanDo.thuocBanTaiCho(ngoaiTroi(1, 38, 48), 1)
+                && !NpcTinhBanDo.thuocBanTaiCho(ngoaiTroi(1, 10, 10), 1));
+        try {
+            dung("OfflineMap.doBuyItem (loai 4) goi thuocBanTaiCho truoc khi tinh gia",
+                    doc("src/real/OfflineMap.java").matches("(?s).*thuocBanTaiCho\\(player, var32\\).*getPrice\\(\\);.*"));
+        } catch (final Exception e) {
+            dung("doc OfflineMap.java", false);
+        }
         dung("dungCanh: nha 100 co Chansey, nha 103 khong", NpcTinhBanDo.dungCanh(trongNha(1, 100), NpcTinhBanDo.NPC_BAN_THUOC)
                 && !NpcTinhBanDo.dungCanh(trongNha(1, 103), NpcTinhBanDo.NPC_BAN_THUOC));
     }

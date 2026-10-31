@@ -17,6 +17,11 @@ class KichBanDS2 {
 
     static final short[] MAP_OFFLINE = {90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 102, 103, 104, 108, 109, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 29, 30, 31, 72, 73, 74, 78, 79, 82, 83, 84, 88, 89};
 
+    /** Nha Kecleon tap hoa (ban thuoc, goi 24 loai 4) cua lang: Pewter 0 -> 102, 70 -> 72, 80 -> 82 (canh nha Machamp). */
+    static int nhaKecleon(int lang) {
+        return lang == 70 ? 72 : lang == 80 ? 82 : 102;
+    }
+
     static boolean laOffline(int m) {
         for (short s : MAP_OFFLINE) if (s == m) return true;
         return false;

@@ -37,8 +37,13 @@ class KichBanDS3 {
 
     /** Bot o trong nha (OfflineMap) - shop NPC chi xu ly o day. */
     static BotChucNang.Bot botNha(int lv) throws Exception {
+        return botNha(lv, 103);
+    }
+
+    /** Bot o lang, vao nha {@code nha} (Pewter: 102 Kecleon - thuoc, 103 Machamp - vu khi, 104 Bronzong - giap). */
+    static BotChucNang.Bot botNha(int lv, int nha) throws Exception {
         BotChucNang.Bot b = botLang(lv);
-        if (!KichBanDS2.vaoNha(b, 103)) System.out.println("  (khong vao duoc nha tu map " + b.mapId + ")");
+        if (!KichBanDS2.vaoNha(b, nha)) System.out.println("  (khong vao duoc nha " + nha + " tu map " + b.mapId + ")");
         return b;
     }
 
@@ -117,7 +122,8 @@ class KichBanDS3 {
 
     // ------------------------------------------------------------------ shop NPC
     static void shopNpc() throws Exception {
-        try (BotChucNang.Bot b = botNha(10)) {
+        // 01/11/2026: goi 24 thuoc chi mua canh Chansey / Kecleon -> mo shop thuoc trong nha Kecleon 102, vu khi sang nha 103
+        try (BotChucNang.Bot b = botNha(10, 102)) {
             int m = b.moc();
             final int m23 = m;
             b.gui(23, (byte) 1);
@@ -136,6 +142,8 @@ class KichBanDS3 {
             b.lamMoi();
             ket("shop_npc.mua_thuoc", b.soThuoc(1) == t0 + 5 && b.xu < xu0, "thuoc 1: " + t0 + " -> " + b.soThuoc(1) + ", xu " + xu0 + " -> " + b.xu);
             long xu1 = b.xu;
+            KichBanDS2.raNgoai(b);
+            if (!KichBanDS2.vaoNha(b, 103)) System.out.println("  (khong sang duoc nha Machamp 103 tu map " + b.mapId + ")");
             int id = muaVuKhi(b, 79);
             b.lamMoi();
             ket("shop_npc.mua_vu_khi", id != KHONG && b.xu < xu1, "id moi=" + id + ", xu " + xu1 + " -> " + b.xu);
