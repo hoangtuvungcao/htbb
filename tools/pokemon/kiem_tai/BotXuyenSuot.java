@@ -521,6 +521,10 @@ public class BotXuyenSuot {
         final java.util.ArrayDeque<int[]> donGan = new java.util.ArrayDeque<>();
         long donGoc = System.currentTimeMillis();
 
+        /** Tong sat thuong / so don quai (goi 10) nhan - do can bang kinh te thuoc. */
+        volatile long satThuongNhan;
+        volatile int soDonNhan;
+
         void ngheDon() {
             final BotChucNang.Bot bb = b;
             final java.util.function.Consumer<BotChucNang.SuKien> cu = bb.ngheNhan;
@@ -531,6 +535,8 @@ public class BotXuyenSuot {
                     DataInputStream r = new DataInputStream(new ByteArrayInputStream(e.d));
                     int mq = r.readShort(), tg = r.readShort(), dmg = r.readInt(), hp = r.readInt();
                     if (tg != bb.actor) return;
+                    satThuongNhan += Math.max(0, dmg);
+                    soDonNhan++;
                     int[] q = bb.quai.get(mq);
                     synchronized (donGan) {
                         donGan.addLast(new int[]{(int) (System.currentTimeMillis() - donGoc), q == null ? -1 : q[5], dmg, hp});

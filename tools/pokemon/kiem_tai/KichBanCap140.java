@@ -836,12 +836,15 @@ final class KichBanCap140 {
             // do can bang kinh te thuoc (thiet ke: thuoc <= 12% thu nhap): binh / quai, xu / quai, guc khi luyen
             long t0 = System.currentTimeMillis(), xu0 = b.xu;
             int binh0 = b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3), so0 = ttkSo, chet0 = soChet;
-            long ttk0 = ttkMs;
+            long ttk0 = ttkMs, st0 = satThuongNhan;
+            int don0 = soDonNhan;
             danh(-1, 40, phut * 60000L);
             int ha = ttkSo - so0;
-            if (ha > 0) ghi(String.format(Locale.ROOT, "LUYEN map %d: %d quai / %.1f phut, TTK %.1fs, BINH %.2f/quai, XU %+d, guc %d, cap %d maxhp %d",
+            if (ha > 0) ghi(String.format(Locale.ROOT, "LUYEN map %d: %d quai / %.1f phut, TTK %.1fs, BINH %.2f/quai, XU %+d, guc %d, cap %d maxhp %d, NHAN %.1f%%HP/quai (%.2f don/quai, don %.1f%%HP), vu khi +%d",
                     mid, ha, (System.currentTimeMillis() - t0) / 60000.0, (ttkMs - ttk0) / 1000.0 / ha,
-                    Math.max(0, binh0 - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3))) / (double) ha, b.xu - xu0, soChet - chet0, b.lv, b.maxhp));
+                    Math.max(0, binh0 - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3))) / (double) ha, b.xu - xu0, soChet - chet0, b.lv, b.maxhp,
+                    100.0 * (satThuongNhan - st0) / Math.max(1, b.maxhp) / ha, (soDonNhan - don0) / (double) ha,
+                    soDonNhan > don0 ? 100.0 * (satThuongNhan - st0) / (soDonNhan - don0) / Math.max(1, b.maxhp) : 0.0, vuKhiPlus()));
         }
         final Map<Integer, Integer> lanToiDich = new HashMap<>();
 
@@ -1170,6 +1173,8 @@ final class KichBanCap140 {
                 int chet0 = soChet;
                 long ttk0 = ttkMs; int ttkSo0 = ttkSo, ttkCap0 = ttkCap;
                 int binh0 = b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3);
+                long stBuoc0 = satThuongNhan;
+                int donBuoc0 = soDonNhan;
                 int ha = danh(tpl, Math.max(1, can), (can > 1 ? 7 : 2) * 60000L);
                 double phut = Math.max(0.1, (System.currentTimeMillis() - t0) / 60000.0);
                 Matcher mtg = Pattern.compile("trong (\\d+) phút").matcher(chu);
@@ -1179,7 +1184,8 @@ final class KichBanCap140 {
                 // TTK (design: ~4/5/6 giay quai thuong o cap 1-30/31-60/61-100 voi do +6) - mau cho can bang
                 if (ttkSo > ttkSo0) toc += String.format(Locale.ROOT, " | TTK %.1fs (cap %d, cap quai %.0f, %d con, vu khi +%d, guc %d)",
                         (ttkMs - ttk0) / 1000.0 / (ttkSo - ttkSo0), b.lv, (ttkCap - ttkCap0) / (double) (ttkSo - ttkSo0), ttkSo - ttkSo0, vuKhiPlus(), soChet - chet0)
-                        + String.format(Locale.ROOT, " BINH %.2f/quai", Math.max(0, binh0 - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3))) / (double) (ttkSo - ttkSo0));
+                        + String.format(Locale.ROOT, " BINH %.2f/quai NHAN %.1f%%HP/quai (%.2f don/quai)", Math.max(0, binh0 - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3))) / (double) (ttkSo - ttkSo0),
+                        100.0 * (satThuongNhan - stBuoc0) / Math.max(1, b.maxhp) / (ttkSo - ttkSo0), (soDonNhan - donBuoc0) / (double) (ttkSo - ttkSo0));
                 ghi("hanh dong '" + q.ten + "': ha " + ha + " " + tenQ + " (lan " + lan + ")" + toc);
                 if (khungGio) choGio("'" + q.ten + "' can dung khung gio: " + chu);
                 if (lan > 14) return "ha " + tenQ + " " + lan + " lan van khong xong: " + chu;
