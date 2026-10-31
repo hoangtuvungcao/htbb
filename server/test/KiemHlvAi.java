@@ -182,4 +182,14 @@ public final class KiemHlvAi {
         Kiem.dung("dich vu bot khong chua dia chi WAF", !unit.contains("51.79."));
         Kiem.dung("dich vu bot: ma nguon co", Files.isRegularFile(Paths.get("../tools/pokemon/hlv_ai/DichVuHlvAi.java")));
     }
+
+    public static void main(final String[] args) {
+        try {
+            com.htbb.dulieu.DuLieuSql.napTuDumpDayDu();
+        } catch (final Throwable ignored) {
+        }
+        chay();
+        final int code = Kiem.tongKet();
+        System.exit(code);
+    }
 }
