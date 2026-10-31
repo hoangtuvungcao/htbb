@@ -236,13 +236,17 @@ public final class HopHoiSinh extends Dialog {
         int dau = Bang.caoDauTam(false) + ChuDe.DEM;
         // một cột; không đủ cao (màn ngang thấp: 6 lựa chọn) thì 2 cột - mọi lựa chọn (cả "Về Trung tâm") luôn thấy
         // thứ tự thử: 1 cột (chi tiết 2 dòng), 2 cột (2 dòng), 1 cột (1 dòng), 2 cột (1 dòng) - J2ME 320x240 thấp
-        for (int lan = 0; lan < 4; lan++) {
+        // 31/10/2026: màn dọc hẹp (J2ME 240x320): 2 cột chỉ còn ~100 px / ô -> chữ "Dùng Thuốc hồi.." -> thử 1 cột chi tiết
+        // 1 dòng (mô tả 2 dòng) TRƯỚC 2 cột
+        boolean hep = Canvas.w < 300;
+        for (int thu = 0; thu < 4; thu++) {
+            int lan = hep && thu == 1 ? 2 : hep && thu == 2 ? 1 : thu;
             int cot = lan == 0 || lan == 2 ? 1 : 2, md = lan < 2 ? 2 : 1;
             int wT = Math.min(Bang.phai() - Bang.trai() - 16, cot == 1 ? (ChuDe.dt() ? 520 : 420) : (ChuDe.dt() ? 760 : 620));
             wT = Math.min(wT, Bang.oTam(wT, 0)[2]);   // tấm bị kẹp <= 80 % vùng an toàn: ngắt dòng theo bề ngang thật
             int wNoi = wT - 2 * ChuDe.DEM - 8;
             int wO = (wNoi - (cot - 1) * k) / cot;
-            String[] mt = ChuDe.ngat(this.moTaGoc, ChuDe.PHU, wNoi, 3);
+            String[] mt = ChuDe.ngat(this.moTaGoc, ChuDe.PHU, wNoi, hep && cot == 1 && md == 1 ? 1 : 3);
             int hMoTa = mt.length * phu + (mt.length > 0 ? k : 0);
             String[][] d2 = new String[this.n][];
             int hh = VungCham.MIN;
@@ -255,7 +259,7 @@ public final class HopHoiSinh extends Dialog {
             }
             int hang = (this.n + cot - 1) / cot;
             int tong = hMoTa + hang * (hh + k);
-            if (lan < 3 && dau + tong > hMax) {
+            if (thu < 3 && dau + tong > hMax) {
                 continue;
             }
             int[] c = Bang.khungTam(g, wT, Math.min(hMax, dau + tong), this.tieuDe, null, 0, null, new IAction() {

@@ -208,9 +208,9 @@ public final class KhungVao {
         return Math.max(6, Bang.cach());
     }
 
-    /** Cao một ô nhập (TField) trong bảng. */
+    /** Cao một ô nhập (TField) trong bảng: >= cỡ chạm (31/10/2026: trước kẹp 26 px ~ 26 dp ở điện thoại, khó chạm). */
     public static int caoO() {
-        return Math.max(game.render.screen.Screen.ITEM_HEIGHT + 4, Math.min(26, VungCham.MIN));
+        return Math.max(game.render.screen.Screen.ITEM_HEIGHT + 4, VungCham.MIN);
     }
 
     /** Cao dòng nhãn trên ô. */
@@ -244,6 +244,29 @@ public final class KhungVao {
         }
         t.paint(g);
         g.setClip(0, 0, Canvas.w, Canvas.h);
+        return y + t.height;
+    }
+
+    /**
+     * Ô nhập GỌN (31/10/2026, màn ngang thấp: ô cao đủ cỡ chạm thì bảng không còn chỗ cho dòng nhãn): nhãn nằm TRONG ô
+     * (chữ mờ) khi ô trống; trả y dưới ô.
+     */
+    public static int oNhapGon(Graphics g, game.render.screen.TField t, String nhan, int x, int y, int w, boolean loi) {
+        if (nhan.endsWith(":")) {
+            nhan = nhan.substring(0, nhan.length() - 1);
+        }
+        t.x = x;
+        t.y = y;
+        t.width = w;
+        t.height = caoO();
+        if (loi) {
+            GiaoDien.khoi(g, x - 2, y - 2, w + 4, t.height + 4, 4, ChuDe.DO);
+        }
+        t.paint(g);
+        g.setClip(0, 0, Canvas.w, Canvas.h);
+        if (t.getText() == null || t.getText().length() == 0) {
+            ChuDe.chuGiua(g, ChuDe.cat(nhan, ChuDe.PHU, w - 16), x + 9, y, t.height, ChuDe.PHU, ChuDe.CHU_PHU, 0);
+        }
         return y + t.height;
     }
 

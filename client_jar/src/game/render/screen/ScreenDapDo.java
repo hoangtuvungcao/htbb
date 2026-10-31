@@ -17,7 +17,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 import network.Message;
 
-public class ScreenDapDo extends Screen {
+public class ScreenDapDo extends Screen implements game.pokemon.BanRen.Nguon {
     public static ScreenDapDo me;
     public static int wCell;
     public static int hCell;
@@ -46,6 +46,7 @@ public class ScreenDapDo extends Screen {
     Command cmdView;
     Command cmdEp;
     Command cmdContinue;
+    Command cmdDat;
     int cout;
     static ItemInInventory itemSelect;
     int[] xItem;
@@ -141,7 +142,7 @@ public class ScreenDapDo extends Screen {
             this.xTo[0] = this.xItem[0];
             this.xTo[1] = this.xItem[1];
         } else if (type == 1) {
-            this.cmdEp.caption = "Đập";
+            this.cmdEp.caption = "Luyện";
             this.xItem = new int[4];
             this.xTo = new int[4];
             this.yItem = new int[4];
@@ -160,7 +161,7 @@ public class ScreenDapDo extends Screen {
             this.xPopup = (xbg + 44) - 1;
             this.yPopup = ybg + 40;
         } else if (type == 4) {
-            this.cmdEp.caption = "Đập";
+            this.cmdEp.caption = "Thêm dòng";
             this.xItem = new int[3];
             this.xTo = new int[3];
             this.yItem = new int[3];
@@ -205,6 +206,16 @@ public class ScreenDapDo extends Screen {
             this.left = this.cmdEp;
         }
         this.type = type;
+        if (type == 0) {
+            this.cmdEp.caption = "Cộng";
+        }
+        // 31/10/2026: tiêu đề theo kiểu (gói máy chủ -> setSizeCell không đặt tile: trước giữ tiêu đề lần mở trước)
+        this.tile = type == 0 ? "Cộng thuộc tính" : type == 1 ? "Luyện đồ tự động" : type == 2 ? "Khóa đồ thú" : type == 3 ? "Khóa trang bị" : "Thêm dòng";
+        if (!isContinue) {
+            game.pokemon.BanRen.moi();
+        }
+        this.anNutLenh = game.pokemon.BanRen.cham();
+        this.center = game.pokemon.BanRen.cham() ? null : this.cmdDat;
         resetSelect();
         getListGem(true, false);
     }
@@ -271,6 +282,12 @@ public class ScreenDapDo extends Screen {
             public void perform() {
             }
         });
+        this.cmdDat = new Command("Đặt vào", new IAction() {
+            @Override
+            public void perform() {
+                game.pokemon.BanRen.datChon(ScreenDapDo.this);
+            }
+        });
         this.right = this.cmdClose;
         this.center = this.cmdView;
         if (!Canvas.isSmartPhone) {
@@ -332,7 +349,7 @@ public class ScreenDapDo extends Screen {
                         Canvas.startOKDlg("Không thể chọn khi đang trong quá trình luyện tự động.", new IAction() {
                             @Override
                             public void perform() {
-                                ScreenDapDo.this.right.action.perform();
+                                if (ScreenDapDo.this.isShowText) { ScreenDapDo.this.right.action.perform(); }
                                 Canvas.endDlg();
                             }
                         });
@@ -378,7 +395,7 @@ public class ScreenDapDo extends Screen {
                 Canvas.startOKDlg("Không thể chọn khi đang trong quá trình luyện tự động.", new IAction() {
                     @Override
                     public void perform() {
-                        ScreenDapDo.this.right.action.perform();
+                        if (ScreenDapDo.this.isShowText) { ScreenDapDo.this.right.action.perform(); }
                         Canvas.endDlg();
                     }
                 });
@@ -397,7 +414,7 @@ public class ScreenDapDo extends Screen {
                 Canvas.startOKDlg("Không có nguyên liệu.", new IAction() {
                     @Override
                     public void perform() {
-                        ScreenDapDo.this.right.action.perform();
+                        if (ScreenDapDo.this.isShowText) { ScreenDapDo.this.right.action.perform(); }
                         Canvas.endDlg();
                     }
                 });
@@ -428,7 +445,7 @@ public class ScreenDapDo extends Screen {
                                 Canvas.startOKDlg("Chưa đặt đá.", new IAction() {
                                     @Override
                                     public void perform() {
-                                        ScreenDapDo.this.right.action.perform();
+                                        if (ScreenDapDo.this.isShowText) { ScreenDapDo.this.right.action.perform(); }
                                         Canvas.endDlg();
                                     }
                                 });
@@ -443,7 +460,7 @@ public class ScreenDapDo extends Screen {
                     Canvas.startOKDlg(ScreenDapDo.this.type == 4 ? "Bạn chưa chọn bột" : "Bạn chưa chọn đá thuộc tính.", new IAction() {
                         @Override
                         public void perform() {
-                            ScreenDapDo.this.right.action.perform();
+                            if (ScreenDapDo.this.isShowText) { ScreenDapDo.this.right.action.perform(); }
                             Canvas.endDlg();
                         }
                     });
@@ -453,7 +470,7 @@ public class ScreenDapDo extends Screen {
                     Canvas.startOKDlg("Bạn chưa chọn luyện kim dược", new IAction() {
                         @Override
                         public void perform() {
-                            ScreenDapDo.this.right.action.perform();
+                            if (ScreenDapDo.this.isShowText) { ScreenDapDo.this.right.action.perform(); }
                             Canvas.endDlg();
                         }
                     });
@@ -502,14 +519,14 @@ public class ScreenDapDo extends Screen {
                         }
                     }));
                 }
-                Canvas.menu.startAt(menu, 3);
                 Canvas.currentDialog = null;
+                game.pokemon.BanRen.moMenu(menu, "Luyện tới mốc");
                 return;
             }
             Canvas.startOKDlg("Chưa đặt vật phẩm.", new IAction() {
                 @Override
                 public void perform() {
-                    ScreenDapDo.this.right.action.perform();
+                    if (ScreenDapDo.this.isShowText) { ScreenDapDo.this.right.action.perform(); }
                     Canvas.endDlg();
                 }
             });
@@ -635,8 +652,8 @@ public class ScreenDapDo extends Screen {
         }
     }
 
-    @Override
-    public void paint(Graphics g) {
+    /** Bố cục cũ (ô vuông xanh trơn) - trước 31/10/2026; nay game.pokemon.BanRen. */
+    void paintCu(Graphics g) {
         if (this.last != null) {
             this.last.paint(g);
         }
@@ -762,8 +779,7 @@ public class ScreenDapDo extends Screen {
         Font.normalFont[0].drawString(g, this.infoPoup, this.xPopup, y00, 2);
     }
 
-    @Override
-    public void update() {
+    void updateCu() {
         if (this.last != null) {
             this.last.update();
         }
@@ -867,8 +883,7 @@ public class ScreenDapDo extends Screen {
         return false;
     }
 
-    @Override
-    public void updateKey() {
+    void updateKeyCu() {
         if (this.isShowText) {
             if (Canvas.keyPressed[2]) {
                 Canvas.keyPressed[2] = false;
@@ -940,6 +955,224 @@ public class ScreenDapDo extends Screen {
             }
         }
         super.updateKey();
+    }
+
+    // ------------------------------------------------------------------ 31/10/2026: bàn thợ rèn chung (game.pokemon.BanRen)
+
+    @Override
+    public void paint(Graphics g) {
+        if (this.last != null) {
+            this.last.paint(g);
+        }
+        game.pokemon.BanRen.ve(g, this);
+        super.paint(g);
+    }
+
+    @Override
+    public void update() {
+        // thế giới phía sau chạy tiếp nhưng KHÔNG nhận chạm của bàn (trước: chạm bàn = nhân vật đi tới chỗ chạm)
+        boolean c = Canvas.isPointerClick, d = Canvas.isPointerDown;
+        Canvas.isPointerClick = false;
+        Canvas.isPointerDown = false;
+        try {
+            if (this.last != null) {
+                this.last.update();
+            }
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        Canvas.isPointerClick = c;
+        Canvas.isPointerDown = d;
+        updatEp();
+        if (this.timeDelay > 0) {
+            this.timeDelay = (byte) (this.timeDelay - 1);
+        }
+        this.isShowText = false;
+        this.center = game.pokemon.BanRen.cham() ? null : this.cmdDat;
+        super.update();
+    }
+
+    @Override
+    public void updateKey() {
+        game.pokemon.BanRen.phim(this);
+        super.updateKey();
+    }
+
+    public boolean keyPress(int keyCode) {
+        if (Canvas.currentDialog != null || Canvas.menu.showMenu) {
+            return false;
+        }
+        if (keyCode == 27) {
+            this.cmdClose.action.perform();
+            return true;
+        }
+        return false;
+    }
+
+    public String tieuDe() {
+        return this.tile;
+    }
+
+    public int soO() {
+        return this.type == 1 ? 4 : this.type == 4 ? 3 : 2;
+    }
+
+    public String nhanO(int i) {
+        if (i == 0) {
+            return this.type == 2 ? "Đồ thú" : "Trang bị";
+        }
+        switch (this.type) {
+            case 0:
+                return "Đá thuộc tính";
+            case 1:
+                return i == 1 ? "Kim dược" : i == 2 ? "Bảo hiểm" : "May mắn";
+            case 4:
+                return i == 1 ? "Bột" : "Đá tiến giai";
+            default:
+                return "Đá khóa";
+        }
+    }
+
+    public Object monO(int i) {
+        return i == 0 ? (Object) itemSelect : i == 1 ? selectGem : i == 2 ? selectGemBH : selectGemMM;
+    }
+
+    public boolean veO(Graphics g, int i, int x, int y, int s) {
+        return false;
+    }
+
+    public void layRa(int i) {
+        if (this.type == 1 && !isFinishImbue) {
+            game.pokemon.BanRen.bao("Không thể đổi khi đang luyện tự động.");
+            return;
+        }
+        if (i == 0) {
+            itemSelect = null;
+            itemID = (short) -1;
+        } else if (i == 1) {
+            selectGem = null;
+        } else if (i == 2) {
+            selectGemBH = null;
+        } else {
+            selectGemMM = null;
+        }
+    }
+
+    public int tabO(int i) {
+        return i == 0 ? 0 : 1;
+    }
+
+    public Vector ds(int tab) {
+        return tab == 0 ? listItem : vnguyenLieu;
+    }
+
+    public String tenTab(int tab) {
+        if (tab == 0) {
+            return this.type == 2 ? "Đồ thú" : "Trang bị";
+        }
+        return this.type == 1 ? "Nguyên liệu" : this.type == 4 ? "Bột / đá" : "Đá";
+    }
+
+    public String khongDat(Object o) {
+        if (this.type == 1 && !isFinishImbue) {
+            return "Đang luyện tự động - chờ xong.";
+        }
+        if (o instanceof GemTemplate) {
+            GemTemplate gem = (GemTemplate) o;
+            GemTemp g = Res.getGemByID(gem.id);
+            if (this.type == 4 && (g == null || !isBot(g.type) && !isDaTienCap(g.type))) {
+                return "Không dùng được ở đây.";
+            }
+            if (this.type == 1 && !isDaMayMan(gem.id) && !isBH(gem.id) && !isLKD(gem.id)) {
+                return "Không dùng được ở đây.";
+            }
+        }
+        return null;
+    }
+
+    public void dat(Object o) {
+        if (khongDat(o) != null) {
+            return;
+        }
+        if (o instanceof ItemInInventory) {
+            itemSelect = (ItemInInventory) o;
+            return;
+        }
+        if (!(o instanceof GemTemplate)) {
+            return;
+        }
+        GemTemplate gem = (GemTemplate) o;
+        if (this.type == 0 || this.type == 2 || this.type == 3) {
+            selectGem = gem;
+        } else if (this.type == 4) {
+            GemTemp g = Res.getGemByID(gem.id);
+            if (g != null && isBot(g.type)) {
+                selectGem = gem;
+            } else {
+                selectGemBH = gem;
+            }
+        } else if (isDaMayMan(gem.id)) {
+            selectGemMM = gem;
+        } else if (isBH(gem.id)) {
+            selectGemBH = gem;
+        } else if (isLKD(gem.id)) {
+            selectGem = gem;
+        }
+    }
+
+    public String goiY() {
+        if (this.type != 0 && this.isShowPopup && this.infoPoup != null && this.infoPoup.length() > 0) {
+            return this.infoPoup;
+        }
+        if (this.type == 1 && itemSelect != null) {
+            String p = game.pokemon.TrangBiThem.chuPhu(itemSelect.itemID);
+            if (p != null) {
+                return p;
+            }
+        }
+        switch (this.type) {
+            case 0:
+                return "Đặt trang bị và đá thuộc tính để cộng thêm thuộc tính.";
+            case 1:
+                return "Đặt trang bị + luyện kim dược (bảo hiểm, may mắn tuỳ chọn) rồi bấm Luyện.";
+            case 2:
+                return "Đặt đồ thú và đá khóa để khóa đồ thú.";
+            case 3:
+                return "Đặt trang bị và đá khóa để khóa trang bị.";
+            default:
+                return "Đặt trang bị, bột và đá tiến giai để thêm một dòng thuộc tính.";
+        }
+    }
+
+    public String khongLam() {
+        if (this.left != this.cmdEp) {
+            return null;
+        }
+        if (this.type == 1 && !isFinishImbue) {
+            return "Đang luyện..";
+        }
+        if (itemSelect == null) {
+            return this.type == 2 ? "Chưa đặt đồ thú" : "Chưa đặt trang bị";
+        }
+        if (selectGem == null) {
+            return this.type == 1 ? "Chưa đặt luyện kim dược" : this.type == 4 ? "Chưa đặt bột" : "Chưa đặt đá";
+        }
+        if (this.type == 4 && selectGemBH == null) {
+            return "Chưa đặt đá tiến giai";
+        }
+        return null;
+    }
+
+    public Command chinh() {
+        if (this.type == 1) {
+            String nut = itemSelect == null ? null : game.pokemon.TrangBiThem.chuNut(itemSelect.itemID);
+            this.cmdEp.caption = nut != null ? nut : "Luyện";
+        }
+        return this.left;
+    }
+
+    public void dong() {
+        this.cmdClose.action.perform();
     }
 
     public static boolean isBH(int id) {

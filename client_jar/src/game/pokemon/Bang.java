@@ -779,7 +779,7 @@ public final class Bang {
         }
         if (chu != null && chu.length() > 0) {
             int dy = an ? 1 : 0;
-            String c = ChuDe.cat(chu, ChuDe.SO, w - 12);
+            String c = dac(kieu) ? ChuDe.catVien(ChuDe.cat(chu, ChuDe.SO, w - 12), ChuDe.SO, 0xFFFFFF, w - 4) : ChuDe.cat(chu, ChuDe.SO, w - 12);
             if (dac(kieu)) {
                 ChuDe.chuVienGiua(g, c, x + w / 2, y + dy, h, ChuDe.SO, kieu == TAT ? 0xD8D8DE : 0xFFFFFF, ChuDe.VIEN, 2);
             } else {
@@ -849,6 +849,17 @@ public final class Bang {
 
     /** Trạng thái trống: Poké Ball + dòng chính (đậm) + dòng gợi ý (chữ tự xuống dòng). */
     public static void trong(Graphics g, int x, int y, int w, int h, String chinh, String phu) {
+        // 31/10/2026 (J2ME 320x240 tủ đồ trống: dòng gợi ý tràn đáy khung): chỗ thấp thì bỏ Poké Ball, chữ canh giữa khung
+        int hChu = ChuDe.ngat(chinh, ChuDe.NHAN, w - 12, 8).length * ChuDe.cao(ChuDe.NHAN)
+                + (phu == null ? 0 : 2 + ChuDe.ngat(phu, ChuDe.PHU, w - 12, 8).length * ChuDe.cao(ChuDe.PHU));
+        if (h - 8 < hChu + 42) {
+            int yy = y + Math.max(2, (h - hChu) / 2);
+            yy = doan(g, ChuDe.NHAN, chinh, x + 6, yy, w - 12, true, ChuDe.CHU);
+            if (phu != null) {
+                doan(g, ChuDe.PHU, phu, x + 6, yy + 2, w - 12, true, ChuDe.CHU_PHU);
+            }
+            return;
+        }
         int cy = y + h / 2 - 22;
         if (!KhungNro.iconGiua(g, BieuTuong.POKEBALL, x + w / 2, cy, 2, -1)) {
             GiaoDien.pokeBall(g, x + w / 2, cy, 12, 0);

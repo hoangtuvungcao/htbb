@@ -498,7 +498,7 @@ public class ListScr extends Screen {
             } else {
                 string = c.content;
             }
-            String str = string;
+            String str = game.pokemon.GiaoDien.catChu(Font.arialFontW, string, this.w - 14);   // 31/10/2026: đo đúng font vẽ
             Font.arialFontW.drawString(g, str, 7, (i * this.height) + 15, 0);
         }
     }

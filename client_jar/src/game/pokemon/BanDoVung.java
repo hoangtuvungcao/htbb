@@ -225,6 +225,7 @@ public final class BanDoVung {
         for (int i = 0; i < n; i++) {
             int id = ID[v][i];
             boolean khoa = KhoaMap.khoa(id);
+            KHOA_[i] = khoa;
             GiaoDien.khoi(g, VX[i] - 5, VY[i] - 5, 11, 11, 5, GiaoDien.VIEN);
             GiaoDien.khoi(g, VX[i] - 4, VY[i] - 4, 9, 9, 4, i == cur ? GiaoDien.VANG : khoa ? ChuDe.XAM : GiaoDien.DO);
             g.setColor(GiaoDien.TRANG);
@@ -325,9 +326,17 @@ public final class BanDoVung {
         g.setClip(cx0, cy0, cw0, ch0);
     }
 
-    /** Nhãn (x, y, w, h) của điểm i đè chấm / lõi đảo của điểm khác. */
+    /** điểm i đang khoá (ổ khoá vẽ ở góc phải trên chấm) - nhãn né ổ khoá (31/10/2026: J2ME "Vermilion" đè khoá) */
+    private static final boolean[] KHOA_ = new boolean[64];
+
+    /** Nhãn (x, y, w, h) của điểm i đè chấm / lõi đảo của điểm khác, hoặc đè ổ khoá của bất kỳ điểm nào. */
     private static boolean deChamKhac(int x, int y, int w, int h, int i, int n, int r) {
         int k = Math.max(5, r * 2 / 3);
+        for (int j = 0; j < n && j < KHOA_.length; j++) {
+            if (KHOA_[j] && x < VX[j] + 13 && x + w > VX[j] + 3 && y < VY[j] - 3 && y + h > VY[j] - 13) {
+                return true;
+            }
+        }
         for (int j = 0; j < n; j++) {
             if (j != i && x < VX[j] + k && x + w > VX[j] - k && y < VY[j] + k && y + h > VY[j] - k) {
                 return true;
