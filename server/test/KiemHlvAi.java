@@ -181,6 +181,14 @@ public final class KiemHlvAi {
         Kiem.dung("unit systemd dich vu bot: deploy / staging khong tu cai, khong tu bat", !deployCham && unit.contains("ExecStartPre=/bin/sh /opt/htbb/tools/pokemon/hlv_ai/xay.sh"));
         Kiem.dung("dich vu bot khong chua dia chi WAF", !unit.contains("51.79."));
         Kiem.dung("dich vu bot: ma nguon co", Files.isRegularFile(Paths.get("../tools/pokemon/hlv_ai/DichVuHlvAi.java")));
+        // bao loi production 31/10/2026: bot dung o 53,19 trong LANG cho buoc dong co Pallet (#14 / #19) vi dich vu khong
+        // nap bang ten ban do -> id (chi kiem soak nap) -> moi buoc "dung o (x,y) tren <ban do>" lam o ban do dang dung
+        final String nc = doc("../tools/pokemon/hlv_ai/HlvAiNguoiChoi.java");
+        final int vao = nc.indexOf("void vao() throws Exception");
+        final int napTg = nc.indexOf("HoiQuy.napTheGioi(b);", vao);
+        Kiem.dung("bot nap ten ban do (LOAD_THEO_TEN) moi lan vao game, khong chi trong kiem soak",
+                vao > 0 && napTg > vao && nc.indexOf("KichBanCap140.napTen();", napTg) > napTg
+                        && nc.indexOf("KichBanCap140.napTen();", napTg) < nc.indexOf("ngheXaHoi();", napTg));
     }
 
     public static void main(final String[] args) {
