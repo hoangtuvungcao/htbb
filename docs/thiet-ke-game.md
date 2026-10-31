@@ -319,7 +319,8 @@ lại trên stack riêng (người chơi không GM, đồ cửa hàng đúng b�
     - +6 nhanh hơn ≥ 5%, +10 nhanh hơn ≥ 8%;
     - +10 không "một đòn": ≥ 1,2 giây ở vòng xoay nhanh nhất;
     - không gai giữa hai cấp quái kề nhau (chậm hơn ≤ 20%);
-    - 16 Gym 45–180 giây với đồ +0 (mô hình 59–145 giây, đo thật cấp 36–42: 43–136 giây).
+    - 16 Gym 45–180 giây với đồ +0 (mô hình 59–145 giây; đo thật 31/10/2026 Gym Celadon ở cấp 36, đồ +0: cả 5 dòng thắng,
+      64–123 giây).
 - **Quái tinh anh** (khối `sua_quai_tinh_anh.sql`): bảng `data_noi_dung_quai_tinh_anh` (máy chủ đặt `maxhp` / `attack` của
   con tinh anh từ đây) chưa theo hai lần "Tự cân chỉnh" của quái thường. Vì vậy tinh anh cấp 13–59 đánh ×1,32–1,78 quái
   thường (thiết kế ×1,3; Arbok 1.117 so với 627) và có HP ×4,0–4,84. Khối này đưa 46 dòng về đúng ×4 HP / ×1,3 tấn công /
@@ -334,6 +335,12 @@ mỗi con ≥ ×2,5 so với trung tính:
   - bước chính C12.4 (45 Cubone, cấp 23), C25.4 (Palpitoad), C37.5 (Rhydon), C42.3 (Gastrodon), C70.3 / C77.3 / C85.3
     (Claydol / Flygon).
 - Charmander ở CA-09.1 (Golem): gây ×0,7 và nhận ×2.
+- Đo thật ở bãi Gastrodon (bản đồ 23, cấp 72; bước C42.3 "35 Gastrodon" bắt buộc), đồ +0, 5 phút mỗi dòng:
+  - Bulbasaur hạ 8 con, 2,2 giây mỗi con;
+  - Eevee hạ 8 con, 6,1 giây mỗi con;
+  - Squirtle chỉ hạ 2 con, 15,7 giây mỗi con, tốn 8 bình thuốc mỗi con;
+  - Charmander (Nước đánh Lửa ×1,5, 10 đòn để gục) không hạ được con nào và hết 12 bình;
+  - Pichu (×0,3) không hạ được con nào.
 
 Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **chưa sửa**):
 

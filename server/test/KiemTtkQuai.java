@@ -20,16 +20,15 @@ import java.util.TreeMap;
  * Do lai tren stack rieng (bot tools/pokemon/kiem_tai/KichBanDoSuc, cot moi {@code ttk_tran} = giay DANH THUAN moi con, tu
  * don dau toi khi quai guc, khong tinh di tim / di bo / hoi sinh): con so 13-40 / 24-100 giay la cot {@code giay_moi_con} (CA
  * di tim quai, di bo, uong thuoc, guc - bot dung sau 120 don khong ha duoc), KHONG phai TTK. TTK that voi do cua hang +0:
- * 2,6-4 giay o cap 20-40, 5-7 giay o cap 50-85 (bang o docs/thiet-ke-game.md muc 2.4) = dung muc thiet ke 4 / 5 / 6 giay.
+ * 2,2-5 giay o cap 20-50, 2,2-7,4 giay o cap 50-85 (docs/thiet-ke-game.md muc 2.4b) = dung muc thiet ke 4 / 5 / 6 giay.
  * Duong chi so quai (data_monster_lau_dai sau khoi sua_can_bang_cap / sua_can_bang_lop + quai Hoenn 139..174) vi vay GIU
  * NGUYEN; test nay khoa no bang mo hinh TTK da doi chieu voi may chu:
  * <ul>
  *   <li>tan cong nguoi choi = (ChiSoDong.tanCong + vu khi bac cua hang x (1 + % nang cap) + huy hieu + vong co) x 1,125 (do
- *       mua co +0..25% ngau nhien, Map.rand10) x (1 + % giai doan tien hoa) x (1 + diem huan luyen 1/3 vao Tan cong) - lech
- *       so may chu tra (goi chi so) &lt;= 3% o cap 20-50 (do 31/10/2026);</li>
+ *       mua co +0..25% ngau nhien, Map.rand10) x (1 + % giai doan tien hoa) x (1 + diem huan luyen 1/3 vao Tan cong), doi
+ *       chieu so may chu tra (goi chi so, do suc 31/10/2026);</li>
  *   <li>TTK = HP quai / (K x max(5% tan cong, tan cong - thu quai)), K = sat thuong moi giay / don co ban cua vong xoay chieu
- *       do that: 2,5-3,6 (Charmander, cham nhat) .. 4,7-6,2 (Eevee / Bulbasaur). Mo hinh dung K CHAM = 3,0 cho tran tren
- *       (khong dong nao cham hon) va K NHANH = 6,0 cho tran duoi (khong dong nao "mot don").</li>
+ *       do that theo dong ({@link #K_DONG}; Charmander cham nhat); "khong mot don" dung vong xoay nhanh nhat = K x 1,5.</li>
  * </ul>
  * Kiem: moi dong x cap 10..100 x vu khi +0 / +6 / +10 (quai thuong dung cap, trung tinh he); Gym 16 truong Gym (cua so
  * thiet ke 90-120 giay danh mot minh dung cap); quai tinh anh HP x4; khac he cuc doan tren buoc giet bat buoc (bao chu game).
