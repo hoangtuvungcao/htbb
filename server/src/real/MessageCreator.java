@@ -697,7 +697,16 @@ public class MessageCreator {
                 }
                 try {
                     final Char p = CharManager.instance.getCharByCharName(charData.charname);
-                    if (p != null) {
+                    if (p != null && p.getSession() != null && p.getSession() != s) {
+                        // 31/10/2026 (nhat ky: hai client cung tai khoan da nhau ~3 s mot lan): day la cho DA phien cu khi
+                        // tai khoan dang nhap lai (buoc danh sach nhan vat) - truoc da tron (client cu tuong rot mang, tu noi
+                        // lai, da nguoc). Nay gui ly do "dang nhap o thiet bi khac" truoc, da sau ~0,4 s.
+                        p.getSession().dongVoiLyDo(real.cmd.LoginHandler.DANG_NHAP_KHAC, new Runnable() {
+                            public void run() {
+                                CharManager.instance.kickPlayer(p, "createCharListMessage messagecreator");
+                            }
+                        });
+                    } else if (p != null) {
                         CharManager.instance.kickPlayer(p, "createCharListMessage messagecreator");
                     }
                 } catch (final Exception ex) {
