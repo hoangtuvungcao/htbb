@@ -178,11 +178,61 @@ public class MsgDlg extends Dialog {
                 k[4] + r + 2 - lh / 2, game.pokemon.ChuDe.THUONG, game.pokemon.ChuDe.CHU, 0);
     }
 
-    @Override
+    /**
+     * 31/10/2026 (soi giao diện: hộp "Mất kết nối" thật và mọi hộp chữ cũ ở máy cảm ứng = hộp trắng nhỏ + phím mềm góc, không
+     * vùng chạm): tấm chung (Bang.khungTam) - chữ ngắt theo bề ngang tấm, nút khối đủ cỡ chạm theo lệnh trái / giữa / phải.
+     */
+    private void veHop(Graphics g) {
+        this.anNutLenh = true;
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; this.info != null && i < this.info.length; i++) {
+            if (i > 0) {
+                sb.append(' ');
+            }
+            sb.append(this.info[i]);
+        }
+        game.model.Command[] lenh = new game.model.Command[3];
+        int n = 0;
+        game.model.Command[] goc = {this.right, this.center, this.left};
+        for (int i = 0; i < 3; i++) {
+            if (goc[i] != null && goc[i].caption != null && goc[i].caption.length() > 0) {
+                lenh[n++] = goc[i];
+            }
+        }
+        int k = game.pokemon.Bang.cach(), hb = game.pokemon.Bang.caoHang();
+        int wT = Math.min(game.pokemon.Bang.rongTamToiDa(), game.pokemon.ChuDe.dt() ? 460 : 380);
+        String[] d = game.pokemon.ChuDe.ngat(sb.toString(), game.pokemon.ChuDe.THUONG, wT - 2 * game.pokemon.ChuDe.DEM - 16, 10);
+        int lh = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.THUONG);
+        int hT = game.pokemon.Bang.caoDauTam(false) + d.length * lh + k + (n > 0 ? hb + k : 0) + game.pokemon.ChuDe.DEM;
+        int[] c = game.pokemon.Bang.khungTam(g, wT, hT, "Thông báo", null, 0, null, null);
+        int y = c[1];
+        for (int i = 0; i < d.length; i++) {
+            game.pokemon.ChuDe.chu(g, d[i], c[0] + c[2] / 2, y + i * lh, game.pokemon.ChuDe.THUONG, game.pokemon.ChuDe.CHU, 2);
+        }
+        if (n == 0) {
+            return;
+        }
+        int yb = c[1] + c[3] - hb;
+        int wn = (c[2] - (n - 1) * k) / n;
+        for (int i = 0; i < n; i++) {
+            final game.model.Command cm = lenh[i];
+            game.pokemon.Bang.nut(g, c[0] + i * (wn + k), yb, i == n - 1 ? c[2] - i * (wn + k) : wn, hb, cm.caption,
+                    i == n - 1 ? game.pokemon.Bang.XAC_NHAN : game.pokemon.Bang.TRUNG, cm.action == null ? null : new game.model.IAction() {
+                        public void perform() {
+                            cm.action.perform();
+                        }
+                    }, "hop-cu-" + i);
+        }
+    }
+
     public void paint(Graphics g) {
         Canvas.resetTrans(g);
         if (this.isIcon && !this.isUseArr && game.pokemon.MenuNguCanh.bat()) {
             veCho(g);
+            return;
+        }
+        if (!this.isIcon && !this.isUseArr && game.pokemon.MenuNguCanh.bat()) {
+            veHop(g);
             return;
         }
         this.anNutLenh = false;

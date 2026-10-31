@@ -357,6 +357,21 @@ public class KiemHanhTrinhUI {
         chamThat(x, y, ghi);
     }
 
+    /** Chuỗi có đang được vẽ trên màn (một khung ở cỡ gốc). */
+    static boolean dangVeChu(final String chu) throws Exception {
+        game.pokemon.GhiChu.xoa();
+        game.pokemon.GhiChu.bat = true;
+        ChupTrongGame.ve(1920, 1080);
+        game.pokemon.GhiChu.bat = false;
+        for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+            String s = game.pokemon.GhiChu.CS[i];
+            if (s != null && s.contains(chu)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static void chamTheoChu(final String chu) throws Exception {
         // chạm vùng chạm nào chứa chuỗi chữ đã vẽ (nút / hàng menu không tên)
         game.pokemon.GhiChu.xoa();
@@ -822,6 +837,11 @@ public class KiemHanhTrinhUI {
         for (String t : tienTo) {
             for (String x : l) {
                 if (x != null && x.toLowerCase().indexOf(t.toLowerCase()) >= 0) {
+                    // 31/10/2026: thẻ nhiều trang (8 lệnh / trang): lật "Thêm" như ngón tay thật tới trang có lệnh
+                    for (int lat = 0; lat < 4 && !dangVeChu(x); lat++) {
+                        chamTheoChu("Thêm");
+                        ngu(300);
+                    }
                     chamTheoChu(x);
                     ngu(500);
                     return true;

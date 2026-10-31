@@ -244,6 +244,42 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.24 (`BAN=924`: J2ME hết NPE mỗi khung khi bảng mẫu quái gửi lại, lò rèn Machamp làm lại, Tiện ích & PK chạm được, ô đăng nhập 44dp, 14 màn cũ kiểu chung có vùng chạm)
+
+Client `PHIEN_BAN=0.9.24-opentest` (`BAN = 0*10000 + 9*100 + 24`; `MIDlet-Version` 0.9.24) trên main 689b76a9, chạy với
+mọi máy chủ 0.9.15+ (không đổi giao thức). `htbb-server.jar` của main (không build lại khi phát hành) - qua cổng staging
+trước khi lên production.
+
+1. **J2ME hết NPE mỗi khung "aet.R[this.at] is null"** (c2a34131): `Res.monsterTemplates[monster_type]` null (bảng mẫu
+   quái vừa được máy chủ gửi lại - lệnh 26 tạo mảng mới - hoặc id ngoài bảng) làm `Monster.update` / `move` /
+   `setMove` và `BossSalamence.setInfo` ném NullPointerException mỗi khung. Nay đọc mẫu qua `Monster.mauHienTai()` (null
+   khi chưa có / ngoài bảng), quái chưa có mẫu đứng yên và xin lại mẫu như trước.
+2. **Giao diện vòng 2** (58715e93 / 8253f04f): lò rèn Machamp vẽ lại (`game.pokemon.BanRen`: Nghiền bột, Thêm dòng, Luyện
+   đồ tự động, Cộng thuộc tính, Khoá đồ thú / trang bị - tấm gỗ + X, ô có nhãn, chạm ô = lấy ra / mở đúng danh sách, nút
+   chính xám + lý do khi chưa đủ, chip "Trang bị | Đá", màn rộng 2 cột); Menu › Tiện ích & PK là tấm chạm được (hàng
+   >= 48 dp, mũi tên mục con, nút lùi); ô nhập đăng nhập / đăng ký >= 44 dp (trước 26 dp), "Nhớ mật khẩu" / "Quên mật
+   khẩu?" không cắt; lỗi J2ME (chữ viền tràn khung, nhãn bản đồ vùng, hộp gục / hồi sinh 240x320, kênh thế giới dưới
+   khung HP, `ViewInfoScr` vẽ ngoài ảnh ném lỗi trên máy thật, phím mềm cảm ứng có chạm); vòng quay may mắn theo cỡ màn;
+   phủ thêm ~48 màn ít gặp (`ChupTrongGame` PhuTrang2 / PhuTrang3).
+3. **Lò rèn "đá thêm dòng"** (c4234dcd): bỏ chữ "đá tiến giai" (thuật ngữ kiếm hiệp cũ) - `KiemThuatNgu`.
+4. **Giao diện vòng 3** (689b76a9 / 26afc24b): 14 màn cũ về kiểu chung qua `game.pokemon.ManCu` (máy có con trỏ: tấm gỗ
+   + X, hàng nút trong tấm, danh sách / lưới / đoạn chữ chạm được; J2ME bấm phím vẽ như cũ) - Vòng quay may mắn + chọn
+   phần thưởng, Vé số, Hộp may mắn, Cây thần, Cổ vật, Thông tin đội, Đăng ký đội, Hướng dẫn, Kênh thế giới, Top đội /
+   Thông báo / danh sách, Chế độ chọn mục tiêu, hộp chữ cũ `MsgDlg` (Mất kết nối...). Sửa lẻ: Bản đồ vùng nhãn không vừa
+   ra vòng ngoài có đường dẫn về chấm (Vermilion / Fuchsia); HUD PC 21:9 viên AUTO chạm bản đồ nhỏ -> dời sang trái bản
+   đồ nhỏ (KiemChamHud pc21x9); dải tin kênh thế giới PC / APK nằm trong khe dưới biển tên mục tiêu; `ChuDe.cat` nhớ
+   đệm theo bộ chữ (banner J2ME 640x360 không tràn); bảng bản đồ cả map có X + chạm ảnh = đi tới; nút thuốc HUD hết
+   thuốc không đè nhãn; thẻ nhân vật tab 4.
+
+Máy chủ (main 689b76a9) đi cùng: boss lang thang cũ bị động - chỉ đánh người đã đánh nó, lần đầu chỉ cảnh báo (184bbacb).
+
+Kiểm (bản PC phát hành, main 689b76a9): KiemPc 257/0, KiemCapNhat 509/0, KiemBanDoVung 448/0 (+ J2ME 448/0),
+KiemTrungLap 252/0, KiemDiemNhiemVu 51/0, KiemTaoNhanVat 5094/0, KiemChamHud 5715/0, KiemThuatNgu 19/0; ChupTrongGame
+mọi cỡ PC / điện thoại / APK + J2ME 240x320, 320x240, 400x240, 360x640, 640x360 (J2ME 62492/0) - còn
+`phu_xep_hang_tab1` ở apk720x1600d2.25 / apk1080x2340d2.75 (đồng xu của hàng thứ 4 đang cuộn dưới mép danh sách, bị cắt
+khi vẽ; có từ trước gộp vòng 3, chỉ là ghi nhận của bộ kiểm) và `hop_thanh` pc4x3 chập chờn (chạy riêng 2/2 đạt).
+KiemHanhTrinhUI không chạy ở máy build (cần máy chủ game đang chạy - chạy ở cổng staging).
+
 ### Bản 0.9.23 (`BAN=923`: màn chọn máy chủ chỉ còn máy chủ HTBB, Bản đồ vùng, ô túi hiện số lượng vật phẩm cộng dồn)
 
 Client `PHIEN_BAN=0.9.23-opentest` (`BAN = 0*10000 + 9*100 + 23`; `MIDlet-Version` 0.9.23) trên main cb9337cd, chạy với

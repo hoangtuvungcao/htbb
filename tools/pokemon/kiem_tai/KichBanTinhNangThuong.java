@@ -708,7 +708,13 @@ public final class KichBanTinhNangThuong {
             // het hoi chieu: doi duoc
             Thread.sleep(21000);
             r = chonKhu(p, 0);
-            ket("tn_khu.het_hoi_chieu", (Boolean) r[0], "sau 21 giay: doi=" + r[0] + " " + r[1]);
+            if (!(Boolean) r[0] && r[1] != null && ((String) r[1]).contains("hạ gục")) {
+                // quai Cherrygrove danh guc nhan vat dung cho 21 giay o bien khu: may chu chan moi thao tac khi guc (dung luat,
+                // KiemChanKhiGuc) - khong phai loi hoi chieu khu, khong kiem duoc buoc nay lan nay
+                ket("tn_khu.het_hoi_chieu", null, "bi quai danh guc trong luc cho het hoi chieu: " + r[1]);
+            } else {
+                ket("tn_khu.het_hoi_chieu", (Boolean) r[0], "sau 21 giay: doi=" + r[0] + " " + r[1]);
+            }
             // vao lai: vao map hop le, khong ket
             p = KichBanBatThuong.vaoLai(p);
             ket("tn_khu.vao_lai", p.mapId >= 0 && p.hp > 0 || p.mapId >= 0, "map " + p.mapId + " hp " + p.hp);

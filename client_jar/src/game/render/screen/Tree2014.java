@@ -12,6 +12,12 @@ import javax.microedition.lcdui.Graphics;
 import network.Message;
 
 public class Tree2014 extends Screen {
+    /** 31/10/2026: đang chạy updateKey không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_updateKey;
+
+    /** 31/10/2026: đang chạy update không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_update;
+
     public static Tree2014 me;
     public Screen last;
     int[] xTrai;
@@ -296,10 +302,60 @@ public class Tree2014 extends Screen {
         Font.normalFont[0].drawString(g, r[1], x + 16, y, 2);
     }
 
-    @Override
+    static String trangThai(int st) {
+        return st == 0 ? "Xanh - tưới để lớn nhanh" : st == 1 ? "Héo" : st == 2 ? "Chín - thu hoạch được" : "Thu hoạch được";
+    }
+
+    /** 31/10/2026: máy có con trỏ - tấm chung: danh sách quả (chạm = chọn), chi tiết, nút Xem / Tăng tốc / Thu hoạch. */
+    void veCham(Graphics g) {
+        this.anNutLenh = true;
+        ObjTree sel = this.index >= 0 && this.index < this.allTree.size() ? (ObjTree) this.allTree.elementAt(this.index) : null;
+        Command xem = sel == null ? null : new Command("Xem chi tiết", this.cmdView.action);
+        Command viec = sel == null ? null : sel.status == 0 ? this.cmdTangToc : sel.status == 2 || sel.status == 3 ? this.cmdThuHoach : null;
+        int[] c = game.pokemon.ManCu.tam(g, this, this.name == null || this.name.length() == 0 ? "Cây thần" : this.name,
+                game.pokemon.ManCu.viec(this.cmdClose), new Command[]{xem, viec});
+        game.pokemon.ManCu.tiepQuanMenu(this.name);
+        int[][] v = game.pokemon.ManCu.chia(c, 55);
+        final Vector l = this.allTree;
+        game.pokemon.ManCu.danhSach(g, v[0], l.size(), this.index, new game.pokemon.ManCu.Dong() {
+            public String chinh(int i) {
+                return ((ObjTree) l.elementAt(i)).name;
+            }
+
+            public String phu(int i) {
+                return trangThai(((ObjTree) l.elementAt(i)).status);
+            }
+
+            public void cham(int i) {
+                Tree2014.this.index = i;
+                Tree2014.this.isShowText = false;
+            }
+        }, "Cây chưa ra quả");
+        String[] d;
+        int[] k;
+        if (this.isShowText && this.arrShowText != null) {
+            d = this.arrShowText;
+            k = new int[d.length];
+            if (d.length > 0) {
+                k[0] = 1;
+            }
+        } else if (sel != null) {
+            d = new String[]{sel.name, "Trạng thái: " + trangThai(sel.status), "Chạm \"Xem chi tiết\" để xem công dụng."};
+            k = new int[]{1, 0, 0};
+        } else {
+            d = new String[]{"Chọn một quả ở danh sách."};
+            k = new int[]{0};
+        }
+        game.pokemon.ManCu.vanBanPhu(g, v[1], d, k);
+    }
+
     public void paint(Graphics g) {
         if (this.last != null) {
             this.last.paint(g);
+        }
+        if (game.pokemon.ManCu.bat()) {
+            veCham(g);
+            return;
         }
         Res.paintDlgFull(g, this.xDr, this.yDr, this.wCell, this.hCell, 0, this.name == null || this.name.length() == 0 ? "Cây thần" : this.name, false, 0);
         int w0 = Canvas.isSmartPhone && this.wCell == 300 ? this.wTree : this.wCell / 2;
@@ -341,6 +397,19 @@ public class Tree2014 extends Screen {
 
     @Override
     public void update() {
+        if (game.pokemon.ManCu.bat() && !this.boc_update && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_update = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        Tree2014.this.update();
+                    }
+                });
+            } finally {
+                this.boc_update = false;
+            }
+            return;
+        }
         if (this.last != null) {
             this.last.update();
         }
@@ -372,6 +441,19 @@ public class Tree2014 extends Screen {
 
     @Override
     public void updateKey() {
+        if (game.pokemon.ManCu.bat() && !this.boc_updateKey && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_updateKey = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        Tree2014.this.updateKey();
+                    }
+                });
+            } finally {
+                this.boc_updateKey = false;
+            }
+            return;
+        }
         if (this.isShowText && !Canvas.isSmartPhone) {
             updateKeyShowText();
         } else {

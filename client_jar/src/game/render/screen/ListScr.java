@@ -307,6 +307,14 @@ public class ListScr extends Screen {
 
     @Override
     public void updateKey() {
+        if (game.pokemon.ManCu.bat() && (Canvas.isPointerClick || Canvas.isPointerDown)) {
+            game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                public void run() {
+                    ListScr.this.updateKey();
+                }
+            });
+            return;
+        }
         if (this.list == null || this.list.size() == 0) {
             selected = 0;
             super.updateKey(); // chỉ phím mềm (Đóng)
@@ -388,10 +396,60 @@ public class ListScr extends Screen {
         }
     }
 
-    @Override
+    /** 31/10/2026: máy có con trỏ - tấm chung, hàng chạm được (chạm = Chọn), nút Menu khi có việc. */
+    void veCham(Graphics g) {
+        this.anNutLenh = true;
+        boolean coMenu = this.type == 0 || this.type == 1 || this.type == 3 || this.type == 4 || this.type == 5
+                || this.type == 2 && Canvas.gameScr.mainChar.isMaster == 0;
+        int[] c = game.pokemon.ManCu.tam(g, this, this.title == null ? "" : this.title, game.pokemon.ManCu.viec(this.right),
+                coMenu && this.list != null && this.list.size() > 0 ? new Command[]{this.left} : null);
+        game.pokemon.ManCu.tiepQuanMenu(this.title);
+        final Vector l = this.list;
+        game.pokemon.ManCu.danhSach(g, c, l == null ? 0 : l.size(), selected, new game.pokemon.ManCu.Dong() {
+            public String chinh(int i) {
+                Object o = l.elementAt(i);
+                if (o instanceof ClanInfo) {
+                    ClanInfo k = (ClanInfo) o;
+                    return k.name + " - Cấp " + (k.level > -1 ? String.valueOf((int) k.level) : "?");
+                }
+                if (o instanceof ChatInfo) {
+                    return ((ChatInfo) o).name;
+                }
+                Char ac = (Char) o;
+                String chuc = ListScr.this.type == 6 && ac.isMaster < 3 && ListScr.this.nameManager != null ? " - " + ListScr.this.nameManager[ac.isMaster] : "";
+                return ac.name + chuc;
+            }
+
+            public String phu(int i) {
+                Object o = l.elementAt(i);
+                if (o instanceof ClanInfo) {
+                    ClanInfo k = (ClanInfo) o;
+                    return "Đội trưởng " + k.master + " - " + (int) k.members + " thành viên - quỹ " + game.pokemon.TienTe.gon(k.money) + " xu";
+                }
+                if (o instanceof ChatInfo) {
+                    return ((ChatInfo) o).content;
+                }
+                Char ac = (Char) o;
+                return "Cấp " + (ac.level > -1 ? String.valueOf((int) ac.level) : "?") + " - " + game.pokemon.TienTe.chuGia(ac.charXu, ac.luong)
+                        + (ListScr.this.type == 7 ? " - CT " + ac.congTrang + " - LT " + ac.lienTram : "");
+            }
+
+            public void cham(int i) {
+                ListScr.selected = i;
+                if (ListScr.this.center != null && ListScr.this.center.action != null) {
+                    ListScr.this.center.action.perform();
+                }
+            }
+        }, "Chưa có ai ở đây");
+    }
+
     public void paint(Graphics g) {
         if (this.lastScr != null) {
             this.lastScr.paint(g);
+        }
+        if (game.pokemon.ManCu.bat()) {
+            veCham(g);
+            return;
         }
         Canvas.resetTrans(g);
         Res.paintDlgFull(g, 20, 20, this.w, this.h);
