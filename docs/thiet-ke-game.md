@@ -1398,6 +1398,9 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
   phí bếp 0,5% giờ thu nhập + hạt theo bậc (cấp 27: Thuốc xịt ~146 xu thay 1.000 NPC cũ). **Trần ngày** giữ đúng số bình như
   trước: tổng trọng số (giá NPC cũ 100 / 500 / 800 / 50 / 150 mỗi bình, `VuonBerry.TRONG_SO_TRAN`) ≤ ngân sách thuốc thiết kế
   3 giờ (`3 × 12% × thu nhập/giờ`), không tính theo giá NPC mới (nếu tính theo giá mới sẽ chế được gấp ~50 lần).
+  Công thức thuốc thường 4–8 (Thuốc xịt, Nước tinh khiết, Siêu thuốc, Nước khoáng, Thuốc cao cấp - berry + vật liệu nhặt /
+  câu / đào) tính cùng cách (`VuonBerry.laThuocBinh`): 13 / 13 / 26 / 26 / 46 xu một mẻ (tiền hạt của phần berry + phí bếp
+  phần còn lại; vật liệu khác không mua bằng xu) và chung trần ngày theo trọng số với thuốc từ vườn.
 - **Kinh tế vườn** (`server/test/KiemVuonBerry` in bảng): bình thuốc thật không bán NPC được; vật liệu sinh thái đổi ra xu
   **chỉ** qua NPC mua lại (`HeSinhThaiMenu.banNpc` → `ChoSinhThai.npcMua`), trần chung 0,1 giờ / ngày với cá / khoáng; chợ
   người chơi là chuyển tiền (đốt 7%). Mỗi ngày tối đa:

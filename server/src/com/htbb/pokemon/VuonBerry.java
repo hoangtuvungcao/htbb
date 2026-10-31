@@ -149,16 +149,24 @@ public final class VuonBerry {
         return Math.max(1L, tran);
     }
 
-    /** Tien hat cua 1 me {@code ct} o cap (moi hat ra SAN_LUONG berry, lam tron len). */
+    /**
+     * Tien hat cua 1 me {@code ct} o cap (moi hat ra SAN_LUONG berry, lam tron len). Chi tinh nguyen lieu la berry gieo duoc
+     * (cong thuc thuoc 4..8 con dung vat lieu sinh thai khac - nhat / cau / dao, khong mua bang xu).
+     */
     public static long hatMe(final KyNangSong.CongThuc ct, final int cap) {
         long hat = 0;
         for (final int[] nl : ct.nguyenLieu) {
-            hat += giaHat(nl[0], cap) * nl[1];
+            if (chiSo(nl[0]) >= 0) {
+                hat += giaHat(nl[0], cap) * nl[1];
+            }
         }
         return (hat + SAN_LUONG - 1) / SAN_LUONG;
     }
 
-    /** Phi bep 1 me thuoc vuon: phan con lai cua {@link #meMucTieu} sau tien hat (tong = muc tieu, khong theo cap). */
+    /**
+     * Phi bep 1 me thuoc binh ({@link #laThuocBinh}: thuoc vuon 30..34 va cong thuc thuoc 4..8): phan con lai cua
+     * {@link #meMucTieu} sau tien hat (tong = muc tieu, khong theo cap).
+     */
     public static long phiBepThuocVuon(final KyNangSong.CongThuc ct, final int cap) {
         return Math.max(0L, meMucTieu(ct) - hatMe(ct, cap));
     }
@@ -185,7 +193,7 @@ public final class VuonBerry {
 
     /** Tien xu that cua 1 me thuoc tu vuon o cap: hat (moi hat ra SAN_LUONG berry) + phi bep. */
     public static long chiPhiMe(final KyNangSong.CongThuc ct, final int cap) {
-        return hatMe(ct, cap) + (laThuocVuon(ct) ? phiBepThuocVuon(ct, cap) : phiBep(cap));
+        return hatMe(ct, cap) + (laThuocBinh(ct) ? phiBepThuocVuon(ct, cap) : phiBep(cap));
     }
 
     /** Trong so tran ngay cua 1 me (gia NPC cu 10 binh - {@link #TRONG_SO_TRAN}). */
@@ -213,6 +221,14 @@ public final class VuonBerry {
     public static long tranThuocNgay(final int cap) {
         final int c = Math.max(1, Math.min(ThongSoLauDai.CAP_TOI_DA, cap));
         return GIO_NGAN_SACH_THUOC * ThongSoLauDai.xuMoiGio(c) * ThongSoLauDai.TIEU_HAO_PHAN_TRAM / 100L;
+    }
+
+    /**
+     * Cong thuc che thuoc ra binh thuoc that (vat lieu 90..94: thuoc vuon 30..34 va cong thuc 4..8). 01/11/2026: ca nhom tinh
+     * phi bep theo {@link #phiBepThuocVuon} (~65% gia NPC) va chung tran ngay {@link #tranThuocNgay} theo {@link #trongSoMe}.
+     */
+    public static boolean laThuocBinh(final KyNangSong.CongThuc ct) {
+        return ct != null && ct.kyNang == KyNangSong.CHE_THUOC && ct.ra >= 90 && ct.ra <= 94;
     }
 
     public static boolean laThuocVuon(final KyNangSong.CongThuc ct) {
