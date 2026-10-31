@@ -170,6 +170,18 @@ public final class KiemDoiLoaiQuai {
             HeSinhThaiGame.doiLoai(m, krok, golem);
             HeSinhThaiGame.giuChiSo(m, p);
             Kiem.bang("quai hiem tren bai Golem 51: cap 53, chi so duong chuan", "53/" + c53[0] + "/" + c53[1], m.level + "/" + m.maxhp + "/" + m.attack);
+            // luat chenh cap (LiveActor.attackDam) tinh theo cap GOC: Breloom 52 bung phat len 54, nguoi choi cap 49 chenh 3 (khong
+            // phai 5 -> x2). Do suc 31/10/2026: don 2.000-3.200 truoc khi sua.
+            final MonsterTemplate breloom = mau(80, 52, 8780, 1127, 339, 4);
+            final MonsterTemplate p54 = HeSinhThaiGame.mauCongCap(breloom, breloom);
+            final Monster mb = new Monster(null, breloom, 0, 0, 0);
+            HeSinhThaiGame.giuChiSo(mb, p54);
+            HeSinhThaiGame.datCongCap(mb, p54);
+            Kiem.bang("bung phat Breloom 52: cap hien 54, cap tinh chenh cap 52", "54/52", mb.level + "/" + HeSinhThaiGame.capChenh(mb));
+            HeSinhThaiGame.datCongCap(mb, null);
+            Kiem.bang("quai thuong: cap tinh chenh cap = cap hien tai", Integer.valueOf(54), Integer.valueOf(HeSinhThaiGame.capChenh(mb)));
+            Kiem.dung("LiveActor.attackDam: luat chenh cap dung HeSinhThaiGame.capChenh",
+                    KiemTtkQuai.doc("src/real/LiveActor.java").contains("int level = this instanceof Monster ? com.htbb.pokemon.HeSinhThaiGame.capChenh((Monster) this) : this.getLevel();"));
             DuongQuaiChuan.dat(null);
             Kiem.dung("duong chua nap: khong cong cap (null, giu chi so goc)", HeSinhThaiGame.mauCongCap(krok, golem) == null);
             Kiem.bang("cong cap = 2 (< 5: khong kich luat chenh cap x2)", Integer.valueOf(2), Integer.valueOf(HeSinhThaiGame.CONG_CAP_DAC_BIET));
