@@ -1,3 +1,4 @@
+import com.htbb.pokemon.DuongQuaiChuan;
 import com.htbb.pokemon.HeSinhThaiGame;
 
 import java.util.ArrayList;
@@ -5,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import real.Monster;
 import real.MonsterTemplate;
@@ -22,6 +24,10 @@ import real.MonsterTemplate;
  * <p>
  * Sua: loai / hinh / he theo template moi, nhung cap + HP + tan cong + thu + chinh xac / ne + EXP + xu theo mau GOC cua o
  * sinh (HeSinhThaiGame.doiLoai / mauChiSo; NoiDungLauDai va Monster dung mauChiSo).
+ * <p>
+ * Quai hiem / bung phat / ngay cong dong (chu game 31/10/2026): cap goc + 2, HP / tan cong / thu / EXP / xu theo duong quai
+ * chuan o cap do (DuongQuaiChuan, noi suy data_monster_lau_dai + Hoenn) - khong theo chi so goc cu cua loai; thay theo thoi
+ * tiet / gio giu dung cap goc. +2 khong bao gio kich luat chenh cap x2 (LiveActor.attackDam: chenh &gt;= 5).
  */
 public final class KiemDoiLoaiQuai {
 
@@ -33,6 +39,7 @@ public final class KiemDoiLoaiQuai {
         try {
             duLieu();
             ham();
+            congCap();
             nguon();
         } catch (final Throwable e) {
             e.printStackTrace();
@@ -114,12 +121,95 @@ public final class KiemDoiLoaiQuai {
         Kiem.dung("mauChiSo(null) = null", HeSinhThaiGame.mauChiSo(null) == null);
     }
 
+    /** Duong chuan tu du lieu that (nhu data.Database.loadMonsterTemplate): quai dai cap + Hoenn 139..174. */
+    static TreeMap<Integer, int[]> duongThat() {
+        final Map<String, List<Map<String, String>>> b = KiemTtkQuai.trangThaiCuoi();
+        final TreeMap<Integer, int[]> d = new TreeMap<Integer, int[]>();
+        final Map<String, Map<String, String>> mon = new HashMap<String, Map<String, String>>();
+        for (final Map<String, String> m : b.get("data_monster")) {
+            mon.put(m.get("id"), m);
+        }
+        for (final Map<String, String> q : b.get("data_monster_lau_dai")) {
+            final Map<String, String> m = mon.get(q.get("id"));
+            DuongQuaiChuan.them(d, KiemTtkQuai.so(m == null ? q.get("cap") : m.get("level")), KiemTtkQuai.so(q.get("maxhp")),
+                    KiemTtkQuai.so(q.get("attack")), KiemTtkQuai.so(q.get("defent")), KiemTtkQuai.so(q.get("rcvxp")),
+                    KiemTtkQuai.so(q.get("rcvgold")));
+        }
+        for (final Map<String, String> m : b.get("data_monster")) {
+            final int id = KiemTtkQuai.so(m.get("id"));
+            if (id >= 139 && id <= 174 && "1".equals(m.get("isuse"))) {
+                DuongQuaiChuan.them(d, KiemTtkQuai.so(m.get("level")), KiemTtkQuai.so(m.get("maxhp")), KiemTtkQuai.so(m.get("attack")),
+                        KiemTtkQuai.so(m.get("defent")), KiemTtkQuai.so(m.get("rcvxp")), KiemTtkQuai.so(m.get("rcvgold")));
+            }
+        }
+        return d;
+    }
+
+    /** Quai hiem / bung phat / ngay cong dong: cap goc + 2, chi so + thuong theo duong chuan. */
+    static void congCap() {
+        // duong gia: noi suy, hai dau
+        final TreeMap<Integer, int[]> gia = new TreeMap<Integer, int[]>();
+        DuongQuaiChuan.them(gia, 50, 8460, 1071, 314, 5940, 383);
+        DuongQuaiChuan.them(gia, 54, 9110, 1184, 364, 7014, 463);
+        DuongQuaiChuan.dat(gia);
+        try {
+            Kiem.bang("DuongQuaiChuan: noi suy cap 52 (HP lam tron 10)", "8790/1128/339/6477/423",
+                    String.join("/", soChuoi(DuongQuaiChuan.taiCap(52))));
+            Kiem.bang("DuongQuaiChuan: ngoai hai dau lay cap gan nhat", "8460/9110",
+                    DuongQuaiChuan.taiCap(10)[0] + "/" + DuongQuaiChuan.taiCap(99)[0]);
+            final MonsterTemplate golem = mau(74, 51, 8620, 1098, 326, 12);
+            final MonsterTemplate krok = mau(64, 60, 183830, 3053, 720, 8);
+            final MonsterTemplate p = HeSinhThaiGame.mauCongCap(krok, golem);
+            Kiem.bang("mauCongCap: loai / he Krokorok, id mau goc, cap goc + 2 = 53", "mau64/8/74/53",
+                    p.name + "/" + p.he + "/" + p.id + "/" + p.level);
+            final int[] c53 = DuongQuaiChuan.taiCap(53);
+            Kiem.bang("mauCongCap: HP / tan cong / thu / EXP / xu = duong chuan cap 53 (khong phai chi so cu Krokorok 183.830 / 3.053)",
+                    c53[0] + "/" + c53[1] + "/" + c53[2] + "/" + c53[3] + "/" + c53[4],
+                    p.maxhp + "/" + p.attack + "/" + p.defend + "/" + p.rcvXp + "/" + p.rcvGold);
+            final Monster m = new Monster(null, golem, 0, 0, 0);
+            HeSinhThaiGame.doiLoai(m, krok, golem);
+            HeSinhThaiGame.giuChiSo(m, p);
+            Kiem.bang("quai hiem tren bai Golem 51: cap 53, chi so duong chuan", "53/" + c53[0] + "/" + c53[1], m.level + "/" + m.maxhp + "/" + m.attack);
+            DuongQuaiChuan.dat(null);
+            Kiem.dung("duong chua nap: khong cong cap (null, giu chi so goc)", HeSinhThaiGame.mauCongCap(krok, golem) == null);
+            Kiem.bang("cong cap = 2 (< 5: khong kich luat chenh cap x2)", Integer.valueOf(2), Integer.valueOf(HeSinhThaiGame.CONG_CAP_DAC_BIET));
+
+            // du lieu that: moi o sinh co the ra quai hiem / bung phat -> +2 cap chi danh manh hon <= 15%, HP <= 20%
+            final TreeMap<Integer, int[]> that = duongThat();
+            DuongQuaiChuan.dat(that);
+            Kiem.dung("duong chuan that cap 1..100 (" + that.size() + " cap)", that.size() >= 60 && that.firstKey() <= 1 && that.lastKey() >= 100);
+            final List<String> manh = new ArrayList<String>();
+            for (int cap = 10; cap <= 98; cap++) { // cap 1..9: HP quai rat nho (450..1.490), x1,2..1,6 khong dang ke
+                final int[] a = DuongQuaiChuan.taiCap(cap), b = DuongQuaiChuan.taiCap(cap + 2);
+                if (b[1] > 1.15 * a[1] || b[0] > 1.20 * a[0] || b[1] < a[1] || b[0] < a[0]) {
+                    manh.add(cap + String.format(Locale.ROOT, ":tc x%.2f hp x%.2f", b[1] / (double) a[1], b[0] / (double) a[0]));
+                }
+            }
+            Kiem.bang("cap goc 10..98 -> +2 tren duong that: tan cong x1..1,15, HP x1..1,2 (thuong nho, khong lech)", "[]", manh.toString());
+        } finally {
+            DuongQuaiChuan.dat(null);
+        }
+    }
+
+    static String[] soChuoi(final int[] a) {
+        final String[] r = new String[a.length];
+        for (int i = 0; i < a.length; i++) {
+            r[i] = String.valueOf(a[i]);
+        }
+        return r;
+    }
+
     static void nguon() {
         final String hst = KiemTtkQuai.doc("src/com/htbb/pokemon/HeSinhThaiGame.java");
         Kiem.dung("HeSinhThaiGame.khiHoiSinh doi loai qua doiLoai(m, t, mau goc)",
                 hst.contains("doiLoai(m, t, real.Map.monsterTemplates.get(Integer.valueOf(goc)));"));
         Kiem.dung("NoiDungLauDai.khiHoiSinh: HP / tan cong / quai tinh anh theo mauChiSo",
                 KiemTtkQuai.doc("src/real/NoiDungLauDai.java").contains("final MonsterTemplate t = com.htbb.pokemon.HeSinhThaiGame.mauChiSo(m);"));
+        Kiem.dung("cong cap chi cho quai hiem / bung phat / ngay cong dong (thay theo thoi tiet / gio: dacBiet 0, khong cong cap)",
+                hst.contains("congCap = true;") && hst.contains("if (congCap || dacBiet != 0) {")
+                && hst.contains("dacBiet = quaiHiem.contains(c) ? 1 : 0;"));
+        Kiem.dung("mauChiSo uu tien mau cong cap", hst.contains("final MonsterTemplate pc = m == null ? null : PHU_CAP.get(m);"));
+        Kiem.dung("Database.loadMonsterTemplate nap DuongQuaiChuan", KiemTtkQuai.doc("src/data/Database.java").contains("com.htbb.pokemon.DuongQuaiChuan.dat(duong);"));
         final String mo = KiemTtkQuai.doc("src/real/Monster.java");
         Kiem.dung("Monster: EXP khi hoi sinh + xu roi theo mauChiSo", mo.contains("Monster.rcvXpSauGiam(com.htbb.pokemon.HeSinhThaiGame.mauChiSo(this))")
                 && mo.contains("com.htbb.pokemon.HeSinhThaiGame.mauChiSo(this).rcvGold / tileDrop"));

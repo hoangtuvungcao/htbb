@@ -5828,6 +5828,8 @@ public class Database {
             }
             final java.util.Map<Integer, long[]> chiSoQuaiLauDai = com.htbb.pokemon.LauDai.bat()
                     ? DatabaseLauDai.napChiSoQuai() : null;
+            // duong quai thuong chuan theo cap (quai hiem / bung phat cap goc + 2 - HeSinhThaiGame.mauCongCap)
+            final java.util.TreeMap<Integer, int[]> duong = new java.util.TreeMap<Integer, int[]>();
             while (rs.next()) {
                 MonsterTemplate item = new MonsterTemplate();
                 item.id = rs.getInt("id");
@@ -5869,8 +5871,14 @@ public class Database {
                         item.rcvGold = (int) q[4];
                     }
                 }
+                // dong duong chuan: quai dai cap (data_monster_lau_dai) + quai Hoenn nam 2 139..174 (isuse 1)
+                if (chiSoQuaiLauDai != null && (chiSoQuaiLauDai.containsKey(Integer.valueOf(item.id))
+                        || item.id >= 139 && item.id <= 174 && item.typeMons == 1)) {
+                    com.htbb.pokemon.DuongQuaiChuan.them(duong, item.level, item.maxhp, item.attack, item.defend, item.rcvXp, item.rcvGold);
+                }
                 list.put(item.id, item);
             }
+            com.htbb.pokemon.DuongQuaiChuan.dat(duong);
             try {
                 rs.close();
             } catch (Exception ignored) {
