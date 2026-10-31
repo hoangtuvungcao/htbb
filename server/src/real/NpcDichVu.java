@@ -84,6 +84,10 @@ public final class NpcDichVu {
                     bao(p, "Hãy đến gần Kecleon tạp hoá.");
                     return true;
                 }
+                // sua-ho-tong: nhiem vu "Hộ tống Gói hàng ... tới Kecleon" - giao xe hang nhiem vu tai day (HoTongNhiemVuGame)
+                if (HoTongNhiemVuGame.traTaiKecleon(p)) {
+                    return true;
+                }
                 p.sendMessage(MessageCreator.createMsgMenu(VeDichChuyenGame.menuKecleon(p), loai, 0));
                 return true;
             case NPC_ARCANINE:

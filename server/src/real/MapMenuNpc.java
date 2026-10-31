@@ -392,37 +392,9 @@ class MapMenuNpc {
     }
 
     static void doMenuNpcNhanTieu(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
-        if (!openvantieu) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng đang bảo trì", ""));
-        } else {
-            try {
-                Calendar cal = Calendar.getInstance();
-                int ihour = cal.get(11);
-                if ((ihour < 9 || ihour >= 21) && TeamServer.server != 100) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể nhận hàng từ 9h đến 21h hàng ngày", ""));
-                    return;
-                }
-
-                if (player.lvDetail.lv < 40) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chỉ dành cho Pokémon từ cấp độ 40 trở lên", ""));
-                    return;
-                }
-
-                if (player.myCountry != player.inCountry) {
-                    return;
-                }
-
-                if (player.map.mapIDLoadMap != 0 && player.map.mapIDLoadMap != 70 && player.map.mapIDLoadMap != 80) {
-                    return;
-                }
-
-                if (idMenu == 0) {
-                    Char.doInitMonter(player, idOptionMenu);
-                }
-            } catch (Exception var7) {
-                var7.printStackTrace();
-            }
-        }
+        // sua-ho-tong: kiem chung (gio 9h-21h / cap 40 / dung nuoc / lang 0-70-80) + ngoai le cho nguoi dang lam buoc nhiem vu
+        // "ho_tong" nam o real.HoTongNhiemVuGame; moi tu choi deu bao ly do (truoc day khac nuoc / ngoai lang thi im lang).
+        HoTongNhiemVuGame.nhanHang(player, idMenu, idOptionMenu);
     }
 
     static void doMenuNpcDracula(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
