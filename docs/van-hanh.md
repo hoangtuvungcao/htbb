@@ -118,6 +118,29 @@ máy (`vps-db-tai-ve.bat` + `vps-db-nap-vao-local.bat`). Tên máy `htbb-vps` kh
 
 ---
 
+### Lên bản mới: cổng kiểm staging (bắt buộc trước production)
+
+Game server chỉ lên production qua `vps/len-production.sh`, và lệnh đó chỉ chạy khi **cổng kiểm staging DAT** cho đúng
+sha256 jar + SQL trong 24 giờ (chi tiết: [trien-khai.md mục 4.4](trien-khai.md)). Từ 31/10/2026 có hai chế độ, **cả hai
+DAT đều lên production được**; kết quả ký ghi `che_do=nhanh|day_du`:
+
+| Chế độ | Khi nào | Thời gian | Chạy gì |
+|---|---|---|---|
+| `--nhanh` (**mặc định**, cổng chuẩn) | mọi lần lên bản | ~10 phút tổng (làm mới staging ~2 phút + bot ~6–7 phút) | kế hoạch `@nhanh` cuối `tools/pokemon/kiem_tai/hoi_quy.conf`: đăng nhập, bản đồ, người chơi thật mới (đăng ký → vào game → hạ quái → đăng nhập lại), chiến đấu, vật phẩm, xã hội, bất thường tiền / đồ (đủ 11 kịch bản), Pokémon người thường, hỗn loạn 1 phút, cập nhật bản, tải nhẹ — 10 làn song song |
+| `--day-du` | bản lớn, đổi hệ thống Gym / cốt truyện / nhiệm vụ / cổng bản đồ / PvP xếp hạng / đồng hồ ảo, hoặc khi nghi ngờ | ~1 giờ bot | mọi nhóm (`@lan` / `@rieng`) |
+
+```bash
+sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh --jar <jar> --sql <sql>            # nhanh (mặc định)
+sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh --day-du --jar <jar> --sql <sql>   # đầy đủ
+bash tools/phat-hanh/len-tat-ca.sh                  # từ máy dev: build + cổng nhanh + lên production
+bash tools/phat-hanh/len-tat-ca.sh --cong-day-du    # ... với cổng đầy đủ
+```
+
+Giữ nguyên ở cả hai chế độ: chạy lại **một** lần nhóm hỏng vì mục bất định đã biết (`hoi_quy_bat_dinh.txt`; bản rút gọn
+`<nhóm>_nhanhN` dùng chung danh sách của nhóm gốc), staging còn sống sau bot, không Exception / Error mới trong log
+(trừ `vps/staging/loi-bo-qua.txt`), canh kết nối CSDL. `--nhom "…"` (gỡ lỗi) = `DAT_MOT_PHAN`, không lên production
+được. Thử trước trên máy dev: `htbb_cong_cu/kiem_truoc.sh <commit>` (mặc định nhanh, `--day-du` cho đầy đủ).
+
 ## 2. Nhật ký (log)
 
 | Tệp / nguồn | Nội dung |

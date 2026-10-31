@@ -42,7 +42,7 @@ Trên VPS, `/opt/htbb` là bản checkout monorepo này (người dùng hệ th�
 | `xuat_csdl_day_du.sh` | sinh lại phần A (schema mọi bảng + dữ liệu thiết kế, bảng người chơi rỗng) của `sql/htbb.sql` từ CSDL đang chạy, giữ nguyên phần B, để chép về `sql/` (`sudo bash /opt/htbb/vps/xuat_csdl_day_du.sh /tmp/htbb.sql`) |
 | `van_hanh/` | công cụ SQL thao tác tay (không thuộc `sql/htbb.sql`): xoá dữ liệu người chơi (`wipe_player_data.sql`, `wipe_sau_open_test.sql`), thu hồi quà (`thu_hoi_qua_tao_nv.sql`) — **tắt server và sao lưu trước**, không hoàn tác được |
 | `len-production.sh` | **cách duy nhất** thay game production (jar / SQL / web): kiểm cổng kiểm (sha256 jar + sql, chữ ký, ≤ 24 giờ) → sao lưu → báo 62 giây → tắt → `nang_cap_csdl.sh` → jar → bật → sức khoẻ → tóm tắt; tự quay lại jar cũ nếu không lên; cấm thứ Hai 04:00–05:00 trừ `--force` |
-| `staging/` | staging cùng VPS + cổng kiểm — [docs/trien-khai.md mục 4.4](../docs/trien-khai.md): `cai-dat.sh` (một lần: thư mục, bí mật, user MariaDB `htbb_staging`, unit, ufw), `lam-moi.sh` (CSDL từ bản sao lưu mới nhất + SQL + jar ứng viên), `sinh-server-ini.sh`, `kiem-truoc-khi-len.sh` (cổng kiểm: bot hồi quy + log sạch → kết quả ký ở `/var/lib/htbb/cong-kiem/`), `htbb-staging-{game,login}.service`, `loi-bo-qua.txt`, `chung.sh` |
+| `staging/` | staging cùng VPS + cổng kiểm — [docs/trien-khai.md mục 4.4](../docs/trien-khai.md): `cai-dat.sh` (một lần: thư mục, bí mật, user MariaDB `htbb_staging`, unit, ufw), `lam-moi.sh` (CSDL từ bản sao lưu mới nhất + SQL + jar ứng viên), `sinh-server-ini.sh`, `kiem-truoc-khi-len.sh` (cổng kiểm `--nhanh` mặc định ~10 phút / `--day-du` ~1 giờ: bot hồi quy + log sạch → kết quả ký ở `/var/lib/htbb/cong-kiem/`), `htbb-staging-{game,login}.service`, `loi-bo-qua.txt`, `chung.sh` |
 | `theo-doi/bao-cao-ngay.sh` | cron 00:10 — báo cáo bất thường production theo ngày (`/opt/htbb/logs/bao_cao/<ngày>.txt`): Exception, nạp map lặp, kéo vị trí, chặn thao tác, đăng nhập lỗi, GC > 200 ms, nhịp > 100 ms |
 | `win/` | tệp `.bat` xem log, chạy SQL, tải CSDL từ Windows qua SSH — [win/README.md](win/README.md) |
 
@@ -50,6 +50,11 @@ Trên VPS, `/opt/htbb` là bản checkout monorepo này (người dùng hệ th�
 
 **Từ 24/10/2026 game server chỉ lên production qua cổng kiểm** (docs/trien-khai.md mục 4.4):
 `staging/kiem-truoc-khi-len.sh --jar … --sql …` (bot hồi quy trên staging) rồi `len-production.sh --chi-jar | --co-sql`.
+Cổng kiểm có hai chế độ, **cả hai DAT đều lên production được** (kết quả ký ghi `che_do=`):
+`--nhanh` (**mặc định**, cổng chuẩn từ 31/10/2026, ~10 phút từ đầu tới cuối: nhóm bot lõi theo kế hoạch `@nhanh` của
+`tools/pokemon/kiem_tai/hoi_quy.conf`) và `--day-du` (mọi nhóm, ~1 giờ — trước bản lớn / đổi hệ thống hoặc khi nghi ngờ).
+`--nhom "…"` (gỡ lỗi) cho `DAT_MOT_PHAN` — `len-production.sh` từ chối. `tools/phat-hanh/len-tat-ca.sh` dùng cổng nhanh,
+`--cong-day-du` cho cổng đầy đủ.
 Khi đã cài cổng kiểm, `deploy-auto.sh` / `update.sh` / `capnhat.sh` dừng ngay (`HTBB_BO_CONG_KIEM=1` để bỏ qua).
 Đoạn dưới mô tả đường cũ (vẫn dùng cho VPS chưa cài cổng kiểm và cho website).
 

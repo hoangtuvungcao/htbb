@@ -1397,12 +1397,15 @@ public class BotChucNang {
             if (k == null) { ket(t, null, "khong co kich ban nay"); continue; }
             if (!GM && CAN_GM.contains(t)) { ket(t, null, "can quyen GM (-Dgm=0)"); continue; }
             System.out.println("---- " + t);
+            long bdKb = System.currentTimeMillis();
             try {
                 k.chay();
             } catch (Throwable e) {
                 ket(t, false, "ngoai le: " + e);
                 e.printStackTrace(System.out);
             }
+            // thoi gian tung kich ban: can lan cong kiem nhanh (hoi_quy.conf @nhanh) theo so do that
+            System.out.printf("[GIO] %s %ds%n", t, (System.currentTimeMillis() - bdKb) / 1000);
         }
         System.out.printf("=== TONG: PASS %d, FAIL %d, BO QUA %d (%ds) ===%n", nPass, nFail, nBo, (System.currentTimeMillis() - bd) / 1000);
         String ra = System.getProperty("ra");

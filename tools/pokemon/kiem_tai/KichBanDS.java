@@ -458,21 +458,35 @@ class KichBanDS {
             List<Integer> ds = timQuai(b, 0, 200);
             if (ds.isEmpty()) { ket("ky_nang", false, "khong co quai"); return; }
             StringBuilder sb = new StringBuilder("chieu=" + Arrays.toString(b.chieu) + " ");
-            int coCap = 0, gayDam = 0;
+            int coCap = 0, gayDam = 0, lamMoiDs = 0;
             for (int o = 0; o < b.chieu.length && !ds.isEmpty(); o++) {
                 if (b.chieu[o] <= 0) continue;
-                coCap++;
                 int id = ds.get(0);
                 int[] q = b.quai.get(id);
+                // ban do 2 dung chung voi bot lan khac (cong kiem song song): quai trong danh sach co the vua bi ha (hp 0) /
+                // bien mat -> bo, tim lai (toi da 5 lan); khong NPE, khong tinh "khong gay dam" vao quai da chet
+                if (q == null || q[2] <= 0) {
+                    ds.remove(0);
+                    if (ds.isEmpty() && lamMoiDs++ < 5) ds = timQuai(b, 0, 200);
+                    o--;
+                    continue;
+                }
+                coCap++;
                 b.den(2, q[0] / 16, q[1] / 16);
                 b.gui(7, (short) id);
                 b.bom(300);
+                if (b.quai.get(id) == null || b.quai.get(id)[2] <= 0) { // bi bot khac ha trong luc di toi
+                    ds.remove(0); coCap--; o--;
+                    if (ds.isEmpty() && lamMoiDs++ < 5) ds = timQuai(b, 0, 200);
+                    continue;
+                }
                 int h0 = b.quai.get(id)[2];
                 b.gui(9, (short) id, (byte) o);
                 b.bom(500);
                 b.gui(7, (short) id);
                 b.bom(300);
-                int h1 = b.quai.get(id)[2];
+                int[] q1 = b.quai.get(id);
+                int h1 = q1 == null ? 0 : q1[2];
                 if (h1 < h0) gayDam++;
                 sb.append("o").append(o).append(":").append(h0).append("->").append(h1).append(' ');
                 if (h1 <= 0) { ds.remove(0); }
@@ -481,6 +495,7 @@ class KichBanDS {
             // hoi chieu: 5 goi lien tiep cung o 0 trong 100ms (ha cap 3 de quai khong chet ngay)
             b.gm("slv " + b.ten + " 3 0", 800);
             ds = timQuai(b, 0, 200);
+            while (!ds.isEmpty() && (b.quai.get(ds.get(0)) == null || b.quai.get(ds.get(0))[2] <= 0)) ds.remove(0); // quai vua bi bot khac ha
             if (!ds.isEmpty()) {
                 int[] qq = b.quai.get(ds.get(0));
                 b.den(2, qq[0] / 16, qq[1] / 16);
