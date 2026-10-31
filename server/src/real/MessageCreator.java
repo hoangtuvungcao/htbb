@@ -896,7 +896,7 @@ public class MessageCreator {
                 m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(Map.gemTemplate[l].name));
                 m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(Map.gemTemplate[l].decript));
                 m.dos.writeByte(Map.gemTemplate[l].type);
-                m.dos.writeByte(Map.gemTemplate[l].banDuoc() ? Map.gemTemplate[l].sell : 0); // GemTemplate.banDuoc
+                m.dos.writeByte(Map.gemTemplate[l].sell);
                 m.dos.writeByte(Map.gemTemplate[l].ep);
                 m.dos.writeByte(Map.gemTemplate[l].typeMoney);
             }

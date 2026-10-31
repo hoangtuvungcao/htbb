@@ -157,7 +157,7 @@ public final class CuaHangLauDai {
                     b.append("xu");
                     break;
                 case 1:
-                    b.append("lượng khoá");
+                    b.append("lượng khoá (hoặc lượng)"); // thieu luong khoa thi tru luong cung so (chu game 31/10/2026)
                     break;
                 case 2:
                     final ItemTemplates t = Map.itemTemplates.get(5).get(Integer.valueOf((int) c[1]));
@@ -229,7 +229,14 @@ public final class CuaHangLauDai {
         if (gh > 0 && !DatabaseLauDai.tangMuaTuan(p.charDBID, ID_TUAN + idDong, LauDaiNhanVat.tuanNay(), gh)) {
             return "Đã đổi đủ " + gh + " lần trong tuần này.";
         }
-        final boolean ok = p.truNeuDu(() -> du(p, chi), () -> tru(p, chi));
+        // Gia luong khoa: tru luong khoa truoc; thieu thi tru LUONG cung so (luong nap mua duoc moi thu luong khoa mua
+        // duoc), do mua bang luong KHONG khoa. Moi lan thu la MOT khoi Char.truNeuDu.
+        boolean ok = p.truNeuDu(() -> du(p, chi, false), () -> tru(p, chi, false));
+        boolean traLuong = false;
+        if (!ok && coLuongKhoa(chi)) {
+            ok = p.truNeuDu(() -> du(p, chi, true), () -> tru(p, chi, true));
+            traLuong = ok;
+        }
         if (!ok) {
             if (gh > 0) {
                 // luot tuan da dem o tren: khong tru duoc thi tra lai (truoc 31/10/2026 thieu tien van mat luot)
@@ -237,16 +244,27 @@ public final class CuaHangLauDai {
             }
             return "Không đủ: " + moTaChiPhi((String) r[3]) + ".";
         }
-        phat(p, thuong);
+        phat(p, thuong, !traLuong);
         try {
-            Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "cua hang lau dai " + idDong + ": " + r[3] + " -> " + r[4],
-                    "cuahanglaudai");
+            Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "cua hang lau dai " + idDong + ": " + r[3] + " -> " + r[4]
+                    + (traLuong ? " (tra bang luong)" : ""), "cuahanglaudai");
         } catch (final Exception ignored) {
         }
-        return "Đã nhận: " + r[2] + ".";
+        return "Đã nhận: " + r[2] + (traLuong ? " (trừ lượng vì thiếu lượng khoá, đồ không khoá)." : ".");
     }
 
-    static boolean du(final Char p, final List<long[]> chi) {
+    /** Chi phi co phan luong khoa (dong Kecleon). */
+    static boolean coLuongKhoa(final List<long[]> chi) {
+        for (final long[] c : chi) {
+            if (c[0] == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** @param bangLuong phan luong khoa tra bang LUONG (luong mo) cung so. */
+    static boolean du(final Char p, final List<long[]> chi, final boolean bangLuong) {
         for (final long[] c : chi) {
             switch ((int) c[0]) {
                 case 0:
@@ -255,7 +273,7 @@ public final class CuaHangLauDai {
                     }
                     break;
                 case 1:
-                    if (p.getLuongLock() < c[2]) {
+                    if ((bangLuong ? p.getLuong() : p.getLuongLock()) < c[2]) {
                         return false;
                     }
                     break;
@@ -279,7 +297,7 @@ public final class CuaHangLauDai {
         return true;
     }
 
-    static void tru(final Char p, final List<long[]> chi) {
+    static void tru(final Char p, final List<long[]> chi, final boolean bangLuong) {
         for (final long[] c : chi) {
             final int id = (int) c[1];
             int n = (int) c[2];
@@ -288,7 +306,11 @@ public final class CuaHangLauDai {
                     p.subXu(c[2], false, "cua hang lau dai");
                     break;
                 case 1:
-                    p.subLuongLock(c[2]);
+                    if (bangLuong) {
+                        p.subLuong(c[2]);
+                    } else {
+                        p.subLuongLock(c[2]);
+                    }
                     break;
                 case 2:
                     VatPhamDungLauDai.truItem(p, id, n);
@@ -305,7 +327,8 @@ public final class CuaHangLauDai {
         }
     }
 
-    static void phat(final Char p, final List<int[]> thuong) {
+    /** @param khoa do ra khoa (tra bang luong khoa / vat pham) hay khong (tra bang luong). */
+    static void phat(final Char p, final List<int[]> thuong, final boolean khoa) {
         for (final int[] t : thuong) {
             try {
                 if (t[0] == 1) {
@@ -318,14 +341,14 @@ public final class CuaHangLauDai {
                         continue;
                     }
                     if (tp.type == 28) {
-                        Char.createItemSoLuong(t[1], t[2], p);
+                        Char.createItemSoLuong(t[1], t[2], p, khoa);
                     } else {
                         for (int k = 0; k < t[2]; k++) {
                             final Item it = Map.dropItemByIdTemplate(p.inCountry, t[1]); // chi so theo template (nhu NhiemVuEngine)
                             if (it != null) {
                                 it.id = p.getIDItem();
                                 it.owner = p.charDBID;
-                                it.lock = 1;
+                                it.lock = (byte) (khoa ? 1 : 0);
                                 p.iItems.add(it);
                             }
                         }

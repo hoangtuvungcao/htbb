@@ -1569,16 +1569,13 @@ public class OfflineMap extends Map {
                   continue;   // id ngoc sai (goi tin sai): bo qua
                }
                GemTemplate g = gemTemplate[id];
-               if (!g.banDuoc()) {
-                  continue; // dong ngung ban (vd luong -> nguyen lieu khi sv.lau_dai): khong chan ca don mua
-               }
                if (g.typeMoney == 0
                      && (long)(g.getPrice(isSale) + (maptrongthanh ? taxOfClan[player.inCountry] * g.getPrice(isSale) / 100 : 0)) > player.getxu()
                   || g.typeMoney == 1 && g.getPrice(isSale) > player.getLuong()) {
                   break;
                }
 
-               if (g.banDuoc()) { // luong -> do / nguyen lieu ngung ban khi sv.lau_dai (GemTemplate.banDuoc)
+               if (g.sell != 0) {
                   if (player.isFullInventory() && !player.hadGemItem(id)) {
                      break;
                   }
@@ -1676,14 +1673,6 @@ public class OfflineMap extends Map {
       return idTemplate >= 630 && idTemplate <= 638;
    }
 
-   /**
-    * Trang bi co chi so ban bang LUONG o NPC 24 (214..263: Than lua / Hat giong than / Khan lua / Nuoc than / Nam cham,
-    * thue 3 ngay, 10-80 luong). sv.lau_dai: luong khong mua suc manh (docs/thiet-ke-game.md 9.1 / 9.5) -> ngung ban.
-    */
-   public static boolean doChiSoBangLuongNgungBan(int idTemplate, boolean lauDai) {
-      return lauDai && idTemplate > 213 && idTemplate <= 263;
-   }
-
    public static boolean isBuyTheBaiMuaban(int idTemplate) {
       return idTemplate == 675;
    }
@@ -1776,10 +1765,6 @@ public class OfflineMap extends Map {
                            }
                         }
 
-                        if (isOk && doChiSoBangLuongNgungBan(var32, com.htbb.pokemon.LauDai.bat())) {
-                           player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này đã ngừng bán (không mua trang bị bằng lượng).", ""));
-                           continue;
-                        }
                         if (isOk && !NpcTinhBanDo.banTaiCho(player, var32)) {
                            // dung danh sach trang nhung NPC dang dung canh khong ban mon nay (vd giap Indigo o Pewter)
                            player.sendMessage(MessageCreator.createServerAlertMessage("Món này không bán ở đây. Hãy đến đúng cửa hàng bán món này.", ""));

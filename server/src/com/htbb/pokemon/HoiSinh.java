@@ -379,6 +379,8 @@ public final class HoiSinh {
         public int hpThuocToiDa = 100;
         public long xu;
         public long luongKhoa;
+        /** Luong (mo): thieu luong khoa thi tra bang luong cung so (chu game 31/10/2026). */
+        public long luong;
         /** Ly do cam hoi sinh tai cho (null = duoc). */
         public String camTaiCho;
         /** Co dong doi o gan con song mang vat pham hoi sinh. */
@@ -477,8 +479,11 @@ public final class HoiSinh {
                     cam != null ? cam : (t.xu < px ? "Thiếu " + so(px - t.xu) + " xu." : null), cho, px));
             final int pl = phiLuongKhoa(c, t.lan);
             if (pl > 0) {
-                ds.add(new LuaChon(LC_LUONG_KHOA, "Trả lượng khoá hồi sinh tại chỗ", pl + " lượng khoá · " + c.hpTraPhi + "% HP",
-                        cam != null ? cam : (t.luongKhoa < pl ? "Thiếu " + (pl - t.luongKhoa) + " lượng khoá." : null), cho, pl));
+                // thieu luong khoa thi tru luong cung so (HoiSinhGame, Char.truLuongKhoaRoiLuong)
+                ds.add(new LuaChon(LC_LUONG_KHOA, "Trả lượng khoá hồi sinh tại chỗ",
+                        pl + (t.luongKhoa < pl && t.luong >= pl ? " lượng (thiếu lượng khoá)" : " lượng khoá") + " · " + c.hpTraPhi + "% HP",
+                        cam != null ? cam : (t.luongKhoa < pl && t.luong < pl
+                                ? "Thiếu " + (pl - t.luongKhoa) + " lượng khoá (hoặc " + (pl - t.luong) + " lượng)." : null), cho, pl));
             }
         }
         ds.add(new LuaChon(LC_TRUNG_TAM, "Về Trung tâm Pokémon" + (t.tenVung.isEmpty() ? "" : " (" + t.tenVung + ")"),

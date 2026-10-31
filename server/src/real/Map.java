@@ -7721,17 +7721,6 @@ public class Map implements Runnable {
 
   
 
-    /**
-     * "Shop Đặc Biệt" VIP (all_item_shop_special: Vảy trái tim 100 lượng + 100.000 xu, Rương nguyên liệu 50 lượng, áo
-     * Zoroark / Gardevoir có chỉ số 500 lượng). sv.lau_dai: lượng chỉ mua trang trí / tiện ích, VIP theo nạp đã bỏ
-     * (docs/thiet-ke-game.md 9.1) -> ngừng bán, menu báo rõ thay vì mở cửa hàng.
-     */
-    public static boolean shopVipNgungBan(final boolean lauDai) {
-        return lauDai;
-    }
-
-    public static final String CHU_SHOP_VIP_NGUNG_BAN = "Shop Đặc Biệt (VIP) đã ngừng bán: lượng không mua nguyên liệu / trang bị có chỉ số.";
-
     void doBuyItemShopNew(Char player, Message message) 
     {
         try 
@@ -8205,10 +8194,6 @@ public class Map implements Runnable {
                 }
     
                 int iditem = message.dis.readUnsignedByte();
-                if (type == TYPE_SHOP_NEW_CUA_HANG_VIP && shopVipNgungBan(com.htbb.pokemon.LauDai.bat())) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(CHU_SHOP_VIP_NGUNG_BAN, ""));
-                    return;
-                }
                 if (type == TYPE_SHOP_NEW_CUA_HANG_VIP) {
                     if (iditem < 0 || iditem >= all_item_shop_special.size()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn bán. Hãy mở lại shop.", ""));
@@ -9290,14 +9275,17 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    if (player.getLuong() < requiredGold) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ lượng để nâng cấp", ""));
+                    // Trừ nguyên liệu và lượng trong MỘT bước (trước: getLuong() < giá rồi subLuong riêng -> hai lệnh xen nhau
+                    // nâng được khi chỉ đủ lượng cho một lần, mảnh có thể âm).
+                    final Item nguyenLieuNc = materialItem;
+                    if (!player.truNeuDu(() -> player.getLuong() >= requiredGold && nguyenLieuNc.otherAtt[65] >= requiredFragments,
+                            () -> {
+                                nguyenLieuNc.otherAtt[65] -= requiredFragments;
+                                player.subLuong(requiredGold);
+                            })) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ lượng để nâng cấp: cần " + requiredGold + " lượng.", ""));
                         return;
                     }
-
-                    // Trừ nguyên liệu và lượng
-                    materialItem.otherAtt[65] -= requiredFragments;
-                    player.subLuong(requiredGold);
 
                     // Logic nâng cấp với tỉ lệ 50%
                     if (new Random().nextInt(100) < 50) {
@@ -9514,9 +9502,14 @@ public class Map implements Runnable {
                         return;
                     }
         
-                    // Trừ chi phí
-                    player.subLuong(1);
-                    player.subXu(3000000, false, "tinh luyen");
+                    // Trừ chi phí: 1 lượng + 3.000.000 xu kiểm-và-trừ trong MỘT bước (trước: kiểm ở trên rồi trừ riêng).
+                    if (!player.truNeuDu(() -> player.getLuong() >= 1 && player.getxu() >= 3000000L, () -> {
+                        player.subLuong(1);
+                        player.subXu(3000000, false, "tinh luyen");
+                    })) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Cần 1 lượng và 3.000.000 xu để tinh luyện.", ""));
+                        return;
+                    }
 
                     // Khoa giao dich VINH VIEN ngay khi TIEN HANH tinh luyen LAN DAU (yeu cau
                     // nguoi dung 21/09/2026: "Khi chua tinh luyen thi vu khi thoi trang co the
@@ -9834,7 +9827,8 @@ public class Map implements Runnable {
                     default: giaLuong = 5000; break;
                 }
 
-                if (player.getLuong() < giaLuong) {
+                // Kiem-va-tru nguyen tu TRUOC khi gia han (truoc: getLuong() < gia, gia han, roi moi subLuong).
+                if (!PhiLuong.tru(player, giaLuong)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ " + giaLuong + " lượng để gia hạn", ""));
                     return;
                 }
@@ -9842,8 +9836,6 @@ public class Map implements Runnable {
                 player.itemVukhiThoiTrang.minuteExist += 7 * 24 * 60;
                 // Decrease number of extensions remaining
                 player.itemVukhiThoiTrang.GiaHan = Math.max(0, player.itemVukhiThoiTrang.GiaHan - 1);
-                // Deduct currency cost
-                player.subLuong((long)giaLuong);
 
                 // Gửi lại thông tin hành trang để client cập nhật số lượng lượng mới
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -10948,6 +10940,38 @@ public class Map implements Runnable {
         }
     }
 
+    /** Hop banh dac biet Trung Thu: moi hop {@link #BANH_MOI_HOP_DAC_BIET} banh nuong + chung ay banh deo + {@link #LUONG_MOI_HOP_DAC_BIET} luong. */
+    public static final int BANH_MOI_HOP_DAC_BIET = 5;
+    public static final int LUONG_MOI_HOP_DAC_BIET = 5;
+
+    /**
+     * Trung Thu 2026: hop dac biet chi con can 5 banh nuong + 5 banh deo (truoc la 10+10) - MOT cong thuc cho moi duong
+     * nhap so luong (truoc 31/10/2026: Map 5+5, ban sao trong doProcessInputTextHalloWeen2016 va MapNhapText 10+10).
+     * Kiem-va-tru luong + banh trong MOT khoi Char.truNeuDu. @return true neu da doi.
+     */
+    static boolean doiHopBanhDacBiet(final Char player, final long sl) {
+        final long banh = sl * BANH_MOI_HOP_DAC_BIET;
+        final long luong = sl * LUONG_MOI_HOP_DAC_BIET;
+        if (!player.truNeuDu(
+                () -> (long) player.getLuong() >= luong && (long) player.potions[125] >= banh && (long) player.potions[124] >= banh,
+                () -> {
+                    player.subLuong(luong);
+                    player.potions[125] = (int) ((long) player.potions[125] - banh);
+                    player.potions[124] = (int) ((long) player.potions[124] - banh);
+                    player.potions[134] = (int) ((long) player.potions[134] + sl);
+                })) {
+            if ((long) player.getLuong() < luong) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ " + luong + " lượng", ""));
+            } else if ((long) player.potions[125] < banh) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ " + banh + " bánh nướng", ""));
+            } else {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ " + banh + " bánh dẻo", ""));
+            }
+            return false;
+        }
+        return true;
+    }
+
     public void doProcessInputTextTrungThu(Char player, int idActor, int idMenu, String text) {
         try {
             if (idActor == -32018) {
@@ -10960,27 +10984,9 @@ public class Map implements Runnable {
                     return;
                 }
 
-                if ((long) player.getLuong() < sl * 5L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+                if (!doiHopBanhDacBiet(player, sl)) {
                     return;
                 }
-
-                // Trung Thu 2026: hop dac biet chi con can 5 banh nuong + 5 banh deo (truoc
-                // la 10+10) cho moi hop, theo dung cong thuc moi.
-                if ((long) player.potions[125] < sl * 5L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
-                    return;
-                }
-
-                if ((long) player.potions[124] < sl * 5L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
-                    return;
-                }
-
-                player.subLuong(sl * 5L);
-                player.potions[125] = (int) ((long) player.potions[125] - sl * 5L);
-                player.potions[124] = (int) ((long) player.potions[124] - sl * 5L);
-                player.potions[134] = (int) ((long) player.potions[134] + sl);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.charname, "doi  " + sl + " hop banh db", "banhdb");
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã đổi được " + sl + " hộp bánh đặc biệt", ""));
@@ -11102,38 +11108,11 @@ public class Map implements Runnable {
     public void doProcessInputTextHalloWeen2016(Char player, int idActor, int idMenu, String text) {
         try {
             if (idActor == -32018) {
-                if (Char.isFinishAllSuKienTrungThul2016()) {
-                    return;
-                }
-
-                long sl = (long) Integer.parseInt(text.trim());
-                if (sl <= 0L || sl > 2000000000L) {
-                    return;
-                }
-
-                if ((long) player.getLuong() < sl * 5L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
-                    return;
-                }
-
-                if ((long) player.potions[125] < sl * 10L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
-                    return;
-                }
-
-                if ((long) player.potions[124] < sl * 10L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
-                    return;
-                }
-
-                player.subLuong(sl * 5L);
-                player.potions[125] = (int) ((long) player.potions[125] - sl * 10L);
-                player.potions[124] = (int) ((long) player.potions[124] - sl * 10L);
-                player.potions[134] = (int) ((long) player.potions[134] + sl);
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                Database.instance.saveOrtherLog("", player.charname, "doi  " + sl + " hop banh db", "banhdb");
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã đổi được " + sl + " hộp bánh đặc biệt", ""));
-                Database.instance.saveLogThongKeChiTieu("hop dac biet", 0, (int) sl, sl * 5L, "luong");
+                // Halloween khong co o nhap -32018. Truoc 31/10/2026 day la BAN SAO hop banh dac biet TRUNG THU (10+10,
+                // kiem co Trung Thu): MapNhapText goi ca doProcessInputTextTrungThu lan ham nay cho cung goi tin, nen khi
+                // hai co cung chua ket thuc mot lan nhap bi doi HAI LAN (5+5 roi 10+10). Hop banh chi doi o
+                // doProcessInputTextTrungThu (doiHopBanhDacBiet); -32018 cua dau gia Black Friday cung khong roi vao day.
+                return;
             } else if (idActor == -32017) {
                 if (Char.isFinishAllSuKienHaloween2016()) {
                     return;
@@ -16193,8 +16172,8 @@ public class Map implements Runnable {
                         // Cac chuoi khac con dinh loi nay: xem MapChat "BẬT"/"TẮT",
                         // MapXuLyLenh "TOP ĐẠI GIA"/"TOP CAO THỦ"/"TOP BANG HỘI", Pet "ĐÃ HẾT HẠN".
                         final String[] menuHoaKyLan = item.getTemplate().idItemUpLevel > -1
-                                ? new String[]{"Sử dụng", "Nâng cấp", "ảo hóa"}
-                                : new String[]{"Sử dụng", "ảo hóa"};
+                                ? new String[]{"Sử dụng", "Nâng cấp", Char.mucMenuAoHoaHoaKyLan()}
+                                : new String[]{"Sử dụng", Char.mucMenuAoHoaHoaKyLan()}; // hien gia (31/10/2026)
                         player.sendMessage(MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0));
                         return;
                     }

@@ -19,8 +19,9 @@ import real.TienShopDacBiet;
  * <ul>
  * <li>Goi 25: client cu -&gt; mo ta dong luong khoa mo dau "[Lượng khoá] "; client &gt;= TienShopDacBiet.BAN_CLIENT -&gt;
  * mo ta nguyen + phan noi them {u8 n, u8 id...}; goi phat lai (session null) -&gt; nhan.</li>
- * <li>Mua (lenh 85 that): thieu luong khoa, du luong -&gt; tu choi "Không đủ lượng khoá: cần X, đang có Y.", KHONG tru
- * luong; du -&gt; tru luong khoa, "Đã mua ...: trừ X lượng khoá, còn Y."; dong luong thuong van tru luong.</li>
+ * <li>Mua (lenh 85 that): du luong khoa -&gt; tru luong khoa, "Đã mua ...: trừ X lượng khoá, còn Y.", do khoa; thieu luong
+ * khoa nhung du luong (chu game 31/10/2026) -&gt; tru LUONG cung gia, do KHONG khoa, bao ro; thieu ca hai -&gt; tu choi
+ * "Không đủ lượng khoá hoặc lượng: ..."; dong luong thuong van tru luong.</li>
  * </ul>
  */
 public final class KiemLuongKhoaShop {
@@ -71,10 +72,17 @@ public final class KiemLuongKhoaShop {
         Kiem.dung("tien_moi=2 (id 0, 2) -> luong khoa", TienShopDacBiet.traLuongKhoa(0) && TienShopDacBiet.traLuongKhoa(2));
         Kiem.dung("do khoa 116..128/150/176 -> luong khoa", TienShopDacBiet.traLuongKhoa(120) && TienShopDacBiet.traLuongKhoa(176));
         Kiem.sai("dong luong thuong (id 10) khong phai luong khoa", TienShopDacBiet.traLuongKhoa(10));
-        Kiem.bang("client cu: mo ta co nhan", "[Lượng khoá] Hồi phục 1500 hp", TienShopDacBiet.moTa(real.Map.shop[1], false));
-        Kiem.bang("client cu: mo ta rong -> nhan + cau day du", "[Lượng khoá] Giá tính bằng lượng khoá.", TienShopDacBiet.moTa(real.Map.shop[3], false));
+        Kiem.bang("client cu: mo ta co nhan + ghi chu tra luong", "[Lượng khoá] Hồi phục 1500 hp" + TienShopDacBiet.GHI_CHU_TRA_LUONG,
+                TienShopDacBiet.moTa(real.Map.shop[1], false));
+        Kiem.bang("client cu: mo ta rong -> nhan + cau day du", "[Lượng khoá] Giá tính bằng lượng khoá." + TienShopDacBiet.GHI_CHU_TRA_LUONG,
+                TienShopDacBiet.moTa(real.Map.shop[3], false));
         Kiem.bang("client cu: dong luong khong doi", "Giảm trừ 100 điểm PK", TienShopDacBiet.moTa(real.Map.shop[2], false));
-        Kiem.bang("client moi: mo ta nguyen", "Hồi phục 1500 hp", TienShopDacBiet.moTa(real.Map.shop[1], true));
+        Kiem.bang("client moi: mo ta + ghi chu tra luong (khong nhan)", "Hồi phục 1500 hp" + TienShopDacBiet.GHI_CHU_TRA_LUONG,
+                TienShopDacBiet.moTa(real.Map.shop[1], true));
+        Kiem.bang("bao thieu ca hai", "Không đủ lượng khoá hoặc lượng: cần 30, đang có 12 lượng khoá, 5 lượng.",
+                TienShopDacBiet.khongDu(30, 12, 5));
+        Kiem.bang("bao da mua bang luong", "Đã mua Vé giờ vàng: trừ 30 lượng (thiếu lượng khoá), còn 70 lượng. Đồ không khoá.",
+                TienShopDacBiet.daMuaBangLuong("Vé giờ vàng \n - x", 30, 70));
         Kiem.bang("bao thieu", "Không đủ lượng khoá: cần 30, đang có 12.", TienShopDacBiet.khongDu(30, 12));
         Kiem.bang("bao da mua (ten nhieu dong lay dong dau)", "Đã mua Ngọc cấp 4 khoá: trừ 1.500 lượng khoá, còn 0.",
                 TienShopDacBiet.daMua("Ngọc cấp 4 khoá \n - x", 1500, 0));
@@ -93,22 +101,36 @@ public final class KiemLuongKhoaShop {
         Kiem.dung("goi 25 client moi: noi them {3, 0, 2, 120} o cuoi", duoiLa(moi, duoi));
         Kiem.sai("goi 25 client cu: khong noi them", duoiLa(cu, duoi));
         Kiem.bang("goi 25 client moi = cu - nhan (3 dong) + noi them (4 byte)",
-                cu.length - 3 * utf("[Lượng khoá] ").length - utf("Giá tính bằng lượng khoá.").length + 4, moi.length);
+                cu.length - 3 * utf("[Lượng khoá] ").length + 4, moi.length);
     }
 
     static void mua() throws Exception {
         map = new real.Map();
-        // 1. thieu luong khoa, du luong: tu choi, KHONG tru luong
+        // 1. thieu luong khoa, du luong: chu game 31/10/2026 - tru LUONG cung gia, bao ro, luong khoa giu
         Char p = nhanVat();
         p.setLuong(1000);
         p.lockLuong = 5;
         GOI.clear();
         real.doBuySpecialItem.doBuySpecialItem(p, goi(85, 2));
-        Kiem.bang("thieu luong khoa: bao ro", "Không đủ lượng khoá: cần 20, đang có 5.", baoCuoi());
-        Kiem.bang("thieu luong khoa: luong KHONG bi tru", 1000L, (long) p.getLuong());
-        Kiem.bang("thieu luong khoa: luong khoa giu", 5L, (long) p.getLuongLock());
-        Kiem.bang("thieu luong khoa: khong nhan thuoc", 0, p.potions[21]);
-        Kiem.bang("thieu luong khoa: khong goi 85", 0, dem(85));
+        Kiem.bang("thieu luong khoa, du luong: bao tru luong",
+                "Đã mua 200 Siêu thuốc hồi máu: trừ 20 lượng (thiếu lượng khoá), còn 980 lượng. Đồ không khoá.", baoCuoi());
+        Kiem.bang("thieu luong khoa, du luong: tru 20 luong", 980L, (long) p.getLuong());
+        Kiem.bang("thieu luong khoa, du luong: luong khoa giu", 5L, (long) p.getLuongLock());
+        Kiem.bang("thieu luong khoa, du luong: nhan thuoc", 200, p.potions[21]);
+        // 1b. thieu ca hai: tu choi, khong tru gi
+        p = nhanVat();
+        p.setLuong(3);
+        p.lockLuong = 5;
+        GOI.clear();
+        real.doBuySpecialItem.doBuySpecialItem(p, goi(85, 2));
+        Kiem.bang("thieu ca hai: bao ro", "Không đủ lượng khoá hoặc lượng: cần 20, đang có 5 lượng khoá, 3 lượng.", baoCuoi());
+        Kiem.bang("thieu ca hai: luong giu", 3L, (long) p.getLuong());
+        Kiem.bang("thieu ca hai: luong khoa giu", 5L, (long) p.getLuongLock());
+        Kiem.bang("thieu ca hai: khong nhan thuoc", 0, p.potions[21]);
+        Kiem.bang("thieu ca hai: khong goi 85", 0, dem(85));
+        p = nhanVat();
+        p.setLuong(1000);
+        p.lockLuong = 5;
         // 2. du luong khoa: tru luong khoa, bao ro
         p.lockLuong = 50;
         GOI.clear();
@@ -117,14 +139,32 @@ public final class KiemLuongKhoaShop {
         Kiem.bang("du luong khoa: luong giu", 1000L, (long) p.getLuong());
         Kiem.bang("du luong khoa: nhan 200 thuoc", 200, p.potions[21]);
         Kiem.bang("du luong khoa: bao da mua", "Đã mua 200 Siêu thuốc hồi máu: trừ 20 lượng khoá, còn 30.", baoCuoi());
-        // 3. do khoa (isItemLock) khong co luong khoa: tu choi ro, khong tru luong
+        // 3. nguyen lieu khoa (isItemLock) khong co luong khoa, du luong: tru luong, nguyen lieu KHONG khoa
         p = nhanVat();
         p.setLuong(1000);
         p.lockLuong = 0;
         GOI.clear();
         real.doBuySpecialItem.doBuySpecialItem(p, goi(85, 120));
-        Kiem.bang("do khoa thieu: bao ro", "Không đủ lượng khoá: cần 15, đang có 0.", baoCuoi());
-        Kiem.bang("do khoa thieu: luong KHONG bi tru", 1000L, (long) p.getLuong());
+        Kiem.bang("nguyen lieu tra bang luong: tru 15 luong", 985L, (long) p.getLuong());
+        Kiem.bang("nguyen lieu tra bang luong: ngoc cap 4 KHONG khoa", 1, p.listGemitem[85]);
+        Kiem.bang("nguyen lieu tra bang luong: khong vao o khoa", 0, p.listGemitemLock[85]);
+        // 3b. du luong khoa: tru luong khoa, nguyen lieu khoa
+        p = nhanVat();
+        p.setLuong(1000);
+        p.lockLuong = 100;
+        GOI.clear();
+        real.doBuySpecialItem.doBuySpecialItem(p, goi(85, 120));
+        Kiem.bang("nguyen lieu tra bang luong khoa: tru 15 luong khoa", 85L, (long) p.getLuongLock());
+        Kiem.bang("nguyen lieu tra bang luong khoa: luong giu", 1000L, (long) p.getLuong());
+        Kiem.bang("nguyen lieu tra bang luong khoa: ngoc vao o khoa", 1, p.listGemitemLock[85]);
+        // 3c. thieu ca hai: tu choi
+        p = nhanVat();
+        p.setLuong(2);
+        p.lockLuong = 0;
+        GOI.clear();
+        real.doBuySpecialItem.doBuySpecialItem(p, goi(85, 120));
+        Kiem.bang("nguyen lieu thieu ca hai: bao ro", "Không đủ lượng khoá hoặc lượng: cần 15, đang có 0 lượng khoá, 2 lượng.", baoCuoi());
+        Kiem.bang("nguyen lieu thieu ca hai: luong giu", 2L, (long) p.getLuong());
         // 4. dong luong thuong: tru luong, khong bao luong khoa
         p = nhanVat();
         p.setLuong(10);

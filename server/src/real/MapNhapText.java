@@ -816,23 +816,8 @@ class MapNhapText {
                     return;
                 }
 
-                if (!player.truNeuDu(
-                        () -> (long) player.getLuong() >= sl * 5L
-                                && (long) player.potions[125] >= sl * 10L
-                                && (long) player.potions[124] >= sl * 10L,
-                        () -> {
-                            player.subLuong(sl * 5L);
-                            player.potions[125] = (int) ((long) player.potions[125] - sl * 10L);
-                            player.potions[124] = (int) ((long) player.potions[124] - sl * 10L);
-                            player.potions[134] = (int) ((long) player.potions[134] + sl);
-                        })) {
-                    if ((long) player.getLuong() < sl * 5L) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
-                    } else if ((long) player.potions[125] < sl * 10L) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
-                    } else {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
-                    }
+                // Cung cong thuc 5+5 voi Map.doProcessInputTextTrungThu (Map.doiHopBanhDacBiet) - truoc day 10+10 o day.
+                if (!Map.doiHopBanhDacBiet(player, sl)) {
                     return;
                 }
 

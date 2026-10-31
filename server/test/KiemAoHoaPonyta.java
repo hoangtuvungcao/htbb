@@ -182,15 +182,16 @@ public final class KiemAoHoaPonyta {
         final String than = s.substring(vt, cuoiHam > vt ? cuoiHam : Math.min(s.length(), vt + 6000));
         Kiem.dung("kiem du hoa thach C2 TRUOC khi tru luong",
                 than.indexOf("< SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN") >= 0
-                && than.indexOf("< SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN") < than.indexOf("this.subLuong("));
+                && than.indexOf("< SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN") < than.indexOf("this.truLuongNeuDu("));
         Kiem.dung("tu choi item co thoi han (minuteExist > 0)", than.contains("if (item.minuteExist > 0) {"));
         Kiem.dung("kiem du GIA_LUONG_AO_HOA_HOA_KY_LAN luong", than.contains("this.getLuong() < GIA_LUONG_AO_HOA_HOA_KY_LAN"));
-        Kiem.dung("tru dung GIA_LUONG_AO_HOA_HOA_KY_LAN luong", than.contains("this.subLuong((long) GIA_LUONG_AO_HOA_HOA_KY_LAN);"));
+        // 31/10/2026: kiem-va-tru nguyen tu (truLuongNeuDu) thay cho subLuong rieng
+        Kiem.dung("tru dung GIA_LUONG_AO_HOA_HOA_KY_LAN luong", than.contains("this.truLuongNeuDu((long) GIA_LUONG_AO_HOA_HOA_KY_LAN)"));
         Kiem.dung("dat moc het han = now + HAN_AO_HOA_HOA_KY_LAN_MS", than.contains("this.timeAoHoaHoaKyLan = System.currentTimeMillis() + HAN_AO_HOA_HOA_KY_LAN_MS;"));
         Kiem.dung("ghi log aohoahkl", than.contains("\"aohoahkl\""));
         // Thu tu: kiem vinh vien va du luong PHAI truoc khi tru tien / mac len nguoi.
         final int viTriKiemThoiHan = than.indexOf("if (item.minuteExist > 0)");
-        final int viTriTruTien = than.indexOf("this.subLuong(");
+        final int viTriTruTien = than.indexOf("this.truLuongNeuDu(");
         Kiem.dung("kiem thoi han truoc khi tru tien", viTriKiemThoiHan >= 0 && viTriTruTien > viTriKiemThoiHan);
 
         // Chot de sai: PHAI dat timeAoHoaHoaKyLan TRUOC khi goi doTrangBiHoaKyLan. Neu
@@ -338,8 +339,11 @@ public final class KiemAoHoaPonyta {
         // "ảo hóa" VIET THUONG - font ban client JAR khong ve duoc chu HOA co dau khoi
         // U+1EA0..U+1EF8, viet "Ảo hóa" thi nguoi choi thay "o hóa" (bao 05/09/2026).
         // Xem test/KiemChuHoaCoDau.java.
-        Kiem.dung("con nang cap duoc (idItemUpLevel > -1) thi menu 3 muc", than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"ảo hóa\"}"));
-        Kiem.dung("da toi da (idItemUpLevel == -1) thi menu chi con 2 muc, an Nang cap", than.contains("new String[]{\"Sử dụng\", \"ảo hóa\"}"));
+        // 31/10/2026: muc "ảo hóa" hien gia (Char.mucMenuAoHoaHoaKyLan, van viet thuong chu dau)
+        Kiem.dung("con nang cap duoc (idItemUpLevel > -1) thi menu 3 muc", than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", Char.mucMenuAoHoaHoaKyLan()}"));
+        Kiem.dung("da toi da (idItemUpLevel == -1) thi menu chi con 2 muc, an Nang cap", than.contains("new String[]{\"Sử dụng\", Char.mucMenuAoHoaHoaKyLan()}"));
+        Kiem.dung("muc ao hoa viet thuong + co gia", real.Char.mucMenuAoHoaHoaKyLan().startsWith("ảo hóa (")
+                && real.Char.mucMenuAoHoaHoaKyLan().contains(real.Char.GIA_LUONG_AO_HOA_HOA_KY_LAN + " lượng"));
         Kiem.dung("re nhanh theo dung item.getTemplate().idItemUpLevel", than.contains("item.getTemplate().idItemUpLevel > -1"));
     }
 
