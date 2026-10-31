@@ -1130,7 +1130,13 @@ final class KichBanCap140 {
                 if (tpl < 0) return "khong biet quai '" + tenQ + "'";
                 int dich = tenBd == null ? -1 : mapTheoTen(b.mapId, tenBd);
                 if (dich < 0) { Set<Integer> co = BotXuyenSuot.QUAI_MAP.get(tpl); if (co != null) for (int x : co) { if (BotXuyenSuot.duong(b.mapId, x) != null) { dich = x; break; } } }
-                if (dich < 0) return "khong co ban do co " + tenQ;
+                if (dich < 0) {
+                    Integer ld = tenBd == null ? null : LOAD_THEO_TEN.get(tenBd.trim());
+                    StringBuilder ly = new StringBuilder();
+                    if (ld != null) for (int mid : mapTim()) if (ld.equals(BotXuyenSuot.LOAD.get(mid)))
+                        ly.append(" map ").append(mid).append(" chan=").append(BotXuyenSuot.dangChan(mid)).append(" duong=").append(BotXuyenSuot.duongUocTinh(b.mapId, mid) != null);
+                    return "khong co ban do co " + tenQ + " (ban do '" + tenBd + "' load " + ld + ":" + ly + ", chan10=" + BotXuyenSuot.dangChan(10) + ")";
+                }
                 if (!toi(dich)) { hop95(0); nhanCuaAiNeuKhoa(); return "khong toi duoc " + tenBd; }
                 int can = Integer.parseInt(mh.group(1));
                 boolean khungGio = Pattern.compile("\\(\\d+:\\d+").matcher(chu).find();

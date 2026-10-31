@@ -714,8 +714,12 @@ public class BotXuyenSuot {
             CHI_ARCANINE.put(21, "Đồng cỏ phía tây");
             CHI_ARCANINE.put(22, "Tàu S.S. Anne");
         }
-        /** Cum Johto mo cap 27..40 (New Bark 10 + 11 / 13 / 14 / 15): chi noi voi 113 / 114 (cap 72+). */
-        static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15));
+        /**
+         * Cum Johto (New Bark 10 + 11 / 13 / 14 / 15, Hang Toi 113 cap 43, Ho Phan No 114 cap 46): khong co duong di bo ve
+         * lang Kanto - di New Bark roi Arcanine "Về làng". Truoc 31/10/2026 thieu 113 / 114: bot guc / het thuoc o Hang Toi
+         * het luot Ve lang mien phi thi ket "khong co duong tu map 113 toi 0" (d090 26 lan / gio).
+         */
+        static final Set<Integer> CUM_JOHTO = new HashSet<>(Arrays.asList(10, 11, 13, 14, 15, 113, 114));
 
         /** Het luot Ve lang mien phi: cach ve lang khac (bot choi: Vé dịch chuyển). */
         boolean veLangKhac() throws Exception {
