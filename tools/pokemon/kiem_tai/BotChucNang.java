@@ -674,7 +674,8 @@ public class BotChucNang {
             // -Dban=N: gui them so ban client sau ma may nhu client that (AutoGuard) - ban >= 902 nhan thong bao nhanh -104
             if (BAN >= 0) gui(1, user, mk, "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + user, BAN);
             else gui(1, user, mk, "2.7.6", "nokia/1/1", "0", "0", "0", (byte) 4, (short) 800, (byte) 0, (byte) 0, "botcn-" + user);
-            cho(b -> b.coLenh(m, 13) || b.coLenh(m, 2) || b.dut, 8000);
+            // 20 giay > io.LogInController.CHO_LOGIN_MS (15 giay): login server cham thi van nhan duoc cau bao cua may chu
+            cho(b -> b.coLenh(m, 13) || b.coLenh(m, 2) || b.dut || b.doiChu(m, 0, "chưa phản hồi") != null, 20000);
             if (coLenh(m, 13)) return null;
             String t = chuTu(m);
             return t.isEmpty() ? (dut ? "server dong ket noi" : "khong tra loi") : t;
