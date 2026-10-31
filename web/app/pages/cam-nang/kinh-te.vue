@@ -58,6 +58,15 @@ const tongDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
       </p>
     </WikiSection>
 
+    <WikiSection id="doi-luong" title="Đổi lượng" lead="NPC Tổng Quản → Đổi lượng (khoá / xu / sàn), hoặc trang Tài khoản trên website. Chỉ dùng lượng thường trong người; lượng khoá không bao giờ đổi ra thứ khác.">
+      <ul class="cham">
+        <li><strong>Lượng → lượng khoá</strong>: 1 <TienTe loai="luong" /> = 1 <TienTe loai="luong_khoa" />, không giới hạn — tiện khi cần thêm lượng khoá mua thuốc, bùa. Một chiều: không đổi ngược lại.</li>
+        <li><strong>Lượng → xu</strong>: một tỉ giá chung cho mọi người, tính lúc 00:00 mỗi ngày (bằng 1% thu nhập 1 giờ ở cấp giữa của người chơi đang hoạt động). Menu luôn hiện "Tỉ giá hôm nay: 1 lượng = … xu" trước khi bạn xác nhận. Mỗi tài khoản đổi tối đa 5.000 lượng / ngày.</li>
+        <li><strong>Sàn đổi lượng ↔ xu</strong>: đặt lệnh bán lượng lấy xu hoặc mua lượng bằng xu với người chơi khác; hệ thống giữ lượng / xu của bạn tới khi khớp, lệnh chưa khớp tự huỷ sau 24 giờ và hoàn lại. Bên mua trả thêm 5% phí bằng xu. Sàn chỉ có <strong>lượng thường</strong> — lượng khoá không bao giờ lên sàn. Cần đủ điều kiện chống clone như chợ (bên dưới).</li>
+        <li>Trên website: Pokémon đang online được đổi ngay; đang offline thì đổi ngay khi bạn vào game (huỷ được trước lúc đó).</li>
+      </ul>
+    </WikiSection>
+
     <WikiSection id="kiem" title="Cách kiếm tiền">
       <ul class="cham">
         <li><strong>Đánh quái gần cấp mình</strong> — nguồn xu chính, tỉ lệ thuận với cấp (xem cột "Xu / giờ" ở <NuxtLink to="/cam-nang/cap-do#bang-exp" class="lien-ket">bảng EXP</NuxtLink>). Chịu giới hạn <NuxtLink to="/cam-nang/cap-do#nang-luong" class="lien-ket">năng lượng huấn luyện</NuxtLink>.</li>

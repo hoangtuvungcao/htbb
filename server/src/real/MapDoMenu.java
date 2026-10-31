@@ -185,6 +185,10 @@ class MapDoMenu {
                 }
                 return;
             }
+            // doi luong: muc "Đổi lượng" (NPC -10) + npc ao -570..-578 (real/DoiLuongGame).
+            if (DoiLuongGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             // nap tien: muc "Cửa hàng & Nạp" (NPC -10) + npc ao -540..-549. Tat co: khong bat gi.
             if (com.htbb.pokemon.NapTienGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;

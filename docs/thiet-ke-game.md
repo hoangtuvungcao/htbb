@@ -1757,8 +1757,41 @@ hồi phục, vùng đánh 4..20 ô, tự hồi sinh (tắt / thuốc thường 
 | Đồng | Giao dịch | Nguồn | Dùng cho |
 |---|---|---|---|
 | **Xu** | được, qua chợ (thuế 6% + phí đăng 1%, đốt) | quái (rơi 30% số lần, theo lệch cấp × năng lượng), nhiệm vụ, ≤ 25% ngân sách sự kiện, phân rã | thuốc, sửa đồ, dịch chuyển, đồ theo bậc, **nâng cấp**, **ngọc hệ**, học chiêu, hồi sinh |
-| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục | bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá |
-| **Lượng** | được (chuyển, phí 5%) | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật | **chỉ** trang trí, tiện ích (đổi tên, mở rộng túi), bản cao cấp tăng tốc |
+| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục; **đổi từ lượng** (1 : 1) | bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá |
+| **Lượng** | được: chuyển ở NPC (phí 5%) và **sàn lượng ↔ xu**; không qua cửa sổ giao dịch | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật; mua trên sàn bằng xu | **chỉ** trang trí, tiện ích (đổi tên, mở rộng túi), bản cao cấp tăng tốc; **đổi ra lượng khoá / xu** (một chiều) |
+
+**Đổi lượng (chủ game 31/10/2026, `real.DoiLuongGame`, luật thuần `com.htbb.pokemon.DoiLuong`)** — NPC Tổng Quản → *Đổi lượng
+(khoá / xu / sàn)*, và web `/account`. Chỉ từ **lượng thường trong người** (không dùng lượng trong kho, không bao giờ dùng
+lượng khoá); **không có đường nào ra lượng** từ hệ thống (lượng khoá / xu không đổi ngược):
+
+```
+lượng ──(1 : doi_luong.ti_le = 1, không trần)──────────────────────────────► lượng khoá
+lượng ──(tỉ giá chung hôm nay, ≤ doi_luong_xu.tran_ngay = 5.000 / tài khoản / ngày)──► xu (IN XU, đếm xu vào)
+lượng ◄──── sàn: lệnh bán / mua giữa người chơi, phí 5% xu bên mua bị đốt ────► xu (KHÔNG in xu)
+```
+
+| Đường | Luật | Chống lạm dụng / an toàn |
+|---|---|---|
+| Lượng → lượng khoá | 1 lượng = `doi_luong.ti_le` (1) lượng khoá, một chiều | trừ + cộng trong một lần giữ khoá tiền (`Char.truNeuDu`), lưu ngay; tỉ lệ đổi giữa chừng → từ chối |
+| Lượng → xu (hệ thống) | **một tỉ giá chung toàn máy chủ mỗi ngày**: 1 lượng = làm tròn(`doi_luong_xu.phan_tram_gio` (1)% × thu nhập 1 giờ ở **cấp trung vị** người chơi thật — không bot — hoạt động 7 ngày), tính lúc 00:00 (giờ VN) và đóng băng cả ngày (`tob_ti_gia_luong_xu`, `INSERT IGNORE`) | trần `doi_luong_xu.tran_ngay` (5.000) lượng / **tài khoản** / ngày (`tob_doi_tien_ngay`, tăng có điều kiện trong một câu UPDATE); xu sinh ra đếm vào `xu_vao` (`tob_kinh_te_ngay`) + thống kê `doi_luong_xu` |
+| Sàn lượng ↔ xu | lệnh bán (ký quỹ lượng thường) / mua (ký quỹ xu + phí); khớp giá tốt nhất rồi sớm nhất, giá khớp = giá lệnh đang chờ; lệnh hết hạn sau 24 giờ; giá trong 50%–500% tỉ giá hệ thống hôm nay; ≤ 10 lệnh mở / Pokémon | trần `san_luong.tran_ngay` (50.000) lượng đặt lệnh / tài khoản / ngày; phí `san_luong.phi_phan_tram` (5)% xu bên mua **bị đốt**; cổng chống clone như chợ ký gửi (cấp, tuổi tài khoản, giờ chơi, cùng thiết bị / IP); không tự khớp lệnh của cùng tài khoản; bot (huấn luyện viên AI) không dùng |
+
+Nguyên tử: ký quỹ trừ khỏi nhân vật và **lưu trước**, rồi mới ghi lệnh + khớp trong **một giao dịch** CSDL (dòng đối diện
+`FOR UPDATE`) — sập máy giữa chừng chỉ có thể làm người chơi mất, không bao giờ nhân đôi. Mọi khoản cộng (xu bán được,
+lượng mua được, hoàn ký quỹ) đi qua hàng đợi `tob_san_luong_tra`, giao khi nhân vật online (chốt 0 → 1 rồi mới cộng).
+Web `/account` chỉ chèn lệnh vào `web_lenh_nhan_vat` (loại `doi_luong_khoa` / `doi_luong_xu`): game chốt dòng rồi đổi
+trên RAM — online đổi ngay, offline đổi ngay khi vào game (huỷ được trước lúc đó). Web **không ghi** `tob_char` (lượng
+khoá nằm trong `pInfo`, game nạp / lưu nhân vật không khoá dòng). Nhật ký: `tob_doi_luong_log`, `tob_san_luong_khop`,
+thống kê chi tiêu tuần `tob_log_use_luong` (`doi_luong_khoa`, `doi_luong_xu`, `san_luong_phi` — hiện ở `/admin/kinh-te`).
+Kiểm: `server/test/KiemDoiLuong`, `web/tests/doi-luong.test.ts`.
+
+**Đồng tiền → kênh chuyển giữa người chơi:**
+
+| Đồng | Cửa sổ giao dịch 1-1 | NPC chuyển | Sàn | Ghi chú |
+|---|---|---|---|---|
+| Xu | không (cửa sổ hiện chỉ chở thuốc) | không | có (bên mua trả xu) | chợ ký gửi / chợ trang trí / chợ sinh thái trả bằng xu |
+| Lượng | **không** | có (Meowth / Tổng Quản *Chuyển lượng*, phí 5%) | có (lệnh bán / mua) | |
+| Lượng khoá | **không** | **không** | **không** | không đường nào (9.6) |
 
 **Đã bỏ hẳn** khi bật `sv.lau_dai`: lượng / lượng khoá rơi từ quái; quà 10 triệu xu ở cấp 35 (nay 5.000 xu + 6 lượng khoá + 10 nguyên liệu khoá mỗi loại cấp 6 cho mọi chế độ, xem 9.6);
 giftcode ra lượng hoặc xu; mốc nạp; hoàn xu khi tiêu lượng; VIP theo nạp; shop lượng bán đồ có chỉ số; kẹo EXP cố định;
@@ -1772,8 +1805,11 @@ cộng lượng khoá hằng ngày cho mọi nhân vật cấp ≥ 40.
 | Nhiệm vụ | ~9% | Thuốc + sửa đồ | ~23% |
 | Sự kiện (25% ngân sách) | ~1% | Mua đồ theo bậc | ~4% |
 | Phân rã | ~0,5% | Ngọc hệ | ~4% |
-| | | Dịch chuyển | ~3% |
-| | | Học chiêu, thuế chợ, hồi sinh, phí hệ sinh thái | phần còn lại |
+| Đổi lượng → xu (hệ thống, 31/10/2026; ≤ 5.000 lượng / tài khoản / ngày × 1% giờ thu nhập trung vị) | theo lượng đem đổi | Dịch chuyển | ~3% |
+| | | Học chiêu, thuế chợ, hồi sinh, phí hệ sinh thái, **phí sàn lượng ↔ xu 5%** | phần còn lại |
+
+Lượng đổi ra lượng khoá / xu rời lưu thông (đếm như lượng tiêu khi bật nạp). Sàn lượng ↔ xu không sinh xu (chỉ chuyển giữa
+hai người), phí bị đốt.
 
 Mục tiêu: xu ra / vào 90–105%, lượng khoá ~95%; lượng tích chậm vì nguồn nhỏ và chỉ mua trang trí.
 
@@ -1827,6 +1863,9 @@ bản đồ / sự kiện đó nếu đỏ.
   Thành viên, và bằng lượng trong game là bản cao cấp vật phẩm tăng tốc (chung trần với bản khoá). **Không bán** chỉ số, đồ,
   đá, tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Mục tiêu mô phỏng: người nạp chênh sức mạnh cùng giờ chơi
   ≤ 5%. Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
+- **Đổi lượng** (9.1): lượng thường → lượng khoá 1 : 1 không trần; lượng → xu theo tỉ giá chung hằng ngày (≤ 5.000 lượng /
+  tài khoản / ngày); sàn lượng ↔ xu giữa người chơi. Ngân sách "nạp không bán sức mạnh" vẫn bị chặn vì mọi thứ mua bằng
+  lượng khoá có trần tuần, và xu đổi ra bị trần ngày theo tài khoản.
 
 ---
 

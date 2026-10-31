@@ -49,6 +49,8 @@ export const LENH_XONG_OFFLINE = 2
 export const LENH_LOI = 3
 export const LENH_CHO_DANG_NHAP = 4
 export const LENH_HUY = 5
+/** Lệnh đổi lượng của người chơi đã được server chốt, đang đổi (data.LenhWeb.DANG_XU_LY). Không huỷ được. */
+export const LENH_DANG_XU_LY = 6
 
 /** Đợi server tối đa bấy nhiêu giây. Server đọc bảng mỗi 1 giây nên 4 giây là đủ. */
 export const LENH_CHO_TOI_DA_GIAY = 4.0
@@ -105,6 +107,7 @@ export function tenTrangThaiLenh(trangThai: number): string {
     case LENH_LOI: return 'lỗi'
     case LENH_CHO_DANG_NHAP: return 'chờ vào game'
     case LENH_HUY: return 'đã huỷ'
+    case LENH_DANG_XU_LY: return 'đang xử lý'
     default: return `trạng thái ${trangThai}`
   }
 }
@@ -115,7 +118,8 @@ export function mauTrangThaiLenh(trangThai: number): 'success' | 'warning' | 'er
     case LENH_XONG_ONLINE:
     case LENH_XONG_OFFLINE: return 'success'
     case LENH_CHO:
-    case LENH_CHO_DANG_NHAP: return 'warning'
+    case LENH_CHO_DANG_NHAP:
+    case LENH_DANG_XU_LY: return 'warning'
     case LENH_LOI: return 'error'
     default: return 'neutral'
   }
