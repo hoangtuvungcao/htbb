@@ -270,6 +270,11 @@ class MapMuaBan {
                         }
 
                         int type = msg.dis.readByte();
+                        if (type == 3) {
+                            // 0.9.27: dat so xu dua (tuyet doi) - real/GiaoDichXu. Luong / luong khoa: khong co kieu nao.
+                            GiaoDichXu.dat(player, dp, msg.dis.readLong());
+                            return;
+                        }
                         if (type == 0) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trao đổi vật phẩm này.", ""));
                             return;
@@ -463,11 +468,21 @@ class MapMuaBan {
                                 huyVaBao(player, "Có bình thuốc khoá (mua bằng lượng khoá) trong giao dịch, đã huỷ.");
                                 return;
                             }
-                            // chong clone: moi chieu co dua thuoc = mot lan chuyen gia tri gui -> nhan.
-                            final boolean playerDua = coDua(player.tPotions);
-                            final boolean dpDua = coDua(dp.tPotions);
-                            if ((playerDua && com.htbb.pokemon.ChongClone.chanChuyen(player, dp, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L))
-                                    || (dpDua && com.htbb.pokemon.ChongClone.chanChuyen(dp, player, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L))) {
+                            // 0.9.27 xu: so xu hai ben khop, con du, trong tran ngay (real/GiaoDichXu). Chua tru gi.
+                            final int loiXu = GiaoDichXu.kiemChot(player, dp);
+                            if (loiXu != GiaoDichXu.HOP_LE) {
+                                if (loiXu == GiaoDichXu.LOI_LECH_HAI_BEN || loiXu == GiaoDichXu.LOI_SO_AM) {
+                                    data.NghiVanGianLan.ghiVatPham(player, "hackgd", "xu " + GiaoDichXu.moTaLoi(loiXu) + " - voi "
+                                            + dp.charname + " | tXu=" + player.tXu + " rXu=" + player.rXu + " dp.tXu=" + dp.tXu + " dp.rXu=" + dp.rXu);
+                                }
+                                huyVaBao(player, "Giao dịch không hợp lệ (" + GiaoDichXu.moTaLoi(loiXu) + "), đã huỷ.");
+                                return;
+                            }
+                            // chong clone: moi chieu co dua thuoc / xu = mot lan chuyen gia tri gui -> nhan.
+                            final boolean playerDua = coDua(player.tPotions) || player.tXu > 0L;
+                            final boolean dpDua = coDua(dp.tPotions) || dp.tXu > 0L;
+                            if ((playerDua && com.htbb.pokemon.ChongClone.chanChuyen(player, dp, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, player.tXu))
+                                    || (dpDua && com.htbb.pokemon.ChongClone.chanChuyen(dp, player, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, dp.tXu))) {
                                 huyVaBao(player, "Giao dịch bị chặn (chống clone), đã huỷ.");
                                 return;
                             }
@@ -481,8 +496,17 @@ class MapMuaBan {
                                 return;
                             }
                             final String tomTatGd = GiaoDichThuoc.tomTat(player.tPotions, player.rPotions, dp.tPotions, dp.rPotions);
+                            final long xuPlayerDua = player.tXu;
+                            final long xuDpDua = dp.tXu;
+                            final boolean luuPlayerTruoc = GiaoDichXu.luuATruoc(player, dp);
 
+                            // Tru xu hai ben TRUOC (kiem-va-tru duoi KHOA_TIEN); thieu -> hoan, huy, khong ai nhan gi.
+                            if (!GiaoDichXu.truHaiBen(player, dp)) {
+                                huyVaBao(player, "Giao dịch không hợp lệ (số xu đã thay đổi), đã huỷ.");
+                                return;
+                            }
                             if (!player.doAddItemTrad2Inventory()) {
+                                GiaoDichXu.hoanHaiBen(player, dp);
                                 // Khe giua kiemTra va luc tru: mot luong khac vua tieu thuoc. Khong
                                 // cong gi cho ai, huy va ghi lai.
                                 String chiTiet = "so thuoc doi ngay truoc luc tru - voi " + dp.charname + " | "
@@ -491,11 +515,15 @@ class MapMuaBan {
                                 huyVaBao(player, "Giao dịch không hợp lệ (số thuốc đã thay đổi), đã huỷ.");
                                 return;
                             }
+                            // Thuoc da doi chu: gio moi cong xu cho ben nhan (+ tran ngay + log gdxu).
+                            GiaoDichXu.congHaiBen(player, dp);
                             if (playerDua) {
-                                com.htbb.pokemon.ChongClone.ghi(player, dp, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L, "thuoc " + tomTatGd);
+                                com.htbb.pokemon.ChongClone.ghi(player, dp, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, xuPlayerDua,
+                                        (xuPlayerDua > 0L ? "xu " + xuPlayerDua + " " : "") + "thuoc " + tomTatGd);
                             }
                             if (dpDua) {
-                                com.htbb.pokemon.ChongClone.ghi(dp, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, 0L, "thuoc " + tomTatGd);
+                                com.htbb.pokemon.ChongClone.ghi(dp, player, com.htbb.pokemon.ChongClone.KIEU_GIAO_DICH, xuDpDua,
+                                        (xuDpDua > 0L ? "xu " + xuDpDua + " " : "") + "thuoc " + tomTatGd);
                             }
                             m = new Message(66);
                             m.dos.writeByte(4);
@@ -503,8 +531,14 @@ class MapMuaBan {
                             dp.sendMessage(m);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                            Database.instance.saveCharAuto(player);
-                            Database.instance.saveCharAuto(dp);
+                            // Ben dua xu rong luu truoc: sap giua hai lan luu thi mat, khong nhan doi (GiaoDichXu.luuATruoc).
+                            if (luuPlayerTruoc) {
+                                Database.instance.saveCharAuto(player);
+                                Database.instance.saveCharAuto(dp);
+                            } else {
+                                Database.instance.saveCharAuto(dp);
+                                Database.instance.saveCharAuto(player);
+                            }
                             dp.sendMessage(MessageCreator.createCharInventoryMessage(dp, 0));
                             dp.sendMessage(MessageCreator.createCharInventoryMessage(dp, 1));
                             // Xoa sach ca hai (thay cho chi userTrade.removeAllElements nhu truoc).
