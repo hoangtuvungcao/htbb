@@ -135,6 +135,12 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
 17. `them_chi_so_vps.sql` (31/10/2026, trang `/admin/he-thong` thẻ VPS): bảng `tob_chi_so_vps` — web lấy mẫu CPU / RAM / swap /
     đĩa / mạng toàn máy mỗi 2 giây, ghi một dòng mỗi phút mỗi máy (`may` = hostname), giữ 7 ngày. Web tự tạo bảng nếu thiếu
     (`SQL_TAO_BANG_VPS` ở `web/server/utils/vpsThuan.ts`, `web/tests/chi-so-vps.test.ts` so khớp với phần A + B). Phần A cũng có.
+18. `them_doi_luong.sql` (31/10/2026, chủ game, `docs/thiet-ke-game.md` 9.1): bảng đổi lượng → lượng khoá / xu và sàn
+    lượng ↔ xu (`tob_doi_tien_ngay`, `tob_doi_luong_log`, `tob_ti_gia_luong_xu`, `tob_san_luong_*`); máy chủ tự tạo nếu thiếu
+    (`DoiLuongDb.DDL`). Khoá danh mục `doi_luong.*` / `doi_luong_xu.*` / `san_luong.*` ở mục 2. `server/test/KiemDoiLuong`.
+19. `them_nang_luong_thanh_vien.sql` (31/10/2026, chủ game): Bùa thể lực không giới hạn (cửa hàng lượng 30 / Kecleon 25
+    lượng khoá), mô tả gói nạp +30 phút năng lượng (chỉ đổi dòng còn mô tả mặc định cũ). Khoá `exp.nang_luong_*_phut` /
+    `tang_toc.bua_*` ở mục 2. `server/test/KiemNangLuongThanhVien`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong
