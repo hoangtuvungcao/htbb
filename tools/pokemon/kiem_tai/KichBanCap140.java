@@ -733,6 +733,7 @@ final class KichBanCap140 {
             List<KichBanTienDoNhiemVu.Dong> ds0 = new ArrayList<>(l0);
             if (dichPhu >= 0) ds0.sort((x, y) -> Boolean.compare(!(x.ms == 1 && x.id == dichPhu), !(y.ms == 1 && y.id == dichPhu)));
             for (KichBanTienDoNhiemVu.Dong q : ds0) {
+                if (q.ms == 1 && dichPhu >= 0 && q.id != dichPhu) continue; // bot muc tieu: chi nhan nhiem vu phu muc tieu
                 if (q.ms == 1 && (coPhuDang || phuBo.contains(q.id))) continue;
                 if (q.ms == 0 && capChan > b.lv) continue;
                 String l = toiNpc(q.npc, q.tra);
