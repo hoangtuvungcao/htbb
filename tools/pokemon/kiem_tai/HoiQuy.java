@@ -406,6 +406,7 @@ public final class HoiQuy {
         synchronized (BatBien.VI_PHAM) { vp = new ArrayList<>(BatBien.VI_PHAM.subList(vp0, BatBien.VI_PHAM.size())); }
         ket(ten + ".bat_bien", vp.isEmpty(), vp.isEmpty() ? "" : vp.size() + ": " + String.join(" || ", vp.subList(0, Math.min(5, vp.size()))));
         THOI_GIAN.put(ten, new long[]{bd, System.currentTimeMillis()});
+        System.out.printf("[GIO] %s %ds%n", ten, (System.currentTimeMillis() - bd) / 1000);
     }
 
     // ================================================================== main

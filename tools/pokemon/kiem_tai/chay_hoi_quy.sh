@@ -19,8 +19,13 @@
 #                           script nay). Ma nguon (server/src, du_lieu, client_pc) LUON doc tu monorepo chua script (-Dgoc)
 #      HOI_QUY_TIEN_TO=kt   tien to tai khoan bot      HTBB_BOT_CP=<classpath>  bot da bien dich san (khong can javac)
 #      HOI_QUY_HE_SO=1      nhan gioi han thoi gian moi nhom (may cham)
+#      HOI_QUY_CHE_DO=day_du  ke hoach lan: day_du = dong "@lan" / "@rieng" (moi nhom, ~1 gio); nhanh = dong "@nhanh lan" /
+#                           "@nhanh rieng" (bo nhom loi cot, ~8 phut - CONG KIEM MAC DINH tu 31/10/2026). Che do nhanh chi chay
+#                           nhom co trong ke hoach @nhanh; nhom "~" (ban rut gon) chi chay o che do nhanh.
 #      HOI_QUY_SONG_SONG=1  chay cac LAN (dong "@lan" trong hoi_quy.conf) cung luc; 0 = tung nhom mot theo thu tu conf
 #      HOI_QUY_LAN_TOI_DA=4 so lan chay cung luc toi da (moi lan = 1 JVM bot = 1 ket noi CSDL, xem hoi_quy.conf)
+#  Bien dich truoc (cong kiem chay song song voi lam moi staging):  chay_hoi_quy.sh --bien-dich <thu muc>
+#      -> in classpath o dong cuoi (dung lai bang HTBB_BOT_CP=<classpath>); ma 0 = xong, 2 = loi bien dich.
 #      HOI_QUY_THU_LAI=1    cho THU LAI MOT LAN nhom hong vi loi BAT DINH da biet (hoi_quy_bat_dinh.txt); 0 = khong
 #      HOI_QUY_JAVA="-Xmx..." tuy chon JVM them cho moi bot (mac dinh -Xmx384m: VPS 4 GB, nhieu bot cung luc)
 #  Ma thoat: 0 = moi nhom DAT; 1 = co nhom HONG / LOI; 2 = sai doi so / khong bien dich duoc.
@@ -28,10 +33,32 @@
 #    (thu tu dong = thu tu hoi_quy.conf; "thu_lai=1 lan1=HONG(...)" = nhom da chay lai mot lan, ket qua la cua lan 2).
 # ============================================================================
 set -uo pipefail
-[ $# -eq 4 ] || { sed -n '2,29p' "$0"; exit 2; }
-HOST=$1; CONG=$2; CONG_LOGIN=$3; DBCONN=$4
 DIR=$(cd "$(dirname "$0")" && pwd)
 GOC=$(cd "$DIR/../../.." && pwd)
+
+# ---- bien dich bot: lop may chu TRUOC (bot dung truc tiep vai lop thuan - com.htbb.pokemon.ChieuPokemon / HePokemon - va
+# HoiQuy dung com.htbb.pokemon.DuongMenu + real.MenuDoiThuong cho bat bien DUONG_MENU), roi bot. In classpath.
+bien_dich() { # $1 = thu muc ra
+    local ra=$1 sv="$1/sv-cls" cp="$1/bot-cls"
+    command -v javac >/dev/null 2>&1 || { echo "[LOI] khong co javac (apt install openjdk-17-jdk-headless) va khong dat HTBB_BOT_CP"; return 2; }
+    mkdir -p "$sv" "$cp"
+    find "$GOC/server/src" -name '*.java' > "$ra/sv-nguon.txt"
+    if ! javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "$GOC/server/lib/jxl-2.6.jar:$GOC/server/lib/mysql-connector-java-5.1.49.jar" \
+        -sourcepath "$GOC/server/src" -d "$sv" @"$ra/sv-nguon.txt" > "$ra/bien_dich_sv.log" 2>&1; then
+        echo "[LOI] bien dich lop may chu hong:"; tail -n 20 "$ra/bien_dich_sv.log"; return 2
+    fi
+    if ! javac -encoding UTF-8 -nowarn -cp "$sv" -d "$cp" "$DIR"/*.java > "$ra/bien_dich.log" 2>&1; then
+        echo "[LOI] bien dich bot hong:"; tail -n 20 "$ra/bien_dich.log"; return 2
+    fi
+    echo "$cp:$sv"
+}
+if [ "${1:-}" = --bien-dich ]; then
+    [ $# -eq 2 ] || { echo "dung: $0 --bien-dich <thu muc>"; exit 2; }
+    mkdir -p "$2" && bien_dich "$(cd "$2" && pwd)"; exit $?
+fi
+
+[ $# -eq 4 ] || { sed -n '2,33p' "$0"; exit 2; }
+HOST=$1; CONG=$2; CONG_LOGIN=$3; DBCONN=$4
 CONF=${HOI_QUY_CONF:-$DIR/hoi_quy.conf}
 BAT_DINH=${HOI_QUY_BAT_DINH:-$DIR/hoi_quy_bat_dinh.txt}
 TT=${HOI_QUY_TIEN_TO:-kt}
@@ -40,6 +67,8 @@ HE_SO=${HOI_QUY_HE_SO:-1}
 SONG_SONG=${HOI_QUY_SONG_SONG:-1}
 LAN_TOI_DA=${HOI_QUY_LAN_TOI_DA:-4}
 THU_LAI=${HOI_QUY_THU_LAI:-1}
+CHE_DO=${HOI_QUY_CHE_DO:-day_du}
+case "$CHE_DO" in day_du|nhanh) ;; *) echo "[LOI] HOI_QUY_CHE_DO=$CHE_DO (day_du | nhanh)"; exit 2 ;; esac
 read -r -a JAVA_THEM <<< "${HOI_QUY_JAVA:--Xmx384m}"
 RA=${HOI_QUY_RA:-$(mktemp -d "${TMPDIR:-/tmp}/hoi-quy.XXXXXX")}
 mkdir -p "$RA" "$RA/kq"
@@ -73,20 +102,8 @@ fi
 if [ -n "${HTBB_BOT_CP:-}" ]; then
     CP=$HTBB_BOT_CP
 else
-    command -v javac >/dev/null 2>&1 || { echo "[LOI] khong co javac (apt install openjdk-17-jdk-headless) va khong dat HTBB_BOT_CP"; exit 2; }
-    CP="$RA/bot-cls"; mkdir -p "$CP"
-    # lop may chu bien dich TRUOC: bot dung truc tiep vai lop thuan (com.htbb.pokemon.ChieuPokemon / HePokemon) va
-    # HoiQuy dung com.htbb.pokemon.DuongMenu + real.MenuDoiThuong cho bat bien DUONG_MENU.
-    SV="$RA/sv-cls"; mkdir -p "$SV"
-    find "$GOC/server/src" -name '*.java' > "$RA/sv-nguon.txt"
-    if ! javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "$GOC/server/lib/jxl-2.6.jar:$GOC/server/lib/mysql-connector-java-5.1.49.jar" \
-        -sourcepath "$GOC/server/src" -d "$SV" @"$RA/sv-nguon.txt" > "$RA/bien_dich_sv.log" 2>&1; then
-        echo "[LOI] bien dich lop may chu hong:"; tail -n 20 "$RA/bien_dich_sv.log"; exit 2
-    fi
-    if ! javac -encoding UTF-8 -nowarn -cp "$SV" -d "$CP" "$DIR"/*.java > "$RA/bien_dich.log" 2>&1; then
-        echo "[LOI] bien dich bot hong:"; tail -n 20 "$RA/bien_dich.log"; exit 2
-    fi
-    CP="$CP:$SV"
+    CP=$(bien_dich "$RA") || { echo "$CP"; exit 2; }
+    CP=$(tail -n 1 <<< "$CP")
 fi
 
 # JDBC cho bot: BotChucNang.sql dung MOT ket noi CSDL / JVM (khong mo tien trinh mysql = ket noi moi cho moi truy van;
@@ -111,32 +128,47 @@ declare -A DONG=() TAT_N=() LAN_CUA=()
 LANS=()                     # ten lan (thu tu khai)
 declare -A LAN_GM=() LAN_TH=() LAN_GMTK=() LAN_NHOM=()
 RIENG=" "
+# Pass 1: ke hoach lan cua che do dang chay. day_du: "@lan" / "@rieng"; nhanh: "@nhanh lan" / "@nhanh rieng" (dong cua che
+# do kia bo qua). Pass 2: dong nhom.
+CO_KE_HOACH=0
 while IFS= read -r D || [ -n "$D" ]; do
-    case "$D" in ''|'#'*) continue ;; esac
-    if [ "${D:0:1}" = "@" ]; then
-        D=${D%%#*}
-        TRAI=${D%%:*}; PHAI=""; [[ "$D" == *:* ]] && PHAI=${D#*:}
-        read -r -a T <<< "$TRAI"
-        case "${T[0]}" in
-            @rieng) RIENG="$RIENG$PHAI " ;;
-            @lan)
-                L=${T[1]:-}; [ -n "$L" ] || { echo "[LOI] hoi_quy.conf: '@lan' thieu ten: $D"; exit 2; }
-                LANS+=("$L"); LAN_GM[$L]=""; LAN_TH[$L]=""; LAN_GMTK[$L]=""
-                for kv in "${T[@]:2}"; do
-                    case "$kv" in
-                        gm=*-*) LAN_GM[$L]=${kv#gm=} ;;
-                        thuong=*-*) LAN_TH[$L]=${kv#thuong=} ;;
-                        gmtk=*) LAN_GMTK[$L]=${kv#gmtk=} ;;
-                        *) echo "[LOI] hoi_quy.conf: '@lan $L' khoa la '$kv'"; exit 2 ;;
-                    esac
-                done
-                [ -n "${LAN_GM[$L]}" ] && [ -n "${LAN_TH[$L]}" ] || { echo "[LOI] hoi_quy.conf: '@lan $L' can gm=a-b thuong=c-d"; exit 2; }
-                LAN_NHOM[$L]="$PHAI"
-                for n in $PHAI; do LAN_CUA[$n]=$L; done ;;
-            *) echo "[LOI] hoi_quy.conf: dong '@' la: $D"; exit 2 ;;
-        esac
+    [ "${D:0:1}" = "@" ] || continue
+    D=${D%%#*}
+    if [ "${D:0:7}" = "@nhanh " ]; then
+        [ "$CHE_DO" = nhanh ] || continue
+        D="@$(sed 's/^[[:space:]]*//' <<< "${D:7}")"
+    elif [ "$CHE_DO" = nhanh ]; then
         continue
     fi
+    TRAI=${D%%:*}; PHAI=""; [[ "$D" == *:* ]] && PHAI=${D#*:}
+    read -r -a T <<< "$TRAI"
+    CO_KE_HOACH=1
+    case "${T[0]}" in
+        @rieng) RIENG="$RIENG$PHAI " ;;
+        @lan)
+            L=${T[1]:-}; [ -n "$L" ] || { echo "[LOI] hoi_quy.conf: '@lan' thieu ten: $D"; exit 2; }
+            LANS+=("$L"); LAN_GM[$L]=""; LAN_TH[$L]=""; LAN_GMTK[$L]=""
+            for kv in "${T[@]:2}"; do
+                case "$kv" in
+                    gm=*-*) LAN_GM[$L]=${kv#gm=} ;;
+                    thuong=*-*) LAN_TH[$L]=${kv#thuong=} ;;
+                    gmtk=*) LAN_GMTK[$L]=${kv#gmtk=} ;;
+                    *) echo "[LOI] hoi_quy.conf: '@lan $L' khoa la '$kv'"; exit 2 ;;
+                esac
+            done
+            [ -n "${LAN_GM[$L]}" ] && [ -n "${LAN_TH[$L]}" ] || { echo "[LOI] hoi_quy.conf: '@lan $L' can gm=a-b thuong=c-d"; exit 2; }
+            LAN_NHOM[$L]="$PHAI"
+            for n in $PHAI; do LAN_CUA[$n]=$L; done ;;
+        *) echo "[LOI] hoi_quy.conf: dong '@' la: $D"; exit 2 ;;
+    esac
+done < "$CONF"
+if [ "$CHE_DO" = nhanh ]; then
+    [ "$CO_KE_HOACH" = 1 ] || { echo "[LOI] hoi_quy.conf khong co dong '@nhanh lan' / '@nhanh rieng'"; exit 2; }
+    TRONG_KH="$RIENG ${LAN_NHOM[*]} "
+fi
+declare -A DA_DINH_NGHIA=()
+while IFS= read -r D || [ -n "$D" ]; do
+    case "$D" in ''|'#'*|'@'*) continue ;; esac
     TAT=0
     if [ "${D:0:1}" = "!" ]; then TAT=1; D=${D:1}; fi
     # "?" = nhom DAI (chay dem): chi chay khi goi ten trong HOI_QUY_NHOM, khong thi bo qua im lang (khong tinh HONG/TAT)
@@ -144,20 +176,42 @@ while IFS= read -r D || [ -n "$D" ]; do
         D=${D:1}
         case " ${HOI_QUY_NHOM:-} " in *" ${D%% *} "*) ;; *) continue ;; esac
     fi
+    # "~" = ban RUT GON cho che do nhanh (che do day_du co nhom goc day du): day_du chi chay khi goi ten trong HOI_QUY_NHOM
+    if [ "${D:0:1}" = "~" ]; then
+        D=${D:1}
+        DA_DINH_NGHIA[${D%% *}]=1
+        if [ "$CHE_DO" != nhanh ]; then
+            case " ${HOI_QUY_NHOM:-} " in *" ${D%% *} "*) ;; *) continue ;; esac
+        fi
+    fi
     N=${D%% *}
+    DA_DINH_NGHIA[$N]=1
+    # che do nhanh: chi nhom co trong ke hoach @nhanh
+    if [ "$CHE_DO" = nhanh ]; then case "$TRONG_KH" in *" $N "*) ;; *) continue ;; esac; fi
     chon "$N" || continue
     DS+=("$N"); DONG[$N]=$D; TAT_N[$N]=$TAT
 done < "$CONF"
+if [ "$CHE_DO" = nhanh ]; then
+    for n in $TRONG_KH; do [ -n "${DA_DINH_NGHIA[$n]:-}" ] || { echo "[LOI] ke hoach @nhanh goi nhom $n khong co trong hoi_quy.conf"; exit 2; }; done
+fi
 [ ${#DS[@]} -gt 0 ] || { echo "[LOI] khong co nhom nao duoc chay"; exit 2; }
 
 # Chot ke hoach lan: khoang tai khoan cac lan KHONG chong nhau, nam trong tai khoan lam-moi.sh tao (GM 001..040, thuong
 # 101..199), GM chuan bi (gmtk, HoiQuy -DgmTk) khong nam trong khoang GM cua lan nao. Nhom co trong @lan nhung cung
 # trong @rieng, hay o hai lan -> LOI cau hinh. Nhom KHONG o lan nao -> chay RIENG (an toan mac dinh).
+declare -A HQ_LECH=()
 kiem_lan() {
     local a b c d L M k x
     declare -A DUNG=()
-    # HoiQuy.tenMoi: 6 chu so co so 10, lan k dung [k*200000, k*200000+200000) -> toi da 4 lan
-    [ ${#LANS[@]} -le 4 ] || { echo "[LOI] toi da 4 dong @lan (HoiQuy -DhqLech)"; return 1; }
+    # HoiQuy.tenMoi: 6 chu so co so 10, lan k dung [k*200000, k*200000+200000) -> toi da 4 lan CO NHOM HoiQuy (hqLech 1..4;
+    # lan khong co HoiQuy khong can bo dem ten)
+    k=0
+    for L in "${LANS[@]}"; do
+        for x in ${LAN_NHOM[$L]}; do
+            if [[ " ${DONG[$x]:-} " == *" HoiQuy "* ]]; then k=$((k + 1)); HQ_LECH[$L]=$k; break; fi
+        done
+    done
+    [ "$k" -le 4 ] || { echo "[LOI] $k lan co nhom HoiQuy - toi da 4 (HoiQuy -DhqLech)"; return 1; }
     for L in "${LANS[@]}"; do
         a=${LAN_GM[$L]%-*}; b=${LAN_GM[$L]#*-}; c=${LAN_TH[$L]%-*}; d=${LAN_TH[$L]#*-}
         for x in "$a" "$b" "$c" "$d"; do [[ "$x" =~ ^[0-9]+$ ]] || { echo "[LOI] @lan $L: so la '$x'"; return 1; }; done
@@ -193,10 +247,8 @@ tham_so_lan() { # $1 = lan ("" = rieng: khoang day du)
     local L=$1
     [ -z "$L" ] && return 0
     local a=${LAN_GM[$L]%-*} b=${LAN_GM[$L]#*-} c=${LAN_TH[$L]%-*} d=${LAN_TH[$L]#*-}
-    local i k=0
-    for i in "${!LANS[@]}"; do [ "${LANS[$i]}" = "$L" ] && k=$((i + 1)); done
-    # -DhqLech: bo dem ten tai khoan moi cua HoiQuy rieng cho moi lan (hai JVM cung luc khong trung ten)
-    printf '%s\n' "-Dtu=$a" "-Dden=$b" "-DtuThuong=$c" "-DdenThuong=$d" "-Dthuong=$(printf '%s%03d' "$TT" "$c")" "-DhqLech=$k"
+    # -DhqLech: bo dem ten tai khoan moi cua HoiQuy rieng cho moi lan co HoiQuy (hai JVM cung luc khong trung ten)
+    printf '%s\n' "-Dtu=$a" "-Dden=$b" "-DtuThuong=$c" "-DdenThuong=$d" "-Dthuong=$(printf '%s%03d' "$TT" "$c")" "-DhqLech=${HQ_LECH[$L]:-0}"
     [ -n "${LAN_GMTK[$L]}" ] && printf '%s\n' "-DgmTk=$(printf '%s%03d' "$TT" "${LAN_GMTK[$L]}")"
     return 0
 }
@@ -237,7 +289,8 @@ duoc_thu_lai() { # $1 nhom $2 kq $3 ma $4 log $5 lop $6 so loi may chu
         if [[ "$m" =~ (log|bat_bien|ngoai_le|may_chu|con_song|csdl|bao_toan|exception) ]]; then echo "muc $m la log / bat bien / may chu / CSDL"; return 1; fi
         ok=0
         while read -r nn mau loai; do
-            [ "$nn" = "$n" ] || continue
+            # ban rut gon cua che do nhanh (<nhom>_nhanh, <nhom>_nhanh1...) dung chung danh sach bat dinh cua nhom goc
+            [ "$nn" = "$n" ] || [ "$nn" = "${n%_nhanh*}" ] || continue
             if [[ "$m" =~ $mau ]]; then ok=1; [ "$loai" = phu ] || goc=1; break; fi
         done < <(grep -vE '^\s*(#|$)' "$BAT_DINH" | sed -E 's/[[:space:]]+#.*$//')
         [ "$ok" = 1 ] || { echo "muc $m khong nam trong danh sach bat dinh"; return 1; }
@@ -351,7 +404,7 @@ for n in "${DS[@]}"; do
 done
 
 BD_TONG=$(date +%s)
-echo "== Hoi quy bot -> $HOST:$CONG (login $CONG_LOGIN), ket qua: $RA"
+echo "== Hoi quy bot ($CHE_DO) -> $HOST:$CONG (login $CONG_LOGIN), ket qua: $RA"
 if [ ${#LAN_CHAY[@]} -gt 0 ]; then
     echo "== Pha 1: ${#LAN_CHAY[@]} lan song song (toi da $LAN_TOI_DA cung luc; moi lan 1 JVM bot = 1 ket noi CSDL)"
     for L in "${LAN_CHAY[@]}"; do echo "   lan $L (gm ${LAN_GM[$L]}, thuong ${LAN_TH[$L]}${LAN_GMTK[$L]:+, gmtk ${LAN_GMTK[$L]}}):${LAN_DS[$L]}"; done
