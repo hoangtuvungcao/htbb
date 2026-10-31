@@ -55,11 +55,21 @@ public final class SatThuongLauDai {
     public static int[] tinh(final long atk, final long def, final int phanTramChieu, final int heChieu,
             final int heDanh1, final int heDanh2, final int heThu1, final int heThu2,
             final int doHePhanTram, final boolean chiMang, final int dao) {
+        return tinh(atk, def, phanTramChieu, heChieu, heDanh1, heDanh2, heThu1, heThu2, doHePhanTram, chiMang, dao, 0, 0);
+    }
+
+    /**
+     * Nhu tren, he so khac he kep vao [{@code heToiThieu}, {@code heToiDa}] (%, &lt;= 0 = khong kep): PvE nguoi danh quai
+     * dung KhacHePve (60..150), PvP truyen 0, 0. Co -95 van theo he so goc.
+     */
+    public static int[] tinh(final long atk, final long def, final int phanTramChieu, final int heChieu,
+            final int heDanh1, final int heDanh2, final int heThu1, final int heThu2,
+            final int doHePhanTram, final boolean chiMang, final int dao, final int heToiThieu, final int heToiDa) {
         int co = 0;
         double d = coBan(atk, def);
         d = d * Math.max(0, phanTramChieu) / 100.0;
         if (heChieu >= 0 && heChieu < HePokemon.SO_HE) {
-            final int he = HePokemon.heSoTrongGame(heChieu, heThu1, heThu2);
+            final int he = KhacHePve.kep(HePokemon.heSoTrongGame(heChieu, heThu1, heThu2), heToiThieu, heToiDa);
             d = d * he / 100.0;
             co |= coHe(heChieu, heThu1, heThu2);
             if (ChieuPokemon.coStab(heChieu, heDanh1, heDanh2)) {
