@@ -778,9 +778,10 @@ public final class HeSinhThaiMenu {
             return;
         }
         final long tranVuon = VuonBerry.tranThuocNgay(HeSinhThaiGame.cap(p));
-        if (VuonBerry.laThuocVuon(ct) && h.thuocVuonHomNay + VuonBerry.giaNpcMe(ct) > tranVuon) {
-            bao(p, "Thuốc từ vườn hôm nay đã đủ (tối đa " + tranVuon + " xu giá NPC mỗi ngày, đã chế " + h.thuocVuonHomNay
-                    + "). Mai chế tiếp, hoặc dùng công thức thường.");
+        // tran ngay tinh bang trong so (gia NPC cu - VuonBerry.TRONG_SO_TRAN): so binh / ngay giu nhu truoc khi gia NPC ha
+        if (VuonBerry.laThuocBinh(ct) && h.thuocVuonHomNay + VuonBerry.trongSoMe(ct) > tranVuon) {
+            bao(p, "Thuốc chế hôm nay đã đủ (tối đa " + tranVuon + " điểm mỗi ngày, đã chế " + h.thuocVuonHomNay
+                    + "; mẻ bình HP nhỏ = 1.000 điểm). Mai chế tiếp.");
             return;
         }
         if (ct.ra == 0 && p.isFullInventory()) {
@@ -791,7 +792,9 @@ public final class HeSinhThaiMenu {
             bao(p, "Hết thể lực sinh hoạt hôm nay.");
             return;
         }
-        final long bep = HeSinhThaiGame.phi(p, HeSinhThai.PHI_BEP_PHAN_NGHIN);
+        // thuoc binh (vuon 30..34 + cong thuc 4..8): phi bep = phan con lai cua 65% gia NPC 10 binh sau tien hat
+        final long bep = VuonBerry.laThuocBinh(ct) ? VuonBerry.phiBepThuocVuon(ct, HeSinhThaiGame.cap(p))
+                : HeSinhThaiGame.phi(p, HeSinhThai.PHI_BEP_PHAN_NGHIN);
         final int[] bacs = new int[ct.nguyenLieu.length];
         synchronized (h) {
             if (!duNguyenLieu(h, ct)) {
@@ -809,8 +812,8 @@ public final class HeSinhThaiMenu {
             if (ct.kyNang == KyNangSong.CHE_THUOC) {
                 h.meThuocHomNay++;
             }
-            if (VuonBerry.laThuocVuon(ct)) {
-                h.thuocVuonHomNay += VuonBerry.giaNpcMe(ct);
+            if (VuonBerry.laThuocBinh(ct)) {
+                h.thuocVuonHomNay += VuonBerry.trongSoMe(ct);
             }
         }
         final String ten;

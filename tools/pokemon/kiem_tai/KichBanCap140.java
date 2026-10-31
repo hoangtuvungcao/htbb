@@ -1609,7 +1609,7 @@ final class KichBanCap140 {
 
         long lanMuaThuoc, lanLuyenAnToan;
         int vuKhiMac = -1;
-        static final int[] GIA_THUOC = {0, 100, 500, 800};
+        static final int[] GIA_THUOC = {0, 2, 4, 7}; // data_potion 1..3 (sua_gia_thuoc.sql 01/11/2026)
 
         /**
          * Tiem (nha 103) nhu nguoi choi that, theo thu tu uu tien (can bang 29/10/2026 - bot cu mua vu khi bang het xu roi di
@@ -1733,9 +1733,10 @@ final class KichBanCap140 {
             // vu khi chua dung bac cap: chi giu du tru thuoc, de danh xu mua vu khi (nguoi choi uu tien vu khi; bot cu mua 20
             // binh 800 xu moi lan, o cap 33 van cam vu khi cap 16 va guc moi 5 phut o Rung Viridian)
             int mucThuoc = tplVk != vuKhiMac ? DU_TRU : MUC;
+            final int nhaRen = b.mapId; // nha Machamp (103 / 73 / 83): Kecleon o nha - 1, Bronzong o nha + 1
             if (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3) < mucThuoc) {
                 int sl = (int) Math.min(mucThuoc - (b.soThuoc(1) + b.soThuoc(2) + b.soThuoc(3)), b.xu * 6 / 10 / GIA_THUOC[loai]);
-                if (sl > 0) {
+                if (sl > 0 && sangNha(nhaRen - 1, "Kecleon")) {
                     int t0 = b.soThuoc(loai);
                     int m = b.moc();
                     b.gui(24, (byte) 1, (byte) 4, (short) loai, (short) sl);
@@ -1747,7 +1748,7 @@ final class KichBanCap140 {
             }
             // Vé dịch chuyển du phong (het luot Ve lang mien phi o ban do xa khong co duong di bo): gia ~ 56 xu x cap
             if (b.soThuoc(162) < 2 && b.xu > DU_TRU_XU + 3L * 60 * b.lv) KichBanCap140TinhNang.muaVe(this, 2);
-            if (giap != null && b.xu - giap[2] >= DU_TRU_XU && sangNhaGiap()) {
+            if (giap != null && b.xu - giap[2] >= DU_TRU_XU && sangNha(nhaRen + 1, "Bronzong")) {
                 final int tpl = giap[0];
                 Set<Integer> cu = new HashSet<>();
                 for (int[] x : b.doDung) cu.add(x[0]);
@@ -1771,14 +1772,15 @@ final class KichBanCap140 {
         }
 
         /**
-         * Giap ban o Bronzong (NPC 3) - nha canh tiem Machamp (Pewter 103 -> 104, 73 -> 74, 83 -> 84). Tu 31/10/2026 may
-         * chu chi ban mon trong danh sach cua NPC dang dung canh (goi 24): bot cu mua giap trong nha 103 (chi co Machamp).
+         * Sang nha NPC canh tiem Machamp: giap o Bronzong (Pewter 103 -> 104, 73 -> 74, 83 -> 84), thuoc o Kecleon (103 -> 102,
+         * 73 -> 72, 83 -> 82). Tu 31/10 (giap) / 01/11/2026 (thuoc) may chu chi ban mon cua NPC dang dung canh (goi 24): bot
+         * cu mua ca hai trong nha 103 (chi co Machamp).
          */
-        boolean sangNhaGiap() throws Exception {
-            int nha = b.mapId + 1;
+        boolean sangNha(int nha, String ai) throws Exception {
+            if (b.mapId == nha) return true;
             KichBanDS2.raNgoai(b);
             if (KichBanDS2.vaoNha(b, nha) && b.mapId == nha) return true;
-            ghi("khong vao duoc nha Bronzong " + nha + " (dang o " + b.mapId + ")");
+            ghi("khong vao duoc nha " + ai + " " + nha + " (dang o " + b.mapId + ")");
             if (KichBanDS2.laOffline(b.mapId)) KichBanDS2.raNgoai(b);
             return false;
         }

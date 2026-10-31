@@ -266,11 +266,18 @@ public final class KiemVuonBerryGame {
             bam(p, hang("M_CONG_THUC"), 30);
             bang("che thuoc vuon: -3 Berry Oran", Integer.valueOf(oranTruoc - 3), Integer.valueOf(h2.tongMa(30)));
             bang("che thuoc vuon: +1 Thuốc xịt (10 binh HP nho khi dung)", Integer.valueOf(1), Integer.valueOf(h2.tongMa(90)));
-            bang("che thuoc vuon: chi tru phi bep", Long.valueOf(xuCt - VuonBerry.phiBep(12)), Long.valueOf(p.xu));
+            com.htbb.pokemon.KyNangSong.CongThuc ct30 = null;
+            for (final com.htbb.pokemon.KyNangSong.CongThuc ctx : com.htbb.pokemon.KyNangSong.CONG_THUC) {
+                if (ctx.id == 30) {
+                    ct30 = ctx;
+                }
+            }
+            // 01/11/2026: phi bep thuoc vuon = 65% gia NPC 10 binh - tien hat (VuonBerry.phiBepThuocVuon), khong theo gio thu nhap
+            bang("che thuoc vuon: chi tru phi bep thuoc vuon", Long.valueOf(xuCt - VuonBerry.phiBepThuocVuon(ct30, 12)), Long.valueOf(p.xu));
             bang("dem gia tri thuoc vuon hom nay", Long.valueOf(1000L), Long.valueOf(h2.thuocVuonHomNay));
             h2.thuocVuonHomNay = VuonBerry.tranThuocNgay(12) - 999L;
             bam(p, hang("M_CONG_THUC"), 30);
-            dung("vuot tran gia tri thuoc vuon / ngay: tu choi, khong tru berry", p.chuCuoi().contains("Thuốc từ vườn hôm nay đã đủ")
+            dung("vuot tran gia tri thuoc vuon / ngay: tu choi, khong tru berry", p.chuCuoi().contains("Thuốc chế hôm nay đã đủ")
                     && h2.tongMa(30) == oranTruoc - 3);
             // tham vuon ban: thay o dat cua ban
             hb.vuonMa[0] = 37;

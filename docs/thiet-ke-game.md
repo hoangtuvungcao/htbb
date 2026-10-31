@@ -66,8 +66,8 @@ Mọi NPC có mặt trong game đều dùng được, ở **mọi bản đồ** 
 
 | NPC (type) | Vai trò |
 |---|---|
-| Y tá Chansey (0) | Trung tâm Pokémon: hồi phục HP / PP miễn phí, mua thuốc (`real.NpcDichVu`) |
-| Kecleon (1, 26), Golem / Tauros (11–20), Sableye (24) | Bán thuốc, gian hàng, đá quý |
+| Y tá Chansey (0) | Trung tâm Pokémon: hồi phục HP / PP miễn phí, mua thuốc, **thuốc cấp cao** bằng xu mở theo cấp (`real.NpcDichVu`, `real.ThuocCapCaoGame`, 9.3) |
+| Kecleon (1, 26), Golem / Tauros (11–20), Sableye (24) | Bán thuốc (Kecleon có cả thuốc cấp cao như Chansey, vé dịch chuyển), gian hàng, đá quý |
 | Machamp (2), Farfetch'd (28) | Thợ rèn: mua đồ cầm tay / trang bị thú, luyện, khảm, sửa, khoá, nghiền bột |
 | Bronzong (3, 27) | Bán trang bị theo dòng |
 | Persian (6, 29) | Bán đá quý, nguyên liệu |
@@ -1415,8 +1415,9 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
   sao rơi, hoá thạch (1–2%).
 - **Vườn berry** (`VuonBerry`, bật lại 29/10/2026; ô đất cũ của game gốc - bản đồ vườn 29 nay là Rừng Ilex, `tob_farm` -
   không dùng): Hệ sinh thái → Vườn nhà và bạn bè → Ô đất của tôi. 2 ô, +1 ô ở cấp 15 và cấp 30, mua thêm 2 ô (1 giờ rồi 3 giờ
-  thu nhập ở cấp người chơi), tối đa 6. Hạt **chỉ mua lúc gieo**: 50% giá tham chiếu 1 berry (bậc theo cấp) - một lần thu (3
-  berry) = 6 lần tiền hạt, trồng là **lời** (chủ game 29/10: "lỗ thì người chơi chơi làm cái éo gì"); berry trong túi không
+  thu nhập ở cấp người chơi), tối đa 6. Hạt **chỉ mua lúc gieo**: 50% giá tham chiếu 1 berry (bậc theo cấp), kẹp bởi trần
+  suy từ giá thuốc NPC (`VuonBerry.hatToiDa`, 01/11/2026: Oran / Pecha / Chesto 10 xu, Rawst / Cheri / Leppa / Sitrus 20,
+  Lum 27) - một lần thu (3 berry) ≥ 6 lần tiền hạt, trồng là **lời** (chủ game 29/10: "lỗ thì người chơi chơi làm cái éo gì"); berry trong túi không
   gieo được. 8 loại: Oran / Pecha cấp 1, 20 phút; Rawst / Cheri cấp 5, 30 phút; Chesto cấp 10, 45 phút; Leppa cấp 20, 60 phút;
   Sitrus cấp 30, 90 phút; Lum cấp 40, 120 phút. Lớn theo đồng hồ máy chủ (cả khi offline), chín rồi không héo. Thu hoạch 3
   berry (bậc lúc gieo), +1 nếu hôm nay vườn được bạn bè tưới từ 2 lần (5 lần / ngày mỗi người cho và mỗi vườn nhận); tối đa
@@ -1425,11 +1426,16 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
   hoạch N cây Berry X" tính mỗi lần thu hoạch đúng loại. Trang trí vườn chế từ khảo cổ, 0 chỉ số; điểm thân thiện ≥ 50 cho
   danh hiệu.
 - **Thuốc từ vườn** (công thức 30–34, chỉ berry, chung trần 5 mẻ chế thuốc / ngày, tốn 3 thể lực + phí bếp): Thuốc xịt (3
-  Oran → 10 HP nhỏ, NPC 1.000 xu), Nước tinh khiết (2 Chesto + 1 Pecha → 10 MP nhỏ, 500), Siêu thuốc (2 Sitrus + 1 Rawst →
-  10 HP vừa, 5.000), Nước khoáng (2 Leppa + 1 Cheri → 10 MP vừa, 1.500), Thuốc cao cấp (1 Lum + 3 Sitrus → 10 HP lớn,
-  8.000). Tự trồng rẻ hơn mua NPC nhiều (cấp 27: Thuốc xịt ~146 xu thay 1.000). **Trần giá trị**: tổng giá NPC của thuốc
-  từ vườn / ngày ≤ ngân sách thuốc thiết kế của người chơi 3 giờ (`3 × 12% × thu nhập/giờ`) - vườn thay tối đa phần thuốc
-  của một người chơi vừa, người chơi nhiều vẫn mua phần còn lại.
+  Oran → 10 HP nhỏ, NPC 20 xu), Nước tinh khiết (2 Chesto + 1 Pecha → 10 MP nhỏ, 20), Siêu thuốc (2 Sitrus + 1 Rawst →
+  10 HP vừa, 40), Nước khoáng (2 Leppa + 1 Cheri → 10 MP vừa, 40), Thuốc cao cấp (1 Lum + 3 Sitrus → 10 HP lớn, 70). Từ
+  01/11/2026 (giá thuốc NPC hạ, 9.3) một mẻ tốn đúng 65% giá NPC 10 bình ở **mọi cấp** (`VuonBerry.meMucTieu`): 13 / 13 / 26
+  / 26 / 46 xu = tiền hạt (≤ 80%, nhờ trần hạt) + phí bếp phần còn lại (`phiBepThuocVuon`, không theo giờ thu nhập). Trước:
+  phí bếp 0,5% giờ thu nhập + hạt theo bậc (cấp 27: Thuốc xịt ~146 xu thay 1.000 NPC cũ). **Trần ngày** giữ đúng số bình như
+  trước: tổng trọng số (giá NPC cũ 100 / 500 / 800 / 50 / 150 mỗi bình, `VuonBerry.TRONG_SO_TRAN`) ≤ ngân sách thuốc thiết kế
+  3 giờ (`3 × 12% × thu nhập/giờ`), không tính theo giá NPC mới (nếu tính theo giá mới sẽ chế được gấp ~50 lần).
+  Công thức thuốc thường 4–8 (Thuốc xịt, Nước tinh khiết, Siêu thuốc, Nước khoáng, Thuốc cao cấp - berry + vật liệu nhặt /
+  câu / đào) tính cùng cách (`VuonBerry.laThuocBinh`): 13 / 13 / 26 / 26 / 46 xu một mẻ (tiền hạt của phần berry + phí bếp
+  phần còn lại; vật liệu khác không mua bằng xu) và chung trần ngày theo trọng số với thuốc từ vườn.
 - **Kinh tế vườn** (`server/test/KiemVuonBerry` in bảng): bình thuốc thật không bán NPC được; vật liệu sinh thái đổi ra xu
   **chỉ** qua NPC mua lại (`HeSinhThaiMenu.banNpc` → `ChoSinhThai.npcMua`), trần chung 0,1 giờ / ngày với cá / khoáng; chợ
   người chơi là chuyển tiền (đốt 7%). Mỗi ngày tối đa:
@@ -1873,8 +1879,42 @@ Mục tiêu: xu ra / vào 90–105%, lượng khoá ~95%; lượng tích chậm 
 | Sửa đồ | 10% giá món × **phần độ bền đã mất** (31/10/2026, `DoBenLogic.giaSua`; trước luôn 10% giá dù mất 2%), trần 8% thu nhập 1 giờ mỗi món | `tieu_hao.sua_do_phan_tram_thu_nhap` |
 | Bán đồ cho NPC | 5% giá, không cộng theo cấp cường hoá | `phi.ban_npc_phan_tram` |
 | Rơi xu / đá | 30% số quái / 15‰ (khi lệch cấp ≤ 5) | `roi.xu.phan_tram`, `roi.da_nang_cap.phan_nghin` |
-| Thuốc | tổng chi thuốc ≤ 12% thu nhập; mỗi món 0,05–5% thu nhập 1 giờ | (dữ liệu) |
+| Thuốc | tổng chi thuốc ≤ 12% thu nhập; mỗi món 0,05–5% thu nhập 1 giờ (thuốc cấp cao: bảng dưới) | (dữ liệu) / `com.htbb.pokemon.ThuocCapCao` |
 | Xổ số | thuế 10% xu / 15% lượng | — |
+
+**Thuốc bằng xu, một chuỗi giá** (31/10–01/11/2026, chủ game + người chơi: cửa sổ thuốc chỉ tới 1.000 HP / 2.000 PP,
+giá 100 / 500 / 800 xu, trong khi cấp 50+ có 11–22 nghìn HP nên phải đốt lượng khoá vào gói 200 bình). Y tá Chansey và
+Kecleon có thêm mục "Thuốc cấp cao (cấp 30+)": bán **đúng các bình** của gói lượng khoá (cùng id `data_potion`, cùng lượng
+hồi), giá xu một bình = max(giá gốc, 0,05% thu nhập 1 giờ ở cấp người mua). Cửa sổ thuốc cũ hạ giá cho cùng một chuỗi
+(khối `sua_gia_thuoc.sql`): bình lớn hơn luôn đắt hơn, xu / điểm hồi giảm dần. Gói lượng khoá 200 bình giữ nguyên (tiện,
+không bắt buộc).
+
+| Bình (id) | Hồi | Bán ở | Giá (xu / bình) | Xu / 1.000 điểm | % thu nhập 1 giờ ở cấp mở / cấp 1 |
+|---|---|---|---|---|---|
+| Thuốc hồi máu (1) | 80 HP | cửa sổ | 2 (cũ 100) | 25 | 0,056% (cấp 1) |
+| Siêu thuốc hồi máu (2) | 300 HP | cửa sổ | 4 (cũ 500) | 13,3 | 0,11% (cấp 1) |
+| Thuốc hồi máu cực mạnh (3) | 1.000 HP | cửa sổ | 7 (cũ 800) | 7 | 0,19% (cấp 1) |
+| Thuốc hồi máu tối đa (22) | 3.000 HP | cấp cao, cấp 30+ | 11 | 3,7 | 0,080% (cấp 30, 13.803) |
+| Thuốc hồi máu 7k (93) | 7.000 HP | cấp cao, cấp 50+ | 20 | 2,9 | 0,059% (cấp 50, 33.925) |
+| Thuốc hồi máu 15k (94) | 15.000 HP | cấp cao, cấp 70+ | 42 | 2,8 | 0,051% (cấp 70, 81.776) |
+| Ether (4) | 160 PP | cửa sổ | 2 (cũ 50) | 12,5 | 0,056% (cấp 1) |
+| Ether lớn (5) | 600 PP | cửa sổ | 4 (cũ 150) | 6,7 | 0,11% (cấp 1) |
+| Ether tối đa (6) | 2.000 PP | cửa sổ | 7 (cũ 500) | 3,5 | 0,19% (cấp 1) |
+| Elixir tối đa (24) | 3.500 PP | cấp cao, cấp 30+ | 9 | 2,6 | 0,065% (cấp 30) |
+| Ether 7k (95) | 7.000 PP | cấp cao, cấp 50+ | 17 | 2,4 | 0,050% (cấp 50) |
+
+Xu / điểm giảm ~47% mỗi bậc ở ba bình nhỏ (giá nguyên xu và sàn 0,05% thu nhập cấp 1 không cho bước nhỏ hơn), ≤ 27% từ
+3.000 trở lên. Cơ sở giá (số đo cấp 50+: mỗi đòn quái ~3–6% HP tối đa, vài đòn mỗi con; hồi 1% / 5 giây chỉ sau 10 giây
+không mất máu nên lúc đánh liên tục gần như không hồi): đánh quái đúng cấp ở cấp mở (3 đòn × 4,5%, HP tối đa ~8k / 15k /
+22k; PP giả định bằng nửa số điểm HP) tổng chi thuốc HP + PP ≈ 11,9% / 6,8% / 5,3% thu nhập ở cấp 30 / 50 / 70 (cấp 50 với
+11k–22k HP: 5,0–10,0%); nặng nhất số đo (4 đòn × 6%) cấp 50 / 70: 12,4% / 9,7%. Chủ game chấp nhận vượt 12% chút ít ở cấp 30
+(trần kiểm ~13%). Lên cấp, sàn 0,05% đẩy giá thuốc cấp cao lên dần (cấp 100: bình 15.000 HP ~152 xu). `data_potion.price`
+của thuốc cấp cao giữ 0: gói 24 (cửa sổ thuốc giá cố định, client chỉ biết giá 20 dòng đầu) không mua được, chỉ qua menu
+máy chủ (mọi client cũ / mới) - kiểm cấp mở, đứng cạnh Chansey / Kecleon (trong nhà: nhà có NPC đó, nhà Machamp không;
+ngoài trời ≤ 7 ô - `NpcTinhBanDo.dungCanh`), giá không đổi từ lúc xem, ô ≤ 999 bình. Cửa sổ thuốc (gói 24 loại 4) cũng vậy
+từ 01/11/2026: chỉ món trong cửa sổ (`NpcDichVu.THUOC_BAN`) và chỉ khi đứng cạnh Chansey / Kecleon
+(`NpcTinhBanDo.thuocBanTaiCho`) - trước đó trong bất kỳ nhà nào (vd nhà Machamp) mua được mọi thuốc có giá, kể cả Kẹo kinh
+nghiệm S (id 10, 500 xu) không NPC nào bán. Kiểm: `server/test/KiemThuocCapCao`.
 
 Bot: xu, đá, đồ rơi đều theo năng lượng; thuốc và sửa đồ tính theo giờ thật, nên treo máy lâu bị lỗ. Tín hiệu nghi bot: năng
 lượng = 0 liên tục nhiều ngày, nhặt đồ đều hơn 20 giờ / ngày, nhịp đánh bất thường (kết hợp cấm theo máy).
@@ -1903,9 +1943,9 @@ bản đồ / sự kiện đó nếu đỏ.
   `giftcode.gia_tri_toi_da` (30); tổng giá trị phát / tháng toàn máy chủ ≤ `giftcode.ngan_sach_thang` (20.000); mỗi tài khoản 1
   lần / mã, mỗi Pokémon ≤ `giftcode.toi_da_thang` (2) mã / tháng; nhập sai 5 lần khoá 10 phút. Server kiểm lại khi phát.
 - **Cửa hàng** (Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm, `real.CuaHangLauDai`): luật "không vật phẩm mồ côi" — mọi dòng **chỉ ra vật phẩm, không bao
-  giờ ra xu / lượng / lượng khoá**. Trang bị bằng xu (Bronzong, 1,5 giờ), thuốc bằng xu (Chansey), bùa / thuốc hiếm bằng lượng
-  khoá có giới hạn tuần (Kecleon), trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện
-  lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật). Dòng giá lượng khoá (Kecleon) thiếu lượng
+  giờ ra xu / lượng / lượng khoá**. Trang bị bằng xu (Bronzong, 1,5 giờ), thuốc bằng xu (Chansey; thuốc cấp cao
+  3.000–15.000 HP / PP mở theo cấp ở Chansey và Kecleon, 9.3), bùa / thuốc hiếm bằng lượng khoá có giới hạn tuần (Kecleon),
+  trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật). Dòng giá lượng khoá (Kecleon) thiếu lượng
   khoá thì trừ lượng cùng số, đồ nhận không khoá (31/10/2026).
 - **Nạp tiền** (tắt mặc định, `sv.nap_tien` + cấu hình web): bán gói lượng, Thẻ tháng, Vé mùa cao cấp, Thành viên. Chủ game
   31/10/2026 đổi luật: lượng nạp là tiền **tốt nhất** - mua được mọi thứ lượng khoá mua được (đồ không khoá) và đồ đẹp / chỉ

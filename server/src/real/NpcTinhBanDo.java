@@ -167,6 +167,44 @@ public final class NpcTinhBanDo {
         return false;
     }
 
+    /**
+     * Chat hon {@link #oNoiDichVu} (cung y goi 24 {@link #banTaiCho}): trong nha - nha do phai co NPC loai {@code loai}
+     * (tep cMap khong co danh sach NPC thi giu luat cu: moi nha); ngoai troi - trong {@link #BAN_KINH_O} o quanh NPC do.
+     * Dung cho menu mua co gia rieng (real.ThuocCapCaoGame): goi menu tu che trong nha Machamp khong mua duoc thuoc.
+     */
+    public static boolean dungCanh(final Char p, final int... loai) {
+        if (p == null || p.map == null) {
+            return false;
+        }
+        if (!p.map.isMapOffline) {
+            return gan(p, loai);
+        }
+        final List<int[]> ds = cua(p.mapID);
+        if (ds.isEmpty()) {
+            return true;
+        }
+        for (final int[] n : ds) {
+            for (final int l : loai) {
+                if (n[2] == l) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Goi 24 mua thuoc (loai 4): {@code id} co trong cua so thuoc (NpcDichVu.THUOC_BAN - Chansey 0 va Kecleon 1 / 26
+     * cung mot danh sach) va nguoi choi {@link #dungCanh} mot NPC ban thuoc.
+     */
+    public static boolean thuocBanTaiCho(final Char p, final int id) {
+        boolean co = false;
+        for (final int t : NpcDichVu.THUOC_BAN) {
+            co |= t == id;
+        }
+        return co && dungCanh(p, NPC_BAN_THUOC);
+    }
+
     /** Thay "player.map.isMapOffline" o cac ham dich vu NPC: trong nha (luat cu) HOAC dung canh NPC dung loai. */
     public static boolean oNoiDichVu(final Char p, final int... loai) {
         if (p == null || p.map == null) {

@@ -281,7 +281,7 @@ public final class KiemVeDichChuyen {
         p.mapID = 102;
         dung("goi 23 loai 1 (Kecleon): menu dich vu", NpcDichVu.moMenu(p, VeDichChuyenGame.NPC_KECLEON));
         Object[] m = p.menuCuoi();
-        dung("menu Kecleon gui idNpc 1, 2 dong", m != null && ((Integer) m[0]).intValue() == 1 && ((String[]) m[2]).length == 2);
+        dung("menu Kecleon gui idNpc 1, 3 dong (thuoc / ve / thuoc cap cao)", m != null && ((Integer) m[0]).intValue() == 1 && ((String[]) m[2]).length == 3);
         dung("menu Kecleon dong 2 ghi gia theo cap", m != null && ((String[]) m[2])[1].contains(com.htbb.pokemon.HoiSinh.so(VeDichChuyen.gia(27)) + " xu/vé"));
         dung("Kecleon ban le (26) cung menu", NpcDichVu.moMenu(p, VeDichChuyenGame.NPC_KECLEON_2));
         p.goi.clear();

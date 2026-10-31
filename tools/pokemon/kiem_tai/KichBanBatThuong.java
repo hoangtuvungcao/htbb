@@ -32,7 +32,7 @@ public final class KichBanBatThuong {
     private KichBanBatThuong() {
     }
 
-    static final int GIA_THUOC_1 = 100;   // Binh thuoc 1 o Kecleon (data_potion) - kiem lai bang lan mua dau
+    static final int GIA_THUOC_1 = 2;     // Binh thuoc 1 o Kecleon (data_potion) - kiem lai bang lan mua dau
     static final int VU_KHI = 79;         // Than lua so cap (shop vu khi NPC 2, 500 xu, ban lai 25 xu)
 
     // ================================================================== GM chuan bi
@@ -114,6 +114,12 @@ public final class KichBanBatThuong {
 
     /** Mo Kecleon (NPC 1) -> "Mua thuoc" nhu client. */
     static boolean moKecleon(BotChucNang.Bot b) throws IOException {
+        // 01/11/2026: goi 24 thuoc chi mua canh Chansey / Kecleon - sang nha Kecleon 102 (Pewter) neu dang o nha khac (103)
+        if (b.mapId != 102 && b.mapId != 72 && b.mapId != 82) {
+            if (KichBanDS2.laOffline(b.mapId)) KichBanDS2.raNgoai(b);
+            KichBanDS2.vaoNha(b, KichBanDS2.nhaKecleon(b.mapId));
+            onDinh(b);
+        }
         int m = b.moc();
         b.gui(23, (byte) 1);
         b.cho(x -> x.coLenh(m, 23) || x.coLenh(m, -30), 5000);

@@ -144,6 +144,9 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
 20. `sua_tien_te_cua_hang.sql` (31/10/2026, kiểm loại tiền mọi vật phẩm đang bán): `data_shop_gia_lau_dai` dòng 116..125
     (nguyên liệu cấp 4-5 khoá) ghi đúng `tien_moi = 2` (lượng khoá) như máy chủ đang trừ; giá không đổi. Phần A cũng có.
     `server/test/KiemLoaiTienCuaHang`.
+21. `sua_gia_thuoc.sql` (01/11/2026): giá cửa sổ thuốc Chansey / Kecleon (`data_potion` 1–6) 100 / 500 / 800 xu (80 / 300 /
+    1.000 HP) và 50 / 150 / 500 xu (Ether 160 / 600 / 2.000 PP) → 2 / 4 / 7 xu, nối chuỗi với thuốc cấp cao bằng xu
+    (`com.htbb.pokemon.ThuocCapCao`, thiết kế 9.3). `UPDATE … AND price = <cũ>` (giá admin đã sửa giữ nguyên). Phần A cũng có.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

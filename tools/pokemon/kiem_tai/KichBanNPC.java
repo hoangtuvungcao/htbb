@@ -380,8 +380,8 @@ public class KichBanNPC {
             int m = b.moc();
             b.gui(23, (byte) 0);
             int n = b.doiMenu(m, 0, 0, 3000);
-            // 0.9.8: + "Poké Ball & Hộp PC" (thu phuc)
-            BotChucNang.ket("dich_vu.chansey.menu", n == 3 && b.timMuc("Hồi phục") == 0 && b.timMuc("Hộp PC") >= 0, b.chuTu(m));
+            // 0.9.8: + "Poké Ball & Hộp PC" (thu phuc); 01/11/2026: + "Thuốc cấp cao (cấp 30+)"
+            BotChucNang.ket("dich_vu.chansey.menu", n == 4 && b.timMuc("Hồi phục") == 0 && b.timMuc("Hộp PC") >= 0, b.chuTu(m));
             m = b.moc();
             b.menu(0, 0, 0);
             String hp = b.doiChu(m, 2500, "hồi phục hoàn toàn", "khoẻ mạnh");

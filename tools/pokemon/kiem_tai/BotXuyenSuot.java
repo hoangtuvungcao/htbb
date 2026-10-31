@@ -657,14 +657,20 @@ public class BotXuyenSuot {
                 if (tot < 0 || !toi(tot)) { ghi("khong ve duoc lang de mua thuoc"); return; }
             }
             int lv = b.lv >= 30 ? 3 : b.lv >= 10 ? 2 : 1;
-            if (!KichBanDS2.vaoNha(b, 103)) { ghi("khong vao duoc nha shop"); return; }
+            // 01/11/2026: goi 24 thuoc chi mua canh Chansey / Kecleon - nha Kecleon (Pewter 102, 72, 82), canh nha Machamp
+            int nhaKec = KichBanDS2.nhaKecleon(b.mapId);
+            if (!KichBanDS2.vaoNha(b, nhaKec)) { ghi("khong vao duoc nha shop"); return; }
             int t0 = b.soThuoc(lv);
             b.gui(24, (byte) 1, (byte) 4, (short) lv, (short) 20);
             b.bom(1200);
             b.lamMoi();
-            ghi("mua thuoc " + lv + ": " + t0 + " -> " + b.soThuoc(lv) + " (xu " + b.xu + ")");
-            // vu khi shop theo bac cap (79 + 7*lop: cap 1,6,11,...,31) - nguoi choi that mua do o tiem
+            ghi("mua thuoc " + lv + ": " + t0 + " -> " + b.soThuoc(lv) + " (xu " + b.xu + ", nha " + b.mapId + ")");
+            // vu khi shop theo bac cap (79 + 7*lop: cap 1,6,11,...,31) - nguoi choi that mua do o tiem Machamp (nha Kecleon + 1)
             int tpl = vuKhiShop(lop, b.lv);
+            if (tpl != vuKhiDangMac && b.mapId == nhaKec) {
+                KichBanDS2.raNgoai(b);
+                if (!KichBanDS2.vaoNha(b, nhaKec + 1)) { ghi("khong vao duoc nha Machamp " + (nhaKec + 1)); return; }
+            }
             if (tpl != vuKhiDangMac) {
                 int id = KichBanDS3.muaVuKhi(b, tpl);
                 if (id != KichBanDS3.KHONG) {

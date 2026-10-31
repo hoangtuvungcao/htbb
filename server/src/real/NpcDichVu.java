@@ -6,7 +6,8 @@ import io.Message;
  * Menu dich vu cua NPC tinh khong co menu rieng trong game goc (client gui goi 23 voi loai NPC, server tra menu -30
  * voi id NPC = loai; nguoi choi chon -> MapDoMenu goi {@link #xuLyMenu}).
  *
- *   - Y ta Chansey (loai 0, Trung tam Pokemon cua thi tran): hoi phuc HP / PP mien phi, mua thuoc hoi phuc.
+ *   - Y ta Chansey (loai 0, Trung tam Pokemon cua thi tran): hoi phuc HP / PP mien phi, mua thuoc hoi phuc, thuoc cap cao
+ *     bang xu mo theo cap (real.ThuocCapCaoGame, cung o Kecleon).
  *     Truoc day goi 23 loai 0 khong co nhanh nao -> client nhan goi rong, bam Chansey khong co gi xay ra.
  *   - Meowth thuong nhan / doi xu (loai 22 / 31): ngan hang - kho xu / luong, chuyen luong, cua hang va nap
  *     (khi bat nap). Truoc day muc "Nap xu" cua client la nap SMS cu (danh sach rong -> "tam khoa").
@@ -72,6 +73,7 @@ public final class NpcDichVu {
                     "Hồi phục Pokémon (miễn phí)",
                     "Mua thuốc hồi phục",
                     BatPokemonGame.TEN_MUC_CHANSEY, // [bat-pokemon] muc 2
+                    ThuocCapCaoGame.TEN_MUC, // muc 3: thuoc 3.000..15.000 HP / PP bang xu, mo theo cap (31/10/2026)
                 }, NPC_Y_TA, 0));
                 return true;
             case NPC_PIDGEOT:
@@ -356,6 +358,9 @@ public final class NpcDichVu {
         if (VeDichChuyenGame.xuLyMenu(p, idNpc, idMenu, chon)) {
             return true; // NPC ao ve dich chuyen (dung / mua)
         }
+        if (ThuocCapCaoGame.xuLyMenu(p, idNpc, idMenu, chon)) {
+            return true; // NPC ao thuoc cap cao (Chansey / Kecleon)
+        }
         if (idNpc == VeDichChuyenGame.NPC_KECLEON || idNpc == VeDichChuyenGame.NPC_KECLEON_2) {
             if (idMenu != 0) {
                 return true;
@@ -368,6 +373,8 @@ public final class NpcDichVu {
                 guiShopThuoc(p);
             } else if (chon == 1) {
                 VeDichChuyenGame.moMua(p);
+            } else if (chon == 2) {
+                ThuocCapCaoGame.moDanhSach(p);
             }
             return true;
         }
@@ -414,6 +421,8 @@ public final class NpcDichVu {
                 guiShopThuoc(p);
             } else if (chon == 2) {
                 BatPokemonGame.moMenuBong(p); // [bat-pokemon]
+            } else if (chon == 3) {
+                ThuocCapCaoGame.moDanhSach(p);
             }
             return true;
         }

@@ -192,8 +192,8 @@ public final class KiemVuonBerry {
         }
         Kiem.dung("moi cap, moi berry: 1 lan thu (3 berry) >= 2 x tien hat (trong la loi)" + (loi ? "" : " (" + loiSai + ")"), loi);
         Kiem.dung("gia hat trong [0,5; 1] x gia tham chieu 1 berry", VuonBerry.GIA_HAT_PHAN_TRAM >= 50 && VuonBerry.GIA_HAT_PHAN_TRAM <= 100);
-        Kiem.bang("hat Oran cap 1 = 50% gia tham chieu bac 1", Long.valueOf(Math.max(1L, VatLieuSinhThai.giaXu(30, 1) / 2)),
-                Long.valueOf(VuonBerry.giaHat(30, 1)));
+        Kiem.bang("hat Oran cap 1 = min(50% gia tham chieu bac 1, tran tu gia thuoc NPC)", Long.valueOf(Math.max(1L,
+                Math.min(VatLieuSinhThai.giaXu(30, 1) / 2, VuonBerry.hatToiDa(30)))), Long.valueOf(VuonBerry.giaHat(30, 1)));
         // 2. voi xu: moi duong doi vat lieu sinh thai ra xu = HeSinhThaiMenu.banNpc (ChoSinhThai.npcMua) -> tran chung / ngay
         final String menu = doc("src/com/htbb/pokemon/HeSinhThaiMenu.java");
         Kiem.bang("chi MOT cho NPC mua vat lieu sinh thai (ChoSinhThai.npcMua)", Integer.valueOf(1),
@@ -247,6 +247,39 @@ public final class KiemVuonBerry {
                         VuonBerry.chiPhiMe(ct, 27) < VuonBerry.giaNpcMe(ct));
             }
         }
+        // 01/11/2026 (gia thuoc NPC ha 2-7 xu): 1 me thuoc vuon ton ~60-70% gia NPC 10 binh o MOI cap, tran ngay giu so binh
+        boolean meKhung = true;
+        String meSai = "";
+        final StringBuilder meBang = new StringBuilder();
+        for (final com.htbb.pokemon.KyNangSong.CongThuc ct : com.htbb.pokemon.KyNangSong.CONG_THUC) {
+            if (!VuonBerry.laThuocBinh(ct)) {
+                continue;
+            }
+            meBang.append(ct.ten).append(": NPC ").append(VuonBerry.giaNpcMe(ct)).append(", vuon ").append(VuonBerry.meMucTieu(ct))
+                    .append(" (hat cap 27 ").append(VuonBerry.hatMe(ct, 27)).append(" + bep ").append(VuonBerry.phiBepThuocVuon(ct, 27))
+                    .append("; cap 100 ").append(VuonBerry.hatMe(ct, 100)).append(" + ").append(VuonBerry.phiBepThuocVuon(ct, 100)).append(")\n");
+            for (int cap = 1; cap <= ThongSoLauDai.CAP_TOI_DA; cap++) {
+                if (VuonBerry.laThuocVuon(ct) && !VuonBerry.meVuonDuoc(ct, cap)) {
+                    continue;
+                }
+                final long cp = VuonBerry.chiPhiMe(ct, cap);
+                final long npc = VuonBerry.giaNpcMe(ct);
+                if (cp * 100 < npc * 60 || cp * 100 > npc * 70 || VuonBerry.phiBepThuocVuon(ct, cap) <= 0) {
+                    meKhung = false;
+                    meSai = ct.ten + " cap " + cap + ": " + cp + " / " + npc;
+                }
+            }
+        }
+        System.out.print(meBang.toString().replaceAll("(?m)^", "   [vuon] "));
+        Kiem.bang("thuoc binh = thuoc vuon 30..34 + cong thuc 4..8 (10 cong thuc)", Integer.valueOf(10), Integer.valueOf(demThuocBinh()));
+        Kiem.dung("moi cap, moi cong thuc thuoc binh (vuon + 4..8): tien 1 me (hat + bep) 60-70% gia NPC 10 binh, bep > 0" + (meKhung ? "" : " (" + meSai + ")"), meKhung);
+        Kiem.bang("tran ngay tinh theo trong so gia NPC cu (giu so binh / ngay)", "[100, 500, 800, 50, 150]",
+                java.util.Arrays.toString(VuonBerry.TRONG_SO_TRAN));
+        final String menuHst = doc("src/com/htbb/pokemon/HeSinhThaiMenu.java");
+        Kiem.dung("HeSinhThaiMenu: tran / cong thuocVuonHomNay bang trongSoMe cho moi thuoc binh, bep = phiBepThuocVuon",
+                menuHst.contains("VuonBerry.laThuocBinh(ct) && h.thuocVuonHomNay + VuonBerry.trongSoMe(ct) > tranVuon")
+                && menuHst.contains("final long bep = VuonBerry.laThuocBinh(ct)") && menuHst.contains("h.thuocVuonHomNay += VuonBerry.trongSoMe(ct)")
+                && menuHst.contains("VuonBerry.phiBepThuocVuon(ct, HeSinhThaiGame.cap(p))"));
         // gia binh NPC trong VuonBerry = phan A data_potion (id 1..5)
         final String toan = DayDu.toanVan();
         final String[] ten = {"Thuốc hồi máu", "Siêu thuốc hồi máu", "Thuốc hồi máu cực mạnh", "Ether", "Ether lớn"};
@@ -257,7 +290,26 @@ public final class KiemVuonBerry {
         Kiem.dung("thuoc 90..94 doi binh 1..5", "PT:1:10".equals(com.htbb.pokemon.KyNangSong.thuongDungThuoc(90))
                 && "PT:5:10".equals(com.htbb.pokemon.KyNangSong.thuongDungThuoc(94)));
         Kiem.dung("menu hat ghi cong dung", menu.contains("VuonBerry.congDung(ma, 2)") && VuonBerry.congDung(30, 2).startsWith("Thuốc xịt từ vườn"));
-        Kiem.dung("huong dan ghi cong dung + gia NPC", VuonBerry.moTaCongDung(27).contains("Thuốc xịt từ vườn (Chế thuốc 1): 3 Berry Oran → 10 bình HP nhỏ (NPC bán 1000 xu"));
+        Kiem.dung("huong dan ghi cong dung + gia NPC", VuonBerry.moTaCongDung(27).contains("Thuốc xịt từ vườn (Chế thuốc 1): 3 Berry Oran → 10 bình HP nhỏ (NPC bán " + VuonBerry.giaNpcMe(ct30()) + " xu"));
+    }
+
+    static int demThuocBinh() {
+        int n = 0;
+        for (final com.htbb.pokemon.KyNangSong.CongThuc c : com.htbb.pokemon.KyNangSong.CONG_THUC) {
+            if (VuonBerry.laThuocBinh(c)) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    static com.htbb.pokemon.KyNangSong.CongThuc ct30() {
+        for (final com.htbb.pokemon.KyNangSong.CongThuc c : com.htbb.pokemon.KyNangSong.CONG_THUC) {
+            if (c.id == 30) {
+                return c;
+            }
+        }
+        return null;
     }
 
     static String doc(final String tep) {

@@ -1724,6 +1724,15 @@ public class OfflineMap extends Map {
                            player.sendMessage(MessageCreator.createServerAlertMessage("Vé dịch chuyển bán ở Kecleon tạp hoá (giá theo cấp).", ""));
                            continue;
                         }
+                        // Goi 24 thuoc chi mua o Chansey / Kecleon dang dung canh va chi mon trong cua so thuoc (NpcDichVu.THUOC_BAN)
+                        // - cung y giap (NpcTinhBanDo.banTaiCho, 5db68468). Truoc 01/11/2026: trong BAT KY nha nao (vd nha Machamp)
+                        // mua duoc moi thuoc co price > 0, ke ca mon khong NPC nao ban (Keo kinh nghiem S id 10 gia 500).
+                        if (!NpcTinhBanDo.thuocBanTaiCho(player, var32)) {
+                           player.sendMessage(MessageCreator.createServerAlertMessage("Thuốc chỉ bán ở Y tá Chansey hoặc Kecleon tạp hoá. Hãy đến gần một trong hai.", ""));
+                           data.NghiVanGianLan.ghiVatPham(player, "hackbitem",
+                                   "doi mua thuoc id " + var32 + " khong o canh Chansey / Kecleon hoac khong co trong cua so thuoc (map " + player.mapID + ")");
+                           continue;
+                        }
                         final long giaMot = Map.potionTemplates2.get(var32).getPrice();
                         long price = giaMot * (long) quantity;
                         if (price <= 0L) {
