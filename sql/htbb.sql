@@ -32066,3 +32066,64 @@ INSERT IGNORE INTO `data_vat_pham_lau_dai` (`id_item`,`ma`,`ten`,`nhom`,`hieu_un
 --  cMap/22 30,27 - tools/pokemon/ThemNpcLang) de "Về làng". data_npc.ban_do khop cMap (test/KiemNpc). Chay lai duoc.
 -- ----------------------------------------------------------------------------------
 UPDATE `data_npc` SET `ban_do` = '0,10,21,22,41,42,70,80,118,201,281' WHERE `type` = 4 AND `ban_do` = '0,10,41,42,70,80,118,201,281';
+-- >>> sua_quai_tinh_anh.sql
+-- ==================================================================================
+--  QUAI TINH ANH THEO QUAI THUONG DANG CHAY (31/10/2026, chu game "fix" TTK sau can bang dong). Do lai TTK tren stack rieng
+--  (bot KichBanDoSuc, cot ttk_tran = giay danh thuan): quai thuong, do cua hang +0: 2,2-5 giay o cap 20-50, 2,2-7,4 giay o
+--  cap 50-85 = dung thiet ke 4 / 5 / 6 giay - duong quai thuong GIU NGUYEN (13-40 / 24-100 giay la giay_moi_con: ca di tim,
+--  di bo, guc; docs/thiet-ke-game.md muc 2.4b). Nhung
+--  bang quai tinh anh (data_noi_dung_quai_tinh_anh, NoiDungLauDai.khiHoiSinh dat maxhp = hp, attack = tan_cong) van la so
+--  sinh ban dau: hai khoi sua_can_bang_cap / sua_can_bang_lop ha tan cong quai thuong cap 13-59 toi 15%, noi suy HP cap
+--  31-39 / 61-69, ha cap Quagsire / Growlithe / Croconaw / Croagunk / Crawdaunt / Farfetch'd ma KHONG sua quai tinh anh ->
+--  tinh anh tan cong x1,32..x1,78 quai thuong (thiet ke x1,3; Arbok 1117 / 627), HP x4,0..x4,84 (thiet ke x4). 30 buoc
+--  chinh "Hạ N quái tinh anh" + 5 buoc ha_alpha la bat buoc. Khoi nay dua moi dong ve dung he so thiet ke tren quai thuong
+--  DANG CHAY: hp = 4 x maxhp, tan_cong = 1,3 x attack (lam tron len o .5), phong_thu = defent (cot chi de doc - may chu dung
+--  thu cua template). Chay lai duoc: UPDATE theo id_goc + 3 GIA TRI CU. Doi xong khoi dong lai may chu game.
+--  Kiem: server/test/KiemTtkQuai.
+-- ----------------------------------------------------------------------------------
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 7480, `tan_cong` = 569, `phong_thu` = 104 WHERE `id_goc` = 13 AND `hp` = 8000 AND `tan_cong` = 589 AND `phong_thu` = 111;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 10560, `tan_cong` = 624, `phong_thu` = 125 WHERE `id_goc` = 14 AND `hp` = 10560 AND `tan_cong` = 685 AND `phong_thu` = 147;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 8520, `tan_cong` = 590, `phong_thu` = 112 WHERE `id_goc` = 15 AND `hp` = 8520 AND `tan_cong` = 608 AND `phong_thu` = 118;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 9000, `tan_cong` = 599, `phong_thu` = 117 WHERE `id_goc` = 16 AND `hp` = 9000 AND `tan_cong` = 628 AND `phong_thu` = 126;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 8000, `tan_cong` = 580, `phong_thu` = 108 WHERE `id_goc` = 17 AND `hp` = 8000 AND `tan_cong` = 589 AND `phong_thu` = 111;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 13680, `tan_cong` = 681, `phong_thu` = 142 WHERE `id_goc` = 18 AND `hp` = 13680 AND `tan_cong` = 802 AND `phong_thu` = 190;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 9520, `tan_cong` = 608, `phong_thu` = 120 WHERE `id_goc` = 19 AND `hp` = 9520 AND `tan_cong` = 647 AND `phong_thu` = 133;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 10040, `tan_cong` = 618, `phong_thu` = 122 WHERE `id_goc` = 20 AND `hp` = 10040 AND `tan_cong` = 667 AND `phong_thu` = 140;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 9000, `tan_cong` = 599, `phong_thu` = 117 WHERE `id_goc` = 21 AND `hp` = 9000 AND `tan_cong` = 628 AND `phong_thu` = 126;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 16760, `tan_cong` = 781, `phong_thu` = 175 WHERE `id_goc` = 22 AND `hp` = 16760 AND `tan_cong` = 919 AND `phong_thu` = 233;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 17840, `tan_cong` = 815, `phong_thu` = 180 WHERE `id_goc` = 23 AND `hp` = 21600 AND `tan_cong` = 1117 AND `phong_thu` = 240;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 10560, `tan_cong` = 624, `phong_thu` = 125 WHERE `id_goc` = 24 AND `hp` = 10560 AND `tan_cong` = 685 AND `phong_thu` = 147;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 12640, `tan_cong` = 649, `phong_thu` = 132 WHERE `id_goc` = 25 AND `hp` = 12640 AND `tan_cong` = 763 AND `phong_thu` = 176;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 12120, `tan_cong` = 644, `phong_thu` = 131 WHERE `id_goc` = 26 AND `hp` = 12120 AND `tan_cong` = 744 AND `phong_thu` = 169;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 13680, `tan_cong` = 681, `phong_thu` = 142 WHERE `id_goc` = 27 AND `hp` = 13680 AND `tan_cong` = 802 AND `phong_thu` = 190;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 11100, `tan_cong` = 631, `phong_thu` = 127 WHERE `id_goc` = 28 AND `hp` = 11640 AND `tan_cong` = 724 AND `phong_thu` = 161;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 13680, `tan_cong` = 681, `phong_thu` = 142 WHERE `id_goc` = 29 AND `hp` = 14720 AND `tan_cong` = 841 AND `phong_thu` = 204;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 14200, `tan_cong` = 698, `phong_thu` = 148 WHERE `id_goc` = 30 AND `hp` = 15200 AND `tan_cong` = 861 AND `phong_thu` = 212;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 19960, `tan_cong` = 884, `phong_thu` = 191 WHERE `id_goc` = 31 AND `hp` = 22880 AND `tan_cong` = 1162 AND `phong_thu` = 255;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 18880, `tan_cong` = 850, `phong_thu` = 185 WHERE `id_goc` = 32 AND `hp` = 22280 AND `tan_cong` = 1140 AND `phong_thu` = 247;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 21000, `tan_cong` = 918, `phong_thu` = 196 WHERE `id_goc` = 33 AND `hp` = 23520 AND `tan_cong` = 1186 AND `phong_thu` = 262;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 22080, `tan_cong` = 953, `phong_thu` = 202 WHERE `id_goc` = 34 AND `hp` = 24200 AND `tan_cong` = 1208 AND `phong_thu` = 269;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 21000, `tan_cong` = 918, `phong_thu` = 196 WHERE `id_goc` = 35 AND `hp` = 24840 AND `tan_cong` = 1230 AND `phong_thu` = 276;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 25280, `tan_cong` = 1054, `phong_thu` = 218 WHERE `id_goc` = 40 AND `hp` = 26080 AND `tan_cong` = 1275 AND `phong_thu` = 291;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 33240, `tan_cong` = 1357, `phong_thu` = 301 WHERE `id_goc` = 41 AND `hp` = 33240 AND `tan_cong` = 1525 AND `phong_thu` = 369;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 29360, `tan_cong` = 1180, `phong_thu` = 244 WHERE `id_goc` = 42 AND `hp` = 29360 AND `tan_cong` = 1388 AND `phong_thu` = 326;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 34480, `tan_cong` = 1427, `phong_thu` = 326 WHERE `id_goc` = 44 AND `hp` = 34480 AND `tan_cong` = 1569 AND `phong_thu` = 384;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 24200, `tan_cong` = 1021, `phong_thu` = 212 WHERE `id_goc` = 45 AND `hp` = 26760 AND `tan_cong` = 1299 AND `phong_thu` = 298;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 32560, `tan_cong` = 1321, `phong_thu` = 290 WHERE `id_goc` = 47 AND `hp` = 32560 AND `tan_cong` = 1502 AND `phong_thu` = 362;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 29960, `tan_cong` = 1200, `phong_thu` = 250 WHERE `id_goc` = 50 AND `hp` = 29960 AND `tan_cong` = 1412 AND `phong_thu` = 334;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 31280, `tan_cong` = 1252, `phong_thu` = 267 WHERE `id_goc` = 52 AND `hp` = 31280 AND `tan_cong` = 1456 AND `phong_thu` = 348;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 52960, `tan_cong` = 1954, `phong_thu` = 506 WHERE `id_goc` = 53 AND `hp` = 54520 AND `tan_cong` = 1954 AND `phong_thu` = 506;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 24200, `tan_cong` = 1021, `phong_thu` = 212 WHERE `id_goc` = 55 AND `hp` = 25480 AND `tan_cong` = 1253 AND `phong_thu` = 283;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 30600, `tan_cong` = 1219, `phong_thu` = 256 WHERE `id_goc` = 57 AND `hp` = 30600 AND `tan_cong` = 1434 AND `phong_thu` = 341;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 31920, `tan_cong` = 1287, `phong_thu` = 278 WHERE `id_goc` = 59 AND `hp` = 31920 AND `tan_cong` = 1479 AND `phong_thu` = 355;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 43480, `tan_cong` = 1819, `phong_thu` = 463 WHERE `id_goc` = 60 AND `hp` = 49880 AND `tan_cong` = 1819 AND `phong_thu` = 463;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 33840, `tan_cong` = 1392, `phong_thu` = 314 WHERE `id_goc` = 62 AND `hp` = 33840 AND `tan_cong` = 1547 AND `phong_thu` = 377;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 27400, `tan_cong` = 1123, `phong_thu` = 229 WHERE `id_goc` = 63 AND `hp` = 27400 AND `tan_cong` = 1321 AND `phong_thu` = 305;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 39000, `tan_cong` = 1693, `phong_thu` = 420 WHERE `id_goc` = 65 AND `hp` = 39000 AND `tan_cong` = 1728 AND `phong_thu` = 434;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 28720, `tan_cong` = 1161, `phong_thu` = 239 WHERE `id_goc` = 68 AND `hp` = 28720 AND `tan_cong` = 1366 AND `phong_thu` = 319;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 28040, `tan_cong` = 1141, `phong_thu` = 234 WHERE `id_goc` = 71 AND `hp` = 28040 AND `tan_cong` = 1343 AND `phong_thu` = 312;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 36440, `tan_cong` = 1539, `phong_thu` = 364 WHERE `id_goc` = 74 AND `hp` = 36440 AND `tan_cong` = 1638 AND `phong_thu` = 405;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 37720, `tan_cong` = 1615, `phong_thu` = 392 WHERE `id_goc` = 76 AND `hp` = 37720 AND `tan_cong` = 1682 AND `phong_thu` = 420;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 46640, `tan_cong` = 1864, `phong_thu` = 477 WHERE `id_goc` = 77 AND `hp` = 51440 AND `tan_cong` = 1864 AND `phong_thu` = 477;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 35120, `tan_cong` = 1465, `phong_thu` = 339 WHERE `id_goc` = 80 AND `hp` = 35120 AND `tan_cong` = 1592 AND `phong_thu` = 391;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `hp` = 49800, `tan_cong` = 1910, `phong_thu` = 491 WHERE `id_goc` = 81 AND `hp` = 53040 AND `tan_cong` = 1910 AND `phong_thu` = 491;

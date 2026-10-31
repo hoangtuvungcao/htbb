@@ -292,6 +292,67 @@ PvP      = sát thương × 0,30, TRẦN 8% HP tối đa của mục tiêu mỗi
 - TTK mục tiêu: quái thường hạ người ~12–15 đòn; quái tinh anh ~20 giây; boss Gym 90–120 giây đánh một mình đúng cấp;
   boss thế giới 8–12 phút với 20 người; PvP cùng cấp cùng đồ 10–14 giây.
 
+### 2.4b TTK đo thật (31/10/2026)
+
+TTK là **giây đánh thuần**: từ đòn đầu tới khi quái gục, không tính đi tìm, đi bộ, uống thuốc, gục. Bot đo sức
+`tools/pokemon/kiem_tai/KichBanDoSuc` ghi cả hai: cột `ttk_tran` (TTK) và `giay_moi_con` (thời gian mỗi con, gồm mọi thứ
+ở trên); `-DdoSucNangCap=N` nâng vũ khí vừa mua lên +N ở Machamp trước khi cầm.
+
+Sau cân bằng dòng, chủ game báo "hạ quái cùng cấp quá chậm: 13–40 giây ở cấp 30, 24–100 giây ở cấp 72 với vũ khí +0". Đo
+lại trên stack riêng (người chơi không GM, đồ cửa hàng đúng bậc, điểm huấn luyện chia đều, quái cùng cấp):
+
+- Các con số đó là `giay_moi_con`, không phải TTK. TTK với đồ +0 là 2,2–5 giây ở cấp 20–50 và 2,2–7,4 giây ở cấp 50–85,
+  tức đúng mức thiết kế 4 / 5 / 6 giây (mục 2.3). Thời gian mỗi con ở cấp 20–40 là 5,7–8 giây.
+- **Đường quái thường giữ nguyên.** Hạ thủ / HP quái để đạt "+0 8–12 giây" là làm quái **lì hơn** chứ không nhanh hơn.
+- Vũ khí +6 = +18% chỉ số vũ khí (mục 4.2). Vũ khí chỉ là ~1/3 tấn công, nên +6 ≈ +5–7% tấn công và TTK nhanh hơn ~8–10%
+  (+10: ~12–15%). Muốn "+6 nhanh gấp đôi +0" thì thủ quái phải ≈ 95% tấn công người chơi +0; khi đó dòng tấn công thấp
+  (Squirtle 85) chỉ còn sàn 5% sát thương. Muốn nâng cấp có ý nghĩa hơn thì đòn bẩy là % chỉ số mỗi bậc nâng cấp
+  (`data_nang_cap_lau_dai`), không phải chỉ số quái (chờ chủ game quyết).
+- Mô hình khoá đường quái (`server/test/KiemTtkQuai`):
+  - Tấn công người chơi = (`ChiSoDong` + vũ khí bậc cửa hàng × (1 + % nâng cấp) + huy hiệu + vòng cổ) × 1,125 (đồ mua có
+    +0..25% ngẫu nhiên, `Map.rand10`) × (1 + % giai đoạn tiến hoá) × (1 + điểm huấn luyện, 1/3 vào Tấn công). Lệch số máy
+    chủ trả ≤ 4%.
+  - TTK = HP quái / (K × max(5% tấn công, tấn công − thủ quái)). K là sát thương mỗi giây trên một đòn cơ bản của vòng xoay
+    chiêu, đo theo dòng: Charmander 3,0 (chậm nhất), Bulbasaur 4,5, Eevee 5,0, Squirtle 4,0, Pichu 4,0.
+  - Kiểm mọi dòng ở cấp 10..100:
+    - +0 trong 0,4–1,5 × mục tiêu (mô hình: 2,2–6,6 giây);
+    - +6 nhanh hơn ≥ 5%, +10 nhanh hơn ≥ 8%;
+    - +10 không "một đòn": ≥ 1,2 giây ở vòng xoay nhanh nhất;
+    - không gai giữa hai cấp quái kề nhau (chậm hơn ≤ 20%);
+    - 16 Gym 45–180 giây với đồ +0 (mô hình 59–145 giây; đo thật 31/10/2026 Gym Celadon ở cấp 36, đồ +0: cả 5 dòng thắng,
+      64–123 giây).
+- **Quái tinh anh** (khối `sua_quai_tinh_anh.sql`): bảng `data_noi_dung_quai_tinh_anh` (máy chủ đặt `maxhp` / `attack` của
+  con tinh anh từ đây) chưa theo hai lần "Tự cân chỉnh" của quái thường. Vì vậy tinh anh cấp 13–59 đánh ×1,32–1,78 quái
+  thường (thiết kế ×1,3; Arbok 1.117 so với 627) và có HP ×4,0–4,84. Khối này đưa 46 dòng về đúng ×4 HP / ×1,3 tấn công /
+  thủ template của quái thường đang chạy. Có 30 bước chính "Hạ N quái tinh anh" và 5 bước `ha_alpha` là bắt buộc.
+
+Rủi ro khắc hệ trên bước giết bắt buộc (báo chủ game, **chưa sửa**). `KiemTtkQuai` in danh sách các bước mà sát thương nhận
+mỗi con ≥ ×2,5 so với trung tính:
+
+- Pichu chỉ có chiêu Điện (cả đòn thường ô 0; ô 4 "Nhanh nhẹn" là buff), nên mọi quái Đất chỉ nhận ×0,3: TTK ×3,3, sát thương
+  nhận mỗi con ×3,3–5. Các bước bị ảnh hưởng:
+  - cửa ải CA-03.1 (Quagsire, cấp 10), CA-09.1 (60 Golem, cấp 49), CA-10.1 (65 Rhydon, cấp 57);
+  - bước chính C12.4 (45 Cubone, cấp 23), C25.4 (Palpitoad), C37.5 (Rhydon), C42.3 (Gastrodon), C70.3 / C77.3 / C85.3
+    (Claydol / Flygon).
+- Charmander ở CA-09.1 (Golem): gây ×0,7 và nhận ×2.
+- Đo thật ở bãi Gastrodon (bản đồ 23, cấp 72; bước C42.3 "35 Gastrodon" bắt buộc), đồ +0, 5 phút mỗi dòng:
+  - Bulbasaur hạ 8 con, 2,2 giây mỗi con;
+  - Eevee hạ 8 con, 6,1 giây mỗi con;
+  - Squirtle chỉ hạ 2 con, 15,7 giây mỗi con, tốn 8 bình thuốc mỗi con;
+  - Charmander (Nước đánh Lửa ×1,5, 10 đòn để gục) không hạ được con nào và hết 12 bình;
+  - Pichu (×0,3) không hạ được con nào; cùng bài với vũ khí +6 thì hạ 7 con, 11,2 giây mỗi con, 2,3 bình mỗi con.
+
+Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **chưa sửa**):
+
+- Ở cấp 50–85, dòng không kháng hệ quái nhận 5–7 đòn mỗi con (11–12 đòn để gục, dưới mức 12–15 thiết kế) và dùng 3–6
+  bình thuốc mỗi con. Phần lớn sát thương đến lúc đi tìm (2 quái cùng đánh).
+- Bản đồ Arcanine (20, cấp 60): mọi dòng nhận 26–40 đòn mỗi con, đa số là đòn nhỏ 22–126 cách nhau 0,3 giây, và 3/4 dòng
+  gục. Cần kiểm riêng.
+- Gym Goldenrod (Tauros, cấp 61) đo ở cấp 62, đồ +0: cả 5 dòng gục sau 56–110 giây, boss còn 10–63% HP, mỗi dòng dùng
+  15–19 bình. Sát thương lên boss 1.400–2.400 mỗi giây, tức cần ~100–150 giây để hạ, đúng cửa sổ thiết kế. Thua là do đòn
+  boss (tới 6.285 một đòn), không phải do HP / thủ boss. Khối `sua_can_bang_cap.sql` chỉ hạ tấn công Gym cấp 13–59 (stt
+  2..10); Gym stt 11..16 vẫn là số thiết kế cho đồ +6.
+
 ### 2.5 Trạng thái
 
 Server tính, client chỉ vẽ (`TrangThaiPokemon`, gói -97):
@@ -981,7 +1042,9 @@ vào bằng **vé Mê cung**, quái ra theo đợt kèm boss Mê cung, giới h�
 
 **Quái tinh anh** (chữ người chơi thấy là "quái tinh anh", không dùng "Alpha"): 1/50 lần hồi sinh, to ×1,3, HP ×4, tấn
 công ×1,3, rơi ×3, chắc chắn rơi 1 đá, 2% đồ Hoàn mỹ, TTK ~20 giây, có thông báo bản đồ
-([noi_dung_quai_tinh_anh.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_tinh_anh.csv)).
+([noi_dung_quai_tinh_anh.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_tinh_anh.csv)). HP và tấn công lấy từ bảng
+`data_noi_dung_quai_tinh_anh` (thủ lấy từ template), luôn tính trên quái thường **đang chạy**: mỗi lần sửa chỉ số quái thường
+phải sửa cả bảng này (khối `sua_quai_tinh_anh.sql`, mục 2.4b; `test/KiemTtkQuai` kiểm ×4 / ×1,3).
 
 **Họ quái theo vùng**: mỗi tuyến 3–4 loài thuộc ít nhất 2 hệ, theo môi trường (Đồng cỏ: Thường / Cỏ / Bọ; Rừng: Bọ / Cỏ / Độc;
 Hang: Đá / Đất / Ma; Bờ biển: Nước / Bay; Núi lửa: Lửa / Đá; Hồ: Nước / Băng; Tháp: Ma / Siêu linh). 20 dải 5 cấp ở
