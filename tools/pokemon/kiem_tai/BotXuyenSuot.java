@@ -565,7 +565,16 @@ public class BotXuyenSuot {
             soChet++;
             lucGuc.addLast(System.currentTimeMillis());
             while (lucGuc.size() > 10) lucGuc.removeFirst();
-            ghi("chet -> ve lang | maxhp " + b.maxhp + " | don cuoi: " + tomTatDon());
+            int mapGuc = b.mapId;
+            String don = tomTatDon();
+            ghi("chet -> ve lang | maxhp " + b.maxhp + " | don cuoi: " + don);
+            // guc khong co don quai thuong nao (goi 10) ngoai lang: boss lang thang (danh lan, goi khac) - nguoi choi that thay
+            // thong bao "... đã xuất hiện ở X" / mat mang thi tranh ban do do mot luc (truoc 31/10/2026 bot di qua Fuchsia 8 guc
+            // moi 30 phut khi Lopunny dung o 40,40)
+            if (don.trim().isEmpty() && mapGuc >= 0 && !KichBanDS.laLang(mapGuc) && !KichBanDS2.laOffline(mapGuc)) {
+                MAP_CHAN.put(mapGuc, System.currentTimeMillis() + 30 * 60000L);
+                ghi("guc khong ro don o map " + mapGuc + " (boss lang thang?) -> tranh 60 phut");
+            }
             int m = b.moc();
             b.gui(31, new byte[0]);
             b.cho(x -> x.coLenh(m, 12), 6000);

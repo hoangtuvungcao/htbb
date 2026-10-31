@@ -553,9 +553,39 @@ final class KichBanCap140 {
         }
 
         // ---------------------------------------------------------------- vong choi
+        int boSuBoss;
+
+        /**
+         * Thong bao may chu "<boss> đã xuất hiện ở <ban do>!" / "... đã rời <ban do>. Hẹn lần sau!" (ThongBao.bossXuatHien /
+         * bossBienMat): nguoi choi that tranh ban do co boss lang thang (danh lan 220 px, 27.000 tan cong) - chan 3 gio / mo lai.
+         */
+        void xemBoss() {
+            int n = b.su.size();
+            if (boSuBoss > n) boSuBoss = 0;
+            for (int i = boSuBoss; i < n; i++) {
+                String c = b.su.get(i).chu;
+                if (c == null) continue;
+                Matcher co = Pattern.compile("đã xuất hiện ở ([^!|]+)!").matcher(c);
+                Matcher roi = Pattern.compile("đã rời ([^.|]+)\\. Hẹn").matcher(c);
+                String ten = co.find() ? co.group(1).trim() : roi.find() ? roi.group(1).trim() : null;
+                if (ten == null) continue;
+                Integer load = LOAD_THEO_TEN.get(ten);
+                if (load == null) continue;
+                boolean xuatHien = c.contains("đã xuất hiện");
+                for (int mid : mapTim()) {
+                    if (!load.equals(BotXuyenSuot.LOAD.get(mid)) || KichBanDS.laLang(mid)) continue;
+                    if (xuatHien) BotXuyenSuot.MAP_CHAN.put(mid, System.currentTimeMillis() + 3 * 3600000L);
+                    else BotXuyenSuot.MAP_CHAN.remove(mid);
+                }
+                ghi("boss " + (xuatHien ? "o " : "roi ") + ten + " (load " + load + ") -> " + (xuatHien ? "tranh ban do" : "mo lai"));
+            }
+            boSuBoss = n;
+        }
+
         void vong() throws Exception {
             BotXuyenSuot.quetLog();
             b.lamMoi();
+            xemBoss();
             // trong nha / khu khong co cong di bo (Bao tang 100 sau Arcanine): ra cua nhu nguoi choi truoc khi tim duong
             if (b.mapId >= 0 && !BotXuyenSuot.LOAD.containsKey(b.mapId)) {
                 int truoc = b.mapId;
