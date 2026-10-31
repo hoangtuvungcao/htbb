@@ -6,6 +6,31 @@ using UnityEngine;
 
 public class RMS
 {
+	// Ten kho luu da nam tren may nguoi choi tu ban phat hanh dau (dat theo game goc). GIU NGUYEN chuoi: doi ten =
+	// mat mat khau da nho / o nhanh / may chu da chon / anh da tai cua nguoi choi cu. Cung ten voi ban jar (RMS.java).
+	// Danh sach ngoai le: du_lieu/ten_cu_cho_phep.csv (server/test/KiemTenCu.java).
+
+	/// <summary>nho tai khoan / mat khau (LoginScr)</summary>
+	public const string KHO_DANG_NHAP = "nqshlogin"; // ten kho cu tren may nguoi choi - giu de khong mat du lieu
+
+	/// <summary>danh sach may chu da chon (ServerListScr)</summary>
+	public const string KHO_DS_MAY_CHU = "ipnqsh"; // ten kho cu tren may nguoi choi - giu de khong mat du lieu
+
+	/// <summary>may chu dang nhap tu dong (ServerListScr)</summary>
+	public const string KHO_MAY_CHU_TU_DONG = "ipnqshauto"; // ten kho cu tren may nguoi choi - giu de khong mat du lieu
+
+	/// <summary>danh sach ip (saveRMSStringIp)</summary>
+	public const string KHO_IP = "nqshIP"; // ten kho cu tren may nguoi choi - giu de khong mat du lieu
+
+	/// <summary>thanh o nhanh</summary>
+	public const string KHO_O_NHANH = "nqshQuickSlot"; // ten kho cu tren may nguoi choi - giu de khong mat du lieu
+
+	/// <summary>anh binh thuoc / ngua da dung (GameData.loadImgPotion; GameMidlet xoa de dung lai moi lan mo)</summary>
+	public const string KHO_ANH_THUOC = "nqshImgPotionNew"; // ten kho cu tren may nguoi choi - giu de khong mat du lieu
+
+	/// <summary>kho anh thuoc doi cu hon nua: chi de XOA (GameData.loadImgPotion)</summary>
+	public const string KHO_ANH_THUOC_CU = "nqshImgPotion"; // ten kho cu can xoa tren may nguoi choi
+
 	private const int INTERVAL = 5;
 
 	private const int MAXTIME = 500;
@@ -154,7 +179,7 @@ public class RMS
 				dataOutputStream.writeShort(port[i]);
 				dataOutputStream.writeUTF(name[i]);
 			}
-			saveRMS("nqshIP", dataOutputStream.toByteArray());
+			saveRMS(KHO_IP, dataOutputStream.toByteArray());
 			dataOutputStream.close();
 		}
 		catch (Exception)
@@ -202,7 +227,7 @@ public class RMS
 				}
 			}
 			sbyte[] array = dataOutputStream.toByteArray();
-			saveRMS("nqshQuickSlot", array);
+			saveRMS(KHO_O_NHANH, array);
 			dataOutputStream.close();
 		}
 		catch (Exception)
@@ -212,7 +237,7 @@ public class RMS
 
 	public static void loadQuickSlot()
 	{
-		sbyte[] array = loadRMS("nqshQuickSlot");
+		sbyte[] array = loadRMS(KHO_O_NHANH);
 		if (array == null)
 		{
 			return;

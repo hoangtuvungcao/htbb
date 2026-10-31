@@ -133,8 +133,8 @@ public static class BuildCli
     /// <summary>
     /// Máy chủ + kênh cập nhật + phiên bản cho BẢN PHÁT HÀNH, đóng vào Resources/htbb_phat_hanh.txt (ThuongHieu đọc
     /// lúc chạy). Máy chủ: -htbbMayChu (GameCI customParameters) > biến MAY_CHU_CHINH > tools/phat-hanh/may_chu.conf >
-    /// ThuongHieu.MAY_CHU_CHINH - thiếu là DỪNG build (trước đây rơi về danh sách server nqsh-h2.top).
-    /// Kênh cập nhật: -htbbCapNhat > CAP_NHAT_URL > may_chu.conf; rỗng = tắt tự cập nhật; kênh NQSH-H2 = DỪNG.
+    /// ThuongHieu.MAY_CHU_CHINH - thiếu là DỪNG build (trước đây rơi về danh sách server của game gốc).
+    /// Kênh cập nhật: -htbbCapNhat > CAP_NHAT_URL > may_chu.conf; rỗng = tắt tự cập nhật; kênh phát hành cũ của game gốc (ThuongHieu.laKenhCu) = DỪNG.
     /// Trả false nếu cấu hình sai (đã ghi lỗi).
     /// </summary>
     private static bool dongCauHinhPhatHanh(out string ban)
@@ -157,9 +157,9 @@ public static class BuildCli
                 + "(mau: may_chu.conf.example). Hien tai: '" + mayChu + "'");
             return false;
         }
-        if (ThuongHieu.laKenhNqsh(mayChu) || ThuongHieu.laKenhNqsh(capNhat))
+        if (ThuongHieu.laKenhCu(mayChu) || ThuongHieu.laKenhCu(capNhat))
         {
-            UnityEngine.Debug.LogError("HTBB LOI: may chu / kenh cap nhat tro ve NQSH-H2 (" + mayChu + " / " + capNhat + ") - khong build ban HTBB");
+            UnityEngine.Debug.LogError("HTBB LOI: may chu / kenh cap nhat tro ve kenh cu cua game goc (" + mayChu + " / " + capNhat + ") - khong build ban HTBB");
             return false;
         }
         int so;

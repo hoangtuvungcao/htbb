@@ -29,7 +29,7 @@ Mục lục:
 
 ### 1.1 Ý tưởng
 
-- HTBB là MMORPG 2D đánh thời gian thực, chuyển từ game kiếm hiệp cũ (KPAH/NQSH). **Người chơi LÀ một Pokémon**:
+- HTBB là MMORPG 2D đánh thời gian thực, chuyển từ một game kiếm hiệp cũ (nguồn gốc: `docs/giay-phep.md`). **Người chơi LÀ một Pokémon**:
   không có nhân vật người, quái, boss, NPC, thú cưỡi, pet đều là Pokémon.
 - Giữ lối chơi MMO gốc: di chuyển, đánh quái, lên cấp, đội (bang cũ), sự kiện, PvP. **Không** có bắt Pokémon bằng
   bóng, không đội hình 6 con, không đánh theo lượt.

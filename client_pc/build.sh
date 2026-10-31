@@ -36,7 +36,8 @@ if [ "$KIEU" = phat-hanh ] || [ "$KIEU" = release ]; then
            echo "     MAY_CHU_CHINH= trong tools/phat-hanh/may_chu.conf (cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf)."
            exit 1 ;;
     esac
-    case "$MAY_CHU_CHINH" in *nqsh-h2*) echo "LOI: $MAY_CHU_CHINH la server NQSH-H2"; exit 1 ;; esac
+    # Rao chan: "nqsh-h2" la ten mien server cu cua game goc - giu chuoi de con nhan ra va tu choi.
+    case "$MAY_CHU_CHINH" in *nqsh-h2*) echo "LOI: $MAY_CHU_CHINH la server cu cua game goc"; exit 1 ;; esac
     MC=$MAY_CHU_CHINH
     THU=0
 else

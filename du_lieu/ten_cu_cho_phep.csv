@@ -13,3 +13,16 @@ web/server/utils/danhSachMayChu.ts,'KPAH_NQSH_LIST',ten bien env cu hon nua (gia
 web/tests/danh-sach-may-chu.test.ts,HTBB_NQSH_LIST,kiem thu bien env cu van duoc doc du phong
 web/tests/danh-sach-may-chu.test.ts,KPAH_NQSH_LIST,kiem thu bien env cu van duoc doc du phong
 web/tests/danh-sach-may-chu.test.ts,NQSH2.txt,kiem thu duong dan danh sach may chu cua client cu van tra noi dung
+client_pc_ios/Assets/Scripts/Assembly-CSharp/RMS.cs,"nqshlogin",ten kho luu tai khoan / mat khau da nho tren may nguoi choi (cung ten ban jar) - doi ten = mat du lieu da luu
+client_pc_ios/Assets/Scripts/Assembly-CSharp/RMS.cs,"ipnqsh",ten kho luu may chu da chon tren may nguoi choi - doi ten = mat du lieu da luu
+client_pc_ios/Assets/Scripts/Assembly-CSharp/RMS.cs,"ipnqshauto",ten kho luu may chu dang nhap tu dong tren may nguoi choi - doi ten = mat du lieu da luu
+client_pc_ios/Assets/Scripts/Assembly-CSharp/RMS.cs,"nqshIP",ten kho luu danh sach ip tren may nguoi choi - doi ten = mat du lieu da luu
+client_pc_ios/Assets/Scripts/Assembly-CSharp/RMS.cs,"nqshQuickSlot",ten kho luu thanh o nhanh tren may nguoi choi - doi ten = mat thiet lap o nhanh
+client_pc_ios/Assets/Scripts/Assembly-CSharp/RMS.cs,"nqshImgPotionNew",ten kho luu anh thuoc / ngua tren may nguoi choi (GameMidlet xoa moi lan mo) - giu cung ten de con xoa dung kho
+client_pc_ios/Assets/Scripts/Assembly-CSharp/RMS.cs,"nqshImgPotion",ten kho doi cu hon nua - chi dung de XOA tren may nguoi choi
+client_pc_ios/Assets/Scripts/Assembly-CSharp/ThuongHieu.cs,"nqsh-h2",laKenhCu: nhan ra ten mien / repo kenh phat hanh cu cua game goc de chan build va bo qua tu cap nhat
+client_pc_ios/Assets/Scripts/Assembly-CSharp/ThuongHieu.cs,"nqsh_h2",laKenhCu: cach viet khac cua kenh phat hanh cu - chan
+client_pc_ios/Assets/Scripts/Assembly-CSharp/ThuongHieu.cs,"nqshh2",laKenhCu: cach viet khac cua kenh phat hanh cu - chan
+client_pc_ios/Assets/Scripts/Assembly-CSharp/ThuongHieu.cs,"NQSH",laMayChuCu: loc ten server game goc trong danh sach da luu tren may nguoi choi (khong hien / khong vao)
+client_apk/pokemon/build.gradle,nqsh-h2,rao chan build APK release tro ve server cu cua game goc
+client_pc/build.sh,nqsh-h2,rao chan build PC phat hanh tro ve server cu cua game goc

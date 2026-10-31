@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Mã máy gửi cuối gói đăng nhập (GameService.login; server lọc qua data.CamTheoMay).
-/// Bước xác thực hai chiều -88 của server NQSH cũ đã bỏ: server HTBB không trả lời -88.
+/// Bước xác thực hai chiều -88 của server game gốc đã bỏ: server HTBB không trả lời -88.
 /// </summary>
 public static class KiemServer
 {
