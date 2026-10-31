@@ -143,10 +143,11 @@ final class KiemHlvAiSoak {
         void vongChinh() throws Exception {
             if (b.su.size() > 3000) b.su.subList(0, 2500).clear();
             kiem();
-            HlvAiNguoiChoi bot = chonBot();
+            String[] viec0 = {"gd_lap", "gd_khong_dua", "mua_cho_bot", "pk_bot", "dau_truong"};
+            boolean canLang = viec0[luot % viec0.length].startsWith("gd");
+            HlvAiNguoiChoi bot = chonBot(canLang);
             if (bot == null) { luyen(2); return; }
-            String[] viec = {"gd_lap", "gd_khong_dua", "mua_cho_bot", "pk_bot", "dau_truong"};
-            String v = viec[luot++ % viec.length];
+            String v = viec0[luot++ % viec0.length];
             try {
                 switch (v) {
                     case "gd_lap": gdLap(bot, true); break;
@@ -166,11 +167,13 @@ final class KiemHlvAiSoak {
             while (System.currentTimeMillis() < het && !b.dut) { b.bom(20000); b.lamMoi(); }
         }
 
-        HlvAiNguoiChoi chonBot() {
+        /** Bot de khai thac; giao dich: uu tien bot dung trong lang (it di chuyen, gap duoc) cap >= 20. */
+        HlvAiNguoiChoi chonBot(boolean lang) {
             List<HlvAiNguoiChoi> ds = new ArrayList<>();
             for (DichVuHlvAi.Ho h : DichVuHlvAi.HO) {
                 HlvAiNguoiChoi p = h.dang;
-                if (p != null && p.b != null && !p.b.dut && p.b.mapId >= 0 && BotXuyenSuot.LOAD.containsKey(p.b.mapId)) ds.add(p);
+                if (p != null && p.b != null && !p.b.dut && p.b.mapId >= 0 && BotXuyenSuot.LOAD.containsKey(p.b.mapId)
+                        && (!lang || KichBanDS.laLang(p.b.mapId) && p.b.lv >= 20)) ds.add(p);
             }
             if (ds.isEmpty()) return null;
             for (HlvAiNguoiChoi p : ds) if (p.b.mapId == b.mapId) return p;
@@ -178,13 +181,17 @@ final class KiemHlvAiSoak {
         }
 
         boolean gapBot(HlvAiNguoiChoi bot) throws Exception {
-            if (bot.b.mapId != b.mapId && !toi(bot.b.mapId)) return false;
-            BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
-            if (bd == null) return false;
-            int[] o = bd.oGan(bot.b.px / 16, bot.b.py / 16, 2);
-            if (o != null) b.diDuong(bd, o[0], o[1]);
-            b.bom(800);
-            return Math.abs(bot.b.px - b.px) <= 160 && Math.abs(bot.b.py - b.py) <= 160 && bot.b.mapId == b.mapId;
+            for (int lan = 0; lan < 3; lan++) {
+                if (bot.b == null || bot.b.dut) return false;
+                if (bot.b.mapId != b.mapId && !toi(bot.b.mapId)) return false;
+                BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+                if (bd == null) return false;
+                int[] o = bd.oGan(bot.b.px / 16, bot.b.py / 16, 2);
+                if (o != null) b.diDuong(bd, o[0], o[1]);
+                b.bom(600);
+                if (Math.abs(bot.b.px - b.px) <= 96 && Math.abs(bot.b.py - b.py) <= 96 && bot.b.mapId == b.mapId) return true;
+            }
+            return false;
         }
 
         /** Moi bot giao dich; dua = dat 1 binh thuoc 1 roi khoa + xac nhan; tinh gia tri thuoc nhan duoc tu bot. */
