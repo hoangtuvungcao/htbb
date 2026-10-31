@@ -43,6 +43,11 @@ public class ViewTextDlg extends Dialog {
     }
 
     public void setInfo(String list, String title) {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            // 31/10/2026: máy có con trỏ - hộp chung (tin nhắn đội...), chữ ngắt theo hộp, nút Đóng đủ cỡ chạm
+            game.pokemon.HopThongBao.bao(title == null ? null : game.pokemon.GiaoDien.tieuDe(title), list);
+            return;
+        }
         this.list = Font.arialFontW.splitFontBStrInLine(list, this.w - 15);
         this.title = title;
         cmyLim = ((this.list.length * 14) - (this.h - 25)) + 15;

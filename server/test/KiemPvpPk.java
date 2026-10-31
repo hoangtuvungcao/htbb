@@ -104,6 +104,36 @@ public final class KiemPvpPk {
         final long[] c = CoPk.phaiTheoGio(300, 1_000_000L, 1_000_000L + 3_600_000L);
         Kiem.bang("300 nghiep het sau 60 phut online", Long.valueOf(0), Long.valueOf(c[0]));
         Kiem.dung("dong ho lui: khong tru", CoPk.phaiTheoGio(300, 2_000_000L, 1_000_000L)[0] == 300);
+        // 31/10/2026 cong kiem pvp.ha_doi_thu: bat PK (67) danh trung -> +1 nghiep -> nhip phut phai ve 0 -> tat PK giua tran
+        Kiem.dung("vua danh nguoi 5 giay: dang giao tranh", CoPk.dangGiaoTranh(1_000_000L, 1_005_000L));
+        Kiem.dung("danh nguoi 60 giay truoc: het giao tranh", !CoPk.dangGiaoTranh(1_000_000L, 1_060_000L));
+        Kiem.dung("chua danh ai: khong giao tranh", !CoPk.dangGiaoTranh(0L, 1_000_000L));
+        Kiem.dung("dong ho lui: khong giao tranh", !CoPk.dangGiaoTranh(2_000_000L, 1_000_000L));
+        final String luat = doc("src/real/LuatPkGame.java");
+        final int iNhip = luat.indexOf("void nhipPhut"), iGiao = luat.indexOf("CoPk.dangGiaoTranh(p.lucDanhNguoiPk", iNhip),
+                iTat = luat.indexOf("p.isKiller = false", iNhip);
+        Kiem.dung("nhipPhut: dang giao tranh thi nghiep dung truoc khi co the tat isKiller", iNhip > 0 && iGiao > iNhip && iGiao < iTat);
+        final real.GemTemplate[] gemCu = real.Map.gemTemplate;
+        if (real.Map.gemTemplate == null) {
+            real.Map.gemTemplate = new real.GemTemplate[0];
+        }
+        final Char k;
+        try {
+            k = new Char(null);
+        } finally {
+            real.Map.gemTemplate = gemCu;
+        }
+        k.isBot = -1;
+        k.killer = 1;
+        k.isKiller = true;
+        k.lucPhaiNghiep = System.currentTimeMillis() - 600_000L;
+        k.lucDanhNguoiPk = System.currentTimeMillis() - 2_000L;
+        real.LuatPkGame.nhipPhut(k);
+        Kiem.dung("nhipPhut khi vua danh nguoi: giu nghiep 1 + PK bat", k.killer == 1 && k.isKiller);
+        k.lucDanhNguoiPk = System.currentTimeMillis() - 120_000L;
+        k.lucPhaiNghiep = System.currentTimeMillis() - 120_000L;
+        real.LuatPkGame.nhipPhut(k);
+        Kiem.dung("nhipPhut sau giao tranh 2 phut: nghiep phai, het ten do", k.killer == 0 && !k.isKiller);
     }
 
     // ------------------------------------------------------------------ (2) xep hang thuan

@@ -7,7 +7,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * Cổng hook của code mod dùng chung (jar / APK / PC). Sau khi bỏ mod NQSH (Auto up, PK, Vận may,
+ * Cổng hook của code mod dùng chung (jar / APK / PC). Sau khi bỏ mod cũ của game gốc (Auto up, PK, Vận may,
  * Lên thành, Giao hàng tự động, Chế đồ nhanh, Dòng ẩn, Xa phu từ xa...) chỉ còn:
  *  - Tự động đánh CHÍNH THỨC (TuDong): gói -100 của máy chủ, vòng mỗi khung hình, thanh trạng thái;
  *  - Menu nhanh / nút nổi (Nen), hiệu ứng (HieuUng), Tiện ích (đăng xuất, tắt popup);

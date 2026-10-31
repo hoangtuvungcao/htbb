@@ -4,7 +4,7 @@ package game.pokemon;
  * Logic thuần (không lcdui) của bảng gán chiêu vào thanh ô nhanh (ChonChieuNhanh): chiêu nào gán được,
  * bố cục bảng, ô nào được chạm. Tách riêng để kiểm thử không cần máy (client_jar/test/KiemOChieuNhanh.java).
  *
- * Thanh ô nhanh chỉ lưu ở máy (RMS "nqshQuickSlot"), server không lưu -> không có gói tin đồng bộ.
+ * Thanh ô nhanh chỉ lưu ở máy (RMS.KHO_O_NHANH), server không lưu -> không có gói tin đồng bộ.
  */
 public final class OChieuNhanh {
     /** số ô của một bộ ô nhanh (phím 1, 3, 5, 7, 9) */

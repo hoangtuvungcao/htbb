@@ -64,6 +64,26 @@ public class SelectCharHandler implements ICommandHandler {
         }
     }
 
+    /**
+     * 31/10/2026 (dang nhap o thiet bi khac): phien cu vua nhan ly do va se bi da sau ~0,4 s (Session.dongVoiLyDo) - cho
+     * nhan vat cu roi CharManager toi da cho ms roi moi chon tiep cho phien moi. Truoc day phien MOI bi ngat ngay (11/12):
+     * client moi dang o man "Dang tai Pokemon" khong tu noi lai -> ket 60 s. true = nhan vat cu da roi.
+     */
+    static boolean choRoi(final Char cu, final long cho) {
+        final long het = System.currentTimeMillis() + cho;
+        while (System.currentTimeMillis() < het) {
+            if (CharManager.instance.getByUserID(cu.userID) != cu && CharManager.instance.getCharByCharName(cu.charname) != cu) {
+                return true;
+            }
+            try {
+                Thread.sleep(100L);
+            } catch (final InterruptedException e) {
+                return false;
+            }
+        }
+        return CharManager.instance.getByUserID(cu.userID) != cu && CharManager.instance.getCharByCharName(cu.charname) != cu;
+    }
+
     @Override
     public void process(final Session session, final Message message) throws IOException {
         try {
@@ -92,8 +112,10 @@ public class SelectCharHandler implements ICommandHandler {
                 } else {
                     CharManager.instance.kickPlayer(p2, "selectcharhandler 1");
                 }
-                session.disconnect(11);
-                return;
+                if (!choRoi(p2, 2500L)) {
+                    session.disconnect(11);
+                    return;
+                }
             }
             p = new Char(session);
             Vector<Item> charItem = null;
@@ -181,8 +203,10 @@ public class SelectCharHandler implements ICommandHandler {
                 } else {
                     CharManager.instance.kickPlayer(p2, "selectcharhandler 2");
                 }
-                session.disconnect(12);
-                return;
+                if (!choRoi(p2, 2500L)) {
+                    session.disconnect(12);
+                    return;
+                }
             }
             if (p.idWedding > -1) {
                 final Wedding wd = Map.allWedding.get(p.idWedding);

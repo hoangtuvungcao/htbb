@@ -19,6 +19,8 @@ public class MonsterVantieu extends Monster {
     public String namemaster = "";
     public byte typeTieu = -1;
     public boolean isFinish = false;
+    /** Xe tu luot mien phi cua nhiem vu ho tong (HoTongNhiemVuGame.nhanHang): giao chi tinh thuong nhiem vu. */
+    public boolean mienPhiNhiemVu = false;
     public int count = 0;
 
     public static MonsterVantieu getMonsterVantieu(int chardbid) {
@@ -162,6 +164,9 @@ public class MonsterVantieu extends Monster {
         String[] type = new String[]{"cá nhân", "bang hội", "quốc gia"};
         byte[] colorItem = new byte[]{Item.COLOR_WHITE, Item.COLOR_BLUE, Item.COLOR_RED, Item.COLOR_GREEN, Item.COLOR_YELLOW, Item.COLOR_MAGENTA};
         Vector<Item> item = new Vector<>();
+        if (!com.htbb.pokemon.HoTongNhiemVu.traThuongVanTieu(this.mienPhiNhiemVu)) {
+            return item; // xe mien phi nhiem vu: cuop khong roi vat pham van tieu
+        }
         Item it = new Item(Map.itemTemplates.get(5).get(611), false, 0, 0, 611);
         item.add(it);
         it.charSeal = this.namemaster + "-tiêu: " + type[this.typeTieu / 6];

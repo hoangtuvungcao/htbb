@@ -46,7 +46,7 @@ public class GameMidlet
 	{
 		ServerListScr.loadSv(isHTBB);
 		Canvas.imgLogo = Canvas.getLogo();
-		RMS.clearRecord("nqshImgPotionNew");
+		RMS.clearRecord(RMS.KHO_ANH_THUOC);
 		Res.loadImgMap();
 		Util.load();
 		Main.canvas.init();

@@ -512,6 +512,18 @@ public class Session extends Thread {
      * (0.9.25+: nhận ra "đăng nhập ở thiết bị khác" -> chỉ nút Kết nối lại).
      */
     public void dongVoiLyDo(final String lyDo, final int cause) {
+        dongVoiLyDo(lyDo, new Runnable() {
+            public void run() {
+                Session.this.disconnect(cause);
+            }
+        });
+    }
+
+    /**
+     * Như trên nhưng việc đóng do người gọi đưa (vd CharManager.kickPlayer: lưu + gỡ nhân vật rồi đóng phiên) - chạy sau
+     * ~0,4 s, khi thông báo đã ra khỏi hàng đợi gửi.
+     */
+    public void dongVoiLyDo(final String lyDo, final Runnable dong) {
         try {
             this.sendMessage(real.MessageCreator.createServerAlertMessage(lyDo, ""));
         } catch (Exception ignored) {
@@ -522,7 +534,11 @@ public class Session extends Thread {
                     Thread.sleep(400L);
                 } catch (InterruptedException ignored) {
                 }
-                Session.this.disconnect(cause);
+                try {
+                    dong.run();
+                } catch (Exception e) {
+                    com.htbb.log.Nhat.canhBao("MANG", "Session.dongVoiLyDo: " + e);
+                }
             }
         }, "dong-ly-do");
         t.setDaemon(true);

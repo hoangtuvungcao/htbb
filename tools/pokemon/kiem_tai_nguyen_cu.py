@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-P2 - kiem tai nguyen: khong con hinh cua may chu cu (KPAH / NQSH kiem hiep) va khong thieu tai nguyen.
+P2 - kiem tai nguyen: khong con hinh cua may chu cu (game kiem hiep goc) va khong thieu tai nguyen.
 
   python3 -I tools/pokemon/kiem_tai_nguyen_cu.py            kiem (ma thoat 1 neu co loi), in tom tat
   python3 -I tools/pokemon/kiem_tai_nguyen_cu.py --ds FILE  ghi them danh sach day du moi id / tep da kiem

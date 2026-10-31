@@ -46,10 +46,11 @@ case "$BAN" in ''|*[!0-9]*) loi "BAN='$BAN' khong hop le (tools/phat-hanh/phien_
 MAY_CHU_CHINH=${MAY_CHU_CHINH:-$(doc_conf may_chu.conf MAY_CHU_CHINH)}
 CAP_NHAT_URL=${CAP_NHAT_URL:-$(doc_conf may_chu.conf CAP_NHAT_URL)}
 [ -n "$MAY_CHU_CHINH" ] || loi "chua co may chu production: MAY_CHU_CHINH=host:cong hoac tools/phat-hanh/may_chu.conf (mau: may_chu.conf.example)"
-case "$MAY_CHU_CHINH$CAP_NHAT_URL" in *nqsh-h2*) loi "may chu / CAP_NHAT_URL tro ve NQSH-H2 - day la ban HTBB" ;; esac
+# Rao chan: "nqsh-h2" la ten mien / repo kenh phat hanh cu cua game goc - giu chuoi de con nhan ra va tu choi.
+case "$MAY_CHU_CHINH$CAP_NHAT_URL" in *nqsh-h2*) loi "may chu / CAP_NHAT_URL tro ve kenh cu cua game goc (nqsh-h2) - day la ban HTBB" ;; esac
 if [ -z "$THU" ]; then
     [ -n "$REPO" ] || loi "chua dat REPO=<chu>/<repo phat hanh HTBB> (THU=1 de chi build)"
-    case "$REPO" in *nqsh-h2*) loi "REPO=$REPO la kenh NQSH-H2 - ban HTBB phai co repo phat hanh rieng" ;; esac
+    case "$REPO" in *nqsh-h2*) loi "REPO=$REPO la kenh cu cua game goc (nqsh-h2) - ban HTBB phai co repo phat hanh rieng" ;; esac
 fi
 export REPO PHIEN_BAN MAY_CHU_CHINH CAP_NHAT_URL
 GOC_TEN="HTBB-$PHIEN_BAN"

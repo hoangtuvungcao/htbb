@@ -84,6 +84,7 @@ public final class Kiem {
         KiemQuaiPokemon.chay(); // moi quai/boss ve bang Pokemon o jar + Unity, het anh quai cu (P2)
         KiemPetPokemon.chay();
         KiemTaiNguyenCu.chay(); // khong con hinh may chu cu trong tai nguyen phat hanh (du_lieu/tai_nguyen_cu*.{txt,csv}, P2)
+        KiemTenCu.chay(); // khong con ten game cu trong server/src, client_jar/src, web/, client_pc_ios, client_apk, client_pc (ngoai le: du_lieu/ten_cu_cho_phep.csv)
         KiemThuPetP2.chay(); // thu cuoi / pet / skin / hoa hinh -> Pokemon: SQL data_thu_pokemon = Java = CSV = client (P2)
         KiemLoiChoiPokemon.chay();
         KiemPokemonServer.chay();
@@ -346,6 +347,7 @@ public final class Kiem {
         KiemGucLapLai.chay(); // cong kiem bot 31/10/2026: client guc van gui di chuyen / danh -> khong tinh them lan guc
         KiemBossLangThang.chay(); // chu game 31/10/2026: boss lang thang cu bi dong - chi danh nguoi da danh no
         KiemHoTong.chay(); // bao loi kazuhas4 31/10/2026 N-3.36: nhan hang o Tong tieu dau (bo dieu kien nuoc / luot), giao Kecleon, dem buoc, chi dan
+        KiemHoTongThuongMienPhi.chay(); // chu game 31/10/2026: xe tu luot mien phi nhiem vu chi tra thuong nhiem vu
         KiemXeHangDiTheo.chay(); // bot cb2 31/10/2026: xe hang ket o goc nha (Pewter) - di theo vet nguoi choi
         KiemDangNhapServer.chay(); // chu game 31/10/2026: login server HTBB thay CheckLoginSocket.jar (giao thuc, han, tat em, quay lui)
         final int ma = tongKet();

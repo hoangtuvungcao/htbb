@@ -2,7 +2,7 @@
 using System;
 
 /// <summary>
-/// Cổng hook của code mod. Sau khi bỏ mod NQSH (Auto up, PK, Vận may, Lên thành, Giao hàng tự động, Chế đồ nhanh,
+/// Cổng hook của code mod. Sau khi bỏ mod cũ của game gốc (Auto up, PK, Vận may, Lên thành, Giao hàng tự động, Chế đồ nhanh,
 /// Dòng ẩn, Pidgeot từ xa, tự mua, tự đăng nhập lại...) chỉ còn:
 ///  - Tự động đánh CHÍNH THỨC (TuDong, máy chủ điều khiển): vòng mỗi khung hình, thanh trạng thái;
 ///  - Menu nhanh / nút "Tự động" nổi, hiệu ứng (HieuUng), Tiện ích (cửa hàng, đăng xuất, tắt popup);

@@ -16,7 +16,7 @@ import javax.microedition.lcdui.Graphics;
 
 /**
  * Menu chính của game (phím mềm trái). Hàng đầu (tên Pokémon) = "Tự động đánh" (chính thức, máy chủ điều khiển:
- * TuDong + Nen.moBangTuDong), "Hiệu ứng", "Tiện ích". Mod NQSH cũ (Xa phu từ xa, Chế đồ nhanh, Dòng ẩn, Auto up,
+ * TuDong + Nen.moBangTuDong), "Hiệu ứng", "Tiện ích". Mod cũ của game gốc (Xa phu từ xa, Chế đồ nhanh, Dòng ẩn, Auto up,
  * Vận tiêu, Vận may, PK) đã bỏ hẳn.
  */
 public class PauseMenu

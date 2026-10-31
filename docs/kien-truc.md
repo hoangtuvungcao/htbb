@@ -4,7 +4,7 @@ Tài liệu này dành cho lập trình viên mới vào dự án. Nó mô tả 
 đâu, dữ liệu đi từ bảng thiết kế tới game theo đường nào, và các quy ước khi sửa mã.
 
 HTBB là game nhập vai trực tuyến 2D, người chơi điều khiển **một con Pokémon**. Game được chuyển từ một game kiếm
-hiệp cũ của TeaMobi (KPAH / NQSH). Lối chơi MMO thời gian thực của game gốc vẫn giữ nguyên: đi lại, đánh quái, lên
+hiệp cũ của TeaMobi (nguồn gốc và bản quyền: `docs/giay-phep.md`). Lối chơi MMO thời gian thực của game gốc vẫn giữ nguyên: đi lại, đánh quái, lên
 cấp, bang hội, sự kiện, PvP. Phần Pokémon gồm loài, 18 hệ khắc chế và tiến hoá. Hiện game chỉ còn chế độ Pokémon:
 bản đồ kiếm hiệp cũ đã bỏ, mọi bản đồ nằm ở `server/cMap` (chỉ bản Pokémon).
 

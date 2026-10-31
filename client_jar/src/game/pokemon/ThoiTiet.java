@@ -229,17 +229,35 @@ public final class ThoiTiet {
             g.drawArc(cx + r - 6, cy - r - 1, 8, 8, 0, 360);
         }
         boolean cham = rong || Canvas.instance != null && Canvas.instance.hasPointerEvents();
-        if (cham && Canvas.currentDialog == null && Canvas.currentScreen == Canvas.gameScr) {
+        if (cham && Canvas.currentDialog == null && Canvas.currentScreen == Canvas.gameScr && !game.render.screen.BangTuDong.dangMo()) {
             VungCham.themTuyetDoi(cx - r, cy - r, 2 * r + 1, 2 * r + 1, BAM, "hud-thoi-tiet");
+        }
+        // 31/10/2026 (KiemHanhTrinhUI: thẻ mở từ bước "thời tiết" còn nằm đè nút bản đồ nhỏ qua menu Cài đặt, Tự động, NPC):
+        // thẻ gợi ý tự đóng sau 8 s và khi có hộp / menu / màn khác mở
+        if (moThe && moTheLuc == 0L) {
+            moTheLuc = System.currentTimeMillis();
+        }
+        if (moThe && hanThe < Long.MAX_VALUE / 8 && (System.currentTimeMillis() - moTheLuc > hanThe || Canvas.currentDialog != null
+                || Canvas.menu.showMenu || Canvas.currentScreen != Canvas.gameScr)) {
+            moThe = false;
+        }
+        if (!moThe) {
+            moTheLuc = 0L;
         }
         if (moThe) {
             veThe(g, rong ? cx : Canvas.hw, rong ? cy + r + 6 : cy + r + 4);
         }
     }
 
+    /** Lúc mở thẻ (0 = chưa vẽ lần nào kể từ khi mở; tự đóng sau hanThe ms). */
+    static long moTheLuc;
+    /** Thẻ gợi ý tự đóng sau chừng này ms (kiểm thử ảnh tĩnh: Long.MAX_VALUE = không tự đóng). */
+    public static long hanThe = 8000L;
+
     static final Runnable BAM = new Runnable() {
         public void run() {
             moThe = !moThe;
+            moTheLuc = 0L;
             try {
                 AmThanh.phat(AmThanh.CLICK);
             } catch (Throwable e) {
@@ -251,6 +269,7 @@ public final class ThoiTiet {
     /** Menu nhanh "Xem thời tiết" (cả máy phím): mở thẻ gợi ý. */
     public static void moTheGoiY() {
         moThe = co;
+        moTheLuc = 0L;
     }
 
     /** "2 giờ 10 phút" / "8 phút". */
@@ -310,6 +329,18 @@ public final class ThoiTiet {
         int h = pad * 2 + hang.size() * lh + 2;
         int x = Math.max(8, Math.min(Canvas.w - 8 - w, cxNeo - w / 2));
         int y = Math.min(yTren, Canvas.h - 8 - h);
+        // 31/10/2026 (KiemHanhTrinhUI pc720 / pc1080: thẻ đè nửa trái bản đồ nhỏ - chạm bản đồ nhỏ trúng thẻ): HUD rộng, thẻ
+        // ngang hàng bản đồ nhỏ thì dồn sang trái cho mép phải thẻ cách bản đồ nhỏ
+        try {
+            game.render.screen.GameScr gs = Canvas.gameScr;
+            game.model.Position p = manRong() && gs != null ? gs.posMiniMapHud() : null;
+            if (p != null && game.render.screen.GameScr.wMiniMap > 0 && y < p.y + game.render.screen.GameScr.hMiniMap + 4
+                    && y + h > p.y && x + w > p.x - 4 - 6) {
+                x = Math.max(8, p.x - 4 - 6 - w);
+            }
+        } catch (Throwable e) {
+            // không bản đồ nhỏ
+        }
         VUNG_THE[0] = x;
         VUNG_THE[1] = y;
         VUNG_THE[2] = w;

@@ -142,7 +142,11 @@ public final class ManXepHang extends ManBang {
                 if (t == 1) {
                     int wg = TienTe.rongGia(TienTe.XU, c.charXu, Font.blackFont, true);
                     Font.blackFont.drawString(g, GiaoDien.catChu(Font.blackFont, ten, x + w - 16 - wg - (xs + s + 6)), xs + s + 6, y + (h - Font.blackFont.getHeight()) / 2, 0);
-                    TienTe.veGia(g, TienTe.XU, c.charXu, x + w - 8 - wg, y + (h - Font.blackFont.getHeight()) / 2, Font.blackFont, true);
+                    // 31/10/2026 (apk 20:9: biểu tượng xu hàng lấp ló dưới đáy vẽ ra ngoài màn): hàng đáy bị che quá nửa thì không vẽ giá
+                    int yGia = y + (h - Font.blackFont.getHeight()) / 2;
+                    if (yGia + g.getTranslateY() + Math.max(Font.blackFont.getHeight(), 18) <= Canvas.h) {
+                        TienTe.veGia(g, TienTe.XU, c.charXu, x + w - 8 - wg, yGia, Font.blackFont, true);
+                    }
                 } else {
                     String so = t == 2 ? String.valueOf(c.congTrang) : "Lv." + c.level;
                     int ws = Font.blackFont.getWidth(so);

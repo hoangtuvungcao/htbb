@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * P2 - khong con hinh may chu cu (KPAH / NQSH kiem hiep) trong tai nguyen phat hanh.
+ * P2 - khong con hinh may chu cu (game kiem hiep goc) trong tai nguyen phat hanh.
  *
  * Ban Java cua phan 1 trong tools/pokemon/kiem_tai_nguyen_cu.py (cong cu day du: ca danh sach id tham chieu
  * va kiem thieu tep). du_lieu/tai_nguyen_cu.txt = dau van tay 16 hex SHA-1 cua moi tep / anh trong goi cua may

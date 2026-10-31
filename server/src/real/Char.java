@@ -5900,6 +5900,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     // Than method (120 dong) da chuyen sang CharSuKien.java. Chu ky GIU NGUYEN.
     public void doResponseTieu(final Char pReceive, final boolean isThief, final int type, int lvOpen) {
+        // chu game 31/10/2026: xe tu luot mien phi cua nhiem vu ho tong -> chi thuong nhiem vu (buoc ho_tong van tinh duoi)
+        if (!isThief && pReceive.monster != null && !com.htbb.pokemon.HoTongNhiemVu.traThuongVanTieu(pReceive.monster.mienPhiNhiemVu)) {
+            try {
+                pReceive.sendMessage(MessageCreator.createServerAlertMessage(com.htbb.pokemon.HoTongNhiemVu.BAO_GIAO_MIEN_PHI, ""));
+            } catch (final Exception ignored) {
+            }
+            DiemMocNhiemVu.khiHoTong(pReceive);
+            return;
+        }
         CharSuKien.doResponseTieu(this, pReceive,isThief,type,lvOpen);
         if (!isThief) {
             DiemMocNhiemVu.khiHoTong(pReceive); // diem moc ho_tong (ve dich, khong bi cuop)

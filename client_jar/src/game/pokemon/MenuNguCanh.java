@@ -135,6 +135,45 @@ public final class MenuNguCanh extends Dialog {
     }
 
     /** Kiểm thử: chữ các lệnh của thẻ đang mở. */
+    /**
+     * Chèn lệnh vào thẻ / menu chữ ĐANG MỞ ngay sau lệnh có chữ moc, chỉ khi thẻ đó có lệnh dau (nhận ra đúng menu). Dùng
+     * khi thông tin máy chủ tới sau lúc mở (Machamp: biết máy chủ có Chế tạo thì thêm lối thẳng). true = đã chèn.
+     */
+    public static boolean chenSau(String dau, String moc, game.model.Command[] them) {
+        Vector v = null;
+        if (Canvas.currentDialog == me && me != null && me.lenh != null) {
+            v = me.lenh;
+        } else if (Canvas.menu != null && Canvas.menu.showMenu && Canvas.menu.menuItems != null) {
+            v = Canvas.menu.menuItems;
+        }
+        if (v == null) {
+            return false;
+        }
+        int vtDau = -1, vtMoc = -1;
+        for (int i = 0; i < v.size(); i++) {
+            Object o = v.elementAt(i);
+            String c = o instanceof game.model.Command ? ((game.model.Command) o).caption : null;
+            if (dau.equals(c)) {
+                vtDau = i;
+            }
+            if (moc.equals(c)) {
+                vtMoc = i;
+            }
+            for (int k = 0; k < them.length; k++) {
+                if (them[k].caption.equals(c)) {
+                    return false;   // đã có
+                }
+            }
+        }
+        if (vtDau < 0 || vtMoc < 0) {
+            return false;
+        }
+        for (int k = them.length - 1; k >= 0; k--) {
+            v.insertElementAt(them[k], vtMoc + 1);
+        }
+        return true;
+    }
+
     public static String[] cacLenh() {
         if (me == null || me.lenh == null) {
             return new String[0];
@@ -224,6 +263,9 @@ public final class MenuNguCanh extends Dialog {
             choTieuDe(td);   // menu máy chủ trả cho lệnh này giữ tiêu đề thẻ (Sổ tay huấn luyện, Sự kiện...)
         }
         Canvas.clearKeyPressed();   // 0.9.4: phím chọn không lọt xuống màn chơi (bỏ qua lời thoại đầu)
+        if (Canvas.menu != null) {
+            Canvas.menu.selected = i;   // 31/10/2026: lệnh cũ đọc Canvas.menu.selected (chợ: Loại / Phẩm / Màu / Cộng)
+        }
         AmThanh.phat(AmThanh.XAC_NHAN);
         if (c.action != null) {
             c.action.perform();
@@ -346,6 +388,11 @@ public final class MenuNguCanh extends Dialog {
                     wNhan = Math.max(wNhan, ChuDe.rong(ds1[i] < 0 ? "Thêm" : chu(ds1[i]), ChuDe.NHAN));
                 }
                 int wc1 = Math.max(ChuDe.dt() ? 170 : 140, Math.min(ChuDe.dt() ? 260 : 220, wNhan + ic + 30));
+                // 31/10/2026 (soi giao diện: Machamp 11 lệnh ở điện thoại 20:9 chỉ 3 lệnh / trang - 4 trang): bề ngang cột khi
+                // 2 cột KHÔNG cần ôm tiêu đề (biển tên trải cả hai cột) - chỉ cả thẻ phải đủ rộng cho tiêu đề
+                int wcHai = Math.min(wc1, wMax / 2);
+                int wTieuCan = tieu == null ? 0 : Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36));
+                wcHai = Math.max(wcHai, (wTieuCan - k - 12 + 1) / 2);
                 if (tieu != null) {
                     wc1 = Math.max(wc1, Math.min(ChuDe.dt() ? 300 : 260, ChuDe.rong(tieu, ChuDe.TIEU_DE) + (chanDung ? sCd + 30 : 36)));
                 }
@@ -378,6 +425,17 @@ public final class MenuNguCanh extends Dialog {
                             nh1 = nh2;
                         }
                     }
+                }
+                if (hTieu + hang1 * (nh1 + k) + 6 > B - T - 4 && ds1.length > 1 && 2 * wc1 + k + 12 > wMax && 2 * wcHai + k + 12 <= wMax
+                        && !ne) {
+                    int nh2 = nh;
+                    for (int i = 0; i < ds1.length; i++) {
+                        if (ds1[i] >= 0) {
+                            nh2 = Math.max(nh2, caoNut(chu(ds1[i]), wcHai, nh));
+                        }
+                    }
+                    wc1 = wcHai;
+                    nh1 = nh2;
                 }
                 if (hTieu + hang1 * (nh1 + k) + 6 > B - T - 4 && ds1.length > 1 && 2 * wc1 + k + 12 <= wMax) {
                     cot1 = 2;

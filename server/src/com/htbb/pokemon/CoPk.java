@@ -70,6 +70,18 @@ public final class CoPk {
         return "Không dùng khăn PK ở khu vực này.";
     }
 
+    /**
+     * Nghiep KHONG phai khi vua danh trung nguoi choi trong chung nay (ms): dang giao tranh thi nghiep dung, khong tu het
+     * ten do / tat PK giua tran. Truoc 31/10/2026: don dau tien cho +1 nghiep, nhip phut sau phai ve 0 -> isKiller = false
+     * -> moi don sau bi MapDanhNhau chan (cong kiem pvp.ha_doi_thu: 700 don ngam chi ~45 don trung roi B hoi day mau).
+     */
+    public static final long DUNG_PHAI_KHI_GIAO_TRANH_MS = 60_000L;
+
+    /** Dang giao tranh PK (danh trung nguoi choi trong {@link #DUNG_PHAI_KHI_GIAO_TRANH_MS}): nghiep chua phai. */
+    public static boolean dangGiaoTranh(final long lucDanhNguoi, final long bay) {
+        return lucDanhNguoi > 0L && bay >= lucDanhNguoi && bay - lucDanhNguoi < DUNG_PHAI_KHI_GIAO_TRANH_MS;
+    }
+
     /** Nghiep sau khi online them tu lucTruoc toi bay (theo dong ho that, khong theo nhip vong lap). [nghiep, luc moi]. */
     public static long[] phaiTheoGio(final int nghiep, final long lucTruoc, final long bay) {
         if (nghiep <= 0) {

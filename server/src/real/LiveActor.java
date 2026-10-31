@@ -411,7 +411,9 @@ public class LiveActor extends Actor {
       }
 
       if (actor.cat == 0) {
-         int level = this.getLevel();
+         // quai hiem / bung phat / ngay cong dong +2 cap (HeSinhThaiGame.CONG_CAP_DAC_BIET): luat chenh cap tinh theo cap GOC
+         // cua o sinh - +2 khong bao gio day nguoi choi dung bai vao nguong x2 (chenh >= 5)
+         int level = this instanceof Monster ? com.htbb.pokemon.HeSinhThaiGame.capChenh((Monster) this) : this.getLevel();
          int deltaLV = level - ((Char)actor).lvDetail.lv;
          if (deltaLV > 0) {
             dam += dam * Map.abs(deltaLV / 5);

@@ -596,6 +596,25 @@ public final class HeSinhThaiGame {
         return m == null ? null : m.getMonsterTemplate();
     }
 
+    /**
+     * Cap dung cho luat chenh cap quai danh nguoi (LiveActor.attackDam): cap GOC cua o sinh cho quai dang mang mau cong cap
+     * (hiem / bung phat / ngay cong dong), con lai cap hien tai. Do suc 31/10/2026: bung phat o Goldenrod (Golem / Breloom)
+     * dua Breloom 52 len 54 - nguoi choi cap 49 (cap mo cua ai CA-09.1) chenh 5 -> x2 + 350: don 2.000-3.200 (thuong ~1.000).
+     */
+    public static int capChenh(final Monster m) {
+        final MonsterTemplate p = m == null ? null : PHU_CAP.get(m);
+        return p != null ? p.level - CONG_CAP_DAC_BIET : (m == null ? 0 : m.level);
+    }
+
+    /** Test: gan / bo mau cong cap cho quai {@code m}. */
+    public static void datCongCap(final Monster m, final MonsterTemplate p) {
+        if (p == null) {
+            PHU_CAP.remove(m);
+        } else {
+            PHU_CAP.put(m, p);
+        }
+    }
+
     /** Quai hiem / bung phat / ngay cong dong hon cap goc chung nay (khong kich luat chenh cap x2 cua LiveActor: >= 5). */
     public static final int CONG_CAP_DAC_BIET = 2;
 
