@@ -256,7 +256,7 @@ const cotLichSu = [
               <div v-if="chuaThanhToan" class="mt-6">
                 <NapQrDemo v-if="donDemo || !qr" :ma="don.ma_don" />
                 <div v-else class="mx-auto w-fit rounded-2xl bg-white p-3 shadow-[0_20px_60px_rgba(10,26,51,.14)]">
-                  <img :src="qr" alt="Mã QR chuyển khoản VietQR" class="block size-64 sm:size-72" width="288" height="288">
+                  <img :src="qr" alt="Mã QR chuyển khoản VietQR" class="block size-60 min-[380px]:size-64 sm:size-72" width="288" height="288">
                 </div>
                 <p v-if="donDemo" class="mt-4 text-center text-sm font-semibold text-error">
                   Bản DEMO: hình trên KHÔNG phải mã QR, không quét được. Đừng chuyển khoản.
@@ -382,9 +382,10 @@ const cotLichSu = [
         <h2 class="section-title text-2xl text-highlighted">
           Gói lượng
         </h2>
-        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div v-for="g in goiLuong" :key="g.ma" class="flex flex-col rounded-2xl border border-default/70 bg-elevated/40 p-5">
-            <div class="font-display text-3xl font-extrabold text-gilded">
+        <!-- điện thoại: 2 gói một hàng (một cột thì 5 gói dài gần 2 màn hình) -->
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+          <div v-for="g in goiLuong" :key="g.ma" class="flex min-w-0 flex-col rounded-2xl border border-default/70 bg-elevated/40 p-4 sm:p-5">
+            <div class="font-display text-2xl font-extrabold text-gilded sm:text-3xl">
               <TienTe loai="luong" :gt="g.luong" :co="30" />
             </div>
             <div class="text-sm text-muted">
@@ -422,12 +423,37 @@ const cotLichSu = [
           </div>
         </div>
 
-        <div class="mt-12 grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div class="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <UCard>
             <template #header>
               <b>Lịch sử nạp</b>
             </template>
-            <UTable :data="lichSu" :columns="cotLichSu" empty="Chưa có đơn nào.">
+            <!-- Điện thoại: mỗi đơn một thẻ — trạng thái và nút "Xem QR" luôn thấy, không phải cuộn ngang bảng -->
+            <p v-if="!lichSu.length" class="text-sm text-muted md:hidden">
+              Chưa có đơn nào.
+            </p>
+            <ul v-else class="divide-y divide-default md:hidden">
+              <li v-for="d in lichSu" :key="d.ma_don" class="py-3 first:pt-0 last:pb-0">
+                <div class="flex items-center justify-between gap-2">
+                  <NuxtLink :to="{ query: { ma_don: d.ma_don } }" class="font-mono lien-ket">
+                    {{ d.ma_don }}
+                  </NuxtLink>
+                  <span class="font-semibold tabular-nums text-highlighted">{{ vnd(d.so_tien) }}</span>
+                </div>
+                <p class="mt-1 text-sm text-muted">
+                  {{ d.ten_goi }} · {{ d.charname }} · {{ d.tao_luc }}
+                </p>
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                  <UBadge :color="MAU_TRANG_THAI_NAP[d.trang_thai] ?? 'neutral'" variant="subtle" :label="TEN_TRANG_THAI_NAP[d.trang_thai] ?? d.trang_thai" />
+                  <UButton
+                    v-if="d.trang_thai === 'cho_thanh_toan'"
+                    size="sm" color="primary" variant="soft" icon="i-lucide-qr-code" label="Xem QR"
+                    :to="{ query: { ma_don: d.ma_don } }"
+                  />
+                </div>
+              </li>
+            </ul>
+            <UTable :data="lichSu" :columns="cotLichSu" empty="Chưa có đơn nào." class="hidden md:block">
               <template #ma_don-cell="{ row }">
                 <NuxtLink :to="{ query: { ma_don: row.original.ma_don } }" class="font-mono lien-ket">
                   {{ row.original.ma_don }}
@@ -466,7 +492,7 @@ const cotLichSu = [
             <p v-if="laDemo" class="mt-2 text-xs text-error">
               Bản DEMO: không lưu trần nạp.
             </p>
-            <form v-else class="mt-4 flex gap-2" @submit.prevent="datTran">
+            <form v-else class="mt-4 flex flex-col gap-2 min-[400px]:flex-row" @submit.prevent="datTran">
               <UInputNumber v-model="tranMoi" :min="0" :step="50000" placeholder="VD: 200000 (0 = bỏ trần)" class="flex-1" />
               <UButton type="submit" :loading="dangDatTran" icon="i-lucide-shield-check">
                 Đặt

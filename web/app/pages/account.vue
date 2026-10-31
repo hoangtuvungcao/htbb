@@ -142,11 +142,12 @@ const columns = [
         class="mb-8"
       />
 
-      <div class="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
+      <!-- grid-cols-1 (= minmax(0,1fr)): không có thì cột ngầm định giãn theo bảng Pokémon, tràn ngang trên điện thoại -->
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
         <!-- Thông tin -->
         <FxReveal>
           <FxTiltCard :max="6" class="h-full rounded-3xl">
-            <div class="relative h-full overflow-hidden rounded-3xl glass ring-gilded p-8">
+            <div class="relative h-full overflow-hidden rounded-3xl glass ring-gilded p-5 sm:p-8">
               <div class="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-pikachu-400/10 blur-3xl" aria-hidden="true" />
               <p class="eyebrow">
                 Thông tin
@@ -201,7 +202,7 @@ const columns = [
 
         <!-- Nhân vật -->
         <FxReveal :delay="0.1">
-          <div class="h-full overflow-hidden rounded-3xl glass ring-gilded p-8">
+          <div class="h-full overflow-hidden rounded-3xl glass ring-gilded p-5 sm:p-8">
             <div class="flex items-center justify-between gap-4">
               <div>
                 <p class="eyebrow">
@@ -219,11 +220,38 @@ const columns = [
             <div v-if="!data && !error" class="mt-6 space-y-3">
               <USkeleton v-for="i in 3" :key="i" class="h-10 w-full" />
             </div>
+            <!-- Điện thoại: mỗi Pokémon một thẻ (bảng 6 cột không vừa 360 px) -->
+            <ul v-else-if="data?.chars.length" class="mt-6 space-y-3 md:hidden">
+              <li v-for="c in data.chars" :key="c.charname" class="rounded-2xl border border-default/60 p-4">
+                <div class="flex items-center gap-3">
+                  <PokeAvatar :dex="dexHienTai(c.class, c.lastLv, c.dex)" class="size-12 shrink-0" />
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate font-semibold text-highlighted">{{ c.charname }}</p>
+                    <p class="truncate text-sm text-muted">{{ speciesName(c.class, c.lastLv, c.dex) }}</p>
+                  </div>
+                  <span class="shrink-0 text-sm text-muted">Cấp <span class="num font-semibold text-primary">{{ c.lastLv }}</span></span>
+                </div>
+                <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                  <div>
+                    <dt class="text-xs text-dimmed">Xu</dt>
+                    <dd class="tabular-nums">{{ soVn(c.xu) }}<span v-if="c.khoXu" class="block text-xs text-muted">kho {{ soVn(c.khoXu) }}</span></dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs text-dimmed">Lượng</dt>
+                    <dd class="tabular-nums">{{ soVn(c.luong) }}<span class="block text-xs text-muted">khoá {{ soVn(c.luongKhoa) }}<template v-if="c.khoLuong || c.khoLuongKhoa"> · kho {{ soVn(c.khoLuong) }} / {{ soVn(c.khoLuongKhoa) }}</template></span></dd>
+                  </div>
+                  <div class="col-span-2">
+                    <dt class="text-xs text-dimmed">Đang ở</dt>
+                    <dd class="break-words">{{ c.mapTen ?? '—' }}<span v-if="c.lanCuoi" class="block text-xs text-muted">chơi lúc {{ c.lanCuoi }}</span></dd>
+                  </div>
+                </dl>
+              </li>
+            </ul>
             <UTable
-              v-else-if="data?.chars.length"
+              v-if="data?.chars.length"
               :data="data.chars"
               :columns="columns"
-              class="mt-6"
+              class="mt-6 hidden md:block"
               :ui="{ th: 'text-xs uppercase tracking-wider text-dimmed', td: 'text-default' }"
             >
               <template #charname-cell="{ row }">
@@ -263,7 +291,7 @@ const columns = [
 
       <!-- Bảo mật -->
       <FxReveal :delay="0.15">
-        <div class="mt-6 overflow-hidden rounded-3xl glass ring-gilded p-8">
+        <div class="mt-6 overflow-hidden rounded-3xl glass ring-gilded p-5 sm:p-8">
           <p class="eyebrow">
             Bảo mật
           </p>
