@@ -355,6 +355,14 @@ Sau trần (mô hình `KiemTtkQuai`, đồ cửa hàng +0, quái mục tiêu đa
 - Pichu trên 10 bước kể trên: TTK 9,7–16,1 giây → 4,9–8,1 giây; sát thương nhận mỗi con so với trung tính ×3,3–5 → ×1,7–2,2.
 - Charmander ở CA-09.1 (Golem): nhận mỗi con ×2,8 → ×1,8; ở C42.3 (Gastrodon) ×1,9 → ×1,6.
 - Không còn bước giết bắt buộc nào, ở dòng nào, nhận quá ×2,2 so với trung tính.
+- Đo thật sau trần (đồ +0, 6–8 phút mỗi lần):
+  - Gastrodon cấp 72: Charmander hạ 8 con, 5,7 giây mỗi con, 0,5 bình mỗi con (trước: 0 con); Pichu hạ 1 con rồi 4 con ở
+    lần đo sau, 7,7–10,5 giây mỗi con, 4,5–12 bình mỗi con (trước: 0 con).
+  - Golem (cấp 54) với người chơi cấp 52: Charmander và Pichu đều hạ 8 con, 2,4 giây mỗi con, 0,1–0,4 bình mỗi con.
+  - Golem với người chơi cấp 49 (đúng cấp mở CA-09.1): cả hai dòng hạ 1 con rồi gục. Lý do là luật chênh cấp cũ
+    (`LiveActor.attackDam`: quái cao hơn 5 cấp đánh ×2 + 70 mỗi cấp), không phải khắc hệ. CA-09.1 (Golem 54, mở cấp 49) và
+    CA-10.1 (Rhydon 62, mở cấp 57) vẫn chênh 5 cấp; các cửa ải trước đã được hạ về ≤ cấp bước + 2 (khối
+    `sua_can_bang_lop.sql`).
 
 Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **chưa sửa**):
 
