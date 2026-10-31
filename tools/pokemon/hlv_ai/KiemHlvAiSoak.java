@@ -146,7 +146,7 @@ final class KiemHlvAiSoak {
             String[] viec0 = {"gd_lap", "gd_khong_dua", "mua_cho_bot", "pk_bot", "dau_truong"};
             boolean canLang = viec0[luot % viec0.length].startsWith("gd");
             HlvAiNguoiChoi bot = chonBot(canLang);
-            if (bot == null) { luyen(2); return; }
+            if (bot == null) { cho(30000); return; } // dung o lang cho bot ghe qua (nguoi that khong roi lang: khong ket ban do)
             String v = viec0[luot++ % viec0.length];
             try {
                 switch (v) {
@@ -163,8 +163,12 @@ final class KiemHlvAiSoak {
                 khaiThac(v + ".loi", 0, false);
             }
             // nguoi that cho 1-2 phut (client that van gui nhip: may chu ngat sau 180 giay im lang)
-            long het = System.currentTimeMillis() + 60000 + rd.nextInt(60000);
-            while (System.currentTimeMillis() < het && !b.dut) { b.bom(20000); b.lamMoi(); }
+            cho(60000 + rd.nextInt(60000));
+        }
+
+        void cho(long ms) throws Exception {
+            long het = System.currentTimeMillis() + ms;
+            while (System.currentTimeMillis() < het && !b.dut) { b.bom(Math.min(20000, Math.max(100, het - System.currentTimeMillis()))); b.lamMoi(); }
         }
 
         /** Bot de khai thac; giao dich: uu tien bot dung trong lang (it di chuyen, gap duoc) cap >= 20. */
@@ -177,13 +181,13 @@ final class KiemHlvAiSoak {
             }
             if (ds.isEmpty()) return null;
             for (HlvAiNguoiChoi p : ds) if (p.b.mapId == b.mapId) return p;
-            return ds.get(rd.nextInt(ds.size()));
+            return null; // chi bot cung ban do (lang) - khong di theo bot ra bai (lan chay 31/10: nguoi that ket o Viridian)
         }
 
         boolean gapBot(HlvAiNguoiChoi bot) throws Exception {
             for (int lan = 0; lan < 3; lan++) {
                 if (bot.b == null || bot.b.dut) return false;
-                if (bot.b.mapId != b.mapId && !toi(bot.b.mapId)) return false;
+                if (bot.b.mapId != b.mapId) return false;
                 BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
                 if (bd == null) return false;
                 int[] o = bd.oGan(bot.b.px / 16, bot.b.py / 16, 2);
@@ -231,7 +235,6 @@ final class KiemHlvAiSoak {
                 if (ban.b == null || ban.b.dut) continue;
                 long gia = (Long) o[5], tham = KichBanCap140.NguoiChoi.gia((Integer) o[4]);
                 if (gia > b.xu) continue;
-                if (!KichBanDS.laLang(b.mapId)) toi(0);
                 long xu0 = b.xu;
                 boolean ok = DichVuHlvAi.muaCho(b, (Integer) o[1], (Integer) o[2], ban.b.actor, (Integer) o[3]);
                 DichVuHlvAi.CHO.remove(o);
@@ -244,7 +247,7 @@ final class KiemHlvAiSoak {
 
         /** Danh bot o ngoai lang: khong rot xu / do cho nguoi danh. */
         void pkBot(HlvAiNguoiChoi bot) throws Exception {
-            if (KichBanDS.laLang(bot.b.mapId) || !gapBot(bot)) { khaiThac("pk_bot.khong_gap", 0, false); return; }
+            if (KichBanDS.laLang(bot.b.mapId) || bot.b.mapId != b.mapId || !gapBot(bot)) { khaiThac("pk_bot.khong_gap", 0, false); return; }
             b.lamMoi();
             long xu0 = b.xu;
             int mon0 = b.tongMon();
@@ -255,7 +258,6 @@ final class KiemHlvAiSoak {
         }
 
         void dauTruong() throws Exception {
-            if (!toi(0)) return;
             if (KichBanDauTruong.chonDauTruong(b, "Đấu trường Bảo Bối") < 0) { khaiThac("dau_truong.khong_mo", 0, false); return; }
             int m = b.moc();
             b.gui(-109, (byte) 2, (byte) 0);
@@ -317,7 +319,7 @@ final class KiemHlvAiSoak {
         Thread.sleep(90000);
         // ---- chuan bi: nguoi that + mot nua bot len cap 20..40 (gia lap quan the bot da choi lau)
         List<NguoiThat> nt = new ArrayList<>();
-        for (int i = 101; i <= 104; i++) {
+        for (int i = 105; i <= 108; i++) { // tai khoan moi tinh moi lan chay (kt101..104 da dung o lan thu truoc)
             NguoiThat n = new NguoiThat(String.format("kt%03d", i));
             nt.add(n);
             Thread t = new Thread(() -> {
@@ -336,7 +338,7 @@ final class KiemHlvAiSoak {
                 len++;
             }
         }
-        ghi("\nChuẩn bị: 4 người thật kt101..kt104 (cấp 30, 300.000 xu qua GM), " + len + " bot đang online lên cấp 20..40 (GM, giả lập bot chơi lâu).\n");
+        ghi("\nChuẩn bị: 4 người thật kt105..kt108 (cấp 30, 300.000 xu qua GM), " + len + " bot đang online lên cấp 20..40 (GM, giả lập bot chơi lâu).\n");
         ghi("| Phút | Bot online | Tổng xu bot | Tổng xu người | Ảnh chụp máy chủ bot/người (gồm online) | Xu bot tạo / đốt / tiêu (ngày) | Vật huỷ | Bot→người max/người (hạn mức) | Chuyển / chặn | Trung vị chợ | Kẹt | Kết nối lại | Chat (lặp) | Tick p99 / lỗi log | Kết nối CSDL |");
         ghi("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
         long batDau = System.currentTimeMillis();
