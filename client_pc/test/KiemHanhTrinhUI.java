@@ -1105,7 +1105,8 @@ public class KiemHanhTrinhUI {
         ngu(3000);
         xuLyHop("gm_vao", 20);
         String ten = gs().mainChar.name;
-        chat("slv " + ten + " 40 0");
+        // -Dhanh.cap: hành trình GM ở nhiều chặng (giữa game 25, cuối game 70 - tài khoản GM khác nhau), mặc định 40
+        chat("slv " + ten + " " + Integer.getInteger("hanh.cap", 40) + " 0");
         chat("smn " + ten + " 3000000 200 500");
         xuLyHop("gm_len_cap", 6);
         // {lệnh mto, bước, NPC cần chạm (null = chỉ chụp)}
