@@ -517,7 +517,8 @@ class KichBanDS4 {
             String elo0 = BotChucNang.sql1("SELECT elo FROM tob_pvp_mua WHERE id_char=" + a.charDb + " ORDER BY mua DESC LIMIT 1");
             c.lamMoi();
             int lan = 0;
-            for (; lan < 400; lan++) {
+            // 700 don (truoc 400): tu 31/10/2026 nguoi choi tu hoi 1% HP / 5 giay khi 10 giay khong mat mau (ngam tay hut thi B hoi)
+            for (; lan < 700; lan++) {
                 if (BotChucNang.BAN >= 908) {
                     // client 0.9.8: PvP la NGAM TAY (-113 loai 0: chieu 0, x, y, huong) - goi 6 nham muc tieu chi con o PvE
                     int[] pa = KichBanNgamTay.viTri(a), pb = KichBanNgamTay.viTri(c);
