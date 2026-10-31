@@ -75,7 +75,7 @@ public class ChupTrongGame {
     static final String MAN_J2ME_GIA_LAP = ",the_gioi,menu,nv_ky_nang,nv_hanh_trang,tu_dong,tu_dong_dang,xac_nhan,hop_thong_bao,"
         + "hop_len_cap,menu_ngu_canh,nhiem_vu,cua_hang_thuoc,pokedex,hop_dang_xuat,hst_vuon_gieo,menu_chu_vuon_gieo,"
         + "ban_do_vung,ban_do_vung_johto,ban_do_vung_hoenn,so_nhiem_vu_cua_ai,so_nhiem_vu_cua_ai_the,"
-        + "menu_npc_dai,menu_npc_dai_con,menu_npc_dai_20,";
+        + "menu_npc_dai,menu_npc_dai_con,menu_npc_dai_20,menu_machamp_che_tao,menu_machamp_cu,";
 
     /** Máy J2ME thật: màn logic đúng W x H, x1 (không phóng). */
     static void datCoJ2me(int W, int H) {
@@ -254,7 +254,8 @@ public class ChupTrongGame {
                 kiem(ho >= cach, t + " x [" + tq + "] cach " + ho + " >= " + cach);
             }
         }
-        kiem(so > 0, nhan + " co vung cham");
+        // máy J2ME chỉ phím (-Dhtbb.khongCham): menu chữ / màn phím không có vùng chạm là đúng
+        kiem(so > 0 || !game.pokemon.MenuNguCanh.bat(), nhan + " co vung cham");
     }
 
     /** nhiệm vụ gốc trước màn ban_do_vung (đặt nhiệm vụ giả có bản đồ đích) */
@@ -343,7 +344,10 @@ public class ChupTrongGame {
             // có mẫu quái) - sổ mở từ Menu › Nhiệm vụ › Sổ nhiệm vụ và từ thẻ HUD phải hiện nhiệm vụ
             "so_nhiem_vu_cua_ai", "so_nhiem_vu_cua_ai_the",
             // 31/10/2026 (báo lỗi 0.9.24 "chỗ chế tạo trang bị nay tìm không thấy"): menu NPC dài - lật "Thêm" phải tới MỌI lệnh
-            "menu_npc_dai", "menu_npc_dai_con", "menu_npc_dai_20", "giao_dich", "pokedex",
+            "menu_npc_dai", "menu_npc_dai_con", "menu_npc_dai_20",
+            // 0.9.26: menu Machamp có lối thẳng Chế tạo trang bị / Khảm ngọc hệ khi máy chủ có (học từ menu Mua bán hỏi ngầm);
+            // máy chủ cũ (Mua bán không có Chế tạo) giữ menu như cũ
+            "menu_machamp_che_tao", "menu_machamp_cu", "giao_dich", "pokedex",
             "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
             "hop_thong_bao_dai", "suc_khoe", "chon_chieu", "goi_y_chieu", "tu_dong", "hop_ban", "hop_mac_do", "hop_len_cap", "hop_tien_hoa",
             "hop_phan_thuong", "hop_nhan_nhiem_vu", "hop_bao_tri", "hop_loi", "hop_mat_ket_noi", "hop_hoi_sinh", "hop_giftcode",
@@ -523,6 +527,9 @@ public class ChupTrongGame {
                 }
                 if (ten.startsWith("menu_npc_dai")) {
                     kiemLatMenu(ten + " " + TEN_COV[c], W, H);
+                }
+                if (ten.startsWith("menu_machamp_")) {
+                    kiemMachamp(ten.endsWith("_che_tao"), ten + " " + TEN_COV[c]);
                 }
                 kiemXemThu(ten, ten + " " + TEN_COV[c]);
                 if ("menu_su_kien".equals(ten)) {
@@ -1618,6 +1625,8 @@ public class ChupTrongGame {
             moSoCuaAi(ten.endsWith("_the"));
         } else if (ten.startsWith("menu_npc_dai")) {
             moMenuDai(ten);
+        } else if (ten.startsWith("menu_machamp_")) {
+            moMachamp(ten.endsWith("_che_tao"));
         } else if (ten.startsWith("ban_do_vung")) {
             // nhiệm vụ có bản đồ đích Cerulean (id 4) -> dấu sao ở Kanto
             QUEST_GOC = new Object[]{game.render.screen.GameScr.mainQuest};
@@ -2338,6 +2347,48 @@ public class ChupTrongGame {
         }
         return new String[]{"Mua bán", "Nghiền bột", "Thêm dòng", "Luyện đồ", "Luyện đồ tự động", "Cộng thuộc tính", "Khóa đồ thú",
             "Khóa trang bị", "Sửa đồ", "Đục lỗ", "Khảm", "Hợp thành"};
+    }
+
+    /**
+     * Machamp như chạm NPC thật (GameScr.moChucNangNpc(2)): menu client + hỏi ngầm Mua bán; máy chủ trả -30 NPC 2 (mới: có
+     * "Chế tạo & khảm ngọc"; cũ: không) - gói trả lời không được hiện thành menu khác.
+     */
+    static void moMachamp(boolean moi) {
+        game.render.screen.GameScr gs = game.render.Canvas.gameScr;
+        gs.switchToMe();
+        game.render.screen.GameScr.coCheTao = -1;
+        game.render.screen.GameScr.doiThoRen = 0L;
+        gs.moChucNangNpc(2);
+        game.pokemon.MenuNguCanh.tiepQuan();
+        String[] ds = moi ? new String[]{"Mua đồ cầm tay", "Mua trang bị thú", "Phá khoá trang bị", "Chế tạo & khảm ngọc"}
+                : new String[]{"Mua đồ cầm tay", "Mua trang bị thú", "Phá khoá trang bị"};
+        menuMayChu(2, 0, ds);
+    }
+
+    static String[] lenhMoDangMo() {
+        if (game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh) {
+            return game.pokemon.MenuNguCanh.cacLenh();
+        }
+        if (game.render.Canvas.menu.showMenu && game.render.Canvas.menu.menuItems != null) {
+            java.util.Vector v = game.render.Canvas.menu.menuItems;
+            String[] r = new String[v.size()];
+            for (int i = 0; i < r.length; i++) r[i] = ((game.model.Command) v.elementAt(i)).caption;
+            return r;
+        }
+        return new String[0];
+    }
+
+    static void kiemMachamp(boolean moi, String nhan) {
+        java.util.List<String> l = java.util.Arrays.asList(lenhMoDangMo());
+        kiem(l.contains("Nghiền bột") && l.contains("Hợp thành"), nhan + ": van la menu Machamp (goi tra loi hoi ngam khong hien de len) " + l);
+        if (moi) {
+            int mb = l.indexOf("Mua bán"), ct = l.indexOf("Chế tạo trang bị"), km = l.indexOf("Khảm ngọc hệ");
+            kiem(ct == mb + 1 && km == mb + 2, nhan + ": Che tao trang bi / Kham ngoc he ngay sau Mua ban " + l);
+            kiem(game.render.screen.GameScr.coCheTao == 1, nhan + ": may chu co Che tao (coCheTao=" + game.render.screen.GameScr.coCheTao + ")");
+        } else {
+            kiem(!l.contains("Chế tạo trang bị") && !l.contains("Khảm ngọc hệ"), nhan + ": may chu cu - KHONG co loi Che tao " + l);
+            kiem(game.render.screen.GameScr.coCheTao == 0, nhan + ": may chu cu ghi coCheTao=0 (" + game.render.screen.GameScr.coCheTao + ")");
+        }
     }
 
     static final java.util.List<String> DA_CHON = java.util.Collections.synchronizedList(new java.util.ArrayList<String>());

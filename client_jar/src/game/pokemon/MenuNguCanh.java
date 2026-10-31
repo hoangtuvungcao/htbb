@@ -135,6 +135,45 @@ public final class MenuNguCanh extends Dialog {
     }
 
     /** Kiểm thử: chữ các lệnh của thẻ đang mở. */
+    /**
+     * Chèn lệnh vào thẻ / menu chữ ĐANG MỞ ngay sau lệnh có chữ moc, chỉ khi thẻ đó có lệnh dau (nhận ra đúng menu). Dùng
+     * khi thông tin máy chủ tới sau lúc mở (Machamp: biết máy chủ có Chế tạo thì thêm lối thẳng). true = đã chèn.
+     */
+    public static boolean chenSau(String dau, String moc, game.model.Command[] them) {
+        Vector v = null;
+        if (Canvas.currentDialog == me && me != null && me.lenh != null) {
+            v = me.lenh;
+        } else if (Canvas.menu != null && Canvas.menu.showMenu && Canvas.menu.menuItems != null) {
+            v = Canvas.menu.menuItems;
+        }
+        if (v == null) {
+            return false;
+        }
+        int vtDau = -1, vtMoc = -1;
+        for (int i = 0; i < v.size(); i++) {
+            Object o = v.elementAt(i);
+            String c = o instanceof game.model.Command ? ((game.model.Command) o).caption : null;
+            if (dau.equals(c)) {
+                vtDau = i;
+            }
+            if (moc.equals(c)) {
+                vtMoc = i;
+            }
+            for (int k = 0; k < them.length; k++) {
+                if (them[k].caption.equals(c)) {
+                    return false;   // đã có
+                }
+            }
+        }
+        if (vtDau < 0 || vtMoc < 0) {
+            return false;
+        }
+        for (int k = them.length - 1; k >= 0; k--) {
+            v.insertElementAt(them[k], vtMoc + 1);
+        }
+        return true;
+    }
+
     public static String[] cacLenh() {
         if (me == null || me.lenh == null) {
             return new String[0];

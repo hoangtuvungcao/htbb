@@ -811,6 +811,10 @@ public class GameScr extends Screen {
 
     @Override
     public void update() {
+        if (chenCheTaoDen > 0L && (System.currentTimeMillis() > chenCheTaoDen
+                || game.pokemon.MenuNguCanh.chenSau("Nghiền bột", "Mua bán", lenhCheTao()))) {
+            chenCheTaoDen = 0L;
+        }
         game.pokemon.MenuNguCanh.tiepQuan();   // pokemon 0.9.3: menu chữ trên màn chơi -> menu nút to (máy cảm ứng / chuột)
         AutoGuard.tick(); // Tự động đánh chính thức + Menu nhanh (code mod dùng chung)
         for (int i = 0; i < this.VecDataEff.size(); i++) {
@@ -3130,9 +3134,22 @@ public class GameScr extends Screen {
             menu.addElement(new Command("Mua bán", new IAction() {
                 @Override
                 public void perform() {
+                    GameScr.doiThoRen = 0L;   // người chơi tự mở menu máy chủ: hiện như thường
                     GameService.gI().requestNPCInfo((short) type);
                 }
             }));
+            if (type == 2) {
+                // 0.9.26: lối thẳng Chế tạo / Khảm ngọc (trước chỉ ở Mua bán › Chế tạo & khảm ngọc - người chơi không tìm thấy)
+                Command[] ct = lenhCheTao();
+                for (int i = 0; i < ct.length; i++) {
+                    menu.addElement(ct[i]);
+                }
+                if (coCheTao < 0 && doiThoRen == 0L) {
+                    // chưa biết máy chủ có Chế tạo không: hỏi ngầm menu Mua bán (gói -30 NPC 2), onMenuOption nhận và không hiện
+                    doiThoRen = System.currentTimeMillis();
+                    GameService.gI().requestNPCInfo((short) 2);
+                }
+            }
             menu.addElement(new Command("Nghiền bột", new IAction() {
                 @Override
                 public void perform() {
@@ -7889,7 +7906,61 @@ public class GameScr extends Screen {
         return false;
     }
 
+    /**
+     * 0.9.26 (báo lỗi 0.9.25: "không tìm thấy chế tạo trang bị"): máy chủ có Chế tạo & khảm ngọc (mục cuối menu Machamp ›
+     * Mua bán, BoNgocGame.themMucThoRen) không: -1 chưa biết, 0 không (máy chủ cũ / tắt), 1 có. Học từ gói -30 NPC 2.
+     */
+    public static int coCheTao = -1;
+    /** Lúc gửi hỏi ngầm menu Mua bán (0 = không chờ): gói trả lời trong 8 s không hiện ra màn. */
+    public static long doiThoRen;
+    /** > 0: còn chờ menu Machamp mở để chèn lối thẳng Chế tạo (hạn, ms). */
+    static long chenCheTaoDen;
+
+    /** Mục thợ rèn của máy chủ (BoNgocGame.TEN_MUC). */
+    public static final String MUC_CHE_TAO = "Chế tạo & khảm ngọc";
+
+    /** Lối thẳng ở menu Machamp: cùng gói NPC ảo -580 menu 0 mục 0 / 1 như menu con "Chế tạo & khảm ngọc" (BoNgocGame.doMenu). */
+    public static Command[] lenhCheTao() {
+        if (coCheTao != 1) {
+            return new Command[0];
+        }
+        return new Command[]{new Command("Chế tạo trang bị", new IAction() {
+            public void perform() {
+                GameService.gI().doMenuOption(-580, (byte) 0, 0);
+            }
+        }), new Command("Khảm ngọc hệ", new IAction() {
+            public void perform() {
+                GameService.gI().doMenuOption(-580, (byte) 0, 1);
+            }
+        })};
+    }
+
+    /** Gói -30 của NPC 2 (Machamp › Mua bán): ghi máy chủ có Chế tạo không; true = gói trả lời hỏi ngầm (không hiện). */
+    static boolean nhanMenuThoRen(int npc, byte idMenu, String[] ds) {
+        if (npc != 2 || idMenu != 0 || ds == null) {
+            return false;
+        }
+        boolean co = false;
+        for (int i = 0; i < ds.length; i++) {
+            if (ds[i] != null && (ds[i].equals(MUC_CHE_TAO) || ds[i].startsWith("Chế tạo"))) {
+                co = true;
+            }
+        }
+        int truoc = coCheTao;
+        coCheTao = co ? 1 : 0;
+        boolean ngam = doiThoRen > 0L && System.currentTimeMillis() - doiThoRen < 8000L;
+        doiThoRen = 0L;
+        if (ngam && co && truoc != 1 && !game.pokemon.MenuNguCanh.chenSau("Nghiền bột", "Mua bán", lenhCheTao())) {
+            // trả lời tới trước khi menu Machamp hiện (gói xử lý khác luồng): update chèn khi menu mở, tối đa 3 s
+            chenCheTaoDen = System.currentTimeMillis() + 3000L;
+        }
+        return ngam;
+    }
+
     public void onMenuOption(final int userId1, final byte idMenu, String[] listStr) {
+        if (nhanMenuThoRen(userId1, idMenu, listStr)) {
+            return;
+        }
         if (Canvas.menu.showMenu) {
             Canvas.menu.showMenu = false;
         }
