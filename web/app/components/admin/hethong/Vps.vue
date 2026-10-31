@@ -7,6 +7,7 @@
  * Ngưỡng màu: shared/utils/vpsNguong.ts. Số nào hệ điều hành không cung cấp (vd load trên Windows) -> "không hỗ trợ…".
  */
 import type { DiemVps, MauVps } from '~~/server/utils/vpsThuan'
+import { NGUONG_VPS, mucCpu, mucDia, mucRamSan, mucSwap, mucTai, type MucVps } from '~~/shared/utils/vpsNguong'
 
 const api = useAdminApi()
 const KHONG_HT = 'không hỗ trợ trên hệ điều hành này'
