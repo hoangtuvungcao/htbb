@@ -1137,6 +1137,13 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
   phẩm nhiệm vụ 10–50). Mở từ Quầy đổi thưởng → "Nhiệm vụ của tôi". Danh sách gửi client được lọc theo cấp (≤ 127 mục): nhiệm vụ phụ mời khi cấp nhiệm vụ ≤ cấp người chơi + 10, **không chặn dưới**
   (chủ game 30/10/2026: lên cấp nhanh không mất vĩnh viễn phụ cấp thấp; thưởng giữ ở cấp của nhiệm vụ), xếp gần cấp người chơi
   nhất trước, NPC (-64) tối đa 20 mục; Quầy đổi thưởng → Nhiệm vụ của tôi → Nhận nhiệm vụ phụ đầy đủ, chia trang "Xem thêm". Phụ đang làm giữ tiến độ qua ngày.
+- **Hộ tống** (kiểu `ho_tong`: N-1..5.36, TV-10.3, HT-MEW.5, C73.2; 31/10/2026, báo lỗi "đến bản đồ rồi mà không có hướng
+  dẫn"): dùng xe hàng vận tiêu. Nhận ở **Tổng tiêu đầu** (NPC -50) trong làng Pewter / Blackthorn / Cianwood, giao cho
+  **Kecleon tạp hoá** cùng làng (nói chuyện khi xe đi cạnh) hoặc **Dịch trạm** ở Đường Victory (118, ô 51..59 × 16..24,
+  khoá cấp 69 + CA-11.3). Ai đang làm bước `ho_tong` luôn thấy mục "Nhận hàng giao" (bỏ điều kiện vùng `myCountry ==
+  inCountry`, khung 9h–21h và cấp ≥ 40); hết lượt vận tiêu thì được **một** lượt miễn phí / ngày. Người không có nhiệm vụ giữ
+  luật vận tiêu cũ (chỉ Dịch trạm). Chuỗi chữ "từ Fuchsia / Olivine…" chỉ là cốt truyện; Sổ tay ghi nơi nhận, nơi giao, ô và
+  hướng. Bị cướp không tính. Mã: `com.htbb.pokemon.HoTongNhiemVu`, `real.HoTongNhiemVuGame`; kiểm `KiemHoTong`.
 
 ### 6.2 Sự kiện: lịch năm theo ngày thật + tuần Pokémon
 

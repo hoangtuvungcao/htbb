@@ -5772,14 +5772,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
             // else: Tim (indexMons=5) - ran >= nguongMau[4]
             p.typeTieu = (byte) (typetieu * 6 + indexMons);
-            p.monster = new MonsterVantieu(p.map, Map.monsterTemplates.get(idMonster[typetieu][indexMons]), p.x, p.y, p.myCountry);
+            // sua-ho-tong: xe hang o ban sao (inCountry) nguoi choi DANG DUNG - nguoi lam nhiem vu ho tong nhan duoc ca khi
+            // myCountry != inCountry; truoc day xe tao o ban sao myCountry nen khong thay / khong di theo (vo tieu thuong: bang nhau).
+            p.monster = new MonsterVantieu(p.map, Map.monsterTemplates.get(idMonster[typetieu][indexMons]), p.x, p.y, p.inCountry);
             p.monster.id = RealController.intance.idGen.getID(1, "");
             p.monster.charDbid = p.charDBID;
             p.monster.level = p.lvDetail.lv;
             p.monster.typeTieu = p.typeTieu;
-            p.monster.maxhp = Char.HP_MONSTER_VANTIEU[(p.lvDetail.lv - 40) / 10] + Char.HP_MONSTER_VANTIEU[(p.lvDetail.lv - 40) / 10] * Char.UP_HP_MONSTER_VANTIEU[(p.lvDetail.lv - 40) / 10] / 100;
+            // sua-ho-tong: chi so bang theo cap kep vao [0, 5] - nguoi lam nhiem vu ho tong cap < 40 (N-1 / N-2.36) va cap 100
+            // truoc day nem ArrayIndexOutOfBounds (bang 6 phan tu cho cap 40..99) -> khong nhan duoc xe hang.
+            final int bac = com.htbb.pokemon.HoTongNhiemVu.chiSoCap(p.lvDetail.lv, Char.HP_MONSTER_VANTIEU.length);
+            p.monster.maxhp = Char.HP_MONSTER_VANTIEU[bac] + Char.HP_MONSTER_VANTIEU[bac] * Char.UP_HP_MONSTER_VANTIEU[bac] / 100;
             p.monster.hp = p.monster.maxhp;
-            p.monster.defend_magic = Char.DEF_MONSTER_VANTIEU[(p.lvDetail.lv - 40) / 10] + Char.DEF_MONSTER_VANTIEU[(p.lvDetail.lv - 40) / 10] * Char.UP_DEF_MONSTER_VANTIEU[(p.lvDetail.lv - 40) / 10] / 100;
+            p.monster.defend_magic = Char.DEF_MONSTER_VANTIEU[bac] + Char.DEF_MONSTER_VANTIEU[bac] * Char.UP_DEF_MONSTER_VANTIEU[bac] / 100;
             p.monster.defend_physic = p.monster.defend_magic;
             p.monster.setTimeFinish(System.currentTimeMillis() + 1200000L);
             p.monster.namemaster = p.charname;

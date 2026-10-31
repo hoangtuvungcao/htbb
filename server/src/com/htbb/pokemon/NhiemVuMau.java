@@ -291,6 +291,11 @@ public final class NhiemVuMau {
                 return vat.trim().equals(thamSo);
             }
         }
+        // sua-ho-tong (31/10/2026): muc_tieu_id cua ho_tong la ten vat cho (1 = Gói hàng, 2, 3...) - moi lan giao xe van tieu
+        // (DiemMocNhiemVu.khiHoTong, tham so "") deu tinh. Truoc day so "" voi "1" -> giao xong N-x.36 / TV-10.3 van 0/1.
+        if (HoTongNhiemVu.KIEU.equals(kieu)) {
+            return true;
+        }
         final boolean rong = mucTieuId == null || mucTieuId.isEmpty();
         if (rong && "pokedex_shiny".equals(kieu)) {
             return false; // shiny phai dung loai muc tieu (so dex); du lieu thieu loai thi khong tinh

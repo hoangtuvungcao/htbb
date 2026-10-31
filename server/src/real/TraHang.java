@@ -42,17 +42,7 @@ public class TraHang {
                     return;
                 }
 
-                player.monster.isFinish = true;
-                player.doResponseTieu(player, false, player.typeTieu, player.lvDetail.lv);
-                Database.instance.addCharVT(player, 0, 0, 0);
-                
-                player.typeTieu = -1;
-                if (Char.isSuKienWordcup2017()) {
-                    final int bongBac = Map.ranDom(1, 2);
-                    player.potions[160] += bongBac;
-                    DiemMocNhiemVu.khiNhanVatPhamSuKien(player, 160, bongBac);
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                }
+                giao(player);
                 return;
             }
 
@@ -60,6 +50,24 @@ public class TraHang {
             return;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Giao xe hang (da kiem vi tri / cung ban do / tam): Dịch trạm (tren) va Kecleon tạp hoá cho hang nhiem vu ho tong
+     * (HoTongNhiemVuGame.traTaiKecleon) dung chung.
+     */
+    static void giao(Char player) {
+        player.monster.isFinish = true;
+        player.doResponseTieu(player, false, player.typeTieu, player.lvDetail.lv);
+        Database.instance.addCharVT(player, 0, 0, 0);
+
+        player.typeTieu = -1;
+        if (Char.isSuKienWordcup2017()) {
+            final int bongBac = Map.ranDom(1, 2);
+            player.potions[160] += bongBac;
+            DiemMocNhiemVu.khiNhanVatPhamSuKien(player, 160, bongBac);
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
         }
     }
 }
