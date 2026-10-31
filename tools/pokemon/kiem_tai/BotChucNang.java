@@ -71,6 +71,29 @@ public class BotChucNang {
          * CONG_SAI_O / NAP_MAP_LAP khi lech - kiem ngam HLV AI 31/10/2026).
          */
         static volatile boolean CHUAN_CLIENT = false;
+        /** Client that (Session_ME 0.9.4): luong rieng gui goi 11 rong neu 30 s chua gui gi - may chu cat socket im lang 180 s. */
+        static final long GIU_KET_NOI_MS = 30000L;
+        static final java.util.Set<Bot> DANG_MO = java.util.concurrent.ConcurrentHashMap.newKeySet();
+        static volatile Thread luongGiu;
+        volatile long lucGuiCuoi = System.currentTimeMillis();
+        static int soGoiGiu;
+
+        static synchronized void batLuongGiu() {
+            if (luongGiu != null) return;
+            luongGiu = new Thread(() -> {
+                while (true) {
+                    try { Thread.sleep(5000); } catch (InterruptedException e) { return; }
+                    long bay = System.currentTimeMillis();
+                    for (Bot x : DANG_MO) {
+                        if (x.dut || x.out == null) { if (x.dut) DANG_MO.remove(x); continue; }
+                        if (bay - x.lucGuiCuoi < GIU_KET_NOI_MS) continue;
+                        try { x.gui(11, new byte[0]); soGoiGiu++; } catch (Exception e) { x.dut = true; if (x.lyDoDut == null) x.lyDoDut = "giu ket noi: " + e; DANG_MO.remove(x); }
+                    }
+                }
+            }, "bot-giu-ket-noi");
+            luongGiu.setDaemon(true);
+            luongGiu.start();
+        }
         long lucVaoMap;
         boolean coMapMoi;
         final String user;
@@ -161,13 +184,16 @@ public class BotChucNang {
             }
             guiGan.addLast(System.currentTimeMillis());
             if (ngheGui != null) ngheGui.accept(cmd, d);
-            ByteArrayOutputStream bo = new ByteArrayOutputStream();
-            bo.write(wk((byte) cmd));
-            bo.write(wk((byte) (d.length >> 8)));
-            bo.write(wk((byte) d.length));
-            for (byte b : d) bo.write(wk(b));
-            out.write(bo.toByteArray());
-            out.flush();
+            synchronized (this) { // khoa ma hoa (curW) + luong giu ket noi: ma hoa va ghi phai lien mot khoi
+                ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                bo.write(wk((byte) cmd));
+                bo.write(wk((byte) (d.length >> 8)));
+                bo.write(wk((byte) d.length));
+                for (byte b : d) bo.write(wk(b));
+                out.write(bo.toByteArray());
+                out.flush();
+                lucGuiCuoi = System.currentTimeMillis();
+            }
         }
 
         void gui(int cmd, Object... f) throws IOException {
@@ -199,6 +225,7 @@ public class BotChucNang {
             in = new DataInputStream(new BufferedInputStream(s.getInputStream()));
             out = s.getOutputStream();
             gui(-40, new byte[0]);
+            if (CHUAN_CLIENT) { DANG_MO.add(this); batLuongGiu(); }
             Object[] k = doc();
             xuLy((Integer) k[0], (byte[]) k[1]);
         }
@@ -911,6 +938,7 @@ public class BotChucNang {
 
         @Override
         public void close() {
+            DANG_MO.remove(this);
             try { if (s != null) s.close(); } catch (Exception ignored) { }
         }
     }

@@ -435,6 +435,19 @@ public final class DichVuHlvAi {
             System.out.println("DichVuHlvAi <host> <cong game>  (xem chu thich dau tep)");
             System.exit(2);
         }
+        // so ban client = ban phat hanh hien tai (tools/phat-hanh/phien_ban.conf BAN=): bot dang nhap nhu client moi nhat -
+        // may chu chi gui goi Pokemon hoang da (-125), learnset (-122), thong bao -104... cho client du moi. Phai dat TRUOC
+        // khi nap lop BotChucNang (BAN la hang so tinh).
+        if (System.getProperty("ban") == null) {
+            String goc = System.getProperty("goc", System.getProperty("noi", "."));
+            try {
+                for (String d : java.nio.file.Files.readAllLines(java.nio.file.Paths.get(goc, "tools", "phat-hanh", "phien_ban.conf"), StandardCharsets.UTF_8)) {
+                    if (d.trim().startsWith("BAN=")) System.setProperty("ban", d.trim().substring(4).trim());
+                }
+            } catch (Exception e) {
+                System.out.println("[HLV AI] khong doc duoc phien_ban.conf (" + e + ") -> ban -1 (client cu: khong bat Pokemon / hoc chieu learnset)");
+            }
+        }
         BotChucNang.HOST = a[0];
         BotChucNang.PORT = Integer.parseInt(a[1]);
         BotChucNang.TIEN_TO = TIEN_TO_TK;
@@ -462,7 +475,7 @@ public final class DichVuHlvAi {
         }));
         docCauHinh();
         napHo();
-        System.out.println("[HLV AI] bat dau: " + HO.size() + " tai khoan bot, cau hinh " + CH);
+        System.out.println("[HLV AI] bat dau: " + HO.size() + " tai khoan bot, ban client " + BotChucNang.BAN + ", cau hinh " + CH);
         if ("1".equals(System.getProperty("hlv.soak"))) KiemHlvAiSoak.batDau();
         if ("1".equals(System.getProperty("hlv.khaiThac"))) KiemHlvAiSoak.batDauKhaiThac();
         long lanTT = 0, lanIn = 0, lanDon = 0;

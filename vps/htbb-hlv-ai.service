@@ -34,7 +34,7 @@ ExecStart=/usr/bin/java -Xms64m -Xmx512m -Xss512k -XX:+UseSerialGC -XX:+ExitOnOu
   -Djava.awt.headless=true -Dfile.encoding=UTF-8 \
   -cp /var/lib/htbb-hlv-ai/cls:/opt/htbb/server/lib/mysql-connector-java-5.1.49.jar \
   -Ddb=htbb_db -Ddbcnf=/etc/htbb/hlv-ai.cnf -Dnoi=/opt/htbb -Dgoc=/opt/htbb -Dcp=/var/lib/htbb-hlv-ai/cp \
-  -Dban=915 DichVuHlvAi 127.0.0.1 19129
+  DichVuHlvAi 127.0.0.1 19129
 KillSignal=SIGTERM
 TimeoutStopSec=60
 Restart=on-failure

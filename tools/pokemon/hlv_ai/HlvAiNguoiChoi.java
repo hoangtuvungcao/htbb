@@ -151,6 +151,18 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         return null;
     }
 
+    /** Vao lai giua buoc (BotXuyenSuot.kiem / qua cong): dem + ghi ly do nhu vong phien. */
+    @Override
+    void vaoLai() throws Exception {
+        DichVuHlvAi.dem("ket_noi_lai", 1);
+        DichVuHlvAi.dem("ket_noi_lai:" + viec, 1);
+        String ly = b == null ? null : b.lyDoDut;
+        DichVuHlvAi.loi("vao lai (" + viec + "): " + (ly == null ? "khong ro" : ly));
+        b.close();
+        Thread.sleep(3000);
+        vao();
+    }
+
     // ================================================================== vong phien
     @Override
     public void run() {
@@ -1006,7 +1018,24 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         b.cho(x -> layGoi(x, m, -122, 0) != null, 3000);
         byte[] d = layGoi(b, m, -122, 0);
         DichVuHlvAi.dem("hoc_chieu_xem", d == null ? 0 : 1);
-        if (d == null) return false;
+        if (d == null) {
+            // client ban -1 (J2ME cu) khong nhan goi learnset (HocChieuGame.coGoiMoi): nhu client cu - bam hoc tung chieu NPC
+            // (goi 109 lop, idx), may chu tu kiem learnset / cap / nguon NPC va tra thong bao
+            if (lop < 0 || lop >= ID_SKILL.length) return false;
+            for (int idx = 0; idx < ID_SKILL[lop].length; idx++) {
+                int o = ID_SKILL[lop][idx];
+                if (daHoc.contains(o)) continue;
+                int mh = b.moc();
+                b.gui(109, (byte) lop, (byte) idx);
+                String tb = b.doiChu(mh, 2500, "đã học", "chưa học được", "cần cấp", "tự học", "Không đủ xu");
+                if (tb == null) continue;
+                if (tb.contains("chưa học được") || tb.contains(": đã học")) daHoc.add(o); // loai khong hoc / da co: khong thu lai
+                boolean ok = tb.contains("đã học") && !tb.contains(": đã học");
+                DichVuHlvAi.dem("hoc_chieu", ok ? 1 : 0);
+                if (ok) { daHoc.add(o); b.lamMoi(); ghi("hoc chieu o " + o + ": " + tb); return true; }
+            }
+            return false;
+        }
         try {
             DataInputStream r = new DataInputStream(new ByteArrayInputStream(d));
             r.readByte(); r.readShort();
