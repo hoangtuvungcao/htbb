@@ -169,7 +169,9 @@ public final class HoiQuy {
         String ten = tenMoi(tienTo);
         String[] k = dangKy(ten, "hq-may-" + ten);
         // ten ghep ngau nhien co the dinh tu cam (vd "xxx") -> bo loc ten tu choi dung luat: thu ten ke tiep
-        for (int lan = 0; lan < 5 && k[1] != null && k[1].contains("tenTuCam"); lan++) {
+        // ... va ten trung (nhieu JVM dam dong khoi dong cung giay -> cung bo dem): thu ten ke tiep
+        for (int lan = 0; lan < 8 && k[1] != null && (k[1].contains("tenTuCam") || k[1].contains("trungTen")); lan++) {
+            demTk += 7919;
             ten = tenMoi(tienTo);
             k = dangKy(ten, "hq-may-" + ten);
         }
@@ -178,6 +180,14 @@ public final class HoiQuy {
         BotChucNang.Bot b = new BotChucNang.Bot(ten);
         BatBien.gan(b);
         String l = b.dangNhap(MAT_KHAU);
+        // dam dong: may chu dang nhap qua tai tra "chưa phản hồi" - nguoi choi that bam lai sau vai giay
+        for (int lan = 0; lan < 6 && l != null && l.contains("chưa phản hồi"); lan++) {
+            b.close();
+            Thread.sleep(3000L + lan * 2000L);
+            b = new BotChucNang.Bot(ten);
+            BatBien.gan(b);
+            l = b.dangNhap(MAT_KHAU);
+        }
         if (l != null) throw new IllegalStateException(ten + " dang nhap: " + l);
         l = b.vaoGame(lop, vung);
         if (l != null) throw new IllegalStateException(ten + " vao game: " + l);

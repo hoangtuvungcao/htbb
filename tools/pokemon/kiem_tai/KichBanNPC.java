@@ -406,6 +406,9 @@ public class KichBanNPC {
             b.den(45, 28, 30);
             m = b.moc();
             b.gui(23, (byte) 1);
+            // Ve dich chuyen (24/10/2026): Kecleon mo menu "Mua thuốc, vật phẩm" / "Vé dịch chuyển" truoc cua so cu
+            n = b.doiMenu(m, 1, 0, 2500);
+            if (n > 0) { int vt = b.timMuc("Mua thuốc"); m = b.moc(); b.menu(1, 0, Math.max(0, vt)); }
             b.bom(1200);
             BotChucNang.ket("dich_vu.kecleon.cua_so", doiGoi23(b, m) == 0, b.chuTu(m));
             // --- Machamp (2) o 45: mua do cam tay, sua do khong bi da

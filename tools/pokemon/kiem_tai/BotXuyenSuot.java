@@ -210,10 +210,18 @@ public class BotXuyenSuot {
      * Ban do vua tu choi cho qua (khoa cap / cua ai, "khong cho qua") -> luc ghi; duong() tranh di XUYEN qua chung 30 phut
      * (truoc 30/10/2026 duong ngan nhat toi New Bark / Rung Viridian di qua Duong Victory 118 khoa cap 69: ket mai mai).
      */
-    static final Map<Integer, Long> MAP_CHAN = new ConcurrentHashMap<>();
+    /**
+     * Ban do dang bi chan (cong tu choi gan day) - RIENG tung bot (moi bot mot luong). Truoc 31/10/2026 dung chung ca JVM:
+     * d130 bi khoa Cherrygrove (15, chua xong cua ai) lam d290 cap 85 "khong co ban do co Luxray" (duong 10 -> 28 qua 15).
+     */
+    static final ThreadLocal<Map<Integer, Long>> MAP_CHAN_LUONG = ThreadLocal.withInitial(ConcurrentHashMap::new);
+
+    static Map<Integer, Long> mapChan() {
+        return MAP_CHAN_LUONG.get();
+    }
 
     static boolean dangChan(int map) {
-        Long t = MAP_CHAN.get(map);
+        Long t = mapChan().get(map);
         return t != null && System.currentTimeMillis() - t < 30 * 60000L;
     }
 
@@ -521,6 +529,10 @@ public class BotXuyenSuot {
         final java.util.ArrayDeque<int[]> donGan = new java.util.ArrayDeque<>();
         long donGoc = System.currentTimeMillis();
 
+        /** Tong sat thuong / so don quai (goi 10) nhan - do can bang kinh te thuoc. */
+        volatile long satThuongNhan;
+        volatile int soDonNhan;
+
         void ngheDon() {
             final BotChucNang.Bot bb = b;
             final java.util.function.Consumer<BotChucNang.SuKien> cu = bb.ngheNhan;
@@ -531,6 +543,8 @@ public class BotXuyenSuot {
                     DataInputStream r = new DataInputStream(new ByteArrayInputStream(e.d));
                     int mq = r.readShort(), tg = r.readShort(), dmg = r.readInt(), hp = r.readInt();
                     if (tg != bb.actor) return;
+                    satThuongNhan += Math.max(0, dmg);
+                    soDonNhan++;
                     int[] q = bb.quai.get(mq);
                     synchronized (donGan) {
                         donGan.addLast(new int[]{(int) (System.currentTimeMillis() - donGoc), q == null ? -1 : q[5], dmg, hp});
@@ -571,10 +585,8 @@ public class BotXuyenSuot {
             // guc khong co don quai thuong nao (goi 10) ngoai lang: boss lang thang (danh lan, goi khac) - nguoi choi that thay
             // thong bao "... đã xuất hiện ở X" / mat mang thi tranh ban do do mot luc (truoc 31/10/2026 bot di qua Fuchsia 8 guc
             // moi 30 phut khi Lopunny dung o 40,40)
-            if (don.trim().isEmpty() && mapGuc >= 0 && !KichBanDS.laLang(mapGuc) && !KichBanDS2.laOffline(mapGuc)) {
-                MAP_CHAN.put(mapGuc, System.currentTimeMillis() + 30 * 60000L);
-                ghi("guc khong ro don o map " + mapGuc + " (boss lang thang?) -> tranh 60 phut");
-            }
+            // (tu 31/10/2026 boss lang thang bi dong: guc khong don quai thuong thuong la trang thai Bong / Doc - khong tranh ban do)
+            if (don.trim().isEmpty() && mapGuc >= 0) ghi("guc khong ro don o map " + mapGuc + " (trang thai Bong / Doc?)");
             int m = b.moc();
             b.gui(31, new byte[0]);
             b.cho(x -> x.coLenh(m, 12), 6000);
@@ -616,7 +628,9 @@ public class BotXuyenSuot {
          * 30% thi guc tren duong ra (dong Co o Cinnabar 29-30/10: "het thuoc -> ve lang" roi guc sau 10 giay).
          */
         boolean veHoiNeuCan() throws Exception {
-            if (b.hp <= 0 || b.hp >= b.maxhp / 2 || b.soThuoc(2) + b.soThuoc(3) > 0 || b.soThuoc(1) * 80 > b.maxhp / 4) return false;
+            // nguong 1/3 HP (truoc 1/2): di bo qua cum Johto toi bai da mat ~50% HP - bot het thuoc ve lang / quay lai mai khong
+            // danh duoc con nao (bo1 #143 31/10/2026)
+            if (b.hp <= 0 || b.hp >= b.maxhp / 3 || b.soThuoc(2) + b.soThuoc(3) > 0 || b.soThuoc(1) * 80 > b.maxhp / 4) return false;
             int tot = -1, ds = 999;
             for (int c : new int[]{70, 0, 80, 1701, 301, 1901}) { List<int[]> d = duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
             // cum Johto (10 / 11 / 13 ...) khong co duong di bo ve lang: toi(0) tu di New Bark roi Arcanine "Về làng" (truoc
@@ -749,7 +763,9 @@ public class BotXuyenSuot {
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
             // cum Johto -> lang: di bo toi New Bark roi Arcanine "Về làng" (truoc 30/10/2026 duong mot chieu)
             // (duong() bo qua khoa cap: tu cum Johto "co duong" qua 113 / 114 cap 72+ nhung cong bi chan)
-            if (KichBanDS.laLang(dich) && (KHU_XA_ARCANINE.contains(tu) || CUM_JOHTO.contains(tu))) {
+            // ... va moi ban do khong co duong di bo ve lang nhung di bo toi duoc New Bark (Violet 20, Ecruteak 19, Goldenrod 18...)
+            if (KichBanDS.laLang(dich) && (KHU_XA_ARCANINE.contains(tu) || CUM_JOHTO.contains(tu)
+                    || duong(tu, dich) == null && !KichBanDS.laLang(tu) && !cungBanDo(tu, 10) && duong(tu, 10) != null)) {
                 int k = KHU_XA_ARCANINE.contains(tu) ? tu : 10;
                 if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
                 if (cungBanDo(tu, dich)) return true;
@@ -780,13 +796,14 @@ public class BotXuyenSuot {
             if ((duong(tu, dich) == null || quaKhoa(duong(tu, dich), b.lv)) && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)
                     && !quaKhoa(duong(10, dich), b.lv)) {
                 if (quaArcanine("New Bark")) tu = b.mapId;
-                else MAP_CHAN.put(10, System.currentTimeMillis());
+                // khong chan New Bark 30 phut chi vi lan nay khong toi duoc Arcanine (guc / lech vi tri) - truoc 31/10/2026 chan
+                // ca cum Johto: d290 o Tau S.S. Anne 'khong co ban do co Luxray' (dang chan [10])
             }
             for (Map.Entry<Integer, String> e : CHI_ARCANINE.entrySet()) {
                 if (cungBanDo(dich, e.getKey()) && !cungBanDo(tu, dich)) {
                     if (quaArcanine(e.getValue())) tu = b.mapId;
                     if (cungBanDo(tu, dich)) return true;
-                    MAP_CHAN.put(dich, System.currentTimeMillis());
+                    mapChan().put(dich, System.currentTimeMillis());
                     ketLyDo("Arcanine khong dua toi " + e.getValue() + " (" + dich + ")");
                     return false;
                 }
@@ -826,7 +843,7 @@ public class BotXuyenSuot {
                         hoiSinh();
                         return false;
                     }
-                    MAP_CHAN.put(e[1], System.currentTimeMillis());
+                    mapChan().put(e[1], System.currentTimeMillis());
                     ketLyDo("cong " + truoc + "->" + e[1] + " khong cho qua: " + (t.length() > 160 ? t.substring(0, 160) : t));
                     return false;
                 }
@@ -969,9 +986,9 @@ public class BotXuyenSuot {
          */
         void boChanKhiMoBanDo() {
             int moc = b.moc();
-            if (mocMoBanDo < moc && b.doiChu(mocMoBanDo, 0, "mở bản đồ mới") != null && !MAP_CHAN.isEmpty()) {
-                ghi("bo chan ban do " + MAP_CHAN.keySet() + ": may chu bao mo ban do moi");
-                MAP_CHAN.clear();
+            if (mocMoBanDo < moc && b.doiChu(mocMoBanDo, 0, "mở bản đồ mới") != null && !mapChan().isEmpty()) {
+                ghi("bo chan ban do " + mapChan().keySet() + ": may chu bao mo ban do moi");
+                mapChan().clear();
             }
             mocMoBanDo = moc;
         }
@@ -981,11 +998,11 @@ public class BotXuyenSuot {
             int tot = mapLuyen0();
             // het cho luyen ma con ban do bi chan (vd mo khoa qua duong khac khong co thong bao): thu lai mot lan khong chan,
             // toi da 3 lan / dong va cach nhau >= 2 phut (ban do van khoa thi toi() chan lai, khong vong lap)
-            if (tot < 0 && !MAP_CHAN.isEmpty() && lanBoChan < 3 && System.currentTimeMillis() - lucBoChan > 120000L) {
+            if (tot < 0 && !mapChan().isEmpty() && lanBoChan < 3 && System.currentTimeMillis() - lucBoChan > 120000L) {
                 lanBoChan++;
                 lucBoChan = System.currentTimeMillis();
-                ghi("khong co map luyen cap " + b.lv + " ngoai ban do bi chan " + MAP_CHAN.keySet() + " -> thu lai");
-                MAP_CHAN.clear();
+                ghi("khong co map luyen cap " + b.lv + " ngoai ban do bi chan " + mapChan().keySet() + " -> thu lai");
+                mapChan().clear();
                 tot = mapLuyen0();
             }
             return tot;
