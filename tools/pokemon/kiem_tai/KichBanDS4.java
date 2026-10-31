@@ -25,6 +25,7 @@ class KichBanDS4 {
         KichBanNhiemVu.dangKy();
         KichBanHuongDan.dangKy();
         KichBanSuaTuyen.dangKy();
+        KichBanHoTong.dangKy();
         KichBanVuon.dangKy(); // bat lai vuon 29/10/2026: gieo / tua / thu hoach / dang nhap lai / buoc So tay lam_vuon
     }
 
