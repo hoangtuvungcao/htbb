@@ -306,8 +306,10 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 // Truoc day nhanh "co luot van tieu" chi gui menu khi myCountry == inCountry,
                 // con lai KHONG gui gi -> nguoi choi co luot van tieu ma dang o lanh tho nuoc
                 // khac thi bam npc khong ra gi, mat luon ca muc Ho Tro.
-                if (p.luot_van_tieu > 0 && p.myCountry == p.inCountry) {
-                    menu = new String[]{"Nhận hàng giao (" + p.luot_van_tieu + " lượt)", "Xuống thú cưỡi", "Đổi danh hiệu", "Đăng ký sàn đấu", "Vào sảnh chờ", "Xem sàn đấu", "Hỗ trợ"};
+                // sua-ho-tong: nguoi dang lam buoc nhiem vu "ho_tong" luon thay muc nhan hang (ca khi het luot / khac nuoc) -
+                // truoc day muc nay an va nguoi choi khong biet nhan Gói hàng o dau (real.HoTongNhiemVuGame).
+                if (real.HoTongNhiemVuGame.hienMucNhan(p)) {
+                    menu = new String[]{real.HoTongNhiemVuGame.chuMucNhan(p), "Xuống thú cưỡi", "Đổi danh hiệu", "Đăng ký sàn đấu", "Vào sảnh chờ", "Xem sàn đấu", "Hỗ trợ"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                 } else {
                     menu = new String[]{"Xuống thú cưỡi", "Đổi danh hiệu", "Đăng ký sàn đấu", "Vào sảnh chờ", "Xem sàn đấu", "Hỗ trợ"};

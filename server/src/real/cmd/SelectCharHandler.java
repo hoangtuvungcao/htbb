@@ -88,7 +88,7 @@ public class SelectCharHandler implements ICommandHandler {
             Char p2 = CharManager.instance.getByUserID(session.userID);
             if (p2 != null) {
                 if (p2.getSession() != null) {
-                    p2.getSession().disconnect(10);
+                    p2.getSession().dongVoiLyDo(LoginHandler.DANG_NHAP_KHAC, 10);
                 } else {
                     CharManager.instance.kickPlayer(p2, "selectcharhandler 1");
                 }
@@ -179,7 +179,7 @@ public class SelectCharHandler implements ICommandHandler {
             p2 = CharManager.instance.getCharByCharName(p.charname);
             if (p2 != null) {
                 if (p2.getSession() != null) {
-                    p2.getSession().disconnect(9);
+                    p2.getSession().dongVoiLyDo(LoginHandler.DANG_NHAP_KHAC, 9);
                 } else {
                     CharManager.instance.kickPlayer(p2, "selectcharhandler 2");
                 }
@@ -241,7 +241,7 @@ public class SelectCharHandler implements ICommandHandler {
                 final Char pp = CharManager.instance.getByUserID(p.userID);
                 if (pp != null) {
                     if (pp.getSession() != null) {
-                        pp.getSession().disconnect(13);
+                        pp.getSession().dongVoiLyDo(LoginHandler.DANG_NHAP_KHAC, 13);
                     } else {
                         CharManager.instance.kickPlayer(pp, "selectcharhandler 3");
                     }

@@ -185,8 +185,19 @@ public final class KichBanTinhNangThuong {
     }
 
     /** Danh quai id cho yeu (HP <= 35%) bang chieu thuong roi nem bong 1 toi khi bat / bo chay. Tra {kq, so lan nem}. */
+    /**
+     * Danh cho yeu (<= 35% HP) roi nem toi khi bat / bo chay / bi tu choi. {ket qua, so bong da TRU}: ket qua 1 bat, 2 bo
+     * chay, 0 het luot, 3 tu choi, -1 quai chet / mat, -2 may chu khong tra loi.
+     *
+     * <p>Cong kiem 31/10/2026 (can bang class: don thuong manh hon): truoc day sau MOI lan truot bot danh them mot don "giu
+     * giao chien" -> ha chet Pidgey 35% HP ("Không thấy Pokémon đó") va dem MOI lan gui la mot bong. Nay nhu client that:
+     * giao chien (BatPokemonGame.khiDanh) giu 30 giay tu don trung cuoi - chi danh lai khi da qua 20 giay; chi DEM bong khi
+     * may chu tra -121 ket qua 0/1/2 (truoc truBong moi duong bo qua deu KHONG tra loi va KHONG tru bong: nhip nem 1,5 giay,
+     * BoNgocGame.coClient); khong tra loi -> cho het nhip nem roi nem lai (toi da 2 lan).
+     */
     static int[] danhVaNem(BotChucNang.Bot b, int id, StringBuilder ghi) throws IOException {
         int[] q;
+        long danhCuoi = 0;
         for (int lan = 0; lan < 60; lan++) {
             b.gui(7, (short) id);
             b.bom(200);
@@ -194,18 +205,30 @@ public final class KichBanTinhNangThuong {
             if (q == null || q[2] == 0) return new int[]{-1, 0};
             if (q[2] > 0 && q[4] > 0 && q[2] * 100 <= q[4] * 35) break;
             b.gui(9, (short) id, (byte) 0);
+            danhCuoi = System.currentTimeMillis();
             b.bom(450);
         }
         q = b.quai.get(id);
         if (q == null || q[2] <= 0) return new int[]{-1, 0};
-        int nem = 0;
-        for (int k = 0; k < 6; k++) {
+        int nem = 0, khongTraLoi = 0;
+        for (int k = 0; k < 8; k++) {
+            if (danhCuoi > 0 && System.currentTimeMillis() - danhCuoi > 20000L) {
+                b.gui(9, (short) id, (byte) 0); // giao chien sap het (30 giay): danh lai mot don nhu nguoi choi
+                danhCuoi = System.currentTimeMillis();
+                b.bom(400);
+                q = b.quai.get(id);
+                if (q == null || q[2] <= 0) { ghi.append("[quai chet khi danh giu giao chien] "); return new int[]{-1, nem}; }
+            }
             int m = b.moc();
             b.gui(-121, (byte) 1, (short) id, (byte) 1);
-            nem++;
             b.cho(x -> goi121(x, m, 1) != null, 3000);
             byte[] d = goi121(b, m, 1);
-            if (d == null) { ghi.append("[nem khong ket qua: ").append(b.chuTu(m)).append("] "); return new int[]{-2, nem}; }
+            if (d == null) {
+                ghi.append("[nem khong ket qua (khong tru bong): ").append(b.chuTu(m)).append("] ");
+                if (++khongTraLoi > 2) return new int[]{-2, nem};
+                b.bom(1700); // nhip nem
+                continue;
+            }
             DataInputStream r = new DataInputStream(new ByteArrayInputStream(d));
             r.readByte();
             r.readShort();
@@ -218,11 +241,11 @@ public final class KichBanTinhNangThuong {
             int tl = r.readShort();
             String chu = r.readUTF();
             ghi.append("[").append(dex).append(' ').append(tl).append("‰ ").append(chu).append("] ");
-            if (kq == 3) { nem--; return new int[]{3, nem}; } // tu choi: khong tru bong
+            if (kq == 3) return new int[]{3, nem}; // tu choi: khong tru bong
+            nem++; // 0 truot / 1 bat / 2 bo chay: da tru mot bong
             if (kq == 1 || kq == 2) return new int[]{kq, nem};
+            if (nem >= 6) break;
             b.bom(1700); // nhip nem 1,5 giay
-            b.gui(9, (short) id, (byte) 0); // giu giao chien
-            b.bom(300);
         }
         return new int[]{0, nem};
     }
@@ -655,7 +678,11 @@ public final class KichBanTinhNangThuong {
         if (l != null) throw new IllegalStateException(p0.user + " " + l);
         BotChucNang.duTuoiChongClone(p0);
         KichBanDS.veLang(p0);
-        lenhGm("slv " + p0.ten + " 40 0");
+        // cap 99 (khong phai 40): nhan vat moi dung 2 x 21 giay o bien khu Cherrygrove giua quai cap ~40. Sau can bang class
+        // 31/10/2026 (ChiSoDong, mau / thu chuan hoa) nhan vat cap 40 tay trang bi quai danh guc giua cac buoc -> moi buoc khu
+        // bao "Bạn đã bị hạ gục" (cong kiem 31/10). Nguoi choi that o day da co do / thuoc; cap cao chi giu canh song, khong
+        // doi luat khu (menu, bien, trung khu, hoi chieu 20 giay kiem nhu cu). Mo ban do: tob_ban_do_mo moc 40 nhu cu.
+        lenhGm("slv " + p0.ten + " 99 0");
         p0.bom(500);
         int idc = p0.charDb;
         p0.close();

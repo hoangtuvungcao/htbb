@@ -633,7 +633,7 @@ public final class TuDongKeHoach {
 
     /** Diem ky vong cua chieu vao quai: sat thuong % x khac he x STAB (/10000). */
     static long diem(final CauHinh c, final TinhHinh t, final Chieu ch, final Quai q) {
-        final int heSo = heSoChieu(c, t, ch, q);
+        final int heSo = KhacHePve.ra(heSoChieu(c, t, ch, q)); // sat thuong that vao quai: he so da kep PvE (60..150)
         final int stab = c.chonChieuTheoHe && ch.he >= 0 ? ChieuPokemon.heSoStab(ch.he, t.he1, t.he2) : 100;
         return (long) Math.max(1, ch.satThuong) * heSo * stab;
     }

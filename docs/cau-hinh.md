@@ -346,12 +346,12 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **385 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **388 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 97 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 249 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 252 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
@@ -511,7 +511,7 @@ Bot lấp máy chủ chơi như người (tên có tiền tố, mặc định "a
 | `hlv_ai.doi_bot_toi_da` | Số đội do bot làm chủ tối đa | số | `3` | 0..50 | ngay | game | Bot cấp 50 lập đội không mất 100.000.000 xu / huy hiệu khi số đội do bot làm chủ còn dưới ngần này (0 = bot không lập đội). Lương đội của bot cho người thật vẫn tính vào hạn mức ngày. |
 | `hlv_ai.tien_to_ten` | Tiền tố tên bot | chuỗi | `ai ` | ≤ 12 ký tự | ngay | game | Hiện trước tên mọi Huấn luyện viên AI ở mọi chỗ người chơi thấy tên (trên đầu, chat, top, đội, chợ...), gõ tự do 1-12 ký tự, có thể dính liền tên (không cần dấu cách / hai chấm), nhưng PHẢI có chữ AI hoặc BOT để người chơi nhận ra bot; không dùng dấu ":". Giá trị sai: máy chủ dùng mặc định "ai ". |
 
-### Khoá ẩn: cố định & luôn bật (290)
+### Khoá ẩn: cố định & luôn bật (293)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -781,6 +781,9 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `chi_so.tran_khang_he` | Trần kháng một hệ (‰) | Cố định (ẩn) | `600` | ngay | game | Kháng hệ + kháng mọi hệ + phiến đá. |
 | `chi_so.san_sat_thuong` | Sàn sát thương mỗi đòn (‰) | Cố định (ẩn) | `400` | ngay | game | Sau mọi lớp giảm, một đòn còn ít nhất chừng này phần nghìn (chống bất tử). |
 | `chi_so.tran_phan_tram_cong` | Trần tổng % cộng thêm (‰) | Cố định (ẩn) | `500` | ngay | game | Tổng % tấn công/phòng thủ/HP từ pet, thú cưỡi, thời trang, bộ, VIP… so với chỉ số gốc. |
+| `chi_so.khac_he_pve_ra_toi_thieu` | Khắc hệ PvE: hệ số đòn người chơi tối thiểu (%) | Cố định (ẩn) | `60` | ngay | game | Đòn người chơi vào quái / boss / trưởng Gym bị kháng (×0,7 / ×0,5) hoặc miễn nhiễm (×0,3) không thấp hơn mức này - dòng chỉ có chiêu bị khắc (Pichu chỉ có chiêu Điện gặp quái Đất) vẫn đi tiếp bước hạ quái bắt buộc. 30 = như Pokémon gốc. PvP không đổi. |
+| `chi_so.khac_he_pve_ra_toi_da` | Khắc hệ PvE: hệ số đòn người chơi tối đa (%) | Cố định (ẩn) | `150` | ngay | game | Đòn người chơi vào quái / boss / trưởng Gym có lợi thế khắc hệ (×1,5 / ×2) không vượt mức này. 200 = như Pokémon gốc. PvP không đổi. |
+| `chi_so.khac_he_pve_vao_toi_da` | Khắc hệ PvE: hệ số đòn quái vào người chơi tối đa (%) | Cố định (ẩn) | `130` | ngay | game | Đòn quái / boss / trưởng Gym có lợi thế khắc hệ vào người chơi (×1,5 / ×2) không vượt mức này; kháng / miễn nhiễm giữ nguyên. Trưởng Gym còn trần riêng gym.he_toi_da. 200 = như Pokémon gốc. PvP không đổi. |
 | `danh_hieu.bat` | Bật danh hiệu thành tựu | Cố định (ẩn) | `1` | ngay | game | 0 = ngừng tự mở khoá danh hiệu và tắt dòng chỉ số của danh hiệu đang đeo (danh hiệu đã có vẫn giữ, vẫn hiện trên đầu). Danh mục + điều kiện ở bảng data_danh_hieu. |
 | `danh_hieu.tran_phan_nghin` | Trần chỉ số ô danh hiệu (‰) | Cố định (ẩn) | `10` | ngay | game | Ngân sách ô danh hiệu (thiết kế cân bằng 4.5, đề xuất 1%): chỉ một danh hiệu đang đeo được tính, giá trị từng danh hiệu (data_danh_hieu.phan_nghin) bị kẹp về trần này và vào trần tổng trang trí. 10 = +1%. |
 

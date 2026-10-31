@@ -485,7 +485,10 @@ public final class ManNhiemVu extends Screen {
         try {
             if (q.stateQuest == 2 && q.type == Quest.TYPE_KILL_MONS && q.idMonsKill != null) {
                 for (int i = 0; i < q.idMonsKill.length && yy + 14 < gh; i++) {
-                    yy = thanhMuc(g, x + 10, yy, w - 20, Res.monsterTemplates[q.idMonsKill[i]].name, q.allMonsKilled[i], q.totalMonskill[i]);
+                    // 31/10/2026: quái ở bản đồ khác (cửa ải) chưa có mẫu ở client - vẫn vẽ thanh tiến độ
+                    String tq = Quest.tenQuai(q.idMonsKill[i]);
+                    yy = thanhMuc(g, x + 10, yy, w - 20, tq != null ? tq : (q.idMonsKill.length == 1 && q.coMuc() ? q.muc : "Quái " + (i + 1)),
+                            q.allMonsKilled[i], q.totalMonskill[i]);
                 }
             } else if (q.stateQuest == 2 && q.type == Quest.TYPE_GET_ITEM && q.idItemGet != null) {
                 for (int i = 0; i < q.idItemGet.length && yy + 14 < gh; i++) {

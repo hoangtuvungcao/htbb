@@ -160,6 +160,7 @@ public final class MenuNguCanh extends Dialog {
         MenuNguCanh m = gI();
         m.lenh = boTrung(lenh);
         m.trang = 0;
+        m.dau = 0;
         m.chon = 0;
         m.moiTrang = TOI_DA;
         m.left = null;
@@ -241,11 +242,33 @@ public final class MenuNguCanh extends Dialog {
         return n <= td ? 1 : (n + td - 2) / (td - 1);
     }
 
+    /**
+     * 31/10/2026 (báo lỗi 0.9.24: "chỗ chế tạo trang bị nay tìm không thấy"; menu Machamp 12 lệnh ở PC 1080: "Khóa đồ thú"
+     * không trang nào hiện): paint chọn số nút / trang lại MỖI khung theo chữ của trang đang xem, nhưng trước đây nhớ SỐ
+     * TRANG - trang 2 tính với cỡ trang khác trang 1 nên nhảy cóc mục (hoặc lặp). Nay nhớ CHỈ SỐ LỆNH ĐẦU trang (dau):
+     * "Thêm" đi tiếp đúng sau lệnh cuối vừa thấy, hết danh sách thì về đầu - mọi lệnh đều tới được dù cỡ trang đổi.
+     */
+    int dau;
+
+    /** "Thêm": sang trang sau lệnh cuối của trang đang hiện (soTren = số lệnh thật trên trang), hết thì về đầu. */
+    void sangTrang(int soTren) {
+        int n = this.lenh == null ? 0 : this.lenh.size();
+        this.dau += Math.max(1, soTren);
+        if (this.dau >= n) {
+            this.dau = 0;
+        }
+        this.trang = this.dau == 0 ? 0 : this.trang + 1;
+        this.chon = 0;
+    }
+
     /** Lệnh trên trang hiện tại: chỉ số trong lenh, -1 = nút "Thêm". */
     int[] dsTrang() {
         int n = this.lenh.size();
         int td = Math.max(2, Math.min(TOI_DA, this.moiTrang));
-        if (n <= td) {
+        if (this.trang > 0 && this.dau == 0) {
+            this.dau = Math.min(n - 1, this.trang * (td - 1));   // kiểm thử đặt thẳng số trang
+        }
+        if (this.dau <= 0 && n <= td) {
             int[] r = new int[n];
             for (int i = 0; i < n; i++) {
                 r[i] = i;
@@ -253,7 +276,7 @@ public final class MenuNguCanh extends Dialog {
             return r;
         }
         int moi = td - 1;
-        int dau = this.trang * moi;
+        int dau = Math.max(0, Math.min(this.dau, n - 1));
         int so = Math.min(moi, n - dau);
         int[] r = new int[so + 1];
         for (int i = 0; i < so; i++) {
@@ -309,7 +332,7 @@ public final class MenuNguCanh extends Dialog {
         int wc = 0, cot = 1, hang = 0, w = 0, h = 0;
         int[] o = null;
         int tdTot = TOI_DA, chongTot = Integer.MAX_VALUE;
-        int trangCu = this.trang, chonCu = this.chon;
+        int chonCu = this.chon;
         int nLenh = this.lenh.size();
         int wMax = (R - L) * 80 / 100, nhTot = nh;
         // lượt 2 (chỉ khi lượt 1 - thẻ giữa ngang - chỗ nào cũng đè HUD, vd J2ME 400x240): cột hẹp nhất + thử vị trí lệch
@@ -317,7 +340,6 @@ public final class MenuNguCanh extends Dialog {
             final boolean ne = lan == 1;
             for (int td = Math.min(TOI_DA, Math.max(2, nLenh)); td >= 2; td--) {
                 this.moiTrang = td;
-                this.trang = Math.min(trangCu, soTrang() - 1);
                 int[] ds1 = dsTrang();
                 int wNhan = 0;
                 for (int i = 0; i < ds1.length; i++) {
@@ -396,7 +418,6 @@ public final class MenuNguCanh extends Dialog {
             }
         }
         this.moiTrang = tdTot;
-        this.trang = Math.min(trangCu, soTrang() - 1);
         this.chon = Math.min(chonCu, Math.max(0, ds.length - 1));
         int x = o[0], y = o[1];
         VUA_VE[0] = x;
@@ -449,11 +470,11 @@ public final class MenuNguCanh extends Dialog {
             final int li = ds[i];
             int c = i / hang, r = i % hang;
             int xr = x + 6 + c * (wc + k), yr = y + hTieu + r * (nhTot + k);
+            final int soTren = ds.length - 1;
             nutLenh(g, xr, yr, wc, nhTot, li < 0 ? "Thêm" : chu(li), i == this.chon, new IAction() {
                 public void perform() {
                     if (li < 0) {
-                        MenuNguCanh.this.trang = (MenuNguCanh.this.trang + 1) % MenuNguCanh.this.soTrang();
-                        MenuNguCanh.this.chon = 0;
+                        MenuNguCanh.this.sangTrang(soTren);
                     } else {
                         MenuNguCanh.this.lam(li);
                     }
@@ -658,8 +679,7 @@ public final class MenuNguCanh extends Dialog {
         } else if (keyCode == -5 || keyCode == 10 || keyCode == 13 || keyCode == 53) {
             if (this.chon < ds.length) {
                 if (ds[this.chon] < 0) {
-                    this.trang = (this.trang + 1) % soTrang();
-                    this.chon = 0;
+                    sangTrang(ds.length - 1);
                 } else {
                     lam(ds[this.chon]);
                 }

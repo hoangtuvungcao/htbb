@@ -50,10 +50,12 @@ public final class KiemDuLieuSql {
      *  doi-tuan-0500 (0.9.14): mo_ta sv.gioBaoTri "ngau nhien 05:01–05:30" (bao tri sau moc tuan thu Hai 05:00) = 366 / 21;
      *  ve-lang-mien-phi: +3 khoa ve_lang.moi_ngay / thang_gym / toi_da (nhom tu_dong, chinh, thu_tu 369..371) = 369 / 21;
      *  do-ben-guc (31/10/2026, chu game): mac_dinh hoi_sinh.do_ben_mat_phan_tram 5 -> 2 (dang nhap lai khong con hoi day do ben) = 369 / 21;
-     *  hlv-ai (31/10/2026, chu game): +nhom hlv_ai 14 khoa (huan luyen vien AI, chinh, thu_tu 372..385) = 383 / 22;
-     *  hlv-ai 2 (31/10/2026): +hlv_ai.doi_bot_toi_da, hlv_ai.tien_to_ten (386, 387), tran_xu mac dinh 2000000 -> 300000 = 385 / 22.
+     *  gioi-han-khac-he-pve (31/10/2026, chu game): +3 khoa chi_so.khac_he_pve_ra_toi_thieu / _ra_toi_da / _vao_toi_da (nhom
+     *  chi_so, co_dinh, thu_tu 372..374) = 372 / 21;
+     *  hlv-ai (31/10/2026, chu game): +nhom hlv_ai 16 khoa (huan luyen vien AI, chinh, thu_tu 375..390; tien to ten,
+     *  doi bot, tran_xu 300000) = 388 / 22.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "c8850d1d019e30d2475ea94f34870d4c788d29c2fb942145fcc72cf7cc7d2d28";
+    static final String VT_DANH_MUC = "e61fd1490bd437724f701e9ef5a99e8e93f6f9208ac1fd0d073bb5ba8d52853b";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

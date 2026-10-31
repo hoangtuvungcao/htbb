@@ -178,8 +178,17 @@ Cột `tob_char.class` giữ nguyên (0..4) và ánh xạ sang dòng Pokémon (`
 - Tám nhánh Eevee: Vaporeon (hồi đội), Jolteon (tốc độ), Flareon (bùng nổ), Espeon / Umbreon (đặc biệt / chịu đòn),
   Leafeon / Glaceon (khống chế), Sylveon (hỗ trợ). Chỉ chọn được khi `dex == 133` và cấp ≥ 25.
 - Thưởng giai đoạn tiến hoá: **+8%** (dạng 2) / **+16%** (dạng 3) HP và tấn công (`LoaiPokemon.PT_GIAI_DOAN_*`).
-- Ràng buộc cân bằng: tích HP × Tấn công × Thủ của mọi dòng nằm trong **±5%**; dòng chịu đòn hạ quái chậm hơn nhưng sống
-  lâu hơn (test so TTK, mục 2.4).
+- Ràng buộc cân bằng: chỉ số **gốc** (nhân vật, chưa tính đồ / pet / thú cưỡi / %) của mỗi dòng = một công thức trung tính
+  theo cấp nhân tỉ lệ bảng trên (`com.htbb.pokemon.ChiSoDong`, 31/10/2026): HP = (20 + 2·(cấp−1)) × tỉ lệ × 70; tấn công =
+  (20 + 5·(cấp−1)) × tỉ lệ × 4/3; thủ = (20 + 2,5·(cấp−1)) × tỉ lệ (tiềm năng skin thú cưỡi cộng % như cũ). Mọi dòng cùng hệ
+  số; vũ khí tiệm cùng bậc có cùng tấn công gốc (Squirtle +60 / Pichu −10 cũ được đưa về trung bình). Tích HP × Tấn công ×
+  Thủ của mỗi dòng khớp tích của tỉ lệ thiết kế của chính dòng đó trong **±5%** (test `KiemCanBangDong`, cấp 10..100). Lưu
+  ý: bản thân bảng tỉ lệ cho tích lệch nhau tới ~1,6 lần (Pichu 85×110×85 so Squirtle 120×85×125) - dòng chịu đòn bù bằng
+  hạ quái chậm hơn (test so TTK, mục 2.4).
+- Trước 31/10/2026 chỉ số lấy từ công thức cũ theo dòng (`CharChiSo`): hệ số HP 80/70/60/70/60, tấn công mỗi dòng một kiểu
+  (Bulbasaur ×1,5, Eevee Tinh thần ×5/3, Pichu Khéo léo ×5/3), thủ = Khéo léo (Charmander / Eevee không tăng Khéo léo theo
+  cấp), Squirtle cộng thủ và tấn công **hai lần**, Pichu thủ ×1,1 - ở cấp 30 tích lệch 11 lần, Charmander / Eevee không
+  hạ nổi quái cùng cấp từ cấp 30 (cổng kiểm bot cb2).
 - Không có chuyển sinh (reset cấp): client đọc cấp bằng 1 byte, tiến hoá gắn với cấp, và reset phá cốt truyện. Thay bằng
   **tinh thông** (mục 3.6).
 - Mỗi tài khoản tối đa `sv.maxCharPerAccount` (3) Pokémon.
@@ -276,12 +285,111 @@ PvP      = sát thương × 0,30, TRẦN 8% HP tối đa của mục tiêu mỗi
 ```
 
 - Thời tiết (khi bật hệ sinh thái): chiêu hợp trời ±10% (mục 7.1), chỉ áp đòn của người chơi.
+- **Trần khắc hệ PvE** (`com.htbb.pokemon.KhacHePve`, quyết định chủ game 31/10/2026). Áp cho người chơi đánh quái / boss /
+  trưởng Gym và ngược lại; PvP (người đánh người, đấu trường) giữ hệ số gốc.
+  - Hệ số đòn người chơi kẹp vào ×0,6–×1,5: miễn nhiễm ×0,3 và kháng đôi ×0,5 thành ×0,6, ×2 thành ×1,5.
+  - Hệ số đòn quái vào người chơi tối đa ×1,3; mức thấp (kháng, miễn nhiễm) giữ nguyên. Trưởng Gym vẫn có trần riêng ×1,15
+    (`gym.he_toi_da`), chia cho hệ số đã kẹp nên không giảm hai lần.
+  - Ba khoá cố định nhóm `chi_so`: `chi_so.khac_he_pve_ra_toi_thieu` (60), `chi_so.khac_he_pve_ra_toi_da` (150),
+    `chi_so.khac_he_pve_vao_toi_da` (130) (đổi khẩn cấp qua server.ini, [cau-hinh.md](cau-hinh.md)).
+  - Cờ gói -95 (khắc / kém / gần miễn) vẫn theo hệ số gốc, để người chơi vẫn thấy khắc hệ. HP trưởng Gym bù theo hệ số đã kẹp
+    (`gym.he_ra_toi_thieu`, mục 5.6). Bộ não Tự động đánh chấm điểm chiêu theo hệ số đã kẹp.
 - Sau mọi lớp giảm phía bị đánh, đòn còn ít nhất 40% (sàn chống bất tử, mục 4.5).
 - Quái chủ động (`com.htbb.pokemon.ChuDongQuai`, cân bằng 29/10/2026): quái thấp hơn người chơi từ 4 cấp không tự lao vào
   (`quai.xam_cap`); cùng lúc tối đa 2 quái chưa bị đánh được đánh một người (`quai.toi_da_vay`) - quái đã mất máu luôn đánh
   trả. Trước đó mọi quái trong 120 px tự vào khi người chơi đang bị đánh (4–6 con trong 1–2 giây).
 - TTK mục tiêu: quái thường hạ người ~12–15 đòn; quái tinh anh ~20 giây; boss Gym 90–120 giây đánh một mình đúng cấp;
   boss thế giới 8–12 phút với 20 người; PvP cùng cấp cùng đồ 10–14 giây.
+
+### 2.4b TTK đo thật (31/10/2026)
+
+TTK là **giây đánh thuần**: từ đòn đầu tới khi quái gục, không tính đi tìm, đi bộ, uống thuốc, gục. Bot đo sức
+`tools/pokemon/kiem_tai/KichBanDoSuc` ghi cả hai: cột `ttk_tran` (TTK) và `giay_moi_con` (thời gian mỗi con, gồm mọi thứ
+ở trên); `-DdoSucNangCap=N` nâng vũ khí vừa mua lên +N ở Machamp trước khi cầm.
+
+Sau cân bằng dòng, chủ game báo "hạ quái cùng cấp quá chậm: 13–40 giây ở cấp 30, 24–100 giây ở cấp 72 với vũ khí +0". Đo
+lại trên stack riêng (người chơi không GM, đồ cửa hàng đúng bậc, điểm huấn luyện chia đều, quái cùng cấp):
+
+- Các con số đó là `giay_moi_con`, không phải TTK. TTK với đồ +0 là 2,2–5 giây ở cấp 20–50 và 2,2–7,4 giây ở cấp 50–85,
+  tức đúng mức thiết kế 4 / 5 / 6 giây (mục 2.3). Thời gian mỗi con ở cấp 20–40 là 5,7–8 giây.
+- **Đường quái thường giữ nguyên.** Hạ thủ / HP quái để đạt "+0 8–12 giây" là làm quái **lì hơn** chứ không nhanh hơn.
+- Vũ khí +6 = +18% chỉ số vũ khí (mục 4.2). Vũ khí chỉ là ~1/3 tấn công, nên +6 ≈ +5–7% tấn công và TTK nhanh hơn ~8–10%
+  (+10: ~12–15%). Muốn "+6 nhanh gấp đôi +0" thì thủ quái phải ≈ 95% tấn công người chơi +0; khi đó dòng tấn công thấp
+  (Squirtle 85) chỉ còn sàn 5% sát thương. Muốn nâng cấp có ý nghĩa hơn thì đòn bẩy là % chỉ số mỗi bậc nâng cấp
+  (`data_nang_cap_lau_dai`), không phải chỉ số quái (chờ chủ game quyết).
+- Mô hình khoá đường quái (`server/test/KiemTtkQuai`):
+  - Tấn công người chơi = (`ChiSoDong` + vũ khí bậc cửa hàng × (1 + % nâng cấp) + huy hiệu + vòng cổ) × 1,125 (đồ mua có
+    +0..25% ngẫu nhiên, `Map.rand10`) × (1 + % giai đoạn tiến hoá) × (1 + điểm huấn luyện, 1/3 vào Tấn công). Lệch số máy
+    chủ trả ≤ 4%.
+  - TTK = HP quái / (K × max(5% tấn công, tấn công − thủ quái)). K là sát thương mỗi giây trên một đòn cơ bản của vòng xoay
+    chiêu, đo theo dòng: Charmander 3,0 (chậm nhất), Bulbasaur 4,5, Eevee 5,0, Squirtle 4,0, Pichu 4,0.
+  - Kiểm mọi dòng ở cấp 10..100:
+    - +0 trong 0,4–1,5 × mục tiêu (mô hình: 2,2–6,6 giây);
+    - +6 nhanh hơn ≥ 5%, +10 nhanh hơn ≥ 8%;
+    - +10 không "một đòn": ≥ 1,2 giây ở vòng xoay nhanh nhất;
+    - không gai giữa hai cấp quái kề nhau (chậm hơn ≤ 20%);
+    - 16 Gym 45–180 giây với đồ +0 (mô hình 59–145 giây; đo thật 31/10/2026 Gym Celadon ở cấp 36, đồ +0: cả 5 dòng thắng,
+      64–123 giây).
+- **Quái tinh anh** (khối `sua_quai_tinh_anh.sql`): bảng `data_noi_dung_quai_tinh_anh` (máy chủ đặt `maxhp` / `attack` của
+  con tinh anh từ đây) chưa theo hai lần "Tự cân chỉnh" của quái thường. Vì vậy tinh anh cấp 13–59 đánh ×1,32–1,78 quái
+  thường (thiết kế ×1,3; Arbok 1.117 so với 627) và có HP ×4,0–4,84. Khối này đưa 46 dòng về đúng ×4 HP / ×1,3 tấn công /
+  thủ template của quái thường đang chạy. Có 30 bước chính "Hạ N quái tinh anh" và 5 bước `ha_alpha` là bắt buộc.
+
+Khắc hệ trên bước giết bắt buộc (đo 31/10/2026 trước trần; **đã sửa** bằng trần khắc hệ PvE, mục 2.4). Trước trần:
+
+- Pichu chỉ có chiêu Điện (cả đòn thường ô 0; ô 4 "Nhanh nhẹn" là buff), nên mọi quái Đất chỉ nhận ×0,3: TTK ×3,3, sát thương
+  nhận mỗi con ×3,3–5. Các bước bị ảnh hưởng:
+  - cửa ải CA-03.1 (Quagsire, cấp 10), CA-09.1 (60 Golem, cấp 49), CA-10.1 (65 Rhydon, cấp 57);
+  - bước chính C12.4 (45 Cubone, cấp 23), C25.4 (Palpitoad), C37.5 (Rhydon), C42.3 (Gastrodon), C70.3 / C77.3 / C85.3
+    (Claydol / Flygon).
+- Charmander ở CA-09.1 (Golem): gây ×0,7 và nhận ×2.
+- Đo thật ở bãi Gastrodon (bản đồ 23, cấp 72; bước C42.3 "35 Gastrodon" bắt buộc), đồ +0, 5 phút mỗi dòng:
+  - Bulbasaur hạ 8 con, 2,2 giây mỗi con;
+  - Eevee hạ 8 con, 6,1 giây mỗi con;
+  - Squirtle chỉ hạ 2 con, 15,7 giây mỗi con, tốn 8 bình thuốc mỗi con;
+  - Charmander (Nước đánh Lửa ×1,5, 10 đòn để gục) không hạ được con nào và hết 12 bình;
+  - Pichu (×0,3) không hạ được con nào; cùng bài với vũ khí +6 thì hạ 7 con, 11,2 giây mỗi con, 2,3 bình mỗi con.
+
+Sau trần (mô hình `KiemTtkQuai`, đồ cửa hàng +0, quái mục tiêu đang chạy):
+
+- Pichu trên 10 bước kể trên: TTK 9,7–16,1 giây → 4,9–8,1 giây; sát thương nhận mỗi con so với trung tính ×3,3–5 → ×1,7–2,2.
+- Charmander ở CA-09.1 (Golem): nhận mỗi con ×2,8 → ×1,8; ở C42.3 (Gastrodon) ×1,9 → ×1,6.
+- Không còn bước giết bắt buộc nào, ở dòng nào, nhận quá ×2,2 so với trung tính.
+- Đo thật sau trần (đồ +0, 6–8 phút mỗi lần):
+  - Gastrodon cấp 72: Charmander hạ 8 con, 5,7 giây mỗi con, 0,5 bình mỗi con (trước: 0 con); Pichu hạ 1 con rồi 4 con ở
+    lần đo sau, 7,7–10,5 giây mỗi con, 4,5–12 bình mỗi con (trước: 0 con).
+  - Golem (cấp 54) với người chơi cấp 52: Charmander và Pichu đều hạ 8 con, 2,4 giây mỗi con, 0,1–0,4 bình mỗi con.
+  - Golem với người chơi cấp 49 (đúng cấp mở CA-09.1), trước khối `sua_cap_quai_cua_ai.sql`: cả hai dòng hạ 1 con rồi gục.
+    Lý do là luật chênh cấp (`LiveActor.attackDam`: quái cao hơn 5 cấp đánh ×2 + 70 mỗi cấp), không phải khắc hệ.
+
+**Quái mục tiêu bước giết bắt buộc ≤ cấp mở + 2** (khối `sua_cap_quai_cua_ai.sql`, chủ game 31/10/2026; cùng luật với các cửa ải
+CA-03..07 ở khối `sua_can_bang_lop.sql`). Rà mọi bước chính / cửa ải / hướng dẫn kiểu giết, giết quái tinh anh, hạ quái tinh
+anh; có 5 bước mà quái mục tiêu cao hơn cấp mở từ 5 cấp:
+
+| Bước | Quái | Cấp cũ → mới | Cấp mở bước | Bản đồ |
+|---|---|---|---|---|
+| CA-09.1 | Golem | 54 → 51 | 49 | 18 |
+| CA-10.1 | Rhydon | 62 → 59 | 57 | 20 |
+| CA-11.1 | Kingler | 70 → 67 | 65 | 22 |
+| CA-12.1 | Vileplume | 78 → 75 | 73 | 24 |
+| C31.4 (tinh anh) | Arcanine | 60 → 55 | 53 (C34.3 mở 57 cũng dùng) | 20 |
+
+- Mỗi mẫu chỉ sinh ở một bản đồ, nên đổi mẫu là đổi đúng bãi quái của bước đó.
+- Trưởng Gym dùng cùng mẫu (Pewter Golem, Viridian Rhydon) lấy cấp Gym riêng, không đổi.
+- Chỉ số và thưởng theo cấp mới trên đường quái đang chạy, quái tinh anh 4 × HP / 1,3 × tấn công. Luật chênh cấp chung giữ
+  nguyên.
+- `KiemTtkQuai` kiểm không bước giết bắt buộc nào có quái ≥ cấp mở + 5.
+
+Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **chưa sửa**):
+
+- Ở cấp 50–85, dòng không kháng hệ quái nhận 5–7 đòn mỗi con (11–12 đòn để gục, dưới mức 12–15 thiết kế) và dùng 3–6
+  bình thuốc mỗi con. Phần lớn sát thương đến lúc đi tìm (2 quái cùng đánh).
+- Bản đồ Arcanine (20, cấp 60): mọi dòng nhận 26–40 đòn mỗi con, đa số là đòn nhỏ 22–126 cách nhau 0,3 giây, và 3/4 dòng
+  gục. Cần kiểm riêng.
+- Gym Goldenrod (Tauros, cấp 61) đo ở cấp 62, đồ +0: cả 5 dòng gục sau 56–110 giây, boss còn 10–63% HP, mỗi dòng dùng
+  15–19 bình. Sát thương lên boss 1.400–2.400 mỗi giây, tức cần ~100–150 giây để hạ, đúng cửa sổ thiết kế. Thua là do đòn
+  boss (tới 6.285 một đòn), không phải do HP / thủ boss. Khối `sua_can_bang_cap.sql` chỉ hạ tấn công Gym cấp 13–59 (stt
+  2..10); Gym stt 11..16 vẫn là số thiết kế cho đồ +6.
 
 ### 2.5 Trạng thái
 
@@ -698,7 +806,8 @@ thêm), không đặt ở từng nguồn, nên pet / thú cưỡi / skin không 
 | Xuyên giáp (tỉ lệ bỏ qua thủ) | 20% → 30% | | — |
 
 **Trần cứng**: phản đòn 15% (PvP 10%); sát thương lên boss / quái +20% / +20%; sát thương theo % HP mục tiêu 1% (boss
-0,2%) và không quá đòn gốc; hồi HP / PP mỗi nhịp 5 giây ≤ 1% tối đa; hút HP lên boss / Gym / tinh anh ×10% (mỗi đòn ≤ 0,2%
+0,2%) và không quá đòn gốc; hồi HP / PP mỗi nhịp 5 giây ≤ 1% tối đa (HP: **ngoài trận** - không mất HP 10 giây - luôn hồi đủ
+1% / nhịp kể cả không có đồ hồi, `HoiMauNgoaiTran`, 31/10/2026); hút HP lên boss / Gym / tinh anh ×10% (mỗi đòn ≤ 0,2%
 HP tối đa); EXP từ đồ ≤ +30%; thưởng bộ ≤ 5%; **tổng % cộng thêm** tấn công / thủ / HP ngoài đồ ≤ +50% trên chỉ số gốc
 (`chi_so.tran_phan_tram_cong`). Giai đoạn tiến hoá, tinh thông, hệ sinh thái tính ngoài (đã có trần riêng).
 
@@ -966,12 +1075,14 @@ vào bằng **vé Mê cung**, quái ra theo đợt kèm boss Mê cung, giới h�
 | Báo trước chiêu lớn | gói -96: thời gian niệm 1,5–3 giây + hình vùng (tròn / nón / chữ nhật / vành); chiêu **nổ đúng lúc hết giờ niệm** (`BossLauDai.nhipNiem`), mục tiêu đứng ngoài vùng lúc đó thì không trúng (trước 29/10/2026 xét ở đòn kế tiếp - né rồi quay lại vẫn ăn ×3) |
 | Nộ theo thời gian | boss Gym sau 5 phút, boss thế giới sau 15 phút: sát thương ×3 (chống kéo dài bằng người đông) |
 | Gọi đệ | ở 70% và 40% HP, 2..6 con theo số người đang đánh; **Gym 1 đấu 1: 1 con mỗi pha** (`gym.so_de`) |
-| Gym 1 đấu 1 | boss Gym và đệ chỉ đánh người thách đấu (nhắm nhầm người khác thì quay về người thách đấu); khắc hệ của đòn trưởng Gym vào người chơi trần **×1,15** (`gym.he_toi_da`, `GiaiDoanBoss.giamKhacHeGym`); chiêu hệ tốt nhất của người thách đấu (ô 1..3, không tính đòn Cào ô 0) dưới ×1 vào hệ boss thì HP boss × tốt nhất / 100 (`gym.he_ra_toi_thieu`, `GiaiDoanBoss.hpGymTheoHe`; Lửa gặp Seismitoad, Điện gặp Celadon ×0,7 → 70% HP; Điện gặp Golem ×0,3 → 30%) - dòng bị khắc vẫn khó hơn (đòn boss mạnh hơn, trận dài hơn) nhưng không bị chặn cứng |
+| Gym 1 đấu 1 | boss Gym và đệ chỉ đánh người thách đấu (nhắm nhầm người khác thì quay về người thách đấu); khắc hệ của đòn trưởng Gym vào người chơi trần **×1,15** (`gym.he_toi_da`, `GiaiDoanBoss.giamKhacHeGym`); chiêu hệ tốt nhất của người thách đấu (ô 1..3, không tính đòn Cào ô 0) dưới ×1 vào hệ boss thì HP boss × tốt nhất / 100 (`gym.he_ra_toi_thieu`, `GiaiDoanBoss.hpGymTheoHe`; hệ số đã qua trần khắc hệ PvE ×0,6–×1,5, mục 2.4: Lửa gặp Seismitoad, Điện gặp Celadon ×0,7 → 70% HP; Điện gặp Golem ×0,3 → kẹp ×0,6 → 60%) - dòng bị khắc vẫn khó hơn (đòn boss mạnh hơn, trận dài hơn) nhưng không bị chặn cứng |
 | Thông báo pha | gói -98 (vào pha, nộ, gọi đệ, khiên) |
 
 **Quái tinh anh** (chữ người chơi thấy là "quái tinh anh", không dùng "Alpha"): 1/50 lần hồi sinh, to ×1,3, HP ×4, tấn
 công ×1,3, rơi ×3, chắc chắn rơi 1 đá, 2% đồ Hoàn mỹ, TTK ~20 giây, có thông báo bản đồ
-([noi_dung_quai_tinh_anh.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_tinh_anh.csv)).
+([noi_dung_quai_tinh_anh.csv](../tools/luu_tru_sinh_du_lieu/du_lieu/noi_dung_quai_tinh_anh.csv)). HP và tấn công lấy từ bảng
+`data_noi_dung_quai_tinh_anh` (thủ lấy từ template), luôn tính trên quái thường **đang chạy**: mỗi lần sửa chỉ số quái thường
+phải sửa cả bảng này (khối `sua_quai_tinh_anh.sql`, mục 2.4b; `test/KiemTtkQuai` kiểm ×4 / ×1,3).
 
 **Họ quái theo vùng**: mỗi tuyến 3–4 loài thuộc ít nhất 2 hệ, theo môi trường (Đồng cỏ: Thường / Cỏ / Bọ; Rừng: Bọ / Cỏ / Độc;
 Hang: Đá / Đất / Ma; Bờ biển: Nước / Bay; Núi lửa: Lửa / Đá; Hồ: Nước / Băng; Tháp: Ma / Siêu linh). 20 dải 5 cấp ở
@@ -1042,6 +1153,13 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
   phẩm nhiệm vụ 10–50). Mở từ Quầy đổi thưởng → "Nhiệm vụ của tôi". Danh sách gửi client được lọc theo cấp (≤ 127 mục): nhiệm vụ phụ mời khi cấp nhiệm vụ ≤ cấp người chơi + 10, **không chặn dưới**
   (chủ game 30/10/2026: lên cấp nhanh không mất vĩnh viễn phụ cấp thấp; thưởng giữ ở cấp của nhiệm vụ), xếp gần cấp người chơi
   nhất trước, NPC (-64) tối đa 20 mục; Quầy đổi thưởng → Nhiệm vụ của tôi → Nhận nhiệm vụ phụ đầy đủ, chia trang "Xem thêm". Phụ đang làm giữ tiến độ qua ngày.
+- **Hộ tống** (kiểu `ho_tong`: N-1..5.36, TV-10.3, HT-MEW.5, C73.2; 31/10/2026, báo lỗi "đến bản đồ rồi mà không có hướng
+  dẫn"): dùng xe hàng vận tiêu. Nhận ở **Tổng tiêu đầu** (NPC -50) trong làng Pewter / Blackthorn / Cianwood, giao cho
+  **Kecleon tạp hoá** cùng làng (nói chuyện khi xe đi cạnh) hoặc **Dịch trạm** ở Đường Victory (118, ô 51..59 × 16..24,
+  khoá cấp 69 + CA-11.3). Ai đang làm bước `ho_tong` luôn thấy mục "Nhận hàng giao" (bỏ điều kiện vùng `myCountry ==
+  inCountry`, khung 9h–21h và cấp ≥ 40); hết lượt vận tiêu thì được **một** lượt miễn phí / ngày. Người không có nhiệm vụ giữ
+  luật vận tiêu cũ (chỉ Dịch trạm). Chuỗi chữ "từ Fuchsia / Olivine…" chỉ là cốt truyện; Sổ tay ghi nơi nhận, nơi giao, ô và
+  hướng. Bị cướp không tính. Mã: `com.htbb.pokemon.HoTongNhiemVu`, `real.HoTongNhiemVuGame`; kiểm `KiemHoTong`.
 
 ### 6.2 Sự kiện: lịch năm theo ngày thật + tuần Pokémon
 
@@ -1556,7 +1674,8 @@ Khi Pokémon gục, người chơi **chọn** trong hộp thoại "Pokémon củ
   đánh, đấu trường; đang thách đấu Gym; đã đánh boss còn sống cùng bản đồ; Mê cung; bản đồ thêm (`hoi_sinh.map_cam_them`).
 - **Về Trung tâm Pokémon**: ở Hoenn về Trung tâm của thị trấn Hoenn gần nhất; Kanto / Johto về làng nhà. Phạt (không áp tân
   thủ): mất 2% EXP lên cấp hiện tại (trần 15 phút cày, **không bao giờ tụt cấp**), mất 2% độ bền tối đa mỗi trang bị đang mặc
-  (không vỡ đồ; 31/10/2026 hạ 5% → 2% vì đăng nhập lại không còn hồi đầy độ bền), **Mệt mỏi** 5 phút (−20% EXP hạ quái, −10% tấn công). Không rơi đồ.
+  (không vỡ đồ; 31/10/2026 hạ 5% → 2% vì đăng nhập lại không còn hồi đầy độ bền; đồ cầm tay hỏng **vẫn đánh được, 30% sát
+  thương** kèm nhắc sửa - trước không đánh được, người hết xu sửa kẹt vĩnh viễn), **Mệt mỏi** 5 phút (−20% EXP hạ quái, −10% tấn công). Không rơi đồ.
 - "Auto về Map Up" không còn bay lại bãi luyện sau khi gục (`hoi_sinh.auto_ve_map_up=0`), để không treo máy vô hạn.
 - Client cũ không có hộp -101 nhận menu thường (id -803) với cùng lựa chọn; đồng đội cứu qua menu -804.
 
@@ -1647,7 +1766,7 @@ Mục tiêu: xu ra / vào 90–105%, lượng khoá ~95%; lượng tích chậm 
 | Trần chuyển xu trực tiếp | 5 giờ thu nhập / ngày (muốn nhiều hơn phải qua chợ, chịu thuế) | `thue.tran_chuyen_xu_gio` |
 | Dịch chuyển | 3% thu nhập 1 giờ | `phi.dich_chuyen_phan_tram_gio` |
 | Hồi sinh trả xu | 40% thu nhập 1 giờ × hệ số gục lặp (luồng mới) | `hoi_sinh.xu_phan_tram_gio` |
-| Sửa đồ | công thức cũ, trần 8% thu nhập 1 giờ mỗi món | `tieu_hao.sua_do_phan_tram_thu_nhap` |
+| Sửa đồ | 10% giá món × **phần độ bền đã mất** (31/10/2026, `DoBenLogic.giaSua`; trước luôn 10% giá dù mất 2%), trần 8% thu nhập 1 giờ mỗi món | `tieu_hao.sua_do_phan_tram_thu_nhap` |
 | Bán đồ cho NPC | 5% giá, không cộng theo cấp cường hoá | `phi.ban_npc_phan_tram` |
 | Rơi xu / đá | 30% số quái / 15‰ (khi lệch cấp ≤ 5) | `roi.xu.phan_tram`, `roi.da_nang_cap.phan_nghin` |
 | Thuốc | tổng chi thuốc ≤ 12% thu nhập; mỗi món 0,05–5% thu nhập 1 giờ | (dữ liệu) |

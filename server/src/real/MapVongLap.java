@@ -407,7 +407,7 @@ class MapVongLap {
                     listmonster = ((Hashtable) map.temp_monsters.get(1)).values();
                 }
 
-                for (Monster mt : listmonster) {
+                for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException (tai 315 bot cb2 31/10)
                     try {
                         mt.update();
                         if (mt.target != null && mt.target.exit) {
@@ -692,7 +692,7 @@ class MapVongLap {
                     listmonster = ((Hashtable) map.temp_monsters.get(2)).values();
                 }
 
-                for (Monster mt : listmonster) {
+                for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException (tai 315 bot cb2 31/10)
                     try {
                         mt.update();
                         if (mt.target != null && mt.target.exit) {
@@ -920,7 +920,7 @@ class MapVongLap {
                     listmonster = ((Hashtable) map.temp_monsters.get(0)).values();
                 }
 
-                for (Monster mt : listmonster) {
+                for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException (tai 315 bot cb2 31/10)
                     try {
                         mt.update();
                         if (mt.target != null && mt.target.exit) {
