@@ -52,7 +52,7 @@ public final class GiftcodeAnToan {
     }
 
     public static void nhap(final Char p, final String goc) {
-        if (!LauDai.bat() || p == null) {
+        if (!LauDai.bat() || p == null || HlvAiGame.chanTienThat(p)) { // huan luyen vien AI khong nhap giftcode
             return;
         }
         if (dangKhoa(p.userID)) {

@@ -149,8 +149,9 @@ public final class KenhChatGame {
         }
     }
 
+    /** Ten nguoi gui hien tren kenh chat (huan luyen vien AI: "bot_ai: ten"; khoaTen bo tien to khi tra cuu). */
     static String ten(final Char p) {
-        return p.charname == null ? "" : p.charname;
+        return p.charname == null ? "" : p.tenHienThi();
     }
 
     /** Con bi cam chat (GM camchat / the cam chat / cam tu dong cu): ly do, null = khong. */

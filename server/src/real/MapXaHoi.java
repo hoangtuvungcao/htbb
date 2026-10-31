@@ -182,7 +182,7 @@ class MapXaHoi {
 
             p.sendMessage(
                     MessageCreator.createMsgPopUp(
-                            p.id, 11, player.charname + " gửi lời thách đấu tới nhóm của bạn với số tiền cược là " + player.moneyThachdau
+                            p.id, 11, player.tenHienThi() + " gửi lời thách đấu tới nhóm của bạn với số tiền cược là " + player.moneyThachdau
                                     + " xu (đội trưởng hai bên đặt; bên thắng nhận gấp đôi trừ phí " + ThachDauCuoc.cauHinh().phiPhanTram
                                     + "%, hoà thì hoàn lại). Bạn có đồng ý không?"
                     )
@@ -244,7 +244,7 @@ class MapXaHoi {
                 }
 
                 m.dos.writeByte(0);
-                m.dos.writeUTF(player.charname);
+                m.dos.writeUTF(player.tenHienThi());
                 m.dos.writeShort(player.id);
                 com.htbb.pokemon.LoiMoiKetBan.ghi(p.charDBID, player.charDBID, System.currentTimeMillis());
                 p.sendMessage(m);
@@ -367,7 +367,7 @@ class MapXaHoi {
                 return;
             }
 
-            String receiver = message.dis.readUTF().trim();
+            String receiver = com.htbb.pokemon.HlvAi.boTienTo(message.dis.readUTF().trim());
             String info = message.dis.readUTF().trim().replaceAll("\\s+", " ");
             if (!kiemSpamChat(player, com.htbb.chongspam.ChongSpam.Kenh.RIENG, info)) {
                 return;

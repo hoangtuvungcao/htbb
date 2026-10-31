@@ -583,7 +583,7 @@ class MapDoi {
             } else {
                 Message m = new Message(27);
                 m.dos.writeShort(player.id);
-                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(player.charname + " đã rời khỏi đội"));
+                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(player.tenHienThi() + " đã rời khỏi đội"));
 
                 for (CharClan cx : clanInfo.member.values()) {
                     Char pp = CharManager.instance.getCharByCharName(cx.charname);
@@ -650,6 +650,7 @@ class MapDoi {
             if (name.indexOf("-") > -1) {
                 name = name.substring(0, name.indexOf("-")).trim();
             }
+            name = com.htbb.pokemon.HlvAi.boTienTo(name); // ten hien thi cua huan luyen vien AI
 
             if (player.equals(name)) {
                 return;
@@ -905,7 +906,7 @@ class MapDoi {
                         Message m = new Message(-11);
                         m.dos.writeByte(type);
                         m.dos.writeShort(player.id);
-                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(player.charname + " muốn mời bạn tham gia đội " + clan.name + ". Bạn có tham gia không? "));
+                        m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(player.tenHienThi() + " muốn mời bạn tham gia đội " + clan.name + ". Bạn có tham gia không? "));
                         p.sendMessage(m);
                         return;
                     }
@@ -988,7 +989,7 @@ class MapDoi {
 
                 Message m = new Message(-11);
                 m.dos.writeByte(type);
-                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(player.charname + (ok ? " đã tham gia đội " : " không đồng ý tham gia đội ") + clanx.name));
+                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(player.tenHienThi() + (ok ? " đã tham gia đội " : " không đồng ý tham gia đội ") + clanx.name));
                 m.dos.writeBoolean(ok);
                 player.rankClan = 3;
 

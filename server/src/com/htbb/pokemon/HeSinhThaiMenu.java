@@ -1053,6 +1053,10 @@ public final class HeSinhThaiMenu {
             return; // chua chon vat lieu trong tui (menu cu)
         }
         final long gia = ChoSinhThai.giaTheoMuc(ma, bac, c.muc);
+        // huan luyen vien AI khong ban pha gia (>= trung vi gia ban gan day, it mau: gia goc vat lieu)
+        if (real.HlvAiGame.giaBanThap(p, "sinh_thai", String.valueOf(c.khoa), gia, VatLieuSinhThai.giaXu(ma, bac))) {
+            return;
+        }
         if (DuLieuHeSinhThai.dsTinBan(p.charDBID, -1, HeSinhThai.TOI_DA_TIN_BAN + 1).size() >= HeSinhThai.TOI_DA_TIN_BAN) {
             bao(p, "Bạn đã có " + HeSinhThai.TOI_DA_TIN_BAN + " tin bán đang mở.");
             return;
@@ -1671,6 +1675,7 @@ public final class HeSinhThaiMenu {
         LauDai.ghiXuRa(tong - ChoSinhThai.nguoiBanNhan(tong)); // nguoi ban nhan tong - thue; thue bi dot
         nhanHang(h, t.khoaVat, t.soLuong, t.duLieu);
         traTienNguoiBan(t.idBan, ChoSinhThai.nguoiBanNhan(tong), "Bán " + VatLieuSinhThai.tenKhoa(t.khoaVat) + " x" + t.soLuong);
+        real.HlvAiGame.ghiGiaBan("sinh_thai", String.valueOf(t.khoaVat), t.giaMoi);
         ChongClone.ghi(p, t.idBan, t.tenBan, ChongClone.KIEU_CHO_SINH_THAI, tong, "sinh thai " + VatLieuSinhThai.tenKhoa(t.khoaVat) + " x" + t.soLuong);
         bao(p, "Đã mua " + moTaTin(t) + ".");
         HeSinhThaiGame.danhDau(p);

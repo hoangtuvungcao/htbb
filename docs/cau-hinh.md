@@ -346,17 +346,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **369 khoá** trong **21 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **383 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 81 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 95 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 249 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (81)
+### Khoá chỉnh trên web (95)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -487,6 +487,27 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 | `sv.adminAccounts` | Danh sách GM trong game | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Tên Pokémon GM, cách nhau dấu phẩy. |
 | `sv.banToiThieu` | Bản tối thiểu (bắt buộc cập nhật) | số | `0` | 0..1000000 | ngay | game | Số bản (BAN, vd 907). Client gửi số bản nhỏ hơn bị chặn đăng nhập, hiện hộp Cần cập nhật + nút Tải bản mới. Chỉ chặn nền tảng đã có bản tải đạt mức này ở trang Bản tải game. 0 = tắt. |
 | `sv.banMoiNhat` | Bản mới nhất (dự phòng) | số | `0` | 0..1000000 | ngay | game | Bản mới nhất lấy theo số bản từng nền tảng ở trang Bản tải game (/admin/tai-game). Ô này chỉ dùng khi bản tải chưa ghi số bản. 0 = chỉ theo trang Bản tải game. |
+
+#### Huấn luyện viên AI (bot) (`hlv_ai`)
+
+Bot lấp máy chủ chơi như người (tên hiện "bot_ai: …"): số lượng, lịch online, tỉ lệ dòng / tính cách, cấp mục tiêu, bản đồ, hoạt động và luật chống lạm phát (hệ số thu nhập, trần xu / túi, giá bán tối thiểu, hạn mức chuyển cho người thật mỗi ngày). Trang riêng: /admin/hlv-ai.
+
+| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
+|---|---|---|---|---|---|---|---|
+| `hlv_ai.bat` | Bật Huấn luyện viên AI | cờ 0/1 | `0` |  | ngay | game | 1 = dịch vụ bot (tiến trình riêng htbb-hlv-ai) giữ đủ bot online theo lịch; 0 = mọi bot thoát dần trong vài phút. |
+| `hlv_ai.so_luong` | Số Huấn luyện viên AI | số | `30` | 0..500 | ngay | game | Số tài khoản bot tối đa (giờ cao điểm 100% = ngần này bot online). Thiếu thì dịch vụ tự tạo tài khoản (cờ la_bot). |
+| `hlv_ai.lich_gio` | Lịch online theo giờ (%) | danh sách số | `30,20,15,10,8,8,12,20,30,40,45,50,55,50,45,50,60,70,85,100,100,90,70,45` | 24 số, 0..100 | ngay | game | 24 số (0h..23h): % số bot online ở mỗi giờ; mỗi bot có phiên dài ngắn ngẫu nhiên, nghỉ, treo máy. |
+| `hlv_ai.ty_le_lop` | Tỉ lệ dòng khởi đầu | danh sách số | `20,20,20,20,20` | 5 số, 0..100 | ngay | game | 5 trọng số: Charmander, Bulbasaur, Eevee, Squirtle, Pichu (bot mới chọn dòng theo tỉ lệ này). |
+| `hlv_ai.ty_le_tinh_cach` | Tỉ lệ tính cách | danh sách số | `30,15,15,20,20` | 5 số, 0..100 | ngay | game | 5 trọng số: cày cấp, PvP, buôn bán, xã hội, chơi thường - quyết định hoạt động hay làm. |
+| `hlv_ai.cap_muc_tieu` | Cấp mục tiêu (thấp, cao) | danh sách số | `10,60` | 2 số, 1..200 | ngay | game | Mỗi bot nhận một cấp mục tiêu trong khoảng này; tới cấp thì thôi cày EXP, chuyển sang PvP / chợ / xã hội / treo. |
+| `hlv_ai.ban_do` | Bản đồ ưu tiên (id) | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Bãi luyện bot ưu tiên khi cày, cách nhau dấu phẩy; trống = rải đều mọi bãi hợp cấp. |
+| `hlv_ai.hoat_dong` | Hoạt động được bật | danh sách chuỗi | `nhiem_vu,cay,treo,gym,boss,pk,dau_truong,pho_ban,doi,chat,ban_be,giao_dich,cho,sinh_thai,vuon,nha_tre,bat,nang_cap,su_kien` | ≤ 255 ký tự | ngay | game | Danh sách hoạt động bot được làm: nhiem_vu, cay, treo, gym, boss, pk, dau_truong, pho_ban, doi, chat, ban_be, giao_dich, cho, sinh_thai, vuon, nha_tre, bat, nang_cap, su_kien. Bỏ một mục = tắt hoạt động đó. |
+| `hlv_ai.he_so_thu_nhap` | Hệ số thu nhập xu của bot (%) | số | `60` | 0..100 | ngay | game | Xu sinh ra (quái, nhiệm vụ, thưởng…) bot nhận = ngần này % người thật. Không áp cho tiền mua bán với người chơi. |
+| `hlv_ai.tran_xu` | Trần xu mỗi bot | số | `2000000` | 0..2000000000 | ngay | game | Số dư xu tối đa của một bot; phần vượt bị đốt (ghi tob_hlv_ai_kinh_te_ngay.xu_dot). |
+| `hlv_ai.tran_vat_pham` | Trần ô túi mỗi bot | số | `60` | 0..500 | ngay | game | Số ô hành trang tối đa (không tính đồ đang rao); mỗi phút ô thừa bị huỷ, món rẻ nhất trước. |
+| `hlv_ai.gia_ban_toi_thieu` | Giá rao tối thiểu của bot (% trung vị) | số | `100` | 50..1000 | ngay | game | Bot rao ở chợ (ký gửi, chợ Pokémon, chợ sinh thái) không dưới ngần này % giá trung vị 7 ngày (ít mẫu: giá tham chiếu) - không phá giá. |
+| `hlv_ai.chuyen_moi_nguoi_ngay` | Hạn mức bot → mỗi người thật / ngày | số | `50000` | 0..100000000 | ngay | game | Tổng giá trị (xu) bot chuyển cho MỘT người chơi thật mỗi ngày (mua đồ của họ, thua cược, đổi thuốc / Pokémon…); vượt thì giao dịch bị từ chối. 0 = cấm. |
+| `hlv_ai.chuyen_tong_ngay` | Hạn mức bot → người thật / ngày (cả máy chủ) | số | `500000` | 0..2000000000 | ngay | game | Tổng giá trị mọi bot chuyển cho người chơi thật mỗi ngày (kể cả góp quỹ đội có người thật). |
 
 ### Khoá ẩn: cố định & luôn bật (290)
 

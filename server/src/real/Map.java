@@ -9893,6 +9893,11 @@ public class Map implements Runnable {
                 // 29/10/2026 (ma-tran-bot "Lo hong uu tien" #3): TRU XU TRUOC, kiem-va-tru mot buoc (TruTruocTrao.truGopQuy)
                 // - quy chi duoc cong dung so da that su tru. Ban cu kiem getxu() < money o day, subXu (chan ve 0) o duoi
                 // roi cong money vao quy: tieu xu o luong khac giua hai buoc -> quy duoc cong nhieu hon so bi tru.
+                // huan luyen vien AI: quy doi phat luong cho nguoi that -> gop quy cua bot tinh vao han muc ngay bot -> nguoi
+                if (HlvAiGame.chanChuyen(player, HlvAiGame.MA_BANG + clandata.id, "bang " + clandata.name, false, player, "gop_quy",
+                        (long) money)) {
+                    return;
+                }
                 if (!TruTruocTrao.truGopQuy(player, (long) money)) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                     return;
@@ -9922,6 +9927,10 @@ public class Map implements Runnable {
                 // (xu da tru o tren bang TruTruocTrao.truGopQuy)
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
+                if (HlvAiGame.laBot(player)) {
+                    HlvAiGame.ghiChuyen(player.charDBID, player.charname, true, HlvAiGame.MA_BANG + clandata.id, "bang " + clandata.name,
+                            false, "gop_quy", (long) money, "gop quy bang");
+                }
                 clandata.addMoney2Clan((long) money);
                 clandata.updateNewClandata2DB();
                 Vector<CharClan> allmem = clandata.getAllMember();
@@ -15005,7 +15014,7 @@ public class Map implements Runnable {
 
                 Message m = new Message(5);
                 m.dos.writeShort(ch.id);
-                m.dos.writeUTF(ch.charname);
+                m.dos.writeUTF(ch.tenHienThi());
                 m.dos.writeShort(ch.x);
                 m.dos.writeShort(ch.y);
                 m.dos.writeInt(ch.hp + ch.percentBuff[2]);

@@ -1104,6 +1104,7 @@ public class TeamServer {
         if (!real.BaoTriDaily.Running) {
             new Thread(new real.BaoTriDaily()).start();
         }
+        real.HlvAiGame.khoiDong(); // huan luyen vien AI: ten bot, bo dem kinh te, anh chup tong xu
         // Lay mau so nguoi online 5 phut/lan -> bang tob_log_online, cho trang Tong quan
         // ve bieu do. Tu tao bang va tu don dong cu hon 30 ngay.
         data.GhiSoOnline.batDau();

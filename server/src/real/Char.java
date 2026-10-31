@@ -213,6 +213,11 @@ public class Char extends LiveActor {
     public boolean gotWages;
     public boolean gifMoonFestival;
     public byte isBot;
+    /**
+     * Huan luyen vien AI (bot lap server): tai khoan co account.team_user.la_bot = 1 - dat luc chon nhan vat
+     * (real.HlvAiGame.vaoGame), KHONG gui client. Khac {@link #isBot} (nhan vat NPC / ban sao cua may chu).
+     */
+    public volatile boolean laHlvAi;
     public byte rankClan;
     public LevelDetail lvDetail;
     public short basepoint;
@@ -7925,7 +7930,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     mm.dos.writeByte(0);
                     mm.dos.writeShort(this.partyID);
                     mm.dos.writeShort(this.id);
-                    mm.dos.writeUTF(this.charname);
+                    mm.dos.writeUTF(this.tenHienThi());
                     mm.dos.writeByte(this.lvDetail.lv);
                     mm.dos.writeShort(this.masterIDParty);
                     mm.dos.writeByte(this.charClass);
@@ -7934,7 +7939,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             final Char ch = this.party.userParty.elementAt(j);
                             if (ch.id != this.id) {
                                 mm.dos.writeShort(ch.id);
-                                mm.dos.writeUTF(ch.charname);
+                                mm.dos.writeUTF(ch.tenHienThi());
                                 mm.dos.writeByte(ch.lvDetail.lv);
                                 mm.dos.writeByte(ch.charClass);
                             }
@@ -7973,7 +7978,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 Message mm = new Message(49);
                 mm.dos.writeByte(1);
                 mm.dos.writeShort(this.id);
-                mm.dos.writeUTF(this.charname);
+                mm.dos.writeUTF(this.tenHienThi());
                 mm.dos.writeByte(this.lvDetail.lv);
                 mm.dos.writeByte(this.charClass);
                 fr.sendMessage(mm);
@@ -7985,7 +7990,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     mm = new Message(49);
                     mm.dos.writeByte(3);
                     mm.dos.writeShort(this.id);
-                    mm.dos.writeUTF(this.charname);
+                    mm.dos.writeUTF(this.tenHienThi());
                     mm.dos.writeByte(this.lvDetail.lv);
                     mm.dos.writeByte(this.charClass);
                     for (int j = 0; j < size; ++j) {
@@ -8024,7 +8029,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (fr != null && fr.id == idInvite) {
                 final Message mm = new Message(49);
                 mm.dos.writeByte(2);
-                mm.dos.writeUTF(this.charname);
+                mm.dos.writeUTF(this.tenHienThi());
                 fr.sendMessage(mm);
                 mm.cleanup();
             }
@@ -15525,19 +15530,29 @@ public int applyRongLonReleaseTo(int baseDamage) {
         // 16/09/2026: them so du TRUOC giao dich (truoc) theo yeu cau nguoi dung "log chi tiet
         // hon" - truoc day chi co so du SAU, muon biet truoc phai tu tinh nguoc (this.xu - xu),
         // khong an toan neu co nhieu luong cung cong/tru gan nhau (rang buoc chi trong KHOA_TIEN).
+        // Huan luyen vien AI: xu SINH RA nhan he so (hlv_ai.he_so_thu_nhap), so du qua tran (hlv_ai.tran_xu) bi dot.
+        final long them = this.laHlvAi && kieu == XU_DEM && xu > 0L ? HlvAiGame.thuNhap(this, xu) : xu;
         final long truoc;
         final long sau;
+        long dot = 0L;
         synchronized (KHOA_TIEN) {
             truoc = this.xu;
-            this.xu = congChanDai(this.xu, xu);
-            this.xutim += xu;
+            this.xu = congChanDai(this.xu, them);
+            this.xutim += them;
+            if (this.laHlvAi && them > 0L) {
+                dot = com.htbb.pokemon.HlvAi.phanDot(this.xu, Math.max(truoc, HlvAiGame.tranXu()));
+                this.xu -= dot;
+            }
             sau = this.xu;
         }
         // so du cu am (du lieu hong) khong tinh la xu sinh ra
         demKinhTe(sau - Math.max(0L, truoc), kieu);
+        if (dot > 0L) {
+            HlvAiGame.ghiDot(this, dot);
+        }
         if (xu != 0L) {
             Database.instance.saveOrtherLog("", this.charname,
-                    truoc + " + " + xu + " = " + this.xu + " tu vi tri " + vitri, "nhanxu");
+                    truoc + " + " + them + (them != xu ? " (goc " + xu + ")" : "") + " = " + this.xu + " tu vi tri " + vitri, "nhanxu");
         }
     }
 
@@ -15560,6 +15575,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
         // chi dem so THAT bi tru (thieu tien -> chan ve 0 -> mat it hon xu)
         demKinhTe(Math.min(0L, sau - Math.max(0L, truoc)), kieu == XU_HOAN ? XU_DEM : kieu);
+        if (this.laHlvAi && kieu == XU_DEM) {
+            HlvAiGame.ghiTieu(Math.max(0L, truoc) - sau);
+        }
         if (xu != 0L) {
             // 16/09/2026: them so du TRUOC (truoc), doi xung voi addXu - theo yeu cau nguoi
             // dung "log chi tiet hon" cho xu (nhan xu VA tru xu).
@@ -16263,6 +16281,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
     @Override
     public String getName() {
         return this.charname;
+    }
+
+    /**
+     * Ten GUI CHO CLIENT (dau dau, chat, to doi, ban be, bang, top, giao dich, cho...): Huan luyen vien AI hien
+     * "bot_ai: ten". KHONG dung lam khoa tra cuu (CharManager, CSDL, GM) - dung {@link #getName()} / charname.
+     */
+    public String tenHienThi() {
+        return com.htbb.pokemon.HlvAi.hienThi(this.charname, this.laHlvAi);
     }
 
     public boolean isCharCopy() {

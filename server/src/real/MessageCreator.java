@@ -1734,7 +1734,8 @@ public class MessageCreator {
         int indexdxyDaGui = -1;
         try {
             m.dos.writeShort(ch.id);
-            final String name = ch.getName();
+            // huan luyen vien AI: "bot_ai: ten" (ban sao CharCopy giu getName rieng)
+            final String name = com.htbb.pokemon.HlvAi.hienThi(ch.getName(), ch.laHlvAi);
             m.dos.writeUTF(name);
             m.dos.writeShort(ch.x);
             m.dos.writeShort(ch.y);
@@ -2429,7 +2430,7 @@ public class MessageCreator {
                 if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
                     online = " - on";
                 }
-                m.dos.writeUTF(String.valueOf(charinfo.name) + online);
+                m.dos.writeUTF(HlvAiGame.hienThi(String.valueOf(charinfo.name)) + online);
                 m.dos.writeByte(charinfo.headStyle);
                 m.dos.writeByte(charinfo.level);
                 m.dos.writeByte(charinfo.wearingItem.size());
@@ -2481,7 +2482,7 @@ public class MessageCreator {
                 if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
                     online = " - on";
                 }
-                m.dos.writeUTF(String.valueOf(charinfo.name) + online);
+                m.dos.writeUTF(HlvAiGame.hienThi(String.valueOf(charinfo.name)) + online);
                 m.dos.writeByte(charinfo.headStyle);
                 m.dos.writeByte(charinfo.level);
                 m.dos.writeByte(charinfo.wearingItem.size());
@@ -2508,7 +2509,7 @@ public class MessageCreator {
             m.dos.writeShort(c.size());
             for (int i = 0; i < c.size(); ++i) {
                 final CharInfo charinfo = c.get(i);
-                m.dos.writeUTF(charinfo.name);
+                m.dos.writeUTF(HlvAiGame.hienThi(charinfo.name));
                 m.dos.writeByte(charinfo.headStyle);
                 m.dos.writeByte(charinfo.level);
                 m.dos.writeByte(charinfo.wearingItem.size());

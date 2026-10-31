@@ -739,7 +739,7 @@ class MapXuLyLenh {
                 MapDoi.doSendListMemberClan(map, player, message);
                 break;
             case -6:
-                map.delFriend(player, message.dis.readUTF());
+                map.delFriend(player, com.htbb.pokemon.HlvAi.boTienTo(message.dis.readUTF()));
                 break;
             case -5:
                 MapXaHoi.doSendMessage(map, player, message);
@@ -939,7 +939,7 @@ class MapXuLyLenh {
                 if (ok == 0) {
                     p.nameCompetitor = "";
                     p.moneyThachdau = 0;
-                    p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " không chấp nhận lời thách đấu của bạn", ""));
+                    p.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " không chấp nhận lời thách đấu của bạn", ""));
                     return;
                 }
 
@@ -1473,7 +1473,7 @@ class MapXuLyLenh {
                     return;
                 }
 
-                m.dos.writeUTF(p.charname);
+                m.dos.writeUTF(p.tenHienThi());
                 m.dos.writeByte(p.headStyle);
                 m.dos.writeByte(p.lvDetail.lv);
                 Vector<Item> charWearing = p.changePosRing(p.getCharWearing());
@@ -1751,7 +1751,7 @@ class MapXuLyLenh {
                             online = " - on";
                         }
 
-                        m.dos.writeUTF(charinfo.name + online);
+                        m.dos.writeUTF(HlvAiGame.hienThi(charinfo.name) + online);
                         m.dos.writeByte(charinfo.headStyle);
                         m.dos.writeByte(charinfo.level);
                         m.dos.writeByte(charinfo.wearingItem.size());
@@ -1790,7 +1790,7 @@ class MapXuLyLenh {
                             online = " - on";
                         }
 
-                        m.dos.writeUTF(charinfo.name + online);
+                        m.dos.writeUTF(HlvAiGame.hienThi(charinfo.name) + online);
                         m.dos.writeByte(charinfo.headStyle);
                         m.dos.writeByte(charinfo.level);
                         m.dos.writeByte(charinfo.wearingItem.size());
@@ -1876,7 +1876,7 @@ class MapXuLyLenh {
                             online = " - on";
                         }
 
-                        m.dos.writeUTF(charinfo.name + online);
+                        m.dos.writeUTF(HlvAiGame.hienThi(charinfo.name) + online);
                         m.dos.writeByte(charinfo.headStyle);
                         m.dos.writeByte(-1);
                         m.dos.writeByte(charinfo.wearingItem.size());
