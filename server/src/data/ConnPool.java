@@ -113,13 +113,18 @@ public class ConnPool {
     }
 
     public Connection getConFromPool() throws SQLException {
-        if (this.pool.size() == 0) {
-            this.initPool();
-        }
-
+        // 31/10/2026: kiem rong + lay ra trong CUNG mot khoa. Truoc day size() ngoai khoa roi removeFirst() trong khoa ->
+        // hai luong cung thay con 1 ket noi, luong sau nem NoSuchElementException (cong kiem chay bot song song: thoat game
+        // -> TichLuyOnline.exitGame). Het han ket noi va initPool khong mo duoc them -> SQLException ro rang.
         Connection con = null;
         synchronized (this.pool) {
-            con = this.pool.removeFirst();
+            if (this.pool.isEmpty()) {
+                this.initPool();
+            }
+            con = this.pool.pollFirst();
+        }
+        if (con == null) {
+            throw new SQLException("ConnPool: het ket noi va khong mo duoc ket noi moi (" + this.url + ")");
         }
 
         try {
