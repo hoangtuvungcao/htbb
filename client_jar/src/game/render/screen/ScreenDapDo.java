@@ -1027,7 +1027,7 @@ public class ScreenDapDo extends Screen implements game.pokemon.BanRen.Nguon {
             case 1:
                 return i == 1 ? "Kim dược" : i == 2 ? "Bảo hiểm" : "May mắn";
             case 4:
-                return i == 1 ? "Bột" : "Đá tiến giai";
+                return i == 1 ? "Bột" : "Đá thêm dòng";
             default:
                 return "Đá khóa";
         }
@@ -1140,7 +1140,7 @@ public class ScreenDapDo extends Screen implements game.pokemon.BanRen.Nguon {
             case 3:
                 return "Đặt trang bị và đá khóa để khóa trang bị.";
             default:
-                return "Đặt trang bị, bột và đá tiến giai để thêm một dòng thuộc tính.";
+                return "Đặt trang bị, bột và đá thêm dòng để thêm một dòng thuộc tính.";
         }
     }
 
@@ -1158,7 +1158,7 @@ public class ScreenDapDo extends Screen implements game.pokemon.BanRen.Nguon {
             return this.type == 1 ? "Chưa đặt luyện kim dược" : this.type == 4 ? "Chưa đặt bột" : "Chưa đặt đá";
         }
         if (this.type == 4 && selectGemBH == null) {
-            return "Chưa đặt đá tiến giai";
+            return "Chưa đặt đá thêm dòng";
         }
         return null;
     }

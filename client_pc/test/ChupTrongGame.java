@@ -3791,13 +3791,13 @@ public class ChupTrongGame {
             return t;
         }
 
-        /** Nguyên liệu thợ rèn: luyện kim dược, bảo hiểm, may mắn, bột, đá tiến giai, đá thuộc tính, đá khoá. */
+        /** Nguyên liệu thợ rèn: luyện kim dược, bảo hiểm, may mắn, bột, đá thêm dòng, đá thuộc tính, đá khoá. */
         static void giaLapRen(boolean trong) {
             gem(8, "Luyện kim dược", 0, 8, "Bắt buộc khi luyện đồ.");
             gem(2, "Ngọc bảo hiểm", 0, 2, "Luyện hỏng không mất cấp.");
             gem(5, "Đá may mắn", 0, 5, "Tăng tỉ lệ luyện thành công.");
             gem(300, "Bột thuộc tính", game.model.GemTemp.TYPE_BOT, 12, "Nghiền từ trang bị - dùng để thêm dòng.");
-            gem(301, "Đá tiến giai", game.model.GemTemp.TYPE_DA_TIEN_GIAI, 14, "Cùng bột để thêm dòng thuộc tính mới.");
+            gem(301, "Đá thêm dòng", game.model.GemTemp.TYPE_DA_TIEN_GIAI, 14, "Cùng bột để thêm dòng thuộc tính mới.");
             gem(302, "Đá thuộc tính", game.model.GemTemp.TYPE_ADD_NEW_ATTRIBUTE, 16, "Cộng thêm một thuộc tính.");
             gem(303, "Đá khóa trang bị", game.model.GemTemp.TYPE_LOCK_ITEM, 18, "Khóa trang bị, không giao dịch được.");
             gem(304, "Đá khóa đồ thú", game.model.GemTemp.TYPE_LOCK_ANIMAL, 18, "Khóa đồ thú.");
