@@ -101,6 +101,10 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         }
         if (b == null || b.dut) throw cuoi == null ? new IllegalStateException("khong vao duoc " + ho.taiKhoan) : cuoi;
         HoiQuy.napTheGioi(b);
+        // ten ban do -> id (KichBanCap140.LOAD_THEO_TEN): thieu thi buoc "dung o (x,y) tren <ban do>" dung o ban do DANG dung
+        // (bao loi production 31/10/2026: bot dung 53,19 trong lang 0/301 cho 'Nơi ngôi sao rơi' #14 / 'Phục kích ở bụi cỏ
+        // cao' #19 - dich o dong co Pallet map 1). Truoc chi kiem soak goi napTen nen may thu khong thay loi.
+        KichBanCap140.napTen();
         ngheXaHoi();
         ngheDon();
         KichBanHuongDan.roiSan(b);
