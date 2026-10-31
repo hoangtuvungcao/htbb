@@ -84,7 +84,7 @@ public class MsgWorld extends Screen {
         for (int i = 0; i < this.data.size(); i++) {
             MsgInfo ms = (MsgInfo) this.data.elementAt(i);
             for (int j = 0; j < ms.arr.length; j++) {
-                Font.arialFontW.drawString(g, ms.arr[j], 8, yy, 0);
+                Font.arialFontW.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFontW, ms.arr[j], Canvas.w - 56), 8, yy, 0);   // 31/10/2026: không tràn khung (J2ME 240)
                 yy += 15;
             }
         }

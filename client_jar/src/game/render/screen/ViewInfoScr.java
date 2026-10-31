@@ -218,7 +218,13 @@ public class ViewInfoScr extends Screen {
     private void paintTextNormal(Graphics g) {
         int y0 = 34;
         if (this.nationID > -1) {
-            g.drawRegion(Res.imgNation, 0, this.nationID * 12, 12, 12, 0, 5, 34, 20);
+            // 31/10/2026: ảnh hệ 11x33 (3 ô 11 px) - vùng 12x12 cũ ngoài ảnh: máy J2ME thật ném IllegalArgumentException
+            javax.microedition.lcdui.Image im = Res.imgNation;
+            int o = im == null ? 0 : Math.min(12, im.getWidth());
+            int ho = im == null ? 0 : Math.min(12, im.getHeight() / 3);
+            if (im != null && ho > 0 && (this.nationID + 1) * ho <= im.getHeight()) {
+                g.drawRegion(im, 0, this.nationID * ho, o, ho, 0, 5, 34, 20);
+            }
             y0 = 34 + 15;
         }
         for (int i = 0; i < this.text.size(); i++) {

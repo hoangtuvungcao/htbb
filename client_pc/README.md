@@ -171,6 +171,11 @@ máy chủ ảnh giả nạp icon từ `server/map/icon_pokemon`):
   `ChupTrongGame` thêm các màn `phu_*` (hộp gục / hồi sinh thật -101, menu Nhiệm vụ của tôi 8 mục, menu NPC ảo kho xu /
   bóng / nạp / Pidgeot, lịch quà đăng nhập, Gym, hộp dùng / vứt / đổi thú / học chiêu, hộp có đường dẫn, xếp hạng tab
   2-3, bạn bè, hộp thư...) chạy cả ở cỡ J2ME;
+  đợt 2 (31/10/2026): `phu_ren_*` (bàn thợ rèn Machamp game.pokemon.BanRen - Nghiền bột / Thêm dòng / Luyện đồ tự động /
+  Cộng thuộc tính / Khóa đồ, trống / đã đặt / xong), `phu_tien_ich_pk*` (Menu › Tiện ích & PK = tấm chạm), `phu_x_*` (33 màn /
+  hộp ít gặp mở qua gói máy chủ thật: vòng quay, vé số, hộp may mắn, Cây thần, Cổ vật, câu đố đăng ký, đội, chợ, nạp SMS,
+  hướng dẫn, kênh thế giới, top đội, thông báo, chọn mục tiêu, sai mật khẩu, mất kết nối thật, lỗi tải, đổi tên pet, mời
+  trao đổi / vào đội / kết bạn / nhóm, ô nhập chữ / số, trang chiêu 3, tủ đồ Skin, khăn PK, nhắn tới, tàu, sửa đồ);
 - `DoKhung`: thời gian vẽ một khung (p50 / p99 / max), KB cấp phát mỗi khung, GC - thế giới 24 người chơi, Menu,
   Nhân vật + Hành trang, Cửa hàng, chat, ở 1280x720 và 1920x1080 (`--j2me`: tắt chữ / khung HD);
 - `DoCuaSo`: FPS trong CỬA SỔ THẬT (cần màn hình): khung game / khung trình bày mỗi giây + bộ đo khung.

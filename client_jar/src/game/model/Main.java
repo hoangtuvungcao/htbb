@@ -28,6 +28,15 @@ public abstract class Main {
         if (this.anNutLenh) {
             return;   // 0.9.5: màn có nút thật trong bảng - không vẽ chip phím mềm (phím vẫn chạy)
         }
+        if (game.pokemon.GiaoDien.nutMemTo() || this instanceof game.render.screen.Dialog && game.pokemon.GiaoDien.nutMemHop()) {
+            // 31/10/2026 (soi giao diện: màn / hộp cũ ở máy cảm ứng chỉ có phím mềm góc 13 px, không vùng chạm): nút khối đủ cỡ
+            // chạm ở ba góc đáy, đăng ký vùng chạm chạy đúng lệnh phím mềm
+            int wG = this.center == null ? 0 : Math.min(game.pokemon.GiaoDien.rongNutMemCham(this.center.caption), Canvas.w * 2 / 5);
+            int wB = (Canvas.w - wG) / 2 - 10;
+            game.pokemon.GiaoDien.nutMemCham(g, this.left, 0, wB);
+            game.pokemon.GiaoDien.nutMemCham(g, this.center, 1, Canvas.w * 2 / 5);
+            game.pokemon.GiaoDien.nutMemCham(g, this.right, 2, wB);
+        } else {
         int vung = Canvas.isPointerDown ? Canvas.collisionCmdBar() : -1;
         // chia chỗ: phím giữa theo chữ (tối đa 2/5 màn), hai bên chia phần còn lại -> không đè nhau
         int wGiua = this.center == null ? 0 : Math.min(game.pokemon.GiaoDien.rongNutMem(this.center.caption, 1), Canvas.w * 2 / 5);
@@ -40,6 +49,7 @@ public abstract class Main {
         }
         if (this.right != null) {
             game.pokemon.GiaoDien.nutMem(g, this.right.caption, 2, Canvas.keyHold[13] || vung == 2, wBen);
+        }
         }
         // 0.9.7: HUD NRO báo thư bằng chấm đỏ ở Menu -> viên "Thư/Quà" (ChamMoi); không vẽ phong bì cũ đè nút bản đồ.
         // Màn cũ / J2ME: phong bì TRỌN trong màn (trước canh giữa ở w - 7 -> tràn mép phải)

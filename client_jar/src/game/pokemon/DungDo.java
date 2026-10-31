@@ -737,7 +737,7 @@ public final class DungDo {
         }
         int wChu = rongToiDa - 54;   // 0.9.22: = chỗ chữ vẽ được (ô icon <= 30 + lề 24)
         if (t.dong == null || t.rongNgat != rongToiDa) {
-            t.dong = ChuDe.ngat(t.chinh, ChuDe.THUONG, wChu, 2);
+            t.dong = ChuDe.ngat(t.chinh, ChuDe.THUONG, ChuUI.bo == null ? wChu * 9 / 10 : wChu, 2);   // J2ME: chữ viền borderFont rộng hơn
             t.rongNgat = rongToiDa;
         }
         int lh = ChuDe.cao(ChuDe.THUONG), lhN = ChuDe.cao(ChuDe.NHAN_NHO), lhP = ChuDe.cao(ChuDe.PHU);
@@ -745,7 +745,7 @@ public final class DungDo {
         int cao = Math.max(VungCham.MIN, lhN + soDong * lh + (t.phu != null ? lhP + 1 : 0) + 12);
         int rong = ChuDe.rong(nhan, ChuDe.NHAN_NHO);
         for (int k = 0; k < t.dong.length; k++) {
-            rong = Math.max(rong, ChuDe.rong(t.dong[k], ChuDe.THUONG));
+            rong = Math.max(rong, ChuDe.rongVien(t.dong[k], ChuDe.THUONG, 0xFFFFFF));
         }
         if (t.phu != null) {
             rong = Math.max(rong, ChuDe.rong(t.phu, ChuDe.PHU));
@@ -773,7 +773,7 @@ public final class DungDo {
         ChuDe.chu(g, nhan + (t.dem > 1 ? "  ×" + t.dem : ""), xc, yt, ChuDe.NHAN_NHO, chuNhat, 0);
         yt += lhN;
         for (int i = 0; i < t.dong.length; i++) {
-            ChuDe.chuVien(g, ChuDe.cat(t.dong[i], ChuDe.THUONG, wd), xc, yt + i * lh, ChuDe.THUONG, 0xFFFFFF, ChuDe.VIEN, 0);
+            ChuDe.chuVien(g, ChuDe.catVien(t.dong[i], ChuDe.THUONG, 0xFFFFFF, wd), xc, yt + i * lh, ChuDe.THUONG, 0xFFFFFF, ChuDe.VIEN, 0);
         }
         if (t.phu != null) {
             ChuDe.chu(g, ChuDe.cat(t.phu, ChuDe.PHU, wd), xc, yt + soDong * lh + 1, ChuDe.PHU, chuNhat, 0);

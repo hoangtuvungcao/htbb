@@ -21,7 +21,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 import network.Message;
 
-public class ScreenItemTim extends Screen {
+public class ScreenItemTim extends Screen implements game.pokemon.BanRen.Nguon {
     public static ScreenItemTim me;
     public static int wCell;
     public static int hCell;
@@ -46,6 +46,10 @@ public class ScreenItemTim extends Screen {
     public static final byte TYPE_LOCK_ITEM = 3;
     public static final byte TYPE_EP_ITEM_TIM = 6;
     public byte type;
+    /** 31/10/2026: đã nhận bột lần nghiền vừa xong (ô "Bột nhận" hiện tới lần đặt món khác) */
+    boolean coKetQua;
+    Command cmdDat;
+    Command cmdHoiXay;
     public byte frame;
     public byte selectMenuItem;
     public boolean createBot;
@@ -141,6 +145,7 @@ public class ScreenItemTim extends Screen {
     }
 
     public void resetData() {
+        this.coKetQua = false;
         this.mScrollItemInventory.clear();
         this.LisItemSelect.removeAllElements();
         this.mScrollNguyenLieu.clear();
@@ -271,6 +276,14 @@ public class ScreenItemTim extends Screen {
         if (type == 6) {
             addNguyenlieu();
         }
+        if (type == 5) {
+            if (!isContinue) {
+                game.pokemon.BanRen.moi();
+                this.coKetQua = false;
+            }
+            this.anNutLenh = game.pokemon.BanRen.cham();
+            this.center = game.pokemon.BanRen.cham() ? null : this.cmdDat;
+        }
     }
 
     public ScreenItemTim() {
@@ -360,6 +373,28 @@ public class ScreenItemTim extends Screen {
             }
         });
         this.cmdView = new Command(Canvas.isSmartPhone ? "" : "", new AnonymousClass5());
+        this.cmdDat = new Command("Đặt vào", new IAction() {
+            public void perform() {
+                game.pokemon.BanRen.datChon(ScreenItemTim.this);
+            }
+        });
+        // 31/10/2026: nghiền làm MẤT trang bị - máy cảm ứng hỏi lại một lần (J2ME: phím mềm như cũ)
+        this.cmdHoiXay = new Command("Nghiền", new IAction() {
+            public void perform() {
+                if (ScreenItemTim.itemSelect == null || ScreenItemTim.this.isXayBot) {
+                    return;
+                }
+                game.model.ItemTemplate t = null;
+                try {
+                    t = Res.getItem(ScreenItemTim.itemSelect.charClazz, ScreenItemTim.itemSelect.idTemplate);
+                } catch (Throwable e) {
+                    t = null;
+                }
+                String ten = t == null ? "trang bị này" : game.pokemon.ChuDe.boCap(t.name);
+                game.pokemon.HopXacNhan.hoi("Nghiền bột", "Nghiền " + ten + "? Trang bị sẽ mất, đổi lại bột dùng cho Thêm dòng.", "Nghiền",
+                        ScreenItemTim.this.cmdXay.action, null);
+            }
+        });
         this.right = this.cmdClose;
         this.center = this.cmdView;
         if (!Canvas.isSmartPhone) {
@@ -479,7 +514,7 @@ public class ScreenItemTim extends Screen {
                             Canvas.startOKDlg("Không thể chọn khi đang trong quá trình luyện tự động.", new IAction() {
                                 @Override
                                 public void perform() {
-                                    ScreenItemTim.this.right.action.perform();
+                                    if (ScreenItemTim.this.isShowText) { ScreenItemTim.this.right.action.perform(); }
                                     Canvas.endDlg();
                                 }
                             });
@@ -535,6 +570,7 @@ public class ScreenItemTim extends Screen {
         this.soluong = (byte) sl;
         addlazer();
         this.isXayBot = true;
+        this.coKetQua = true;
     }
 
     private void paintResult(Graphics g) {
@@ -751,6 +787,14 @@ public class ScreenItemTim extends Screen {
 
     @Override
     public void paint(Graphics g) {
+        if (this.type == 5) {
+            if (this.last != null) {
+                this.last.paint(g);
+            }
+            game.pokemon.BanRen.ve(g, this);
+            super.paint(g);
+            return;
+        }
         if (this.last != null) {
             this.last.paint(g);
         }
@@ -861,6 +905,10 @@ public class ScreenItemTim extends Screen {
 
     @Override
     public void update() {
+        if (this.type == 5) {
+            updateMoi();
+            return;
+        }
         updateResult();
         updatelazer();
         updateEffect();
@@ -1128,6 +1176,11 @@ public class ScreenItemTim extends Screen {
 
     @Override
     public void updateKey() {
+        if (this.type == 5) {
+            game.pokemon.BanRen.phim(this);
+            super.updateKey();
+            return;
+        }
         if (this.isShowText) {
             if (Canvas.keyPressed[2] && this.type != 5) {
                 Canvas.keyPressed[2] = false;
@@ -1213,6 +1266,174 @@ public class ScreenItemTim extends Screen {
             }
         }
         super.updateKey();
+    }
+
+    // ------------------------------------------------------------------ 31/10/2026: Nghiền bột = bàn thợ rèn chung (game.pokemon.BanRen)
+
+    /** Nhịp của bàn mới: hiệu ứng nghiền chạy như cũ (hết hiệu ứng -> bỏ món đã nghiền), thế giới sau không nhận chạm. */
+    void updateMoi() {
+        updateResult();
+        updatelazer();
+        updateEffect();
+        this.frame = (byte) ((this.frame + 1) % 3);
+        if (this.isdestroyitem && this.mEffect.size() <= 0) {
+            if (this.timeDlay >= 0) {
+                this.timeDlay--;
+            }
+            if (this.timeDlay < 0) {
+                itemSelect = null;
+                this.isdestroyitem = false;
+                this.isXayBot = false;
+                this.timeDlay = 15;
+                this.cmdXay.caption = "Nghiền";
+                resetSelect();
+            }
+        }
+        boolean c = Canvas.isPointerClick, d = Canvas.isPointerDown;
+        Canvas.isPointerClick = false;
+        Canvas.isPointerDown = false;
+        try {
+            if (this.last != null) {
+                this.last.update();
+            }
+        } catch (Throwable e) {
+            // bỏ qua
+        }
+        Canvas.isPointerClick = c;
+        Canvas.isPointerDown = d;
+        this.isShowText = false;
+        this.center = game.pokemon.BanRen.cham() ? null : this.cmdDat;
+        super.update();
+    }
+
+    public boolean keyPress(int keyCode) {
+        if (this.type == 5 && keyCode == 27 && Canvas.currentDialog == null && !Canvas.menu.showMenu) {
+            this.cmdClose.action.perform();
+            return true;
+        }
+        return false;
+    }
+
+    public String tieuDe() {
+        return "Nghiền bột";
+    }
+
+    public int soO() {
+        return 2;
+    }
+
+    public String nhanO(int i) {
+        return i == 0 ? "Trang bị" : "Bột nhận";
+    }
+
+    public Object monO(int i) {
+        return i == 0 ? itemSelect : null;
+    }
+
+    String tenKetQua() {
+        try {
+            if (this.typeResult == 0) {
+                return MainChar.listPotion[this.id_bot].name;
+            }
+            GemTemp t = Res.getGemByID(this.id_bot);
+            return t == null ? "bột" : t.name;
+        } catch (Throwable e) {
+            return "bột";
+        }
+    }
+
+    public boolean veO(Graphics g, int i, int x, int y, int s) {
+        if (i != 1) {
+            return false;
+        }
+        boolean co = this.coKetQua && !this.isXayBot;
+        game.pokemon.Bang.oDo(g, x, y, s, co, false, null, "ren-o-1");
+        int cx = x + s / 2, cy = y + s / 2, ic = s - 10;
+        if (co) {
+            try {
+                if (this.typeResult == 0) {
+                    game.pokemon.LuoiTui.veO(g, new Integer(MainChar.listPotion[this.id_bot].index), x, y, s, false, null, "ren-o-1");
+                } else {
+                    game.pokemon.IconVatPham.ve(g, (short) (this.id_bot + 6500), cx, cy, ic, game.pokemon.IconVatPham.DP_NGOC);
+                }
+            } catch (Throwable e) {
+                // gói lạ: chỉ ô trống
+            }
+            game.pokemon.BanRen.soLuong(g, x, y, s, this.soluong);
+        } else {
+            int b = Math.max(16, s / 2);
+            game.pokemon.BieuTuong.veBong(g, game.pokemon.BieuTuong.DA, x + (s - b) / 2, y + (s - b) / 2, b, 0x8A6A4A, game.pokemon.ChuDe.NEN_PHU);
+        }
+        return true;
+    }
+
+    public void layRa(int i) {
+        if (i != 0) {
+            return;
+        }
+        if (this.isXayBot) {
+            game.pokemon.BanRen.bao("Đang nghiền - chờ xong.");
+            return;
+        }
+        itemSelect = null;
+    }
+
+    public int tabO(int i) {
+        return i == 0 ? 0 : -1;
+    }
+
+    public Vector ds(int tab) {
+        return tab == 0 ? listItem : null;
+    }
+
+    public String tenTab(int tab) {
+        return tab == 0 ? "Trang bị nghiền được" : null;
+    }
+
+    public String khongDat(Object o) {
+        if (this.isXayBot) {
+            return "Đang nghiền - chờ xong rồi đặt món khác.";
+        }
+        return o instanceof ItemInInventory ? null : "Chỉ nghiền được trang bị.";
+    }
+
+    public void dat(Object o) {
+        if (khongDat(o) != null) {
+            return;
+        }
+        itemSelect = (ItemInInventory) o;
+        this.coKetQua = false;
+        this.createBot = false;
+        this.hclip = this.size;
+        this.hclip1 = 0;
+    }
+
+    public String goiY() {
+        if (this.isXayBot) {
+            return "Đang nghiền..";
+        }
+        if (this.coKetQua) {
+            return "Nhận được " + tenKetQua() + " x" + this.soluong + ".";
+        }
+        if (itemSelect != null) {
+            return "Trang bị sẽ mất, đổi lại bột dùng cho Thêm dòng.";
+        }
+        return "Đặt trang bị không dùng nữa để nghiền ra bột (dùng cho Thêm dòng).";
+    }
+
+    public String khongLam() {
+        if (this.isXayBot) {
+            return "Đang nghiền..";
+        }
+        return itemSelect == null ? "Chưa đặt trang bị" : null;
+    }
+
+    public Command chinh() {
+        return game.pokemon.BanRen.cham() ? this.cmdHoiXay : this.cmdXay;
+    }
+
+    public void dong() {
+        this.cmdClose.action.perform();
     }
 
     public static boolean isBH(int id) {
