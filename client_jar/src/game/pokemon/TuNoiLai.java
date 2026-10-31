@@ -63,6 +63,24 @@ public final class TuNoiLai {
         thongBaoLuc = System.currentTimeMillis();
     }
 
+    /**
+     * 31/10/2026 (nhật ký máy chủ: một người mở hai client cùng tài khoản - mỗi lần đăng nhập đá client kia, client bị đá tự
+     * nối lại rồi đá ngược, 3 giây một lần): máy chủ báo "đăng nhập ở thiết bị khác" trước khi đóng phiên -> client này KHÔNG
+     * tự nối lại (chỉ nút "Kết nối lại" của người chơi), hộp mất kết nối ghi đúng lý do.
+     */
+    public static final String DANG_NHAP_KHAC = "Tài khoản của bạn vừa đăng nhập ở thiết bị khác.";
+
+    /** đã bị đá vì đăng nhập ở nơi khác (tới khi người chơi tự kết nối lại / vào lại game) */
+    public static boolean biDangNhapKhac;
+
+    /** MessageHandler lệnh 37: thông báo của máy chủ là lý do bị đá vì đăng nhập nơi khác? */
+    public static void xetThongBao(String s) {
+        if (s != null && s.indexOf("đăng nhập ở thiết bị khác") >= 0) {
+            biDangNhapKhac = true;
+            GiamSat.ghi("bi dang nhap o thiet bi khac - khong tu ket noi lai");
+        }
+    }
+
     /** tài khoản / mật khẩu của lần đăng nhập cuối (chỉ trong RAM) - ô nhập có thể đã bị xoá sau khi vào game */
     static String tkCuoi = "", mkCuoi = "";
 
@@ -86,6 +104,7 @@ public final class TuNoiLai {
 
     /** Người chơi bấm "Kết nối lại": một lần nối (không tự thử thêm), vẫn tự chọn lại Pokémon. */
     public static void thuCong() {
+        biDangNhapKhac = false;
         lan = TOI_DA;
         dangNoi = true;
         daChonLai = false;
@@ -93,6 +112,7 @@ public final class TuNoiLai {
 
     /** Đã vào lại màn chơi (gói thông tin nhân vật): hết đợt. */
     public static void vaoGame() {
+        biDangNhapKhac = false;
         lan = 0;
         dangNoi = false;
     }
@@ -102,7 +122,7 @@ public final class TuNoiLai {
      * false = hết lượt / không tự nối được -> hiện hộp như cũ.
      */
     public static boolean thu(final String tk, final String mk, final Runnable noi) {
-        if (tat || noi == null || tk == null || tk.length() == 0 || mk == null || mk.length() == 0
+        if (tat || biDangNhapKhac || noi == null || tk == null || tk.length() == 0 || mk == null || mk.length() == 0
                 || System.currentTimeMillis() - thongBaoLuc < 5000L || lan >= TOI_DA) {
             GiamSat.ghi("khong tu ket noi lai: lan=" + lan + " tk=" + (tk == null ? 0 : tk.length()) + " mk=" + (mk == null ? 0 : mk.length())
                     + " thong bao cach " + (System.currentTimeMillis() - thongBaoLuc) + " ms");

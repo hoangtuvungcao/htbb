@@ -17,6 +17,9 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 public class ShopOnline extends Screen {
+    /** 31/10/2026: đang chạy updateKey không chạm thô (ManCu - vùng chạm kiểu chung đã xử lý) */
+    boolean boc_updateKey;
+
     public Scroll scl;
     public Scroll cmrShowTxt;
     public static short level;
@@ -374,12 +377,105 @@ public class ShopOnline extends Screen {
         g.fillRect(x, y1, this.w0 + 2, 1);
     }
 
-    @Override
+    static String boMau(String t) {
+        return t != null && t.length() > 1 && WindowInfoScr.isDegit(t.charAt(0)) ? t.substring(1) : t;
+    }
+
+    /**
+     * 31/10/2026 (soi giao diện: chợ còn hộp J2ME cũ - mũi tên tab, chữ nhỏ, không vùng chạm): máy có con trỏ - tấm chung,
+     * chip 6 tab, hàng món (icon / tên / giá) chạm = chọn rồi Chọn, bộ lọc Tìm = hàng chạm được, nút Mua / Menu / Thông tin
+     * trong tấm, xu đang có ở góc. Việc / gói gửi như cũ.
+     */
+    void veCham(Graphics g) {
+        this.anNutLenh = true;
+        if (this.isShowText) {
+            int[] c = game.pokemon.ManCu.tam(g, this, "Thông tin món", game.pokemon.ManCu.viec(this.right), null);
+            game.pokemon.ManCu.vanBan(g, c, this.arrInfo, null);
+            return;
+        }
+        Vector v = (Vector) ALL_ITEM.elementAt(this.indexMainTile);
+        boolean coMon = this.select >= 0 && this.select < v.size() && !(this.indexMainTile == 1 && this.isSelectTypeFind);
+        int[] c = game.pokemon.ManCu.tam(g, this, "Chợ", game.pokemon.ManCu.viec(this.right),
+                new Command[]{coMon ? this.cmdShowText : null, this.left});
+        game.pokemon.ManCu.tiepQuanMenu("Chợ");
+        int k = game.pokemon.Bang.cach();
+        Object[] vc = new Object[tile.length];
+        for (int i = 0; i < tile.length; i++) {
+            final int t = i;
+            vc[i] = new IAction() {
+                public void perform() {
+                    ShopOnline.this.indexMainTile = t;
+                    ShopOnline.this.scl.clear();
+                    ShopOnline.this.select = -1;
+                    ShopOnline.this.isFocusMainTab = false;
+                    ShopOnline.this.setCmdLeft();
+                }
+            };
+        }
+        int hc = game.pokemon.Bang.hangChip(g, c[0], c[1], c[2], tile, this.indexMainTile, vc) + k;
+        c[1] += hc;
+        c[3] -= hc;
+        // xu đang có (chạm = chú thích) - hàng dưới cùng
+        int hx = Math.max(game.pokemon.VungCham.MIN, game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + 4);
+        game.pokemon.TienTe.veGiaCham(g, game.pokemon.TienTe.XU, money, c[0] + 4, c[1] + c[3] - hx + (hx - Font.arialFont.getHeight()) / 2, Font.arialFont, true);
+        c[3] -= hx + k;
+        if (this.indexMainTile == 1 && this.isSelectTypeFind) {
+            final String[] nhan = tileFind[this.typeSearch];
+            final String[] gt = this.typeSearch == 0 ? new String[]{nameItem[this.idType], String.valueOf(this.idLevel), Pham[this.idPham], Color[this.idColor],
+                String.valueOf(this.idPlus)} : new String[]{this.nameChar.equals("") ? "Nhập tên" : this.nameChar};
+            game.pokemon.ManCu.danhSach(g, c, nhan.length, this.select, new game.pokemon.ManCu.Dong() {
+                public String chinh(int i) {
+                    return nhan[i] + " " + (i < gt.length ? gt[i] : "");
+                }
+
+                public String phu(int i) {
+                    return null;
+                }
+
+                public void cham(int i) {
+                    ShopOnline.this.select = i;
+                    ShopOnline.this.doselect();
+                }
+            }, null);
+            return;
+        }
+        final Vector l = v;
+        final boolean mua = this.indexMainTile <= 1;
+        game.pokemon.ManCu.danhSach(g, c, l.size(), this.select, new game.pokemon.ManCu.Dong() {
+            public String chinh(int i) {
+                String[] n = ((ItemInInventory) l.elementAt(i)).getName();
+                return n == null || n.length == 0 ? "?" : boMau(n[0]);
+            }
+
+            public String phu(int i) {
+                ItemInInventory it = (ItemInInventory) l.elementAt(i);
+                String[] n = it.getName();
+                String gia = it.prize > 0 ? "Giá " + game.pokemon.TienTe.gon(it.prize) + " xu" : null;
+                String dg = it.prizeBet > 0 ? "Đấu giá " + game.pokemon.TienTe.gon(it.prizeBet) + " xu" : null;
+                String p = gia != null && dg != null ? gia + " - " + dg : gia != null ? gia : dg;
+                if (p == null && n != null && n.length > 1) {
+                    p = boMau(n[1]);
+                }
+                return p == null ? (mua ? "" : null) : p;
+            }
+
+            public void cham(int i) {
+                ShopOnline.this.select = i;
+                ShopOnline.this.isFocusMainTab = false;
+                ShopOnline.this.setCmdLeft();
+            }
+        }, this.indexMainTile == 1 ? "Chưa có kết quả - bấm Tìm" : "Chưa có món nào");
+    }
+
     public void paint(Graphics g) {
         if (this.lastScreen != null) {
             this.lastScreen.paint(g);
         }
         Canvas.resetTrans(g);
+        if (game.pokemon.ManCu.bat()) {
+            veCham(g);
+            return;
+        }
         Res.paintDlgDragonFull(g, this.x, this.y, this.w0, this.h0);
         // pokemon: viên tên tab + mũi tên vàng (thay thanh xám + mũi tên ảnh kiếm hiệp)
         game.pokemon.GiaoDien.vienTab(g, Canvas.hw - 51, this.y + 7, 102, 21, this.isFocusMainTab);
@@ -521,7 +617,7 @@ public class ShopOnline extends Screen {
         if (this.xRunR > 0) {
             this.xRunR--;
         }
-        if (Canvas.currentDialog == null && !Canvas.menu.showMenu) {
+        if (Canvas.currentDialog == null && !Canvas.menu.showMenu && !game.pokemon.ManCu.bat()) {
             if (this.isShowText) {
                 ScrollResult r0 = this.cmrShowTxt.updateKey();
                 if (r0.isDowning || r0.isFinish) {
@@ -596,6 +692,19 @@ public class ShopOnline extends Screen {
 
     @Override
     public void updateKey() {
+        if (game.pokemon.ManCu.bat() && !this.boc_updateKey && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            this.boc_updateKey = true;
+            try {
+                game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                    public void run() {
+                        ShopOnline.this.updateKey();
+                    }
+                });
+            } finally {
+                this.boc_updateKey = false;
+            }
+            return;
+        }
         if (this.isFocusMainTab) {
             if (Canvas.keyPressed[4]) {
                 Canvas.keyPressed[4] = false;
@@ -1241,7 +1350,55 @@ public class ShopOnline extends Screen {
         }
     }
 
+    /** 31/10/2026: máy có con trỏ - nhập giá bán / giá đấu giá bằng ô nhập chung (hai bước) thay khung PageScr cũ. */
+    static void hoiGiaBan(final ItemInInventory item) {
+        Canvas.inputDlg.setInfo("Giá bán (xu)", new IAction() {
+            public void perform() {
+                final int gia;
+                try {
+                    gia = Integer.parseInt(Canvas.inputDlg.tfInput.getText().trim());
+                } catch (Exception e) {
+                    Canvas.endDlg();
+                    Canvas.startOKDlg("Giá bán không hợp lệ");
+                    return;
+                }
+                Canvas.endDlg();
+                Canvas.inputDlg.setInfo("Giá khởi điểm đấu giá (xu, nhỏ hơn giá bán)", new IAction() {
+                    public void perform() {
+                        final int dat;
+                        try {
+                            dat = Integer.parseInt(Canvas.inputDlg.tfInput.getText().trim());
+                        } catch (Exception e) {
+                            Canvas.endDlg();
+                            Canvas.startOKDlg("Giá đặt không hợp lệ");
+                            return;
+                        }
+                        Canvas.endDlg();
+                        if (gia < dat) {
+                            Canvas.startOKDlg("Giá đặt phải nhỏ hơn giá bán");
+                            return;
+                        }
+                        Canvas.startYesNoDlg("Đặt bán vật phẩm này với giá " + game.pokemon.TienTe.gon(gia) + " xu?", new IAction() {
+                            public void perform() {
+                                GameService.gI().doRequestSelItem(0, item.itemID, gia, dat);
+                                Canvas.startOKDlg("Đã gửi thông tin bán");
+                            }
+                        });
+                    }
+                }, 3, 9, true);
+                Canvas.inputDlg.tfInput.setText("10000");
+                Canvas.inputDlg.show();
+            }
+        }, 3, 9, true);
+        Canvas.inputDlg.tfInput.setText("100000");
+        Canvas.inputDlg.show();
+    }
+
     public static void popupBuyItem(final ItemInInventory item) {
+        if (game.pokemon.MenuNguCanh.bat()) {
+            hoiGiaBan(item);
+            return;
+        }
         final TField tfSeri = new TField(10, 40, 120, Screen.deltaY);
         tfSeri.setIputType(3);
         tfSeri.isFocus = true;

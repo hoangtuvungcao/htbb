@@ -12,8 +12,13 @@ import javax.microedition.lcdui.Graphics;
  * Logic + lưu cài đặt ở TuDong (code mod dùng chung). Mở từ Menu nhanh, menu chính (hàng đầu), phím # -> "Tự động
  * đánh", hoặc bảng Auto gốc của game. Đóng bằng nút x, chạm ra ngoài, phím mềm phải, # hoặc *.
  */
-final class BangTuDong {
+public final class BangTuDong {
     static boolean mo;
+
+    /** Bảng Tự động đang phủ màn chơi (HUD bên dưới không đăng ký chạm). */
+    public static boolean dangMo() {
+        return mo;
+    }
     private static int chon;
     private static int dau;
     private static boolean dungPhim;

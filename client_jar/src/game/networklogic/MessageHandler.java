@@ -2448,6 +2448,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                     game.pokemon.TuNoiLai.coThongBao();   // 0.9.4: server vừa báo lý do -> rớt ngay sau không tự nối lại
                     String message = msg.reader().readUTF();
                     final String url = msg.reader().readUTF();
+                    game.pokemon.TuNoiLai.xetThongBao(message);   // 31/10/2026: bị đá vì đăng nhập nơi khác -> không tự nối lại
                     // pokemon (hệ sinh thái): kết quả câu cá hiện sau hoạt cảnh cá cắn; đọc mốc đua / điểm đào
                     if (url.equals("") && game.pokemon.SinhThai.chanThongBao(message)) {
                         break;

@@ -367,6 +367,14 @@ public class WindowInfoScr extends Screen {
 
     @Override
     public void updateKey() {
+        if (laCuaSoCham() && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                public void run() {
+                    WindowInfoScr.this.updateKey();
+                }
+            });
+            return;
+        }
         if (this.isShowText) {
             if (Canvas.keyHold[2]) {
                 if (this.hShow >= 100) {
@@ -803,6 +811,7 @@ public class WindowInfoScr extends Screen {
                     @Override
                     public void perform() {
                         WindowInfoScr.this.doSelectedCheDo();
+                    game.pokemon.ManCu.tiepQuanMenu("Chế đồ");
                     }
                 });
                 this.left = new Command("Xong", new IAction() {
@@ -855,6 +864,7 @@ public class WindowInfoScr extends Screen {
                     @Override
                     public void perform() {
                         WindowInfoScr.this.doSelectedEpDothu();
+                    game.pokemon.ManCu.tiepQuanMenu("Ép đồ thú");
                     }
                 });
                 doLeftEpDothu();
@@ -2779,6 +2789,14 @@ public class WindowInfoScr extends Screen {
 
     @Override
     public void update() {
+        if (laCuaSoCham() && (Canvas.isPointerClick || Canvas.isPointerDown || Canvas.isPointerRelease)) {
+            game.pokemon.ManCu.phimKhongCham(new Runnable() {
+                public void run() {
+                    WindowInfoScr.this.update();
+                }
+            });
+            return;
+        }
         Canvas.gameScr.update();
         if (cmy != cmtoY) {
             cmvy = (cmtoY - cmy) << 2;
@@ -2836,6 +2854,11 @@ public class WindowInfoScr extends Screen {
     public void paint(Graphics g) {
         this.thLuoiH = 0;
         Canvas.gameScr.paint(g);
+        if (laCuaSoCham()) {
+            veCuaSoCham(g);
+            return;
+        }
+        this.anNutLenh = false;
         g.translate(this.x, this.y);
         // pokemon: khung theo bề ngang / cao của tab (rk x hk), mọi vị trí tính từ khung
         int dl = (this.rk - 145) / 2;
@@ -5290,5 +5313,359 @@ public class WindowInfoScr extends Screen {
             this.questInfo.addElement(str);
         }
         Canvas.endDlg();
+    }
+
+    // ------------------------------------------------------------------ 31/10/2026: 4 cửa sổ cũ kiểu chung (máy có con trỏ)
+    // Gian hàng của tôi (23), gian hàng người khác (24), Chế đồ (28), Ép đồ thú (32): tấm chung (game.pokemon.ManCu), mọi việc
+    // bằng chạm (đặt bán / lấy về / mua / bỏ vào / lấy ra / Xong / Hợp). Luật + gói gửi giữ nguyên: chạm ô = đặt trạng thái
+    // chọn như phím rồi gọi đúng việc cũ (thẻ lệnh "Bỏ vào / Lấy ra / Thông tin" -> thẻ lệnh chung). J2ME bấm phím vẽ như cũ.
+
+    /** Tab đang mở là một trong 4 cửa sổ có bản vẽ kiểu chung. */
+    public boolean laCuaSoCham() {
+        if (!game.pokemon.MenuNguCanh.bat() || index == null || focusTab < 0 || focusTab >= index.length) {
+            return false;
+        }
+        int t = index[focusTab];
+        return t == 23 || t == 24 || t == 28 || t == 32;
+    }
+
+    /** Gian hàng của tôi ở màn hẹp: 0 = Hành trang, 1 = Đang bán */
+    int cotGianHang;
+
+    static String tenMon(Object o) {
+        if (o instanceof ItemInInventory) {
+            String[] n = ((ItemInInventory) o).getName();
+            String t = n == null || n.length == 0 ? "?" : n[0];
+            return t.length() > 1 && isDegit(t.charAt(0)) ? t.substring(1) : t;
+        }
+        int id = o instanceof RealID ? ((RealID) o).ID : o instanceof GemTemplate ? ((GemTemplate) o).id : -1;
+        GemTemp t = id < 0 ? null : Res.getGemByID((short) id);
+        return t == null ? "?" : t.name;
+    }
+
+    /** Ô hiển thị cho món (RealID -> GemTemplate để vẽ icon ngọc / số). */
+    static Object oMon(Object o) {
+        if (o instanceof RealID) {
+            RealID r = (RealID) o;
+            GemTemplate g = new GemTemplate(r.ID);
+            g.id = r.ID;
+            g.number = r.number > 0 ? r.number : (short) 1;
+            return g;
+        }
+        return o;
+    }
+
+    static int giaMon(Object o) {
+        return o instanceof RealID ? ((RealID) o).price : o instanceof ItemInInventory ? ((ItemInInventory) o).prize : 0;
+    }
+
+    void veCuaSoCham(Graphics g) {
+        this.anNutLenh = true;
+        Canvas.resetTrans(g);
+        int t = index[focusTab];
+        if (t == 23) {
+            veGianHangToi(g);
+        } else if (t == 24) {
+            veGianHangKhac(g);
+        } else if (t == 28) {
+            veCheDo(g);
+        } else {
+            veEpDoThu(g);
+        }
+    }
+
+    /** Đầu cột: chữ nhãn; trả cao đã dùng. */
+    static int dauCot(Graphics g, int[] c, String s) {
+        game.pokemon.ChuDe.chu(g, game.pokemon.ChuDe.cat(s, game.pokemon.ChuDe.NHAN, c[2] - 8), c[0] + 4, c[1], game.pokemon.ChuDe.NHAN,
+                game.pokemon.ChuDe.CHU, 0);
+        return game.pokemon.ChuDe.cao(game.pokemon.ChuDe.NHAN) + game.pokemon.Bang.cach();
+    }
+
+    void veGianHangToi(Graphics g) {
+        int[] c = game.pokemon.ManCu.tam(g, this, "Gian hàng của tôi", game.pokemon.ManCu.viec(this.right), null);
+        int[][] v;
+        if (c[2] >= 360) {
+            v = game.pokemon.ManCu.chia(c, 50);
+        } else {
+            // màn hẹp: chip "Hành trang | Đang bán" thay hai cột
+            Object[] vc = {new IAction() {
+                public void perform() {
+                    WindowInfoScr.this.cotGianHang = 0;
+                }
+            }, new IAction() {
+                public void perform() {
+                    WindowInfoScr.this.cotGianHang = 1;
+                }
+            }};
+            int hc = game.pokemon.Bang.hangChip(g, c[0], c[1], c[2], new String[]{"Hành trang", "Đang bán"}, this.cotGianHang, vc) + game.pokemon.Bang.cach();
+            int[] r = {c[0], c[1] + hc, c[2], c[3] - hc};
+            int[] an = {c[0], c[1] + c[3], c[2], 0};
+            v = this.cotGianHang == 0 ? new int[][]{r, an} : new int[][]{an, r};
+        }
+        final Vector tui = new Vector();
+        for (int i = 0; i < Char.inventory.size(); i++) {
+            Object o = Char.inventory.elementAt(i);
+            if (o instanceof ItemInInventory && !((ItemInInventory) o).isSelling) {
+                tui.addElement(o);
+            }
+        }
+        for (int i = 0; i < MainChar.gemItem.size(); i++) {
+            tui.addElement(MainChar.gemItem.elementAt(i));
+        }
+        int h0 = v[0][3] <= 0 ? 0 : dauCot(g, v[0], "Hành trang - chạm để đặt bán");
+        if (v[0][3] > 0) {
+        game.pokemon.ManCu.danhSach(g, new int[]{v[0][0], v[0][1] + h0, v[0][2], v[0][3] - h0}, tui.size(), -1, new game.pokemon.ManCu.DongIcon() {
+            public Object mon(int i) {
+                return tui.elementAt(i);
+            }
+
+            public String chinh(int i) {
+                return tenMon(tui.elementAt(i));
+            }
+
+            public String phu(int i) {
+                Object o = tui.elementAt(i);
+                return o instanceof GemTemplate ? "Còn " + ((GemTemplate) o).number : "Chạm để đặt giá bán";
+            }
+
+            public void cham(int i) {
+                Object o = tui.elementAt(i);
+                if (o instanceof ItemInInventory) {
+                    WindowInfoScr.this.setLeftSellItem((ItemInInventory) o, (short) -1);
+                } else {
+                    WindowInfoScr.this.setLeftSellItem(null, ((GemTemplate) o).rID);
+                }
+            }
+        }, "Hành trang trống");
+        }
+        final Vector ban = this.sellItem;
+        if (v[1][3] <= 0) {
+            return;
+        }
+        int h1 = dauCot(g, v[1], "Đang bán - chạm để lấy về");
+        game.pokemon.ManCu.danhSach(g, new int[]{v[1][0], v[1][1] + h1, v[1][2], v[1][3] - h1}, ban.size(), -1, new game.pokemon.ManCu.DongIcon() {
+            public Object mon(int i) {
+                return oMon(ban.elementAt(i));
+            }
+
+            public String chinh(int i) {
+                return tenMon(ban.elementAt(i));
+            }
+
+            public String phu(int i) {
+                return "Giá " + game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, giaMon(ban.elementAt(i)));
+            }
+
+            public void cham(int i) {
+                final Object o = ban.elementAt(i);
+                game.pokemon.HopXacNhan.hoi("Lấy về", "Thôi bán " + tenMon(o) + " và lấy về hành trang?", "Lấy về", new IAction() {
+                    public void perform() {
+                        WindowInfoScr.this.doRequestSellItem(o instanceof ItemInInventory ? (ItemInInventory) o : null,
+                                o instanceof RealID ? ((RealID) o).realID : (short) -1, 0, false);
+                    }
+                }, null);
+            }
+        }, "Chưa bán món nào");
+    }
+
+    void veGianHangKhac(Graphics g) {
+        int[] c = game.pokemon.ManCu.tam(g, this, "Gian hàng", game.pokemon.ManCu.viec(this.right), null);
+        final Vector ban = this.sellItem;
+        int h0 = dauCot(g, c, "Chạm món để xem / mua");
+        game.pokemon.ManCu.danhSach(g, new int[]{c[0], c[1] + h0, c[2], c[3] - h0}, ban.size(), this.selected, new game.pokemon.ManCu.DongIcon() {
+            public Object mon(int i) {
+                return oMon(ban.elementAt(i));
+            }
+
+            public String chinh(int i) {
+                return tenMon(ban.elementAt(i));
+            }
+
+            public String phu(int i) {
+                return "Giá " + game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, giaMon(ban.elementAt(i)));
+            }
+
+            public void cham(final int i) {
+                WindowInfoScr.this.selected = i;
+                final Object o = ban.elementAt(i);
+                Vector lenh = new Vector();
+                lenh.addElement(new Command("Mua - " + game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, giaMon(o)), new IAction() {
+                    public void perform() {
+                        WindowInfoScr.this.selected = i;
+                        if (WindowInfoScr.this.left != null && WindowInfoScr.this.left.action != null) {
+                            WindowInfoScr.this.left.action.perform();
+                        }
+                    }
+                }));
+                lenh.addElement(new Command("Thông tin", new IAction() {
+                    public void perform() {
+                        if (o instanceof ItemInInventory) {
+                            game.pokemon.TheVatPham.moXem(o, "Giá " + game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, giaMon(o)));
+                        } else {
+                            GemTemp gt = Res.getGemByID(((RealID) o).ID);
+                            game.pokemon.HopThongBao.bao(tenMon(o), gt == null ? "" : gt.decript);
+                        }
+                    }
+                }));
+                game.pokemon.MenuNguCanh.mo(lenh, tenMon(o));
+            }
+        }, "Gian hàng trống");
+    }
+
+    void veCheDo(Graphics g) {
+        int[] c = game.pokemon.ManCu.tam(g, this, "Chế đồ", game.pokemon.ManCu.viec(this.right), new Command[]{this.left});
+        int k = game.pokemon.Bang.cach();
+        int lh = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU);
+        int y = c[1];
+        StringBuffer can = new StringBuffer("Cần: ");
+        for (int i = 0; this.listCheDo != null && i < this.listCheDo.size(); i++) {
+            Mineral mi = (Mineral) this.listCheDo.elementAt(i);
+            can.append(i > 0 ? ", " : "").append(mi.name).append(" x").append((int) mi.number);
+        }
+        String[] d = game.pokemon.ChuDe.ngat(can.toString(), game.pokemon.ChuDe.PHU, c[2] - 8, 2);
+        for (int i = 0; i < d.length; i++) {
+            game.pokemon.ChuDe.chu(g, d[i], c[0] + 4, y + i * lh, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 0);
+        }
+        y += d.length * lh + k;
+        final Vector ep = this.listEp == null ? new Vector() : this.listEp;
+        y += dauCot(g, new int[]{c[0], y, c[2], 0}, "Đã đặt (chạm = lấy ra)");
+        int n = Math.max(6, ep.size());
+        int s = game.pokemon.ManCu.hangO(g, c[0], y, c[2], Math.min(n, 8), game.pokemon.Bang.coO(), new game.pokemon.ManCu.O() {
+            public String chu(int i) {
+                return null;
+            }
+
+            public void cham(int i) {
+                if (i < ep.size()) {
+                    WindowInfoScr.this.numW = 1000;
+                    WindowInfoScr.this.selected = i;
+                    WindowInfoScr.this.doSelectedCheDo();
+                    game.pokemon.ManCu.tiepQuanMenu("Chế đồ");
+                }
+            }
+
+            public void ve(Graphics g, int i, int x, int y, int s) {
+                if (i < ep.size()) {
+                    game.pokemon.ManCu.veMon(g, ep.elementAt(i), x, y, s);
+                }
+            }
+        }, "che-dat-");
+        y += s + k;
+        final Vector tui = this.listTemp;
+        int h1 = dauCot(g, new int[]{c[0], y, c[2], 0}, "Nguyên liệu (chạm = bỏ vào)");
+        game.pokemon.ManCu.danhSach(g, new int[]{c[0], y + h1, c[2], c[1] + c[3] - y - h1}, tui.size(), -1, new game.pokemon.ManCu.DongIcon() {
+            public Object mon(int i) {
+                return tui.elementAt(i);
+            }
+
+            public String chinh(int i) {
+                return tenMon(tui.elementAt(i));
+            }
+
+            public String phu(int i) {
+                return "Còn " + ((GemTemplate) tui.elementAt(i)).number;
+            }
+
+            public void cham(int i) {
+                WindowInfoScr.this.numW = 1000;
+                WindowInfoScr.this.selected = 2 * 1000 + i;
+                WindowInfoScr.this.doSelectedCheDo();
+                    game.pokemon.ManCu.tiepQuanMenu("Chế đồ");
+            }
+        }, "Không có nguyên liệu");
+    }
+
+    void veEpDoThu(Graphics g) {
+        int[] c0 = game.pokemon.ManCu.tam(g, this, "Ép đồ thú", game.pokemon.ManCu.viec(this.right), new Command[]{this.left});
+        int k = game.pokemon.Bang.cach();
+        int lh = game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU);
+        // màn rộng: ô ép bên trái, hành trang bên phải (danh sách đủ cao); màn hẹp: xếp dọc
+        boolean rong = c0[2] >= 400 && c0[2] * 3 >= c0[3] * 4;
+        int[] c = rong ? new int[]{c0[0], c0[1], c0[2] * 55 / 100, c0[3]} : c0;
+        int[] cl = rong ? new int[]{c0[0] + c[2] + k, c0[1], c0[2] - c[2] - k, c0[3]} : null;
+        int y = c[1];
+        String yeu = "5 đồ thú cùng màu, cấp " + Math.max(30, lvThu - 5) + "-" + (lvThu + 5) + " (ô giữa: đồ chính) + " + (int) slNLThu + " nguyên liệu.";
+        String[] d = game.pokemon.ChuDe.ngat(yeu, game.pokemon.ChuDe.PHU, c[2] - 8, 2);
+        for (int i = 0; i < d.length; i++) {
+            game.pokemon.ChuDe.chu(g, d[i], c[0] + 4, y + i * lh, game.pokemon.ChuDe.PHU, game.pokemon.ChuDe.CHU_PHU, 0);
+        }
+        y += d.length * lh + k;
+        final ItemInInventory[] dt = this.itemEpdothu;
+        // màn thấp (J2ME 320x240): ô nhỏ lại để danh sách hành trang còn >= 2 hàng chạm được
+        int sMuon = cl != null ? game.pokemon.Bang.coO() : Math.max(24, Math.min(game.pokemon.Bang.coO(), (c[1] + c[3] - y - lh - 4 * k - 2 * game.pokemon.ManCu.caoHang()) / 2));
+        int s = game.pokemon.ManCu.hangO(g, c[0], y, c[2], 5, sMuon, new game.pokemon.ManCu.O() {
+            public String chu(int i) {
+                return i == 2 ? "Chính" : null;
+            }
+
+            public void cham(int i) {
+                if (dt[i] != null) {
+                    WindowInfoScr.this.numH = 1;
+                    WindowInfoScr.this.selected = i;
+                    WindowInfoScr.this.doSelectedEpDothu();
+                    game.pokemon.ManCu.tiepQuanMenu("Ép đồ thú");
+                }
+            }
+
+            public void ve(Graphics g, int i, int x, int y, int s) {
+                game.pokemon.ManCu.veMon(g, dt[i], x, y, s);
+            }
+        }, "ep-do-");
+        y += s + game.pokemon.ChuDe.cao(game.pokemon.ChuDe.PHU) + k;
+        final Vector ep = this.listEp == null ? new Vector() : this.listEp;
+        int s2 = game.pokemon.ManCu.hangO(g, c[0], y, c[2], 6, sMuon * 4 / 5, new game.pokemon.ManCu.O() {
+            public String chu(int i) {
+                return null;
+            }
+
+            public void cham(int i) {
+                if (i < ep.size()) {
+                    WindowInfoScr.this.numH = 1;
+                    WindowInfoScr.this.selected = 6 + i;
+                    WindowInfoScr.this.doSelectedEpDothu();
+                    game.pokemon.ManCu.tiepQuanMenu("Ép đồ thú");
+                }
+            }
+
+            public void ve(Graphics g, int i, int x, int y, int s) {
+                if (i < ep.size()) {
+                    game.pokemon.ManCu.veMon(g, ep.elementAt(i), x, y, s);
+                }
+            }
+        }, "ep-nl-");
+        y += s2 + k;
+        if (cl != null) {
+            c = cl;
+            y = cl[1];
+        }
+        final Vector thu = this.listItemAnimal;
+        final Vector nl = this.listTemp;
+        int h1 = dauCot(g, new int[]{c[0], y, c[2], 0}, "Hành trang (chạm = bỏ vào)");
+        game.pokemon.ManCu.danhSach(g, new int[]{c[0], y + h1, c[2], c[1] + c[3] - y - h1}, thu.size() + nl.size(), -1, new game.pokemon.ManCu.DongIcon() {
+            Object o(int i) {
+                return i < thu.size() ? thu.elementAt(i) : nl.elementAt(i - thu.size());
+            }
+
+            public Object mon(int i) {
+                return o(i);
+            }
+
+            public String chinh(int i) {
+                return tenMon(o(i));
+            }
+
+            public String phu(int i) {
+                Object x = o(i);
+                return x instanceof ItemInInventory ? "Cấp " + ((ItemInInventory) x).level : "Còn " + ((GemTemplate) x).number;
+            }
+
+            public void cham(int i) {
+                WindowInfoScr.this.numH = 2;
+                WindowInfoScr.this.numW = 1000;
+                WindowInfoScr.this.selected = i;
+                WindowInfoScr.this.doSelectedEpDothu();
+                    game.pokemon.ManCu.tiepQuanMenu("Ép đồ thú");
+            }
+        }, "Không có đồ thú cùng màu / nguyên liệu");
     }
 }
