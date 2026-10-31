@@ -346,11 +346,11 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **388 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **393 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 97 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 102 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 252 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
@@ -381,6 +381,11 @@ Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, ph�
 | `thu.tha_xu_moi_cap` | Thả thú: xu mỗi cấp | số | `2` | 0..100 | ngay | game | Cộng thêm theo cấp của thú (cấp tính tối đa 100). |
 | `thu.tha_xu_toi_da` | Thả thú: trần xu mỗi con | số | `300` | 0..5000 | ngay | game | Trần xu nhận được khi thả một con (hút xu an toàn: giữ nhỏ so với giờ thu nhập). |
 | `thu.tha_xu_ngay` | Thả thú: trần xu mỗi ngày | số | `2000` | 0..1000000 | ngay | game | Xu tối đa một người chơi nhận được từ thả thú mỗi ngày (theo lịch máy chủ, lưu trong CSDL: đăng nhập lại / khởi động lại không đặt lại). Quá trần vẫn thả được nhưng 0 xu. |
+| `doi_luong.ti_le` | Đổi lượng → lượng khoá: lượng khoá mỗi lượng | số | `1` | 0..100 | ngay | cả hai | NPC Tổng Quản (mục Đổi lượng) và web /account: 1 lượng thường = N lượng khoá. Một chiều (không đổi ngược, lượng khoá không bao giờ là đầu vào), không trần ngày. 0 = tắt. |
+| `doi_luong_xu.phan_tram_gio` | Đổi lượng → xu: % thu nhập 1 giờ | số | `1` | 0..100 | ngay | cả hai | Tỉ giá chung toàn máy chủ: 1 lượng = làm tròn (N% × thu nhập 1 giờ ở cấp trung vị người chơi thật hoạt động 7 ngày), tính lúc 00:00 và giữ cố định cả ngày (bảng tob_ti_gia_luong_xu; đổi khoá có hiệu lực từ ngày sau). Xu sinh ra đếm vào xu vào (tob_kinh_te_ngay). 0 = tắt. |
+| `doi_luong_xu.tran_ngay` | Đổi lượng → xu: trần lượng / tài khoản / ngày | số | `5000` | 0..1000000 | ngay | cả hai | Số lượng thường tối đa mỗi tài khoản đổi ra xu với hệ thống mỗi ngày (gộp mọi Pokémon của tài khoản, NPC + web). 0 = tắt. |
+| `san_luong.phi_phan_tram` | Sàn lượng ↔ xu: phí bên mua (%) | số | `5` | 0..50 | ngay | cả hai | Phí xu bên mua trả thêm trên mỗi lượng khớp (làm tròn lên theo từng lượng), bị đốt (hố hút). Sàn chỉ giao dịch lượng thường; lượng khoá không bao giờ lên sàn. |
+| `san_luong.tran_ngay` | Sàn lượng ↔ xu: trần lượng đặt lệnh / tài khoản / ngày | số | `50000` | 0..10000000 | ngay | cả hai | Tổng lượng đặt lệnh bán + mua mỗi tài khoản mỗi ngày (huỷ lệnh trong ngày trả lại phần chưa khớp). Cổng chống clone như chợ ký gửi; bot không dùng sàn. 0 = đóng sàn. |
 
 #### Sự kiện & giftcode (`su_kien`)
 

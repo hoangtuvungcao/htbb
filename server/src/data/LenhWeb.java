@@ -56,6 +56,10 @@ import server.TeamServer;
  *   ngay o lan doc dau tien, khong co trang thai CHO_DANG_NHAP: online -> kickPlayer (luu ban
  *   RAM cuoi + ngat ket noi) roi xoa; offline -> xoa thang.           -> XONG_ONLINE (hoac LOI)
  *
+ *   doi_luong_khoa / doi_luong_xu (cap_do = so luong; NGUOI CHOI gui tu web /account, admin_user = "nguoi_choi:<tk>")
+ *     - xu ly o real.DoiLuongGame.xuLyLenhWeb: online -> CHOT dong (-> DANG_XU_LY, UPDATE co dieu kien) roi doi tren
+ *       RAM; offline -> CHO_DANG_NHAP, doi khi vao game. Khong bao gio ghi thang tob_char.
+ *
  *   loi (sai cap, khong co nhan vat, ha cap, mon khong khop...) -> LOI, ket_qua ghi ly do.
  *
  * Web doi toi da vai giay roi doc trang_thai de bao lai cho nguoi bam. Server dang tat thi dong
@@ -102,6 +106,11 @@ public final class LenhWeb implements Runnable {
     public static final int CHO_DANG_NHAP = 4;
     /** Nguoi quan tri huy tren web. Server bo qua. */
     public static final int HUY = 5;
+    /**
+     * Lenh doi luong cua nguoi choi (real.DoiLuongGame) da duoc server CHOT, dang doi tren RAM. Khong bao gio doc lai
+     * (khong ap dung hai lan); web khong huy duoc (huy chi an dong CHO / CHO_DANG_NHAP).
+     */
+    public static final int DANG_XU_LY = 6;
 
     /** Doc bang moi giay: web dang doi ket qua, khong de nguoi bam cho lau. */
     public static final long CHU_KY_MS = 1000L;
@@ -765,6 +774,23 @@ public final class LenhWeb implements Runnable {
             final String adminUser = (String) r[6];
             final int trangThaiCu = (Integer) r[7];
             final String thamSo = (String) r[8];
+            if (real.DoiLuongGame.laLenh(loai)) {
+                // doi luong cua nguoi choi (web /account): chot dong truoc khi doi, xem real.DoiLuongGame.xuLyLenhWeb
+                final int[] tt = {trangThaiCu};
+                KetQua kqDoi;
+                try {
+                    kqDoi = real.DoiLuongGame.xuLyLenhWeb(id, loai, charId, capDo, tt);
+                } catch (final Exception e) {
+                    kqDoi = new KetQua(LOI, cat("loi: " + e.getMessage(), 250));
+                }
+                if (kqDoi.trangThai == tt[0] && kqDoi.moTa.isEmpty()) {
+                    continue;
+                }
+                ghiKetQua(id, tt[0], kqDoi);
+                System.out.println("[LENH WEB] #" + id + " " + loai + " " + charname + " (id " + charId + ") " + capDo
+                        + " boi " + adminUser + " -> " + kqDoi.moTa);
+                continue;
+            }
             KetQua kq;
             try {
                 kq = xuLy(loai, charId, capDo, phanNghin, thamSo, adminUser, trangThaiCu);
@@ -836,6 +862,26 @@ public final class LenhWeb implements Runnable {
             ps.setLong(3, id);
             ps.setInt(4, trangThaiCu);
             ps.executeUpdate();
+        } finally {
+            dong(ps);
+            tra(conn);
+        }
+    }
+
+    /** Chot dong lenh (trangThaiCu -> DANG_XU_LY) co dieu kien: true = chi luong goi duoc ap dung (web chua huy). */
+    public static boolean chotDangXuLy(final long id, final int trangThaiCu) throws Exception {
+        if (trangThaiCu != CHO && trangThaiCu != CHO_DANG_NHAP) {
+            return false;
+        }
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = Database.instance.getConnection();
+            ps = conn.prepareStatement("UPDATE `" + TEN_BANG + "` SET trang_thai = ?, xu_ly_luc = NOW() WHERE id = ? AND trang_thai = ?");
+            ps.setInt(1, DANG_XU_LY);
+            ps.setLong(2, id);
+            ps.setInt(3, trangThaiCu);
+            return ps.executeUpdate() == 1;
         } finally {
             dong(ps);
             tra(conn);

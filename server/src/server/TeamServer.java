@@ -1123,6 +1123,8 @@ public class TeamServer {
         data.LenhWeb.batDau();
         // nap tien: vong cong don / thu hoi / cho trang tri (chi chay khi NapTien.bat()).
         com.htbb.pokemon.NapTienGame.batDau();
+        // Doi luong + san luong <-> xu: ti gia ngay (00:00), het han lenh, tra tien cho nguoi online. Xem real/DoiLuongGame.
+        real.DoiLuongGame.batDau();
         // Phat qua đua top tu trang quan tri web: bang tob_top_thuong, doc luc nguoi choi
         // mo menu NPC Tong Quan (khong can vong lap rieng). Xem real/SuKienDuaTop.
         real.SuKienDuaTop.taoBang();

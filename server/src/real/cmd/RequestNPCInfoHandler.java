@@ -936,6 +936,8 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.idxKhoXuLuong = menu.length;
                         menu = menuKho;
                     }
+                    // Doi luong (luong -> luong khoa / xu, san luong <-> xu): noi CUOI menu. Xem real/DoiLuongGame.
+                    menu = real.DoiLuongGame.noiMenuTongQuan(p, menu);
                     // nap tien: muc "Cửa hàng & Nạp" noi CUOI menu (tat co: menu y nguyen).
                     menu = com.htbb.pokemon.NapTienGame.noiMenuTongQuan(p, menu);
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);

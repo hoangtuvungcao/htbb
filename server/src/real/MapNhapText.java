@@ -414,6 +414,11 @@ class MapNhapText {
                     return;
                 }
 
+                // doi luong / san luong: hop nhap so -32301..-32306 (real/DoiLuongGame).
+                if (DoiLuongGame.xuLyNhap(player, idActor, text)) {
+                    return;
+                }
+
                 if (idActor == KhoXuLuong.INPUT_GUI_XU) {
                     KhoXuLuong.doNhapGuiXu(player, text);
                     return;
