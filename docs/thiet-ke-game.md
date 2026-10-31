@@ -178,8 +178,17 @@ Cột `tob_char.class` giữ nguyên (0..4) và ánh xạ sang dòng Pokémon (`
 - Tám nhánh Eevee: Vaporeon (hồi đội), Jolteon (tốc độ), Flareon (bùng nổ), Espeon / Umbreon (đặc biệt / chịu đòn),
   Leafeon / Glaceon (khống chế), Sylveon (hỗ trợ). Chỉ chọn được khi `dex == 133` và cấp ≥ 25.
 - Thưởng giai đoạn tiến hoá: **+8%** (dạng 2) / **+16%** (dạng 3) HP và tấn công (`LoaiPokemon.PT_GIAI_DOAN_*`).
-- Ràng buộc cân bằng: tích HP × Tấn công × Thủ của mọi dòng nằm trong **±5%**; dòng chịu đòn hạ quái chậm hơn nhưng sống
-  lâu hơn (test so TTK, mục 2.4).
+- Ràng buộc cân bằng: chỉ số **gốc** (nhân vật, chưa tính đồ / pet / thú cưỡi / %) của mỗi dòng = một công thức trung tính
+  theo cấp nhân tỉ lệ bảng trên (`com.htbb.pokemon.ChiSoDong`, 31/10/2026): HP = (20 + 2·(cấp−1)) × tỉ lệ × 70; tấn công =
+  (20 + 5·(cấp−1)) × tỉ lệ × 4/3; thủ = (20 + 2,5·(cấp−1)) × tỉ lệ (tiềm năng skin thú cưỡi cộng % như cũ). Mọi dòng cùng hệ
+  số; vũ khí tiệm cùng bậc có cùng tấn công gốc (Squirtle +60 / Pichu −10 cũ được đưa về trung bình). Tích HP × Tấn công ×
+  Thủ của mỗi dòng khớp tích của tỉ lệ thiết kế của chính dòng đó trong **±5%** (test `KiemCanBangDong`, cấp 10..100). Lưu
+  ý: bản thân bảng tỉ lệ cho tích lệch nhau tới ~1,6 lần (Pichu 85×110×85 so Squirtle 120×85×125) - dòng chịu đòn bù bằng
+  hạ quái chậm hơn (test so TTK, mục 2.4).
+- Trước 31/10/2026 chỉ số lấy từ công thức cũ theo dòng (`CharChiSo`): hệ số HP 80/70/60/70/60, tấn công mỗi dòng một kiểu
+  (Bulbasaur ×1,5, Eevee Tinh thần ×5/3, Pichu Khéo léo ×5/3), thủ = Khéo léo (Charmander / Eevee không tăng Khéo léo theo
+  cấp), Squirtle cộng thủ và tấn công **hai lần**, Pichu thủ ×1,1 - ở cấp 30 tích lệch 11 lần, Charmander / Eevee không
+  hạ nổi quái cùng cấp từ cấp 30 (cổng kiểm bot cb2).
 - Không có chuyển sinh (reset cấp): client đọc cấp bằng 1 byte, tiến hoá gắn với cấp, và reset phá cốt truyện. Thay bằng
   **tinh thông** (mục 3.6).
 - Mỗi tài khoản tối đa `sv.maxCharPerAccount` (3) Pokémon.
@@ -698,7 +707,8 @@ thêm), không đặt ở từng nguồn, nên pet / thú cưỡi / skin không 
 | Xuyên giáp (tỉ lệ bỏ qua thủ) | 20% → 30% | | — |
 
 **Trần cứng**: phản đòn 15% (PvP 10%); sát thương lên boss / quái +20% / +20%; sát thương theo % HP mục tiêu 1% (boss
-0,2%) và không quá đòn gốc; hồi HP / PP mỗi nhịp 5 giây ≤ 1% tối đa; hút HP lên boss / Gym / tinh anh ×10% (mỗi đòn ≤ 0,2%
+0,2%) và không quá đòn gốc; hồi HP / PP mỗi nhịp 5 giây ≤ 1% tối đa (HP: **ngoài trận** - không mất HP 10 giây - luôn hồi đủ
+1% / nhịp kể cả không có đồ hồi, `HoiMauNgoaiTran`, 31/10/2026); hút HP lên boss / Gym / tinh anh ×10% (mỗi đòn ≤ 0,2%
 HP tối đa); EXP từ đồ ≤ +30%; thưởng bộ ≤ 5%; **tổng % cộng thêm** tấn công / thủ / HP ngoài đồ ≤ +50% trên chỉ số gốc
 (`chi_so.tran_phan_tram_cong`). Giai đoạn tiến hoá, tinh thông, hệ sinh thái tính ngoài (đã có trần riêng).
 
@@ -1556,7 +1566,8 @@ Khi Pokémon gục, người chơi **chọn** trong hộp thoại "Pokémon củ
   đánh, đấu trường; đang thách đấu Gym; đã đánh boss còn sống cùng bản đồ; Mê cung; bản đồ thêm (`hoi_sinh.map_cam_them`).
 - **Về Trung tâm Pokémon**: ở Hoenn về Trung tâm của thị trấn Hoenn gần nhất; Kanto / Johto về làng nhà. Phạt (không áp tân
   thủ): mất 2% EXP lên cấp hiện tại (trần 15 phút cày, **không bao giờ tụt cấp**), mất 2% độ bền tối đa mỗi trang bị đang mặc
-  (không vỡ đồ; 31/10/2026 hạ 5% → 2% vì đăng nhập lại không còn hồi đầy độ bền), **Mệt mỏi** 5 phút (−20% EXP hạ quái, −10% tấn công). Không rơi đồ.
+  (không vỡ đồ; 31/10/2026 hạ 5% → 2% vì đăng nhập lại không còn hồi đầy độ bền; đồ cầm tay hỏng **vẫn đánh được, 30% sát
+  thương** kèm nhắc sửa - trước không đánh được, người hết xu sửa kẹt vĩnh viễn), **Mệt mỏi** 5 phút (−20% EXP hạ quái, −10% tấn công). Không rơi đồ.
 - "Auto về Map Up" không còn bay lại bãi luyện sau khi gục (`hoi_sinh.auto_ve_map_up=0`), để không treo máy vô hạn.
 - Client cũ không có hộp -101 nhận menu thường (id -803) với cùng lựa chọn; đồng đội cứu qua menu -804.
 
@@ -1647,7 +1658,7 @@ Mục tiêu: xu ra / vào 90–105%, lượng khoá ~95%; lượng tích chậm 
 | Trần chuyển xu trực tiếp | 5 giờ thu nhập / ngày (muốn nhiều hơn phải qua chợ, chịu thuế) | `thue.tran_chuyen_xu_gio` |
 | Dịch chuyển | 3% thu nhập 1 giờ | `phi.dich_chuyen_phan_tram_gio` |
 | Hồi sinh trả xu | 40% thu nhập 1 giờ × hệ số gục lặp (luồng mới) | `hoi_sinh.xu_phan_tram_gio` |
-| Sửa đồ | công thức cũ, trần 8% thu nhập 1 giờ mỗi món | `tieu_hao.sua_do_phan_tram_thu_nhap` |
+| Sửa đồ | 10% giá món × **phần độ bền đã mất** (31/10/2026, `DoBenLogic.giaSua`; trước luôn 10% giá dù mất 2%), trần 8% thu nhập 1 giờ mỗi món | `tieu_hao.sua_do_phan_tram_thu_nhap` |
 | Bán đồ cho NPC | 5% giá, không cộng theo cấp cường hoá | `phi.ban_npc_phan_tram` |
 | Rơi xu / đá | 30% số quái / 15‰ (khi lệch cấp ≤ 5) | `roi.xu.phan_tram`, `roi.da_nang_cap.phan_nghin` |
 | Thuốc | tổng chi thuốc ≤ 12% thu nhập; mỗi món 0,05–5% thu nhập 1 giờ | (dữ liệu) |

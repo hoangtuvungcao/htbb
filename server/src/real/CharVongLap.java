@@ -296,12 +296,19 @@ class CharVongLap {
                 }
             }
         }
+        // Hoi HP ngoai tran (HoiMauNgoaiTran): nhan ra mat HP (quai / nguoi / trang thai) moi nhip
+        if (self.hp < self.hpNhipTruoc) {
+            self.lucMatMauCuoi = System.currentTimeMillis();
+        }
+        self.hpNhipTruoc = self.hp;
         if (System.currentTimeMillis() - self.timeRegentHpMp >= 5000L && self.hp > 0) {
             if (self.petUsing != null && self.petUsing.isPetKhi() && Map.r.nextInt(100) < 50) {
                 self.setNguoiTuyet(5);
             }
+            int daHoiDo = 0;
             if (self.haveRegentHP() > 0 && self.hp < self.maxhp && self.hp > 0 && !self.isVetThuongSau() && !self.checkChoang()) {
                 final int a = self.haveRegentHP();
+                daHoiDo = a;
                 self.hp += a;
                 if (self.calculatorHPMP()) {
                     try {
@@ -313,6 +320,19 @@ class CharVongLap {
                     self.sendMessage(MessageCreator.createNew_HMP_Message(self, a));
                     self.sendToNearPlayer(MessageCreator.createNew_HMP_Message(self, a));
                 } catch (final IOException ex7) {
+                }
+            }
+            {
+                final int them = self.isVetThuongSau() || self.checkChoang() ? 0
+                        : com.htbb.pokemon.HoiMauNgoaiTran.luong(self.hp, self.maxhp, System.currentTimeMillis(), self.lucMatMauCuoi, daHoiDo);
+                if (them > 0) {
+                    self.hp += them;
+                    self.hpNhipTruoc = self.hp;
+                    try {
+                        self.sendMessage(MessageCreator.createNew_HMP_Message(self, them));
+                        self.sendToNearPlayer(MessageCreator.createNew_HMP_Message(self, them));
+                    } catch (final IOException ignored) {
+                    }
                 }
             }
             if (self.haveRegentMP() > 0 && self.mp < self.maxmp && self.hp > 0 && !self.isYemBua()) {
