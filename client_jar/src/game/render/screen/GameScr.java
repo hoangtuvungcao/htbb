@@ -5301,7 +5301,10 @@ public class GameScr extends Screen {
             }
         });
         Canvas.msgdlg.isIcon = false;
-        Canvas.msgdlg.setInfo("Mất kết nối với máy chủ! Kiểm tra mạng rồi bấm Kết nối lại nhé.", (Command) null, ketNoiLai, new Command("Thoát", new IAction() {
+        String lyDo = game.pokemon.TuNoiLai.biDangNhapKhac
+                ? game.pokemon.TuNoiLai.DANG_NHAP_KHAC + " Bấm Kết nối lại để chơi tiếp trên máy này (máy kia sẽ bị thoát)."
+                : "Mất kết nối với máy chủ! Kiểm tra mạng rồi bấm Kết nối lại nhé.";
+        Canvas.msgdlg.setInfo(lyDo, (Command) null, ketNoiLai, new Command("Thoát", new IAction() {
             @Override
             public void perform() {
                 Canvas.cmdNgatKetNoi.action.perform();
