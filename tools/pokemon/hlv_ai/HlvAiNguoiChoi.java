@@ -971,6 +971,7 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         b.gui(-122, (byte) 0);
         b.cho(x -> layGoi(x, m, -122, 0) != null, 3000);
         byte[] d = layGoi(b, m, -122, 0);
+        DichVuHlvAi.dem("hoc_chieu_xem", d == null ? 0 : 1);
         if (d == null) return false;
         try {
             DataInputStream r = new DataInputStream(new ByteArrayInputStream(d));
