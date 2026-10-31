@@ -202,6 +202,10 @@ fi
 
 if [ $BOT = 1 ]; then
     buoc "3d. Dich vu Huan luyen vien AI (htbb-hlv-ai) - so bot / bat tat chinh o /admin/hlv-ai"
+    # dich vu bien dich tu /opt/htbb (lop may chu + bo bot) moi lan khoi dong: dua ma nguon commit nay len truoc
+    git archive HEAD vps tools/pokemon/kiem_tai tools/pokemon/hlv_ai server/src | gzip > "$TAM/bot_$SHA.tgz"
+    $SSH "$VPS" "mkdir -p $UV" && $SCP "$TAM/bot_$SHA.tgz" "$VPS:$UV/" >>"$LOG" 2>&1 || loi "tai ma nguon bot hong"
+    $SSH "$VPS" "cd /opt/htbb && tar --no-overwrite-dir -xzf $UV/bot_$SHA.tgz" >>"$LOG" 2>&1 || loi "giai nen ma nguon bot hong"
     $SSH "$VPS" "set -e
         command -v javac >/dev/null || DEBIAN_FRONTEND=noninteractive apt-get install -y -q openjdk-17-jdk-headless >/dev/null
         install -m 644 /opt/htbb/vps/htbb-hlv-ai.service /etc/systemd/system/ && systemctl daemon-reload
@@ -212,7 +216,8 @@ if [ $BOT = 1 ]; then
             install -m 640 -g htbb /dev/null /etc/htbb/hlv-ai.cnf
             printf '[client]\nhost=%s\nport=%s\nuser=%s\npassword=%s\n' \"\$HTBB_DB_HOST\" \"\$HTBB_DB_PORT\" \"\$HTBB_DB_USER\" \"\$HTBB_DB_PASS\" > /etc/htbb/hlv-ai.cnf
         fi
-        systemctl enable htbb-hlv-ai >/dev/null 2>&1; systemctl restart htbb-hlv-ai; sleep 20
+        systemctl enable htbb-hlv-ai >/dev/null 2>&1; systemctl restart --no-block htbb-hlv-ai
+        for i in $(seq 1 60); do systemctl is-active htbb-hlv-ai | grep -q activating || break; sleep 10; done; sleep 30
         systemctl is-active htbb-hlv-ai; tail -3 /opt/htbb/logs/hlv-ai.out" 2>&1 | tee -a "$LOG" || loi "cai dich vu bot hong"
 fi
 
