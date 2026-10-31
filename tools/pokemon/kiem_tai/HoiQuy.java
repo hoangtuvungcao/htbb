@@ -180,6 +180,14 @@ public final class HoiQuy {
         BotChucNang.Bot b = new BotChucNang.Bot(ten);
         BatBien.gan(b);
         String l = b.dangNhap(MAT_KHAU);
+        // dam dong: may chu dang nhap qua tai tra "chưa phản hồi" - nguoi choi that bam lai sau vai giay
+        for (int lan = 0; lan < 6 && l != null && l.contains("chưa phản hồi"); lan++) {
+            b.close();
+            Thread.sleep(3000L + lan * 2000L);
+            b = new BotChucNang.Bot(ten);
+            BatBien.gan(b);
+            l = b.dangNhap(MAT_KHAU);
+        }
         if (l != null) throw new IllegalStateException(ten + " dang nhap: " + l);
         l = b.vaoGame(lop, vung);
         if (l != null) throw new IllegalStateException(ten + " vao game: " + l);
