@@ -220,7 +220,8 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         if (loi.size() > 50) loi.clear();
         String v = chonViec();
         viec = v;
-        long het = System.currentTimeMillis() + (3 + rd.nextInt(10)) * 60000L;
+        long bd = System.currentTimeMillis();
+        long het = bd + (3 + rd.nextInt(10)) * 60000L;
         het = Math.min(het, henRa);
         int ok;
         try {
@@ -233,6 +234,14 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
             ghi("loi viec " + v + ": " + e);
         }
         DichVuHlvAi.dem(v, ok);
+        if (ok == 0) {
+            // nguoi choi gap viec khong lam duoc (chua du doi Dau truong, chua co khan PK...) thi thoi viec do mot luc
+            nghiViec.put(v, System.currentTimeMillis() + (20 + rd.nextInt(21)) * 60000L);
+            if (System.currentTimeMillis() - bd < 60000L && !dungLai && System.currentTimeMillis() < henRa) {
+                viec = DichVuHlvAi.bat("cay") ? "cay" : "treo"; // lam viec quen thuoc cho het luot thay vi doi viec lien tuc
+                lam(viec, Math.min(het, System.currentTimeMillis() + 3 * 60000L));
+            }
+        }
         xuLyXaHoi();
         if (System.currentTimeMillis() - lanChat > 4 * 60000L && rd.nextInt(3) == 0 && DichVuHlvAi.bat("chat")) {
             noi(HlvAiChat.theoViec(v), rd.nextInt(6) == 0);
@@ -240,12 +249,16 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         ho.cap = b.lv;
     }
 
+    /** Viec vua hong -> luc duoc thu lai. */
+    final Map<String, Long> nghiViec = new java.util.HashMap<>();
+
     String chonViec() {
         int[] w = TRONG_SO[ho.tinhCach].clone();
+        long bay = System.currentTimeMillis();
         boolean duCap = b.lv >= ho.capMucTieu;
         int tong = 0;
         for (int i = 0; i < VIEC.length; i++) {
-            if (!DichVuHlvAi.bat(VIEC[i]) || !moKhoa(VIEC[i])) w[i] = 0;
+            if (!DichVuHlvAi.bat(VIEC[i]) || !moKhoa(VIEC[i]) || nghiViec.getOrDefault(VIEC[i], 0L) > bay) w[i] = 0;
             else if (duCap && VIEC_EXP.contains(VIEC[i])) w[i] = Math.max(w[i] / 10, w[i] > 0 ? 1 : 0);
             tong += w[i];
         }
@@ -264,7 +277,7 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         switch (v) {
             case "pk": return lv >= 15;
             case "dau_truong": return lv >= 20;
-            case "pho_ban": return lv >= 20;
+            case "pho_ban": return lv >= 28;
             case "boss": return lv >= 20;
             case "gym": return lv >= 8;
             case "cho": case "giao_dich": return lv >= 20;
@@ -505,51 +518,91 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
     }
 
     /**
-     * Giao dich chu dong (goi 66): moi mot nguoi gan do (bot hoac nguoi that); ho dong y thi dat 1-3 binh thuoc, cho ho dat
-     * mon cua ho roi khoa + xac nhan; ho khong dat gi trong 20 giay thi huy (khong cho khong). Toi da 1 loi moi / 10 phut.
+     * Giao dich (goi 66) - dieu khien NGAY trong luong doc goi (nhu nguoi bam nut, khong doi het viec dang lam):
+     * <pre>
+     *  may chu -> client: 0 loi moi (id), 1 da mo, 2 mot ben dat (2, loai, id nguoi dat, thuoc, so), 5 ca hai da khoa,
+     *  4 xong, -1 huy. client -> may chu: 1 dong y, 2 dat, 3 huy, 4 khoa, 5 xac nhan.
+     *  Luat cong bang: chi khoa khi doi phuong DA dat gi; dat lai DUNG loai + so doi phuong dat (toi da 3, minh phai co);
+     *  nguoi moi (bot) dat truoc 1 binh; doi phuong khong dat trong 25 giay -> huy. Khong bao gio cho khong.
+     * </pre>
      */
-    long lanMoiGd;
+    volatile int gdTrangThai, gdDoi;
+    volatile boolean gdChuDong, gdMinhDat, gdDoiDat, gdKhoa;
+    volatile long gdLuc, lanMoiGd;
+    volatile int gdXong;
 
+    void gdDatLai() {
+        gdTrangThai = 0;
+        gdDoi = 0;
+        gdChuDong = gdMinhDat = gdDoiDat = gdKhoa = false;
+    }
+
+    /** Goi 66 den (luong doc goi cua chinh bot). */
+    void gdGoi(byte[] d) throws IOException {
+        int loai = d[0];
+        if (loai == 0 && d.length >= 3) {
+            int id = (short) (((d[1] & 255) << 8) | (d[2] & 255));
+            boolean nhan = gdTrangThai == 0 && DichVuHlvAi.bat("giao_dich") && b.lv >= 20 && !dungLai && rd.nextInt(4) > 0;
+            if (!nhan) return;
+            gdDatLai();
+            gdTrangThai = 1;
+            gdDoi = id;
+            gdLuc = System.currentTimeMillis();
+            b.gui(66, (byte) 1, (short) id);
+            DichVuHlvAi.dem("nhan_giao_dich", 1);
+        } else if (loai == 1) {
+            gdTrangThai = Math.max(gdTrangThai, 1);
+            gdLuc = System.currentTimeMillis();
+            if (gdChuDong && !gdMinhDat) {
+                int t = b.soThuoc(1) > 0 ? 1 : b.soThuoc(2) > 0 ? 2 : -1;
+                if (t < 0) { b.gui(66, (byte) 3); gdDatLai(); return; }
+                b.gui(66, (byte) 2, (byte) 1, (byte) t, (short) 1);
+                gdMinhDat = true;
+            }
+        } else if (loai == 2 && d.length >= 7 && gdTrangThai >= 1) {
+            int nguoiDat = (short) (((d[2] & 255) << 8) | (d[3] & 255));
+            if (nguoiDat == b.actor) return;
+            int thuoc = d[4] & 255, so = ((d[5] & 255) << 8) | (d[6] & 255);
+            gdDoiDat = true;
+            if (!gdMinhDat) {
+                int sl = Math.min(3, Math.min(so, b.soThuoc(thuoc)));
+                if (sl <= 0) { b.gui(66, (byte) 3); gdDatLai(); return; }
+                b.gui(66, (byte) 2, (byte) 1, (byte) thuoc, (short) sl);
+                gdMinhDat = true;
+            }
+            if (!gdKhoa) { b.gui(66, (byte) 4); gdKhoa = true; }
+        } else if (loai == 5 && gdTrangThai >= 1) {
+            if (gdDoiDat && gdMinhDat) b.gui(66, (byte) 5);
+            else { b.gui(66, (byte) 3); gdDatLai(); }
+        } else if (loai == 4) {
+            if (gdTrangThai >= 1) { DichVuHlvAi.dem("giao_dich_xong", 1); gdXong++; }
+            gdDatLai();
+        } else if (loai == -1) {
+            gdDatLai();
+        }
+    }
+
+    /** Moi mot nguoi dang dung gan (bot hoac nguoi that) - toi da 1 loi moi / 10 phut; phien do gdGoi lo. */
     boolean giaoDichChuDong() throws Exception {
-        if (System.currentTimeMillis() - lanMoiGd < 10 * 60000L || b.nguoi.isEmpty()) return false;
+        if (System.currentTimeMillis() - lanMoiGd < 10 * 60000L || b.nguoi.isEmpty() || gdTrangThai != 0) return false;
         lanMoiGd = System.currentTimeMillis();
         List<Integer> ds = new ArrayList<>(b.nguoi.keySet());
         int id = ds.get(rd.nextInt(ds.size()));
-        int m = b.moc();
+        int x0 = gdXong;
+        gdDatLai();
+        gdChuDong = true;
+        gdDoi = id;
+        gdLuc = System.currentTimeMillis();
         b.gui(66, (byte) 0, (short) id);
-        boolean mo = b.cho(x -> KichBanBatThuong.giaoDich(x, m, 1), 15000);
-        if (!mo) return false;
-        return giaoDichPhien(m);
-    }
-
-    /** Phien giao dich da mo (66/1): dat thuoc doi lai thuoc cua doi phuong, cong bang (cung so luong). */
-    boolean giaoDichPhien(int m) throws IOException {
-        int loai = b.soThuoc(2) > 3 ? 2 : b.soThuoc(1) > 3 ? 1 : -1;
-        long het = System.currentTimeMillis() + 20000;
-        boolean doiDat = false;
-        while (System.currentTimeMillis() < het && !b.dut) {
+        long het = System.currentTimeMillis() + 40000;
+        while (System.currentTimeMillis() < het && !b.dut && (gdChuDong || gdTrangThai != 0)) {
             b.bom(500);
-            for (int i = m; i < b.su.size(); i++) {
-                BotChucNang.SuKien e = b.su.get(i);
-                if (e.cmd == 66 && e.so != null && (e.so[0] == 2 || e.so[0] == 4)) doiDat = true;
-                if (e.cmd == 66 && e.so != null && e.so[0] == 3) return false; // doi phuong huy
-            }
-            if (doiDat) break;
+            if (gdTrangThai == 0 && System.currentTimeMillis() - gdLuc > 15000) break; // khong ai nhan loi moi
         }
-        if (!doiDat || loai < 0) {
-            b.gui(66, (byte) 3);
-            b.bom(500);
-            return false;
-        }
-        b.gui(66, (byte) 2, (byte) 1, (byte) loai, (short) (1 + rd.nextInt(3)));
-        b.bom(800);
-        b.gui(66, (byte) 4);
-        b.bom(1500);
-        b.gui(66, (byte) 5);
-        b.bom(2000);
-        b.lamMoi();
-        ghi("giao dich xong (thuoc " + loai + ")");
-        return true;
+        boolean xong = gdXong > x0;
+        if (gdTrangThai != 0) { b.gui(66, (byte) 3); b.bom(300); }
+        gdDatLai();
+        return xong;
     }
 
     /**
@@ -681,10 +734,10 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         bb.ngheNhan = e -> {
             if (cu != null) cu.accept(e);
             try {
-                if (hop.size() > 30) return;
                 byte[] d = e.d;
+                if (e.cmd == 66 && d != null && d.length >= 1) { gdGoi(d); return; }
+                if (hop.size() > 30) return;
                 if (e.cmd == 49 && d != null && d.length >= 5 && d[0] == 0) hop.add(new Object[]{"to_doi", (int) (short) (((d[3] & 255) << 8) | (d[4] & 255)), ""});
-                else if (e.cmd == 66 && d != null && d.length >= 3 && d[0] == 0) hop.add(new Object[]{"giao_dich", (int) (short) (((d[1] & 255) << 8) | (d[2] & 255)), ""});
                 else if (e.cmd == -11 && d != null && d.length >= 3 && d[0] == 0) hop.add(new Object[]{"vao_doi", (int) (short) (((d[1] & 255) << 8) | (d[2] & 255)), ""});
                 else if (e.cmd == 101 && d != null && d.length >= 4 && d[0] == 0) {
                     DataInputStream r = new DataInputStream(new ByteArrayInputStream(d));
@@ -713,6 +766,10 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
 
     /** Xu ly hop xa hoi: dong y loi moi theo tinh cach, tra loi chat (tin rieng gan nhu luon tra loi). */
     void xuLyXaHoi() throws IOException {
+        if (gdTrangThai != 0 && !gdChuDong && System.currentTimeMillis() - gdLuc > 25000) { // doi phuong khong dat gi
+            b.gui(66, (byte) 3);
+            gdDatLai();
+        }
         Object[] s;
         int n = 0;
         while ((s = hop.poll()) != null && n++ < 8 && b != null && !b.dut) {
@@ -734,13 +791,6 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
                     break;
                 case "ket_ban":
                     if (DichVuHlvAi.bat("ban_be") && rd.nextInt(3) > 0) { b.gui(101, (short) id, (byte) 1); b.bom(400); DichVuHlvAi.dem("nhan_ket_ban", 1); }
-                    break;
-                case "giao_dich":
-                    if (DichVuHlvAi.bat("giao_dich") && b.lv >= 20 && rd.nextInt(3) > 0) {
-                        int m = b.moc();
-                        b.gui(66, (byte) 1, (short) id);
-                        if (b.cho(x -> KichBanBatThuong.giaoDich(x, m, 1), 5000)) DichVuHlvAi.dem("nhan_giao_dich", giaoDichPhien(m) ? 1 : 0);
-                    }
                     break;
                 case "tin_rieng": {
                     if (!DichVuHlvAi.bat("chat")) break;

@@ -349,7 +349,7 @@ public final class DichVuHlvAi {
     static boolean muaChoBot(HlvAiNguoiChoi p) throws Exception {
         for (Object[] o : CHO) {
             HlvAiNguoiChoi ban = (HlvAiNguoiChoi) o[0];
-            if (ban == p || ban.b == null || ban.b.dut || ban.b.mapId != 103 && !KichBanDS.laLang(ban.b.mapId)) continue;
+            if (ban == p || ban.b == null || ban.b.dut) continue; // nguoi ban phai online (may chu kiem)
             long gia = (Long) o[5];
             if (gia > KichBanCap140.NguoiChoi.gia((Integer) o[4]) * 13 / 10 + 200 || gia > p.b.xu) continue;
             CHO.remove(o);
