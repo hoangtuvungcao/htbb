@@ -60,7 +60,7 @@ export const NHOM_TT: { ma: string, ten: string, moTa: string, an?: boolean }[] 
   { ma: "quan_tri", ten: "Quản trị & thử nghiệm (cố định)", moTa: "Cờ GM cũ và khoá thử nghiệm (máy thật luôn mặc định).", an: true },
   { ma: "dat_ten_pet", ten: "Thẻ đặt tên Pokémon", moTa: "Giá bán (lượng), số lần mua / tuần và tỉ lệ các mức của dòng chỉ số ngẫu nhiên. Trần một dòng và trần tổng trang trí 5% là cố định. Bảng chỉ số trong data_dong_the_ten, từ cấm trong data_tu_cam_ten.", an: true },
   { ma: "loai", ten: "Loài Pokémon hoang dã", moTa: "Loài riêng từng con quái khi hồi sinh (6 bậc T1–T6, tỉ lệ gặp theo bậc), tải hình theo nhu cầu. Dữ liệu loài ở bảng data_loai* (sql/htbb.sql, khối them_loai_day_du.sql).", an: true },
-  { ma: "hlv_ai", ten: "Huấn luyện viên AI (bot)", moTa: "Bot lấp máy chủ chơi như người (tên có tiền tố, mặc định \"ai \"): số lượng, lịch online, tỉ lệ dòng / tính cách, cấp mục tiêu, bản đồ, hoạt động và luật chống lạm phát (hệ số thu nhập, trần xu / túi, giá bán tối thiểu, hạn mức chuyển cho người thật mỗi ngày). Trang riêng: /admin/hlv-ai." },
+  { ma: "hlv_ai", ten: "Huấn luyện viên AI (bot)", moTa: "Bot lấp máy chủ chơi như người (mặc định không tiền tố): số lượng, lịch online, tỉ lệ dòng / tính cách, cấp mục tiêu, bản đồ, hoạt động và luật chống lạm phát (hệ số thu nhập, trần xu / túi, giá bán tối thiểu, hạn mức chuyển cho người thật mỗi ngày). Trang riêng: /admin/hlv-ai." },
 ]
 
 export const DANH_MUC_TT: KhoaTT[] = [
