@@ -1345,8 +1345,11 @@ và hệ sinh thái **hút ròng** xu (hố hút ≈ 118% nguồn của chính n
     cao nhất của bản đồ, cấp mới cũng không vượt mức đó + 2.
   - HP, tấn công, thủ, EXP, xu lấy từ đường quái thường chuẩn ở cấp đó: nội suy `data_monster_lau_dai` và quái Hoenn
     139..174, nạp lúc khởi động. Không dùng chỉ số gốc cũ của loài. Bảng rơi theo cấp mới.
-  - Từ cấp 10 trở lên, +2 cấp nghĩa là tấn công ×1–1,15 và HP ×1–1,2. Chênh 2 cấp không kích luật chênh cấp ×2 (chỉ áp từ
-    5 cấp).
+  - Từ cấp 10 trở lên, +2 cấp nghĩa là tấn công ×1–1,15 và HP ×1–1,2.
+  - Luật chênh cấp khi quái đánh người (`LiveActor.attackDam`: cao hơn 5 cấp thì ×2 + 70 mỗi cấp) tính theo **cấp gốc** của ô
+    sinh (`HeSinhThaiGame.capChenh`), không theo cấp +2.
+  - Đo thật 31/10/2026, trước khi sửa: bùng phát ở Goldenrod đưa Breloom 52 lên 54. Người chơi cấp 49 (cấp mở cửa ải
+    CA-09.1) chênh 5 cấp, ăn đòn 2.000–3.200 thay vì ~1.000. Bot ghi nhãn quái là "Seviper" / "Golem" vì đọc theo hình.
   - Thay loài theo thời tiết / giờ thường giữ đúng cấp gốc.
 - **Bùng phát**: 4 khung / ngày (11h, 17h, 20h, 22h), mỗi khung 1 giờ, một cặp (tuyến, loài của tuyến); 40% số lần hồi sinh
   trên tuyến đó thành loài bùng phát; có thông báo đầu / cuối.
