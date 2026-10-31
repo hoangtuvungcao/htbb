@@ -640,7 +640,11 @@ public final class DungVatPham {
         if (t == 29 || it.isManhSuuTap()) {
             return ten + " dùng để ghép bộ sưu tập ở Thợ rèn bí ẩn.";
         }
-        if (it.isPet() || t == 26 || t == 27) {
+        if (it.isPet()) {
+            // pet dong hanh (PetDongHanh / trung no): dung o Nha tre - truoc ghi "NPC thu nuoi" khong ton tai (nguoi choi hoi 31/10/2026)
+            return ten + ": gửi ở Menu › Hệ sinh thái › Nhà trẻ và trứng › Gửi pet đang sở hữu.";
+        }
+        if (t == 26 || t == 27) {
             return ten + ": mang tới NPC thú nuôi để dùng.";
         }
         return ten + " là nguyên liệu / vật phẩm đổi thưởng, không dùng trực tiếp. Xem Sổ tay huấn luyện, mục Cửa hàng và đổi vật phẩm.";
