@@ -244,6 +244,31 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.25 (`BAN=925`, vá nóng: sổ nhiệm vụ J2ME trống khi chỉ có cửa ải, menu NPC dài lật "Thêm" nhảy cóc mục)
+
+Client `PHIEN_BAN=0.9.25-opentest` (`BAN = 0*10000 + 9*100 + 25`; `MIDlet-Version` 0.9.25) trên main 187f1772 - bản vá
+nóng của 0.9.24, chỉ đổi client (không đổi giao thức, chạy với mọi máy chủ 0.9.15+). `htbb-server.jar` không build lại
+khi phát hành.
+
+1. **Sổ nhiệm vụ J2ME trống khi chỉ có cửa ải** (edec85f8, cherry-pick ca464a44): client chỉ nạp mẫu quái của bản đồ đang
+   đứng; cửa ải có quái mục tiêu ở bản đồ khác (vd "60 Golem ở Goldenrod" - `Res.monsterTemplates[74]` null) làm
+   `Quest.getInfoPaintScr` ném NPE (bị nuốt) -> tab Nhiệm vụ cũ vẽ "Chưa nhận nhiệm vụ"; nhiệm vụ nói chuyện / bước Gym
+   cũng bị ẩn như vậy. Có từ 0.9.15. Nay mô tả không bao giờ rỗng khi đang làm / đã xong (thiếu mẫu quái / vật phẩm thì
+   dùng câu mục tiêu máy chủ); máy có chạm: Menu › Nhiệm vụ › Sổ nhiệm vụ mở `ManNhiemVu` (cùng sổ với thẻ HUD), máy phím
+   giữ tab cũ nhưng tự xuống dòng; thanh tiến độ chi tiết vẫn vẽ khi thiếu mẫu; hàng tiền cửa sổ cũ (J2ME phím) không
+   chui dưới góc khung.
+2. **Menu NPC dài lật "Thêm" nhảy cóc mục** (187f1772, cherry-pick 91e84018): `MenuNguCanh` chọn lại số nút / trang mỗi
+   khung theo chữ của trang đang xem nhưng nhớ SỐ TRANG -> trang 2 tính với cỡ trang khác trang 1, bỏ qua mục (Machamp 12
+   lệnh: APK 1080x1920 mất "Khóa đồ thú / Khóa trang bị / Sửa đồ / Đục lỗ", J2ME 240x320 / 320x240 mất 1-2 lệnh, menu 20
+   lệnh mất tới 9 - "Chế tạo & khảm ngọc" không tới được). Nay nhớ chỉ số lệnh đầu trang: "Thêm" (chạm / phím) đi tiếp
+   ngay sau lệnh cuối vừa thấy, hết danh sách về đầu.
+
+Kiểm (bản PC phát hành, main 187f1772): KiemPc 257/0, KiemCapNhat 509/0, KiemBanDoVung 448/0 (+ J2ME 448/0),
+KiemTrungLap 252/0, KiemDiemNhiemVu 51/0, KiemTaoNhanVat 5094/0, KiemChamHud 5712/0, KiemThuatNgu 19/0; ChupTrongGame
+J2ME 240x320, 320x240, 400x240, 360x640, 640x360 (64192/0) + apk1080x1920d3 / apk720x1600d2 (68765/0); `menu_npc_dai*` +
+`so_nhiem_vu_cua_ai*` ở mọi cỡ HD / APK (13477/0), J2ME chạm (1770/0) và J2ME phím `-Dhtbb.khongCham=true` (1646/0).
+KiemSoNhiemVuThat không chạy ở máy build (cần máy chủ game đang chạy - chạy ở cổng staging).
+
 ### Bản 0.9.24 (`BAN=924`: J2ME hết NPE mỗi khung khi bảng mẫu quái gửi lại, lò rèn Machamp làm lại, Tiện ích & PK chạm được, ô đăng nhập 44dp, 14 màn cũ kiểu chung có vùng chạm)
 
 Client `PHIEN_BAN=0.9.24-opentest` (`BAN = 0*10000 + 9*100 + 24`; `MIDlet-Version` 0.9.24) trên main 689b76a9, chạy với
