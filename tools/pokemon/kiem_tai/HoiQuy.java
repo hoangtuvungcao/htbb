@@ -80,7 +80,12 @@ public final class HoiQuy {
     // ================================================================== tai khoan that
     static final String MAT_KHAU = "123456";
     static final String CHU = "bghkqrvwxz"; // khong nguyen am: khong ghep thanh tu cam / ten quan tri
-    static int demTk = (int) (System.currentTimeMillis() / 1000 % 100000);
+    /**
+     * -DhqLech=k (chay_hoi_quy.sh dat theo lan song song): bo dem ten bat dau o k*200000 + (giay % 100000) - hai JVM
+     * HoiQuy chay CUNG LUC (hai lan) khong bao gio sinh trung ten tai khoan / ma may / giftcode (truoc: chi theo gio bat dau,
+     * hai JVM bat dau cach vai giay se trung ten sau vai lan dang ky).
+     */
+    static int demTk = (int) (System.currentTimeMillis() / 1000 % 100000) + 200000 * Integer.getInteger("hqLech", 0);
     static final Map<String, Integer> CHAR_DB = new ConcurrentHashMap<>();
 
     static synchronized String tenMoi(String tienTo) {
@@ -418,9 +423,12 @@ public final class HoiQuy {
         // goi kieu BotChucNang (hoi_quy.conf kieu cn): <host> <cong> <tien to> [kich ban ...]; tien to chi de tuong thich
         int dau = 2;
         if (a.length > 2 && !KB.containsKey(a[2]) && !a[2].equals("all") && !a[2].equals("nhanh") && !a[2].equals("hon_loan")) dau = 3;
-        for (int i = dau; i < a.length; i++) chon.add(a[i]);
+        // "bo:<kich ban>" = bo kich ban do khoi all / nhanh (hoi_quy.conf tach kich ban doi cau hinh toan may chu ra nhom @rieng)
+        List<String> boKb = new ArrayList<>();
+        for (int i = dau; i < a.length; i++) { if (a[i].startsWith("bo:")) boKb.add(a[i].substring(3)); else chon.add(a[i]); }
         if (chon.isEmpty() || chon.contains("all")) chon = new ArrayList<>(KB.keySet());
         else if (chon.contains("nhanh")) { chon = new ArrayList<>(KB.keySet()); chon.removeAll(CHAM); }
+        for (String t : boKb) if (!chon.remove(t)) { System.out.println("[LOI] bo:" + t + " - khong co kich ban nay"); System.exit(2); }
         long bd = System.currentTimeMillis();
         int honLoan = Integer.getInteger("honloan", 3);
         try {

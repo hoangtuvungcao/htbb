@@ -179,6 +179,11 @@ bash "$DIR_SCRIPT/sinh-server-ini.sh"
     echo "nguon=$NGUON"
 } > "$STG_GOC/ung_vien.txt"
 sed 's/^/   /' "$STG_GOC/ung_vien.txt"
+# Dong ho ao (GM "tua", com.htbb.pokemon.DongHo) ghi do lech vao dong_ho_thu.txt o thu muc chay va GIU qua khoi dong lai:
+# lan cong kiem truoc tua toi thu Hai (pho_ban_cup / tn_ngay_moi) -> lan sau may chu khoi dong voi gio ao lech nhieu ngay,
+# ghi cau_hinh.sua_luc o tuong lai -> MAX(sua_luc) khong doi khi bot sua cau_hinh bang NOW() -> CauHinhTrungTam khong nap
+# lai (thu tren may dev 31/10/2026: dk_ip.cung_may_dung_han_muc hong vi lech 9 ngay). CSDL da nap moi -> dong ho cung ve 0.
+rm -f "$STG_GOC/server/dong_ho_thu.txt"
 
 buoc "8/8 Bat staging"
 if [ "$BAT" = 0 ]; then

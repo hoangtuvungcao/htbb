@@ -41,10 +41,23 @@ SYSTEMCTL=${SYSTEMCTL:-systemctl}
 #   STG_DB_MAXCO / STG_DB_MAXNAP   pool staging (sinh-server-ini.sh ghi de; vai chuc bot la du)
 #   STG_DB_MAX_USER_CONN           tran CUNG cua MariaDB cho user staging (MAX_USER_CONNECTIONS, gom ca bot + login)
 #   STG_DB_DU_TRU                  cong kiem DUNG neu Threads_connected >= max_connections - so nay (de cho production)
-STG_DB_MAXCO=${STG_DB_MAXCO:-12}
+# 31/10/2026: 12 -> 16. Cong kiem chay 4 lan bot song song (STG_BOT_LAN) ~ gap 4 lan so nguoi choi cung luc: pool 12
+# can (thu tren may dev: data.ConnPool.getConFromPool NoSuchElementException - kiem size() ngoai khoa roi removeFirst,
+# pool can thi initPool mo them toi maxco ket noi). Xau nhat: 16 + 2x3 + 1 = 23 mo san, +16 khi initPool = 39, + login
+# + 4 bot <= 48 (MAX_USER_CONNECTIONS). Loi dua (race) cua ConnPool la loi that cua may chu, can sua rieng.
+STG_DB_MAXCO=${STG_DB_MAXCO:-16}
 STG_DB_MAXNAP=${STG_DB_MAXNAP:-3}
 STG_DB_MAX_USER_CONN=${STG_DB_MAX_USER_CONN:-48}
 STG_DB_DU_TRU=${STG_DB_DU_TRU:-60}
+# Bot cong kiem chay SONG SONG theo lan (tools/pokemon/kiem_tai/hoi_quy.conf, dong @lan): moi lan = MOT JVM bot cung luc =
+# MOT ket noi JDBC (BotChucNang.sql dung chung mot ket noi / JVM). Ngan sach user staging (STG_DB_MAX_USER_CONN 48):
+# pool game mo san maxco 16 + 2 x maxNap 3 + maxco1 1 = 23, login vai ket noi, bot <= STG_BOT_LAN (4) -> ~29 < 48; tong
+# MariaDB chi tang toi da (STG_BOT_LAN - 1) so voi chay tuan tu, canh gac STG_DB_DU_TRU giu nguyen.
+#   STG_BOT_LAN   so lan chay cung luc toi da (1 = tung lan mot, van chia tai khoan)
+#   STG_BOT_JAVA  tuy chon JVM moi bot: VPS 4 GB (production + MariaDB + staging 1.2 GB) - JVM mac dinh lay toi 1/4 RAM
+#                 cho MOI bot; nhieu bot cung luc phai co tran heap.
+STG_BOT_LAN=${STG_BOT_LAN:-4}
+STG_BOT_JAVA=${STG_BOT_JAVA:--Xmx384m -XX:+UseSerialGC}
 
 # Lenh mysql: mac dinh root qua unix_socket (Ubuntu). May dev: MYSQL="mysql -S /duong/sock -uroot".
 if [ -n "${MYSQL:-}" ]; then
