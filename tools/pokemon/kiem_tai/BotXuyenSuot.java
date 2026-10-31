@@ -980,9 +980,9 @@ public class BotXuyenSuot {
          */
         void boChanKhiMoBanDo() {
             int moc = b.moc();
-            if (mocMoBanDo < moc && b.doiChu(mocMoBanDo, 0, "mở bản đồ mới") != null && !MAP_CHAN.isEmpty()) {
-                ghi("bo chan ban do " + MAP_CHAN.keySet() + ": may chu bao mo ban do moi");
-                MAP_CHAN.clear();
+            if (mocMoBanDo < moc && b.doiChu(mocMoBanDo, 0, "mở bản đồ mới") != null && !mapChan().isEmpty()) {
+                ghi("bo chan ban do " + mapChan().keySet() + ": may chu bao mo ban do moi");
+                mapChan().clear();
             }
             mocMoBanDo = moc;
         }
@@ -992,11 +992,11 @@ public class BotXuyenSuot {
             int tot = mapLuyen0();
             // het cho luyen ma con ban do bi chan (vd mo khoa qua duong khac khong co thong bao): thu lai mot lan khong chan,
             // toi da 3 lan / dong va cach nhau >= 2 phut (ban do van khoa thi toi() chan lai, khong vong lap)
-            if (tot < 0 && !MAP_CHAN.isEmpty() && lanBoChan < 3 && System.currentTimeMillis() - lucBoChan > 120000L) {
+            if (tot < 0 && !mapChan().isEmpty() && lanBoChan < 3 && System.currentTimeMillis() - lucBoChan > 120000L) {
                 lanBoChan++;
                 lucBoChan = System.currentTimeMillis();
-                ghi("khong co map luyen cap " + b.lv + " ngoai ban do bi chan " + MAP_CHAN.keySet() + " -> thu lai");
-                MAP_CHAN.clear();
+                ghi("khong co map luyen cap " + b.lv + " ngoai ban do bi chan " + mapChan().keySet() + " -> thu lai");
+                mapChan().clear();
                 tot = mapLuyen0();
             }
             return tot;
