@@ -187,6 +187,16 @@ final class KichBanCap140 {
         return tot;
     }
 
+    /** Co ban do nao ten {@code ten} (khong phan biet hoa thuong) dat NPC loai {@code npc} khong. */
+    static boolean coNpcOTen(String ten, int npc) {
+        String t = ten.trim();
+        for (Map.Entry<Integer, String> e : HoiQuy.TEN_MAP.entrySet()) {
+            if (e.getValue() == null || !e.getValue().trim().equalsIgnoreCase(t)) continue;
+            if (KichBanHuongDan.oNpc(e.getKey(), npc) != null) return true;
+        }
+        return false;
+    }
+
     /** Mau quai theo ten, uu tien loai sinh o ban do nap {@code load}. */
     static int quaiTheoTen(String ten, int load) {
         int bat = -1;
@@ -544,7 +554,9 @@ final class KichBanCap140 {
                         int s = quaArc ? 1000 : quaLang ? 2000 + BotXuyenSuot.duong(0, mid).size() : d == null ? Integer.MAX_VALUE : d.size() - (KichBanDS.laLang(mid) ? 1 : 0);
                         if (s < ds) { ds = s; dich = mid; }
                     }
-                    if (tenBd != null && dich >= 0) chuNv("NPC loai " + npc + " ghi '" + tra + "' nhung khong co o ban do '" + tenBd + "' (co o " + HoiQuy.TEN_MAP.get(BotXuyenSuot.LOAD.get(dich)) + ")");
+                    // chi bao loi chu khi KHONG ban do nao mang ten do co NPC nay (khong di bo toi duoc tu cho dang dung
+                    // hay co nhieu ban do trung ten khong phai loi chu nhiem vu)
+                    if (tenBd != null && dich >= 0 && !coNpcOTen(tenBd, npc)) chuNv("NPC loai " + npc + " ghi '" + tra + "' nhung khong co o ban do '" + tenBd + "' (co o " + HoiQuy.TEN_MAP.get(BotXuyenSuot.LOAD.get(dich)) + ")");
                 }
                 if (dich < 0) return "khong ban do nao co NPC loai " + npc;
                 if (!toi(dich)) return "khong di toi ban do " + dich + " co NPC " + npc;
