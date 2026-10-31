@@ -336,6 +336,7 @@ public final class Kiem {
         KiemCanBangCap.chay(); // can bang cap 15-45: duong quai / gia do cua hang, #29 luon lam duoc, EXP thang Gym theo cap
         KiemPetDongHanh.chay(); // chu game 30/10/2026 "có": pet dong hanh mien phi 1 lan + mua bang xu (Nha tre dung duoc)
         KiemCanBangDong.chay(); // chu game 31/10/2026: chi so 5 dong theo bang thiet ke, hoi HP ngoai tran, sua do theo do ben mat, vu khi hong 30%
+        KiemTtkQuai.chay(); // chu game 31/10/2026 "fix" TTK: mo hinh TTK do cua hang +0/+6/+10 moi dong cap 10..100, Gym, tinh anh, khac he
         KiemQuaiNam2.chay(); // cong kiem bot 31/10/2026: quai nam 2 chi lech cap goc <= 2 (Mahogany 84 moc Wailord / Banette 91-92)
         KiemMuaDungNpc.chay(); // bot phu kin 31/10/2026: goi 24 chi mua mon cua NPC dang dung canh (giap Indigo khong mua o Pewter)
         KiemChanKhiGuc.chay(); // chu game 31/10/2026: dang guc khong dung NPC / di chuyen bang NPC / mua ban / giao dich / qua cong
