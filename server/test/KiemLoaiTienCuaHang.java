@@ -98,6 +98,10 @@ public final class KiemLoaiTienCuaHang {
                 && DayDu.doc("src/real/cmd/RequestNPCInfoHandler.java").contains("for (int i = 214; i <= 263; ++i) {"));
         Kiem.dung("Shop Dac Biet VIP van ban", !DayDu.doc("src/real/Map.java").contains("shopVipNgungBan")
                 && !DayDu.doc("src/real/MapDoMenu.java").contains("shopVipNgungBan"));
+        Kiem.dung("Persian: Da tach 5x-7x mua bang luong -> KHONG khoa",
+                offline.contains("if (id != 175 && id != 176 && id != 177 || g.typeMoney == 1) {"));
+        Kiem.dung("thiet-ke 9.5: bo muc tieu 'chenh suc manh <= 5%', xu / cay van la duong tien chinh",
+                DayDu.doc("../docs/thiet-ke-game.md").contains("xu / cày quái vẫn là đường tiến chính"));
         Kiem.dung("goi 25 gui sell goc cua ngoc", DayDu.doc("src/real/MessageCreator.java").contains("m.dos.writeByte(Map.gemTemplate[l].sell);"));
 
         // luong khoa truoc, thieu thi luong cung gia, thieu ca hai thi khong tru

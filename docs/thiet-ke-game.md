@@ -1833,8 +1833,9 @@ bản đồ / sự kiện đó nếu đỏ.
 - **Nạp tiền** (tắt mặc định, `sv.nap_tien` + cấu hình web): bán gói lượng, Thẻ tháng, Vé mùa cao cấp, Thành viên. Chủ game
   31/10/2026 đổi luật: lượng nạp là tiền **tốt nhất** - mua được mọi thứ lượng khoá mua được (đồ không khoá) và đồ đẹp / chỉ
   số cao cấp đang bán bằng lượng (trang bị thuê NPC 24, nguyên liệu cấp 4-5 Persian, Shop đặc biệt VIP, thú cưỡi và nâng cấp
-  thú cưỡi, ảo hoá Hỏa Kỳ Lân). Cổng nạp không bán trực tiếp tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Mục tiêu mô phỏng: người nạp chênh sức mạnh cùng giờ chơi
-  ≤ 5%. Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
+  thú cưỡi, ảo hoá Hỏa Kỳ Lân). Cổng nạp không bán trực tiếp tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Lượng nạp **được phép** mua đồ mạnh hơn (đồ chỉ số cao
+  cấp, nâng cấp thú cưỡi...), đồ mua bằng lượng không khoá; còn **xu / cày quái vẫn là đường tiến chính** (nâng cấp +1..+15,
+  ngọc hệ, đồ theo bậc chỉ bằng xu + đá). Bỏ mục tiêu cũ "người nạp chênh sức mạnh cùng giờ chơi ≤ 5%" (31/10/2026). Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
 
 ---
 
