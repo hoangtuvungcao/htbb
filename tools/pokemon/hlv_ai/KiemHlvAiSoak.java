@@ -101,7 +101,16 @@ final class KiemHlvAiSoak {
             if (l == null) l = gm.vaoGame(0);
             if (l != null) throw new IllegalStateException("GM kt040: " + l);
         }
-        gm.gm(lenh, 1200);
+        try {
+            gm.gm(lenh, 1200);
+        } catch (java.net.SocketException e) { // GM im lang > 180 s bi may chu ngat (nua mo): vao lai, gui lai mot lan
+            gm.close();
+            gm = new BotChucNang.Bot("kt040");
+            String l = gm.dangNhap("123456");
+            if (l == null) l = gm.vaoGame(0);
+            if (l != null) throw new IllegalStateException("GM kt040: " + l);
+            gm.gm(lenh, 1200);
+        }
         GHI_CHU.add(new SimpleDateFormat("HH:mm").format(new Date()) + " GM: " + lenh);
     }
 
@@ -405,6 +414,17 @@ final class KiemHlvAiSoak {
             b.gui(-11, (byte) 0, (short) bot.b.actor);
             b.bom(1500);
             khaiThac("moi_doi", 0, false);
+            // quy doi: bot (vua vao doi cua nguoi that) gop 8000 xu > han muc 5000/nguoi/ngay -> may chu phai chan (gop_quy)
+            String truoc = BotChucNang.sql1("SELECT CONCAT(COUNT(*),'/',IFNULL(SUM(bi_chan),0),'/',IFNULL(SUM(IF(bi_chan=0,gia_tri,0)),0)) FROM tob_hlv_ai_chuyen WHERE kieu='gop_quy'");
+            bot.yeuCauGopQuy = 8000;
+            cho(12000);
+            String sau = BotChucNang.sql1("SELECT CONCAT(COUNT(*),'/',IFNULL(SUM(bi_chan),0),'/',IFNULL(SUM(IF(bi_chan=0,gia_tri,0)),0)) FROM tob_hlv_ai_chuyen WHERE kieu='gop_quy'");
+            String[] t0 = (truoc == null ? "0/0/0" : truoc.trim()).split("/"), t1 = (sau == null ? "0/0/0" : sau.trim()).split("/");
+            long lan = Long.parseLong(t1[0]) - Long.parseLong(t0[0]);
+            long chan = Long.parseLong(t1[1].split("\\.")[0]) - Long.parseLong(t0[1].split("\\.")[0]);
+            long qua = Long.parseLong(t1[2].split("\\.")[0]) - Long.parseLong(t0[2].split("\\.")[0]);
+            if (lan == 0) khaiThac("gop_quy_doi_nguoi.khong_ghi", 0, false);
+            else khaiThac("gop_quy_doi_nguoi", Math.max(0, qua - 5000), chan > 0);
         }
 
         boolean chuDoi;

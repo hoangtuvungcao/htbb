@@ -244,6 +244,8 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
             }
             if (b.mapId == 205) sanDau(-1);
             xuLyXaHoi();
+            int gq = yeuCauGopQuy;
+            if (gq > 0) { yeuCauGopQuy = 0; gopQuy(gq); }
             b.bom(3000);
             b.lamMoi();
             return;
@@ -966,11 +968,7 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         }
         if (coDoi && b.lv >= 50 && System.currentTimeMillis() - lanGopQuy > 20 * 3600000L / Math.max(1, (long) DichVuHlvAi.TANG_TOC) && b.xu > 20000) {
             lanGopQuy = System.currentTimeMillis();
-            int m = b.moc();
-            b.gui(-20, 1000 + rd.nextInt(4) * 1000);
-            b.cho(x -> x.layLenh(m, -32) != null, 3000);
-            BotChucNang.SuKien pp = b.layLenh(m, -32);
-            if (pp != null) { b.gui(-32, (short) pp.so[0], (byte) pp.so[1], "", (byte) 0); b.bom(1000); DichVuHlvAi.dem("gop_quy", 1); }
+            gopQuy(1000 + rd.nextInt(4) * 1000);
         }
         if (coDoi) {
             String c = HlvAiChat.chon(HlvAiChat.XA_HOI, rd, b.lv, b.tenMap, 0);
@@ -981,6 +979,21 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
     }
 
     boolean chuDoi;
+    /** Kiem khai thac: bot dung yen gop quy doi (doi cua nguoi that vua moi) so xu nay; 0 = khong. */
+    volatile int yeuCauGopQuy;
+
+    /** Gop quy doi dang o (goi -20 + xac nhan popup -32), nhu nguoi choi. */
+    boolean gopQuy(int xu) throws IOException {
+        int m = b.moc();
+        b.gui(-20, xu);
+        b.cho(x -> x.layLenh(m, -32) != null, 3000);
+        BotChucNang.SuKien pp = b.layLenh(m, -32);
+        if (pp == null) return false;
+        b.gui(-32, (short) pp.so[0], (byte) pp.so[1], "", (byte) 0);
+        b.bom(1000);
+        DichVuHlvAi.dem("gop_quy", 1);
+        return true;
+    }
 
     // ================================================================== hoc chieu
     static final int[][] ID_SKILL = {{6, 7, 8}, {6, 7, 8}, {8, 9, 10}, {6, 7, 8}, {6, 7, 8}};
