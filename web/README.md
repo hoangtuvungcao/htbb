@@ -24,6 +24,7 @@ Chép `.env.example` thành `.env` (dev); trên VPS là `/etc/htbb/htbb.env` (d�
 | `HTBB_LINK_ANDROID`, `HTBB_LINK_PC`, `HTBB_LINK_JAR`, `HTBB_LINK_IOS`, `HTBB_LINK_GROUP` | Link dự phòng khi CMS để trống |
 | `HTBB_NAP_BAT` + `HTBB_NAP_*`, `HTBB_SEPAY_*`, `HTBB_CASSO_*` | Nạp tiền — mặc định **tắt** |
 | `HTBB_GMAIL_*`, `HTBB_MAIL_FROM_NAME` | Gửi email (Gmail API); lấy refresh token: `node scripts/lay-gmail-refresh-token.mjs` |
+| `HTBB_SMTP_USER`, `HTBB_SMTP_PASS` (+ `HTBB_SMTP_HOST/PORT/FROM`) | Gửi email qua Gmail SMTP + mật khẩu ứng dụng — dùng khi `HTBB_GMAIL_*` chưa đủ (docs/van-hanh.md mục 11.1) |
 | `HTBB_UPLOAD_DIR` | Thư mục ảnh/tệp tải lên (mặc định `./uploads`) |
 | `HTBB_DIR`, `HTBB_WEB_SRC_DIR` | Đường dẫn monorepo cho script tài nguyên (`npm run sinh-anim-khoi-dau`) |
 

@@ -10,6 +10,7 @@
  */
 import { kiemCauHinhNapThat } from './napTienThuan'
 import { quyetDinhCheDoNap } from './napDemoThuan'
+import { chuanHoaMatKhauUngDung } from './mailThuan'
 import { readFileSync, statSync, accessSync, constants } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { createHash, randomBytes } from 'node:crypto'
@@ -200,8 +201,8 @@ export interface HtbbConfig {
     ipChoPhep: string
   }
   /**
-   * Gửi email qua Gmail API (OAuth2 refresh token) — dùng cho Quên mật khẩu và
-   * thông báo đổi mật khẩu. Thiếu một trong bốn giá trị đầu = chưa bật gửi mail.
+   * Gửi email qua Gmail API (OAuth2 refresh token) hoặc SMTP + mật khẩu ứng dụng — dùng cho Quên
+   * mật khẩu và thông báo đổi mật khẩu/email. Không đủ đường nào = chưa bật gửi mail.
    * Cách lấy: scripts/lay-gmail-refresh-token.mjs, docs/van-hanh.md.
    */
   mail: {
@@ -210,6 +211,17 @@ export interface HtbbConfig {
     gmailRefreshToken: string
     /** Địa chỉ Gmail gửi đi (chính tài khoản đã cấp quyền). */
     gmailSender: string
+    /**
+     * Đường dự phòng: SMTP + mật khẩu ứng dụng Gmail (HTBB_SMTP_USER + HTBB_SMTP_PASS). Chỉ dùng khi bốn
+     * biến HTBB_GMAIL_* chưa đủ. Mật khẩu đã bỏ mọi khoảng trắng (Google hiện theo nhóm 4 ký tự).
+     */
+    smtpUser: string
+    smtpPass: string
+    /** Mặc định smtp.gmail.com : 465 (TLS ngay). Cổng khác = STARTTLS bắt buộc. */
+    smtpHost: string
+    smtpPort: number
+    /** Địa chỉ "From" khi gửi SMTP: HTBB_SMTP_FROM, rồi HTBB_GMAIL_SENDER, rồi HTBB_SMTP_USER. */
+    smtpFrom: string
     /** Tên hiển thị ở ô "Người gửi". */
     fromName: string
   }
@@ -345,6 +357,15 @@ export function useHtbbConfig(): HtbbConfig {
       gmailClientSecret: (env('HTBB_GMAIL_CLIENT_SECRET') ?? '').trim(),
       gmailRefreshToken: (env('HTBB_GMAIL_REFRESH_TOKEN') ?? '').trim(),
       gmailSender: (env('HTBB_GMAIL_SENDER') ?? '').trim(),
+      smtpUser: (env('HTBB_SMTP_USER') ?? '').trim(),
+      smtpPass: chuanHoaMatKhauUngDung(env('HTBB_SMTP_PASS') ?? ''),
+      smtpHost: (env('HTBB_SMTP_HOST') ?? '').trim() || 'smtp.gmail.com',
+      smtpPort: (() => {
+        const p = envInt('HTBB_SMTP_PORT', 465)
+        return p > 0 && p < 65536 ? p : 465
+      })(),
+      smtpFrom: (env('HTBB_SMTP_FROM') ?? '').trim() || (env('HTBB_GMAIL_SENDER') ?? '').trim()
+        || (env('HTBB_SMTP_USER') ?? '').trim(),
       fromName: env('HTBB_MAIL_FROM_NAME') || TEN_SITE,
     },
     secret,
