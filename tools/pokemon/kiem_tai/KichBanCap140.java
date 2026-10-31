@@ -795,6 +795,7 @@ final class KichBanCap140 {
 
         @Override
         int mapLuyen() {
+            boChanKhiMoBanDo();
             if (capMapKhoa != b.lv) { mapKhoa.clear(); capMapKhoa = b.lv; }
             int tot = -1, diem = Integer.MAX_VALUE;
             for (int mid : BotXuyenSuot.MAP_THU) {
