@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Bot / Huấn luyện viên AI: bot lấp máy chủ chơi như người (tên hiện tiền tố hlv_ai.tien_to_ten + tên, mặc định "ai "). Trang này chỉnh nhóm cấu hình hlv_ai
+ * Bot / Huấn luyện viên AI: bot lấp máy chủ chơi như người (tên mặc định không tiền tố; có thể đặt hlv_ai.tien_to_ten). Trang này chỉnh nhóm cấu hình hlv_ai
  * (lưu qua /api/admin/cau-hinh-he-thong/luu - có lịch sử, hoàn tác ở trang Cấu hình hệ thống), xem bot đang online và
  * kinh tế của bot (máy chủ game ghi: tob_hlv_ai_kinh_te_ngay / tob_hlv_ai_moc / tob_hlv_ai_chuyen).
  */
@@ -31,7 +31,7 @@ const dangSua = ref(false)
 const f = reactive({
   bat: false, soLuong: 30, lich: Array.from({ length: 24 }, () => 50), lop: [20, 20, 20, 20, 20], tinhCach: [30, 15, 15, 20, 20],
   capThap: 10, capCao: 60, banDo: '', viec: [] as string[],
-  heSo: 60, tranXu: 300000, tranTui: 60, giaBan: 100, chuyenNguoi: 50000, chuyenTong: 500000, doiBot: 3, tienTo: 'ai ',
+  heSo: 60, tranXu: 300000, tranTui: 60, giaBan: 100, chuyenNguoi: 50000, chuyenTong: 500000, doiBot: 3, tienTo: '',
 })
 const lyDo = ref('')
 const dangLuu = ref(false)
@@ -55,7 +55,7 @@ function napForm() {
   f.heSo = so(g('hlv_ai.he_so_thu_nhap'), 60)
   f.tranXu = so(g('hlv_ai.tran_xu'), 300000)
   f.doiBot = so(g('hlv_ai.doi_bot_toi_da'), 3)
-  f.tienTo = g('hlv_ai.tien_to_ten') ?? 'ai '
+  f.tienTo = g('hlv_ai.tien_to_ten') ?? ''
   f.tranTui = so(g('hlv_ai.tran_vat_pham'), 60)
   f.giaBan = so(g('hlv_ai.gia_ban_toi_thieu'), 100)
   f.chuyenNguoi = so(g('hlv_ai.chuyen_moi_nguoi_ngay'), 50000)
@@ -147,8 +147,8 @@ const gioHienTai = new Date().getHours()
       title="CSDL chưa có bảng tob_hlv_ai_* - chạy nâng cấp CSDL (vps/nang_cap_csdl.sh, khối them_hlv_ai.sql)." />
 
     <p class="mb-4 text-sm text-muted">
-      Bot chơi qua giao thức thật như người chơi (tiến trình riêng <code>htbb-hlv-ai</code> trên VPS, không tự bật), tên luôn có
-      tiền tố <b>"{{ chuanTienToHlvAi(f.tienTo) }}"</b> (đổi ở ô <i>Tiền tố tên bot</i> bên dưới). Bot không nạp, không mua gói, không chuyển / nhận lượng, không nhập giftcode. Máy chủ giữ lạm phát bằng hệ số
+      Bot chơi qua giao thức thật như người chơi (tiến trình riêng <code>htbb-hlv-ai</code> trên VPS, không tự bật), tên bot
+      hiển thị như người chơi bình thường (không cần tiền tố bot/ai; hoặc tuỳ chỉnh tiền tố ở ô <i>Tiền tố tên bot</i> bên dưới nếu muốn). Bot không nạp, không mua gói, không chuyển / nhận lượng, không nhập giftcode. Máy chủ giữ lạm phát bằng hệ số
       thu nhập, trần xu / túi, giá rao tối thiểu và hạn mức bot → người thật mỗi ngày.
     </p>
 
@@ -244,8 +244,8 @@ const gioHienTai = new Date().getHours()
             <UFormField v-for="(t, i) in Object.values(TINH_CACH)" :key="t" :label="t"><UInput v-model.number="f.tinhCach[i]" type="number" :min="0" :max="100" size="sm" /></UFormField>
           </div>
           <h3 class="pt-2 font-semibold">Tên bot</h3>
-          <UFormField label="Tiền tố tên bot (1–12 ký tự, phải có AI hoặc BOT; được dính liền tên)" :error="loiTienTo ?? undefined">
-            <UInput v-model="f.tienTo" :maxlength="12" class="w-48" placeholder="ai " />
+          <UFormField label="Tiền tố tên bot (để trống = tên như người thật; tối đa 12 ký tự, không dùng dấu :)" :error="loiTienTo ?? undefined">
+            <UInput v-model="f.tienTo" :maxlength="12" class="w-48" placeholder="để trống = không tiền tố" />
           </UFormField>
           <p class="text-sm">Xem trước: <span v-for="t in xemTruoc" :key="t" class="mr-3 rounded bg-elevated px-2 py-0.5 font-mono">{{ t }}</span></p>
           <h3 class="pt-2 font-semibold">Cấp mục tiêu và bản đồ</h3>

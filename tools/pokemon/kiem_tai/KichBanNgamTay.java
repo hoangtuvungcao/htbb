@@ -431,16 +431,22 @@ public final class KichBanNgamTay {
         b.den(MAP, best[0] / 16 - 2, best[1] / 16);
         b.bom(1200);
         int[] q = b.quai.get(bid);
-        int m = b.moc();
-        short[] h = huong(new int[]{b.px, b.py}, new int[]{q[0], q[1]}, false);
         b.gui(-113, (byte) 1, (byte) 1);   // bat Ngam thu cong (thong ke)
-        b.gui(-113, (byte) 0, (byte) 0, (short) b.px, (short) b.py, h[0], h[1]);
-        b.bom(1500);
         boolean trung = false;
-        for (int i = m; i < b.su.size(); i++) {
-            BotChucNang.SuKien e = b.su.get(i);
-            // goi danh quai (9) / quai guc (90) / EXP (30): cung phan hoi nhu duong khoa muc tieu cu (lenh 9)
-            if ((e.cmd == 9 || e.cmd == 106 || e.cmd == 90 || e.cmd == 30) && e.d != null) trung = true;
+        // quai tu di lai: ngam lai vi tri moi nhat truoc moi phat, toi da 3 phat nhu nguoi choi (cong kiem 31/10 trat 1 lan do
+        // quai da di 64 px giua luc doc vi tri va luc ban)
+        for (int phat = 0; phat < 3 && !trung; phat++) {
+            int[] qm = b.quai.get(bid);
+            if (qm != null) q = qm;
+            int m = b.moc();
+            short[] h = huong(new int[]{b.px, b.py}, new int[]{q[0], q[1]}, false);
+            b.gui(-113, (byte) 0, (byte) 0, (short) b.px, (short) b.py, h[0], h[1]);
+            b.bom(1500);
+            for (int i = m; i < b.su.size(); i++) {
+                BotChucNang.SuKien e = b.su.get(i);
+                // goi danh quai (9) / quai guc (90) / EXP (30): cung phan hoi nhu duong khoa muc tieu cu (lenh 9)
+                if ((e.cmd == 9 || e.cmd == 106 || e.cmd == 90 || e.cmd == 30) && e.d != null) trung = true;
+            }
         }
         if (Boolean.getBoolean("nt.doiChieu")) {   // doi chieu: duong khoa muc tieu cu (lenh 9) co danh duoc quai nay khong
             b.bom(2500);

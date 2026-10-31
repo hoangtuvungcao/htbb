@@ -944,8 +944,8 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 Bot chơi như người chơi thật để máy chủ ít người vẫn có đối thủ và bạn đồng hành (chủ game duyệt 31/10/2026). Mỗi bot là
 một tài khoản thường (cột `account.team_user.la_bot = 1`, không gửi xuống client), đăng nhập qua giao thức thật như một
 client (bộ bot `tools/pokemon/kiem_tai` + `tools/pokemon/hlv_ai`), không GM, không lệnh đặc biệt: máy chủ áp mọi luật như
-người chơi (chống spam, khoá bản đồ, chống clone, cấp mở tính năng…). Tên bot luôn có **tiền tố** (khoá `hlv_ai.tien_to_ten`, mặc định `ai ` → `ai minhanh`) ở mọi chỗ người
-chơi thấy tên (trên đầu, chat, tổ đội, bạn bè, đội, bảng xếp hạng trong game và trên web, giao dịch, chợ).
+người chơi (chống spam, khoá bản đồ, chống clone, cấp mở tính năng…). Mặc định tên bot hiển thị như người chơi bình thường ở mọi chỗ người
+chơi thấy tên (trên đầu, chat, tổ đội, bạn bè, đội, bảng xếp hạng trong game và trên web, giao dịch, chợ). Có thể đặt tiền tố tuỳ chọn bằng khoá `hlv_ai.tien_to_ten`.
 
 **Bật lần đầu (VPS, root).** Tiến trình riêng `htbb-hlv-ai` — deploy không cài, không bật:
 

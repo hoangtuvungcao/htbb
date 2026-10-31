@@ -55,7 +55,7 @@ public final class KiemDuLieuSql {
      *  hlv-ai (31/10/2026, chu game): +nhom hlv_ai 16 khoa (huan luyen vien AI, chinh, thu_tu 375..390; tien to ten,
      *  doi bot, tran_xu 300000) = 388 / 22.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "e61fd1490bd437724f701e9ef5a99e8e93f6f9208ac1fd0d073bb5ba8d52853b";
+    static final String VT_DANH_MUC = "6e4d70f38ea9472f09539536ab24622200baeca58ea7811a43564ace81c67d9e";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */
