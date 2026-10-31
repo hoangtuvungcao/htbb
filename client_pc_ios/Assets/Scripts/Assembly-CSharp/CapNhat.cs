@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 /// <summary>
 /// Tự cập nhật bản PC: lúc mở game đọc phienban.json của kênh phát hành HTBB (ThuongHieu.capNhatUrl(): hằng số
 /// ThuongHieu.CAP_NHAT_URL hoặc CAP_NHAT_URL đóng vào lúc build từ tools/phat-hanh/may_chu.conf; do phat-hanh.sh ghi),
-/// RỖNG = TẮT tự cập nhật (mặc định open test). Kênh NQSH-H2 cũ (kpah-server/nqsh-h2-tai) luôn bị bỏ qua ở chế độ
+/// RỖNG = TẮT tự cập nhật (mặc định open test). Kênh phát hành cũ của game gốc (ThuongHieu.laKenhCu) luôn bị bỏ qua ở chế độ
 /// Pokémon - bản HTBB đọc nó sẽ tải game cũ đè lên chính nó. Mục "pc": {"ban", "link", "sha256", "ghiChu"}. "ban" lớn hơn Application.version (số bản, đặt lúc
 /// build qua HTBB_VERSION_CODE) thì tải zip, kiểm sha256, rồi chạy một script PowerShell chờ game
 /// thoát, giải nén đè lên thư mục game và mở lại game. Không có mạng / lỗi thì game chạy bình thường.
@@ -51,7 +51,7 @@ public class CapNhat : MonoBehaviour
 
 	public static void batDau(GameObject go)
 	{
-		// chưa cấu hình kênh phát hành HTBB (hoặc là kênh NQSH-H2 cũ) = tắt hẳn, không gửi request nào
+		// chưa cấu hình kênh phát hành HTBB (hoặc là kênh phát hành cũ của game gốc) = tắt hẳn, không gửi request nào
 		if (Application.platform == RuntimePlatform.WindowsPlayer && ThuongHieu.capNhatUrl() != null)
 		{
 			go.AddComponent<CapNhat>();
@@ -112,10 +112,10 @@ public class CapNhat : MonoBehaviour
 			UnityEngine.Debug.LogWarning("CapNhat: " + ex.Message);
 		}
 		UnityEngine.Debug.Log("CapNhat: dang cai " + dangCai + ", moi nhat " + (moi == null ? "?" : moi.ban.ToString()));
-		// link tải cũng không được trỏ về kênh NQSH-H2 (phienban.json bị ghi nhầm)
-		if (moi != null && !string.IsNullOrEmpty(moi.link) && ThuongHieu.laKenhNqsh(moi.link))
+		// link tải cũng không được trỏ về kênh phát hành cũ của game gốc (phienban.json bị ghi nhầm)
+		if (moi != null && !string.IsNullOrEmpty(moi.link) && ThuongHieu.laKenhCu(moi.link))
 		{
-			UnityEngine.Debug.LogWarning("CapNhat: link tai thuoc kenh NQSH-H2 - bo qua");
+			UnityEngine.Debug.LogWarning("CapNhat: link tai thuoc kenh phat hanh cu cua game goc - bo qua");
 			yield break;
 		}
 		if (moi == null || moi.ban <= dangCai || string.IsNullOrEmpty(moi.link))

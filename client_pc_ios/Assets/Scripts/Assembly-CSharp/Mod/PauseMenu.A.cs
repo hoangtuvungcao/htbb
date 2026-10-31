@@ -1,5 +1,5 @@
 // Port từ client_jar/shared/mod/game/render/screen/PauseMenu.java (phần mod). Phần gốc của menu ở ../PauseMenu.cs.
-// Mod NQSH cũ (Pidgeot từ xa, Chế đồ nhanh, Dòng ẩn, Auto up, Giao hàng tự động, PK, Vận may: đập / thêm dòng /
+// Mod cũ của game gốc (Pidgeot từ xa, Chế đồ nhanh, Dòng ẩn, Auto up, Giao hàng tự động, PK, Vận may: đập / thêm dòng /
 // khóa / nuôi pet / học chiêu pet / nghiền / tự đăng nhập lại / tự đi bộ) đã bỏ hẳn. Hàng mod = "Tự động đánh"
 // (chính thức, máy chủ điều khiển: TuDong + BangTuDong), "Hiệu ứng", "Tiện ích", "Ngoại hình".
 public partial class PauseMenu : MyScreen

@@ -8,9 +8,9 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Khong con ten game cu (ten may chu goc, 4 chu cai - xem TEN) trong ma nguon HTBB: server/src, client_jar/src, web/
- * (bo node_modules va thu muc build). Moi lan xuat hien phai nam trong mot dong cua du_lieu/ten_cu_cho_phep.csv
- * ("tep,chuoi,ly_do": chuoi la doan nguyen van tren cung dong, bao trum lan xuat hien) - chi danh cho tuong thich
+ * Khong con ten game cu (ten may chu goc, 4 chu cai - xem TEN) trong ma nguon HTBB: server/src, client_jar/src, web/,
+ * client_pc_ios/Assets/{Scripts,Editor}, client_apk, client_pc (bo node_modules va thu muc build / sinh ra).
+ * Moi lan xuat hien phai nam trong mot dong cua du_lieu/ten_cu_cho_phep.csv ("tep,chuoi,ly_do": chuoi la doan nguyen van tren cung dong, bao trum lan xuat hien) - chi danh cho tuong thich
  * nguoc (ten RecordStore tren may nguoi choi, duong dan / bien env client cu da phat hanh, bo loc ten server cu).
  * Dong cho phep khong con dung toi cung HONG (danh sach phai gon).
  */
@@ -18,9 +18,12 @@ public final class KiemTenCu {
 
     /** ten cu, so khong phan biet hoa thuong */
     private static final String TEN = "nqsh";
-    private static final String[] THU_MUC = {"server/src", "client_jar/src", "web"};
+    private static final String[] THU_MUC = {"server/src", "client_jar/src", "web", "client_pc_ios/Assets/Scripts", "client_pc_ios/Assets/Editor", "client_apk",
+        "client_pc"};
     private static final Set<String> BO_QUA = new HashSet<>(java.util.Arrays.asList(
-        "node_modules", ".nuxt", ".output", ".data", ".nitro", ".cache", "dist", "coverage", "uploads", "logs"));
+        "node_modules", ".nuxt", ".output", ".data", ".nitro", ".cache", "dist", "coverage", "uploads", "logs",
+        // client_apk / client_pc: thu muc build (code chep tu client_jar/src bang port-j2me.py nam o day), Gradle, ban dong goi
+        "build", ".gradle", "out", "obj", "bin"));
 
     private static final List<String[]> CHO_PHEP = new ArrayList<>();
     private static final Set<Integer> DA_DUNG = new HashSet<>();
@@ -31,7 +34,7 @@ public final class KiemTenCu {
     }
 
     public static void chay() {
-        Kiem.nhom("Khong con ten game cu trong server/src, client_jar/src, web/ (ngoai le: du_lieu/ten_cu_cho_phep.csv)");
+        Kiem.nhom("Khong con ten game cu trong server/src, client_jar/src, web/, client PC Unity / APK / PC (ngoai le: du_lieu/ten_cu_cho_phep.csv)");
         try {
             CHO_PHEP.clear();
             DA_DUNG.clear();

@@ -162,7 +162,7 @@ javac -d /tmp/htbb-tools tools/pokemon/DungBoTileMoi.java && java -cp /tmp/htbb-
 
 ## 7. Thay toàn bộ hình của máy chủ cũ (P2)
 
-Mọi hình của game kiếm hiệp gốc (KPAH / NQSH) mà client Pokémon còn có thể vẽ đã được thay **tại chỗ** (giữ tên tệp, kích
+Mọi hình của game kiếm hiệp gốc của TeaMobi (tên phát hành cũ KPAH / NQSH — ghi một lần ở đây để xác định nguồn gốc bản quyền) mà client Pokémon còn có thể vẽ đã được thay **tại chỗ** (giữ tên tệp, kích
 thước, bảng khung) bằng hình Pokémon PMDCollab hoặc hình dự án tự vẽ bằng code. Không dùng sprite vật phẩm chính thức của
 Nintendo (Bulbapedia / Serebii...) ở bất kỳ đâu.
 

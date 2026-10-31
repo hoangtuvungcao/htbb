@@ -84,7 +84,7 @@ public final class Kiem {
         KiemQuaiPokemon.chay(); // moi quai/boss ve bang Pokemon o jar + Unity, het anh quai cu (P2)
         KiemPetPokemon.chay();
         KiemTaiNguyenCu.chay(); // khong con hinh may chu cu trong tai nguyen phat hanh (du_lieu/tai_nguyen_cu*.{txt,csv}, P2)
-        KiemTenCu.chay(); // khong con ten game cu trong server/src, client_jar/src, web/ (ngoai le: du_lieu/ten_cu_cho_phep.csv)
+        KiemTenCu.chay(); // khong con ten game cu trong server/src, client_jar/src, web/, client_pc_ios, client_apk, client_pc (ngoai le: du_lieu/ten_cu_cho_phep.csv)
         KiemThuPetP2.chay(); // thu cuoi / pet / skin / hoa hinh -> Pokemon: SQL data_thu_pokemon = Java = CSV = client (P2)
         KiemLoiChoiPokemon.chay();
         KiemPokemonServer.chay();

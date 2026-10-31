@@ -196,8 +196,9 @@ def kiemMayChuRelease = tasks.register('kiemMayChuRelease') {
                 "(build-pokemon.sh: MAY_CHU=host:cong), bien MAY_CHU_CHINH, hoac MAY_CHU_CHINH= trong tools/phat-hanh/may_chu.conf " +
                 "(cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf).")
         }
+        // Rao chan: "nqsh-h2" la ten mien server cu cua game goc - giu chuoi de con nhan ra va tu choi.
         if (mc.contains('nqsh-h2')) {
-            throw new GradleException("May chu '$mc' la server NQSH-H2 cu - khong build APK HTBB")
+            throw new GradleException("May chu '$mc' la server cu cua game goc - khong build APK HTBB")
         }
         println "HTBB release: may chu $mc, phien ban $phienBan ($ban)"
     }

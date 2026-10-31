@@ -33,15 +33,23 @@ public class ServerListScr : MyScreen
 
 	public static int index = -1;
 
-	public static string[] nameServer = new string[7] { "Thăng Long (Mới)", "Hoa Lư", "Kinh Môn", "Hoàng Vương", "Mỹ Sơn", "Tràng An", "Tiên La" };
+	// Mặc định = đúng MỘT máy chủ Huyền Thoại Bảo Bối (như bản jar 0.9.23, ServerListScr.java); máy chủ cố định của bản
+	// build (ThuongHieu.mayChuCoDinh) thay nó ở apMayChuCoDinh. Trước đây là danh sách server của game gốc (IP người khác).
+	public static string[] nameServer = new string[1] { ThuongHieu.TEN_GAME };
 
-	public static string[] address = new string[7] { "112.213.84.163", "27.0.12.112", "112.213.94.124", "112.213.94.124", "112.213.94.124", "112.213.94.124", "112.213.94.124" };
+	public static string[] address = new string[1] { MAY_CHU_MAC_DINH };
 
-	public static short[] port = new short[7] { 19129, 19129, 19129, 19129, 19129, 19129, 19129 };
+	public static short[] port = new short[1] { CONG_MAC_DINH };
 
-	public static sbyte[] index_server = new sbyte[9] { 0, 0, 0, 0, 0, 3, 4, 1, 2 };
+	public static sbyte[] index_server = new sbyte[1];
 
-	public static string linkGetHost = "http://teamobi.com/srvips/NQSH2.txt";
+	/// <summary>IP origin máy chủ HTBB (giống bản jar) - chỉ dùng khi bản build không mang máy chủ cố định.</summary>
+	public const string MAY_CHU_MAC_DINH = "180.93.57.30";
+
+	public const short CONG_MAC_DINH = 19129;
+
+	/// <summary>Rỗng = không tải danh sách server (bản HTBB chỉ có máy chủ của mình, như TaiDanhSach bản jar).</summary>
+	public static string linkGetHost = string.Empty;
 
 	public static string nameSvAuto = string.Empty;
 
@@ -153,12 +161,12 @@ public class ServerListScr : MyScreen
 		}
 		if (isHTBB)
 		{
-			// Giống bản jar (TaiDanhSach): server NQSH-H2, danh sách "Tên|host|port" tải từ linkGetHost
-			nameServer = new string[1] { "NQSH-H2" };
-			address = new string[1] { "nqsh-h2.top" };
-			port = new short[1] { 30774 };
+			// Giống bản jar 0.9.23 (ServerListScr / TaiDanhSach): đúng một máy chủ HTBB, không tải danh sách server nào
+			nameServer = new string[1] { ThuongHieu.TEN_GAME };
+			address = new string[1] { MAY_CHU_MAC_DINH };
+			port = new short[1] { CONG_MAC_DINH };
 			index_server = new sbyte[1];
-			linkGetHost = "https://nqsh-h2.top/robots.txt";
+			linkGetHost = string.Empty;
 			GameMidlet.numberSupport = "19006610";
 		}
 		else
@@ -228,9 +236,9 @@ public class ServerListScr : MyScreen
 	/// </summary>
 	public static System.Collections.IEnumerator taiDanhSachTuDong()
 	{
-		if (!string.IsNullOrEmpty(ThuongHieu.mayChuCoDinh()))
+		if (!string.IsNullOrEmpty(ThuongHieu.mayChuCoDinh()) || string.IsNullOrEmpty(linkGetHost))
 		{
-			yield break; // pokemon: máy chủ cố định, không tải robots.txt
+			yield break; // pokemon: máy chủ cố định / không có link danh sách - không tải gì
 		}
 		using (UnityEngine.Networking.UnityWebRequest r = UnityEngine.Networking.UnityWebRequest.Get(linkGetHost))
 		{
@@ -327,6 +335,13 @@ public class ServerListScr : MyScreen
 
 	public void doUpdateServer()
 	{
+		if (string.IsNullOrEmpty(linkGetHost))
+		{
+			// nút "Cập nhật": danh sách cố định theo bản build - không tải gì (như TaiDanhSach.capNhat bản jar)
+			loadSv(GameMidlet.isHTBB);
+			init();
+			return;
+		}
 		Canvas.startWaitDlg();
 		Net.connectHTTP(linkGetHost, cmdUpdateServer);
 	}
@@ -344,7 +359,7 @@ public class ServerListScr : MyScreen
 				dataOutputStream.writeShort(port[i]);
 				dataOutputStream.writeByte(index_server[i]);
 			}
-			RMS.saveRMS("ipnqsh", dataOutputStream.toByteArray());
+			RMS.saveRMS(RMS.KHO_DS_MAY_CHU, dataOutputStream.toByteArray());
 			dataOutputStream.close();
 		}
 		catch (Exception ex)
@@ -361,7 +376,7 @@ public class ServerListScr : MyScreen
 			dataOutputStream.writeUTF(nameSv);
 			dataOutputStream.writeUTF(add);
 			dataOutputStream.writeShort(port);
-			RMS.saveRMS("ipnqshauto", dataOutputStream.toByteArray());
+			RMS.saveRMS(RMS.KHO_MAY_CHU_TU_DONG, dataOutputStream.toByteArray());
 			dataOutputStream.close();
 		}
 		catch (Exception ex)
@@ -379,7 +394,7 @@ public class ServerListScr : MyScreen
 		nameSvAuto = string.Empty;
 		addressAuTo = string.Empty;
 		portAuTo = -1;
-		sbyte[] array = RMS.loadRMS("ipnqshauto");
+		sbyte[] array = RMS.loadRMS(RMS.KHO_MAY_CHU_TU_DONG);
 		if (array == null)
 		{
 			return;
@@ -394,8 +409,16 @@ public class ServerListScr : MyScreen
 			nameSvAuto = dataInputStream.readUTF();
 			addressAuTo = dataInputStream.readUTF();
 			portAuTo = dataInputStream.readShort();
-			LoginScr.nameServer = nameSvAuto;
 			dataInputStream.close();
+			if (ThuongHieu.laMayChuCu(nameSvAuto, addressAuTo))
+			{
+				// máy đăng nhập tự động lưu từ bản cũ trỏ về server game gốc: bỏ
+				nameSvAuto = string.Empty;
+				addressAuTo = string.Empty;
+				portAuTo = -1;
+				return;
+			}
+			LoginScr.nameServer = nameSvAuto;
 		}
 		catch (IOException ex)
 		{
@@ -409,7 +432,7 @@ public class ServerListScr : MyScreen
 		{
 			return;
 		}
-		sbyte[] array = RMS.loadRMS("ipnqsh");
+		sbyte[] array = RMS.loadRMS(RMS.KHO_DS_MAY_CHU);
 		if (array == null)
 		{
 			return;
@@ -422,18 +445,27 @@ public class ServerListScr : MyScreen
 		try
 		{
 			sbyte b = dataInputStream.readByte();
-			nameServer = new string[b];
-			address = new string[b];
-			port = new short[b];
-			index_server = new sbyte[b];
+			string[] ten = new string[b];
+			string[] dc = new string[b];
+			short[] cg = new short[b];
+			sbyte[] ix = new sbyte[b];
 			for (int i = 0; i < b; i++)
 			{
-				nameServer[i] = dataInputStream.readUTF();
-				address[i] = dataInputStream.readUTF();
-				port[i] = dataInputStream.readShort();
-				index_server[i] = dataInputStream.readByte();
+				ten[i] = dataInputStream.readUTF();
+				dc[i] = dataInputStream.readUTF();
+				cg[i] = dataInputStream.readShort();
+				ix[i] = dataInputStream.readByte();
 			}
 			dataInputStream.close();
+			// danh sách lưu từ bản cũ (nhiều server game gốc, IP người khác / server game gốc) thì bỏ, giữ mặc định
+			// (như ServerListScr.loadIP bản jar)
+			if (b == 1 && !ThuongHieu.laMayChuCu(ten[0], dc[0]))
+			{
+				nameServer = ten;
+				address = dc;
+				port = cg;
+				index_server = ix;
+			}
 		}
 		catch (IOException)
 		{

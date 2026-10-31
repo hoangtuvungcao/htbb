@@ -321,7 +321,7 @@ public class LoginScr : MyScreen
 				dataOutputStream.writeUTF(tfUser.getText());
 				dataOutputStream.writeUTF(tfPass.getText());
 			}
-			RMS.saveRMS("nqshlogin", dataOutputStream.toByteArray());
+			RMS.saveRMS(RMS.KHO_DANG_NHAP, dataOutputStream.toByteArray());
 			dataOutputStream.close();
 		}
 		catch (Exception ex)
@@ -348,7 +348,7 @@ public class LoginScr : MyScreen
 
 	private void loadPass()
 	{
-		sbyte[] array = RMS.loadRMS("nqshlogin");
+		sbyte[] array = RMS.loadRMS(RMS.KHO_DANG_NHAP);
 		if (array == null)
 		{
 			return;

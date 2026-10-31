@@ -32,7 +32,7 @@ public static class ThuongHieu
 	/// chu nay, khong tai danh sach robots.txt. Thu tu: tham so dong lenh -htbbMayChu host:cong > hang so nay >
 	/// gia tri BuildCli.Win64 dong vao luc build (Resources/htbb_phat_hanh.txt, lay tu -htbbMayChu / bien
 	/// MAY_CHU_CHINH / tools/phat-hanh/may_chu.conf) > MAY_CHU_THU (chi ban Development / Editor).
-	/// Ban phat hanh KHONG build duoc khi khong co may chu (BuildCli dung lai) - khong con roi ve nqsh-h2.top.
+	/// Ban phat hanh KHONG build duoc khi khong co may chu (BuildCli dung lai) - khong con roi ve danh sach may chu cua game goc.
 	/// </summary>
 	public const string MAY_CHU_CHINH = "";
 
@@ -42,7 +42,7 @@ public static class ThuongHieu
 	/// <summary>
 	/// Link phienban.json cua kenh phat hanh HTBB (CapNhat.cs doc muc "pc"). RONG = TAT tu cap nhat PC.
 	/// Thu tu: hang so nay > gia tri dong vao luc build (CAP_NHAT_URL / -htbbCapNhat / tools/phat-hanh/may_chu.conf).
-	/// Link kenh NQSH-H2 cu luon bi bo qua (xem capNhatUrl).
+	/// Link kenh phat hanh cu cua game goc luon bi bo qua (xem capNhatUrl, laKenhCu).
 	/// </summary>
 	public const string CAP_NHAT_URL = "";
 
@@ -121,7 +121,7 @@ public static class ThuongHieu
 
 	/// <summary>
 	/// Link phienban.json de tu cap nhat PC; null = TAT. Bien moi truong HTBB_CAPNHAT_URL (chi de thu tren may)
-	/// > CAP_NHAT_URL > gia tri dong vao luc build. O che do Pokemon KHONG BAO GIO doc kenh NQSH-H2 cu (ban PC
+	/// > CAP_NHAT_URL > gia tri dong vao luc build. O che do Pokemon KHONG BAO GIO doc kenh phat hanh cu cua game goc (ban PC
 	/// HTBB se tu tai game cu de len chinh no).
 	/// </summary>
 	public static string capNhatUrl()
@@ -140,19 +140,35 @@ public static class ThuongHieu
 		{
 			return null;
 		}
-		if (laKenhNqsh(link))
+		if (laKenhCu(link))
 		{
-			UnityEngine.Debug.LogWarning("CapNhat: bo qua kenh NQSH-H2 (" + link + ") o ban Huyen Thoai Bao Boi");
+			UnityEngine.Debug.LogWarning("CapNhat: bo qua kenh phat hanh cu cua game goc (" + link + ") o ban Huyen Thoai Bao Boi");
 			return null;
 		}
 		return link;
 	}
 
-	/// <summary>Link thuoc kenh phat hanh NQSH-H2 cu (repo kpah-server/nqsh-h2-tai, ten mien nqsh-h2.top).</summary>
-	public static bool laKenhNqsh(string link)
+	/// <summary>Link / may chu thuoc kenh phat hanh cu cua game goc (repo + ten mien cu) - BuildCli dung build, CapNhat bo qua.</summary>
+	public static bool laKenhCu(string link)
 	{
+		if (string.IsNullOrEmpty(link))
+		{
+			return false;
+		}
 		string l = link.ToLowerInvariant();
+		// TUONG-THICH-TEN-CU: ba cach viet ten mien / repo kenh cu cua game goc - giu chuoi de con nhan ra va chan
 		return l.Contains("nqsh-h2") || l.Contains("nqsh_h2") || l.Contains("nqshh2");
+	}
+
+	/// <summary>
+	/// Muc may chu luu tu ban cu (ten hoac dia chi cua server game goc): bo, khong hien / khong vao (giong ban jar
+	/// TaiDanhSach.tenHien + ServerListScr.loadIP).
+	/// </summary>
+	public static bool laMayChuCu(string ten, string diaChi)
+	{
+		string t = ten == null ? string.Empty : ten.ToUpperInvariant();
+		// TUONG-THICH-TEN-CU: ten server game goc con nam trong danh sach da luu tren may nguoi choi - giu chuoi de loc
+		return t.Contains("NQSH") || t.Contains("KPAH") || laKenhCu(diaChi);
 	}
 
 	/// <summary>Ten phien ban hien cho nguoi choi (vd "0.9.0-opentest (900)").</summary>
