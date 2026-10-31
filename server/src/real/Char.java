@@ -16202,6 +16202,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.monster.map = this.map;
             this.monster.region = this.region;
             this.monster.inCountry = this.inCountry;
+            this.monster.vet.xoa(); // sua-xe-hang-ket: sang ban do moi, vet cu vo nghia
         }
         try {
             if (this.charthanthu != null) {

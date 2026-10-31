@@ -93,6 +93,7 @@ public class MonsterVantieu extends Monster {
                         return;
                     }
 
+                    com.htbb.pokemon.XeHangDiTheo.ghi(this.vet, this.target.x, this.target.y); // sua-xe-hang-ket
                     if (Math.abs(this.target.x - this.x) <= 80 * this.target.upSpeedNguaVanTieu
                         && Math.abs(this.target.y - this.y) <= 80 * this.target.upSpeedNguaVanTieu) {
                         this.move();
@@ -108,63 +109,24 @@ public class MonsterVantieu extends Monster {
     public void attack() {
     }
 
+    /** sua-xe-hang-ket: vet nguoi choi de xe di theo (com.htbb.pokemon.XeHangDiTheo). */
+    public final com.htbb.pokemon.XeHangDiTheo.Vet vet = new com.htbb.pokemon.XeHangDiTheo.Vet();
+
     @Override
     public void move() {
         long now = System.currentTimeMillis();
         this.moved = false;
         if (now - this.lastTimeMove > this.moveDelay) {
-            label29:
             if (this.target != null) {
-                while (true) {
-                    int xx;
-                    int yy;
-                    while (true) {
-                        if (this.count >= 30) {
-                            break label29;
-                        }
-
-                        this.count++;
-                        xx = this.x;
-                        yy = this.y;
-                        if (Math.abs(this.x - this.target.x) <= 16) {
-                            break;
-                        }
-
-                        if (this.x > this.target.x) {
-                            if (!this.map.canMove(--xx, yy)) {
-                                break;
-                            }
-
-                            this.x = xx;
-                        } else {
-                            if (!this.map.canMove(++xx, yy)) {
-                                break;
-                            }
-
-                            this.x = xx;
-                        }
-                    }
-
-                    if (Math.abs(this.y - this.target.y) <= 16) {
-                        break;
-                    }
-
-                    if (this.y > this.target.y) {
-                        if (!this.map.canMove(xx, --yy)) {
-                            break;
-                        }
-
-                        this.y = yy;
-                    } else {
-                        if (!this.map.canMove(xx, ++yy)) {
-                            break;
-                        }
-
-                        this.y = yy;
-                    }
+                // sua-xe-hang-ket: truoc day duoi thang (x roi y, chan thi dung) -> ket o goc nha (Pewter); nay di theo vet
+                final Map m = this.map;
+                final int[] r = com.htbb.pokemon.XeHangDiTheo.buoc(this.vet, this.x, this.y, this.target.x, this.target.y, 30,
+                        (a, b) -> m.canMove(a, b));
+                if (r[0] != this.x || r[1] != this.y) {
+                    this.x = r[0];
+                    this.y = r[1];
+                    this.count = 30;
                 }
-
-                this.count = 30;
             }
 
             if (this.count >= 15) {
