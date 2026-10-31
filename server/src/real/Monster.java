@@ -680,7 +680,8 @@ public class Monster extends LiveActor {
                     this.baoDoiLoai();
                 }
                 this.hp = this.maxhp;
-                this.xp = Monster.rcvXpSauGiam(this.getMonsterTemplate());
+                // EXP theo mau chi so (mau GOC cua o sinh khi he sinh thai doi loai - HeSinhThaiGame.mauChiSo)
+                this.xp = Monster.rcvXpSauGiam(com.htbb.pokemon.HeSinhThaiGame.mauChiSo(this));
                 this.tDelay = 0;
                 this.target = null;
                 this.x = this.default_x;
@@ -952,7 +953,7 @@ public class Monster extends LiveActor {
     }
 
     public int getGoldRcv() {
-        return this.getMonsterTemplate().rcvGold / tileDrop;
+        return com.htbb.pokemon.HeSinhThaiGame.mauChiSo(this).rcvGold / tileDrop; // xu theo mau GOC khi doi loai
     }
     public static int LimitLock = 200000;
     public static int LimitEvent = 0;
