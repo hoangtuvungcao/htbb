@@ -68,6 +68,7 @@ public final class KiemTtkQuai {
             ttkQuai(bac, quai);
             gym(bac);
             tinhAnh();
+            capMucTieu();
             khacHe(bac);
         } catch (final Throwable e) {
             e.printStackTrace();
@@ -222,15 +223,30 @@ public final class KiemTtkQuai {
             return cuoi;
         }
         final Map<String, List<Map<String, String>>> bang = new HashMap<String, List<Map<String, String>>>();
-        for (final String t : new String[]{"data_monster", "data_monster_lau_dai", "data_noi_dung_gym", "data_npc"}) {
+        for (final String t : new String[]{"data_monster", "data_monster_lau_dai", "data_noi_dung_gym", "data_npc",
+            "data_noi_dung_quai_tinh_anh"}) {
             bang.put(t, KiemMucTieuNhiemVu.sao(KiemMucTieuNhiemVu.dongThuong(t)));
         }
-        for (final String khoi : new String[]{"sua_can_bang_cap.sql", "sua_can_bang_lop.sql"}) {
-            KiemMucTieuNhiemVu.ap(DayDu.phanNangCap(khoi), bang);
+        for (final String khoi : KHOI_QUAI) {
+            if (KHOI_CAP_QUAI.equals(khoi)) {
+                truocCapQuai = new HashMap<String, Integer>();
+                for (final Map<String, String> m : bang.get("data_monster")) {
+                    truocCapQuai.put(m.get("id"), Integer.valueOf(so(m.get("level"))));
+                }
+            }
+            KHOP.put(khoi, KiemMucTieuNhiemVu.ap(DayDu.phanNangCap(khoi), bang));
         }
         cuoi = bang;
         return bang;
     }
+
+    /** Cac khoi phan B doi chi so / cap quai, theo thu tu trong sql/htbb.sql. */
+    static final String KHOI_CAP_QUAI = "sua_cap_quai_cua_ai.sql";
+    static final String[] KHOI_QUAI = {"sua_can_bang_cap.sql", "sua_can_bang_lop.sql", "sua_quai_tinh_anh.sql", KHOI_CAP_QUAI};
+    /** khoi -> so dong moi lenh UPDATE khop (lan ap dau). */
+    static final Map<String, List<Integer>> KHOP = new HashMap<String, List<Integer>>();
+    /** id mau quai -> cap TRUOC khoi sua_cap_quai_cua_ai.sql. */
+    static Map<String, Integer> truocCapQuai;
 
     /** Quai thuong dung cap: con cap cao nhat &lt;= cap nguoi choi (nhu bot do suc chon). */
     static double[] dungCap(final TreeMap<Integer, double[]> quai, final int cap) {
@@ -350,26 +366,27 @@ public final class KiemTtkQuai {
             lai += n.intValue();
         }
         Kiem.bang("khoi quai tinh anh: ap lan hai khong doi gi", Integer.valueOf(0), Integer.valueOf(lai));
+        final List<Map<String, String>> ta2 = trangThaiCuoi().get("data_noi_dung_quai_tinh_anh"); // + sua_cap_quai_cua_ai.sql
         final Map<String, Map<String, String>> thuong = new HashMap<String, Map<String, String>>();
         for (final Map<String, String> d : trangThaiCuoi().get("data_monster_lau_dai")) {
             thuong.put(d.get("id"), d);
         }
         final List<String> lechTruoc = new ArrayList<String>(), lech = new ArrayList<String>();
         int n = 0;
-        for (int i = 0; i < ta.size(); i++) {
-            final Map<String, String> q = thuong.get(ta.get(i).get("id_goc"));
+        for (int i = 0; i < ta2.size(); i++) {
+            final Map<String, String> q = thuong.get(ta2.get(i).get("id_goc"));
             if (q == null) {
                 continue;
             }
             n++;
             final int hp = so(q.get("maxhp")), atk = so(q.get("attack")), thu = so(q.get("defent"));
-            final String moi = so(ta.get(i).get("hp")) + "/" + so(ta.get(i).get("tan_cong")) + "/" + so(ta.get(i).get("phong_thu"));
+            final String moi = so(ta2.get(i).get("hp")) + "/" + so(ta2.get(i).get("tan_cong")) + "/" + so(ta2.get(i).get("phong_thu"));
             final String mong = 4 * hp + "/" + (atk * 13 + 5) / 10 + "/" + thu;
             if (!mong.equals(moi)) {
-                lech.add(ta.get(i).get("id_goc") + ":" + moi + "!=" + mong);
+                lech.add(ta2.get(i).get("id_goc") + ":" + moi + "!=" + mong);
             }
             if (so(goc.get(i).get("tan_cong")) > (atk * 13 + 5) / 10 * 1.05) {
-                lechTruoc.add(ta.get(i).get("id_goc"));
+                lechTruoc.add(ta2.get(i).get("id_goc"));
             }
         }
         Kiem.dung("quai tinh anh co dong (" + n + ")", n >= 60);
@@ -379,6 +396,58 @@ public final class KiemTtkQuai {
     }
 
     // ------------------------------------------------------------------ khac he cuc doan
+
+    /**
+     * Quai muc tieu buoc giet bat buoc (chinh / cua ai / huong dan: giet, giet_tinh_anh, ha_alpha) khong cao hon cap mo cua
+     * buoc &gt;= 5 cap (luat chenh cap LiveActor.attackDam: cao hon 5 cap danh x2). Khoi sua_cap_quai_cua_ai.sql (chu game
+     * 31/10/2026): Golem 54 -> 51, Arcanine 60 -> 55, Rhydon 62 -> 59, Kingler 70 -> 67, Vileplume 78 -> 75.
+     */
+    static void capMucTieu() {
+        trangThaiCuoi();
+        int sai = 0;
+        final List<Integer> khop = KHOP.get(KHOI_CAP_QUAI);
+        for (final Integer n : khop) {
+            sai += n.intValue() == 1 ? 0 : 1;
+        }
+        Kiem.bang("khoi " + KHOI_CAP_QUAI + ": 15 lenh, moi lenh khop dung mot dong (gia tri cu dung)", "15/0", khop.size() + "/" + sai);
+        int lai = 0;
+        for (final Integer n : KiemMucTieuNhiemVu.ap(DayDu.phanNangCap(KHOI_CAP_QUAI), trangThaiCuoi())) {
+            lai += n.intValue();
+        }
+        Kiem.bang("khoi " + KHOI_CAP_QUAI + ": ap lan hai khong doi gi", Integer.valueOf(0), Integer.valueOf(lai));
+        final Map<String, Integer> sau = new HashMap<String, Integer>();
+        final Map<String, String> ten = new HashMap<String, String>();
+        for (final Map<String, String> m : trangThaiCuoi().get("data_monster")) {
+            sau.put(m.get("id"), Integer.valueOf(so(m.get("level"))));
+            ten.put(m.get("id"), m.get("name"));
+        }
+        final List<String> truoc = new ArrayList<String>(), con = new ArrayList<String>();
+        int buoc = 0;
+        for (final Map<String, String> q : KiemMucTieuNhiemVu.dongThuong("data_quest_lau_dai")) {
+            final String loai = q.get("loai"), kieu = q.get("kieu_muc_tieu");
+            if (!("chinh".equals(loai) || "cua_ai".equals(loai) || "huong_dan".equals(loai))
+                    || !("giet".equals(kieu) || "giet_tinh_anh".equals(kieu) || "ha_alpha".equals(kieu))) {
+                continue;
+            }
+            final Integer c0 = truocCapQuai.get(q.get("muc_tieu_id")), c1 = sau.get(q.get("muc_tieu_id"));
+            if (c1 == null) {
+                continue;
+            }
+            buoc++;
+            final int mo = so(q.get("cap_toi_thieu"));
+            if (c0.intValue() - mo >= 5) {
+                truoc.add(q.get("ma") + " " + ten.get(q.get("muc_tieu_id")) + " " + c0 + "/" + mo);
+            }
+            if (c1.intValue() - mo >= 5) {
+                con.add(q.get("ma") + " " + ten.get(q.get("muc_tieu_id")) + " " + c1 + "/" + mo);
+            }
+        }
+        java.util.Collections.sort(truoc);
+        Kiem.dung("buoc giet bat buoc co quai muc tieu (" + buoc + ")", buoc >= 100);
+        Kiem.bang("truoc khoi: 5 buoc co quai >= cap mo + 5", "[C31.4 Arcanine 60/53, CA-09.1 Golem 54/49, CA-10.1 Rhydon 62/57, "
+                + "CA-11.1 Kingler 70/65, CA-12.1 Vileplume 78/73]", truoc.toString());
+        Kiem.bang("sau khoi: khong buoc giet bat buoc nao co quai muc tieu >= cap mo + 5", "[]", con.toString());
+    }
 
     /** Buoc giet bat buoc chu game neu (31/10/2026): Pichu gap quai Dat, Charmander gap quai Nuoc / Da. */
     static final String[] BUOC_KHAC_HE = {"CA-03.1", "CA-09.1", "CA-10.1", "C12.4", "C25.4", "C37.5", "C42.3", "C70.3", "C77.3", "C85.3"};

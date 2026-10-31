@@ -32146,3 +32146,34 @@ UPDATE `data_nhiem_vu_noi_dung` SET `muc_tieu_text` = 'Nhận Gói hàng ở T�
 UPDATE `data_nhiem_vu_noi_dung` SET `muc_tieu_text` = 'Nhận Gói hàng ở Tổng tiêu đầu (làng khởi đầu), hộ tống tới Kecleon tạp hoá an toàn', `goi_y` = 'Nhận xe hàng ở Tổng tiêu đầu trong làng (Pewter / Blackthorn / Cianwood), đi cạnh xe tới Kecleon tạp hoá cùng làng rồi nói chuyện với Kecleon (hoặc Dịch trạm ở Đường Victory). Bị cướp không tính.' WHERE `ma` = 'TV-10.3' AND `muc_tieu_text` = 'Hộ tống Gói hàng từ Olivine tới Machamp an toàn';
 UPDATE `data_nhiem_vu_noi_dung` SET `muc_tieu_text` = 'Nhận Bong bóng hồng ở Tổng tiêu đầu (làng khởi đầu), hộ tống tới Kecleon tạp hoá an toàn', `goi_y` = 'Nhận xe hàng ở Tổng tiêu đầu trong làng (Pewter / Blackthorn / Cianwood), đi cạnh xe tới Kecleon tạp hoá cùng làng rồi nói chuyện với Kecleon (hoặc Dịch trạm ở Đường Victory). Bị cướp không tính.' WHERE `ma` = 'HT-MEW.5' AND `muc_tieu_text` = 'Hộ tống Bong bóng hồng từ Cinnabar tới Bronzong an toàn';
 UPDATE `data_nhiem_vu_noi_dung` SET `muc_tieu_text` = 'Nhận Đoàn Pokémon nhỏ ở Tổng tiêu đầu (làng khởi đầu), hộ tống tới Kecleon tạp hoá an toàn', `goi_y` = 'Nhận xe hàng ở Tổng tiêu đầu trong làng (Pewter / Blackthorn / Cianwood), đi cạnh xe tới Kecleon tạp hoá cùng làng rồi nói chuyện với Kecleon (hoặc Dịch trạm ở Đường Victory). Bị cướp không tính.' WHERE `ma` = 'C73.2' AND `muc_tieu_text` = 'Hộ tống Đoàn Pokémon nhỏ từ Sootopolis tới Chansey an toàn';
+-- >>> sua_cap_quai_cua_ai.sql
+-- ==================================================================================
+--  QUAI MUC TIEU BUOC GIET BAT BUOC <= CAP MO + 2 (chu game 31/10/2026, sau tran khac he PvE). Luat chenh cap cu
+--  (LiveActor.attackDam): quai cao hon nguoi choi 5 cap danh x2 + 70 moi cap - do suc Charmander / Pichu cap 49 do +0 o cua
+--  ai CA-09.1 (Golem 54): ha 1 con roi guc; o cap 52 (chenh 2): 8 con, 2,4 giay / con, 0,1-0,4 binh / con. Cung luat voi
+--  khoi sua_can_bang_lop.sql (CA-03..07): moi buoc giet bat buoc (chinh / cua ai) co quai muc tieu cao hon cap mo >= 5:
+--    CA-09.1 Golem      54 -> 51 (mo 49)   CA-10.1 Rhydon  62 -> 59 (mo 57)   CA-11.1 Kingler 70 -> 67 (mo 65)
+--    CA-12.1 Vileplume  78 -> 75 (mo 73)   C31.4 tinh anh Arcanine 60 -> 55 (mo 53; C34.3 Arcanine mo 57 cung dung)
+--  Moi mau chi sinh o MOT ban do (Golem 18, Arcanine / Rhydon 20, Kingler 22, Vileplume 24) nen doi mau = doi dung bai quai
+--  cua buoc do; truong Gym dung mau nay (Pewter Golem, Viridian Rhydon) lay cap Gym rieng (BossLauDai). Chi so + thuong theo
+--  cap moi tren duong quai dang chay (cap 51 = Blaziken; 55 / 59 / 67 / 75 noi suy giua hai cap ke ben, HP lam tron 10;
+--  EXP = data_cap_do_lau_dai.mob_exp, xu = xu_moi_quai x 100 / 30) va quai tinh anh 4 x HP / 1,3 x tan cong (nhu
+--  sua_quai_tinh_anh.sql). Luat chenh cap chung giu nguyen. Chay lai duoc: UPDATE theo khoa + GIA TRI CU. Doi xong khoi
+--  dong lai may chu game. Kiem: server/test/KiemTtkQuai (khong buoc giet bat buoc nao co quai >= cap mo + 5).
+-- ----------------------------------------------------------------------------------
+
+UPDATE `data_monster` SET `level` = 51 WHERE `id` = 74 AND `level` = 54;
+UPDATE `data_monster` SET `level` = 55 WHERE `id` = 48 AND `level` = 60;
+UPDATE `data_monster` SET `level` = 59 WHERE `id` = 60 AND `level` = 62;
+UPDATE `data_monster` SET `level` = 67 WHERE `id` = 54 AND `level` = 70;
+UPDATE `data_monster` SET `level` = 75 WHERE `id` = 58 AND `level` = 78;
+UPDATE `data_monster_lau_dai` SET `cap` = 51, `maxhp` = 8620, `attack` = 1098, `defent` = 326, `rcvxp` = 6192, `rcvgold` = 400 WHERE `id` = 74 AND `cap` = 54 AND `maxhp` = 9110 AND `attack` = 1184 AND `defent` = 364 AND `rcvxp` = 7014 AND `rcvgold` = 463;
+UPDATE `data_monster_lau_dai` SET `cap` = 55, `maxhp` = 9270, `attack` = 1213, `defent` = 378, `rcvxp` = 7312, `rcvgold` = 487 WHERE `id` = 48 AND `cap` = 60 AND `maxhp` = 10080 AND `attack` = 1364 AND `defent` = 448 AND `rcvxp` = 9000 AND `rcvgold` = 623;
+UPDATE `data_monster_lau_dai` SET `cap` = 59, `maxhp` = 9920, `attack` = 1333, `defent` = 434, `rcvxp` = 8634, `rcvgold` = 593 WHERE `id` = 60 AND `cap` = 62 AND `maxhp` = 10870 AND `attack` = 1399 AND `defent` = 463 AND `rcvxp` = 9831 AND `rcvgold` = 687;
+UPDATE `data_monster_lau_dai` SET `cap` = 67, `maxhp` = 12850, `attack` = 1486, `defent` = 499, `rcvxp` = 12262, `rcvgold` = 877 WHERE `id` = 54 AND `cap` = 70 AND `maxhp` = 14030 AND `attack` = 1538 AND `defent` = 520 AND `rcvxp` = 14000 AND `rcvgold` = 1013;
+UPDATE `data_monster_lau_dai` SET `cap` = 75, `maxhp` = 15000, `attack` = 1626, `defent` = 556, `rcvxp` = 18330, `rcvgold` = 1293 WHERE `id` = 58 AND `cap` = 78 AND `maxhp` = 15580 AND `attack` = 1677 AND `defent` = 577 AND `rcvxp` = 21547 AND `rcvgold` = 1500;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `cap` = 51, `hp` = 34480, `tan_cong` = 1427, `phong_thu` = 326 WHERE `id_goc` = 74 AND `cap` = 54 AND `hp` = 36440 AND `tan_cong` = 1539 AND `phong_thu` = 364;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `cap` = 55, `hp` = 37080, `tan_cong` = 1577, `phong_thu` = 378 WHERE `id_goc` = 48 AND `cap` = 60 AND `hp` = 40320 AND `tan_cong` = 1773 AND `phong_thu` = 448;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `cap` = 59, `hp` = 39680, `tan_cong` = 1733, `phong_thu` = 434 WHERE `id_goc` = 60 AND `cap` = 62 AND `hp` = 43480 AND `tan_cong` = 1819 AND `phong_thu` = 463;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `cap` = 67, `hp` = 51400, `tan_cong` = 1932, `phong_thu` = 499 WHERE `id_goc` = 54 AND `cap` = 70 AND `hp` = 56120 AND `tan_cong` = 1999 AND `phong_thu` = 520;
+UPDATE `data_noi_dung_quai_tinh_anh` SET `cap` = 75, `hp` = 60000, `tan_cong` = 2114, `phong_thu` = 556 WHERE `id_goc` = 58 AND `cap` = 78 AND `hp` = 62320 AND `tan_cong` = 2180 AND `phong_thu` = 577;
