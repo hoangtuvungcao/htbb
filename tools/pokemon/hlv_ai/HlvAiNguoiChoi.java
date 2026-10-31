@@ -277,7 +277,7 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         switch (v) {
             case "pk": return lv >= 15;
             case "dau_truong": return lv >= 20;
-            case "pho_ban": return lv >= 28;
+            case "pho_ban": return lv >= 45; // pho ban 5 tang danh theo nhom: bot le cap 35 guc o tang 1 (kiem ngam 31/10)
             case "boss": return lv >= 20;
             case "gym": return lv >= 8;
             case "cho": case "giao_dich": return lv >= 20;
