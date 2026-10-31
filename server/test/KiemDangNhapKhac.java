@@ -39,6 +39,17 @@ public class KiemDangNhapKhac {
             Kiem.dung(tep + ": khong con da phien cu bang disconnect tron (getSession().disconnect)", !s.contains("getSession().disconnect("));
             Kiem.dung(tep + ": da phien cu qua dongVoiLyDo(DANG_NHAP_KHAC)", s.contains("dongVoiLyDo("));
         }
+        // 31/10/2026 (kiem 2 client that tren may chu local): cho DA thuc te khi dang nhap lai la buoc danh sach nhan vat
+        // (MessageCreator.createCharListMessage) - truoc kickPlayer tron, client cu khong biet ly do -> tu noi lai, da nguoc
+        String mc = doc("../MessageCreator.java");
+        int i = mc == null ? -1 : mc.indexOf("createCharListMessage(");
+        String doan = i < 0 ? "" : mc.substring(i, Math.min(mc.length(), i + 3000));
+        Kiem.dung("MessageCreator.createCharListMessage: da phien cu kem ly do (dongVoiLyDo DANG_NHAP_KHAC)",
+                doan.contains("dongVoiLyDo(real.cmd.LoginHandler.DANG_NHAP_KHAC"));
+        // phien MOI khong bi ngat khi nhan vat cu con trong ~0,4 s cho da: cho nhan vat cu roi roi chon tiep
+        String sc = doc("SelectCharHandler.java");
+        Kiem.dung("SelectCharHandler: cho nhan vat cu roi (choRoi) truoc khi ngat phien moi",
+                sc != null && sc.contains("static boolean choRoi(") && sc.indexOf("choRoi(p2,") > 0);
     }
 
     public static void main(String[] a) {
