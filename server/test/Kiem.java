@@ -168,6 +168,7 @@ public final class Kiem {
         KiemChiemVatRoi.chay();
         KiemDocThu.chay();
         KiemGiaoDichRutDo.chay();
+        KiemGiaoDichXu.chay(); // 0.9.27 giao dich xu 1-1 (goi 66/2/3): nguyen tu, khong nhan doi, tran ngay, luong khong giao dich
         KiemTruTruocTrao.chay(); // 29/10/2026 ma-tran-bot: cho / quy doi / ghep ngoc / che tao / nang cap cu tru TRUOC trao; ban thu NPC; kho do
         KiemKetBan.chay();
         KiemGiftcodeDoCamTayBaoVat.chay();

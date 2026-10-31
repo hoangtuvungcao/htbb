@@ -6568,6 +6568,12 @@ public class GameScr extends Screen {
                 addPotionTrade(this.mainChar.rItems, p);
                 return;
             }
+            if (type == 3) {
+                // 0.9.27: số xu một bên đặt (máy chủ chỉ gửi cho client >= 927)
+                long xu = msg.reader().readLong();
+                game.pokemon.XuGiaoDich.nhanGoi(userIdTrade == this.mainChar.ID, xu, this.mainChar.nameUserTrade);
+                return;
+            }
             if (type == 2) {
                 int id3 = msg.reader().readUnsignedByte();
                 if (userIdTrade == this.mainChar.ID) {
@@ -6615,7 +6621,9 @@ public class GameScr extends Screen {
             WindowInfoScr.gI().left = new Command("Chuyển", new IAction() {
                 @Override
                 public void perform() {
-                    Canvas.startYesNoDlg("Bạn thật sự muốn trao đổi", new IAction() {
+                    Canvas.startYesNoDlg("Bạn thật sự muốn trao đổi" + (game.pokemon.XuGiaoDich.dua > 0 || game.pokemon.XuGiaoDich.nhan > 0
+                            ? " (đưa " + game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, game.pokemon.XuGiaoDich.dua) + ", nhận "
+                            + game.pokemon.TienTe.chu(game.pokemon.TienTe.XU, game.pokemon.XuGiaoDich.nhan) + ")" : ""), new IAction() {
                         @Override
                         public void perform() {
                             GameService.gI().sendConfirmTrade();
@@ -6665,6 +6673,7 @@ public class GameScr extends Screen {
     }
 
     private void cancelTrade() {
+        game.pokemon.XuGiaoDich.datLai();
         this.mainChar.isTrade = false;
         this.mainChar.tItems.removeAllElements();
         this.mainChar.rItems.removeAllElements();

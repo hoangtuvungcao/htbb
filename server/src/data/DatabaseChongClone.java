@@ -128,6 +128,34 @@ public final class DatabaseChongClone {
         return ra;
     }
 
+    /**
+     * 0.9.27 giao dich xu (real.GiaoDichXu): tong xu moi TAI KHOAN da dua qua giao dich 1-1 tu 0h hom nay (kieu
+     * giao_dich, khong bi chan) - nap lai tran ngay sau khi khoi dong. Giao dich chi thuoc ghi xu = 0 nen khong lam lech.
+     */
+    public static java.util.Map<Integer, Long> xuGiaoDichHomNay() {
+        final java.util.Map<Integer, Long> ra = new java.util.HashMap<Integer, Long>();
+        if (!taoBang()) {
+            return ra;
+        }
+        Connection conn = null;
+        PreparedStatement pre = null;
+        ResultSet rs = null;
+        try {
+            conn = Database.instance.getConnection();
+            pre = conn.prepareStatement("SELECT gui_tk, SUM(xu) FROM " + BANG
+                    + " WHERE luc >= CURDATE() AND kieu = 'giao_dich' AND bi_chan = 0 AND xu > 0 AND gui_tk > 0 GROUP BY gui_tk");
+            rs = pre.executeQuery();
+            while (rs.next()) {
+                ra.put(Integer.valueOf(rs.getInt(1)), Long.valueOf(rs.getLong(2)));
+            }
+        } catch (final Exception e) {
+            System.out.println("[CHONG CLONE] khong nap duoc tong xu giao dich hom nay: " + e);
+        } finally {
+            dong(rs, pre, conn);
+        }
+        return ra;
+    }
+
     /** Ngay dang ky tai khoan (team_user.regdate, CSDL tai khoan), -1 neu khong doc duoc. */
     public static long ngayDangKy(final int userId, final String csdlTaiKhoan) {
         Connection conn = null;

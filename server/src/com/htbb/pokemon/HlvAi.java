@@ -192,7 +192,8 @@ public final class HlvAi {
     public static long giaTri(final String kieu, final long xu) {
         // doi thuoc / doi Pokemon: tham so xu o day la PHI (khong phai gia tri trao) -> uoc gia tri co dinh
         if (kieu != null && KIEU_KHONG_XU.contains(kieu)) {
-            return GIA_TRI_KHONG_XU;
+            // 0.9.27: giao dich 1-1 co the kem xu (real.GiaoDichXu) -> gia tri = uoc gia tri thuoc + so xu that.
+            return "giao_dich".equals(kieu) ? GIA_TRI_KHONG_XU + Math.max(0L, xu) : GIA_TRI_KHONG_XU;
         }
         return Math.max(0L, xu);
     }

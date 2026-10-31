@@ -284,6 +284,9 @@ public class Char extends LiveActor {
     public short[] itemquest;
     public int[] tPotions;
     public int[] rPotions;
+    /** 0.9.27 giao dich xu (goi 66/2 kieu 3, real/GiaoDichXu): xu MINH dat vao / xu doi phuong dat cho minh. Chi tru luc chot. */
+    public long tXu;
+    public long rXu;
     public short[][] posNPCInVilage;
     /**
      * True cho mot bot duoc dat vao TAT CA cac khu (region) cua mot ban do nhieu khu (vi du NPC
@@ -416,6 +419,8 @@ public class Char extends LiveActor {
         final int n = (this.potions != null) ? this.potions.length : SO_O_THUOC;
         this.tPotions = new int[n];
         this.rPotions = new int[n];
+        this.tXu = 0L;
+        this.rXu = 0L;
         try {
             this.userTrade.removeAllElements();
         } catch (final Exception e) {

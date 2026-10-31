@@ -546,7 +546,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `thue.cho` | Thuế chợ ký gửi (%) | Cố định (ẩn) | `6` | ngay | game | Đốt khỏi nền kinh tế khi bán được. |
 | `thue.dang_ban` | Phí đăng bán (%) | Cố định (ẩn) | `1` | ngay | game | Đốt, không hoàn; tối thiểu 1 xu. |
 | `thue.chuyen_luong` | Phí chuyển lượng (%) | Cố định (ẩn) | `5` | ngay | game | Làm tròn lên, tối thiểu 1 khi > 0. |
-| `thue.tran_chuyen_xu_gio` | Trần chuyển xu / ngày (giờ thu nhập) | Cố định (ẩn) | `5` | ngay | game | Bội số thu nhập 1 giờ ở cấp người gửi. |
+| `thue.tran_chuyen_xu_gio` | Trần chuyển xu / ngày (giờ thu nhập) | Cố định (ẩn) | `5` | ngay | game | Bội số thu nhập 1 giờ ở cấp người gửi. 0.9.27: áp cho ô xu trong cửa sổ giao dịch 1-1 (`real/GiaoDichXu`), cộng chung mọi nhân vật một tài khoản; `0` = tắt giao dịch xu, `< 0` = không giới hạn; HLV AI không tính. |
 | `phi.dich_chuyen_phan_tram_gio` | Phí dịch chuyển (% thu nhập 1 giờ) | Cố định (ẩn) | `3` | ngay | game | Tối thiểu 1 xu. |
 | `phi.hoi_sinh_phan_tram_gio` | Phí hồi sinh (% thu nhập 1 giờ) | Cố định (ẩn) | `5` | ngay | game | Tối thiểu 1 xu. |
 | `phi.ban_npc_phan_tram` | Giá bán đồ cho NPC (% giá) | Cố định (ẩn) | `5` | ngay | game | Không cộng theo cấp cường hoá. |

@@ -248,6 +248,27 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.27 (`BAN=927`: ô xu trong giao dịch 1-1 kiểu NRO)
+
+Client `PHIEN_BAN=0.9.27-opentest` (`BAN = 0*10000 + 9*100 + 27`; `MIDlet-Version` 0.9.27). **Cần máy chủ có
+`real/GiaoDichXu`** (gói 66/2 kiểu 3) - máy chủ cũ bỏ qua kiểu lạ, ô xu không có tác dụng (giao dịch thuốc vẫn chạy).
+Tương thích ngược: máy chủ chỉ gửi gói 66/2/3 cho client `BAN >= 927`; client 0.9.26 và PC Unity (không gửi số bản)
+nhận một dòng chữ "X đưa N xu vào giao dịch" thay vì ô xu, vẫn nhận xu khi hoàn tất, không tự đưa xu được.
+
+1. **Ô xu** (`game.pokemon.XuGiaoDich`, `ManGiaoDich.veXu`): dưới "Bạn đưa" là nút "Đưa [xu] số" (chạm -> nhập số xu,
+   0 = rút; chỉ khi chưa khoá), dưới "Bạn nhận" là thẻ "Nhận [xu] số" của đối phương; dòng chat khi đối phương đổi số;
+   hộp "Chuyển" ghi tóm tắt "Bạn đưa ... xu, nhận ... xu". J2ME bấm phím (cửa sổ cũ `WindowInfoScr` tab 8): mục "Đưa xu"
+   trong menu ô giao dịch bên mình + dòng chat + tóm tắt trong hộp xác nhận.
+2. **Lượng / lượng khoá không giao dịch được** trong cửa sổ (chỉ NPC "Chuyển lượng" / sàn) - không có ô, không có kiểu gói.
+3. **Máy chủ**: xu chỉ trừ lúc hai bên xác nhận (kiểm lại số dư + trần, trừ hai bên trước, hoàn nếu bước sau hỏng, cộng
+   sau cùng); trần ngày theo tài khoản `thue.tran_chuyen_xu_gio` (mặc định 5 giờ thu nhập ở cấp người gửi); chống clone
+   như giao dịch thuốc; log `gdxu`. Kiểm: `server/test/KiemGiaoDichXu`.
+4. Hàng ví Xu / Lượng / Lượng khoá (`ViTien`, 0.9.7) không đổi - lượng khoá vẫn biểu tượng ổ khoá + chú thích
+   "Lượng khoá" khi chạm.
+
+PC Unity (`client_pc_ios`): chưa có ô xu (cửa sổ giao dịch cũ; Unity không gửi số bản nên máy chủ coi là client cũ,
+gửi dòng chữ thay thế).
+
 ### Bản 0.9.26 (`BAN=926`: chợ kiểu chung, menu chữ cũ -> thẻ lệnh, 4 cửa sổ cũ có vùng chạm, Machamp có lối thẳng Chế tạo, đăng nhập nơi khác không tự nối lại)
 
 Client `PHIEN_BAN=0.9.26-opentest` (`BAN = 0*10000 + 9*100 + 26`; `MIDlet-Version` 0.9.26) trên main c4720b22. Báo lý do
