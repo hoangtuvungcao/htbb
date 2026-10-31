@@ -232,7 +232,7 @@ final class KichBanCap140 {
             }, "cap140-" + p.nhanh);
             th.add(t);
             t.start();
-            Thread.sleep(20000);
+            Thread.sleep(Long.getLong("gianCach", 20000L)); // dam dong (-DgianCach): cac bot vao lech nhau
         }
         // giu bot dieu phoi song (doc goi) trong luc cho
         while (th.stream().anyMatch(Thread::isAlive)) {
