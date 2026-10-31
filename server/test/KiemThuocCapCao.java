@@ -17,7 +17,7 @@ import java.util.List;
  * THUOC CAP CAO BANG XU (31/10/2026, chu game + nguoi choi: cap 50+ 11-22 nghin HP ma thuoc xu chi toi 1.000 HP / 2.000
  * PP, phai dot luong khoa vao goi 200 binh). Kiem: du lieu (cung id / luong hoi voi goi luong khoa, data_potion.price giu 0
  * nen goi 24 khong mua duoc), gia trong khung thiet ke 9.3 o moi cap mo (0,05-5% thu nhap 1 gio / binh, tong chi thuoc
- * &lt;= 12% theo so do sat thuong nhan), khoa cap, chi mua canh Chansey / Kecleon (nha Machamp / ngoai troi xa: khong),
+ * &lt;= ~13% theo so do sat thuong nhan, chuoi gia nhat quan voi cua so thuoc), khoa cap, chi mua canh Chansey / Kecleon (nha Machamp / ngoai troi xa: khong),
  * duong mua qua menu -30 (moi client cu / moi deu co) tu Chansey va Kecleon. Goi tu Kiem.java qua {@link #BAO}.
  */
 public final class KiemThuocCapCao {
@@ -145,6 +145,7 @@ public final class KiemThuocCapCao {
             duLieu();
             gia();
             nganSach();
+            chuoiGia();
             menu();
             mua();
             khoaCap();
@@ -235,7 +236,7 @@ public final class KiemThuocCapCao {
         dung("HP: gia / binh tang theo bac (3k < 7k < 15k)", ThuocCapCao.GIA_GOC[0] < ThuocCapCao.GIA_GOC[1]
                 && ThuocCapCao.GIA_GOC[1] < ThuocCapCao.GIA_GOC[2]);
         dung("PP: gia / binh tang theo bac (3,5k < 7k)", ThuocCapCao.GIA_GOC[3] < ThuocCapCao.GIA_GOC[4]);
-        bang("gia thuan: thu nhap 0 -> gia goc", Long.valueOf(60L), Long.valueOf(ThuocCapCao.gia(2, 0L)));
+        bang("gia thuan: thu nhap 0 -> gia goc", Long.valueOf(ThuocCapCao.GIA_GOC[2]), Long.valueOf(ThuocCapCao.gia(2, 0L)));
         bang("gia thuan: san 0,05% lam tron len (302.450 -> 152)", Long.valueOf(152L), Long.valueOf(ThuocCapCao.gia(2, 302450L)));
     }
 
@@ -253,7 +254,8 @@ public final class KiemThuocCapCao {
     }
 
     static void nganSach() {
-        final int tran = ThongSoLauDai.TIEU_HAO_PHAN_TRAM > 0 ? ThongSoLauDai.TIEU_HAO_PHAN_TRAM : 12;
+        // chu game 01/11/2026: vuot 12% chut it o cap 30 chap nhan duoc, truong hop xau nhat cua mo hinh thuong <= ~13%
+        final int tran = (ThongSoLauDai.TIEU_HAO_PHAN_TRAM > 0 ? ThongSoLauDai.TIEU_HAO_PHAN_TRAM : 12) + 1;
         final int[][] moc = {{30, 8000, 0, 3}, {50, 15000, 1, 4}, {50, 11000, 1, 4}, {50, 22000, 1, 4}, {70, 22000, 2, 4}};
         for (final int[] m : moc) {
             final double vua = phanTramThuNhap(m[0], m[1], 3, 0.045, m[2], m[3]);
@@ -263,6 +265,52 @@ public final class KiemThuocCapCao {
         for (final int[] m : new int[][]{{50, 15000, 1, 4}, {70, 22000, 2, 4}}) {
             final double nang = phanTramThuNhap(m[0], m[1], 4, 0.06, m[2], m[3]);
             dung(String.format("cap %d, %d HP, 4 don x 6%%: chi thuoc %.1f%% thu nhap <= %d%%", m[0], m[1], nang, tran), nang <= tran);
+        }
+    }
+
+    /** Gia data_potion phan A cua {@code id} (-1 neu khong doc duoc). */
+    static long giaPhanA(final String dong, final int id) {
+        final java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\(" + id + ",\\d+,\\d+,\\d,'[^']*','[^']*',(\\d+),").matcher(dong);
+        return m.find() ? Long.parseLong(m.group(1)) : -1L;
+    }
+
+    /** Chuoi cua so thuoc (data_potion 1..6) + thuoc cap cao: binh lon dat hon, xu / diem hoi khong tang. */
+    static void chuoiGia() throws Exception {
+        final String sql = doc("../sql/htbb.sql");
+        final int dau = sql.indexOf("INSERT INTO `data_potion` VALUES");
+        final String dong = sql.substring(dau, sql.indexOf('\n', dau));
+        // {hoi, gia}: HP 80 / 300 / 1.000 (cua so) -> 3.000 / 7.000 / 15.000 (cap cao); PP 160 / 600 / 2.000 -> 3.500 / 7.000
+        final long[][] hp = {{80, giaPhanA(dong, 1)}, {300, giaPhanA(dong, 2)}, {1000, giaPhanA(dong, 3)},
+            {3000, ThuocCapCao.GIA_GOC[0]}, {7000, ThuocCapCao.GIA_GOC[1]}, {15000, ThuocCapCao.GIA_GOC[2]}};
+        final long[][] pp = {{160, giaPhanA(dong, 4)}, {600, giaPhanA(dong, 5)}, {2000, giaPhanA(dong, 6)},
+            {3500, ThuocCapCao.GIA_GOC[3]}, {7000, ThuocCapCao.GIA_GOC[4]}};
+        for (final long[][] c : new long[][][]{hp, pp}) {
+            final String ten = c == hp ? "HP" : "PP";
+            boolean tang = true;
+            boolean giam = true;
+            final StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < c.length; i++) {
+                sb.append(c[i][0]).append('@').append(c[i][1]).append(' ');
+                if (i > 0) {
+                    tang &= c[i][1] > c[i - 1][1];
+                    giam &= c[i][1] * c[i - 1][0] <= c[i - 1][1] * c[i][0]; // gia/diem khong tang
+                }
+            }
+            dung(ten + ": binh lon hon dat hon (" + sb.toString().trim() + ")", tang);
+            dung(ten + ": xu / diem hoi khong tang theo bac", giam);
+        }
+        final long thuNhap1 = LauDai.xuMoiGio(1);
+        boolean khung = true;
+        for (int id = 1; id <= 6; id++) {
+            final long g = giaPhanA(dong, id);
+            khung &= g * 10000L >= thuNhap1 * ThuocCapCao.SAN_PHAN_VAN && g * 10000L <= thuNhap1 * ThuocCapCao.TRAN_PHAN_VAN;
+        }
+        dung("cua so thuoc 1..6: 0,05-5% thu nhap 1 gio o cap 1 (" + thuNhap1 + ") - het vuot 5% duoi cap 23", khung);
+        // phan B: UPDATE theo gia cu -> dung gia phan A
+        final long[][] cu = {{1, 100}, {2, 500}, {3, 800}, {4, 50}, {5, 150}, {6, 500}};
+        for (final long[] c : cu) {
+            final String u = "UPDATE `data_potion` SET `price` = " + giaPhanA(dong, (int) c[0]) + " WHERE `id` = " + c[0] + " AND `price` = " + c[1] + ";";
+            dung("phan B sua_gia_thuoc: " + u, sql.contains(u));
         }
     }
 

@@ -32,7 +32,7 @@ public final class KichBanBatThuong {
     private KichBanBatThuong() {
     }
 
-    static final int GIA_THUOC_1 = 100;   // Binh thuoc 1 o Kecleon (data_potion) - kiem lai bang lan mua dau
+    static final int GIA_THUOC_1 = 2;     // Binh thuoc 1 o Kecleon (data_potion) - kiem lai bang lan mua dau
     static final int VU_KHI = 79;         // Than lua so cap (shop vu khi NPC 2, 500 xu, ban lai 25 xu)
 
     // ================================================================== GM chuan bi

@@ -10,18 +10,19 @@ package com.htbb.pokemon;
  *
  * <pre>
  *  bac  id  hoi            cap   gia goc (xu / binh)
- *   0   22  3.000 HP        30    8
- *   1   93  7.000 HP        50   18
- *   2   94  15.000 HP       70   60
+ *   0   22  3.000 HP        30   11
+ *   1   93  7.000 HP        50   20
+ *   2   94  15.000 HP       70   42
  *   3   24  3.500 PP        30    9
- *   4   95  7.000 PP        50   18
+ *   4   95  7.000 PP        50   17
  * </pre>
  *
  * Gia 1 binh = max(gia goc, 0,05% thu nhap 1 gio o cap nguoi mua) - docs/thiet-ke-game.md 9.3: moi mon 0,05-5% thu
  * nhap 1 gio, tong chi thuoc &lt;= 12% (tieu_hao.thuoc_phan_tram_thu_nhap). Gia goc dat de o cap mo (cap 30 / 50 / 70) danh
- * quai dung cap (~3-6% HP toi da moi don, vai don moi con, hoi 1% / 5 giay ngoai tran; PP = nua so diem HP) ton ~6-10%
- * thu nhap cho HP + PP, nang nhat so do (4 don x 6%) o cap 50 / 70 ~11,8% (server/test/KiemThuocCapCao tinh lai bang bang
- * data_cap_do_lau_dai). San 0,05% giu binh van la ho hut xu nho o
+ * quai dung cap (~3-6% HP toi da moi don, vai don moi con, hoi 1% / 5 giay ngoai tran; PP = nua so diem HP) ton 11,9 / 6,8 /
+ * 5,3% thu nhap o cap 30 / 50 / 70, nang nhat so do (4 don x 6%) o cap 50 / 70 12,4 / 9,7% (chu game 01/11/2026: tran ~13%;
+ * server/test/KiemThuocCapCao tinh lai bang bang data_cap_do_lau_dai). Cung chuoi voi cua so thuoc data_potion 1..6 (2 / 4 /
+ * 7 xu, sua_gia_thuoc.sql): binh lon dat hon, xu / diem hoi khong tang. San 0,05% giu binh van la ho hut xu nho o
  * cap cao (cap 100: binh 15.000 HP ~ 152 xu).
  *
  * <p>data_potion.price cua cac id nay GIU 0: goi 24 (cua so thuoc, gia co dinh, client chi biet gia 20 dong dau) tu
@@ -39,7 +40,7 @@ public final class ThuocCapCao {
     /** Cap mo ban. */
     public static final int[] CAP = {30, 50, 70, 30, 50};
     /** Gia goc (xu / binh) o cap mo. */
-    public static final long[] GIA_GOC = {8L, 18L, 60L, 9L, 18L};
+    public static final long[] GIA_GOC = {11L, 20L, 42L, 9L, 17L};
     /** Ten mac dinh (khi bang data_potion chua nap). */
     public static final String[] TEN = {"Thuốc hồi máu tối đa", "Thuốc hồi máu 7k", "Thuốc hồi máu 15k", "Elixir tối đa", "Ether 7k"};
     /** San gia: phan van (1/10.000) thu nhap 1 gio - 5 = 0,05%. */

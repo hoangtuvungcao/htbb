@@ -1609,7 +1609,7 @@ final class KichBanCap140 {
 
         long lanMuaThuoc, lanLuyenAnToan;
         int vuKhiMac = -1;
-        static final int[] GIA_THUOC = {0, 100, 500, 800};
+        static final int[] GIA_THUOC = {0, 2, 4, 7}; // data_potion 1..3 (sua_gia_thuoc.sql 01/11/2026)
 
         /**
          * Tiem (nha 103) nhu nguoi choi that, theo thu tu uu tien (can bang 29/10/2026 - bot cu mua vu khi bang het xu roi di
