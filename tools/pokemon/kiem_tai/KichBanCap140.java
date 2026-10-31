@@ -1135,7 +1135,7 @@ final class KichBanCap140 {
                     StringBuilder ly = new StringBuilder();
                     if (ld != null) for (int mid : mapTim()) if (ld.equals(BotXuyenSuot.LOAD.get(mid)))
                         ly.append(" map ").append(mid).append(" chan=").append(BotXuyenSuot.dangChan(mid)).append(" duong=").append(BotXuyenSuot.duongUocTinh(b.mapId, mid) != null);
-                    return "khong co ban do co " + tenQ + " (ban do '" + tenBd + "' load " + ld + ":" + ly + ", chan10=" + BotXuyenSuot.dangChan(10) + ")";
+                    return "khong co ban do co " + tenQ + " (ban do '" + tenBd + "' load " + ld + ":" + ly + ", chan10=" + BotXuyenSuot.dangChan(10) + ", dang chan " + BotXuyenSuot.MAP_CHAN.keySet().stream().filter(BotXuyenSuot::dangChan).collect(java.util.stream.Collectors.toList()) + ")";
                 }
                 if (!toi(dich)) { hop95(0); nhanCuaAiNeuKhoa(); return "khong toi duoc " + tenBd; }
                 int can = Integer.parseInt(mh.group(1));

@@ -804,6 +804,13 @@ public class BotXuyenSuot {
                 uongThuoc();
                 if (b.mapId == truoc) {
                     String t = b.chuTu(m);
+                    if (t.contains("hạ gục")) {
+                        // may chu bao dang guc (bot khong thay don cua boss lang thang - goi khac lenh 10): hoi sinh, KHONG
+                        // danh dau ban do dich bi chan (truoc 31/10/2026: chan 30 phut -> 'khong co ban do co Luxray' cho d290)
+                        ghi("guc (may chu bao) khi qua cong " + truoc + "->" + e[1] + ": " + (t.length() > 120 ? t.substring(0, 120) : t));
+                        hoiSinh();
+                        return false;
+                    }
                     MAP_CHAN.put(e[1], System.currentTimeMillis());
                     ketLyDo("cong " + truoc + "->" + e[1] + " khong cho qua: " + (t.length() > 160 ? t.substring(0, 160) : t));
                     return false;
