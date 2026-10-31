@@ -572,12 +572,8 @@ final class KichBanCap140 {
                 Integer load = LOAD_THEO_TEN.get(ten);
                 if (load == null) continue;
                 boolean xuatHien = c.contains("đã xuất hiện");
-                for (int mid : mapTim()) {
-                    if (!load.equals(BotXuyenSuot.LOAD.get(mid)) || KichBanDS.laLang(mid)) continue;
-                    if (xuatHien) BotXuyenSuot.MAP_CHAN.put(mid, System.currentTimeMillis() + 3 * 3600000L);
-                    else BotXuyenSuot.MAP_CHAN.remove(mid);
-                }
-                ghi("boss " + (xuatHien ? "o " : "roi ") + ten + " (load " + load + ") -> " + (xuatHien ? "tranh ban do" : "mo lai"));
+                // tu 31/10/2026 boss lang thang bi dong (real.BossLangThang): khong can tranh ban do - chi ghi
+                ghi("boss " + (xuatHien ? "o " : "roi ") + ten + " (load " + load + ")");
             }
             boSuBoss = n;
         }
