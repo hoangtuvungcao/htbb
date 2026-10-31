@@ -277,7 +277,7 @@ public class RegionMapMoba {
                 listmonster = this.temp_monsters.get(1).values();
             }
 
-            for (Monster mt : listmonster) {
+            for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 try {
                     mt.update();
                     if (mt.target != null && mt.target.exit) {
@@ -398,7 +398,7 @@ public class RegionMapMoba {
                 listmonster = this.temp_monsters.get(2).values();
             }
 
-            for (Monster mt : listmonster) {
+            for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 try {
                     mt.update();
                     if (mt.target != null && mt.target.exit) {
@@ -807,7 +807,7 @@ public class RegionMapMoba {
                 }
 
                 try {
-                    for (Monster mt : listmonster) {
+                    for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                         try {
                             mt.update();
                             if (mt.target != null && mt.target.exit) {

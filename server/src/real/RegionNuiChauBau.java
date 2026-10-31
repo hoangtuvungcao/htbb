@@ -240,7 +240,7 @@ public class RegionNuiChauBau {
                 listmonster = this.temp_monsters.get(1).values();
             }
 
-            for (Monster mt : listmonster) {
+            for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 try {
                     mt.update();
                     if (mt.target != null && mt.target.exit) {
@@ -349,7 +349,7 @@ public class RegionNuiChauBau {
                 listmonster = this.temp_monsters.get(2).values();
             }
 
-            for (Monster mt : listmonster) {
+            for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                 try {
                     mt.update();
                     if (mt.target != null && mt.target.exit) {
@@ -471,7 +471,7 @@ public class RegionNuiChauBau {
                 Collection<Monster> listmonster = this.monsters.get(0).values();
 
                 try {
-                    for (Monster mt : listmonster) {
+                    for (Monster mt : new java.util.ArrayList<Monster>(listmonster)) {   // ban sao: tranh ConcurrentModificationException
                         try {
                             mt.update();
                             if (mt.isDead) {

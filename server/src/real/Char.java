@@ -6428,7 +6428,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
     // thêm sửa lan test 
     public void updateEffectBuff() {
     try {
-        final Iterator<EffectBuff> it = this.AllEffBuff.iterator();
+        // ban sao (31/10/2026, tai 315 bot cb2): luong khac (chieu / vat pham / quai) them hieu ung trong luc duyet ->
+        // ConcurrentModificationException o Vector$Itr.remove, hieu ung het han khong duoc go
+        final Iterator<EffectBuff> it = new java.util.ArrayList<EffectBuff>(this.AllEffBuff).iterator();
 
         while (it.hasNext()) {
             final EffectBuff ef = it.next();
@@ -6500,7 +6502,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
 
                 // Xoá hiệu ứng
-                it.remove();
+                this.AllEffBuff.remove(ef);
                 this.hashEffBuff.remove(ef.idEff);
             }
         }
