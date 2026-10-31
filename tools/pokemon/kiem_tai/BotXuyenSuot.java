@@ -757,7 +757,9 @@ public class BotXuyenSuot {
             if (KichBanDS2.laOffline(tu) || !LOAD.containsKey(tu)) { KichBanDS2.raNgoai(b); tu = b.mapId; }
             // cum Johto -> lang: di bo toi New Bark roi Arcanine "Về làng" (truoc 30/10/2026 duong mot chieu)
             // (duong() bo qua khoa cap: tu cum Johto "co duong" qua 113 / 114 cap 72+ nhung cong bi chan)
-            if (KichBanDS.laLang(dich) && (KHU_XA_ARCANINE.contains(tu) || CUM_JOHTO.contains(tu))) {
+            // ... va moi ban do khong co duong di bo ve lang nhung di bo toi duoc New Bark (Violet 20, Ecruteak 19, Goldenrod 18...)
+            if (KichBanDS.laLang(dich) && (KHU_XA_ARCANINE.contains(tu) || CUM_JOHTO.contains(tu)
+                    || duong(tu, dich) == null && !KichBanDS.laLang(tu) && !cungBanDo(tu, 10) && duong(tu, 10) != null)) {
                 int k = KHU_XA_ARCANINE.contains(tu) ? tu : 10;
                 if (toi(k) && quaArcanine("Về làng")) tu = b.mapId;
                 if (cungBanDo(tu, dich)) return true;
@@ -788,7 +790,8 @@ public class BotXuyenSuot {
             if ((duong(tu, dich) == null || quaKhoa(duong(tu, dich), b.lv)) && !cungBanDo(tu, 10) && duong(10, dich) != null && !dangChan(10)
                     && !quaKhoa(duong(10, dich), b.lv)) {
                 if (quaArcanine("New Bark")) tu = b.mapId;
-                else mapChan().put(10, System.currentTimeMillis());
+                // khong chan New Bark 30 phut chi vi lan nay khong toi duoc Arcanine (guc / lech vi tri) - truoc 31/10/2026 chan
+                // ca cum Johto: d290 o Tau S.S. Anne 'khong co ban do co Luxray' (dang chan [10])
             }
             for (Map.Entry<Integer, String> e : CHI_ARCANINE.entrySet()) {
                 if (cungBanDo(dich, e.getKey()) && !cungBanDo(tu, dich)) {
