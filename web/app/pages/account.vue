@@ -6,8 +6,14 @@ interface AccountInfo {
   username: string
   email: string | null
   activated: boolean
-  chars: Array<{ charname: string, lastLv: number, xp: number, class: number, dex: number }>
+  chars: Array<{
+    charname: string, lastLv: number, xp: number, class: number, dex: number,
+    xu?: number, khoXu?: number, luong?: number, luongKhoa?: number, khoLuong?: number, khoLuongKhoa?: number,
+    mapTen?: string | null, lanCuoi?: string | null
+  }>
 }
+
+const soVn = (n: number | undefined) => (n ?? 0).toLocaleString('vi-VN')
 
 const api = useApi()
 const auth = useAuth()
@@ -114,6 +120,9 @@ const columns = [
   { accessorKey: 'charname', header: 'Tên' },
   { accessorKey: 'class', header: 'Pokémon' },
   { accessorKey: 'lastLv', header: 'Cấp' },
+  { accessorKey: 'xu', header: 'Xu' },
+  { accessorKey: 'luong', header: 'Lượng' },
+  { accessorKey: 'mapTen', header: 'Đang ở' },
 ]
 </script>
 
@@ -228,6 +237,18 @@ const columns = [
               </template>
               <template #lastLv-cell="{ row }">
                 <span class="num font-semibold text-primary">{{ row.original.lastLv }}</span>
+              </template>
+              <template #xu-cell="{ row }">
+                <span class="num">{{ soVn(row.original.xu) }}</span>
+                <span v-if="row.original.khoXu" class="block text-xs text-muted">kho {{ soVn(row.original.khoXu) }}</span>
+              </template>
+              <template #luong-cell="{ row }">
+                <span class="num">{{ soVn(row.original.luong) }}</span>
+                <span class="block text-xs text-muted">khoá {{ soVn(row.original.luongKhoa) }}<template v-if="row.original.khoLuong || row.original.khoLuongKhoa"> · kho {{ soVn(row.original.khoLuong) }} / {{ soVn(row.original.khoLuongKhoa) }}</template></span>
+              </template>
+              <template #mapTen-cell="{ row }">
+                <span>{{ row.original.mapTen ?? '—' }}</span>
+                <span v-if="row.original.lanCuoi" class="block text-xs text-muted">chơi lúc {{ row.original.lanCuoi }}</span>
               </template>
             </UTable>
             <div v-else-if="data" class="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-dashed border-default p-10 text-center">
