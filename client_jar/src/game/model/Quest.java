@@ -279,32 +279,82 @@ public class Quest {
         return "";
     }
 
-    public String getInfoPaintScr() {
-        String info = "";
-        if (this.stateQuest == 1) {
-            info = new StringBuffer(String.valueOf(this.decript)).append("|").append(this.infoGift).toString();
-        } else if (this.stateQuest == 2) {
-            switch (this.type) {
-                case 0:
-                    String info2 = new StringBuffer(String.valueOf(Res.monsterTemplates[this.idMonsKill[0]].name)).append(": ").append((int) this.allMonsKilled[0]).append("/").append((int) this.totalMonskill[0]).toString();
-                    for (int i = 1; i < this.idMonsKill.length; i++) {
-                        info2 = new StringBuffer(String.valueOf(info2)).append("|").append(Res.monsterTemplates[this.idMonsKill[i]]).append(": ").append((int) this.allMonsKilled[i]).append("/").append((int) this.totalMonskill[i]).toString();
-                    }
-                    info = new StringBuffer(String.valueOf(info2)).append("|").append(this.infoGift).toString();
-                    break;
-                case 2:
-                    String info3 = new StringBuffer(String.valueOf(ItemQuest.NAME_ITEM[this.idItemGet[0]])).append(": ").append((int) this.allItemGet[0]).append("/").append((int) this.totalItemGet[0]).toString();
-                    for (int i2 = 1; i2 < this.idItemGet.length; i2++) {
-                        info3 = new StringBuffer(String.valueOf(info3)).append("|").append(ItemQuest.NAME_ITEM[this.idItemGet[i2]]).append(": ").append((int) this.allItemGet[i2]).append("/").append((int) this.totalItemGet[i2]).toString();
-                    }
-                    info = new StringBuffer(String.valueOf(info3)).append("|").append(this.infoGift).toString();
-                    break;
-                case 4:
-                    info = new StringBuffer(String.valueOf(new StringBuffer("Hạ: ").append((int) this.allMonsKilled[0]).append("/").append((int) this.totalMonskill[0]).toString())).append("|").append(this.infoGift).toString();
-                    break;
-            }
+    /**
+     * Tên quái theo id; null = client chưa có mẫu quái (chỉ nạp mẫu quái của bản đồ đang đứng).
+     * 31/10/2026 (báo lỗi J2ME "sổ nhiệm vụ trống"): cửa ải "60 Golem ở Goldenrod" đứng ở bản đồ khác -> mẫu Golem null ->
+     * getInfoPaintScr ném NPE -> sổ nhiệm vụ cũ (Menu › Nhiệm vụ › Sổ nhiệm vụ) bỏ cả nhiệm vụ, vẽ "Chưa nhận nhiệm vụ".
+     */
+    public static String tenQuai(int id) {
+        try {
+            MonsterTemplate t = Res.monsterTemplates[id];
+            return t != null && t.name != null && t.name.length() > 0 ? t.name : null;
+        } catch (Throwable e) {
+            return null;
         }
-        return info;
+    }
+
+    static String tenVatPham(int id) {
+        try {
+            String s = ItemQuest.NAME_ITEM[id];
+            return s != null && s.length() > 0 ? s : null;
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    /** Dòng mục tiêu khi không biết tên quái / vật phẩm: câu mục tiêu của máy chủ, không thì mô tả, không thì kiểu chung. */
+    String mucChung(String kieu) {
+        if (this.coMuc()) {
+            return this.muc;
+        }
+        return this.decript != null && this.decript.length() > 0 ? this.decript : kieu;
+    }
+
+    /**
+     * Chữ mục tiêu + phần thưởng cho sổ nhiệm vụ cũ (WindowInfoScr tab Nhiệm vụ, máy J2ME bấm phím), dòng cách bằng "|".
+     * Không bao giờ rỗng khi nhiệm vụ đang làm / đã xong (rỗng = sổ coi như không có nhiệm vụ): thiếu mẫu quái / vật phẩm
+     * thì dùng câu mục tiêu máy chủ gửi; nói chuyện / tiến hoá / kiểu khác thì mô tả.
+     */
+    public String getInfoPaintScr() {
+        StringBuffer b = new StringBuffer();
+        if (this.stateQuest == 1) {
+            b.append(this.decript != null && this.decript.length() > 0 ? this.decript : mucChung("Xong! Về trả nhiệm vụ"));
+        } else if (this.stateQuest == 2) {
+            try {
+                if (this.type == TYPE_KILL_MONS && this.idMonsKill != null && this.idMonsKill.length > 0) {
+                    for (int i = 0; i < this.idMonsKill.length; i++) {
+                        String t = tenQuai(this.idMonsKill[i]);
+                        if (i > 0) {
+                            b.append("|");
+                        }
+                        b.append(t != null ? t : (this.idMonsKill.length == 1 ? mucChung("Hạ quái") : "Quái " + (i + 1)))
+                                .append(": ").append((int) this.allMonsKilled[i]).append("/").append((int) this.totalMonskill[i]);
+                    }
+                } else if (this.type == TYPE_GET_ITEM && this.idItemGet != null && this.idItemGet.length > 0) {
+                    for (int i = 0; i < this.idItemGet.length; i++) {
+                        String t = tenVatPham(this.idItemGet[i]);
+                        if (i > 0) {
+                            b.append("|");
+                        }
+                        b.append(t != null ? t : (this.idItemGet.length == 1 ? mucChung("Thu thập vật phẩm") : "Vật phẩm " + (i + 1)))
+                                .append(": ").append((int) this.allItemGet[i]).append("/").append((int) this.totalItemGet[i]);
+                    }
+                } else if (this.type == TYPE_KILL_MONSTER_LEVEL && this.allMonsKilled != null && this.allMonsKilled.length > 0) {
+                    b.append("Hạ: ").append((int) this.allMonsKilled[0]).append("/").append((int) this.totalMonskill[0]);
+                } else {
+                    b.append(mucChung("Đang làm"));
+                }
+            } catch (Throwable e) {
+                b.setLength(0);
+                b.append(mucChung("Đang làm"));
+            }
+        } else {
+            return "";
+        }
+        if (this.infoGift != null && this.infoGift.length() > 0) {
+            b.append("|").append(this.infoGift);
+        }
+        return b.toString();
     }
 
     public boolean isTalk() {
