@@ -18,6 +18,7 @@ import {
   xhIdDanhHieu, xhTenGiaoThe, xhVungTuInfotop,
 } from '../../shared/utils/xepHangThuan'
 import type { XhBangDinhNghia, XhCaiDat, XhDongDem, XhLuaChon, XhLuatTen, XhMaBang } from '../../shared/utils/xepHangThuan'
+import { tenHienThiHlvAi } from '../../shared/utils/hlvAi'
 import { dexHienTai, speciesName } from '../../shared/utils/pokemon'
 
 // ------------------------------------------------------------------ kiểu kết quả công khai
@@ -153,7 +154,27 @@ async function tinhLoaiTru(cd: XhCaiDat): Promise<{ luat: XhLuatTen, userIds: nu
       console.error('[xep-hang] khong doc duoc team_user de loai tru:', e?.code ?? e?.message ?? e)
     }
   }
+  await napTenHlvAi()
   return { luat, userIds: [...ids].slice(0, MAX_ID_LOAI_TRU * 3) }
+}
+
+/** Tên (chữ thường) nhân vật của Huấn luyện viên AI (account.team_user.la_bot = 1) - bảng xếp hạng hiện "bot_ai: tên". */
+let tenHlvAi = new Set<string>()
+
+async function napTenHlvAi(): Promise<void> {
+  try {
+    const ids = (await q<{ id: number }>(dbAccount(), `SELECT id FROM team_user WHERE la_bot = 1 LIMIT ${MAX_ID_LOAI_TRU}`))
+      .map(r => Math.trunc(Number(r.id))).filter(n => Number.isFinite(n))
+    const moi = new Set<string>()
+    if (ids.length) {
+      const rows = await q<{ charname: string }>(dbGame(), `SELECT charname FROM tob_char WHERE userid IN (${ids.join(',')})`)
+      for (const r of rows) moi.add(String(r.charname).toLowerCase())
+    }
+    tenHlvAi = moi
+  }
+  catch {
+    // CSDL chưa có cột la_bot (chưa nâng cấp): không có bot
+  }
 }
 
 /** Điều kiện loại trừ trên tob_char bí danh `a` (đệm theo chu kỳ làm mới). */
@@ -198,7 +219,7 @@ function dongNv(r: Record<string, any>, giaTri: number | null, phu = '', vung?: 
   const lv = soNguyen(r.lastLv)
   const cls = soNguyen(r.class)
   return {
-    ten: String(r.charname ?? ''),
+    ten: tenHienThiHlvAi(String(r.charname ?? ''), tenHlvAi.has(String(r.charname ?? '').toLowerCase())),
     loai: speciesName(cls, lv, r.dex),
     dex: dexHienTai(cls, lv, r.dex),
     shiny: soNguyen(r.shiny) > 0,
