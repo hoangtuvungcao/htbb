@@ -54,9 +54,9 @@ MariaDB sẽ kéo game xuống (`Requires=`).
 - Muốn báo trước cho người chơi rồi mới khởi động lại: dùng *khởi động lại an toàn* từ web (mục 4.4).
 
 **Login server (`htbb-login`)** — `htbb-login.jar` (viết trong repo, thay `CheckLoginSocket.jar` của game gốc từ
-31/10/2026; đặc tả + số đo: [dang-nhap.md](dang-nhap.md)). Restart login vô hại với người đang chơi, nhưng game làm
-mất **một** yêu cầu đăng nhập gửi ngay sau đó → luôn restart game sau login nếu có thể (hoặc chấp nhận một người
-thấy "chưa phản hồi" và bấm lại).
+31/10/2026; đặc tả + số đo: [dang-nhap.md](dang-nhap.md)). Restart login vô hại với người đang chơi: game tự nối
+lại trong 1-2 s và gửi lại yêu cầu đăng nhập đang chờ (game bản trước 31/10/2026 thì mất một yêu cầu — restart game
+sau login).
 
 ```bash
 systemctl show htbb-login -p ExecStart --no-pager | grep -o -- '-jar [^ ;]*'   # đang chạy jar nào
@@ -65,12 +65,12 @@ grep -E ' (W|E) \[' /opt/htbb/logs/login.out | tail     # QUA_TAI (hàng đầy 
 
 # LÊN bản mới (một lần, sau khi qua cổng kiểm staging; lúc vắng người):
 sudo install -m 644 /opt/htbb/vps/htbb-login.service /etc/systemd/system/ && sudo systemctl daemon-reload
-sudo systemctl restart htbb-login && sleep 2 && sudo systemctl restart htbb-game
+sudo systemctl restart htbb-login
 
 # QUAY LUI về jar cũ - MỘT dòng (không sửa unit, không đổi server.ini):
-echo HTBB_LOGIN_JAR=CheckLoginSocket.jar | sudo tee /etc/htbb/login.env && sudo systemctl restart htbb-login && sleep 2 && sudo systemctl restart htbb-game
+echo HTBB_LOGIN_JAR=CheckLoginSocket.jar | sudo tee /etc/htbb/login.env && sudo systemctl restart htbb-login
 # Về lại bản mới:
-sudo rm /etc/htbb/login.env && sudo systemctl restart htbb-login && sleep 2 && sudo systemctl restart htbb-game
+sudo rm /etc/htbb/login.env && sudo systemctl restart htbb-login
 ```
 
 Dấu hiệu cần xem: `[NHIP]` có `hetHan` / `tuChoi` > 0 (yêu cầu bị trả `-3` vì quá hạn 13 s / hàng đầy — thường do CSDL
@@ -924,7 +924,7 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 | `htbb-game` trạng thái `failed`, không tự bật | `journalctl -u htbb-game -n 50`, `tail -100 /opt/htbb/logs/game.out` | sửa nguyên nhân (thường CSDL/`server.ini`), rồi `systemctl reset-failed htbb-game && systemctl start htbb-game` |
 | Game bật nhưng không vào được / mất tính năng lạ | `grep "Load configuration file error" game.out` | sửa dòng sai trong `vps/server.ini.tmpl`/biến deploy, deploy lại, khởi động lại |
 | Đăng nhập báo "Có lỗi xảy ra khi đăng nhập" | `systemctl status htbb-login`, `grep -E ' (W\|E) \[' /opt/htbb/logs/login.out \| tail` | lỗi CSDL / quá hạn thì xem MariaDB; khởi động lại `htbb-login` rồi `htbb-game`; kiểm `loginServer/server.ini` (cần `characterEncoding=UTF-8` trong `db.url`); bản mới hỏng thì quay lui (mục 1, "Login server") |
-| Đăng nhập báo "Máy chủ đăng nhập chưa phản hồi" | `grep 'DANG_NHAP' /opt/htbb/logs/game.out \| tail` (game: số yêu cầu chờ, kết nối login còn/MẤT), `[NHIP]` trong `login.out` | login vừa khởi động lại mà game chưa: `systemctl restart htbb-game` lúc vắng; `ket noi login MAT` kéo dài: xem `htbb-login` |
+| Đăng nhập báo "Máy chủ đăng nhập chưa phản hồi" | `grep 'DANG_NHAP' /opt/htbb/logs/game.out \| tail` (game: số yêu cầu chờ, kết nối login còn/MẤT), `[NHIP]` trong `login.out` | `ket noi login MAT` kéo dài: xem `htbb-login` (game tự nối lại + gửi lại yêu cầu chờ); `hang gui` lớn: login/CSDL chậm, xem `[NHIP]` |
 | Game treo (cổng mở, không phản hồi) | `suc-khoe.log` báo `nhip=TREO`/`game=HONG` | nếu chưa bật tự khởi động lại: `systemctl restart htbb-game` (không `kill -9`); xem `gc.log` nếu nghi hết heap |
 | Nhân vật "biến mất" khỏi danh sách chọn | `SELECT charname, ban, del FROM htbb_db.tob_char WHERE charname='<tên>'`; `/admin/log?bang=tob_log_all_item&loc2=loiinvent`; `grep "Data too long" game.out` | lưu hành trang thất bại thì server tự đặt `ban=1`: tìm nguyên nhân (hành trang quá lớn), rồi mở khoá ở `/admin/nhanvat`. Các cột `tob_char.equip/inven/bag/tuido` phải là `MEDIUMTEXT` (cột `TEXT` chỉ chứa ~140 món). Phần tiến độ từ lần lưu thành công cuối **đã mất** |
 | Website 502 / trắng | `systemctl status htbb-web`, `journalctl -u htbb-web -n 100`, `tail /opt/htbb/logs/deploy-web.log` | `systemctl restart htbb-web`; deploy hỏng thì web tự quay về bản trước |

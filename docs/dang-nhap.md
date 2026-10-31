@@ -173,21 +173,22 @@ Unit [vps/htbb-login.service](../vps/htbb-login.service) chạy `-jar ${HTBB_LOG
 ```sh
 cd /opt/htbb && sudo -u htbb git pull                        # có server/loginServer/htbb-login.jar
 sudo install -m 644 vps/htbb-login.service /etc/systemd/system/ && sudo systemctl daemon-reload
-sudo systemctl restart htbb-login && sleep 2 && sudo systemctl restart htbb-game   # game nối lại login mới
+sudo systemctl restart htbb-login        # game tự nối lại (≤ 1-2 s) và gửi lại yêu cầu đang chờ
 tail -n 20 /opt/htbb/logs/login.out                          # [KHOI_DONG] ... [CSDL] ket noi CSDL tai khoan ok
 ```
 
 Chưa cài unit mới thì máy vẫn chạy `CheckLoginSocket.jar` như cũ (unit cũ ghi cứng tên jar) — kéo code về một mình
-không đổi gì. Restart game sau login vì game server **làm mất yêu cầu đầu tiên** gửi sau khi login server khởi động lại
-(mục 9); `vps/update.sh` / `deploy-auto.sh` vốn đã restart login trước rồi mới bật game.
+không đổi gì. Restart login **không** cần restart game: từ bản game có `KhachDangNhap` (cùng nhánh này) game tự nối
+lại và gửi lại yêu cầu còn chờ (mục 9). Game bản cũ hơn thì làm mất một yêu cầu ngay sau khi login khởi động lại —
+khi đó restart game sau login.
 
 **Quay lui về jar cũ — một dòng:**
 
 ```sh
-echo HTBB_LOGIN_JAR=CheckLoginSocket.jar | sudo tee /etc/htbb/login.env && sudo systemctl restart htbb-login && sleep 2 && sudo systemctl restart htbb-game
+echo HTBB_LOGIN_JAR=CheckLoginSocket.jar | sudo tee /etc/htbb/login.env && sudo systemctl restart htbb-login
 ```
 
-Về lại bản mới: `sudo rm /etc/htbb/login.env && sudo systemctl restart htbb-login && sleep 2 && sudo systemctl restart htbb-game`.
+Về lại bản mới: `sudo rm /etc/htbb/login.env && sudo systemctl restart htbb-login`.
 Kiểm đang chạy jar nào: `systemctl show htbb-login -p ExecStart` hoặc `ps -o args= -C java | grep -- -jar`.
 
 Máy dev / Windows: `server/loginServer/run.bat` (`set HTBB_LOGIN_JAR=CheckLoginSocket.jar` để chạy jar cũ);
@@ -217,10 +218,15 @@ hai, rớt mạng vào lại) **ĐẠT** với cả hai jar.
 
 ## 9. Rủi ro / việc còn lại
 
-- **Game làm mất yêu cầu đầu tiên sau khi login server khởi động lại** (cả jar cũ lẫn mới): luồng gửi của
-  `io.LogInController` đã kiểm "còn nối" rồi mới chờ hàng; login rớt trong lúc chờ thì yêu cầu kế tiếp ghi vào socket chết
-  → người đó chờ 15 s rồi thấy "chưa phản hồi" (thấy được ở bot `dang_nhap.dung` khi chỉ restart login). Cách tránh khi
-  vận hành: restart game sau login (mục 7). Sửa tận gốc (gửi lại yêu cầu còn chờ khi nối lại) là việc của game server.
+- **Đã sửa (31/10/2026): game làm mất yêu cầu đầu tiên sau khi login server khởi động lại** (xảy ra với cả jar cũ lẫn
+  mới). Luồng gửi cũ của `io.LogInController` kiểm "còn nối" rồi mới chờ hàng; login rớt trong lúc chờ thì yêu cầu kế
+  tiếp bị ghi vào socket chết → người đó chờ 15 s rồi thấy "chưa phản hồi" (bot `dang_nhap.dung` HỎNG khi chỉ restart
+  login). Nay phía game là [KhachDangNhap](../server/src/com/htbb/dangnhap/KhachDangNhap.java): yêu cầu nằm trong
+  bảng chờ tới khi có trả lời / hết hạn; luồng gửi chờ hàng có hạn 500 ms nên thấy rớt kết nối ngay cả lúc rảnh; nối lại
+  xong thì **gửi lại** mọi yêu cầu còn chờ theo thứ tự phiên; trả lời chỉ giao khi gỡ được khỏi bảng chờ (không bao giờ
+  trả lời hai lần, trả lời muộn sau 15 s bị bỏ); hạn 15 s tính từ lần gửi đầu. Kiểm: `KiemDangNhapServer` (login khởi
+  động lại giữa đợt 200 đăng nhập: 200/200 đúng, mỗi phiên một lần, trễ tối đa ~2 s) và bot `cn_dang_nhap` sau khi chỉ
+  restart login: ĐẠT.
 - Bản mới dùng Connector/J 5.1.49 (như game) thay 5.0.8: hết lỗi `utf8mb4` của driver cũ, nhưng khi còn giữ đường quay
   lui về jar cũ thì MariaDB **vẫn** phải để `utf8` ([htbb-mariadb.cnf](../vps/htbb-mariadb.cnf)).
 - Mật khẩu vẫn là `PASSWORD()` không salt (yêu cầu tương thích). Login server tự viết là điều kiện để làm giai đoạn 3 của

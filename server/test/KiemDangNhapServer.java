@@ -58,6 +58,7 @@ public final class KiemDangNhapServer {
             gioiHan();
             mayChu();
             trienKhai();
+            khachGame();
         } catch (final Exception e) {
             Kiem.dung("khong nem ngoai le: " + e, false);
             e.printStackTrace(System.out);
@@ -688,6 +689,155 @@ public final class KiemDangNhapServer {
             Kiem.dung(u + ": ExecStart chay ${HTBB_LOGIN_JAR}", s.matches("(?s).*\\nExecStart=[^\\n]*-jar \\$\\{HTBB_LOGIN_JAR\\}.*"));
             Kiem.dung(u + ": EnvironmentFile dat SAU Environment (tep quay lui ghi de mac dinh)",
                     s.indexOf("EnvironmentFile=-") > s.indexOf("Environment=HTBB_LOGIN_JAR"));
+        }
+    }
+
+    // ================================================================ phia game: KhachDangNhap (io.LogInController)
+
+    /** Ghi lai moi tra loi / het han cua khach. */
+    static final class NgheGhi implements com.htbb.dangnhap.KhachDangNhap.Nghe {
+        final ConcurrentHashMap<Long, AtomicInteger> soLan = new ConcurrentHashMap<>();
+        final ConcurrentHashMap<Long, Integer> kq = new ConcurrentHashMap<>();
+        final ConcurrentHashMap<Long, Long> luc = new ConcurrentHashMap<>();
+        final Set<Long> hetHan = ConcurrentHashMap.newKeySet();
+
+        @Override
+        public void traLoi(final long phien, final int ketQua, final boolean v, final byte r) {
+            this.soLan.computeIfAbsent(phien, x -> new AtomicInteger()).incrementAndGet();
+            this.kq.put(phien, ketQua);
+            this.luc.put(phien, System.currentTimeMillis());
+        }
+
+        @Override
+        public void hetHan(final long phien, final long cho, final String t) {
+            this.soLan.computeIfAbsent(phien, x -> new AtomicInteger()).incrementAndGet();
+            this.hetHan.add(phien);
+        }
+
+        @Override
+        public void suKien(final String chu) {
+        }
+
+        boolean moiPhienMotLan() {
+            for (final AtomicInteger a : this.soLan.values()) {
+                if (a.get() != 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    static void doiDu(final NgheGhi n, final int so, final long ms) throws InterruptedException {
+        final long het = System.currentTimeMillis() + ms;
+        while (n.soLan.size() < so && System.currentTimeMillis() < het) {
+            Thread.sleep(20);
+        }
+    }
+
+    static void khachGame() throws Exception {
+        final java.io.ByteArrayOutputStream log = new java.io.ByteArrayOutputStream();
+        final Method datRa = NhatKy.class.getDeclaredMethod("datRa", java.io.PrintStream.class);
+        datRa.setAccessible(true);
+        datRa.invoke(null, new java.io.PrintStream(log, true, "UTF-8"));
+        try {
+            final NguonGia ng = new NguonGia();
+            for (int i = 1; i <= 200; i++) {
+                ng.them("kh" + i, "1", 5000 + i, 0, 0, "", 0);
+            }
+            ng.ngu = 15; // CSDL hoi cham: luc tat dot ngot van con yeu cau trong hang chua tra loi
+            MayChuDangNhap m = bat(ng, "login.luong", "1");
+            final int cong = m.cong();
+            final NgheGhi nghe = new NgheGhi();
+            final com.htbb.dangnhap.KhachDangNhap k = new com.htbb.dangnhap.KhachDangNhap(
+                    new com.htbb.dangnhap.KhachDangNhap.DiaChi() {
+                        @Override
+                        public String host() {
+                            return "127.0.0.1";
+                        }
+
+                        @Override
+                        public int cong() {
+                            return cong;
+                        }
+                    }, nghe, 15000L);
+            k.batDau();
+            final long t0 = System.currentTimeMillis();
+            final Map<Long, Long> guiLuc = new ConcurrentHashMap<>();
+            for (int i = 1; i <= 200; i++) {
+                guiLuc.put((long) i, System.currentTimeMillis());
+                k.gui(i, "kh" + i, "1", (byte) 9);
+                Thread.sleep(5);
+                if (i == 100) {
+                    m.dung(0); // login server "chet" giua dot: yeu cau trong hang + dang gui bi bo, ket noi dut
+                    Thread.sleep(300);
+                    m = bat(ng, "login.luong", "1", "port", String.valueOf(cong)); // bat lai cung cong
+                }
+            }
+            doiDu(nghe, 200, 20000);
+            long treMax = 0;
+            int dung = 0;
+            for (int i = 1; i <= 200; i++) {
+                final Long l = nghe.luc.get((long) i);
+                if (l != null) {
+                    treMax = Math.max(treMax, l - guiLuc.get((long) i));
+                }
+                final Integer v = nghe.kq.get((long) i);
+                if (v != null && v == 5000 + i) {
+                    dung++;
+                }
+            }
+            Kiem.bang("login server khoi dong lai giua dot 200 dang nhap: ca 200 nhan DUNG ket qua", 200, dung);
+            Kiem.dung("khong yeu cau nao het han 15 s", nghe.hetHan.isEmpty());
+            Kiem.dung("moi phien tra loi DUNG MOT lan (khong tra loi doi)", nghe.moiPhienMotLan() && nghe.soLan.size() == 200);
+            Kiem.dung("tre lon nhat chi bang thoi gian noi lai (< 5 s, khong phai 15 s): " + treMax + " ms", treMax < 5000);
+            Kiem.dung("da noi lai va gui lai yeu cau dang cho: noiLai=" + k.soNoiLai.get() + " guiLai=" + k.soGuiLai.get(),
+                    k.soNoiLai.get() >= 2 && k.soGuiLai.get() > 0);
+            Kiem.bang("khong con yeu cau treo", 0, k.soDangCho());
+
+            // yeu cau dau tien SAU khi login khoi dong lai luc dang ranh (loi cu: ghi vao socket chet -> mat, cho 15 s)
+            m.dung(0);
+            Thread.sleep(300);
+            m = bat(ng, "port", String.valueOf(cong));
+            final long t1 = System.currentTimeMillis();
+            k.gui(1001, "kh1", "1", (byte) 9);
+            doiDu(nghe, 201, 20000);
+            Kiem.dung("yeu cau dau tien sau khi login khoi dong lai (luc ranh) duoc tra loi nhanh: "
+                    + (System.currentTimeMillis() - t1) + " ms", Integer.valueOf(5001).equals(nghe.kq.get(1001L))
+                    && System.currentTimeMillis() - t1 < 5000);
+            m.dung(0);
+            k.dung();
+
+            // login server CHET HAN: het han dung choMs, bat lai sau do thi KHONG tra loi them lan nua
+            final NgheGhi n2 = new NgheGhi();
+            final int cong2 = cong;
+            final com.htbb.dangnhap.KhachDangNhap k2 = new com.htbb.dangnhap.KhachDangNhap(
+                    new com.htbb.dangnhap.KhachDangNhap.DiaChi() {
+                        @Override
+                        public String host() {
+                            return "127.0.0.1";
+                        }
+
+                        @Override
+                        public int cong() {
+                            return cong2;
+                        }
+                    }, n2, 1200L);
+            k2.batDau();
+            k2.gui(1, "kh1", "1", (byte) 9);
+            k2.gui(2, "kh2", "1", (byte) 9);
+            doiDu(n2, 2, 5000);
+            Kiem.dung("login server khong len: het han sau choMs (1.2 s) -> bao nguoi choi thu lai", n2.hetHan.size() == 2);
+            m = bat(ng, "port", String.valueOf(cong));
+            Thread.sleep(2500);
+            Kiem.dung("login len lai sau het han: yeu cau da het han KHONG gui lai, khong tra loi lan hai",
+                    n2.moiPhienMotLan() && n2.kq.isEmpty());
+            k2.dung();
+            m.dung(0);
+            Kiem.dung("thoi gian chay phan khach < 30 s", System.currentTimeMillis() - t0 < 30000);
+        } finally {
+            NhatKy.xa(2000L);
+            datRa.invoke(null, new java.io.PrintStream(new java.io.FileOutputStream(java.io.FileDescriptor.out), true, "UTF-8"));
         }
     }
 }

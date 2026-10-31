@@ -258,8 +258,9 @@ client ──(1: user, pass, version, ...)──▶ game LoginHandler
 LoginHandler.onLoginOK ──▶ game nạp nhân vật từ htbb_db ──(13: danh sách nhân vật)──▶ client
 ```
 
-- [LogInController.java](../server/src/io/LogInController.java) giữ **một** kết nối bền tới login server và tự nối lại mỗi
-  giây khi rớt. Hàng đợi gửi quá 50 yêu cầu thì từ chối đăng nhập ngay.
+- [LogInController.java](../server/src/io/LogInController.java) giữ **một** kết nối bền tới login server
+  ([KhachDangNhap](../server/src/com/htbb/dangnhap/KhachDangNhap.java)): rớt thì tự nối lại và gửi lại mọi yêu cầu
+  còn chờ, mỗi phiên chỉ nhận một trả lời, quá 15 s thì báo người chơi thử lại. Hàng đợi gửi quá 50 yêu cầu thì từ chối đăng nhập ngay.
 - Game server đọc `sv.iplogin`/`sv.portlogin` sớm (`docDiaChiLoginSom`) trước khi mở kết nối tới login server.
 - Game server chỉ nhận `userId` từ login server. Toàn bộ dữ liệu nhân vật nằm ở `htbb_db`.
 - Login server không nối ra ngoài, nên nó chỉ cần mở cho `127.0.0.1`.
