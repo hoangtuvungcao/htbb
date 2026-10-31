@@ -10,6 +10,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class LogInController implements ISessionHandler {
     private static final byte CHECK_LOGIN = 1;
     private Hashtable<Long, Session> htLoginSessionList;
+    /**
+     * Luc gui yeu cau (ms) cua moi phien dang cho login server. 31/10/2026 (cong kiem: "dk.dang_nhap khong tra loi"):
+     * truoc day game KHONG BAO GIO tra loi client neu login server khong tra loi (cham / mat ket noi giua chung -
+     * yeu cau gui tren socket chet bi mat) -> client treo o man dang nhap. Nay qua {@link #CHO_LOGIN_MS} thi bao client
+     * thu lai + ghi canh bao (bao nhieu yeu cau dang cho, ket noi login con khong).
+     */
+    private final Hashtable<Long, Long> htLucGui = new Hashtable<>();
+    static final long CHO_LOGIN_MS = Long.getLong("htbb.choLoginMs", 15000L);
     protected LinkedBlockingQueue<Message> m_msgSendQueue;
     protected LinkedBlockingQueue<Message> m_msgReceiveQueue;
     private static long SESSION_ID;
@@ -49,8 +57,9 @@ public class LogInController implements ISessionHandler {
                 LoginHandler.onLoginFail(s);
                 return false;
             }
-            this.m_msgSendQueue.add(m);
+            this.htLucGui.put(sSessionID, System.currentTimeMillis());
             this.htLoginSessionList.put(sSessionID, s);
+            this.m_msgSendQueue.add(m);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,8 +68,11 @@ public class LogInController implements ISessionHandler {
     }
 
     public void OnMessageLogInResponse(long sSessionID, int iUserID, boolean bIsVinaphone, byte bRegion) {
-        Session s = this.htLoginSessionList.get(sSessionID);
-        this.htLoginSessionList.remove(sSessionID);
+        Session s = this.htLoginSessionList.remove(sSessionID);
+        Long luc = this.htLucGui.remove(sSessionID);
+        if (s == null && luc == null) {
+            com.htbb.log.Nhat.canhBao("DANG_NHAP", "login server tra loi phien " + sSessionID + " da het han cho (> " + CHO_LOGIN_MS + " ms) - bo qua");
+        }
         if (s != null) {
             s.lgData.UserID = iUserID;
             s.lgData.bVinaFone = bIsVinaphone;
@@ -80,6 +92,45 @@ public class LogInController implements ISessionHandler {
     public void run() {
         this.SendMessage();
         this.ReceiveMessage();
+        this.KiemHetHan();
+    }
+
+    /** Moi giay: phien cho login server qua CHO_LOGIN_MS -> bao client thu lai (khong de treo), ghi canh bao. */
+    private void KiemHetHan() {
+        Thread t = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000L);
+                    long bay = System.currentTimeMillis();
+                    for (Long id : new java.util.ArrayList<>(this.htLucGui.keySet())) {
+                        Long luc = this.htLucGui.get(id);
+                        if (luc == null || bay - luc < CHO_LOGIN_MS) {
+                            continue;
+                        }
+                        this.htLucGui.remove(id);
+                        Session s = this.htLoginSessionList.remove(id);
+                        boolean noi = this.m_sLogInSession != null && this.m_sLogInSession.isConnected();
+                        com.htbb.log.Nhat.canhBao("DANG_NHAP", "login server khong tra loi sau " + (bay - luc) + " ms: "
+                                + (s == null || s.lgData == null ? "?" : com.htbb.log.Nhat.sach(s.lgData.username))
+                                + " (dang cho " + this.htLucGui.size() + ", hang gui " + this.m_msgSendQueue.size()
+                                + ", ket noi login " + (noi ? "con" : "MAT") + ")");
+                        if (s != null) {
+                            try {
+                                s.sendMessage(real.MessageCreator.createServerAlertMessage(
+                                        "Máy chủ đăng nhập chưa phản hồi. Vui lòng thử lại sau ít giây.", ""));
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    return;
+                } catch (Exception e) {
+                    com.htbb.log.Nhat.canhBao("DANG_NHAP", "kiem het han cho login loi: " + e);
+                }
+            }
+        }, "LoginHetHan");
+        t.setDaemon(true);
+        t.start();
     }
 
     private void ReceiveMessage() {
