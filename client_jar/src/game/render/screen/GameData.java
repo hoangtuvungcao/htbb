@@ -43,10 +43,10 @@ public class GameData {
 
     public static void loadImgPotion() {
         try {
-            RecordStore.deleteRecordStore("nqshImgPotion");
+            RecordStore.deleteRecordStore(RMS.KHO_ANH_THUOC_CU);
         } catch (Exception e) {
         }
-        byte[] array = RMS.loadRMS("nqshImgPotionNew");
+        byte[] array = RMS.loadRMS(RMS.KHO_ANH_THUOC);
         int ver = 0;
         if (array == null) {
             ver = 0;
@@ -101,7 +101,7 @@ public class GameData {
                 createImgHorse(dataHorse[a], headHorse[a]);
             }
             dos.writeByte(ver);
-            RMS.saveRMS("nqshImgPotionNew", bo.toByteArray());
+            RMS.saveRMS(RMS.KHO_ANH_THUOC, bo.toByteArray());
             dos.close();
         } catch (Exception e1) {
             e1.printStackTrace();

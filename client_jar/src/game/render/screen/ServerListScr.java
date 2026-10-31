@@ -112,7 +112,7 @@ public class ServerListScr extends Screen {
                 dos.writeShort(port[i]);
                 dos.writeByte(index_server[i]);
             }
-            RMS.saveRMS("ipnqsh", bo.toByteArray());
+            RMS.saveRMS(RMS.KHO_DS_MAY_CHU, bo.toByteArray());
             dos.close();
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -120,7 +120,7 @@ public class ServerListScr extends Screen {
     }
 
     public static void loadIP() {
-        byte[] bData = RMS.loadRMS("ipnqsh");
+        byte[] bData = RMS.loadRMS(RMS.KHO_DS_MAY_CHU);
         if (bData == null) {
             return;
         }

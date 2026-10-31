@@ -12,6 +12,24 @@ import java.io.IOException;
 import javax.microedition.rms.RecordStore;
 
 public class RMS {
+    /*
+     * Ten RecordStore da nam tren may nguoi choi tu ban phat hanh dau (dat theo game goc). GIU NGUYEN chuoi:
+     * doi ten = mat mat khau da nho / o nhanh / danh sach may chu / anh da tai cua moi nguoi choi cu.
+     * Danh sach ngoai le: du_lieu/ten_cu_cho_phep.csv (server/test/KiemTenCu.java).
+     */
+    /** nho tai khoan / mat khau (LoginScr) */
+    public static final String KHO_DANG_NHAP = "nqshlogin"; // ten kho RMS cu tren may nguoi choi - giu de khong mat du lieu
+    /** danh sach may chu da chon (ServerListScr, TaiDanhSach) */
+    public static final String KHO_DS_MAY_CHU = "ipnqsh"; // ten kho RMS cu tren may nguoi choi - giu de khong mat du lieu
+    /** danh sach ip tai ve (saveRMSStringIp) */
+    public static final String KHO_IP = "nqshIP"; // ten kho RMS cu tren may nguoi choi - giu de khong mat du lieu
+    /** thanh o nhanh (OChieuNhanh) */
+    public static final String KHO_O_NHANH = "nqshQuickSlot"; // ten kho RMS cu tren may nguoi choi - giu de khong mat du lieu
+    /** anh binh thuoc / ngua da dung (GameData.loadImgPotion) */
+    public static final String KHO_ANH_THUOC = "nqshImgPotionNew"; // ten kho RMS cu tren may nguoi choi - giu de khong mat du lieu
+    /** kho anh thuoc doi cu hon nua: chi de XOA khi mo game (GameData.loadImgPotion) */
+    public static final String KHO_ANH_THUOC_CU = "nqshImgPotion"; // ten kho RMS cu can xoa tren may nguoi choi
+
     public static void deleteAllRMS() {
         try {
             String[] str = RecordStore.listRecordStores();
@@ -77,7 +95,7 @@ public class RMS {
                 dos.writeShort(port[i]);
                 dos.writeUTF(name[i]);
             }
-            saveRMS("nqshIP", bo.toByteArray());
+            saveRMS(KHO_IP, bo.toByteArray());
             dos.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,7 +156,7 @@ public class RMS {
                 }
             }
             byte[] bData = bo.toByteArray();
-            saveRMS("nqshQuickSlot", bData);
+            saveRMS(KHO_O_NHANH, bData);
             dos.close();
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -146,7 +164,7 @@ public class RMS {
     }
 
     public static void loadQuickSlot() {
-        byte[] bData = loadRMS("nqshQuickSlot");
+        byte[] bData = loadRMS(KHO_O_NHANH);
         if (bData == null) {
             return;
         }

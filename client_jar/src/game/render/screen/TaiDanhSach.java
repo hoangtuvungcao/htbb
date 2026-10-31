@@ -5,7 +5,7 @@ import java.util.Vector;
 /**
  * Máy chủ của bản build: thuộc tính MANIFEST / htbb-app.properties "HTBB-May-Chu: host:cong" (build.sh của jar,
  * client_pc/build.sh, client_apk/pokemon/build.gradle luôn ghi). Mở màn chọn server thì danh sách = đúng một server
- * này (ghi vào RMS "ipnqsh" như nút "Cập nhật" gốc). Không còn tải danh sách server của game cũ.
+ * này (ghi vào RMS.KHO_DS_MAY_CHU như nút "Cập nhật" gốc). Không còn tải danh sách server của game cũ.
  */
 final class TaiDanhSach {
     private static boolean daTai;
@@ -78,14 +78,15 @@ final class TaiDanhSach {
     }
 
     /**
-     * pokemon: tên server hiện trên màn chọn. Danh sách lưu RMS từ bản cũ có thể mang tên game
-     * cũ (vd "NQSH-H2"): hiện thành "Máy chủ n" để giao diện không lộ tên cũ KPAH/NQSH (tên server của game gốc).
+     * pokemon: tên server hiện trên màn chọn. Danh sách lưu RMS từ bản cũ có thể mang tên server của
+     * game gốc: hiện thành "Máy chủ n" để giao diện không lộ tên cũ.
      */
     static String tenHien(String ten, int i) {
         if (ten == null) {
             return "";
         }
         String hoa = ten.toUpperCase();
+        // hai chuỗi dưới là tên server game gốc cần LỌC khỏi RMS cũ (không vẽ) - ngoại lệ du_lieu/ten_cu_cho_phep.csv
         if (hoa.indexOf("NQSH") >= 0 || hoa.indexOf("KPAH") >= 0) {
             return "Máy chủ " + (i + 1);
         }

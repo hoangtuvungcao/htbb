@@ -1,0 +1,15 @@
+tep,chuoi,ly_do
+client_jar/src/game/render/screen/RMS.java,"nqshlogin",ten RecordStore nho tai khoan / mat khau da luu tren may nguoi choi - doi ten = mat du lieu da luu
+client_jar/src/game/render/screen/RMS.java,"ipnqsh",ten RecordStore danh sach may chu da chon tren may nguoi choi - doi ten = mat du lieu da luu
+client_jar/src/game/render/screen/RMS.java,"nqshIP",ten RecordStore danh sach ip tren may nguoi choi - doi ten = mat du lieu da luu
+client_jar/src/game/render/screen/RMS.java,"nqshQuickSlot",ten RecordStore thanh o nhanh tren may nguoi choi - doi ten = mat thiet lap o nhanh
+client_jar/src/game/render/screen/RMS.java,"nqshImgPotionNew",ten RecordStore anh thuoc / ngua da tai tren may nguoi choi - doi ten = tai lai + bo rac kho cu
+client_jar/src/game/render/screen/RMS.java,"nqshImgPotion",ten RecordStore doi cu hon nua - chi dung de XOA khi mo game (don may nguoi choi)
+client_jar/src/game/render/screen/TaiDanhSach.java,"NQSH",bo loc ten server game goc trong danh sach RMS cu (hien thanh "May chu n" - khong ve ra man hinh)
+web/server/utils/duongDanCu.ts,'/server/NQSH2.txt',duong dan danh sach may chu ghi cung trong client cu da phat hanh - phai con tra noi dung
+web/server/utils/duongDanCu.ts,'/NQSH2.txt',duong dan danh sach may chu ghi cung trong client cu da phat hanh - phai con tra noi dung
+web/server/utils/danhSachMayChu.ts,'HTBB_NQSH_LIST',ten bien env cu tren VPS / GitHub vars - van doc du phong sau khi doi sang HTBB_SERVER_LIST_CU
+web/server/utils/danhSachMayChu.ts,'KPAH_NQSH_LIST',ten bien env cu hon nua (giai doan KPAH) - van doc du phong
+web/tests/danh-sach-may-chu.test.ts,HTBB_NQSH_LIST,kiem thu bien env cu van duoc doc du phong
+web/tests/danh-sach-may-chu.test.ts,KPAH_NQSH_LIST,kiem thu bien env cu van duoc doc du phong
+web/tests/danh-sach-may-chu.test.ts,NQSH2.txt,kiem thu duong dan danh sach may chu cua client cu van tra noi dung

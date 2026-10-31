@@ -15,7 +15,7 @@ import javax.microedition.lcdui.Graphics;
 import network.Message;
 
 /**
- * TỰ ĐỘNG ĐÁNH chính thức (thay mod NQSH: Auto up / PK / Vận may / Lên thành / Giao hàng tự động đã bỏ).
+ * TỰ ĐỘNG ĐÁNH chính thức (thay mod cũ của game gốc: Auto up / PK / Vận may / Lên thành / Giao hàng tự động đã bỏ).
  * MÁY CHỦ quyết định: client chỉ chạy khi server trả "đang bật" (lệnh -100, HTBB com.htbb.pokemon.TuDong /
  * real.TuDongGame); server đếm giờ mỗi ngày, chặn nhịp thao tác như người thật, dừng khi PvP / sàn đấu / Gym /
  * boss / đổi map / ra khỏi vùng / hết giờ. Server cũ không trả lời -100 thì không bao giờ chạy.

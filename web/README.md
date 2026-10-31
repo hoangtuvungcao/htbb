@@ -20,7 +20,7 @@ Chép `.env.example` thành `.env` (dev); trên VPS là `/etc/htbb/htbb.env` (d�
 | `HTBB_SITE_URL` | Địa chỉ gốc website (canonical, sitemap); trống = chặn lập chỉ mục |
 | `HTBB_ADMIN_ACCOUNTS` | Tài khoản luôn là Siêu quản trị (cách nhau dấu phẩy) |
 | `HTBB_ADMIN_2FA_BAT_BUOC`, `HTBB_ADMIN_IP_CHO_PHEP`, `HTBB_ADMIN_*` | Bảo mật khu quản trị |
-| `HTBB_SERVER_LIST`, `HTBB_NQSH_LIST` | Danh sách máy chủ cho client (`/server.txt`) |
+| `HTBB_SERVER_LIST`, `HTBB_SERVER_LIST_CU` | Danh sách máy chủ cho client (`/server.txt`) |
 | `HTBB_LINK_ANDROID`, `HTBB_LINK_PC`, `HTBB_LINK_JAR`, `HTBB_LINK_IOS`, `HTBB_LINK_GROUP` | Link dự phòng khi CMS để trống |
 | `HTBB_NAP_BAT` + `HTBB_NAP_*`, `HTBB_SEPAY_*`, `HTBB_CASSO_*` | Nạp tiền — mặc định **tắt** |
 | `HTBB_GMAIL_*`, `HTBB_MAIL_FROM_NAME` | Gửi email (Gmail API); lấy refresh token: `node scripts/lay-gmail-refresh-token.mjs` |
