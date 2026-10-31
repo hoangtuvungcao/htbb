@@ -46,7 +46,8 @@ public final class KiemPhanLoaiCauHinh {
         //        chong lam phat - chu game 31/10/2026: chinh tren trang /admin/hlv-ai)
         // <= 97: hlv_ai them doi_bot_toi_da + tien_to_ten (chu game 31/10/2026: doi tien to ten bot tren trang /admin/hlv-ai)
         // <= 100: +3 khoa exp.nang_luong_{thanh_vien,the_thang,ve_mua}_phut (chu game 31/10/2026: thuong nang luong theo goi)
-        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 100), con lai an", chinh <= 100 && chinh >= 40);
+        // <= 101: +tang_toc.bua_ngay_toi_da (Bua the luc khong gioi han, admin dat lai tran)
+        Kiem.dung("phan loai: chi con it khoa chinh tren web (<= 101), con lai an", chinh <= 101 && chinh >= 40);
         Kiem.dung("phan loai: co khoa co dinh + luon bat", coDinh > 100 && luonBat >= 15);
         Kiem.dung("luon_bat: moi khoa la co, gia tri 1", luonBatDung);
 

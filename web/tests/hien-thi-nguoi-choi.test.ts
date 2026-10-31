@@ -222,11 +222,12 @@ test('Năng lượng: +phút Thành viên / Thẻ tháng / Vé mùa + giá Bùa 
   const cao = bang('nap_cua_hang').find(r => r.ma === 'bua_the_luc')
   assert.ok(cao, 'nap_cua_hang thiếu bua_the_luc')
   assert.equal(so(/Bùa thể lực<\/strong>: bản cao cấp <b>(\d+) lượng<\/b>/), Number(cao.gia_luong))
-  assert.equal(so(/<b>\d+ lượng<\/b> \((\d+) \/ tuần\)/), Number(cao.gioi_han))
+  assert.equal(Number(cao.gioi_han), 0, 'bùa thể lực: không giới hạn mua')
+  assert.match(vue, /Mua và dùng không giới hạn/)
   const khoa = bang('data_cua_hang_lau_dai').find(r => r.thuong === 'ITEM:1255:1')
   assert.ok(khoa, 'Kecleon thiếu Bùa thể lực khoá')
   assert.equal(so(/bản khoá <b>(\d+) lượng khoá<\/b>/), Number(String(khoa.chi_phi).split(':')[1]))
-  assert.equal(so(/lượng khoá<\/b> \((\d+) \/ tuần\) ở Kecleon/), Number(khoa.gioi_han_tuan))
+  assert.equal(Number(khoa.gioi_han_tuan), 0, 'bùa khoá Kecleon: không giới hạn tuần')
 })
 
 test('hạn mức đăng ký: mặc định = quy-tac-dang-ky.json, open test (mo_han_muc_dang_ky.sql) = 6 / giờ, 30 / 24 giờ; trang không ghi số cố định', () => {

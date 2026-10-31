@@ -55,9 +55,9 @@ public final class KiemDuLieuSql {
      *  hlv-ai (31/10/2026, chu game): +nhom hlv_ai 16 khoa (huan luyen vien AI, chinh, thu_tu 375..390; tien to ten,
      *  doi bot, tran_xu 300000) = 388 / 22; sua mac dinh tien_to_ten = "" = 388 / 22;
      *  nang-luong-thanh-vien (31/10/2026, chu game): +3 khoa exp.nang_luong_{thanh_vien,the_thang,ve_mua}_phut (kinh_te,
-     *  chinh, thu_tu 391..393) = 391 / 22.
+     *  chinh, thu_tu 391..393) = 391 / 22; +tang_toc.bua_ngay_toi_da (Bua the luc khong gioi han, 0, thu_tu 394) = 392 / 22.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "c770f21c39bc0771f465217f213992a2168f929e401caa076339e231008c9558";
+    static final String VT_DANH_MUC = "7692319d32cad9b975ed6fbf5a31fb02155dad7da75a2627731abdfc1a9d3f44";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */
@@ -221,6 +221,9 @@ public final class KiemDuLieuSql {
                     || t.startsWith("UPDATE `nap_cua_hang` SET `ten` = ") && t.matches("(?s).* WHERE `ma` = '[a-z_]+' AND `ten` = '[^']+'$")
                     // 31/10/2026: mo ta goi nap ghi them +phut nang luong CHI khi con mo ta mac dinh cu (giu ban admin sua)
                     || t.startsWith("UPDATE `nap_goi` SET `mo_ta` = ") && t.matches("(?s).* WHERE `ma` = '[A-Z_0-9]+' AND `mo_ta` = '[^']+'$")
+                    // 31/10/2026 Bua the luc khong gioi han + gia moi: CHI khi dong con gia / gioi han mac dinh cu
+                    || t.equals("UPDATE `nap_cua_hang` SET `gia_luong` = 30, `gioi_han` = 0 WHERE `ma` = 'bua_the_luc'"
+                            + " AND `gia_luong` = 60 AND `gioi_han` = 4")
                     // bang CONG TAC su kien (khong phai du lieu nguoi choi): lich su kien nam 0.9.5
                     || t.startsWith("UPDATE tob_su_kien SET mo_luc = NULL") || t.startsWith("DELETE FROM tob_su_kien WHERE ma IN")
                     || (t.startsWith("ALTER TABLE tob_su_kien") && t.contains("ADD COLUMN IF NOT EXISTS"))

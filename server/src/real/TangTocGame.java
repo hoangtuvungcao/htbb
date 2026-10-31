@@ -43,6 +43,16 @@ public final class TangTocGame {
 
     // ------------------------------------------------------------------ dung vat pham
 
+    /** So Bua the luc toi da / ngay tu danh muc (tang_toc.bua_ngay_toi_da, mac dinh 0 = khong gioi han). */
+    static int buaNgayToiDa() {
+        try {
+            return (int) Math.max(0L, Math.min(100L, com.htbb.cauhinh.CauHinhTrungTam.so(TangToc.K_BUA_NGAY_TOI_DA,
+                    TangToc.BUA_NGAY_TOI_DA)));
+        } catch (final Throwable t) {
+            return TangToc.BUA_NGAY_TOI_DA;
+        }
+    }
+
     /** VatPhamDungLauDai.dung: @return true neu {@code item} la vat pham tang toc (da xu ly, ke ca tu choi). */
     public static boolean dung(final Char p, final Item item) {
         if (!LauDai.bat() || p == null || item == null || item.getTemplate() == null) {
@@ -59,7 +69,8 @@ public final class TangTocGame {
         }
         final long bay = System.currentTimeMillis();
         final int ngay = homNay(bay), tuan = tuanNay(bay);
-        final String loi = TangToc.kiemDung(h, loai, p.lvDetail.lv, LevelDetail.expMain.length, coTheThang(p), ngay, tuan);
+        final String loi = TangToc.kiemDung(h, loai, p.lvDetail.lv, LevelDetail.expMain.length, coTheThang(p), ngay, tuan,
+                buaNgayToiDa());
         if (loi != null) {
             VatPhamDungLauDai.bao(p, loi);
             return true;
@@ -83,7 +94,8 @@ public final class TangTocGame {
         }
         final String them;
         if (loai == TangToc.BUA) {
-            them = "+" + TangToc.BUA_PHUT + " phút năng lượng 100% hôm nay (chỉ EXP).";
+            them = "+" + TangToc.BUA_PHUT + " phút năng lượng mức " + TangToc.BUA_HE_SO_EXP + "% EXP, " + TangToc.BUA_HE_SO_XU
+                    + "% xu hôm nay (sau phần 100%, cộng dồn, không giới hạn, không tính điểm tăng tốc).";
         } else if (loai == TangToc.UY_THAC) {
             them = "Đặt trước 1 giờ ủy thác: thoát game để Pokémon tự luyện (" + TangToc.UY_THAC_PHAN_TRAM
                     + "% EXP 1 giờ đánh quái, không có xu/vật phẩm).";

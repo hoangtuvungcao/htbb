@@ -942,8 +942,11 @@ public final class NapTienGame implements Runnable {
                 + (NapTienLogic.TRAO_TRANG_TRI.equals(m.trao) ? " Xem trong Tủ đồ trang trí." : "")
                 + (veMoRong ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + MoRongHanhTrang.O_MOI_VE + " ô." : "")
                 + (veOThu ? " Vé đã vào hành trang (tab nguyên liệu): bấm Dùng để thêm " + OThu.O_MOI_VE + " ô thú." : "")
-                + (tangToc ? " Vật phẩm đã vào hành trang; dùng chung giới hạn " + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, "
-                        + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "")
+                + (tangToc && TangToc.loaiCuaMa(m.ma) == TangToc.BUA
+                        ? " Bùa đã vào hành trang: mỗi bùa +" + TangToc.BUA_PHUT + " phút năng lượng mức " + TangToc.BUA_HE_SO_EXP
+                                + "% EXP, " + TangToc.BUA_HE_SO_XU + "% xu hôm nay, dùng bao nhiêu tuỳ ý, không tính vào giới hạn tăng tốc." : "")
+                + (tangToc && TangToc.loaiCuaMa(m.ma) != TangToc.BUA ? " Vật phẩm đã vào hành trang; dùng chung giới hạn "
+                        + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, " + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "")
                 + (datTen ? " Thẻ đã vào hành trang: bấm Sử dụng để đặt tên cho Pokémon đi theo." : "");
     }
 

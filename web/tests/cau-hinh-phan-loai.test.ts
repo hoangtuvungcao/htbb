@@ -31,7 +31,8 @@ test('phân loại: ít khoá chỉnh trên web, phần lớn ẩn', () => {
   // <= 95: thêm nhóm hlv_ai 14 khoá (Huấn luyện viên AI: số lượng / lịch / tỉ lệ / cấp / bản đồ / hoạt động + 6 luật chống lạm phát).
   // <= 97: thêm hlv_ai.doi_bot_toi_da + hlv_ai.tien_to_ten.
   // <= 100: thêm 3 khoá exp.nang_luong_{thanh_vien,the_thang,ve_mua}_phut (thưởng năng lượng theo gói, chủ game 31/10/2026).
-  assert.ok(d.chinh >= 40 && d.chinh <= 100, `chỉnh trên web: ${d.chinh}`)
+  // <= 101: thêm tang_toc.bua_ngay_toi_da (Bùa thể lực không giới hạn, admin đặt lại trần).
+  assert.ok(d.chinh >= 40 && d.chinh <= 101, `chỉnh trên web: ${d.chinh}`)
   assert.ok(d.co_dinh > 100, `cố định: ${d.co_dinh}`)
   assert.ok(d.luon_bat >= 15, `luôn bật: ${d.luon_bat}`)
 })

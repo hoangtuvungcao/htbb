@@ -551,7 +551,7 @@ tính). `NangLuong` + `ThongSoLauDai.NANG_LUONG_PHUT_NGAY` / `BAC_MET`:
   `exp.nang_luong_thanh_vien_phut`), **Thẻ tháng** (+30, `exp.nang_luong_the_thang_phut`), **Vé mùa cao cấp** của mùa
   hiện tại (+30, `exp.nang_luong_ve_mua_phut`) — cộng dồn, tối đa +90 (90 + 90 = 180 phút 100% khi đủ 3 gói). Chốt **một lần**
   lúc khởi tạo năng lượng của ngày (lần hạ quái / mở Sổ tay / Tự động đánh / Kẹo hiếm đầu tiên trong ngày) theo gói còn hạn
-  lúc đó — mua giữa ngày thì áp dụng từ hôm sau. Giống Bùa thể lực: **chỉ EXP** (xu / đá / đồ rơi vẫn theo phút gốc — nạp
+  lúc đó — mua giữa ngày thì áp dụng từ hôm sau. **Chỉ EXP** (xu / đá / đồ rơi vẫn theo phút gốc — nạp
   tiền không bán xu), **không tích** sang hôm sau. Sau phần 100% (đã cộng thưởng) vẫn là 120 phút 20%, 120 phút 5%, rồi 0%.
   Lưu `HoSoLauDai` khoá `n1` / `n2` / `n3`; Sổ tay ghi chi tiết "cơ bản + tích luỹ, Bùa thể lực, Thành viên HTBB, Thẻ
   tháng, Vé mùa cao cấp". CSDL lỗi / tắt nạp = không cộng. Bot Huấn luyện viên AI không nhận. Kiểm
@@ -562,7 +562,8 @@ tính). `NangLuong` + `ThongSoLauDai.NANG_LUONG_PHUT_NGAY` / `BAC_MET`:
 ### 3.4 Vật phẩm tăng tốc
 
 Mua **thời gian**, không mua sức mạnh: chỉ cho EXP — không xu, không đá, không vật phẩm, không đổi tỉ lệ rơi, không chỉ
-số (`com.htbb.pokemon.TangToc`, `real.TangTocGame`). Mỗi món có **bản cao cấp** (bán bằng lượng ở Cửa hàng lượng, lượng
+số (`com.htbb.pokemon.TangToc`, `real.TangTocGame`). Ngoại lệ từ 31/10/2026: **Bùa thể lực** cho bậc bùa EXP 50% + xu / đá /
+đồ rơi 30%, không giới hạn, ngoài trần điểm (xem cuối mục). Mỗi món có **bản cao cấp** (bán bằng lượng ở Cửa hàng lượng, lượng
 bị đốt; tắt bằng `nap.tang_toc.bat`) và **bản khoá** (kiếm bằng chơi). Cả hai đều khoá (không giao dịch) và **dùng chung
 một trần**.
 
@@ -570,7 +571,7 @@ một trần**.
 |---|---|---|---|---|
 | Vé EXP ×1,5 (30 phút) | 1250 / 1251 | 15 | EXP hạ quái ×1,5 trong 30 phút **đánh quái**, nhân sau năng lượng | 60 phút vé / ngày; không trộn ×1,5 với ×2 đang chạy |
 | Vé EXP ×2 (30 phút) | 1252 / 1253 | 30 | như trên, ×2 | chung 60 phút vé |
-| Bùa thể lực | 1254 / 1255 | 45 | +60 phút năng lượng 100% hôm nay, **chỉ EXP**, không tích sang hôm sau | 1 / ngày |
+| Bùa thể lực | 1254 / 1255 | — (không tính) | +60 phút **bậc bùa** hôm nay (EXP 50%, xu / đá / đồ rơi 30%), cộng dồn, không tích sang hôm sau | **không giới hạn** |
 | Phiếu ủy thác luyện tập (1 giờ) | 1256 / 1257 | 12 | Treo offline: thoát game, đăng nhập lại nhận 20% EXP của 1 giờ đánh quái ở cấp lúc thoát | 3 giờ / ngày (+1 với Thẻ tháng), đặt trước ≤ 4 giờ |
 | Kẹo hiếm | 1214 | 30 | EXP bằng 30 phút đánh quái, **trừ 30 phút năng lượng 100%** | 2 / tuần |
 
@@ -579,13 +580,29 @@ một trần**.
 - **Không dùng ở cấp 100** (EXP vượt cấp thành tinh thông = sức mạnh).
 - Nguồn bản khoá: nhiệm vụ tuần (2/2 → 2 vé ×1,5 + 1 phiếu ủy thác), lịch đăng nhập (ngày 3 → vé ×1,5, ngày 7 → bùa),
   vé mùa (nhánh miễn phí có nhiều điểm tăng tốc hơn nhánh cao cấp), Kecleon (bằng lượng khoá, 2 / tuần mỗi món: vé ×1,5 khoá
-  15, phiếu ủy thác khoá 10, Bùa thể lực khoá 45 lượng khoá — dòng 130, thêm 31/10/2026). Người không
+  15, phiếu ủy thác khoá 10; Bùa thể lực khoá 25 lượng khoá không giới hạn — dòng 130, thêm 31/10/2026). Người không
   nạp dùng khoảng 40–60% trần mỗi tuần.
-- **Bùa thể lực bán ở đâu** (chủ game 31/10/2026): bản cao cấp 1254 ở NPC Tổng Quản → Cửa hàng và nạp → Cửa hàng lượng →
-  Tăng tốc (60 lượng, 4 / tuần — cùng tỉ lệ ≈ 1,33 lượng / điểm như vé EXP, kẹo hiếm; chỉ hiện khi `sv.nap_tien=1` và
-  `nap.tang_toc.bat=1`); bản khoá 1255 ở Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm → Lượng khoá (Kecleon) (45 lượng khoá,
-  2 / tuần, ≈ 1 lượng khoá / điểm như vé ×1,5 khoá). Cả hai đếm **45 điểm khi dùng** vào trần chung 60 / ngày, 210 / tuần
-  và vẫn 1 bùa / ngày (`TangToc.BUA_NGAY_TOI_DA`).
+- **Bùa thể lực** (chủ game 31/10/2026: "không giới hạn sử dụng", rồi "EXP và xu 50%, giá vừa phải"):
+  - **Bán**: bản cao cấp 1254 ở NPC Tổng Quản → Cửa hàng và nạp → Cửa hàng lượng → Tăng tốc — **30 lượng, không giới hạn**
+    (`nap_cua_hang.gioi_han = 0`; chỉ hiện khi `sv.nap_tien=1` và `nap.tang_toc.bat=1`); bản khoá 1255 ở Quầy đổi thưởng →
+    Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm → Lượng khoá (Kecleon) — **Bùa thể lực khoá 25 lượng khoá**, không giới hạn
+    (`gioi_han_tuan = 0`). Admin đặt lại trần mua ở cột giới hạn của dòng cửa hàng.
+  - **Dùng**: không giới hạn số bùa / ngày (khoá `tang_toc.bua_ngay_toi_da`, mặc định 0 = không giới hạn) và **không tính**
+    vào trần 60 / 210 điểm (`TangToc.TINH_TRAN`) — vé / ủy thác / kẹo giữ nguyên trần. Vẫn không dùng ở cấp tối đa (EXP vượt
+    cấp thành tinh thông).
+  - **Hiệu ứng**: mỗi bùa +60 phút **bậc bùa** của hôm nay, nằm **sau** phần 100% và **trước** bậc mệt (100% → bậc bùa →
+    120 phút 20% → 120 phút 5% → 0%). Ở bậc bùa: **EXP 50%** (`TangToc.BUA_HE_SO_EXP`), **xu 30%** (`BUA_HE_SO_XU`); đá
+    và đồ rơi dùng chung hệ số với xu (`RoiLauDai` lấy một hệ số cho xu / đá / bảng rơi). Bùa cộng dồn, phần chưa đánh hết
+    **không tích** sang hôm sau. Bùa dùng trước lần hạ quái đầu tiên trong ngày được giữ chờ, vào bậc bùa khi ngày khởi tạo.
+    Lưu `HoSoLauDai` `ze` / `zf` (phút bậc bùa / phút chờ); hồ sơ cũ (bùa 60 phút đã nằm trong phần 100%) được đổi sang bậc
+    bùa ở lần dùng bùa kế tiếp.
+  - **Vì sao xu 30% chứ không 50%**: một bùa 30 lượng cho tối đa 60 phút × 30% = **0,3 giờ thu nhập xu** = 1% thu nhập 1
+    giờ / lượng — đúng bằng, không rẻ hơn, tỷ giá tham chiếu của hệ thống (1 lượng = 1% thu nhập 1 giờ). Ở 50% sẽ ra 0,5 giờ
+    = 1,67% / lượng (rẻ hơn tỷ giá ~67%), muốn giữ 50% thì giá phải ≥ 50 lượng. Thực nhận còn thấp hơn: 60 phút đó nếu không
+    có bùa vẫn được 20% (bậc mệt), nên phần xu tăng thêm chỉ ≈ 0,1 giờ / bùa. Bản khoá 25 lượng khoá ra cùng 0,3 giờ (lượng
+    khoá không mua được bằng tiền; cần 1 giờ đánh quái thật cho mỗi bùa).
+  - EXP: bùa 30 lượng = 30 phút EXP tương đương (60 × 50%) — 1 lượng / phút EXP, đắt hơn vé ×1,5 (20 lượng ≈ 15 phút EXP
+    thêm) một chút nhưng không bị trần.
 - Mục tiêu đã kiểm bằng mô phỏng: mua tối đa nhanh hơn người không dùng ≤ 40% cùng giờ chơi; sức mạnh cùng cấp chênh
   ≤ 1%.
 - Phân biệt với **Tự động đánh** (mục 8.2): Tự động đánh chỉ chạy khi online và chịu nguyên luật năng lượng; phiếu ủy

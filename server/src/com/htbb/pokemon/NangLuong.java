@@ -60,11 +60,27 @@ public final class NangLuong {
 
     /** He so (%) khi da dung {@code msDung} ms trong ngay co {@code phut100} phut 100%. */
     public static int heSo(final long msDung, final int phut100) {
+        return heSo(msDung, phut100, 0, 0);
+    }
+
+    /**
+     * He so (%) voi bac bua: {@code phut100} phut 100%, roi {@code phutBua} phut o {@code heSoBua}% (Bua the luc), roi
+     * bac met (120 phut 20%, 120 phut 5%, 0%).
+     */
+    public static int heSo(final long msDung, final int phut100, final int phutBua, final int heSoBua) {
         final long phut = msDung / 60000L;
         if (phut < phut100) {
             return 100;
         }
-        return ThongSoLauDai.heSoMet((int) Math.min(Integer.MAX_VALUE, phut - phut100));
+        if (phut < (long) phut100 + Math.max(0, phutBua)) {
+            return heSoBua;
+        }
+        return ThongSoLauDai.heSoMet((int) Math.min(Integer.MAX_VALUE, phut - phut100 - Math.max(0, phutBua)));
+    }
+
+    /** He so EXP hien tai cua ho so (khong kiem ngay). */
+    static int heSoExp(final HoSoLauDai h) {
+        return heSo(h.nlMsDung, h.nlPhut100, TangToc.buaPhutHomNay(h), TangToc.BUA_HE_SO_EXP);
     }
 
     // ================================================================== thuong thanh vien (31/10/2026)
@@ -121,9 +137,9 @@ public final class NangLuong {
         synchronized (h) {
             final StringBuilder b = new StringBuilder();
             b.append("Phút 100% hôm nay: ").append(h.nlPhut100).append(" phút (cơ bản + tích luỹ ").append(phut100Goc(h));
-            final int bua = TangToc.phut100KhongBua(h) == h.nlPhut100 ? 0 : TangToc.BUA_PHUT;
-            if (bua > 0) {
-                b.append(", Bùa thể lực +").append(bua);
+            final int buaCu = h.nlPhut100 - TangToc.phut100KhongBua(h);
+            if (buaCu > 0) {
+                b.append(", Bùa thể lực +").append(buaCu);
             }
             final int[] t = {h.nlThuongTv, h.nlThuongThe, h.nlThuongVe};
             for (int i = 0; i < 3; i++) {
@@ -132,6 +148,12 @@ public final class NangLuong {
                 }
             }
             b.append(')');
+            final int bua = TangToc.buaPhutHomNay(h);
+            if (bua > 0) {
+                b.append("\nBùa thể lực hôm nay: ").append(TangToc.soBuaHomNay(h)).append(" bùa, +").append(bua)
+                        .append(" phút ở mức ").append(TangToc.BUA_HE_SO_EXP).append("% EXP, ").append(TangToc.BUA_HE_SO_XU)
+                        .append("% xu/đồ rơi (sau phần 100%, không tích sang hôm sau).");
+            }
             if (thuongTong(h) > 0) {
                 b.append("\nPhút thưởng gói chỉ tính EXP, không cộng dồn sang hôm sau.");
             } else {
@@ -198,20 +220,20 @@ public final class NangLuong {
             }
             h.nlLanCuoi = bayGio;
             h.ban = true;
-            return heSo(h.nlMsDung, h.nlPhut100);
+            return heSoExp(h);
         }
     }
 
     /**
-     * He so cho XU / da / vat pham roi (khong ghi nhan): KHONG tinh Bua the luc (TangToc) va thuong thanh vien - vat
-     * pham tang toc / goi nap chi cho EXP, khong lam tang tien / do roi.
+     * He so cho XU / da / vat pham roi (khong ghi nhan): KHONG tinh thuong thanh vien (goi nap chi cho EXP); bac Bua the
+     * luc cho xu / da / do roi o TangToc.BUA_HE_SO_XU (30%, chu game 31/10/2026).
      */
     public static int heSoXuHienTai(final HoSoLauDai h, final long bayGio) {
         synchronized (h) {
             if (h.nlNgay != ngay(bayGio)) {
                 return 100;
             }
-            return heSo(h.nlMsDung, phut100Goc(h));
+            return heSo(h.nlMsDung, phut100Goc(h), TangToc.buaPhutHomNay(h), TangToc.BUA_HE_SO_XU);
         }
     }
 
@@ -221,7 +243,7 @@ public final class NangLuong {
             if (h.nlNgay != ngay(bayGio)) {
                 return 100;
             }
-            return heSo(h.nlMsDung, h.nlPhut100);
+            return heSoExp(h);
         }
     }
 }

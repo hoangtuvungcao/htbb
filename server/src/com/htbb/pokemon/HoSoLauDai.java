@@ -121,6 +121,9 @@ public final class HoSoLauDai {
     public int tgBuaNgay;
     public int tgBuaChoNgay;
     public int tgBuaCongNgay;
+    /** Tong phut bua da cong hom tgBuaCongNgay / dang cho cong hom tgBuaChoNgay (bua cong don, 31/10/2026). */
+    public int tgBuaPhut;
+    public int tgBuaChoPhut;
     /** Uy thac: ms da dat truoc (chua chay), ms da nhan hom nay, luc thoat game gan nhat (ms). */
     public long tgUtMs;
     public long tgUtMsNgay;
@@ -198,6 +201,8 @@ public final class HoSoLauDai {
         dat(b, "z8", tgBuaNgay);
         dat(b, "z9", tgBuaChoNgay);
         dat(b, "za", tgBuaCongNgay);
+        dat(b, "ze", tgBuaPhut);
+        dat(b, "zf", tgBuaChoPhut);
         dat(b, "zb", tgUtMs);
         dat(b, "zc", tgUtMsNgay);
         dat(b, "zd", tgThoat);
@@ -365,6 +370,10 @@ public final class HoSoLauDai {
                 h.tgBuaChoNgay = iv;
             } else if (k.equals("za")) {
                 h.tgBuaCongNgay = iv;
+            } else if (k.equals("ze")) {
+                h.tgBuaPhut = iv;
+            } else if (k.equals("zf")) {
+                h.tgBuaChoPhut = iv;
             } else if (k.equals("zb")) {
                 h.tgUtMs = v;
             } else if (k.equals("zc")) {

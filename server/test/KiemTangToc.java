@@ -62,7 +62,8 @@ public final class KiemTangToc {
         Kiem.bang("uy thac dung duoc", null, TangToc.kiemDung(h, TangToc.UY_THAC, 50, 100, false, NGAY, TUAN));
         TangToc.ghiDung(h, TangToc.UY_THAC, NGAY, TUAN);
         TangToc.ghiDung(h, TangToc.UY_THAC, NGAY, TUAN);
-        Kiem.dung("54/60 diem: bua (45) bi chan tran ngay", TangToc.kiemDung(h, TangToc.BUA, 50, 100, false, NGAY, TUAN) != null);
+        Kiem.bang("54/60 diem: bua van dung duoc (31/10/2026: bua khong tinh tran diem)", null,
+                TangToc.kiemDung(h, TangToc.BUA, 50, 100, false, NGAY, TUAN));
         Kiem.bang("ngay moi: bua dung duoc", null, TangToc.kiemDung(h, TangToc.BUA, 50, 100, false, NGAY + 1, TUAN));
 
         // tran tuan: 7 ngay x 60 diem > 210
@@ -92,8 +93,13 @@ public final class KiemTangToc {
         Kiem.bang("uy thac khong the thang: 3 gio/ngay", 3, gio);
 
         final HoSoLauDai b = moi();
-        TangToc.ghiDung(b, TangToc.BUA, NGAY, TUAN);
-        Kiem.dung("bua the luc 1/ngay", TangToc.kiemDung(b, TangToc.BUA, 50, 100, false, NGAY, TUAN) != null);
+        for (int i = 0; i < 5; i++) {
+            TangToc.ghiDung(b, TangToc.BUA, NGAY, TUAN);
+        }
+        Kiem.bang("bua the luc cong don: 5 bua van dung tiep duoc (khong gioi han / ngay)", null,
+                TangToc.kiemDung(b, TangToc.BUA, 50, 100, false, NGAY, TUAN));
+        Kiem.bang("5 bua khong an diem tang toc", "0/0", b.tgDiemNgay + "/" + b.tgDiemTuan);
+        Kiem.dung("admin dat tran 5 bua / ngay -> bua thu 6 bi chan", TangToc.kiemDung(b, TangToc.BUA, 50, 100, false, NGAY, TUAN, 5) != null);
         final HoSoLauDai k = moi();
         k.khTuan = TUAN;
         k.khSo = 2;
@@ -123,25 +129,33 @@ public final class KiemTangToc {
         Kiem.bang("ve nhan SAU nang luong: 200 x met 5% = 10, x ve x2 = 20", 20,
                 TangToc.nhanVe(CapDoLauDai.expHaQuai(200, 100, 0, 5, 100, 100), 200));
 
-        // bua the luc: +60 phut 100% chi EXP, khong tich sang hom sau, he so xu khong tinh bua
+        // bua the luc (31/10/2026): +60 phut BAC BUA (EXP 50%, xu 30%) sau phut 100%, cong don, khong tich sang hom sau
         final HoSoLauDai b = moi();
         final long t0 = ngay(2026, 10, 19, 8);
         NangLuong.ghiNhan(b, t0, 90, 180);
         final int hom = NangLuong.ngay(t0);
         TangToc.ghiDung(b, TangToc.BUA, hom, TUAN);
-        Kiem.bang("bua: phut 100% = 90 + 60", 150, b.nlPhut100);
+        Kiem.bang("bua: phut 100% giu 90, bac bua 60", "90/60", b.nlPhut100 + "/" + TangToc.buaPhutHomNay(b));
         int heSo = 0;
         for (int i = 1; i <= 120; i++) {
             heSo = NangLuong.ghiNhan(b, t0 + i * 60000L, 90, 180);
         }
-        Kiem.bang("phut 120 co bua: EXP 100%", 100, heSo);
-        Kiem.bang("phut 120 co bua: xu/do roi van 20% (tang toc chi EXP)", 20, NangLuong.heSoXuHienTai(b, t0 + 120 * 60000L));
+        Kiem.bang("phut 120 co bua: EXP 50% (bac bua)", 50, heSo);
+        Kiem.bang("phut 120 co bua: xu/do roi 30% (bac bua)", 30, NangLuong.heSoXuHienTai(b, t0 + 120 * 60000L));
+        Kiem.bang("phut 89: EXP 100%", 100, NangLuong.heSo(89 * 60000L, 90, 60, 50));
+        Kiem.bang("phut 150 (het bac bua): vao bac met 20%", 20, NangLuong.heSo(150 * 60000L, 90, 60, 50));
         NangLuong.ghiNhan(b, ngay(2026, 10, 20, 8), 90, 180);
-        Kiem.bang("hom sau: khong tich phan bua (dung 120 > 90 -> chi 90)", 90, b.nlPhut100);
+        Kiem.bang("hom sau: khong tich phan bua (dung 120 > 90 -> chi 90, bac bua 0)", "90/0", b.nlPhut100 + "/" + TangToc.buaPhutHomNay(b));
         final HoSoLauDai c = moi();
         TangToc.ghiDung(c, TangToc.BUA, NangLuong.ngay(ngay(2026, 10, 21, 8)), TUAN);
+        TangToc.ghiDung(c, TangToc.BUA, NangLuong.ngay(ngay(2026, 10, 21, 8)), TUAN);
         NangLuong.ghiNhan(c, ngay(2026, 10, 21, 8), 90, 180);
-        Kiem.bang("bua dung truoc lan danh quai dau tien: cong khi doi ngay", 90 + 60, c.nlPhut100);
+        Kiem.bang("2 bua dung truoc lan danh quai dau tien: vao bac bua khi doi ngay", "90/120", c.nlPhut100 + "/" + TangToc.buaPhutHomNay(c));
+        // ho so cu: bua 60 phut da nam trong nlPhut100 (tgBuaPhut = 0) -> bua moi doi sang bac bua, khong mat phut
+        final HoSoLauDai cu = HoSoLauDai.giaiMa("nn=" + hom + ";np=150;za=" + hom + ";z8=1;z1=" + hom);
+        Kiem.bang("ho so cu: phut 100% goc tru bua cu", 90, TangToc.phut100KhongBua(cu));
+        TangToc.ghiDung(cu, TangToc.BUA, hom, TUAN);
+        Kiem.bang("ho so cu + 1 bua moi: 90 phut 100% + 120 phut bac bua", "90/120/2", cu.nlPhut100 + "/" + TangToc.buaPhutHomNay(cu) + "/" + TangToc.soBuaHomNay(cu));
 
         // uy thac: offline, 20% EXP 1 gio, chi phan da dat truoc
         final HoSoLauDai u = moi();
