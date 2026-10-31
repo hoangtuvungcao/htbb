@@ -473,6 +473,11 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
             if (!menu.showMenu && currentDialog == null) {
                 currentScreen.updateKey();
             }
+            // 31/10/2026: menu chữ cũ mở trên màn KHÁC màn chơi (chợ, cửa sổ cũ...) ở máy có con trỏ -> thẻ lệnh chung (màn chơi:
+            // GameScr.update -> MenuNguCanh.tiepQuan)
+            if (currentScreen != gameScr) {
+                game.pokemon.ManCu.tiepQuanMenu(null);
+            }
         }
         if (timeout > 0) {
             timeout--;

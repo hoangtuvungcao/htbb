@@ -225,12 +225,14 @@ public final class BanDoVung {
         for (int i = 0; i < n; i++) {
             int id = ID[v][i];
             boolean khoa = KhoaMap.khoa(id);
-            KHOA_[i] = khoa;
+            // bản đồ hẹp (J2ME 320x240): không vẽ ổ khoá (chấm xám đã báo khoá) - đủ chỗ cho mọi nhãn
+            boolean veKhoa = khoa && w >= 360;
+            KHOA_[i] = veKhoa;
             GiaoDien.khoi(g, VX[i] - 5, VY[i] - 5, 11, 11, 5, GiaoDien.VIEN);
             GiaoDien.khoi(g, VX[i] - 4, VY[i] - 4, 9, 9, 4, i == cur ? GiaoDien.VANG : khoa ? ChuDe.XAM : GiaoDien.DO);
             g.setColor(GiaoDien.TRANG);
             g.fillRect(VX[i] - 2, VY[i] - 3, 3, 1);
-            if (khoa) {
+            if (veKhoa) {
                 BieuTuong.ve(g, BieuTuong.KHOA, VX[i] + 3, VY[i] - 13, 10, ChuDe.XAM, GiaoDien.LA);
             }
         }
@@ -274,6 +276,9 @@ public final class BanDoVung {
                 continue;
             }
             String t = ten(v, i);
+            if (w < 360 && i != cur && i != chon) {
+                t = rutGon(t);   // 31/10/2026: bản đồ hẹp (J2ME 320x240) - tên gọn để mọi nhãn có chỗ
+            }
             int tw = Math.min(ChuDe.rongVien(t, ChuDe.NHAN_NHO, 0xF6E6C0), w - 8) + 8;
             t = ChuDe.cat(t, ChuDe.NHAN_NHO, tw - 8);
             // dưới đảo, trên đảo, phải, trái; nhãn không đè chấm điểm khác (điểm ưu tiên: lần hai bỏ luật này)
@@ -343,6 +348,26 @@ public final class BanDoVung {
             }
         }
         g.setClip(cx0, cy0, cw0, ch0);
+    }
+
+    /** Tên gọn cho bản đồ hẹp: "Hang Darkrai" -> "H.Darkrai", "Cao nguyên Indigo" -> "Indigo", "Đảo X" -> "Đ.X". */
+    static String rutGon(String t) {
+        if (t == null) {
+            return t;
+        }
+        if (t.startsWith("Cao nguyên ")) {
+            return t.substring(11);
+        }
+        if (t.startsWith("Hang ") && t.length() > 9) {
+            return "H." + t.substring(5);
+        }
+        if (t.startsWith("Đảo ") && t.length() > 8) {
+            return "Đ." + t.substring(4);
+        }
+        if (t.startsWith("Rừng ") && t.length() > 9) {
+            return "R." + t.substring(5);
+        }
+        return t;
     }
 
     /** điểm i đang khoá (ổ khoá vẽ ở góc phải trên chấm) - nhãn né ổ khoá (31/10/2026: J2ME "Vermilion" đè khoá) */

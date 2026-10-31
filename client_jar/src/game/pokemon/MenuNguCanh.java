@@ -223,6 +223,9 @@ public final class MenuNguCanh extends Dialog {
             choTieuDe(td);   // menu máy chủ trả cho lệnh này giữ tiêu đề thẻ (Sổ tay huấn luyện, Sự kiện...)
         }
         Canvas.clearKeyPressed();   // 0.9.4: phím chọn không lọt xuống màn chơi (bỏ qua lời thoại đầu)
+        if (Canvas.menu != null) {
+            Canvas.menu.selected = i;   // 31/10/2026: lệnh cũ đọc Canvas.menu.selected (chợ: Loại / Phẩm / Màu / Cộng)
+        }
         AmThanh.phat(AmThanh.XAC_NHAN);
         if (c.action != null) {
             c.action.perform();

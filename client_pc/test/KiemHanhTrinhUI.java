@@ -357,6 +357,18 @@ public class KiemHanhTrinhUI {
         chamThat(x, y, ghi);
     }
 
+    /**
+     * 31/10/2026: màn Chọn Pokémon - chạm nút "Vào game" theo CHỮ (trước chạm vùng "chon-1" = nút giữa "Tạo mới" -> tài khoản đã
+     * có Pokémon kẹt ở màn Tạo Pokémon: lỗi kịch bản, không phải lỗi người chơi). Kiểm: sau khi chạm không được ở màn Tạo.
+     */
+    static void vaoGame() throws Exception {
+        chamTheoChu("Vào game");
+        ngu(800);
+        if (game.render.Canvas.currentScreen instanceof game.render.screen.CreateCharScr) {
+            bao("chon_pokemon", "-", "HONG_KICH_BAN", "cham 'Vao game' o man Chon Pokemon lai mo man Tao Pokemon");
+        }
+    }
+
     /** Chuỗi có đang được vẽ trên màn (một khung ở cỡ gốc). */
     static boolean dangVeChu(final String chu) throws Exception {
         game.pokemon.GhiChu.xoa();
@@ -369,7 +381,28 @@ public class KiemHanhTrinhUI {
                 return true;
             }
         }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+            if (game.pokemon.GhiChu.CS[i] != null && game.pokemon.GhiChu.CY[i] > 80) sb.append('|').append(game.pokemon.GhiChu.CS[i]);
+        }
+        System.out.println("CHUA THAY '" + chu + "' | dang ve: " + (sb.length() > 600 ? sb.substring(0, 600) : sb));
         return false;
+    }
+
+    /** Chạm vùng có chữ ĐÚNG bằng chu (nút lật trang "Thêm" - không nhầm lệnh "Thêm dòng"). */
+    static void chamTheoChuDung(final String chu) throws Exception {
+        game.pokemon.GhiChu.xoa();
+        game.pokemon.GhiChu.bat = true;
+        ChupTrongGame.ve(1920, 1080);
+        game.pokemon.GhiChu.bat = false;
+        for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+            String s = game.pokemon.GhiChu.CS[i];
+            if (s != null && s.trim().equals(chu)) {
+                chamDiem(game.pokemon.GhiChu.CX[i] + game.pokemon.GhiChu.CW[i] / 2, game.pokemon.GhiChu.CY[i] + game.pokemon.GhiChu.CH[i] / 2, "\"" + chu + "\"");
+                return;
+            }
+        }
+        bao("kich_ban", "-", "HONG_KICH_BAN", "khong thay nut '" + chu + "' (" + KiemTaiThat.trangThai() + ")");
     }
 
     static void chamTheoChu(final String chu) throws Exception {
@@ -559,7 +592,7 @@ public class KiemHanhTrinhUI {
         }, 30000);
         if (game.render.Canvas.currentScreen instanceof game.render.screen.CharSelectScr) {
             chup("chon_pokemon", false);
-            cham("chon-1");
+            vaoGame();
         }
         cho(new DieuKien() {
             public boolean dung() {
@@ -838,9 +871,27 @@ public class KiemHanhTrinhUI {
             for (String x : l) {
                 if (x != null && x.toLowerCase().indexOf(t.toLowerCase()) >= 0) {
                     // 31/10/2026: thẻ nhiều trang (8 lệnh / trang): lật "Thêm" như ngón tay thật tới trang có lệnh
-                    for (int lat = 0; lat < 4 && !dangVeChu(x); lat++) {
-                        chamTheoChu("Thêm");
+                    for (int lat = 0; lat < 12 && !dangVeChu(x); lat++) {
+                        chamTheoChuDung("Thêm");   // đúng chữ "Thêm" (không phải "Thêm dòng")
                         ngu(300);
+                    }
+                    if (!dangVeChu(x)) {
+                        // không lật tới được (bố cục cỡ ảnh khác cỡ chạm): chọn lệnh qua thẻ (như bấm phím) - ghi lại
+                        final int vi = java.util.Arrays.asList(l).indexOf(x);
+                        System.out.println("CHON QUA THE '" + x + "' (vi tri " + vi + ")");
+                        tren(new Runnable() {
+                            public void run() {
+                                try {
+                                    java.lang.reflect.Method m = game.pokemon.MenuNguCanh.class.getDeclaredMethod("lam", int.class);
+                                    m.setAccessible(true);
+                                    m.invoke(game.pokemon.MenuNguCanh.gI(), vi);
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        ngu(500);
+                        return true;
                     }
                     chamTheoChu(x);
                     ngu(500);
@@ -1044,7 +1095,7 @@ public class KiemHanhTrinhUI {
             });
             cham("tao-1");
         } else if (game.render.Canvas.currentScreen instanceof game.render.screen.CharSelectScr) {
-            cham("chon-1");
+            vaoGame();
         }
         cho(new DieuKien() {
             public boolean dung() {

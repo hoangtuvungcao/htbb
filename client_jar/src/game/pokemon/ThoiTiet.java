@@ -229,7 +229,7 @@ public final class ThoiTiet {
             g.drawArc(cx + r - 6, cy - r - 1, 8, 8, 0, 360);
         }
         boolean cham = rong || Canvas.instance != null && Canvas.instance.hasPointerEvents();
-        if (cham && Canvas.currentDialog == null && Canvas.currentScreen == Canvas.gameScr) {
+        if (cham && Canvas.currentDialog == null && Canvas.currentScreen == Canvas.gameScr && !game.render.screen.BangTuDong.dangMo()) {
             VungCham.themTuyetDoi(cx - r, cy - r, 2 * r + 1, 2 * r + 1, BAM, "hud-thoi-tiet");
         }
         if (moThe) {

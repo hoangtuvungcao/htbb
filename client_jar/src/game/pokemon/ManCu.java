@@ -225,9 +225,12 @@ public final class ManCu {
         }
     }
 
+    /** Kiểm thử: giữ menu chữ cũ (giả lập máy J2ME bấm phím trên máy có con trỏ - ChupTrongGame menu_chu_*). */
+    public static boolean giuMenuChu;
+
     /** Menu chữ cũ vừa mở trên màn cũ -> thẻ lệnh chung. */
     public static void tiepQuanMenu(String tieuDe) {
-        if (!bat() || Canvas.menu == null || !Canvas.menu.showMenu || Canvas.currentDialog != null) {
+        if (!bat() || giuMenuChu || Canvas.menu == null || !Canvas.menu.showMenu || Canvas.currentDialog != null) {
             return;
         }
         java.util.Vector v = Canvas.menu.menuItems;

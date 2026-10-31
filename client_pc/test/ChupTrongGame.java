@@ -1525,6 +1525,7 @@ public class ChupTrongGame {
     }
 
     static void moMan(String ten) {
+        game.pokemon.ManCu.giuMenuChu = false;
         game.render.Canvas.isPointerDown = false;
         game.pokemon.ThoiTiet.co = false;   // 0.9.17: thời tiết giả của menu_su_kien không lọt sang màn khác
         game.pokemon.ThoiTiet.moThe = false;
@@ -1610,6 +1611,7 @@ public class ChupTrongGame {
             game.pokemon.HanhDong.moMenuChinh();   // phím mềm trái J2ME: menu chữ đủ mục (không gon)
             moHangNhiemVuChu();
         } else if ("menu_chu_vuon_gieo".equals(ten)) {
+            game.pokemon.ManCu.giuMenuChu = true;   // màn này giả lập menu chữ của máy J2ME bấm phím
             moSinhThai(ten);
         } else if ("menu_chu_ban_than".equals(ten)) {
             game.render.Canvas.gameScr.switchToMe();
@@ -3913,7 +3915,7 @@ public class ChupTrongGame {
      * MessageHandler theo đúng thứ tự đọc của bộ xử lý, hoặc hàm mở của màn mà menu / NPC gọi). Chạy ở mọi cỡ kể cả J2ME.
      */
     static final class PhuTrang3 {
-        static final String[] MAN = {"phu_x_ban_do_khoa", "phu_x_quay_so_chon", "phu_x_vong_quay", "phu_x_ve_so", "phu_x_mini_game", "phu_x_cay_than",
+        static final String[] MAN = {"phu_x_ban_do_khoa", "phu_x_cho_hang", "phu_x_quay_so_chon", "phu_x_vong_quay", "phu_x_ve_so", "phu_x_mini_game", "phu_x_cay_than",
             "phu_x_co_vat", "phu_x_cau_do", "phu_x_dang_ky_doi", "phu_x_thong_tin_doi", "phu_x_cho", "phu_x_nap_sms", "phu_x_huong_dan",
             "phu_x_kenh_the_gioi", "phu_x_top_doi", "phu_x_thong_bao_ds", "phu_x_bang_auto", "phu_x_sai_mat_khau", "phu_x_mat_ket_noi",
             "phu_x_loi_tai", "phu_x_doi_ten_pet", "phu_x_moi_trao_doi_pokemon", "phu_x_moi_vao_doi", "phu_x_moi_ket_ban", "phu_x_moi_nhom",
@@ -4056,6 +4058,18 @@ public class ChupTrongGame {
                     gui(-12);
                 } else if ("phu_x_cho".equals(ten)) {
                     goi(62, new byte[]{(byte) -1});
+                } else if ("phu_x_cho_hang".equals(ten)) {
+                    goi(62, new byte[]{(byte) -1});
+                    java.util.Vector cho = (java.util.Vector) game.render.screen.ShopOnline.ALL_ITEM.elementAt(0);
+                    cho.removeAllElements();
+                    for (int i = 0; i < 5 && i < game.model.Char.inventory.size(); i++) {
+                        Object o = game.model.Char.inventory.elementAt(i);
+                        if (o instanceof game.model.ItemInInventory) {
+                            ((game.model.ItemInInventory) o).prize = 15000 * (i + 1);
+                            cho.addElement(o);
+                        }
+                    }
+                    game.render.Canvas.shop.select = 0;
                 } else if ("phu_x_nap_sms".equals(ten)) {
                     moi().writeByte(2);
                     o.writeUTF("Nạp 10.000đ = 100 lượng");
