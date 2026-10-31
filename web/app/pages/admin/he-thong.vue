@@ -4,10 +4,18 @@
  * vào tob_chi_so_may_chu, giữ 7 ngày) + bật/tắt/khởi động lại (AdminHethongDieuKhien, trước là /admin/server)
  * + chế độ bảo trì đăng nhập (AdminHethongBaoTri).
  * Tự tải lại mỗi 30 giây. "Im lặng > 90 giây" = cùng ngưỡng với HTBB/vps/kiem-suc-khoe.sh.
+ * Thẻ "VPS" (?tab=vps): chỉ số toàn máy, trực tiếp 2 giây (AdminHethongVps, GET /api/admin/chi-so-vps).
  */
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 const api = useAdminApi()
 const me = useAdminMe()
+const route = useRoute()
+const router = useRouter()
+const tab = computed<'game' | 'vps'>({
+  get: () => (route.query.tab === 'vps' ? 'vps' : 'game'),
+  set: v => router.replace({ query: { ...route.query, tab: v === 'vps' ? 'vps' : undefined } }),
+})
+const vps = ref<{ refresh: () => void } | null>(null)
 
 interface Diem {
   luc: string, ketNoi: number, nhanVat: number, heapMb: number, heapToiDaMb: number, thread: number, cpu: number, taiMay: number
@@ -18,7 +26,7 @@ interface ChiSo { bangChuaCo: boolean, gio: number, bucketGiay: number, songGanN
 const gio = ref(6)
 const { data, status, error, refresh } = useAsyncData('admin-he-thong-chi-so', () => api<ChiSo>('/api/admin/chi-so-may-chu', { query: { gio: gio.value } }), { server: false, watch: [gio] })
 const baoTri = ref<{ refresh: () => void } | null>(null)
-useIntervalFn(() => { if (document.visibilityState === 'visible') refresh() }, 30_000)
+useIntervalFn(() => { if (document.visibilityState === 'visible' && tab.value === 'game') refresh() }, 30_000)
 
 const diem = computed(() => data.value?.diem ?? [])
 function nhanThoiGian(s: string) {
@@ -39,14 +47,21 @@ const choDoc = (g: number) => (g < 60 ? `${g} giây` : g < 3600 ? `${Math.round(
 <template>
   <AdminPage title="Máy chủ & bảo trì">
     <template #right>
-      <USelect v-model="gio" :items="[{ label: '1 giờ', value: 1 }, { label: '6 giờ', value: 6 }, { label: '24 giờ', value: 24 }, { label: '7 ngày', value: 168 }]" size="sm" class="w-28" aria-label="Khoảng thời gian" />
-      <UButton icon="i-lucide-refresh-cw" color="neutral" variant="ghost" :loading="status === 'pending'" aria-label="Tải lại" @click="refresh(); baoTri?.refresh()" />
+      <USelect v-if="tab === 'game'" v-model="gio":items="[{ label: '1 giờ', value: 1 }, { label: '6 giờ', value: 6 }, { label: '24 giờ', value: 24 }, { label: '7 ngày', value: 168 }]" size="sm" class="w-28" aria-label="Khoảng thời gian" />
+      <UButton icon="i-lucide-refresh-cw" color="neutral" variant="ghost" :loading="status === 'pending'" aria-label="Tải lại" @click="tab === 'vps' ? vps?.refresh() : (refresh(), baoTri?.refresh())" />
     </template>
 
     <div>
       <h1 class="text-2xl font-bold text-highlighted">Máy chủ & bảo trì</h1>
-      <p class="mt-1 text-sm text-muted">Game tự ghi một mẫu mỗi 30 giây (giữ 7 ngày). Trang tự tải lại mỗi 30 giây. <a href="#dieu-khien" class="text-primary hover:underline">Bật / tắt / khởi động lại</a> · <a href="#bao-tri" class="text-primary hover:underline">Bảo trì đăng nhập</a>.</p>
+      <p v-if="tab === 'game'" class="mt-1 text-sm text-muted">Game tự ghi một mẫu mỗi 30 giây (giữ 7 ngày). Trang tự tải lại mỗi 30 giây. <a href="#dieu-khien" class="text-primary hover:underline">Bật / tắt / khởi động lại</a> · <a href="#bao-tri" class="text-primary hover:underline">Bảo trì đăng nhập</a>.</p>
     </div>
+
+    <UTabs v-if="me.duoc('/api/admin/chi-so-vps', 'GET')" v-model="tab" :content="false" class="w-full"
+      :items="[{ label: 'Máy chủ game', value: 'game', icon: 'i-lucide-gamepad-2' }, { label: 'VPS (toàn máy)', value: 'vps', icon: 'i-lucide-server-cog' }]" />
+
+    <AdminHethongVps v-if="tab === 'vps'" ref="vps" />
+
+    <template v-else>
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-x" title="Không tải được chỉ số máy chủ" :description="loiApi(error)"
       :actions="[{ label: 'Thử lại', color: 'error', variant: 'outline', onClick: () => refresh() }]" />
@@ -103,5 +118,6 @@ const choDoc = (g: number) => (g < 60 ? `${g} giây` : g < 3600 ? `${Math.round(
     <div id="bao-tri" class="scroll-mt-20">
       <AdminHethongBaoTri ref="baoTri" />
     </div>
+    </template>
   </AdminPage>
 </template>

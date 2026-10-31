@@ -83,7 +83,7 @@ export const ADMIN_MENU: { nhom: string, items: AdminMenuItem[] }[] = [
     nhom: 'Hệ thống',
     items: [
       { key: 'cau_hinh_he_thong', to: '/admin/cau-hinh-he-thong', label: 'Cấu hình', icon: 'i-lucide-settings-2', api: '/api/admin/cau-hinh-he-thong', moTa: 'Các thông số vận hành chỉnh được (tỉ lệ rơi, sự kiện, bảo trì, thành viên…); phần cố định đã ẩn' },
-      { key: 'he_thong', to: '/admin/he-thong', label: 'Máy chủ & bảo trì', icon: 'i-lucide-server', api: '/api/admin/he-thong/bao-tri', moTa: 'Biểu đồ chỉ số, bảo trì đăng nhập, bật/tắt/khởi động lại máy chủ' },
+      { key: 'he_thong', to: '/admin/he-thong', label: 'Máy chủ & bảo trì', icon: 'i-lucide-server', api: '/api/admin/he-thong/bao-tri', moTa: 'Biểu đồ chỉ số game + VPS trực tiếp (CPU, RAM, đĩa, mạng), bảo trì đăng nhập, bật/tắt/khởi động lại máy chủ' },
       { key: 'chandoan', to: '/admin/chandoan', label: 'Chẩn đoán', icon: 'i-lucide-activity', api: '/api/admin/chandoan' },
       { key: 'vai_tro', to: '/admin/vai-tro', label: 'Phân quyền', icon: 'i-lucide-shield-check', api: '/api/admin/auth/me', moTa: 'Cấp vai trò quản trị, ma trận quyền' },
     ],

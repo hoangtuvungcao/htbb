@@ -2464,6 +2464,33 @@ CREATE TABLE IF NOT EXISTS `tob_chat_chan` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `tob_chi_so_vps` (
+  `luc` datetime NOT NULL,
+  `may` varchar(64) NOT NULL DEFAULT '',
+  `so_mau` smallint(6) NOT NULL DEFAULT 0,
+  `cpu_tb` float DEFAULT NULL,
+  `cpu_max` float DEFAULT NULL,
+  `tai_1` float DEFAULT NULL,
+  `ram_tong_mb` int(11) NOT NULL DEFAULT 0,
+  `ram_dung_mb` int(11) NOT NULL DEFAULT 0,
+  `ram_san_min_mb` int(11) NOT NULL DEFAULT 0,
+  `swap_tong_mb` int(11) DEFAULT NULL,
+  `swap_dung_mb` int(11) DEFAULT NULL,
+  `swap_vao_s` float DEFAULT NULL,
+  `swap_ra_s` float DEFAULT NULL,
+  `dia_doc_b` bigint(20) DEFAULT NULL,
+  `dia_ghi_b` bigint(20) DEFAULT NULL,
+  `mang_vao_b` bigint(20) DEFAULT NULL,
+  `mang_ra_b` bigint(20) DEFAULT NULL,
+  `mang_goi_vao_s` float DEFAULT NULL,
+  `mang_goi_ra_s` float DEFAULT NULL,
+  `dia_max_pt` float DEFAULT NULL,
+  PRIMARY KEY (`may`,`luc`),
+  KEY `k_luc` (`luc`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `tob_chiem_thanh_tuan` (
   `lan` bigint(20) NOT NULL,
   `id_char` int(11) NOT NULL,
@@ -32217,3 +32244,11 @@ CREATE TABLE IF NOT EXISTS `tob_hlv_ai_moc` (`luc` DATETIME NOT NULL, `tong_xu_b
 CREATE TABLE IF NOT EXISTS `tob_hlv_ai_chuyen` (`id` BIGINT NOT NULL AUTO_INCREMENT, `luc` DATETIME NOT NULL, `huong` TINYINT NOT NULL DEFAULT 0, `kieu` VARCHAR(24) NOT NULL DEFAULT '', `bot_id` INT NOT NULL DEFAULT 0, `bot_ten` VARCHAR(40) NOT NULL DEFAULT '', `nguoi_id` INT NOT NULL DEFAULT 0, `nguoi_ten` VARCHAR(40) NOT NULL DEFAULT '', `xu` BIGINT NOT NULL DEFAULT 0, `gia_tri` BIGINT NOT NULL DEFAULT 0, `bi_chan` TINYINT NOT NULL DEFAULT 0, `chi_tiet` VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `k_luc` (`luc`), KEY `k_nguoi` (`nguoi_id`, `luc`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE IF NOT EXISTS `tob_hlv_ai_gia` (`id` BIGINT NOT NULL AUTO_INCREMENT, `luc` DATETIME NOT NULL, `loai` VARCHAR(16) NOT NULL, `ma` VARCHAR(40) NOT NULL, `gia` BIGINT NOT NULL, PRIMARY KEY (`id`), KEY `k_ma` (`loai`, `ma`, `luc`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE IF NOT EXISTS `tob_hlv_ai_trang_thai` (`tai_khoan` VARCHAR(32) NOT NULL, `user_id` INT NOT NULL DEFAULT 0, `char_id` INT NOT NULL DEFAULT 0, `ten` VARCHAR(40) NOT NULL DEFAULT '', `lop` TINYINT NOT NULL DEFAULT 0, `tinh_cach` VARCHAR(16) NOT NULL DEFAULT '', `cap` INT NOT NULL DEFAULT 0, `cap_muc_tieu` INT NOT NULL DEFAULT 0, `map_id` INT NOT NULL DEFAULT -1, `ten_map` VARCHAR(64) NOT NULL DEFAULT '', `hoat_dong` VARCHAR(32) NOT NULL DEFAULT '', `online` TINYINT NOT NULL DEFAULT 0, `xu` BIGINT NOT NULL DEFAULT 0, `vao_luc` DATETIME NULL, `ra_luc` DATETIME NULL, `cap_nhat` DATETIME NULL, `ghi_chu` VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`tai_khoan`), KEY `k_online` (`online`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- >>> them_chi_so_vps.sql
+-- ==================================================================================
+--  CHI SO VPS (chu game 31/10/2026: trang /admin/he-thong the "VPS"): web (Nuxt) tu lay mau CPU / RAM / swap / dia / mang
+--  toan may moi 2 giay (web/server/utils/vpsLayMau.ts), giu 30 phut trong bo nho, ghi MOT dong moi phut moi may (cot `may`
+--  = hostname) vao tob_chi_so_vps, xoa dong qua 7 ngay. Web tu tao bang neu thieu (cung dinh nghia: SQL_TAO_BANG_VPS trong
+--  web/server/utils/vpsThuan.ts; web/tests/chi-so-vps.test.ts so khop). Tat bang HTBB_CHI_SO_VPS=0. Chay lai duoc.
+-- ----------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tob_chi_so_vps` (`luc` DATETIME NOT NULL, `may` VARCHAR(64) NOT NULL DEFAULT '', `so_mau` SMALLINT NOT NULL DEFAULT 0, `cpu_tb` FLOAT NULL, `cpu_max` FLOAT NULL, `tai_1` FLOAT NULL, `ram_tong_mb` INT NOT NULL DEFAULT 0, `ram_dung_mb` INT NOT NULL DEFAULT 0, `ram_san_min_mb` INT NOT NULL DEFAULT 0, `swap_tong_mb` INT NULL, `swap_dung_mb` INT NULL, `swap_vao_s` FLOAT NULL, `swap_ra_s` FLOAT NULL, `dia_doc_b` BIGINT NULL, `dia_ghi_b` BIGINT NULL, `mang_vao_b` BIGINT NULL, `mang_ra_b` BIGINT NULL, `mang_goi_vao_s` FLOAT NULL, `mang_goi_ra_s` FLOAT NULL, `dia_max_pt` FLOAT NULL, PRIMARY KEY (`may`, `luc`), KEY `k_luc` (`luc`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

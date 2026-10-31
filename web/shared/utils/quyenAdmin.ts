@@ -110,6 +110,7 @@ export const QUY_TAC_QUYEN: QuyTacQuyen[] = [
   { mau: '/api/admin/cau-hinh-he-thong/**', nhom: 'Hệ thống', viec: 'Cấu hình hệ thống trung tâm (chế độ, kinh tế, nạp tiền, bảo trì…), lịch sử + hoàn tác, khởi động lại an toàn', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/server/**', nhom: 'Hệ thống', viec: 'Bật/tắt/khởi động lại máy chủ game', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/chi-so-may-chu', nhom: 'Hệ thống', viec: 'Chỉ số máy chủ (CPU, bộ nhớ, online)', doc: TAT_CA, ghi: KHONG_AI },
+  { mau: '/api/admin/chi-so-vps/**', nhom: 'Hệ thống', viec: 'Chỉ số VPS trực tiếp + lịch sử (CPU, RAM, swap, đĩa, mạng, tiến trình, dịch vụ systemd)', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/he-thong/**', nhom: 'Hệ thống', viec: 'Chế độ bảo trì đăng nhập, thông tin vận hành', doc: SIEU_XEM, ghi: KHONG_AI },
   { mau: '/api/admin/chandoan/file', nhom: 'Hệ thống', viec: 'Tải tệp chẩn đoán', doc: SIEU, ghi: KHONG_AI },
   { mau: '/api/admin/chandoan/**', nhom: 'Hệ thống', viec: 'Chẩn đoán kết nối, cấu hình web', doc: SIEU_XEM, ghi: KHONG_AI },
