@@ -936,7 +936,46 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
     boolean trongPhoBan(long het) throws Exception {
         int ha0 = soHaQuai;
         long h = Math.min(het, System.currentTimeMillis() + 8 * 60000L);
-        while (System.currentTimeMillis() < h && !b.dut && b.mapId == KichBanPhoBanCup.MAP_PB && b.hp > 0) danh(-1, 4, 60000L);
+        // phong pho ban: quai theo tang (khong theo cap / o sinh cua ban do luyen) -> danh moi quai nhin thay, het quai thi di
+        // quanh phong tim (danh(-1) cua ban do luyen loc quai theo cap +-, phong khong co o sinh -> truoc day dung im = 0 quai)
+        BotChucNang.BanDo bdPb = BotChucNang.BanDo.nap(b.mapLoad);
+        while (System.currentTimeMillis() < h && !b.dut && b.mapId == KichBanPhoBanCup.MAP_PB && b.hp > 0) {
+            Integer chon = null;
+            double tot = 1e18;
+            for (Map.Entry<Integer, int[]> e : b.quai.entrySet()) {
+                int[] q = e.getValue();
+                if (q == null || q[2] <= 0) continue;
+                double kc = Math.hypot(q[0] - b.px, q[1] - b.py);
+                if (kc < tot) { tot = kc; chon = e.getKey(); }
+            }
+            if (chon == null) {
+                b.lamMoi();
+                if (bdPb != null) {
+                    int[] o = bdPb.oGan(Math.max(1, b.px / 16 + rd.nextInt(17) - 8), Math.max(1, b.py / 16 + rd.nextInt(17) - 8), 3);
+                    if (o != null) b.diDuong(bdPb, o[0], o[1]);
+                }
+                b.bom(1500);
+                continue;
+            }
+            int[] q = b.quai.get(chon);
+            if (bdPb != null && q != null) { int[] o = bdPb.oGan(q[0] / 16, q[1] / 16, 2); if (o != null) b.diDuong(bdPb, o[0], o[1]); }
+            for (int don = 0; don < 120 && !b.dut && b.hp > 0; don++) {
+                int[] qt = b.quai.get(chon);
+                b.gui(9, (short) (int) chon, (byte) BotXuyenSuot.chieuTheoHe(b, lop, qt == null ? -1 : qt[5], don));
+                b.bom(260);
+                if (don % 3 == 2) { b.gui(7, (short) (int) chon); b.bom(150); }
+                int[] q2 = b.quai.get(chon);
+                if (q2 == null || q2[2] == 0) break;
+                if (bdPb != null && don % 6 == 5 && Math.hypot(q2[0] - b.px, q2[1] - b.py) > 60) {
+                    int[] o = bdPb.oGan(q2[0] / 16, q2[1] / 16, 2);
+                    if (o != null) b.diDuong(bdPb, o[0], o[1]);
+                }
+                if (b.hp > 0 && b.hp < b.maxhp / 2) uongThuoc();
+            }
+            int[] q3 = b.quai.get(chon);
+            if (q3 != null && q3[2] == 0) { soHaQuai++; DichVuHlvAi.dem("pho_ban_ha_quai", 1); }
+            else if (q3 == null) b.quai.remove(chon);
+        }
         if (b.mapId == KichBanPhoBanCup.MAP_PB) {
             b.menu(KichBanPhoBanCup.SO_TAY, KichBanPhoBanCup.MENU_PB_TRONG, 0);
             b.cho(x -> x.mapId != KichBanPhoBanCup.MAP_PB, 4000);

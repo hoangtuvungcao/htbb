@@ -522,8 +522,11 @@ final class KiemHlvAiSoak {
         List<HlvAiNguoiChoi> bots = new ArrayList<>();
         long het = System.currentTimeMillis() + 5 * 60000L;
         while (bots.size() < 3 && System.currentTimeMillis() < het) {
+            // uu tien bot da co Pokemon trong Hop PC (de thu trao doi Pokemon voi bot); het 3 phut dau thi lay bat ky
+            boolean canHop = System.currentTimeMillis() < het - 2 * 60000L;
             for (DichVuHlvAi.Ho h : DichVuHlvAi.HO) {
                 HlvAiNguoiChoi p = h.dang;
+                if (canHop && (p == null || p.conDeTrao() == null)) continue;
                 if (p != null && p.b != null && !p.b.dut && !bots.contains(p) && bots.size() < 3) {
                     gm("slv " + p.b.ten + " " + (45 + DichVuHlvAi.RD.nextInt(10)) + " 0");
                     p.dungYen = nt.get(bots.size()).b.mapId; // moi bot dung canh mot nguoi that
