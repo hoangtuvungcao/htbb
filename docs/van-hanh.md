@@ -1000,8 +1000,8 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 Bot chơi như người chơi thật để máy chủ ít người vẫn có đối thủ và bạn đồng hành (chủ game duyệt 31/10/2026). Mỗi bot là
 một tài khoản thường (cột `account.team_user.la_bot = 1`, không gửi xuống client), đăng nhập qua giao thức thật như một
 client (bộ bot `tools/pokemon/kiem_tai` + `tools/pokemon/hlv_ai`), không GM, không lệnh đặc biệt: máy chủ áp mọi luật như
-người chơi (chống spam, khoá bản đồ, chống clone, cấp mở tính năng…). Mặc định tên bot hiển thị như người chơi bình thường ở mọi chỗ người
-chơi thấy tên (trên đầu, chat, tổ đội, bạn bè, đội, bảng xếp hạng trong game và trên web, giao dịch, chợ). Có thể đặt tiền tố tuỳ chọn bằng khoá `hlv_ai.tien_to_ten`.
+người chơi (chống spam, khoá bản đồ, chống clone, cấp mở tính năng…). Tên bot luôn có **tiền tố** (khoá `hlv_ai.tien_to_ten`, mặc định `ai ` → `ai minhanh`) ở mọi chỗ người
+chơi thấy tên (trên đầu, chat, tổ đội, bạn bè, đội, bảng xếp hạng trong game và trên web, giao dịch, chợ).
 
 **Bật lần đầu (VPS, root).** Tiến trình riêng `htbb-hlv-ai` — deploy không cài, không bật:
 
@@ -1047,7 +1047,8 @@ nhận lượng, không nhập giftcode (máy chủ chặn theo cờ). Thống k
 chuyển, tổng xu bot / người thật) và `tob_hlv_ai_moc` (ảnh chụp 10 phút) — biểu đồ ở /admin/hlv-ai.
 
 **Đổi tiền tố tên bot.** /admin/hlv-ai → khung *Cấu hình* → mục **Tên bot** → ô *Tiền tố tên bot* (xem trước ngay
-bên dưới) → ghi *Lý do* → **Lưu cấu hình**. Để trống để không hiện tiền tố; hoặc gõ tự do tối đa 12 ký tự, không dùng `:`. Máy chủ áp dụng trong
+bên dưới) → ghi *Lý do* → **Lưu cấu hình**. Gõ tự do 1–12 ký tự, có thể dính liền tên (`AI` → `AIminhanh`), nhưng phải
+có chữ AI hoặc BOT và không dùng `:`; giá trị sai bị từ chối (máy chủ vẫn dùng mặc định `ai `). Máy chủ áp dụng trong
 ≤ 15 giây, không khởi động lại; tên người chơi gửi lại theo tiền tố cũ vẫn được nhận ra. Bot cấp 50 được lập đội miễn
 100 triệu xu khi số đội do bot làm chủ dưới `hlv_ai.doi_bot_toi_da` (3); lương đội bot trả cho người thật tính vào hạn mức.
 

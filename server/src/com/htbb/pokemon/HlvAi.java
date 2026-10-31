@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * <pre>
  *  Nhan dien: cot account.team_user.la_bot = 1 (KHONG gui xuong client). Ten nhan vat luu nguyen; moi cho may chu GUI
- *             ten cho client hien tien to tuy chon (cau hinh hlv_ai.tien_to_ten, mac dinh rong) + ten ({@link #hienThi}). Ten that chi co [0-9a-zA-Z] (CreateCharHandler)
+ *             ten cho client hien tien to (cau hinh hlv_ai.tien_to_ten, mac dinh "ai ") + ten ({@link #hienThi}). Ten that chi co [0-9a-zA-Z] (CreateCharHandler)
  *             nen tien to (co '_' ':' ' ') khong trung ten nguoi choi nao; ten client gui nguoc lai (tin rieng, ket ban,
  *             tim ten) duoc {@link #boTienTo} truoc khi tra cuu.
  *  Kinh te:   bot choi tu do nhu nguoi, may chu ghim lam phat:
@@ -62,28 +62,28 @@ public final class HlvAi {
     // ------------------------------------------------------------------ ten hien thi (tien to cau hinh hlv_ai.tien_to_ten)
     /** Khoa cau hinh tien to ten (chinh tren /admin/hlv-ai, ap dung ngay). */
     public static final String K_TIEN_TO = "hlv_ai.tien_to_ten";
-    /** Mac dinh rong: ten hien thi nhu nguoi choi binh thuong, khong tien to. */
-    public static final String TIEN_TO_MAC_DINH = "";
+    /** Mac dinh: "ai " -> ten hien "ai minhanh". */
+    public static final String TIEN_TO_MAC_DINH = "ai ";
     public static final int TIEN_TO_TOI_DA = 12;
     /**
-     * Mau tien to (danh muc + web + may chu dung chung): 0-12 ky tu, khong ':' / ky tu dieu khien (chu chat kieu cu tach ten
-     * o ": "). De trong = ten nhu nguoi choi that, khong can tien to bot/ai.
+     * Mau tien to (danh muc + web + may chu dung chung): 1-12 ky tu, khong ':' / ky tu dieu khien (chu chat kieu cu tach ten
+     * o ": "), PHAI chua "ai" hoac "bot" (khong phan biet hoa thuong) de nguoi choi nhan ra Huan luyen vien AI.
      */
-    public static final String MAU_TIEN_TO = "^[^:\\u0000-\\u001F]{0,12}$";
-    public static final String LOI_TIEN_TO = "Tiền tố tối đa 12 ký tự và không dùng dấu \":\"";
+    public static final String MAU_TIEN_TO = "^(?=.*([Aa][Ii]|[Bb][Oo][Tt]))[^:\\u0000-\\u001F]{1,12}$";
+    public static final String LOI_TIEN_TO = "Tiền tố phải có chữ AI hoặc BOT để người chơi nhận ra Huấn luyện viên AI";
 
     private static volatile String tienTo = TIEN_TO_MAC_DINH;
     /** Moi tien to da dung tu luc bat may (ten client con giu tu truoc khi doi). */
     private static final java.util.Set<String> DA_DUNG = new java.util.concurrent.CopyOnWriteArraySet<String>(
-            Arrays.asList("ai ", "bot_ai: "));
+            Arrays.asList(TIEN_TO_MAC_DINH, "bot_ai: "));
     /** Ten (khong tien to) co phai bot dang biet khong - real.HlvAiGame dat; null = coi moi ten la bot (kiem thu). */
     private static volatile java.util.function.Predicate<String> laTenBot = null;
 
     public static boolean tienToHopLe(final String cauHinh) {
-        return cauHinh != null && cauHinh.matches(MAU_TIEN_TO);
+        return cauHinh != null && !cauHinh.trim().isEmpty() && cauHinh.matches(MAU_TIEN_TO);
     }
 
-    /** Tien to that dung: gia tri cau hinh hop le giu NGUYEN (co the dinh lien ten), sai luat = mac dinh rong. */
+    /** Tien to that dung: gia tri cau hinh hop le giu NGUYEN (co the dinh lien ten), sai luat = mac dinh "ai ". */
     public static String chuan(final String cauHinh) {
         return tienToHopLe(cauHinh) ? cauHinh : TIEN_TO_MAC_DINH;
     }
@@ -91,9 +91,7 @@ public final class HlvAi {
     /** Dat tien to moi (nhip 15 giay cua real.HlvAiGame). Tien to cu van duoc boTienTo nhan ra. */
     public static void datTienTo(final String cauHinh) {
         final String t = chuan(cauHinh);
-        if (!t.isEmpty()) {
-            DA_DUNG.add(t);
-        }
+        DA_DUNG.add(t);
         tienTo = t;
     }
 
@@ -105,15 +103,12 @@ public final class HlvAi {
         return tienTo;
     }
 
-    /** Ten client thay cho mot nhan vat: bot -> tien to + ten neu co tien to, nguoi -> nguyen ten. */
+    /** Ten client thay cho mot nhan vat: bot -> tien to + ten, nguoi -> nguyen ten. */
     public static String hienThi(final String ten, final boolean laBot) {
         if (ten == null || !laBot) {
             return ten;
         }
         final String t = tienTo;
-        if (t == null || t.isEmpty()) {
-            return ten;
-        }
         return ten.startsWith(t) ? ten : t + ten;
     }
 
