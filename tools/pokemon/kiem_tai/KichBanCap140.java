@@ -728,7 +728,47 @@ final class KichBanCap140 {
         }
 
         // ---------------------------------------------------------------- nhan nhiem vu moi
+        long lanSoTayPhu;
+
+        /**
+         * Bot muc tieu phu: muc tieu khong co trong danh sach NPC (-64 chi gui 20 nhiem vu phu gan cap nhat - NhiemVuLauDai.locPhu)
+         * -> nhan nhu nguoi choi qua So tay -> Nhiem vu cua toi -> Nhan nhiem vu phu (co trang "Xem them").
+         */
+        boolean nhanPhuSoTay() throws Exception {
+            if (dichPhu < 0 || !Boolean.getBoolean("phuSoTay") || System.currentTimeMillis() - lanSoTayPhu < 5 * 60000L) return false; // nhan qua So tay: buoc vao So tay "Đang làm", bot chua lam theo duoc (chi danh sach NPC -64)
+            if (l2.stream().anyMatch(x -> x.ms == 1 && x.id == dichPhu) || l0.stream().anyMatch(x -> x.ms == 1 && x.id == dichPhu)) return false;
+            lanSoTayPhu = System.currentTimeMillis();
+            String ten = BotChucNang.sql1("SELECT name FROM data_quest_moi WHERE id=" + (dichPhu + 2001));
+            String ma = BotChucNang.sql1("SELECT ma FROM data_quest_lau_dai WHERE id_so=" + (dichPhu + 2001));
+            if (ten == null || ten.isEmpty()) { ghi("muc tieu phu #" + dichPhu + ": khong doc duoc ten"); return false; }
+            List<String> ds = KichBanDS4.dsNhom(b, 1, 12);
+            for (int trang = 0; trang < 30 && ds != null && !ds.isEmpty() && !ds.get(0).startsWith("THONG BAO"); trang++) {
+                int vt = -1, them = -1;
+                for (int i = 0; i < ds.size(); i++) {
+                    String d = BotChucNang.khongDau(ds.get(i));
+                    if (d.startsWith(BotChucNang.khongDau(ten))) vt = i;
+                    if (d.startsWith("xem them")) them = i;
+                }
+                if (vt >= 0) {
+                    String t = KichBanDS4.nhan(b, vt);
+                    docNv();
+                    ghi("NHAN phu muc tieu qua So tay '" + ten + "' (" + ma + ", trang " + (trang + 1) + "): " + t.replace('\n', ' ')
+                            + " | dang lam NPC co muc tieu: " + l2.stream().anyMatch(x -> x.ms == 1 && x.id == dichPhu));
+                    lanTienTrien = System.currentTimeMillis();
+                    return true;
+                }
+                if (them < 0) break;
+                int m = b.moc();
+                b.menu(-527, 12, them);
+                if (b.doiMenu(m, -527, 12, 2500) <= 0) break;
+                ds = new ArrayList<>(b.menuChu);
+            }
+            ghi("muc tieu phu '" + ten + "' (" + ma + ") khong co trong So tay -> Nhan nhiem vu phu: " + (ds == null ? "null" : ds.size() + " muc"));
+            return false;
+        }
+
         boolean nhanMoi() throws Exception {
+            if (nhanPhuSoTay()) return true;
             boolean coPhuDang = l2.stream().anyMatch(x -> x.ms == 1);
             List<KichBanTienDoNhiemVu.Dong> ds0 = new ArrayList<>(l0);
             if (dichPhu >= 0) ds0.sort((x, y) -> Boolean.compare(!(x.ms == 1 && x.id == dichPhu), !(y.ms == 1 && y.id == dichPhu)));
