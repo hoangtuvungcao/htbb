@@ -102,6 +102,12 @@ public final class TienShopDacBiet {
         }
     }
 
+    /** Sau mot lan mua: khong loai tien nao giam (mua that bai) -&gt; hoan luot gioi han tuan. */
+    public static boolean khongTruTien(final long lkTruoc, final long lkSau, final long lTruoc, final long lSau,
+            final long xuTruoc, final long xuSau) {
+        return lkSau >= lkTruoc && lSau >= lTruoc && xuSau >= xuTruoc;
+    }
+
     /** "Không đủ lượng khoá: cần 30, đang có 12." */
     public static String khongDu(final long can, final long co) {
         return "Không đủ lượng khoá: cần " + so(can) + ", đang có " + so(Math.max(0L, co)) + ".";

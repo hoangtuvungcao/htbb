@@ -264,6 +264,15 @@ public final class DatabaseLauDai {
                 Integer.valueOf(idChar), Integer.valueOf(idShop), Integer.valueOf(tuan), Integer.valueOf(gioiHan)) == 1;
     }
 
+    /**
+     * Tra lai 1 luot da dem boi tangMuaTuan khi giao dich KHONG tru duoc tien (thieu luong khoa / xu, het cho...).
+     * Truoc 31/10/2026 luot tuan bi dem TRUOC buoc tru tien: bam mua khi thieu luong khoa van mat 1 luot tuan.
+     */
+    public static void hoanMuaTuan(final int idChar, final int idShop, final int tuan) {
+        ghi("UPDATE tob_mua_tuan SET so_luong = so_luong - 1 WHERE id_char = ? AND id_shop = ? AND tuan = ? AND so_luong > 0",
+                Integer.valueOf(idChar), Integer.valueOf(idShop), Integer.valueOf(tuan));
+    }
+
     // ------------------------------------------------------------------ boss / ham nguc / pvp
 
     public static void ghiDongGop(final long lan, final int idChar, final int phanNghin, final int hang, final int bac) {

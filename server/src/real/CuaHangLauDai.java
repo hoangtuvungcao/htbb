@@ -231,6 +231,10 @@ public final class CuaHangLauDai {
         }
         final boolean ok = p.truNeuDu(() -> du(p, chi), () -> tru(p, chi));
         if (!ok) {
+            if (gh > 0) {
+                // luot tuan da dem o tren: khong tru duoc thi tra lai (truoc 31/10/2026 thieu tien van mat luot)
+                DatabaseLauDai.hoanMuaTuan(p.charDBID, ID_TUAN + idDong, LauDaiNhanVat.tuanNay());
+            }
             return "Không đủ: " + moTaChiPhi((String) r[3]) + ".";
         }
         phat(p, thuong);

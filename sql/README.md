@@ -135,6 +135,9 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
 17. `them_chi_so_vps.sql` (31/10/2026, trang `/admin/he-thong` thẻ VPS): bảng `tob_chi_so_vps` — web lấy mẫu CPU / RAM / swap /
     đĩa / mạng toàn máy mỗi 2 giây, ghi một dòng mỗi phút mỗi máy (`may` = hostname), giữ 7 ngày. Web tự tạo bảng nếu thiếu
     (`SQL_TAO_BANG_VPS` ở `web/server/utils/vpsThuan.ts`, `web/tests/chi-so-vps.test.ts` so khớp với phần A + B). Phần A cũng có.
+18. `sua_tien_te_cua_hang.sql` (31/10/2026, kiểm loại tiền mọi vật phẩm đang bán): `data_shop_gia_lau_dai` dòng 116..125
+    (nguyên liệu cấp 4-5 khoá) ghi đúng `tien_moi = 2` (lượng khoá) như máy chủ đang trừ; giá không đổi. Phần A cũng có.
+    `server/test/KiemLoaiTienCuaHang`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

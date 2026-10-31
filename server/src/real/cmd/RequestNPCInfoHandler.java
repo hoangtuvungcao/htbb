@@ -1099,8 +1099,10 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case 24: {
                 m.dos.writeByte(1);
                 m.dos.writeByte(-1);
-                m.dos.writeShort(50);
-                for (int i = 214; i <= 263; ++i) {
+                // sv.lau_dai: trang bi chi so bang luong ngung ban (OfflineMap.doChiSoBangLuongNgungBan) -> danh sach rong
+                final boolean ngungBan24 = real.OfflineMap.doChiSoBangLuongNgungBan(214, com.htbb.pokemon.LauDai.bat());
+                m.dos.writeShort(ngungBan24 ? 0 : 50);
+                for (int i = 214; i <= 263 && !ngungBan24; ++i) {
                     m.dos.writeShort(i);
                 }
                 break;

@@ -135,6 +135,7 @@ public final class Kiem {
         KiemCauHinhTrungTam.chay();
         KiemLocBiMat.chay();
         KiemChiTietThuoc.chay();
+        KiemLoaiTienCuaHang.chay();
         KiemIconSkinThu.chay();
         KiemDanhMucNgoc.chay();
         KiemDanhMucThu.chay();

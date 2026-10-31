@@ -327,4 +327,18 @@ public class GemTemplate extends OtherItem
         }
         return false;
     }
+
+    /**
+     * Dong nay con ban o cua so Persian (lenh 74) khong. Khi sv.lau_dai (docs/thiet-ke-game.md 9.1 / 9.5: luong KHONG
+     * mua do / da / nguyen lieu) cac dong gia bang LUONG (typeMoney 1: to lua / bac / thuy tinh / go sua / da cung cap
+     * 4-5, da tach nguyen lieu 5x-7x) ngung ban - goi 25 gui sell = 0 (client an dong) va lenh 74 bo qua.
+     */
+    public static boolean banDuoc(final int sell, final int typeMoney, final boolean lauDai) {
+        return sell != 0 && !(lauDai && typeMoney == 1);
+    }
+
+    public boolean banDuoc() {
+        return banDuoc(this.sell, this.typeMoney, com.htbb.pokemon.LauDai.bat());
+    }
 }
+

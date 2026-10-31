@@ -7721,6 +7721,17 @@ public class Map implements Runnable {
 
   
 
+    /**
+     * "Shop Đặc Biệt" VIP (all_item_shop_special: Vảy trái tim 100 lượng + 100.000 xu, Rương nguyên liệu 50 lượng, áo
+     * Zoroark / Gardevoir có chỉ số 500 lượng). sv.lau_dai: lượng chỉ mua trang trí / tiện ích, VIP theo nạp đã bỏ
+     * (docs/thiet-ke-game.md 9.1) -> ngừng bán, menu báo rõ thay vì mở cửa hàng.
+     */
+    public static boolean shopVipNgungBan(final boolean lauDai) {
+        return lauDai;
+    }
+
+    public static final String CHU_SHOP_VIP_NGUNG_BAN = "Shop Đặc Biệt (VIP) đã ngừng bán: lượng không mua nguyên liệu / trang bị có chỉ số.";
+
     void doBuyItemShopNew(Char player, Message message) 
     {
         try 
@@ -8194,6 +8205,10 @@ public class Map implements Runnable {
                 }
     
                 int iditem = message.dis.readUnsignedByte();
+                if (type == TYPE_SHOP_NEW_CUA_HANG_VIP && shopVipNgungBan(com.htbb.pokemon.LauDai.bat())) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(CHU_SHOP_VIP_NGUNG_BAN, ""));
+                    return;
+                }
                 if (type == TYPE_SHOP_NEW_CUA_HANG_VIP) {
                     if (iditem < 0 || iditem >= all_item_shop_special.size()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn bán. Hãy mở lại shop.", ""));

@@ -51,6 +51,9 @@ public class doBuySpecialItem {
     /** Mon dang mua o lenh 85 nay (bao "Đã mua ...: trừ X lượng khoá" sau khi mua). */
     private static final ThreadLocal<ShopTemplate> MON_DANG_MUA = new ThreadLocal<ShopTemplate>();
 
+    /** {id_shop, tuan} khi chanMuaShop vua dem 1 luot gioi han tuan cho lan mua nay (hoan lai neu khong tru tien). */
+    private static final ThreadLocal<int[]> LUOT_TUAN = new ThreadLocal<int[]>();
+
     /** Dang xu ly lenh 85 cho mon tra bang luong khoa (xem TRA_LUONG_KHOA). */
     static boolean traLuongKhoa() {
         return Boolean.TRUE.equals(TRA_LUONG_KHOA.get());
@@ -62,6 +65,8 @@ public class doBuySpecialItem {
         // moi vao hanh trang = lock 1 (cho ky gui / giao dich da chan lock 1).
         final int[] thuocTruoc = player.potions == null ? null : player.potions.clone();
         final long luongKhoaTruoc = player.getLuongLock();
+        final long luongTruoc = player.getLuong();
+        final long xuTruoc = player.getxu();
         final java.util.Set<Object> doTruoc = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
         try {
             doTruoc.addAll(player.iItems);
@@ -71,6 +76,17 @@ public class doBuySpecialItem {
             doBuySpecialItem0(player, msg);
         } finally {
             TRA_LUONG_KHOA.remove();
+            // Gioi han tuan dem TRUOC buoc tru tien (chanMuaShop): khong tru dong nao (thieu luong khoa, het cho...)
+            // thi tra lai luot - truoc 31/10/2026 bam mua Ve gio vang khi thieu luong khoa van mat luot tuan.
+            final int[] luot = LUOT_TUAN.get();
+            LUOT_TUAN.remove();
+            try {
+                if (luot != null && TienShopDacBiet.khongTruTien(luongKhoaTruoc, player.getLuongLock(), luongTruoc,
+                        player.getLuong(), xuTruoc, player.getxu())) {
+                    data.DatabaseLauDai.hoanMuaTuan(player.charDBID, luot[0], luot[1]);
+                }
+            } catch (Exception ignored) {
+            }
             final ShopTemplate mon = MON_DANG_MUA.get();
             MON_DANG_MUA.remove();
             try {
@@ -138,10 +154,15 @@ public class doBuySpecialItem {
 
                     // GD2 2.10 (Q10): shop luong chi con do trang tri; kiem o CHINH noi xu ly (muc 11).
                     if (com.htbb.pokemon.LauDai.bat()) {
-                        final String chan = data.DatabaseLauDai.chanMuaShop(player.charDBID, item.id, LauDaiNhanVat.tuanNay());
+                        final int tuan = LauDaiNhanVat.tuanNay();
+                        final String chan = data.DatabaseLauDai.chanMuaShop(player.charDBID, item.id, tuan);
                         if (chan != null) {
                             player.sendMessage(MessageCreator.createServerAlertMessage(chan, ""));
                             return;
+                        }
+                        final int[] g = data.DatabaseLauDai.GIA_SHOP.get(Integer.valueOf(item.id));
+                        if (g != null && g[3] > 0) {
+                            LUOT_TUAN.set(new int[]{item.id, tuan}); // da dem 1 luot: hoan o doBuySpecialItem neu khong tru tien
                         }
                         if (data.DatabaseLauDai.traBangLuongKhoa(item.id)) {
                             TRA_LUONG_KHOA.set(Boolean.TRUE);

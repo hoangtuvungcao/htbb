@@ -385,6 +385,10 @@ class MapDoMenu {
                             break;
             
                         case 3:
+                            if (Map.shopVipNgungBan(com.htbb.pokemon.LauDai.bat())) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(Map.CHU_SHOP_VIP_NGUNG_BAN, ""));
+                                return;
+                            }
                             player.sendMessage(MessageCreator.createMessageShopNew(player, all_item_shop_special, "Mua", "Shop Đặc Biệt", TYPE_SHOP_NEW_CUA_HANG_VIP));
                             break;
             
@@ -3451,7 +3455,7 @@ class MapDoMenu {
 
                                     for (int ixxx = 0; ixxx < menu.length; ixxx++) {
                                         Item it = (Item) player.itemChange5.get(ixxx);
-                                        menu[ixxx] = it.getTemplate().name + " " + he[it.heItem] + " (" + gia + " lượng)";
+                                        menu[ixxx] = it.getTemplate().name + " " + he[it.heItem] + " (" + gia + (idOptionMenu == 1 ? " lượng khoá)" : " lượng)"); // nhan dung loai tien that tru (3495/3498)
                                     }
 
                                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
