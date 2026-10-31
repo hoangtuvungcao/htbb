@@ -159,6 +159,7 @@ public final class TuDongGame {
         n.sanDau = m == null || laSanDau(p, m);
         n.baiLuyen = m != null && !(m instanceof OfflineMap) && !(m instanceof MapChauBau) && !n.sanDau && coQuai(m);
         n.theThang = TangTocGame.coTheThang(p);
+        n.hetNangLuong = hetNangLuong(p);
         try {
             n.cap = p.getLevel();
         } catch (final Exception e) {
@@ -512,8 +513,31 @@ public final class TuDongGame {
     }
 
     static void tich(final Char p, final TuDong.CauHinh c, final TuDong.Phien ph, final long bay) {
-        TuDong.tich(c, ph, TangTocGame.coTheThang(p), bay, homNay(bay));
+        TuDong.tich(c, ph, TangTocGame.coTheThang(p), bay, homNay(bay), !hetNangLuong(p));
         ghiNgay(p, ph);
+    }
+
+    /** Nang luong huan luyen (EXP, tinh ca Bua the luc + thuong thanh vien) dang 0%. Loi = khong. */
+    static boolean hetNangLuong(final Char p) {
+        try {
+            return com.htbb.pokemon.LauDai.bat() && LauDaiNhanVat.nangLuongExpHienTai(p) <= 0;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+    /** Dang tu dong ma nang luong ve 0%: KHONG dung (chu game 31/10/2026), bao ro MOT lan / ngay. */
+    static void baoHetNangLuong(final Char p, final TuDong.Phien ph, final long bay) {
+        if (!ph.bat || !TuDong.nenBaoHetNangLuong(ph, homNay(bay))) {
+            return;
+        }
+        try {
+            com.htbb.thongbao.ThongBao.rieng(p, TuDong.BAO_HET_NANG_LUONG);
+        } catch (final Exception e) {
+            // mat ket noi
+        }
+        bao(p, TuDong.BAO_HET_NANG_LUONG);
+        Nhat.kiemToan("TU_DONG", "het nang luong " + p.charname + " (khong dung, khong tru kho gio treo)");
     }
 
     static void tat(final Char p, final TuDong.Phien ph, final int lyDo) {
@@ -536,10 +560,11 @@ public final class TuDongGame {
     /** Cong gio + kiem het gio / doi map / ra vung / san dau. @return true = vua tat (da bao client). */
     static boolean kiemDangChay(final Char p, final TuDong.CauHinh c, final TuDong.Phien ph, final long bay) {
         int lyDo = -1;
+        boolean hetNL = false;
         if (!c.bat) {
             lyDo = TuDong.TAT_TAT_TINH_NANG;
-        } else if (TuDong.tich(c, ph, TangTocGame.coTheThang(p), bay, homNay(bay))) {
-            lyDo = TuDong.TAT_HET_GIO;
+        } else if (TuDong.tich(c, ph, TangTocGame.coTheThang(p), bay, homNay(bay), !(hetNL = hetNangLuong(p)))) {
+            lyDo = ph.lyDoTat == TuDong.TAT_HET_GIO_GIU_KHO ? TuDong.TAT_HET_GIO_GIU_KHO : TuDong.TAT_HET_GIO;
         } else if (p.hp <= 0 && hetChoHoiSinh(ph, bay)) {
             lyDo = TuDong.TAT_CHET;
         } else if (p.map == null || TuDong.raVung(ph, p.map.mapId, p.x, p.y)) {
@@ -559,6 +584,9 @@ public final class TuDongGame {
         }
         ghiNgay(p, ph);
         if (lyDo < 0) {
+            if (hetNL) {
+                baoHetNangLuong(p, ph, bay);
+            }
             return false;
         }
         if (khoaMap != null) {

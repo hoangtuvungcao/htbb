@@ -151,9 +151,63 @@ public final class LauDaiNhanVat {
         if (h == null) {
             return 100;
         }
-        return NangLuong.ghiNhan(h, com.htbb.pokemon.DongHo.bay(),
-                LauDai.so(LauDai.K_NANG_LUONG_PHUT, ThongSoLauDai.NANG_LUONG_PHUT_NGAY),
-                LauDai.so(LauDai.K_NANG_LUONG_TICH, ThongSoLauDai.NANG_LUONG_PHUT_TICH_TOI_DA));
+        final long bay = com.htbb.pokemon.DongHo.bay();
+        // Thuong thanh vien chi tinh khi lan nay khoi tao ngay moi (doc CSDL toi da 1 lan / ngay / nhan vat).
+        final int[] thuong = NangLuong.daKhoiTao(h, bay) ? null : thuongNangLuong(p);
+        return NangLuong.ghiNhan(h, bay, phutNgay(), phutTich(), thuong);
+    }
+
+    static int phutNgay() {
+        return LauDai.so(LauDai.K_NANG_LUONG_PHUT, ThongSoLauDai.NANG_LUONG_PHUT_NGAY);
+    }
+
+    static int phutTich() {
+        return LauDai.so(LauDai.K_NANG_LUONG_TICH, ThongSoLauDai.NANG_LUONG_PHUT_TICH_TOI_DA);
+    }
+
+    /**
+     * Goi dang con han {Thanh vien HTBB, The thang, Ve mua cao cap} (chu game 31/10/2026: moi goi +phut nang luong
+     * 100% / ngay). Loi CSDL / tat nap = khong co (khong tang nham).
+     */
+    static boolean[] goiConHan(final Char p) {
+        final boolean[] co = new boolean[3];
+        try {
+            co[NangLuong.TV] = com.htbb.pokemon.ThanhVien.coGoiConHan(p.userID);
+        } catch (final Throwable ignored) {
+        }
+        co[NangLuong.THE] = TangTocGame.coTheThang(p);
+        co[NangLuong.VE] = com.htbb.pokemon.NapTienGame.coVeMuaCaoCap(p);
+        return co;
+    }
+
+    /** Phut thuong hom nay {TV, THE, VE} theo goi con han luc nay + cau hinh exp.nang_luong_*_phut. */
+    static int[] thuongNangLuong(final Char p) {
+        if (HlvAiGame.laBot(p)) {
+            return null; // huan luyen vien AI khong co goi nap
+        }
+        return NangLuong.thuongTheoCo(goiConHan(p));
+    }
+
+    /**
+     * Khoi tao nang luong cua ngay neu chua (khong ghi nhan lan ha quai): So tay xem truoc lan danh quai dau tien, Keo
+     * hiem, Tu dong danh. Thuong thanh vien duoc chot luc nay.
+     */
+    public static HoSoLauDai chuanBiNgay(final Char p) {
+        final HoSoLauDai h = lay(p);
+        if (h == null) {
+            return null;
+        }
+        final long bay = com.htbb.pokemon.DongHo.bay();
+        if (!NangLuong.daKhoiTao(h, bay)) {
+            NangLuong.doiNgay(h, bay, phutNgay(), phutTich(), thuongNangLuong(p));
+        }
+        return h;
+    }
+
+    /** He so EXP hien tai (khong ghi nhan, co Bua + thuong thanh vien). Loi / tat = 100. */
+    public static int nangLuongExpHienTai(final Char p) {
+        final HoSoLauDai h = chuanBiNgay(p);
+        return h == null ? 100 : NangLuong.heSoHienTai(h, com.htbb.pokemon.DongHo.bay());
     }
 
     /**

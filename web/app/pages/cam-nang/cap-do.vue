@@ -72,6 +72,7 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
         <li>Mọi vật phẩm tăng tốc dùng chung giới hạn <strong>60 điểm mỗi ngày</strong> và <strong>210 điểm mỗi tuần</strong> (khoảng 3,5 giờ EXP).</li>
         <li><strong>Bản khoá</strong> kiếm được khi chơi: xong 2 nhiệm vụ tuần (2 vé x1,5 + 1 phiếu ủy thác), lịch đăng nhập ngày 3 (vé x1,5) và ngày 7 (bùa thể lực), vé mùa miễn phí, đổi lượng khoá ở Kecleon.</li>
         <li><strong>Bản cao cấp</strong> (cửa hàng lượng) có cùng công dụng và cùng giới hạn — chỉ tiết kiệm thời gian, không mạnh hơn người cùng cấp.</li>
+        <li><strong>Bùa thể lực</strong>: bản cao cấp <b>60 lượng</b> (4 / tuần) ở NPC Tổng Quản → Cửa hàng và nạp → Cửa hàng lượng; bản khoá <b>45 lượng khoá</b> (2 / tuần) ở Kecleon. Tính 45 điểm khi dùng, tối đa 1 bùa mỗi ngày.</li>
       </ul>
     </WikiSection>
 
@@ -100,6 +101,12 @@ const tongMet = thanhMet.reduce((s, b) => s + b.rong, 0)
       <ul class="cham mt-5">
         <li>Ngày nào không chơi hết, phần 100% được <strong>tích lại</strong> (nghỉ ngơi), tối đa <strong>{{ hienGio(nl.phutTichToiDa / 60) }}</strong>.</li>
         <li>Nhiệm vụ, sự kiện, boss và Pokédex không bị năng lượng giới hạn.</li>
+        <li>
+          <strong>Thưởng gói</strong> — cộng thêm phút 100% mỗi ngày (chỉ EXP, không tích sang hôm sau, cộng dồn):
+          <b>+30 phút</b> Thành viên HTBB, <b>+30 phút</b> Thẻ tháng, <b>+30 phút</b> Vé mùa cao cấp. Tính lúc bắt đầu ngày
+          theo gói còn hạn; xem chi tiết ở Sổ tay huấn luyện → Năng lượng và tinh thông.
+        </li>
+        <li>Hết năng lượng (0%) khi đang <NuxtLink to="/cam-nang/tu-dong" class="lien-ket">Tự động đánh</NuxtLink>: không tự dừng, chỉ báo một lần; giờ miễn phí vẫn tính nhưng kho giờ treo không bị trừ.</li>
       </ul>
     </WikiSection>
 

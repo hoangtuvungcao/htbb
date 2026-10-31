@@ -614,6 +614,22 @@ public final class NapTienGame implements Runnable {
         return coTheNho(p) ? NapTienLogic.THE_THANG_BAN_KINH_NHAT_THEM * 16 : 0;
     }
 
+    /**
+     * Ve mua CAO CAP cua mua hien tai da mo (NangLuong: +phut nang luong 100% / ngay). Goi MOT lan / ngay / nhan vat
+     * (luc khoi tao nang luong cua ngay). Tat nap / loi CSDL = false.
+     */
+    public static boolean coVeMuaCaoCap(final Char p) {
+        if (!NapTien.bat() || p == null) {
+            return false;
+        }
+        try {
+            final Object[] v = NapTienDb.veMua(p.charDBID, NapTienLogic.muaVe(LauDai.ngayHienTai()));
+            return (Integer) v[0] == 1;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
     /** Nho the thang 60 giay (doGetItem goi rat nhieu, khong hoi CSDL moi lan). */
     private static final ConcurrentHashMap<Integer, long[]> THE_NHO = new ConcurrentHashMap<Integer, long[]>();
 

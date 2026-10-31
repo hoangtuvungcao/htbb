@@ -94,7 +94,8 @@ public final class TuDong {
 
     public static final int TAT_NGUOI_CHOI = 0, TAT_HET_GIO = 1, TAT_PVP = 2, TAT_BOSS = 3, TAT_DOI_MAP = 4,
             TAT_RA_VUNG = 5, TAT_VI_PHAM = 6, TAT_CHET = 7, TAT_TAT_TINH_NANG = 8, TAT_SAN_DAU = 9, TAT_THOAT = 10,
-            TAT_DAY_TUI = 11, TAT_HP_THAP = 12, TAT_TU_DI = 13, TAT_KHU_CAM = 14, TAT_VU_KHI_HONG = 15;
+            TAT_DAY_TUI = 11, TAT_HP_THAP = 12, TAT_TU_DI = 13, TAT_KHU_CAM = 14, TAT_VU_KHI_HONG = 15,
+            TAT_HET_GIO_GIU_KHO = 16;
     static final String[] LY_DO = {
         "Đã dừng Tự động đánh.",
         "Hết thời gian Tự động đánh hôm nay. Ngày mai được dùng tiếp.",
@@ -114,7 +115,17 @@ public final class TuDong {
         // 31/10/2026 (chu game: "do vat cam tay bi hong" -> Auto dung im khong bao gi): may chu tu choi moi don khi do
         // cam tay hong (Char.checkDurableWeapone) - noi ro thay vi dung im
         "Tự động đánh dừng: đồ cầm tay hỏng - đến Thợ rèn sửa rồi bật lại.",
+        // 31/10/2026 (chu game): het nang luong (0%) thi KHONG tru kho gio treo - het gio mien phi thi dung, giu kho
+        "Hết giờ Tự động đánh miễn phí hôm nay. Năng lượng huấn luyện đang 0% nên kho giờ treo không bị trừ"
+                + " - dùng Bùa thể lực hoặc nghỉ tới 0 giờ rồi bật lại.",
     };
+
+    /**
+     * Bao MOT lan / ngay khi dang Tu dong danh ma nang luong huan luyen ve 0% (chu game 31/10/2026: KHONG tu dung, chi
+     * bao ro). Luc 0%, gio mien phi van tinh, kho gio treo (Ve treo) KHONG bi tru.
+     */
+    public static final String BAO_HET_NANG_LUONG = "Đã hết năng lượng huấn luyện hôm nay — đánh quái không còn EXP/xu."
+            + " Dùng Bùa thể lực hoặc nghỉ tới 0 giờ.";
 
     public static String lyDo(final int ma) {
         return ma >= 0 && ma < LY_DO.length ? LY_DO[ma] : LY_DO[0];
@@ -393,6 +404,19 @@ public final class TuDong {
         public int soKe;
         /** So don danh o lan nhip truoc (client cu: phat hien dung im de goi y ly do), -1 = chua co. */
         public int soDanhLanNhip = -1;
+        /** Ngay (yyyyMMdd) da bao "het nang luong" (BAO_HET_NANG_LUONG chi mot lan / ngay). */
+        public int ngayBaoHetNangLuong;
+    }
+
+    /** true DUNG MOT lan / ngay (moi phien): luc nay nen bao BAO_HET_NANG_LUONG. */
+    public static boolean nenBaoHetNangLuong(final Phien p, final int homNay) {
+        synchronized (p) {
+            if (p.ngayBaoHetNangLuong == homNay) {
+                return false;
+            }
+            p.ngayBaoHetNangLuong = homNay;
+            return true;
+        }
     }
 
     /** Gio toi da hom nay (giay). */
@@ -483,6 +507,8 @@ public final class TuDong {
         public String khoaMap;
         /** Do cam tay hong (do ben 0): may chu tu choi moi don danh. */
         public boolean vuKhiHong;
+        /** Nang luong huan luyen (EXP, co Bua) dang 0%: kho gio treo khong dung duoc. */
+        public boolean hetNangLuong;
     }
 
     /**
@@ -518,6 +544,9 @@ public final class TuDong {
         }
         if (giayConLai(c, p, n.theThang, homNay) <= 0) {
             return lyDo(TAT_HET_GIO);
+        }
+        if (n.hetNangLuong && giayMienPhiConLai(c, p, n.theThang, homNay) <= 0) {
+            return lyDo(TAT_HET_GIO_GIU_KHO); // con kho nhung nang luong 0%: khong dot ve treo
         }
         return null;
     }
@@ -565,6 +594,15 @@ public final class TuDong {
      * Doi ngay giua chung: phan truoc 00:00 khong mang sang ngay moi. @return true = vua HET GIO (da tat).
      */
     public static boolean tich(final CauHinh c, final Phien p, final boolean theThang, final long bay, final int homNay) {
+        return tich(c, p, theThang, bay, homNay, true);
+    }
+
+    /**
+     * Nhu tren; {@code truKho} = false khi nang luong huan luyen dang 0% (chu game 31/10/2026): gio mien phi van tinh,
+     * phan vuot KHONG tru kho gio treo; het gio mien phi thi dung voi ly do {@link #TAT_HET_GIO_GIU_KHO} (kho giu nguyen).
+     */
+    public static boolean tich(final CauHinh c, final Phien p, final boolean theThang, final long bay, final int homNay,
+            final boolean truKho) {
         synchronized (p) {
             if (!p.bat) {
                 return false;
@@ -578,11 +616,15 @@ public final class TuDong {
             }
             final long tran = giayToiDa(c, theThang) * 1000L;
             if (p.msDung > tran) {
-                // het gio mien phi: phan vuot tru vao kho gio treo
+                // het gio mien phi: phan vuot tru vao kho gio treo (khong tru khi nang luong 0%)
                 final long vuot = p.msDung - tran;
-                final long tru = Math.min(vuot, Math.max(0L, p.msKho));
+                final long tru = truKho ? Math.min(vuot, Math.max(0L, p.msKho)) : 0L;
                 p.msKho -= tru;
                 p.msDung = tran;
+            }
+            if (p.msDung >= tran && !truKho && p.msKho > 0L) {
+                tat(p, TAT_HET_GIO_GIU_KHO);
+                return true;
             }
             if (p.msDung >= tran && p.msKho <= 0L) {
                 p.msDung = tran;

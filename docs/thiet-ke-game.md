@@ -547,6 +547,17 @@ tính). `NangLuong` + `ThongSoLauDai.NANG_LUONG_PHUT_NGAY` / `BAC_MET`:
 - Đổi ngày lúc 00:00 giờ máy chủ. Ghi đè được bằng khoá `exp.nang_luong_phut` / `exp.nang_luong_tich_phut` (bảng
   `cau_hinh`); thiếu dòng thì dùng 90 / 180 của code.
 - Trạng thái hiện ở Quầy đổi thưởng → Sổ tay huấn luyện → Năng lượng và tinh thông.
+- **Thưởng gói** (chủ game 31/10/2026): mỗi ngày cộng thêm phút 100% khi đang có **Thành viên HTBB** (+30,
+  `exp.nang_luong_thanh_vien_phut`), **Thẻ tháng** (+30, `exp.nang_luong_the_thang_phut`), **Vé mùa cao cấp** của mùa
+  hiện tại (+30, `exp.nang_luong_ve_mua_phut`) — cộng dồn, tối đa +90 (90 + 90 = 180 phút 100% khi đủ 3 gói). Chốt **một lần**
+  lúc khởi tạo năng lượng của ngày (lần hạ quái / mở Sổ tay / Tự động đánh / Kẹo hiếm đầu tiên trong ngày) theo gói còn hạn
+  lúc đó — mua giữa ngày thì áp dụng từ hôm sau. Giống Bùa thể lực: **chỉ EXP** (xu / đá / đồ rơi vẫn theo phút gốc — nạp
+  tiền không bán xu), **không tích** sang hôm sau. Sau phần 100% (đã cộng thưởng) vẫn là 120 phút 20%, 120 phút 5%, rồi 0%.
+  Lưu `HoSoLauDai` khoá `n1` / `n2` / `n3`; Sổ tay ghi chi tiết "cơ bản + tích luỹ, Bùa thể lực, Thành viên HTBB, Thẻ
+  tháng, Vé mùa cao cấp". CSDL lỗi / tắt nạp = không cộng. Bot Huấn luyện viên AI không nhận. Kiểm
+  `server/test/KiemNangLuongThanhVien`.
+  Ảnh hưởng cân bằng: người cày ≥ 5 giờ / ngày có đủ 3 gói được ≈ +70% EXP quái so với người không gói (90 → 180 phút
+  100%); người chơi 60–90 phút / ngày gần như không chênh. Chỉnh từng khoá trên web (0 = tắt) nếu mô phỏng / thực tế lệch.
 
 ### 3.4 Vật phẩm tăng tốc
 
@@ -567,8 +578,14 @@ một trần**.
   **dùng**. Bot không vượt được trần.
 - **Không dùng ở cấp 100** (EXP vượt cấp thành tinh thông = sức mạnh).
 - Nguồn bản khoá: nhiệm vụ tuần (2/2 → 2 vé ×1,5 + 1 phiếu ủy thác), lịch đăng nhập (ngày 3 → vé ×1,5, ngày 7 → bùa),
-  vé mùa (nhánh miễn phí có nhiều điểm tăng tốc hơn nhánh cao cấp), Kecleon (bằng lượng khoá, 2 / tuần mỗi món). Người không
+  vé mùa (nhánh miễn phí có nhiều điểm tăng tốc hơn nhánh cao cấp), Kecleon (bằng lượng khoá, 2 / tuần mỗi món: vé ×1,5 khoá
+  15, phiếu ủy thác khoá 10, Bùa thể lực khoá 45 lượng khoá — dòng 130, thêm 31/10/2026). Người không
   nạp dùng khoảng 40–60% trần mỗi tuần.
+- **Bùa thể lực bán ở đâu** (chủ game 31/10/2026): bản cao cấp 1254 ở NPC Tổng Quản → Cửa hàng và nạp → Cửa hàng lượng →
+  Tăng tốc (60 lượng, 4 / tuần — cùng tỉ lệ ≈ 1,33 lượng / điểm như vé EXP, kẹo hiếm; chỉ hiện khi `sv.nap_tien=1` và
+  `nap.tang_toc.bat=1`); bản khoá 1255 ở Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm → Lượng khoá (Kecleon) (45 lượng khoá,
+  2 / tuần, ≈ 1 lượng khoá / điểm như vé ×1,5 khoá). Cả hai đếm **45 điểm khi dùng** vào trần chung 60 / ngày, 210 / tuần
+  và vẫn 1 bùa / ngày (`TangToc.BUA_NGAY_TOI_DA`).
 - Mục tiêu đã kiểm bằng mô phỏng: mua tối đa nhanh hơn người không dùng ≤ 40% cùng giờ chơi; sức mạnh cùng cấp chênh
   ≤ 1%.
 - Phân biệt với **Tự động đánh** (mục 8.2): Tự động đánh chỉ chạy khi online và chịu nguyên luật năng lượng; phiếu ủy
@@ -1715,9 +1732,15 @@ Một tính năng **Tự động đánh** do **máy chủ** điều khiển thay
    miễn phí còn lại + kho, "tối đa" = trần ngày + kho, kèm dòng "Kho giờ treo: …" khi đang tắt — client cũ (0.9.21 /
    0.9.22 / J2ME) không cần sửa. Vé từ giftcode luôn **khoá**, xếp chồng một ô (`Item.quanlity`), giá NPC 0. Nguồn: giftcode
    (`TREO400`: 40 vé = 400 giờ); không bán. `real.TuDongGame.dungVeTreo` / `traoVeTreo`, kiểm `server/test/KiemVeTreo`.
+   **Khi năng lượng huấn luyện 0%** (chủ game 31/10/2026; tính cả Bùa thể lực và thưởng gói): Tự động đánh **không tự
+   dừng**, máy chủ báo **một lần / ngày** "Đã hết năng lượng huấn luyện hôm nay — đánh quái không còn EXP/xu. Dùng Bùa thể
+   lực hoặc nghỉ tới 0 giờ." (thẻ thông báo + chữ trên đầu). Giờ miễn phí hôm nay **vẫn tính**, nhưng **không trừ kho** giờ
+   treo: hết giờ miễn phí lúc 0% thì dừng với lý do riêng (`TuDong.TAT_HET_GIO_GIU_KHO`, kho giữ nguyên) và bật lại lúc
+   0% chỉ còn kho bị từ chối — không có giờ treo vô hạn khi 0% (giữ trần giờ / ngày chống bot ở mục 2). Dùng Bùa thể lực
+   (năng lượng > 0%) hoặc qua 0 giờ thì kho dùng lại như cũ. Kiểm `server/test/KiemNangLuongThanhVien`.
 3. **Điều kiện bật**: chỉ ở bãi luyện tập có Pokémon hoang dã (không thành phố, nhà, sàn đấu, chiến trường, khu Chiếm Gym),
    không đang PK, không gục, còn giờ.
-4. **Tự dừng khi**: hết giờ, đổi bản đồ, ra khỏi bán kính (`tu_dong.ban_kinh` 240 px + 64 px), gục, và nếu
+4. **Tự dừng khi**: hết giờ (kể cả hết giờ miễn phí lúc năng lượng 0% — không trừ kho), đổi bản đồ, ra khỏi bán kính (`tu_dong.ban_kinh` 240 px + 64 px), gục, và nếu
    `tu_dong.tat_khi_pvp=1`: bị Pokémon khác tấn công, tự đánh người, bật PK, vào sàn đấu / Gym / chiến trường, đánh boss.
 5. **Chống bot**: nhịp đánh / thuốc / nhặt theo cửa sổ trượt (`tu_dong.nhip_*`); vượt thì bỏ lệnh và đếm vi phạm, đủ
    `tu_dong.vi_pham_tat` (20) thì dừng + ghi nghi vấn. Với mọi người chơi, nhịp đánh trên `tu_dong.nhip_nguoi` chỉ ghi nghi

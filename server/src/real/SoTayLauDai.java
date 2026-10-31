@@ -161,13 +161,16 @@ public final class SoTayLauDai {
         }
     }
 
-    static void xemNangLuong(final Char p, final HoSoLauDai h) {
+    static void xemNangLuong(final Char p, final HoSoLauDai h0) {
+        // Khoi tao ngay moi neu chua danh quai hom nay: chot thuong thanh vien / the thang / ve mua de hien dung.
+        final HoSoLauDai c = LauDaiNhanVat.chuanBiNgay(p);
+        final HoSoLauDai h = c != null ? c : h0;
         final long bay = com.htbb.pokemon.DongHo.bay();
         final int hs = NangLuong.heSoHienTai(h, bay);
         final long phut = h.nlNgay == NangLuong.ngay(bay) ? h.nlMsDung / 60000L : 0L;
         final int tran = CapDoLauDai.tranCap(LauDai.ngayHienTai(), LevelDetail.expMain.length);
-        final String s = "Năng lượng huấn luyện\nĐã đánh quái hôm nay: " + phut + " phút\nGiờ 100% hôm nay: "
-                + h.nlPhut100 + " phút\nTốc độ EXP hiện tại: " + hs + "%, xu/đồ rơi: " + NangLuong.heSoXuHienTai(h, bay) + "%\n"
+        final String s = "Năng lượng huấn luyện\nĐã đánh quái hôm nay: " + phut + " phút\n" + NangLuong.moTaPhut100(h)
+                + "\nTốc độ EXP hiện tại: " + hs + "%, xu/đồ rơi: " + NangLuong.heSoXuHienTai(h, bay) + "%\n"
                 + com.htbb.pokemon.TangToc.trangThai(h, NangLuong.ngay(bay), com.htbb.pokemon.NhiemVuLauDai.tuan(bay))
                 + (LauDai.tranTheoMua() ? "\n\nTrần cấp mùa này: " + tran : "\n\nCấp tối đa: " + tran)
                 + "\nTinh thông: " + h.ttDiem + " điểm (+" + (CapDoLauDai.tinhThongPhanNghin(h.ttDiem) / 10.0) + "% "

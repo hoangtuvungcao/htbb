@@ -23,6 +23,13 @@ public final class HoSoLauDai {
     public int nlPhut100 = ThongSoLauDai.NANG_LUONG_PHUT_NGAY;
     /** Lan cuoi ghi nhan danh quai (ms) - de cong thoi gian lien tuc. */
     public long nlLanCuoi;
+    /**
+     * Phut 100% thuong thanh vien da cong vao nlPhut100 cua ngay nlNgay (NangLuong.doiNgay, chu game 31/10/2026):
+     * Thanh vien HTBB / The thang / Ve mua cao cap. Khong tich sang hom sau, chi EXP.
+     */
+    public int nlThuongTv;
+    public int nlThuongThe;
+    public int nlThuongVe;
 
     // ---- tinh thong (1.6) ----
     public int ttDiem;
@@ -140,6 +147,9 @@ public final class HoSoLauDai {
         dat(b, "nn", nlNgay);
         dat(b, "nm", nlMsDung);
         dat(b, "np", nlPhut100);
+        dat(b, "n1", nlThuongTv);
+        dat(b, "n2", nlThuongThe);
+        dat(b, "n3", nlThuongVe);
         dat(b, "td", ttDiem);
         dat(b, "tq", ttQuy);
         dat(b, "tl", ttLoai);
@@ -252,6 +262,12 @@ public final class HoSoLauDai {
                 h.nlMsDung = v;
             } else if (k.equals("np")) {
                 h.nlPhut100 = iv;
+            } else if (k.equals("n1")) {
+                h.nlThuongTv = iv;
+            } else if (k.equals("n2")) {
+                h.nlThuongThe = iv;
+            } else if (k.equals("n3")) {
+                h.nlThuongVe = iv;
             } else if (k.equals("td")) {
                 h.ttDiem = iv;
             } else if (k.equals("tq")) {
