@@ -1410,9 +1410,11 @@ final class KichBanCap140 {
             lanSua = System.currentTimeMillis();
             long x0 = b.xu;
             int m = b.moc();
-            b.gui(72, (byte) 2);
+            // gia sua = 10% gia mon (khong theo do ben da mat): vu khi truoc (0 - re, quyet dinh sat thuong), du xu thi ca bo (2)
+            b.gui(72, (byte) 0);
             b.bom(800);
             b.lamMoi();
+            if (b.xu > 60000) { b.gui(72, (byte) 1); b.bom(800); b.lamMoi(); }
             if (b.xu < x0) { xuTieu += x0 - b.xu; ghi("sua do (Machamp): xu " + x0 + " -> " + b.xu); }
             else if (b.chuTu(m).contains("tiền") || b.chuTu(m).contains("xu")) ghi("sua do khong du xu: " + b.chuTu(m));
         }
