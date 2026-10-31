@@ -1,5 +1,5 @@
 /**
- * /server.txt + /NQSH2.txt (danh sách máy chủ cho client game), link cũ /kpah/… /*.php của
+ * /server.txt + link danh sách cũ (danh sách máy chủ cho client game), link cũ /kpah/… /*.php của
  * website PHP đã bỏ, và các tệp JSON danh mục do công cụ Java
  * của repo game sinh (shared/data/danh-muc-*.json, bang-cap-do.json). Chạy: npm test.
  */
@@ -7,7 +7,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { bienDanhSachMayChu, bienDanhSachNqsh, docDanhSachMayChu } from '../server/utils/danhSachMayChu.ts'
+import { bienDanhSachClientCu, bienDanhSachMayChu, docDanhSachMayChu } from '../server/utils/danhSachMayChu.ts'
 import { xuLyDuongDanCu } from '../server/utils/duongDanCu.ts'
 
 test('server.txt: một máy chủ', () => {
@@ -33,17 +33,19 @@ test('server.txt: HTBB_SERVER_LIST trước, KPAH_SERVER_LIST dự phòng', () =
   assert.equal(bienDanhSachMayChu({}), undefined)
 })
 
-test('NQSH2.txt: HTBB_NQSH_LIST riêng nếu có, không thì dùng chung HTBB_SERVER_LIST', () => {
-  assert.equal(bienDanhSachNqsh({ HTBB_NQSH_LIST: 'n', HTBB_SERVER_LIST: 's' }), 'n')
-  assert.equal(bienDanhSachNqsh({ KPAH_NQSH_LIST: 'k', HTBB_SERVER_LIST: 's' }), 'k')  // TUONG-THICH-TEN-CU
-  assert.equal(bienDanhSachNqsh({ HTBB_SERVER_LIST: 's' }), 's')
-  assert.equal(bienDanhSachNqsh({}), undefined)
+test('danh sách cũ: HTBB_SERVER_LIST_CU riêng nếu có, không thì dùng chung HTBB_SERVER_LIST', () => {
+  assert.equal(bienDanhSachClientCu({ HTBB_SERVER_LIST_CU: 'c', HTBB_NQSH_LIST: 'n', HTBB_SERVER_LIST: 's' }), 'c')
+  // TUONG-THICH-TEN-CU: tên biến cũ trên VPS / GitHub vars vẫn được đọc dự phòng
+  assert.equal(bienDanhSachClientCu({ HTBB_NQSH_LIST: 'n', HTBB_SERVER_LIST: 's' }), 'n')
+  assert.equal(bienDanhSachClientCu({ KPAH_NQSH_LIST: 'k', HTBB_SERVER_LIST: 's' }), 'k')
+  assert.equal(bienDanhSachClientCu({ HTBB_SERVER_LIST: 's' }), 's')
+  assert.equal(bienDanhSachClientCu({}), undefined)
 })
 
 test('link cũ: danh sách máy chủ trả thẳng nội dung (không chuyển hướng), có/không tiền tố /kpah', () => {
   for (const d of ['/server.txt', '/kpah/server.txt']) assert.deepEqual(xuLyDuongDanCu(d), { loai: 'danh_sach', bien: 'server' })
   for (const d of ['/NQSH2.txt', '/server/NQSH2.txt', '/kpah/NQSH2.txt', '/kpah/server/NQSH2.txt', '/NQSH2.txt?x=1']) {
-    assert.deepEqual(xuLyDuongDanCu(d), { loai: 'danh_sach', bien: 'nqsh' }, d)
+    assert.deepEqual(xuLyDuongDanCu(d), { loai: 'danh_sach', bien: 'cu' }, d)
   }
 })
 

@@ -1,6 +1,6 @@
 /**
- * DANH SÁCH MÁY CHỦ cho client game (GET /server.txt, /NQSH2.txt, /server/NQSH2.txt, kể cả
- * tiền tố /kpah — phục vụ ở server/middleware/duong-dan-cu.ts, xem duongDanCu.ts).
+ * DANH SÁCH MÁY CHỦ cho client game (GET /server.txt và link danh sách cũ của client đã phát hành,
+ * kể cả tiền tố /kpah — phục vụ ở server/middleware/duong-dan-cu.ts, xem duongDanCu.ts).
  * File THUẦN (không import) để npm test kiểm trực tiếp.
  *
  * Client Unity (ServerListScr.linkGetHost = "http://" + SERVER_HOST + "/server.txt") tải tệp
@@ -15,8 +15,9 @@
  * Dòng sai định dạng bị BỎ (không gửi rác cho client — client tách bằng ":" và đọc thẳng
  * cổng là số). Không còn dòng nào hợp lệ -> null (trả 503).
  *
- *   HTBB_NQSH_LIST (dự phòng: KPAH_NQSH_LIST) — riêng cho /NQSH2.txt của client cũ đã phát  // TUONG-THICH-TEN-CU
- *   hành, nếu cần khác /server.txt. Không đặt thì dùng chung HTBB_SERVER_LIST.
+ *   HTBB_SERVER_LIST_CU — riêng cho link danh sách cũ của client đã phát hành (duongDanCu.ts),
+ *   nếu cần khác /server.txt. Không đặt thì dùng chung HTBB_SERVER_LIST. Tên biến cũ vẫn đọc
+ *   (dự phòng) ở bienDanhSachClientCu.
  */
 const DONG_HOP_LE = /^[^:\r\n]+:[A-Za-z0-9.\-]+:\d{1,5}:\d+$/
 
@@ -36,9 +37,10 @@ export function bienDanhSachMayChu(env: Record<string, string | undefined>): str
   return env.KPAH_SERVER_LIST  // TUONG-THICH-TEN-CU
 }
 
-/** /NQSH2.txt (client cũ): HTBB_NQSH_LIST / KPAH_NQSH_LIST nếu có, không thì như /server.txt. */  // TUONG-THICH-TEN-CU
-export function bienDanhSachNqsh(env: Record<string, string | undefined>): string | undefined {
-  for (const k of ['HTBB_NQSH_LIST', 'KPAH_NQSH_LIST']) {  // TUONG-THICH-TEN-CU
+/** Link danh sách cũ (client cũ): HTBB_SERVER_LIST_CU nếu có, không thì như /server.txt. */
+export function bienDanhSachClientCu(env: Record<string, string | undefined>): string | undefined {
+  // TUONG-THICH-TEN-CU: hai tên biến sau là tên cũ trong file env / GitHub vars đã đặt trên VPS - vẫn đọc dự phòng.
+  for (const k of ['HTBB_SERVER_LIST_CU', 'HTBB_NQSH_LIST', 'KPAH_NQSH_LIST']) {
     const v = env[k]
     if (v !== undefined && v.trim() !== '') return v
   }

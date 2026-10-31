@@ -1,9 +1,10 @@
 /*
  * PHUC HOI TU LOI CU (P3): lop nay duoc dich nguoc tu lib/htbb-core.jar - ma loi da bien dich cua
  * game goc - bang Vineflower 1.11.1 roi sua tay toi thieu cho bien dich duoc (--release 8). Giu
- * nguyen ten lop, package va hanh vi; doi ten / don dep de o giai doan sau. Nguon goc: docs/giay-phep.md.
+ * nguyen ten lop va hanh vi; package da doi sang com.htbb.log.nguoidung (bo ten game cu). Nguon goc:
+ * docs/giay-phep.md.
  */
-package logNQSH;
+package com.htbb.log.nguoidung;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;

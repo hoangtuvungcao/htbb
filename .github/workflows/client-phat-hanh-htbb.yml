@@ -1,6 +1,6 @@
 # Phát hành Huyền Thoại Bảo Bối (HTBB): build jar (thường + nhẹ), APK :pokemon (ký bằng ky-ban-phat-hanh.sh),
 # PC (Unity qua GameCI) rồi đẩy lên GitHub Releases của repo phát hành HTBB + ghi phienban.json.
-# Bấm "Run workflow" ở tab Actions. Không bao giờ đụng kênh NQSH-H2 cũ (kpah-server/nqsh-h2-tai).
+# Bấm "Run workflow" ở tab Actions. Không bao giờ đụng kênh phát hành cũ của game gốc (repo / tên miền chứa "nqsh-h2" - giữ chuỗi để chặn).
 #
 # Cấu hình (Settings -> Secrets and variables -> Actions), xem tools/phat-hanh/README.md:
 #   Variables: HTBB_REPO_PHAT_HANH   <chu>/<repo-phat-hanh-htbb>   (chưa có = chỉ build được, chi_build=true)
@@ -76,7 +76,7 @@ jobs:
         run: |
           thieu=""
           case "$MAY_CHU_CHINH" in ?*:[0-9]*) ;; *) thieu="$thieu vars.HTBB_MAY_CHU_CHINH(host:cong)" ;; esac
-          case "$MAY_CHU_CHINH$CAP_NHAT_URL$REPO" in *nqsh-h2*) echo "::error::may chu / CAP_NHAT_URL / REPO tro ve NQSH-H2"; exit 1 ;; esac
+          case "$MAY_CHU_CHINH$CAP_NHAT_URL$REPO" in *nqsh-h2*) echo "::error::may chu / CAP_NHAT_URL / REPO tro ve kenh cu cua game goc (nqsh-h2)"; exit 1 ;; esac
           if [ "$CHI_BUILD" != true ]; then
             [ -n "$REPO" ] || thieu="$thieu vars.HTBB_REPO_PHAT_HANH"
             [ -n "$T" ] || thieu="$thieu secrets.HTBB_TAI_TOKEN"

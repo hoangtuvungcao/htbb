@@ -48,8 +48,9 @@ elif [ -z "$MAY_CHU_CHINH" ]; then
     echo "     Thu tren may: MAY_CHU_CHINH=127.0.0.1:19129 sh client_jar/build.sh $V"
     exit 1
 else
+    # Rao chan: "nqsh-h2" la ten mien server cu cua game goc - giu chuoi de con nhan ra va tu choi.
     case "$MAY_CHU_CHINH" in
-        *nqsh-h2*) echo "LOI: MAY_CHU_CHINH=$MAY_CHU_CHINH la server NQSH-H2 cu"; exit 1 ;;
+        *nqsh-h2*) echo "LOI: MAY_CHU_CHINH=$MAY_CHU_CHINH la server cu cua game goc"; exit 1 ;;
     esac
     case "$MAY_CHU_CHINH" in
         ?*:[0-9]*) ;;

@@ -6,15 +6,15 @@
  * /var/www/html/kpah), nên link cũ có hai dạng: /register.php và /kpah/register.php.
  *
  *   1. DANH SÁCH MÁY CHỦ — client đã phát hành tải trực tiếp, KHÔNG chuyển hướng (client cũ
- *      có thể không theo 301): /server.txt (client Unity), /server/NQSH2.txt và /NQSH2.txt
- *      (bản thật trên PHP; /server.txt chỉ là symlink tới nó), kèm tiền tố /htbb. Trả luôn
+ *      có thể không theo 301): /server.txt (client Unity) và tệp danh sách cũ của game gốc
+ *      (DANH_SACH bên dưới; /server.txt chỉ là symlink tới nó), kèm tiền tố /htbb. Trả luôn
  *      nội dung — xem danhSachMayChu.ts.
  *   2. Trang .php cũ -> 301 sang trang Nuxt tương ứng (giữ query string). Không phải GET/HEAD
  *      (vd SePay còn POST webhook_sepay.php) -> 308 để giữ method và body.
  *   3. /kpah hay /kpah/<gì đó khác> -> 301 về trang tương ứng bỏ tiền tố, không có thì trang chủ.
  */
 export type KetQuaDuongDanCu =
-  | { loai: 'danh_sach', bien: 'server' | 'nqsh' }
+  | { loai: 'danh_sach', bien: 'server' | 'cu' }
   | { loai: 'chuyen', dich: string, ma: 301 | 308 }
   | null
 
@@ -42,10 +42,11 @@ const TRANG_ADMIN = new Set([
   'nhanvat', 'nhatky', 'online', 'reset-toanbo', 'server', 'sukien', 'taikhoan', 'tao-hang-loat',
 ])
 
-const DANH_SACH: Readonly<Record<string, 'server' | 'nqsh'>> = Object.freeze({
+// TUONG-THICH-TEN-CU: hai đường dẫn cuối là link danh sách máy chủ đã ghi cứng trong client cũ đã phát hành - giữ nguyên.
+const DANH_SACH: Readonly<Record<string, 'server' | 'cu'>> = Object.freeze({
   '/server.txt': 'server',
-  '/server/NQSH2.txt': 'nqsh',
-  '/NQSH2.txt': 'nqsh',
+  '/server/NQSH2.txt': 'cu',
+  '/NQSH2.txt': 'cu',
 })
 
 export function xuLyDuongDanCu(duong: string, method = 'GET'): KetQuaDuongDanCu {

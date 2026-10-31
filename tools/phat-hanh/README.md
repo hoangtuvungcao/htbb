@@ -10,7 +10,7 @@ cùng **một máy chủ production** (`tools/phat-hanh/may_chu.conf`, gitignore
 | `phien_ban.conf` (trong git) | `PHIEN_BAN`, `BAN` (chỉ tăng; `major*10000+minor*100+patch`) | `client_jar/build.sh` (MANIFEST `MIDlet-Version`/`HTBB-Phien-Ban`/`HTBB-Ban`, `PhienBan.BAN` gửi khi đăng nhập → server `sv.banToiThieu`), `client_apk/pokemon/build.gradle` (versionCode/versionName), `client_pc_ios/Assets/Editor/BuildCli.cs` (bundleVersion), workflow |
 | `may_chu.conf` (KHÔNG trong git) | `MAY_CHU_CHINH=host:cổng` (**bắt buộc**), `CAP_NHAT_URL=` (rỗng = PC không tự cập nhật) | cả ba build; biến môi trường cùng tên thắng tệp |
 
-Thiếu máy chủ là build phát hành **dừng** với thông báo (trước đây jar/APK/PC rơi về danh sách server `nqsh-h2.top`).
+Thiếu máy chủ là build phát hành **dừng** với thông báo (trước đây jar/APK/PC rơi về danh sách server của game gốc).
 
 ```sh
 cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf      # điền MAY_CHU_CHINH=host:19129
@@ -27,9 +27,9 @@ REPO=<chu>/<repo-phat-hanh-htbb> sh tools/phat-hanh/phat-hanh.sh pc      "ghi ch
   tag `jar` (`HTBB.jar`), `jar-nhe` (`HTBB-nhe.jar`), `android` (`HTBB.apk`), `pc` (`HTBB-PC.zip`).
 - `phienban.json` (nhánh `main` của repo phát hành): mục `jar`, `jar-nhe`, `android`, `pc` =
   `{ban, phienBan, link, sha256, kichThuoc, ghiChu, ngay}`. Bản PC đọc mục `pc` **chỉ khi** build có `CAP_NHAT_URL`
-  (link raw của `phienban.json` này); open test mặc định để trống = tắt. Link kênh NQSH-H2 luôn bị bỏ qua.
+  (link raw của `phienban.json` này); open test mặc định để trống = tắt. Link kênh phát hành cũ của game gốc luôn bị bỏ qua.
 - **Repo phát hành HTBB chưa có**: chủ server tạo repo public chỉ chứa bản build (vd `<chu>/htbb-tai`), đặt
-  `REPO=` khi chạy tay hoặc biến `HTBB_REPO_PHAT_HANH` cho workflow. Script từ chối `REPO` là repo NQSH-H2.
+  `REPO=` khi chạy tay hoặc biến `HTBB_REPO_PHAT_HANH` cho workflow. Script từ chối `REPO` là repo phát hành cũ của game gốc (chứa `nqsh-h2`).
 - Khoá ký APK luôn **ngoài repo** (`KEY_DIR`; `ky-ban-phat-hanh.sh` từ chối nếu nằm trong repo git). Tạo khoá: xem
   [docs/build.md](../../docs/build.md) mục Android. Mọi bản sau phải ký cùng khoá.
 - Ghi công PMDCollab (CC BY-NC 4.0): `client_jar/res/GHI_CONG.txt` có trong jar/APK; PC có `GHI_CONG.txt` cạnh `.exe`.

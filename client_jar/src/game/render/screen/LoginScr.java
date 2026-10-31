@@ -474,7 +474,7 @@ public class LoginScr extends Screen {
                 dos.writeUTF(this.tfUser.getText());
                 dos.writeUTF(this.tfPass.getText());
             }
-            RMS.saveRMS("nqshlogin", bo.toByteArray());
+            RMS.saveRMS(RMS.KHO_DANG_NHAP, bo.toByteArray());
             dos.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -482,7 +482,7 @@ public class LoginScr extends Screen {
     }
 
     private void loadPass() {
-        byte[] data = RMS.loadRMS("nqshlogin");
+        byte[] data = RMS.loadRMS(RMS.KHO_DANG_NHAP);
         if (data == null) {
             return;
         }

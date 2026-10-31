@@ -3,7 +3,7 @@
 #   cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf
 # Đọc bởi: client_jar/build.sh (MAY_CHU_CHINH), client_apk/pokemon/build.gradle (release; -PmayChu / MAY_CHU ghi đè),
 #          client_pc_ios/Assets/Editor/BuildCli.cs (ThuongHieu.MAY_CHU_CHINH; -htbbMayChu khi build ghi đè).
-# Biến môi trường cùng tên luôn thắng tệp này. Thiếu cả hai -> build phát hành DỪNG (không còn rơi về nqsh-h2.top).
+# Biến môi trường cùng tên luôn thắng tệp này. Thiếu cả hai -> build phát hành DỪNG (không còn rơi về server của game gốc).
 # Một dòng KHOA=giatri, không dấu nháy, không khoảng trắng. Để trống = build phát hành dừng với thông báo lỗi.
 # Vd: MAY_CHU_CHINH=203.0.113.10:19129
 MAY_CHU_CHINH=
