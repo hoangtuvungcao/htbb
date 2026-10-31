@@ -359,10 +359,26 @@ Sau trần (mô hình `KiemTtkQuai`, đồ cửa hàng +0, quái mục tiêu đa
   - Gastrodon cấp 72: Charmander hạ 8 con, 5,7 giây mỗi con, 0,5 bình mỗi con (trước: 0 con); Pichu hạ 1 con rồi 4 con ở
     lần đo sau, 7,7–10,5 giây mỗi con, 4,5–12 bình mỗi con (trước: 0 con).
   - Golem (cấp 54) với người chơi cấp 52: Charmander và Pichu đều hạ 8 con, 2,4 giây mỗi con, 0,1–0,4 bình mỗi con.
-  - Golem với người chơi cấp 49 (đúng cấp mở CA-09.1): cả hai dòng hạ 1 con rồi gục. Lý do là luật chênh cấp cũ
-    (`LiveActor.attackDam`: quái cao hơn 5 cấp đánh ×2 + 70 mỗi cấp), không phải khắc hệ. CA-09.1 (Golem 54, mở cấp 49) và
-    CA-10.1 (Rhydon 62, mở cấp 57) vẫn chênh 5 cấp; các cửa ải trước đã được hạ về ≤ cấp bước + 2 (khối
-    `sua_can_bang_lop.sql`).
+  - Golem với người chơi cấp 49 (đúng cấp mở CA-09.1), trước khối `sua_cap_quai_cua_ai.sql`: cả hai dòng hạ 1 con rồi gục.
+    Lý do là luật chênh cấp (`LiveActor.attackDam`: quái cao hơn 5 cấp đánh ×2 + 70 mỗi cấp), không phải khắc hệ.
+
+**Quái mục tiêu bước giết bắt buộc ≤ cấp mở + 2** (khối `sua_cap_quai_cua_ai.sql`, chủ game 31/10/2026; cùng luật với các cửa ải
+CA-03..07 ở khối `sua_can_bang_lop.sql`). Rà mọi bước chính / cửa ải / hướng dẫn kiểu giết, giết quái tinh anh, hạ quái tinh
+anh; có 5 bước mà quái mục tiêu cao hơn cấp mở từ 5 cấp:
+
+| Bước | Quái | Cấp cũ → mới | Cấp mở bước | Bản đồ |
+|---|---|---|---|---|
+| CA-09.1 | Golem | 54 → 51 | 49 | 18 |
+| CA-10.1 | Rhydon | 62 → 59 | 57 | 20 |
+| CA-11.1 | Kingler | 70 → 67 | 65 | 22 |
+| CA-12.1 | Vileplume | 78 → 75 | 73 | 24 |
+| C31.4 (tinh anh) | Arcanine | 60 → 55 | 53 (C34.3 mở 57 cũng dùng) | 20 |
+
+- Mỗi mẫu chỉ sinh ở một bản đồ, nên đổi mẫu là đổi đúng bãi quái của bước đó.
+- Trưởng Gym dùng cùng mẫu (Pewter Golem, Viridian Rhydon) lấy cấp Gym riêng, không đổi.
+- Chỉ số và thưởng theo cấp mới trên đường quái đang chạy, quái tinh anh 4 × HP / 1,3 × tấn công. Luật chênh cấp chung giữ
+  nguyên.
+- `KiemTtkQuai` kiểm không bước giết bắt buộc nào có quái ≥ cấp mở + 5.
 
 Sát thương nhận ngoài đòn bẩy chỉ số quái (báo chủ game, **chưa sửa**):
 
