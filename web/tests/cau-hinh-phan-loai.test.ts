@@ -28,7 +28,9 @@ test('phân loại: ít khoá chỉnh trên web, phần lớn ẩn', () => {
   // <= 78: quản lý thú thêm 6 khoá chỉnh (thu.*), open test thêm 2 khoá hạn mức đăng ký (dang_ky.toi_da_gio / _ngay —
   // chủ game chỉnh trên web khi người chơi dùng chung mạng di động bị chặn). Cùng trần với server/test/KiemPhanLoaiCauHinh.java.
   // <= 81: thêm 3 khoá Về làng miễn phí (ve_lang.moi_ngay / thang_gym / toi_da — chủ game chỉnh lượt trên web).
-  assert.ok(d.chinh >= 40 && d.chinh <= 81, `chỉnh trên web: ${d.chinh}`)
+  // <= 95: thêm nhóm hlv_ai 14 khoá (Huấn luyện viên AI: số lượng / lịch / tỉ lệ / cấp / bản đồ / hoạt động + 6 luật chống lạm phát).
+  // <= 97: thêm hlv_ai.doi_bot_toi_da + hlv_ai.tien_to_ten.
+  assert.ok(d.chinh >= 40 && d.chinh <= 97, `chỉnh trên web: ${d.chinh}`)
   assert.ok(d.co_dinh > 100, `cố định: ${d.co_dinh}`)
   assert.ok(d.luon_bat >= 15, `luôn bật: ${d.luon_bat}`)
 })
@@ -70,9 +72,9 @@ test('chỉnh trên web: những thứ người vận hành thật sự chỉnh 
   assert.equal(k('sv.tilePotion').macDinh, '14')
 })
 
-test('nhóm trên trang: 7 nhóm (thêm Chống clone 19/10/2026; Thẻ đặt tên Pokémon 0.9.8 chỉ có khoá ẩn - giữ ≤ 70 khoá web), không khoá ẩn; nhóm chỉ có khoá ẩn bị đánh dấu an', () => {
+test('nhóm trên trang: 8 nhóm (thêm Chống clone 19/10/2026; Huấn luyện viên AI 31/10/2026; Thẻ đặt tên Pokémon 0.9.8 chỉ có khoá ẩn), không khoá ẩn; nhóm chỉ có khoá ẩn bị đánh dấu an', () => {
   const trang = nhomTT()
-  assert.deepEqual(trang.map(n => n.ma), ['kinh_te', 'su_kien', 'nap_tien', 'thanh_vien', 'chong_clone', 'tu_dong', 'bao_tri'])
+  assert.deepEqual(trang.map(n => n.ma), ['kinh_te', 'su_kien', 'nap_tien', 'thanh_vien', 'chong_clone', 'tu_dong', 'bao_tri', 'hlv_ai'])
   for (const n of trang) for (const x of n.khoa) assert.ok(!anTT(x), x.khoa)
   for (const n of NHOM_TT) {
     const coHien = DANH_MUC_TT.some(x => x.nhom === n.ma && !anTT(x))

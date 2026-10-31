@@ -48,6 +48,7 @@ export const ADMIN_MENU: { nhom: string, items: AdminMenuItem[] }[] = [
       { key: 'bang_game', to: '/admin/bang-game', label: 'Kết quả trong game', icon: 'i-lucide-castle', api: '/api/admin/bang-game' },
       { key: 'xep_hang', to: '/admin/xep-hang', label: 'Bảng xếp hạng web', icon: 'i-lucide-trophy', api: '/api/admin/xep-hang', moTa: 'Bảng nào hiện, thứ tự, làm mới, loại trừ' },
       { key: 'dua_top', to: '/admin/dua-top', label: 'Đua top', icon: 'i-lucide-medal', api: '/api/admin/dua-top' },
+      { key: 'hlv_ai', to: '/admin/hlv-ai', label: 'Bot / Huấn luyện viên AI', icon: 'i-lucide-bot', api: '/api/admin/hlv-ai', moTa: 'Bot lấp máy chủ: số lượng, lịch, tính cách, hoạt động, chống lạm phát, bot online, kinh tế bot' },
     ],
   },
   {

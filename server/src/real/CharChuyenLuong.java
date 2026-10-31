@@ -47,6 +47,9 @@ public final class CharChuyenLuong {
      * nguoi choi - mua ban hang cao cap chi qua Cho trang tri co thue (docs/van-hanh.md).
      */
     static boolean chanViNapTien(final Char player) {
+        if (real.HlvAiGame.chanTienThat(player)) { // huan luyen vien AI khong chuyen luong
+            return true;
+        }
         // thanh vien: chuyen luong can Thanh vien HTBB (tat he thong = khong chan).
         if (com.htbb.pokemon.ThanhVien.chanVaBao(player, "chuyen_luong")) {
             return true;
@@ -74,6 +77,10 @@ public final class CharChuyenLuong {
             return;
         }
         final Char nguoiNhan = CharManager.instance.getCharByCharName(ten);
+        if (nguoiNhan != null && real.HlvAiGame.laBot(nguoiNhan)) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Huấn luyện viên AI không nhận lượng.", ""));
+            return;
+        }
         if (nguoiNhan == null) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
                     "Không tìm thấy Pokémon \"" + ten + "\" đang online.", ""));
@@ -112,6 +119,10 @@ public final class CharChuyenLuong {
             return;
         }
         final Char nguoiNhan = CharManager.instance.getCharByCharName(c.tenNguoiNhan);
+        if (nguoiNhan != null && real.HlvAiGame.laBot(nguoiNhan)) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Huấn luyện viên AI không nhận lượng.", ""));
+            return;
+        }
         if (nguoiNhan == null) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
                     c.tenNguoiNhan + " đã thoát game, hãy thử lại.", ""));

@@ -637,7 +637,7 @@ public class CharCopyMoba extends Char {
 
                     this.map.checkTrade(c);
                     if (c.mapID == Map.idMapTown && c.idClan != -1 && Map.getTown[p.inCountry] && Map.giveCardFail(c)) {
-                        this.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(c.charname + " giao thẻ thất bại"), c.myCountry);
+                        this.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(c.tenHienThi() + " giao thẻ thất bại"), c.myCountry);
                         this.map.sendAllPlayer(MessageCreator.createMsgStartGetTown(p.inCountry), p.inCountry);
                     }
 

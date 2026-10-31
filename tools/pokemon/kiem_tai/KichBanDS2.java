@@ -190,8 +190,8 @@ class KichBanDS2 {
             // trong nha: cong ra = map cu (client GameScr: changeMap(oldMap, toX, toY) voi xOut/yOut cua o cong)
             for (int[] g : bd.cong) {
                 int[] dung = bd.oTruocCong(g[0], g[1]);
-                b.px = b.tx * 16 + 8;
-                b.py = b.ty * 16 + 8;
+                if (!BotChucNang.Bot.CHUAN_CLIENT) { b.px = b.tx * 16 + 8;
+                b.py = b.ty * 16 + 8; }
                 if (dung == null || !b.diDuong(bd, dung[0], dung[1])) continue;
                 int m = b.moc();
                 b.gui(12, (short) b.mapCu, (short) g[3], (short) g[4]);
@@ -215,8 +215,8 @@ class KichBanDS2 {
         for (int[] chon : ds) {
             int[] dung = bd.oTruocCong(chon[0], chon[1]);
             if (dung == null) { ly = "cong " + chon[0] + "," + chon[1] + " khong co o dung"; continue; }
-            b.px = b.tx * 16 + 8;
-            b.py = b.ty * 16 + 8;
+            if (!BotChucNang.Bot.CHUAN_CLIENT) { b.px = b.tx * 16 + 8;
+            b.py = b.ty * 16 + 8; }
             // tx/ty chi cap nhat khi vao map; vi tri hien tai lay tu px/py neu da di
             if (!b.diDuong(bd, dung[0], dung[1])) { ly = "khong di bo toi " + dung[0] + "," + dung[1] + " tu " + b.px / 16 + "," + b.py / 16; continue; }
             int m = b.moc();

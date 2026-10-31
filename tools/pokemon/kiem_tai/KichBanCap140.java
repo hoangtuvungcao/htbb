@@ -287,7 +287,7 @@ final class KichBanCap140 {
     }
 
     // ================================================================== mot nguoi choi
-    static final class NguoiChoi extends BotXuyenSuot.Dong {
+    static class NguoiChoi extends BotXuyenSuot.Dong { // khong final: tools/pokemon/hlv_ai/HlvAiNguoiChoi ke thua
         final String nhanh;
         final File tepCp;
         final List<String> dongThoiGian = new ArrayList<>(); // "cap|phut that|ngay ao|nv chinh|phu|cua ai|xu|chet"

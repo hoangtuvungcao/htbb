@@ -176,6 +176,9 @@ public final class ChongClone {
 
     /** Ca hai ben deu phai qua cap / tuoi (thach dau). Bao cho {@code nguoiBao}. */
     public static boolean chanCaHai(final Char a, final Char b, final Char nguoiBao, final String kieu) {
+        if (real.HlvAiGame.chanCaHai(a, b, nguoiBao, kieu)) { // huan luyen vien AI: han muc ngay bot -> nguoi
+            return true;
+        }
         String m = lyDo(a, a == nguoiBao, kieu);
         if (m == null) {
             m = lyDo(b, b == nguoiBao, kieu);
@@ -192,6 +195,9 @@ public final class ChongClone {
      * han cung thiet bi / IP moi nguoi nhan moi ngay. true = da chan (da bao {@code nguoiBao}, da ghi nhat ky).
      */
     public static boolean chanChuyen(final Char gui, final Char nhan, final Char nguoiBao, final String kieu, final long xu) {
+        if (real.HlvAiGame.chanChuyen(gui, nhan, nguoiBao, kieu, xu)) { // huan luyen vien AI: han muc ngay bot -> nguoi
+            return true;
+        }
         if (laBot(gui) || laBot(nhan)) {
             return false;
         }
@@ -220,6 +226,7 @@ public final class ChongClone {
 
     /** Ghi mot lan chuyen da xong (ca hai ben online). */
     public static void ghi(final Char gui, final Char nhan, final String kieu, final long xu, final String chiTiet) {
+        real.HlvAiGame.ghiChuyen(gui, nhan, kieu, xu, chiTiet);
         if (laBot(gui) || laBot(nhan)) {
             return;
         }
@@ -229,6 +236,10 @@ public final class ChongClone {
     /** Ghi mot lan chuyen ma nguoi nhan co the offline (cho trang tri, cho sinh thai): chi biet id + ten. */
     public static void ghi(final Char gui, final int nhanId, final String nhanTen, final String kieu, final long xu,
             final String chiTiet) {
+        if (gui != null && nhanId > 0) {
+            real.HlvAiGame.ghiChuyen(gui.charDBID, gui.charname, real.HlvAiGame.laBot(gui), nhanId, nhanTen,
+                    real.HlvAiGame.laCharBot(nhanId), kieu, xu, chiTiet);
+        }
         if (laBot(gui) || nhanId <= 0) {
             return;
         }
@@ -241,6 +252,10 @@ public final class ChongClone {
     /** Ghi mot lan chuyen ma nguoi GUI co the offline (don dat hang cho sinh thai): nguoi nhan online. */
     public static void ghiNhan(final int guiId, final String guiTen, final Char nhan, final String kieu, final long xu,
             final String chiTiet) {
+        if (nhan != null && guiId > 0) {
+            real.HlvAiGame.ghiChuyen(guiId, guiTen, real.HlvAiGame.laCharBot(guiId), nhan.charDBID, nhan.charname,
+                    real.HlvAiGame.laBot(nhan), kieu, xu, chiTiet);
+        }
         if (laBot(nhan) || guiId <= 0) {
             return;
         }
@@ -252,6 +267,9 @@ public final class ChongClone {
 
     /** Nguoi nhan co the offline: chi kiem gioi han cung may (cap / tuoi nguoi ban da kiem luc rao). */
     public static boolean chanChuyen(final Char gui, final int nhanId, final String nhanTen, final String kieu, final long xu) {
+        if (real.HlvAiGame.chanChuyen(gui, nhanId, nhanTen, real.HlvAiGame.laCharBot(nhanId), gui, kieu, xu)) {
+            return true; // huan luyen vien AI: han muc ngay bot -> nguoi
+        }
         if (laBot(gui) || nhanId <= 0) {
             return false;
         }

@@ -44,6 +44,12 @@ class KichBanDS3 {
 
     /** Mua 1 mon tu shop vu khi (NPC 2) - tra ve id mon moi trong tui hoac -1. */
     static int muaVuKhi(BotChucNang.Bot b, int tpl) throws IOException {
+        // client chuan (HLV AI): may chu chi ban khi dung canh NPC ren (NpcTinhBanDo.banTaiCho, BAN_KINH_O) - di toi NPC
+        // nhu nguoi choi, khong thi bi ghi "hackbitem" trong nhat ky gian lan
+        if (BotChucNang.Bot.CHUAN_CLIENT && KichBanHuongDan.oNpc(b.mapLoad, 2) != null) {
+            String loi = KichBanHuongDan.toiNpc(b, 2);
+            if (loi != null) return KHONG;
+        }
         int m = b.moc();
         b.gui(23, (byte) 2);
         int n = b.doiMenu(m, 2, 0, 3000);

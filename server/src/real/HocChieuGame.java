@@ -539,21 +539,24 @@ public final class HocChieuGame {
             ThongBao.loi(p, tc + " tự học khi đủ cấp.", "");
             return;
         }
-        if (p.getxu() < r.giaXu) {
+        // Huan luyen vien AI hoc chieu NPC mien phi (chu game 31/10/2026): bot co dung bo chieu nguoi choi cung cap / dong co,
+        // khong tao them xu (chi bo qua mot ho hut); cac dieu kien khac (learnset, cap, nguon NPC) giu nguyen.
+        final long gia = HlvAiGame.laBot(p) ? 0L : r.giaXu;
+        if (p.getxu() < gia) {
             ThongBao.loi(p, "Không đủ xu.", "Cần " + so(r.giaXu) + " xu để học " + tc);
             return;
         }
-        if (r.giaXu > 0) {
-            p.subXu(r.giaXu, true, "map 80");
+        if (gia > 0) {
+            p.subXu(gia, true, "map 80");
         }
         p.skill[o] = 1;
         chuanHoa(p, false);
         try {
-            Database.instance.saveLogLearnSkill(p.charname, "Học skill: " + tc + " với giá: " + r.giaXu + " xu (loài " + p.pokeDex + ")");
+            Database.instance.saveLogLearnSkill(p.charname, "Học skill: " + tc + " với giá: " + gia + " xu (loài " + p.pokeDex + ")");
         } catch (final Throwable ignored) {
         }
         guiThongTin(p);
-        ThongBao.gui(p, ThongBao.HIEM, LoaiPokemon.ten(p.pokeDex) + " đã học " + tc + "!", "−" + so(r.giaXu) + " xu",
+        ThongBao.gui(p, ThongBao.HIEM, LoaiPokemon.ten(p.pokeDex) + " đã học " + tc + "!", gia > 0 ? "−" + so(gia) + " xu" : "Huấn luyện viên AI học miễn phí",
                 ThongBao.HINH_POKEMON, p.pokeDex);
         if (coGoiMoi(p)) {
             guiLearnset(p);

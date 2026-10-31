@@ -273,9 +273,14 @@ class MapNhapText {
                     return;
                 }
 
+                // huan luyen vien AI lam chu doi: luong cho nguoi that tinh vao han muc ngay bot -> nguoi
+                if (HlvAiGame.chanChuyen(player, p, player, "luong_doi", player.salaryClan)) {
+                    return;
+                }
                 player.pointCongHienClan = player.pointCongHienClan - clanInfo.getDCHPhatLuongNhanh();
                 String info = p.getxu() + " mc= " + clanInfo.money;
                 p.addXu(player.salaryClan, "map 35");
+                HlvAiGame.ghiChuyen(player, p, "luong_doi", player.salaryClan, "luong doi");
                 clanInfo.money = clanInfo.money - player.salaryClan;
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 info = info
@@ -301,7 +306,7 @@ class MapNhapText {
                 p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được lương đội là " + player.salaryClan + " xu", ""));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 Database.instance.saveOrtherLog("", p.charname, info, "salaryCN");
-                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận được " + player.salaryClan + " xu lương đội.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " đã nhận được " + player.salaryClan + " xu lương đội.", ""));
                 clanInfo.updateNewClandata2DB();
                 player.salaryClan = 0L;
             } else if (idActor == -32049) {
@@ -363,7 +368,7 @@ class MapNhapText {
                     }
                     player.thuChoTang = null;
                     if (QuanLyThuGame.day(p)) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã đầy ô thú, không nhận thêm được.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " đã đầy ô thú, không nhận thêm được.", ""));
                         QuanLyThuGame.chanNhan(p, "duoc tang thu cuoi tu " + player.charname);
                         return;
                     }
@@ -1169,7 +1174,7 @@ class MapNhapText {
 
                 String timeReceiveLuong = p.checkNhanLuongBang();
                 if (timeReceiveLuong != null) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " chỉ có thể nhận lương sau " + timeReceiveLuong, ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " chỉ có thể nhận lương sau " + timeReceiveLuong, ""));
                     return;
                 }
 
@@ -1201,9 +1206,14 @@ class MapNhapText {
                     return;
                 }
 
+                // huan luyen vien AI lam chu doi: luong cho nguoi that tinh vao han muc ngay bot -> nguoi
+                if (HlvAiGame.chanChuyen(player, p, player, "luong_doi", player.salaryClan)) {
+                    return;
+                }
                 player.pointCongHienClan = player.pointCongHienClan - clanInfox.getDCHPhatLuong();
                 String info = p.getxu() + " mc= " + clanInfox.money;
                 p.addXu(player.salaryClan, "map 35");
+                HlvAiGame.ghiChuyen(player, p, "luong_doi", player.salaryClan, "luong doi");
                 clanInfox.money = clanInfox.money - player.salaryClan;
                 info = info
                         + "_"
@@ -1227,7 +1237,7 @@ class MapNhapText {
                 p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được lương đội là " + player.salaryClan + " xu", ""));
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 Database.instance.saveOrtherLog("", p.charname, info, "salaryC");
-                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận được " + player.salaryClan + " xu lương đội.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " đã nhận được " + player.salaryClan + " xu lương đội.", ""));
                 clanInfox.updateNewClandata2DB();
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 player.salaryClan = 0L;
@@ -1267,6 +1277,10 @@ class MapNhapText {
                     return;
                 }
 
+                if (HlvAiGame.laBot(player)) { // bot chu doi: phat luong tung nguoi (qua han muc), khong phat dong loat
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Huấn luyện viên AI chỉ phát lương từng người.", ""));
+                    return;
+                }
                 clanInfoxx.addMoney2Clan(-moneySub);
                 clanInfoxx.updateNewClandata2DB();
 
@@ -1510,7 +1524,7 @@ class MapNhapText {
                     }
 
                     if (p.idArena > -1) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã chấp nhận tham gia một trận đấu khác.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " đã chấp nhận tham gia một trận đấu khác.", ""));
                         return;
                     }
 
@@ -1522,7 +1536,7 @@ class MapNhapText {
                         }
                         if (player.moneyThachdau > 0) {
                             if (p.getxu() < (long) player.moneyThachdau) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " không có đủ số tiền cược bạn muốn cược.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " không có đủ số tiền cược bạn muốn cược.", ""));
                                 return;
                             }
 
@@ -1541,7 +1555,7 @@ class MapNhapText {
                                         MessageCreator.createMsgPopUp(
                                                 p.id,
                                                 10,
-                                                player.charname
+                                                player.tenHienThi()
                                                 + " lv "
                                                 + player.lvDetail.lv
                                                 + " gửi lời thách đấu tới bạn với số tiền cược là "

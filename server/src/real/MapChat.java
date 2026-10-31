@@ -1560,7 +1560,7 @@ class MapChat {
 
                             p.dayCamChat = Char.getDayTime(time * 24L * 60L * 60L * 1000L);
                             Database.instance.saveOrtherLog("", p.charname, "bi " + player.getSession().username + " cấm chat " + time + " ngày", "scamchat");
-                            player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã bị cấm chat " + time + " ngày", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " đã bị cấm chat " + time + " ngày", ""));
                         }
                     }
                 }

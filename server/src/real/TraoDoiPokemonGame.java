@@ -242,7 +242,7 @@ public final class TraoDoiPokemonGame {
         try {
             final Message mm = tao(S_LOI_MOI);
             mm.dos.writeShort(p.id);
-            mm.dos.writeUTF(p.charname);
+            mm.dos.writeUTF(p.tenHienThi());
             mm.dos.writeByte((int) (MOI_MS / 1000L));
             q.sendMessage(mm);
         } catch (final Exception ignored) {
@@ -605,7 +605,7 @@ public final class TraoDoiPokemonGame {
                             doi.add(c);
                         }
                     }
-                    o.writeUTF(q.charname);
+                    o.writeUTF(q.tenHienThi());
                     o.writeByte(f.buoc[b]);
                     o.writeByte(f.buoc[1 - b]);
                 }

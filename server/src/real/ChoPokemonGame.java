@@ -297,6 +297,10 @@ public final class ChoPokemonGame {
         }
         final BatPokemon.Loai loai = BatPokemonGame.LOAI.get(Integer.valueOf(c.dex));
         final long[] k = khungCon(l, c);
+        // huan luyen vien AI khong ban pha gia: >= trung vi gia ban gan day (it mau: 1,5 lan san khung, khong qua tran)
+        if (HlvAiGame.giaBanThap(p, "cho_pokemon", "p" + c.dex, gia, Math.min(k[1], k[0] + k[0] / 2))) {
+            return;
+        }
         final int soDang = cuaToi(p).size();
         final String ly = ChoPokemon.lyDoDang(l, h, c, loai, cap(p), soDang, gia, k, System.currentTimeMillis() / 1000L);
         if (ly != null) {
@@ -381,6 +385,7 @@ public final class ChoPokemonGame {
         if (d != null) {
             d.ghiBat(kq.con.dex, kq.con.shiny, bayGiay);
         }
+        HlvAiGame.ghiGiaBan("cho_pokemon", "p" + kq.con.dex, gia);
         ChongClone.ghi(p, t.idBan, t.tenBan, KIEU_CHONG_CLONE, gia, "cho pokemon tin " + idTin + " " + HopPc.maHoaCon(t.con));
         log(p.charname, "mua tin " + idTin + " cua " + t.tenBan + " " + HopPc.maHoaCon(t.con) + " gia " + gia + " thue " + thue);
         if (!nghi.isEmpty()) {

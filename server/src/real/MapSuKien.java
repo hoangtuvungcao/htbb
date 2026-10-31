@@ -277,7 +277,7 @@ class MapSuKien {
                 if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_30) {
                     try {
                         sendAllCharServer(
-                                -1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi bắn pháo hoa")
+                                -1, MessageCreator.createServerAlertAutoOffMessage(p.tenHienThi() + " đã nhận được " + gemTemplate[idgift[index]].name + " khi bắn pháo hoa")
                         );
                     } catch (IOException var16) {
                     }
@@ -471,7 +471,7 @@ class MapSuKien {
                         try {
                             sendAllCharServer(
                                     -1,
-                                    MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi bắn pháo hoa")
+                                    MessageCreator.createServerAlertAutoOffMessage(p.tenHienThi() + " đã nhận được " + gemTemplate[idgift[index]].name + " khi bắn pháo hoa")
                             );
                         } catch (IOException var18) {
                         }
@@ -529,7 +529,7 @@ class MapSuKien {
 
                         try {
                             sendAllCharServer(
-                                    -1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được " + newItem.getName() + " khi bắn pháo hoa")
+                                    -1, MessageCreator.createServerAlertAutoOffMessage(p.tenHienThi() + " đã nhận được " + newItem.getName() + " khi bắn pháo hoa")
                             );
                         } catch (IOException var16) {
                         }
@@ -844,7 +844,7 @@ class MapSuKien {
                     if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_30) {
                         try {
                             sendAllCharServer(
-                                    -1, MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi dâng bánh")
+                                    -1, MessageCreator.createServerAlertAutoOffMessage(p.tenHienThi() + " đã nhận được " + gemTemplate[idgift[index]].name + " khi dâng bánh")
                             );
                         } catch (IOException var16) {
                         }

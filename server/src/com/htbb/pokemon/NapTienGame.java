@@ -635,6 +635,9 @@ public final class NapTienGame implements Runnable {
     // ================================================================== menu goc
 
     public static void moGoc(final Char p) {
+        if (real.HlvAiGame.chanTienThat(p)) { // huan luyen vien AI khong nap / mua goi
+            return;
+        }
         String the = "Thẻ tháng: chưa có";
         String ve = "Vé mùa";
         long no = 0L;
@@ -779,6 +782,9 @@ public final class NapTienGame implements Runnable {
     }
 
     static void xacNhanMua(final Char p, final int chon) throws SQLException {
+        if (real.HlvAiGame.chanTienThat(p)) {
+            return;
+        }
         final List<NapTienLogic.Mon> mot = nguCanh(p);
         NGU_CANH.remove(p.charDBID);
         if (chon != 0 || mot == null || mot.size() != 1) {

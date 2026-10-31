@@ -23,6 +23,7 @@ Trên VPS, `/opt/htbb` là bản checkout monorepo này (người dùng hệ th�
 |---|---|
 | `htbb-game.service` | `/etc/systemd/system/` — game, TCP 19129, heap 1.5 GB |
 | `htbb-login.service` | `/etc/systemd/system/` — login server, TCP 8023 chỉ nội bộ |
+| `htbb-hlv-ai.service` | `/etc/systemd/system/` — Huấn luyện viên AI (bot lấp máy chủ, `tools/pokemon/hlv_ai`): **không** cài / bật tự động; cần `/etc/htbb/hlv-ai.env` (`HLV_AI_BI_MAT`) + `/etc/htbb/hlv-ai.cnf` (user CSDL), bật / tắt bot ở `/admin/hlv-ai` ([van-hanh.md](../docs/van-hanh.md) mục Huấn luyện viên AI) |
 | `../web/deploy/htbb-web.service` | `/etc/systemd/system/` — website, 127.0.0.1:3000 |
 | `htbb-nginx.conf` | `/etc/nginx/sites-available/htbb` — nginx sau WAF, dải IP WAF khai riêng trong `/etc/nginx/snippets/htbb-waf-ip.conf` |
 | `htbb-mariadb.cnf` | `/etc/mysql/mariadb.conf.d/99-htbb.cnf` — MariaDB 127.0.0.1:3306, utf8, buffer pool 768M |

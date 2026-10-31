@@ -936,3 +936,64 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 | `/admin/naptien` có hộp đỏ | đọc danh sách lý do | thiếu/yếu biến môi trường hoặc chưa có giấy phép — đúng thiết kế (fail closed) |
 | Người chơi báo không nhận giftcode | `tob_giftcode` (bat, han, da_dung/tong_luot, cap), `tob_giftcode_log`, log `[GIFTCODE]` | xem luật 8.1; tài khoản chưa kích hoạt có thể bị khoá tính năng `giftcode` |
 | Mail quên mật khẩu không tới | `journalctl -u htbb-web \| grep -i gmail` | đủ 4 biến `HTBB_GMAIL_*`? `invalid_grant` → lấy lại refresh token (mục 11) |
+
+---
+
+## 15. Huấn luyện viên AI (bot lấp máy chủ)
+
+Bot chơi như người chơi thật để máy chủ ít người vẫn có đối thủ và bạn đồng hành (chủ game duyệt 31/10/2026). Mỗi bot là
+một tài khoản thường (cột `account.team_user.la_bot = 1`, không gửi xuống client), đăng nhập qua giao thức thật như một
+client (bộ bot `tools/pokemon/kiem_tai` + `tools/pokemon/hlv_ai`), không GM, không lệnh đặc biệt: máy chủ áp mọi luật như
+người chơi (chống spam, khoá bản đồ, chống clone, cấp mở tính năng…). Tên bot luôn có **tiền tố** (khoá `hlv_ai.tien_to_ten`, mặc định `ai ` → `ai minhanh`) ở mọi chỗ người
+chơi thấy tên (trên đầu, chat, tổ đội, bạn bè, đội, bảng xếp hạng trong game và trên web, giao dịch, chợ).
+
+**Bật lần đầu (VPS, root).** Tiến trình riêng `htbb-hlv-ai` — deploy không cài, không bật:
+
+```bash
+install -m 644 /opt/htbb/vps/htbb-hlv-ai.service /etc/systemd/system/ && systemctl daemon-reload
+install -m 640 -g htbb /dev/null /etc/htbb/hlv-ai.env && echo "HLV_AI_BI_MAT=$(openssl rand -hex 24)" > /etc/htbb/hlv-ai.env
+install -m 640 -g htbb /dev/null /etc/htbb/hlv-ai.cnf   # [client] host=127.0.0.1 port=3306 user=... password=...
+apt install -y openjdk-17-jdk-headless                 # ExecStartPre biên dịch từ /opt/htbb
+systemctl enable --now htbb-hlv-ai
+```
+
+Sau đó bật / tắt và chỉnh ở **/admin/hlv-ai** (nhóm cấu hình `hlv_ai`, cũng hiện ở Cấu hình hệ thống, có lịch sử / hoàn
+tác): `hlv_ai.bat` (tắt = mọi bot thoát dần, tiến trình vẫn chạy), số bot, lịch online 24 giờ, tỉ lệ dòng / tính cách
+(cày cấp, PvP, buôn bán, xã hội, chơi thường), cấp mục tiêu, bãi luyện ưu tiên, từng hoạt động. Dịch vụ đọc lại cấu hình
+mỗi 20 giây, tự tạo tài khoản bot còn thiếu (mật khẩu = HMAC của `HLV_AI_BI_MAT`, không lưu chữ rõ), ghi
+`tob_hlv_ai_trang_thai` mỗi phút (danh sách bot online trên trang). Log: `/opt/htbb/logs/hlv-ai.out` (mỗi 5 phút một dòng
+online / heap / số việc).
+
+**Bot làm gì.** Nhiệm vụ chính / phụ / cửa ải, cày, treo máy (Tự động đánh), Gym, boss, bắt Pokémon hoang dã, Đấu trường
+(khi đủ 3 loài), mua khăn PK rồi chỉ đánh người đang đeo khăn, thách đấu cược nhỏ (cấp 40+), phó bản nhóm (cấp 45+),
+học chiêu ở NPC, lập / vào đội, góp quỹ, chat, kết bạn, giao dịch thuốc và trao đổi Pokémon 1 đổi 1, chợ ký gửi, hệ sinh
+thái, vườn, nhà trẻ. Không đụng lượng / nạp / vòng quay lượng / xổ số / giftcode.
+
+**Chống lạm phát (máy chủ game, `real.HlvAiGame`, áp ngay):**
+
+| Khoá | Mặc định | Luật |
+|---|---|---|
+| `hlv_ai.he_so_thu_nhap` | 60 | xu **sinh ra** (quái, nhiệm vụ, thưởng, bán NPC…) bot nhận = 60% người thật |
+| `hlv_ai.tran_xu` | 300.000 | số dư bot vượt trần bị đốt (cột `xu_dot`) |
+| `hlv_ai.tran_vat_pham` | 60 | ô túi vượt trần bị huỷ mỗi phút, món rẻ nhất trước |
+| `hlv_ai.gia_ban_toi_thieu` | 100 | bot rao ở chợ (ký gửi, chợ Pokémon, chợ sinh thái) ≥ % trung vị giá bán 7 ngày (`tob_hlv_ai_gia`), ít mẫu thì ≥ giá tham chiếu |
+| `hlv_ai.chuyen_moi_nguoi_ngay` | 50.000 | tổng giá trị bot → MỘT người thật / ngày (bot mua đồ của người, thua cược, đổi thuốc / Pokémon); vượt = giao dịch bị từ chối |
+| `hlv_ai.chuyen_tong_ngay` | 500.000 | như trên, cả máy chủ (kể cả bot góp quỹ đội có người thật) |
+
+Mỗi lần chuyển giá trị bot ↔ người (cả lần bị chặn) ghi `tob_hlv_ai_chuyen`. Bot không nạp, không mua gói, không chuyển /
+nhận lượng, không nhập giftcode (máy chủ chặn theo cờ). Thống kê: `tob_hlv_ai_kinh_te_ngay` (xu bot tạo / cắt / đốt / tiêu,
+chuyển, tổng xu bot / người thật) và `tob_hlv_ai_moc` (ảnh chụp 10 phút) — biểu đồ ở /admin/hlv-ai.
+
+**Đổi tiền tố tên bot.** /admin/hlv-ai → khung *Cấu hình* → mục **Tên bot** → ô *Tiền tố tên bot* (xem trước ngay
+bên dưới) → ghi *Lý do* → **Lưu cấu hình**. Gõ tự do 1–12 ký tự, có thể dính liền tên (`AI` → `AIminhanh`), nhưng phải
+có chữ AI hoặc BOT và không dùng `:`; giá trị sai bị từ chối (máy chủ vẫn dùng mặc định `ai `). Máy chủ áp dụng trong
+≤ 15 giây, không khởi động lại; tên người chơi gửi lại theo tiền tố cũ vẫn được nhận ra. Bot cấp 50 được lập đội miễn
+100 triệu xu khi số đội do bot làm chủ dưới `hlv_ai.doi_bot_toi_da` (3); lương đội bot trả cho người thật tính vào hạn mức.
+
+**Tài nguyên.** Một kết nối CSDL cho cả dịch vụ; khoảng 3–6 MB heap và 2 luồng mỗi bot online (100 bot ≈ 400 MB, unit giới hạn
+900 MB / 60% CPU). Phía máy chủ game mỗi bot là một người chơi online (cùng chi phí như người thật).
+
+**Kiểm trên máy thử.** `java … -Dhlv.thu=1 -Dhlv.tangToc=12 -Dhlv.soak=1 -Dhlv.soakRa=soak.md DichVuHlvAi 127.0.0.1 <cổng>`:
+lịch online chạy nhanh 12 lần, 4 người thật kt101..kt104 cố ý khai thác bot (giao dịch lặp, xin không, mua chợ bot, đánh bot,
+đấu trường) và bảng kiểm toán mỗi 10 phút (tổng xu, xu tạo / đốt, giá trị bot → người so với hạn mức, kẹt, chat, tick p99,
+kết nối CSDL). Luật thuần + danh mục: `server/test/KiemHlvAi`.

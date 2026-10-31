@@ -795,7 +795,7 @@ public class BotXuyenSuot {
                 b.px = b.px <= 0 ? b.tx * 16 + 8 : b.px;
                 if (dung == null || !b.diDuong(bd, dung[0], dung[1])) {
                     // vi tri bot chua dong bo (moi vao map): dung o vao
-                    b.px = b.tx * 16 + 8; b.py = b.ty * 16 + 8;
+                    if (!BotChucNang.Bot.CHUAN_CLIENT) { b.px = b.tx * 16 + 8; b.py = b.ty * 16 + 8; }
                     if (dung == null || !b.diDuong(bd, dung[0], dung[1])) { ketLyDo("khong di bo toi cong " + e[0] + " map " + b.mapId); return false; }
                 }
                 int truoc = b.mapId, m = b.moc();

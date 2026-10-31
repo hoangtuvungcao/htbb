@@ -442,6 +442,8 @@ public class OfflineMap extends Map {
                   }
 
                   // (xu nguoi mua da tru o tren - TruTruocTrao.truNguoiMuaCho - truoc khi rut mon / cong nguoi ban)
+                  real.HlvAiGame.ghiGiaBan("ky_gui", maGia(item, type), type == 0 ? player.sellerInfo.priceSell
+                     : player.sellerInfo.priceSell / Math.max(1, ((GemSellEntry)item).soLuong));
                   com.htbb.pokemon.ChongClone.ghi(player, p, com.htbb.pokemon.ChongClone.KIEU_KY_GUI, player.sellerInfo.priceSell,
                      (type == 0 ? "vat pham " + ((Item)item).getTemplate().name : "ngoc " + ((GemSellEntry)item).idGemTemplate
                         + " x" + ((GemSellEntry)item).soLuong) + (item.getCharcanBuy().equals("") ? "" : " (dat rieng)"));
@@ -774,6 +776,23 @@ public class OfflineMap extends Map {
       }
    }
 
+   /** Ma mat hang cho gia trung vi (real.HlvAiGame): "i<template>" vat pham, "g<template ngoc>" ngoc. */
+   static String maGia(Actor item, int type) {
+      try {
+         if (type == 0 && item instanceof Item) {
+            return "i" + ((Item)item).tempateID;
+         }
+         if (item instanceof GemItem) {
+            return "g" + ((GemItem)item).idGemTemplate;
+         }
+         if (item instanceof GemSellEntry) {
+            return "g" + ((GemSellEntry)item).idGemTemplate;
+         }
+      } catch (Exception ignored) {
+      }
+      return "?";
+   }
+
    /** Gia tham chieu cho kiem gia ky gui: gia goc cua template (vat pham) / gia ngoc (ngoc), 0 neu khong co. */
    static long giaThamChieu(Actor item, int type) {
       try {
@@ -919,7 +938,8 @@ public class OfflineMap extends Map {
 
                   // chong clone: nguoi rao du cap / tuoi; gia trong khoang so voi gia tham chieu (chong_clone.ky_gui_*).
                   if (com.htbb.pokemon.ChongClone.chanMotBen(player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI)
-                     || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, type))) {
+                     || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, type))
+                     || real.HlvAiGame.giaBanThap(player, "ky_gui", maGia(item, type), prize_sell, giaThamChieu(item, type))) {
                      return;
                   }
 
@@ -1085,7 +1105,8 @@ public class OfflineMap extends Map {
 
       // chong clone: nguoi rao du cap / tuoi; gia moi vien trong khoang so voi gia tham chieu.
       if (com.htbb.pokemon.ChongClone.chanMotBen(player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI)
-         || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, 1))) {
+         || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, 1))
+         || real.HlvAiGame.giaBanThap(player, "ky_gui", maGia(item, 1), prize_sell, giaThamChieu(item, 1))) {
          return;
       }
 
@@ -1202,7 +1223,8 @@ public class OfflineMap extends Map {
 
                // chong clone: nguoi rao du cap / tuoi; gia trong khoang so voi gia tham chieu (chong_clone.ky_gui_*).
                if (com.htbb.pokemon.ChongClone.chanMotBen(player, com.htbb.pokemon.ChongClone.KIEU_KY_GUI)
-                  || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, type))) {
+                  || com.htbb.pokemon.ChongClone.giaKyGuiSai(player, prize_sell, giaThamChieu(item, type))
+                     || real.HlvAiGame.giaBanThap(player, "ky_gui", maGia(item, type), prize_sell, giaThamChieu(item, type))) {
                   return;
                }
 
@@ -1916,7 +1938,7 @@ public class OfflineMap extends Map {
                      msg.dos.writeByte(user.size());
 
                      for (int i = 0; i < user.size(); i++) {
-                        msg.dos.writeUTF(((CharSell)user.elementAt(i)).charname);
+                        msg.dos.writeUTF(HlvAiGame.hienThi(((CharSell)user.elementAt(i)).charname));
                         msg.dos.writeShort(((CharSell)user.elementAt(i)).idChar);
                      }
 
