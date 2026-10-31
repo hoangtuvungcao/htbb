@@ -37,6 +37,8 @@ ExecStart=/usr/bin/java -Xms64m -Xmx512m -Xss512k -XX:+UseSerialGC -XX:+ExitOnOu
   DichVuHlvAi 127.0.0.1 19129
 KillSignal=SIGTERM
 TimeoutStopSec=60
+# ExecStartPre bien dich lop may chu + bo bot: VPS 2 nhan mat 2-4 phut (31/10/2026 qua 90 giay mac dinh)
+TimeoutStartSec=600
 Restart=on-failure
 RestartSec=30
 StandardOutput=append:/opt/htbb/logs/hlv-ai.out
