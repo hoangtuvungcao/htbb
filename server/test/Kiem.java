@@ -135,6 +135,7 @@ public final class Kiem {
         KiemCauHinhTrungTam.chay();
         KiemLocBiMat.chay();
         KiemChiTietThuoc.chay();
+        KiemLoaiTienCuaHang.chay();
         KiemIconSkinThu.chay();
         KiemDanhMucNgoc.chay();
         KiemDanhMucThu.chay();
@@ -168,6 +169,7 @@ public final class Kiem {
         KiemChiemVatRoi.chay();
         KiemDocThu.chay();
         KiemGiaoDichRutDo.chay();
+        KiemGiaoDichXu.chay(); // 0.9.27 giao dich xu 1-1 (goi 66/2/3): nguyen tu, khong nhan doi, tran ngay, luong khong giao dich
         KiemTruTruocTrao.chay(); // 29/10/2026 ma-tran-bot: cho / quy doi / ghep ngoc / che tao / nang cap cu tru TRUOC trao; ban thu NPC; kho do
         KiemKetBan.chay();
         KiemGiftcodeDoCamTayBaoVat.chay();
@@ -209,6 +211,7 @@ public final class Kiem {
         KiemPhuNpcMotNguon.chay(); // chu game 31/10/2026: NPC phu cap -15..+3 / 30 muc; buoc nhan o So tay hien o NPC
         KiemQuaiNhiemVuToiDuoc.chay(); // 30/10/2026: quai nhiem vu sinh o ban do toi duoc (Dong co phia tay 21 / Tau S.S. Anne 22 qua Arcanine)
         KiemVeTreo.chay(); // Ve treo 10 gio: kho gio Tu dong danh + giftcode TREO400 (XU + ve xep chong)
+        KiemNangLuongThanhVien.chay(); // Bua the luc o cua hang + thuong nang luong Thanh vien / The thang / Ve mua + Tu dong luc 0%
         KiemLuongKhoaShop.chay(); // cua hang dac biet: dong tra bang luong khoa ghi ro / goi 25 noi them / khong tru luong thay
         KiemMoTaVatPham.chay(); // 0.9.14 ra soat vat pham: loai / mo ta / dung tu tui / sao goi thu cuoi / shop
         KiemQuanLyThu.chay(); // o thu chung, tha ve tu nhien (xu), khoa, ve mo o thu, goi 16 noi them + -119
@@ -360,6 +363,7 @@ public final class Kiem {
         KiemXeHangDiTheo.chay(); // bot cb2 31/10/2026: xe hang ket o goc nha (Pewter) - di theo vet nguoi choi
         KiemDangNhapServer.chay(); // chu game 31/10/2026: login server HTBB thay CheckLoginSocket.jar (giao thuc, han, tat em, quay lui)
         KiemHlvAi.chay(); // chu game 31/10/2026: huan luyen vien AI (bot lap may chu) - tien to ten bot, luat chong lam phat, danh muc hlv_ai
+        KiemDoiLuong.chay(); // chu game 31/10/2026: doi luong -> luong khoa / xu (ti gia chung), san luong thuong <-> xu, giao dich khong co luong
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

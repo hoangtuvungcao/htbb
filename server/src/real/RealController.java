@@ -87,6 +87,13 @@ public class RealController extends ServerController {
         resetTime = false;
     }
 
+    /** Hang Litleo Trung Thu (nen, Gay Anh Trang) chi ban khi su kien Trung Thu chua ket thuc. */
+    static boolean denTrungThuDangMo() {
+        return !Char.isFinishAllSuKienTrungThul2016();
+    }
+
+    static final String CHU_HET_SU_KIEN_DEN = "Sự kiện Trung Thu đã kết thúc - không mua được nến / Gậy Ánh Trăng.";
+
     public void initMapHTBB() {
         Map m = null;
         mapList.put(new Integer(-1), new OfflineMap(-1));
@@ -1056,6 +1063,12 @@ public class RealController extends ServerController {
                                     switch (idNpc) {
 
                                         case -65:
+                                            // Nen / Gay Anh Trang la hang cua Litleo Trung Thu (NPC -65 chi gui khi Trung Thu chua ket
+                                            // thuc, Map.doSendNpc). Truoc 31/10/2026 goi tin tu che mua duoc quanh nam (Gay 10.000 luong).
+                                            if ((idOptionMenu == 3 || idOptionMenu == 4) && !denTrungThuDangMo()) {
+                                                p.sendMessage(MessageCreator.createServerAlertMessage(CHU_HET_SU_KIEN_DEN, ""));
+                                                return;
+                                            }
 
                                             if (idOptionMenu == 3) {
                                                 // 5 nến
@@ -1372,6 +1385,10 @@ public class RealController extends ServerController {
                                     // TODO hàm xử lý input
 
                                     //System.out.println("noi dung nhap: " + idActor + " / " +idMenuInputText+ " / " + text + " / " + p.id);
+                                    if (idActor == -65 && !denTrungThuDangMo()) {
+                                        p.sendMessage(MessageCreator.createServerAlertMessage(CHU_HET_SU_KIEN_DEN, ""));
+                                        return;
+                                    }
                                     if (idActor == -65) {
                                         if (p.isFullInventory()) {
                                             p.sendMessage(MessageCreator.createServerAlertMessage("Chừa hành trang ra rồi mua.", ""));

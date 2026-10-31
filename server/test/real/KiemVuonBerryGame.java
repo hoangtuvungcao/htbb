@@ -277,7 +277,7 @@ public final class KiemVuonBerryGame {
             bang("dem gia tri thuoc vuon hom nay", Long.valueOf(1000L), Long.valueOf(h2.thuocVuonHomNay));
             h2.thuocVuonHomNay = VuonBerry.tranThuocNgay(12) - 999L;
             bam(p, hang("M_CONG_THUC"), 30);
-            dung("vuot tran gia tri thuoc vuon / ngay: tu choi, khong tru berry", p.chuCuoi().contains("Thuốc từ vườn hôm nay đã đủ")
+            dung("vuot tran gia tri thuoc vuon / ngay: tu choi, khong tru berry", p.chuCuoi().contains("Thuốc chế hôm nay đã đủ")
                     && h2.tongMa(30) == oranTruoc - 3);
             // tham vuon ban: thay o dat cua ban
             hb.vuonMa[0] = 37;

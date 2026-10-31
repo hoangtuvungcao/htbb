@@ -145,7 +145,7 @@ done
 # giu (xem src/data/LocLogVatPham.java - danh sach o do la ban goc, day chi la ban
 # chep; test/KiemLocLogVatPham.java ep hai ben phai khop). Moi dong KHONG thuoc danh
 # sach giu la rac cu (rieng luckGOLD 3,2 trieu dong trong mot ngay) - xoa theo lo.
-LOAI_GIU="matdo trade sitemu delI timeout inven2tui tui2inven uwea uride XOAPET XOATC itemtrungpet tichthu tichthuchoi logchoi thugay downlv caitaocaitrang hoahinhpet loiinvent loisave hackc hackR hackbitem hackchonchar hcm ngoairange ngoairange1 stGive ffbug hklbug scamchat iftrung naptien nhanlk mocNap mocnap nhanluong chuyenluong tangluong gdpet nghiclone nhanxu logxu autosave lenlv lenlevel putGiftCode gcode quatop quatopct top100 tophl thuongchiemthanh salaryC salaryCN txs xoso idruongmm taothankhi nangcapthankhi chetaotrangbi hopnguyenlieu khanglan truxu truthieu tratieu motieu thaden petbachthu longdenrong2026 linhnguyettruong2026 doiNLT lansutu2026 tiendan2026"
+LOAI_GIU="matdo trade sitemu delI timeout inven2tui tui2inven uwea uride XOAPET XOATC itemtrungpet tichthu tichthuchoi logchoi thugay downlv caitaocaitrang hoahinhpet loiinvent loisave hackc hackR hackbitem hackchonchar hcm ngoairange ngoairange1 stGive ffbug hklbug scamchat iftrung naptien nhanlk mocNap mocnap nhanluong chuyenluong tangluong gdpet gdxu nghiclone nhanxu logxu autosave lenlv lenlevel putGiftCode gcode quatop quatopct top100 tophl thuongchiemthanh salaryC salaryCN txs xoso idruongmm taothankhi nangcapthankhi chetaotrangbi hopnguyenlieu khanglan truxu truthieu tratieu motieu thaden petbachthu longdenrong2026 linhnguyettruong2026 doiNLT lansutu2026 tiendan2026"
 
 DS=""
 for L in $LOAI_GIU; do DS="$DS${DS:+,}'$L'"; done

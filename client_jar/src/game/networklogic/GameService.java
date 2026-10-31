@@ -425,6 +425,19 @@ public class GameService extends Cmd_message {
         }
     }
 
+    /** 0.9.27: đặt số xu đưa trong giao dịch (66/2 kiểu 3, số tuyệt đối; 0 = rút) - game.pokemon.XuGiaoDich. */
+    public void sendXuTrade(long xu) {
+        Message m = init((byte) 66);
+        try {
+            m.writer().writeByte(2);
+            m.writer().writeByte(3);
+            m.writer().writeLong(xu);
+            this.session.sendMessage(m);
+            m.cleanup();
+        } catch (Exception e) {
+        }
+    }
+
     public void kickOutParty(int idUser, byte kickOrDel) {
         Message m = init((byte) 50);
         try {

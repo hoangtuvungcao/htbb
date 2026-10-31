@@ -326,7 +326,7 @@ sudo systemctl stop htbb-staging-game htbb-staging-login
 **Mỗi lần lên bản mới** — chép jar + SQL ứng viên lên VPS (ví dụ `/opt/htbb/ung_vien/`), rồi:
 
 ```bash
-# 1. cổng kiểm: ~10 phút nạp CSDL + 30–90 phút bot; chạy lúc ít người chơi
+# 1. cổng kiểm: mặc định --nhanh (~10 phút tổng, cổng chuẩn); --day-du = mọi nhóm (~1 giờ); chạy lúc ít người chơi
 sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh \
      --jar /opt/htbb/ung_vien/htbb-server.jar --sql /opt/htbb/ung_vien/htbb.sql     # bản có SQL mới
 sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh \
@@ -350,7 +350,10 @@ khác trên VPS rồi thêm `--nguon <thư mục>` vào lệnh `kiem-truoc-khi-l
    bot + ghi đè `cau_hinh` của staging → cài jar → bật, chờ cổng 29129. Hỏng bước nào = HỎNG.
 2. `tools/pokemon/kiem_tai/chay_hoi_quy.sh 127.0.0.1 29129 28023 cnf=…,db=htbb_staging,dbtk=htbb_staging_account`:
    mỗi nhóm trong `tools/pokemon/kiem_tai/hoi_quy.conf` phải DAT (BotChucNang: mã thoát 0 và `FAIL 0`; BotBangThong:
-   mọi bot vào game, `loi=0`; hết giờ = HỎNG). Các nhóm chạy theo **làn** (dòng `@lan` trong `hoi_quy.conf`): pha 1 các
+   mọi bot vào game, `loi=0`; hết giờ = HỎNG). **Chế độ** (`HOI_QUY_CHE_DO`): `--nhanh` (mặc định) chỉ chạy kế hoạch
+   `@nhanh lan` / `@nhanh rieng` ở cuối `hoi_quy.conf` — nhóm lõi + bản rút gọn `~<nhóm>_nhanhN` (tách kịch bản của nhóm
+   dài ra nhiều làn ngắn, tối đa `STG_BOT_LAN_NHANH` làn cùng lúc, bot biên dịch song song lúc làm mới staging);
+   `--day-du` chạy mọi nhóm theo `@lan` / `@rieng`. Các nhóm chạy theo **làn** (dòng `@lan` trong `hoi_quy.conf`): pha 1 các
    làn chạy song song (mỗi làn một khoảng tài khoản `kt0xx` / `kt1xx` riêng, tối đa `STG_BOT_LAN`=4 JVM bot cùng lúc,
    heap `STG_BOT_JAVA`), pha 2 các nhóm `@rieng` chạy **một mình** (tua đồng hồ ảo, cấu hình toàn máy chủ, chiếm Gym,
    bản tối thiểu). Nhóm HỎNG chỉ vì mục **bất định đã biết** (`tools/pokemon/kiem_tai/hoi_quy_bat_dinh.txt`, theo từng
@@ -366,6 +369,7 @@ khác trên VPS rồi thêm `--nguon <thư mục>` vào lệnh `kiem-truoc-khi-l
    chữ ký `sha256(khoá ‖ sha256(khoá ‖ nội dung))` bằng `/etc/htbb/cong-kiem.key`, root 0600), log + kết quả từng nhóm
    ở `/var/lib/htbb/cong-kiem/nhat_ky/<thời điểm>/` (giữ 30 lần), rồi tắt staging (`--giu-chay` để giữ).
    `--nhom "a b"` chạy vài nhóm để gỡ lỗi — kết quả là `DAT_MOT_PHAN`, **không** dùng được để lên production.
+   Kết quả ký ghi `che_do=nhanh|day_du` + `giay=`; `len-production.sh` nhận `DAT` của cả hai chế độ.
 
 **`len-production.sh`** — đúng các bước làm tay trước đây, theo thứ tự: kiểm jar (zip) / SQL (phần B, `USE htbb_db`) /
 cổng kiểm (tệp kết quả đúng sha256 jar + sql, chữ ký đúng, `DAT`, dưới `CONG_KIEM_GIO`=24 giờ; `--chi-jar` đòi cổng kiểm

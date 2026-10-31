@@ -1,9 +1,13 @@
 /**
- * GỬI EMAIL QUA GMAIL API (OAuth2, refresh token).
+ * GỬI EMAIL — hai đường, chọn theo cấu hình (không thêm thư viện ngoài):
  *
  *   if (mailDaCauHinh()) await guiMail({ to, subject, text, html })
  *
- * Không dùng SMTP/thư viện ngoài: chỉ hai lời gọi HTTPS bằng fetch.
+ *   A. Gmail API (OAuth2, refresh token) — dùng khi đủ 4 biến HTBB_GMAIL_*. Ưu tiên.
+ *   B. SMTP + mật khẩu ứng dụng Gmail — dùng khi có HTBB_SMTP_USER + HTBB_SMTP_PASS (và A chưa đủ).
+ *      Máy khách SMTP tối giản ở mailThuan.ts (node:tls, cổng 465 TLS ngầm / 587 STARTTLS).
+ *
+ * Đường A chỉ là hai lời gọi HTTPS bằng fetch:
  *   1. Đổi refresh token lấy access token ở https://oauth2.googleapis.com/token.
  *      Access token sống ~1 giờ; nhớ trong bộ nhớ tới khoảng 60 giây trước khi hết hạn.
  *   2. Gửi thư ở https://gmail.googleapis.com/gmail/v1/users/me/messages/send, thân là
@@ -16,27 +20,29 @@
  * KHÔNG BAO GIỜ ghi token (refresh/access) hay client secret ra log — chỉ ghi mã lỗi
  * và trạng thái Google trả về.
  *
- * Cấu hình: HTBB_GMAIL_* (xem server/utils/config.ts và docs/van-hanh.md).
+ * Cấu hình: HTBB_GMAIL_* hoặc HTBB_SMTP_* (xem server/utils/config.ts và docs/van-hanh.md).
  */
-import { randomBytes } from 'node:crypto'
+import { hostname } from 'node:os'
+import { dungThuMime, guiSmtp, motDongMail, type ThuGui } from './mailThuan'
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const SEND_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send'
 /** Chờ Google tối đa bao lâu cho mỗi lời gọi. */
 const HET_GIO_MS = 15_000
 
-export interface ThuGui {
-  to: string
-  subject: string
-  text: string
-  html: string
+/** Đường gửi đang dùng: Gmail API (đủ 4 biến HTBB_GMAIL_*) trước, rồi SMTP (HTBB_SMTP_USER + PASS). */
+export function duongGuiMail(): 'gmail-api' | 'smtp' | null {
+  const m = useHtbbConfig().mail
+  if (m.gmailClientId !== '' && m.gmailClientSecret !== '' && m.gmailRefreshToken !== '' && m.gmailSender !== '') {
+    return 'gmail-api'
+  }
+  if (m.smtpUser !== '' && m.smtpPass !== '') return 'smtp'
+  return null
 }
 
-/** Đủ cấu hình để gửi mail chưa (đủ 4 giá trị HTBB_GMAIL_*). */
+/** Đủ cấu hình để gửi mail chưa (một trong hai đường). */
 export function mailDaCauHinh(): boolean {
-  const m = useHtbbConfig().mail
-  return m.gmailClientId !== '' && m.gmailClientSecret !== ''
-    && m.gmailRefreshToken !== '' && m.gmailSender !== ''
+  return duongGuiMail() !== null
 }
 
 /** Thoát ký tự đặc biệt trước khi chèn giá trị người dùng nhập vào HTML. */
@@ -97,71 +103,6 @@ async function doiRefreshToken(): Promise<string> {
 }
 
 // ---------------------------------------------------------------------------
-//  Dựng thư MIME
-// ---------------------------------------------------------------------------
-
-/** Bỏ CR/LF: giá trị đưa vào header mà có xuống dòng là chèn được header lạ. */
-function motDong(s: string): string {
-  return s.replace(/[\r\n]+/g, ' ').trim()
-}
-
-/**
- * Mã hoá RFC 2047 cho header có chữ không phải ASCII. Một "encoded-word" tối đa 75
- * ký tự, nên chia chuỗi thành nhiều đoạn (không cắt đôi ký tự UTF-8), nối bằng
- * xuống dòng + khoảng trắng (folding). Chuỗi ASCII thuần giữ nguyên.
- */
-function maHoaHeader(s: string): string {
-  // eslint-disable-next-line no-control-regex
-  if (/^[\x20-\x7E]*$/.test(s)) return s
-  const doan: string[] = []
-  let hienTai = ''
-  for (const kyTu of s) {
-    // 45 byte UTF-8 -> 60 ký tự base64, cộng 12 ký tự "=?UTF-8?B?" "?=" = 72 < 75.
-    if (Buffer.byteLength(hienTai + kyTu, 'utf8') > 45) {
-      doan.push(hienTai)
-      hienTai = ''
-    }
-    hienTai += kyTu
-  }
-  if (hienTai !== '') doan.push(hienTai)
-  return doan.map(d => `=?UTF-8?B?${Buffer.from(d, 'utf8').toString('base64')}?=`).join('\r\n ')
-}
-
-/** Nội dung base64, ngắt dòng 76 ký tự theo chuẩn MIME. */
-function base64Dong(s: string): string {
-  return (Buffer.from(s, 'utf8').toString('base64').match(/.{1,76}/g) ?? []).join('\r\n')
-}
-
-function dungThu(thu: ThuGui): string {
-  const m = useHtbbConfig().mail
-  const ranh = `htbb_${randomBytes(12).toString('hex')}`
-  const tenGui = motDong(m.fromName).replace(/["\\]/g, '')
-  const tu = /^[\x20-\x7E]*$/.test(tenGui) ? `"${tenGui}"` : maHoaHeader(tenGui)
-  const dong = [
-    `From: ${tu} <${motDong(m.gmailSender)}>`,
-    `To: ${motDong(thu.to)}`,
-    `Subject: ${maHoaHeader(motDong(thu.subject))}`,
-    `Date: ${new Date().toUTCString().replace('GMT', '+0000')}`,
-    'MIME-Version: 1.0',
-    `Content-Type: multipart/alternative; boundary="${ranh}"`,
-    '',
-    `--${ranh}`,
-    'Content-Type: text/plain; charset="UTF-8"',
-    'Content-Transfer-Encoding: base64',
-    '',
-    base64Dong(thu.text),
-    `--${ranh}`,
-    'Content-Type: text/html; charset="UTF-8"',
-    'Content-Transfer-Encoding: base64',
-    '',
-    base64Dong(thu.html),
-    `--${ranh}--`,
-    '',
-  ]
-  return dong.join('\r\n')
-}
-
-// ---------------------------------------------------------------------------
 //  Gửi
 // ---------------------------------------------------------------------------
 
@@ -170,11 +111,29 @@ function dungThu(thu: ThuGui): string {
  * người gọi tự quyết định báo gì cho người dùng.
  */
 export async function guiMail(thu: ThuGui): Promise<void> {
-  if (!mailDaCauHinh()) throw new Error('mail chua cau hinh')
-  const to = motDong(thu.to)
+  const duong = duongGuiMail()
+  if (duong === null) throw new Error('mail chua cau hinh')
+  const to = motDongMail(thu.to)
   if (!dangKyEmailHopLe(to)) throw new Error('dia chi nhan khong hop le')
+  const m = useHtbbConfig().mail
 
-  const raw = Buffer.from(dungThu({ ...thu, to }), 'utf8').toString('base64url')
+  if (duong === 'smtp') {
+    const from = m.smtpFrom
+    try {
+      await guiSmtp(
+        { host: m.smtpHost, port: m.smtpPort, user: m.smtpUser, pass: m.smtpPass, tenMay: hostname() },
+        { from, to: [to], thu: dungThuMime({ ...thu, to }, m.fromName, from) },
+      )
+    } catch (e: any) {
+      // Thông báo lỗi của guiSmtp không bao giờ chứa mật khẩu / chuỗi AUTH. 535 = sai mật khẩu ứng dụng
+      // (hoặc tài khoản chưa bật Xác minh 2 bước) -> tạo lại ở https://myaccount.google.com/apppasswords.
+      console.error('[mail] SMTP gửi thư thất bại:', e?.message ?? String(e))
+      throw e
+    }
+    return
+  }
+
+  const raw = Buffer.from(dungThuMime({ ...thu, to }, m.fromName, m.gmailSender), 'utf8').toString('base64url')
 
   // Thử tối đa 2 lần: lần đầu bị 401 (access token bị thu hồi trước hạn) thì bỏ
   // token đang nhớ, lấy token mới rồi gửi lại.

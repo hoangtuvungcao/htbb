@@ -346,17 +346,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **388 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **400 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 97 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 109 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 252 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (97)
+### Khoá chỉnh trên web (109)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -375,12 +375,23 @@ Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, ph�
 | `roi.xu.phan_tram` | Tỉ lệ một quái rơi xu (%) — dài hạn | số | `30` | 0..100 | ngay | game | Xác suất rơi xu; số xu mỗi lần tự chia ngược để kỳ vọng xu/quái không đổi. |
 | `roi.da_nang_cap.phan_nghin` | Tỉ lệ rơi đá nâng cấp (‰) | số | `15` | 0..200 | ngay | game | Phần nghìn mỗi quái khi lệch cấp ≤ 5. |
 | `exp.nang_luong_phut` | Phút năng lượng 100% / ngày | số | `90` | 0..1440 | ngay | game | Số phút EXP/rơi đầy đủ mỗi ngày. |
+| `exp.nang_luong_thanh_vien_phut` | Năng lượng: phút thưởng Thành viên HTBB | số | `30` | 0..180 | ngay | game | Phút năng lượng 100% cộng thêm mỗi ngày khi tài khoản có Thành viên HTBB còn hạn lúc bắt đầu ngày. Chỉ EXP, không tích sang hôm sau; cộng dồn với Thẻ tháng và Vé mùa cao cấp. 0 = tắt. |
+| `exp.nang_luong_the_thang_phut` | Năng lượng: phút thưởng Thẻ tháng | số | `30` | 0..180 | ngay | game | Phút năng lượng 100% cộng thêm mỗi ngày khi Pokémon có Thẻ tháng còn hạn lúc bắt đầu ngày. Chỉ EXP, không tích sang hôm sau; cộng dồn với Thành viên và Vé mùa cao cấp. 0 = tắt. |
+| `exp.nang_luong_ve_mua_phut` | Năng lượng: phút thưởng Vé mùa cao cấp | số | `30` | 0..180 | ngay | game | Phút năng lượng 100% cộng thêm mỗi ngày khi Pokémon đã mở Vé mùa cao cấp của mùa hiện tại lúc bắt đầu ngày. Chỉ EXP, không tích sang hôm sau; cộng dồn với Thành viên và Thẻ tháng. 0 = tắt. |
+| `tang_toc.bua_ngay_toi_da` | Bùa thể lực: số bùa tối đa / ngày | số | `0` | 0..100 | ngay | game | Số Bùa thể lực một Pokémon dùng được mỗi ngày. 0 = không giới hạn (mặc định 31/10/2026). Bùa không tính vào trần 60 / 210 điểm tăng tốc; mỗi bùa +60 phút bậc bùa (EXP / xu theo tang_toc.bua_exp_phan_tram / tang_toc.bua_xu_phan_tram). |
+| `tang_toc.bua_exp_phan_tram` | Bùa thể lực: EXP ở bậc bùa (%) | số | `50` | 0..100 | ngay | game | Mỗi Bùa thể lực thêm 60 phút bậc bùa ngay sau phần năng lượng 100% của ngày; ở bậc này EXP từ quái nhận mức này (%). Mặc định 50. Không giới hạn số bùa, không tích sang hôm sau. |
+| `tang_toc.bua_xu_phan_tram` | Bùa thể lực: xu / đá / đồ rơi ở bậc bùa (%) | số | `50` | 0..100 | ngay | game | Xu, đá và đồ rơi từ quái ở bậc bùa (%). Mặc định 50: 60 phút bậc bùa thay 60 phút mức 20% nên một bùa 30 lượng thêm ~0,3 giờ thu nhập xu = 1% / lượng (đúng tỷ giá tham chiếu). |
 | `thu.o_co_ban` | Ô thú cơ bản | số | `20` | 1..120 | ngay | game | Số ô thú (thú cưỡi + Pokémon đi theo, chung một danh sách) mỗi người chơi trước khi dùng Vé mở ô thú. Đầy ô: không nhận thêm thú; người chơi cũ đang vượt giữ nguyên, chỉ không nhận thêm. |
 | `thu.o_toi_da` | Ô thú tối đa | số | `60` | 1..120 | ngay | game | Trần ô thú mở bằng Vé mở ô thú (+1 ô mỗi vé). Dùng vé khi đã tối đa bị từ chối, không mất vé; cửa hàng không bán vé thừa. |
 | `thu.tha_xu_co_ban` | Thả thú: xu cơ bản | số | `20` | 0..1000 | ngay | game | Xu khi thả một thú VĨNH VIỄN về tự nhiên = (cơ bản + mỗi cấp × cấp) × bậc hiếm, không quá trần mỗi con. Thú có hạn: 0 xu. |
 | `thu.tha_xu_moi_cap` | Thả thú: xu mỗi cấp | số | `2` | 0..100 | ngay | game | Cộng thêm theo cấp của thú (cấp tính tối đa 100). |
 | `thu.tha_xu_toi_da` | Thả thú: trần xu mỗi con | số | `300` | 0..5000 | ngay | game | Trần xu nhận được khi thả một con (hút xu an toàn: giữ nhỏ so với giờ thu nhập). |
 | `thu.tha_xu_ngay` | Thả thú: trần xu mỗi ngày | số | `2000` | 0..1000000 | ngay | game | Xu tối đa một người chơi nhận được từ thả thú mỗi ngày (theo lịch máy chủ, lưu trong CSDL: đăng nhập lại / khởi động lại không đặt lại). Quá trần vẫn thả được nhưng 0 xu. |
+| `doi_luong.ti_le` | Đổi lượng → lượng khoá: lượng khoá mỗi lượng | số | `1` | 0..100 | ngay | cả hai | NPC Tổng Quản (mục Đổi lượng) và web /account: 1 lượng thường = N lượng khoá. Một chiều (không đổi ngược, lượng khoá không bao giờ là đầu vào), không trần ngày. 0 = tắt. |
+| `doi_luong_xu.phan_tram_gio` | Đổi lượng → xu: % thu nhập 1 giờ | số | `1` | 0..100 | ngay | cả hai | Tỉ giá chung toàn máy chủ: 1 lượng = làm tròn (N% × thu nhập 1 giờ ở cấp trung vị người chơi thật hoạt động 7 ngày), tính lúc 00:00 và giữ cố định cả ngày (bảng tob_ti_gia_luong_xu; đổi khoá có hiệu lực từ ngày sau). Xu sinh ra đếm vào xu vào (tob_kinh_te_ngay). 0 = tắt. |
+| `doi_luong_xu.tran_ngay` | Đổi lượng → xu: trần lượng / tài khoản / ngày | số | `5000` | 0..1000000 | ngay | cả hai | Số lượng thường tối đa mỗi tài khoản đổi ra xu với hệ thống mỗi ngày (gộp mọi Pokémon của tài khoản, NPC + web). 0 = tắt. |
+| `san_luong.phi_phan_tram` | Sàn lượng ↔ xu: phí bên mua (%) | số | `5` | 0..50 | ngay | cả hai | Phí xu bên mua trả thêm trên mỗi lượng khớp (làm tròn lên theo từng lượng), bị đốt (hố hút). Sàn chỉ giao dịch lượng thường; lượng khoá không bao giờ lên sàn. |
+| `san_luong.tran_ngay` | Sàn lượng ↔ xu: trần lượng đặt lệnh / tài khoản / ngày | số | `50000` | 0..10000000 | ngay | cả hai | Tổng lượng đặt lệnh bán + mua mỗi tài khoản mỗi ngày (huỷ lệnh trong ngày trả lại phần chưa khớp). Cổng chống clone như chợ ký gửi; bot không dùng sàn. 0 = đóng sàn. |
 
 #### Sự kiện & giftcode (`su_kien`)
 
@@ -490,7 +501,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 
 #### Huấn luyện viên AI (bot) (`hlv_ai`)
 
-Bot lấp máy chủ chơi như người (mặc định không tiền tố): số lượng, lịch online, tỉ lệ dòng / tính cách, cấp mục tiêu, bản đồ, hoạt động và luật chống lạm phát (hệ số thu nhập, trần xu / túi, giá bán tối thiểu, hạn mức chuyển cho người thật mỗi ngày). Trang riêng: /admin/hlv-ai.
+Bot lấp máy chủ chơi như người (tên có tiền tố, mặc định "ai "): số lượng, lịch online, tỉ lệ dòng / tính cách, cấp mục tiêu, bản đồ, hoạt động và luật chống lạm phát (hệ số thu nhập, trần xu / túi, giá bán tối thiểu, hạn mức chuyển cho người thật mỗi ngày). Trang riêng: /admin/hlv-ai.
 
 | Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
 |---|---|---|---|---|---|---|---|
@@ -509,7 +520,8 @@ Bot lấp máy chủ chơi như người (mặc định không tiền tố): s�
 | `hlv_ai.chuyen_moi_nguoi_ngay` | Hạn mức bot → mỗi người thật / ngày | số | `50000` | 0..100000000 | ngay | game | Tổng giá trị (xu) bot chuyển cho MỘT người chơi thật mỗi ngày (mua đồ của họ, thua cược, đổi thuốc / Pokémon…); vượt thì giao dịch bị từ chối. 0 = cấm. |
 | `hlv_ai.chuyen_tong_ngay` | Hạn mức bot → người thật / ngày (cả máy chủ) | số | `500000` | 0..2000000000 | ngay | game | Tổng giá trị mọi bot chuyển cho người chơi thật mỗi ngày (kể cả góp quỹ đội có người thật). |
 | `hlv_ai.doi_bot_toi_da` | Số đội do bot làm chủ tối đa | số | `3` | 0..50 | ngay | game | Bot cấp 50 lập đội không mất 100.000.000 xu / huy hiệu khi số đội do bot làm chủ còn dưới ngần này (0 = bot không lập đội). Lương đội của bot cho người thật vẫn tính vào hạn mức ngày. |
-| `hlv_ai.tien_to_ten` | Tiền tố tên bot | chuỗi | *(trống)* | ≤ 12 ký tự | ngay | game | Để trống để bot hiện tên như người chơi bình thường ở mọi chỗ; nếu muốn vẫn có thể đặt tiền tố tối đa 12 ký tự, không dùng dấu ":". Giá trị sai: máy chủ dùng mặc định rỗng. |
+| `hlv_ai.tien_to_ten` | Tiền tố tên bot | chuỗi | `ai ` | ≤ 12 ký tự | ngay | game | Hiện trước tên mọi Huấn luyện viên AI ở mọi chỗ người chơi thấy tên (trên đầu, chat, top, đội, chợ...), gõ tự do 1-12 ký tự, có thể dính liền tên (không cần dấu cách / hai chấm), nhưng PHẢI có chữ AI hoặc BOT để người chơi nhận ra bot; không dùng dấu ":". Giá trị sai: máy chủ dùng mặc định "ai ". |
+| `hlv_ai.cap_theo_nguoi` | Cấp mục tiêu theo người chơi thật | cờ 0/1 | `1` |  | ngay | game | 1 = mỗi ngày (và lúc dịch vụ khởi động) tính khoảng cấp từ người chơi thật hoạt động 7 ngày: thấp = phân vị 25%, cao = trung bình top 10 trừ 2 (không quá mức cao của hlv_ai.cap_muc_tieu, không dưới thấp + 5). Bot mới nhận cấp mục tiêu trong khoảng này; bot cũ dưới mức thấp được nâng dần (tối đa +3 / ngày); bot không cày quá mức cao. 0 = dùng hlv_ai.cap_muc_tieu. |
 
 ### Khoá ẩn: cố định & luôn bật (293)
 
@@ -534,7 +546,7 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `thue.cho` | Thuế chợ ký gửi (%) | Cố định (ẩn) | `6` | ngay | game | Đốt khỏi nền kinh tế khi bán được. |
 | `thue.dang_ban` | Phí đăng bán (%) | Cố định (ẩn) | `1` | ngay | game | Đốt, không hoàn; tối thiểu 1 xu. |
 | `thue.chuyen_luong` | Phí chuyển lượng (%) | Cố định (ẩn) | `5` | ngay | game | Làm tròn lên, tối thiểu 1 khi > 0. |
-| `thue.tran_chuyen_xu_gio` | Trần chuyển xu / ngày (giờ thu nhập) | Cố định (ẩn) | `5` | ngay | game | Bội số thu nhập 1 giờ ở cấp người gửi. |
+| `thue.tran_chuyen_xu_gio` | Trần chuyển xu / ngày (giờ thu nhập) | Cố định (ẩn) | `5` | ngay | game | Bội số thu nhập 1 giờ ở cấp người gửi. 0.9.27: áp cho ô xu trong cửa sổ giao dịch 1-1 (`real/GiaoDichXu`), cộng chung mọi nhân vật một tài khoản; `0` = tắt giao dịch xu, `< 0` = không giới hạn; HLV AI không tính. |
 | `phi.dich_chuyen_phan_tram_gio` | Phí dịch chuyển (% thu nhập 1 giờ) | Cố định (ẩn) | `3` | ngay | game | Tối thiểu 1 xu. |
 | `phi.hoi_sinh_phan_tram_gio` | Phí hồi sinh (% thu nhập 1 giờ) | Cố định (ẩn) | `5` | ngay | game | Tối thiểu 1 xu. |
 | `phi.ban_npc_phan_tram` | Giá bán đồ cho NPC (% giá) | Cố định (ẩn) | `5` | ngay | game | Không cộng theo cấp cường hoá. |

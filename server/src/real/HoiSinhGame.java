@@ -486,6 +486,7 @@ public final class HoiSinhGame {
         th.hpThuocToiDa = vp[1];
         th.xu = p.getxu();
         th.luongKhoa = p.lockLuong;
+        th.luong = p.getLuong();
         th.camTaiCho = camTaiCho(p, c);
         th.coDongDoi = c.dongDoiBat && !dongDoiGan(p, true).isEmpty();
         th.daChoDongDoi = t.daChoDongDoi;
@@ -680,17 +681,22 @@ public final class HoiSinhGame {
             }
             case HoiSinh.LC_LUONG_KHOA: {
                 final long pl = l.phi;
-                if (p.truLuongKhoaNeuDu(pl)) {
-                    LUONG_KHOA_DOT.addAndGet(pl);
+                // luong khoa truoc, thieu thi luong cung so (chu game 31/10/2026: luong nap mua duoc moi thu luong khoa mua duoc)
+                final int traBang = p.truLuongKhoaRoiLuong(pl, pl);
+                if (traBang != Char.TRA_KHONG) {
+                    final boolean bangLuong = traBang == Char.TRA_LUONG;
+                    if (!bangLuong) {
+                        LUONG_KHOA_DOT.addAndGet(pl);
+                    }
                     try {
-                        Database.instance.saveLogThongKeChiTieu("hoi sinh tai cho", 0, 1, pl, "luong khoa");
+                        Database.instance.saveLogThongKeChiTieu("hoi sinh tai cho", 0, 1, pl, bangLuong ? "luong" : "luong khoa");
                     } catch (final Exception ignored) {
                     }
-                    hoiTaiCho(p, c.hpTraPhi, "luong khoa " + pl);
+                    hoiTaiCho(p, c.hpTraPhi, (bangLuong ? "luong " : "luong khoa ") + pl);
                     SO_LUONG_KHOA.incrementAndGet();
                     xong = true;
                 } else {
-                    bao(p, "Không đủ lượng khoá.");
+                    bao(p, "Không đủ " + pl + " lượng khoá hoặc lượng.");
                 }
                 break;
             }

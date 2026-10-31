@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Bot / Huấn luyện viên AI: bot lấp máy chủ chơi như người (tên mặc định không tiền tố; có thể đặt hlv_ai.tien_to_ten). Trang này chỉnh nhóm cấu hình hlv_ai
+ * Bot / Huấn luyện viên AI: bot lấp máy chủ chơi như người (tên hiện tiền tố hlv_ai.tien_to_ten + tên, mặc định "ai "). Trang này chỉnh nhóm cấu hình hlv_ai
  * (lưu qua /api/admin/cau-hinh-he-thong/luu - có lịch sử, hoàn tác ở trang Cấu hình hệ thống), xem bot đang online và
  * kinh tế của bot (máy chủ game ghi: tob_hlv_ai_kinh_te_ngay / tob_hlv_ai_moc / tob_hlv_ai_chuyen).
  */
@@ -12,7 +12,8 @@ interface Bot { taiKhoan: string, charId: number, ten: string, lop: number, tinh
 interface Ngay { ngay: string, xuTao: number, xuCat: number, xuDot: number, xuTieu: number, xuNhanNguoi: number, xuTraNguoi: number, giaTriChoNguoi: number, soChuyen: number, soChan: number, vatHuy: number, tongXuBot: number, tongXuNguoi: number, soBot: number, soBotOnline: number }
 interface Moc { luc: string, tongXuBot: number, tongXuNguoi: number, soBotOnline: number, soNguoiOnline: number }
 interface Chuyen { luc: string, huong: number, kieu: string, bot: string, nguoi: string, xu: number, giaTri: number, biChan: boolean, chiTiet: string }
-interface KetQua { coBang: boolean, cauHinh: Record<string, { giaTri: string, macDinh: string, daLuu: boolean }>, bot: Bot[], ngay: Ngay[], moc: Moc[], chuyen: Chuyen[] }
+interface CapTheoNguoi { ngay: string, thap: number, cao: number, soNguoi: number, tbNguoi: number, caoNhatNguoi: number, tbTop: number, tbBot: number, caoNhatBot: number, botNang: number, capNhat: string | null }
+interface KetQua { coBang: boolean, cauHinh: Record<string, { giaTri: string, macDinh: string, daLuu: boolean }>, capTheoNguoi: CapTheoNguoi | null, bot: Bot[], ngay: Ngay[], moc: Moc[], chuyen: Chuyen[] }
 
 const { data, status, error, refresh } = useAsyncData('admin-hlv-ai', () => api<KetQua>('/api/admin/hlv-ai'), { server: false })
 const hen = setInterval(() => { if (!dangSua.value) refresh() }, 30000)
@@ -30,8 +31,8 @@ const VIEC: Record<string, string> = {
 const dangSua = ref(false)
 const f = reactive({
   bat: false, soLuong: 30, lich: Array.from({ length: 24 }, () => 50), lop: [20, 20, 20, 20, 20], tinhCach: [30, 15, 15, 20, 20],
-  capThap: 10, capCao: 60, banDo: '', viec: [] as string[],
-  heSo: 60, tranXu: 300000, tranTui: 60, giaBan: 100, chuyenNguoi: 50000, chuyenTong: 500000, doiBot: 3, tienTo: '',
+  capThap: 10, capCao: 60, capTheoNguoi: true, banDo: '', viec: [] as string[],
+  heSo: 60, tranXu: 300000, tranTui: 60, giaBan: 100, chuyenNguoi: 50000, chuyenTong: 500000, doiBot: 3, tienTo: 'ai ',
 })
 const lyDo = ref('')
 const dangLuu = ref(false)
@@ -50,12 +51,13 @@ function napForm() {
   const cap = ds(g('hlv_ai.cap_muc_tieu'), 2, 0)
   f.capThap = cap[0] ?? 10
   f.capCao = cap[1] ?? 60
+  f.capTheoNguoi = g('hlv_ai.cap_theo_nguoi') !== '0'
   f.banDo = g('hlv_ai.ban_do') ?? ''
   f.viec = String(g('hlv_ai.hoat_dong') ?? '').split(',').map(x => x.trim()).filter(Boolean)
   f.heSo = so(g('hlv_ai.he_so_thu_nhap'), 60)
   f.tranXu = so(g('hlv_ai.tran_xu'), 300000)
   f.doiBot = so(g('hlv_ai.doi_bot_toi_da'), 3)
-  f.tienTo = g('hlv_ai.tien_to_ten') ?? ''
+  f.tienTo = g('hlv_ai.tien_to_ten') ?? 'ai '
   f.tranTui = so(g('hlv_ai.tran_vat_pham'), 60)
   f.giaBan = so(g('hlv_ai.gia_ban_toi_thieu'), 100)
   f.chuyenNguoi = so(g('hlv_ai.chuyen_moi_nguoi_ngay'), 50000)
@@ -72,6 +74,7 @@ function giaTriForm(): Record<string, string> {
     'hlv_ai.ty_le_lop': f.lop.map(x => Math.trunc(x)).join(','),
     'hlv_ai.ty_le_tinh_cach': f.tinhCach.map(x => Math.trunc(x)).join(','),
     'hlv_ai.cap_muc_tieu': `${Math.trunc(f.capThap)},${Math.trunc(f.capCao)}`,
+    'hlv_ai.cap_theo_nguoi': f.capTheoNguoi ? '1' : '0',
     'hlv_ai.ban_do': f.banDo.split(',').map(x => x.trim()).filter(Boolean).join(','),
     'hlv_ai.hoat_dong': viecDung.join(','),
     'hlv_ai.he_so_thu_nhap': String(Math.trunc(f.heSo)),
@@ -149,8 +152,8 @@ const gioHienTai = new Date().getHours()
       title="CSDL chưa có bảng tob_hlv_ai_* - chạy nâng cấp CSDL (vps/nang_cap_csdl.sh, khối them_hlv_ai.sql)." />
 
     <p class="mb-4 text-sm text-muted">
-      Bot chơi qua giao thức thật như người chơi (tiến trình riêng <code>htbb-hlv-ai</code> trên VPS, không tự bật), tên bot
-      hiển thị như người chơi bình thường; có thể đặt tiền tố ở ô <i>Tiền tố tên bot</i> nếu muốn. Bot không nạp, không mua gói, không chuyển / nhận lượng, không nhập giftcode. Máy chủ giữ lạm phát bằng hệ số
+      Bot chơi qua giao thức thật như người chơi (tiến trình riêng <code>htbb-hlv-ai</code> trên VPS, không tự bật), tên luôn có
+      tiền tố <b>"{{ chuanTienToHlvAi(f.tienTo) }}"</b> (đổi ở ô <i>Tiền tố tên bot</i> bên dưới). Bot không nạp, không mua gói, không chuyển / nhận lượng, không nhập giftcode. Máy chủ giữ lạm phát bằng hệ số
       thu nhập, trần xu / túi, giá rao tối thiểu và hạn mức bot → người thật mỗi ngày.
     </p>
 
@@ -261,14 +264,25 @@ const gioHienTai = new Date().getHours()
             <UFormField v-for="(t, i) in Object.values(TINH_CACH)" :key="t" :label="t" class="min-w-0" :ui="{ label: 'truncate' }"><UInput v-model.number="f.tinhCach[i]" type="number" :min="0" :max="100" size="sm" /></UFormField>
           </div>
           <h3 class="pt-2 font-semibold">Tên bot</h3>
-          <UFormField label="Tiền tố tên bot (để trống = tên như người thật; tối đa 12 ký tự, không dùng dấu :)" :error="loiTienTo ?? undefined">
-            <UInput v-model="f.tienTo" :maxlength="12" class="w-48" placeholder="để trống = không tiền tố" />
+          <UFormField label="Tiền tố tên bot (1–12 ký tự, phải có AI hoặc BOT; được dính liền tên)" :error="loiTienTo ?? undefined">
+            <UInput v-model="f.tienTo" :maxlength="12" class="w-48" placeholder="ai " />
           </UFormField>
           <p class="text-sm">Xem trước: <span v-for="t in xemTruoc" :key="t" class="mr-3 rounded bg-elevated px-2 py-0.5 font-mono">{{ t }}</span></p>
           <h3 class="pt-2 font-semibold">Cấp mục tiêu và bản đồ</h3>
+          <UCheckbox :model-value="f.capTheoNguoi" @update:model-value="(x: boolean | 'indeterminate') => { dangSua = true; f.capTheoNguoi = x === true }" label="Cấp mục tiêu theo người chơi thật (mỗi ngày: thấp = 25% người thật hoạt động 7 ngày, cao = trung bình top 10 trừ 2)" />
+          <p v-if="f.capTheoNguoi" class="text-sm text-muted">
+            <template v-if="data?.capTheoNguoi">
+              Đang dùng <b>cấp {{ data.capTheoNguoi.thap }}–{{ data.capTheoNguoi.cao }}</b> theo người chơi thật
+              ({{ data.capTheoNguoi.soNguoi }} người hoạt động 7 ngày: trung bình cấp {{ data.capTheoNguoi.tbNguoi }}, cao nhất {{ data.capTheoNguoi.caoNhatNguoi }},
+              top 10 trung bình {{ data.capTheoNguoi.tbTop }}; bot trung bình {{ data.capTheoNguoi.tbBot }}, cao nhất {{ data.capTheoNguoi.caoNhatBot }};
+              {{ data.capTheoNguoi.botNang }} bot được nâng / chặn mục tiêu hôm nay - tính ngày {{ data.capTheoNguoi.ngay }}).
+              Bot không cày quá cấp {{ data.capTheoNguoi.cao }}; ô "cao" dưới đây là trần.
+            </template>
+            <template v-else>Dịch vụ bot chưa tính (chưa chạy hôm nay, hoặc chưa có người chơi thật hoạt động 7 ngày - khi đó dùng khoảng cố định dưới đây).</template>
+          </p>
           <div class="flex flex-wrap gap-3">
-            <UFormField label="Cấp mục tiêu thấp"><UInput v-model.number="f.capThap" type="number" :min="1" :max="200" class="w-24" /></UFormField>
-            <UFormField label="Cấp mục tiêu cao"><UInput v-model.number="f.capCao" type="number" :min="1" :max="200" class="w-24" /></UFormField>
+            <UFormField :label="f.capTheoNguoi ? 'Cấp mục tiêu thấp (khi chưa có người thật)' : 'Cấp mục tiêu thấp'"><UInput v-model.number="f.capThap" type="number" :min="1" :max="200" class="w-24" /></UFormField>
+            <UFormField :label="f.capTheoNguoi ? 'Cấp mục tiêu cao (trần)' : 'Cấp mục tiêu cao'"><UInput v-model.number="f.capCao" type="number" :min="1" :max="200" class="w-24" /></UFormField>
             <UFormField label="Bãi luyện ưu tiên (id bản đồ, dấu phẩy; trống = rải đều)" class="grow"><UInput v-model="f.banDo" placeholder="vd 1,2,5" /></UFormField>
           </div>
         </section>

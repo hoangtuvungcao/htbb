@@ -1623,7 +1623,9 @@ public class OfflineMap extends Map {
                      Database.instance.saveLogThongKeChiTieu(g.name + "_luong", 0, 1, (long)g.getPrice(isSale), "luong");
                   }
 
-                  if (id != 175 && id != 176 && id != 177) {
+                  // Da tach nguyen lieu 5x/6x/7x (175..177) tung luon ra KHOA. Chu game 31/10/2026: do mua bang LUONG
+                  // khong khoa -> chi khoa khi KHONG tra bang luong (typeMoney != 1).
+                  if (id != 175 && id != 176 && id != 177 || g.typeMoney == 1) {
                      player.doAddGemItem(id);
                   } else {
                      player.doAddGemItem(id, 1, true);

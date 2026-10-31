@@ -119,7 +119,8 @@ public final class ManGiaoDich extends Screen {
         int wOi = 4 * s + 3 * k;
         int wl = Math.min(w * (ChuDe.dt() ? 66 : 58) / 100, 2 * wOi + 3 * k + 16);
         int nh = Bang.caoHang();
-        int hO = h - nh - k;
+        // 0.9.27: hàng xu dưới mỗi bên (cao = hàng nút) - lưới đồ ngắn lại một hàng
+        int hO = h - nh - k - nh - k;
         int wb = (wl - k) / 2;
         // 0.9.22 (APK mật độ cao): lưới chỉ dùng cot x ô - phần dư của hai bên trả cho cột Hành trang (tên đồ không bị cắt)
         int[] cs = cotO(wb, hO - 13 - Font.blackFont.getHeight());
@@ -130,6 +131,8 @@ public final class ManGiaoDich extends Screen {
         }
         veO(g, x, y, wb, hO, "Bạn đưa", mc().tItems, true);
         veO(g, x + wb + k, y, wl - wb - k, hO, "Bạn nhận", mc().rItems, false);
+        veXu(g, x, y + hO + k, wb, nh, true);
+        veXu(g, x + wb + k, y + hO + k, wl - wb - k, nh, false);
         // nút
         Bang.nut(g, x, y + h - nh, wb, nh, "Huỷ giao dịch", Bang.TRUNG, new IAction() {
             public void perform() {
@@ -143,7 +146,9 @@ public final class ManGiaoDich extends Screen {
                     GameService.gI().sendOkTrade(mc().ID);
                     buoc = 1;
                 } else if (buoc == 2) {
-                    HopXacNhan.hoi("Chuyển đồ", "Đồng ý trao đổi? Sau khi chuyển không lấy lại được.", "Chuyển", new IAction() {
+                    HopXacNhan.hoi("Chuyển đồ", "Đồng ý trao đổi? Sau khi chuyển không lấy lại được."
+                            + (XuGiaoDich.dua > 0 || XuGiaoDich.nhan > 0 ? " Bạn đưa " + TienTe.chu(TienTe.XU, XuGiaoDich.dua)
+                            + ", nhận " + TienTe.chu(TienTe.XU, XuGiaoDich.nhan) + "." : ""), "Chuyển", new IAction() {
                         public void perform() {
                             GameService.gI().sendConfirmTrade();
                             mc().isTrade = false;
@@ -231,6 +236,31 @@ public final class ManGiaoDich extends Screen {
                 }
             }
         });
+    }
+
+    /**
+     * 0.9.27 hàng xu (kiểu NRO): bên mình = nút "Đưa [xu] số" (chạm -> nhập số xu, chỉ khi chưa khoá); bên kia = thẻ "Nhận
+     * [xu] số". Lượng / lượng khoá không có hàng - không giao dịch được (chỉ NPC "Chuyển lượng").
+     */
+    void veXu(Graphics g, int x, int y, int w, int h, boolean cuaMinh) {
+        long v = cuaMinh ? XuGiaoDich.dua : XuGiaoDich.nhan;
+        if (cuaMinh) {
+            Bang.nut(g, x, y, w, h, "", buoc == 0 ? Bang.TRUNG : Bang.TAT, buoc != 0 ? null : new IAction() {
+                public void perform() {
+                    XuGiaoDich.hoi();
+                }
+            }, "gd-xu");
+        } else {
+            Bang.the(g, x, y, w, h);
+        }
+        Font f = Font.blackFont;
+        String nhan = cuaMinh ? "Đưa " : "Nhận ";
+        int wn = f.getWidth(nhan);
+        boolean gon = wn + TienTe.rongGia(TienTe.XU, v, f, false) > w - 8;
+        int wTong = wn + TienTe.rongGia(TienTe.XU, v, f, gon);
+        int x0 = x + Math.max(4, (w - wTong) / 2);
+        f.drawString(g, nhan, x0, y + (h - f.getHeight()) / 2, 0);
+        TienTe.veGia(g, TienTe.XU, v, x0 + wn, y + (h - TienTe.coTheoChu(f)) / 2, f, gon);
     }
 
     /** {số cột, cạnh ô} lưới 12 ô của một bên rộng w, cao hl cho lưới: 4 cột x 3 hàng (bảng hẹp: 3 x 4, rồi 2 cột). */

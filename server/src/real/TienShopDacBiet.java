@@ -55,11 +55,15 @@ public final class TienShopDacBiet {
     /** Mo ta gui trong goi 25: client cu -&gt; them {@link #NHAN} cho dong tra bang luong khoa. */
     public static String moTa(final ShopTemplate t, final boolean clientMoi) {
         final String d = t.decript == null ? "" : t.decript;
-        if (clientMoi || !traLuongKhoa(t.id)) {
+        if (!traLuongKhoa(t.id)) {
             return d;
         }
-        return d.trim().isEmpty() ? NHAN + "Giá tính bằng lượng khoá." : NHAN + d;
+        final String than = (d.trim().isEmpty() ? "Giá tính bằng lượng khoá." : d) + GHI_CHU_TRA_LUONG;
+        return clientMoi ? than : NHAN + than;
     }
+
+    /** Chu game 31/10/2026: dong gia luong khoa mua duoc bang luong (nap) cung gia, do mua bang luong khong khoa. */
+    public static final String GHI_CHU_TRA_LUONG = " Thiếu lượng khoá thì trừ lượng (đồ mua bằng lượng không khoá).";
 
     /**
      * Bang shop cuoi goi 25 (createMsgLogin): u8 so dong, moi dong {u8 id, u8 anh, int gia, UTF ten, UTF mo ta, u8 loai
@@ -100,6 +104,24 @@ public final class TienShopDacBiet {
                 dos.writeByte(t.id);
             }
         }
+    }
+
+    /** Sau mot lan mua: khong loai tien nao giam (mua that bai) -&gt; hoan luot gioi han tuan. */
+    public static boolean khongTruTien(final long lkTruoc, final long lkSau, final long lTruoc, final long lSau,
+            final long xuTruoc, final long xuSau) {
+        return lkSau >= lkTruoc && lSau >= lTruoc && xuSau >= xuTruoc;
+    }
+
+    /** "Không đủ lượng khoá hoặc lượng: cần 30, đang có 12 lượng khoá, 5 lượng." */
+    public static String khongDu(final long can, final long coKhoa, final long coLuong) {
+        return "Không đủ lượng khoá hoặc lượng: cần " + so(can) + ", đang có " + so(Math.max(0L, coKhoa)) + " lượng khoá, "
+                + so(Math.max(0L, coLuong)) + " lượng.";
+    }
+
+    /** "Đã mua X: trừ 30 lượng (thiếu lượng khoá), còn 12 lượng. Đồ không khoá." */
+    public static String daMuaBangLuong(final String ten, final long tru, final long con) {
+        return "Đã mua " + tenNgan(ten) + ": trừ " + so(tru) + " lượng (thiếu lượng khoá), còn " + so(Math.max(0L, con))
+                + " lượng. Đồ không khoá.";
     }
 
     /** "Không đủ lượng khoá: cần 30, đang có 12." */

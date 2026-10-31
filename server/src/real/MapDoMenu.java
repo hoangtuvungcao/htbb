@@ -185,6 +185,10 @@ class MapDoMenu {
                 }
                 return;
             }
+            // doi luong: muc "Đổi lượng" (NPC -10) + npc ao -570..-578 (real/DoiLuongGame).
+            if (DoiLuongGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
             // nap tien: muc "Cửa hàng & Nạp" (NPC -10) + npc ao -540..-549. Tat co: khong bat gi.
             if (com.htbb.pokemon.NapTienGame.xuLyMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
@@ -3210,7 +3214,7 @@ class MapDoMenu {
                                                                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 2));
                                                                 }
                                                             } else {
-                                                                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Dùng lượng"}, idNpc, 3));
+                                                                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Dùng lượng (100)", "Dùng lượng khoá (200)"}, idNpc, 3));
                                                             }
                                                         } else {
                                                             if (!Char.isOpenSellBlackFriday()) {
@@ -3413,7 +3417,8 @@ class MapDoMenu {
                                                             player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 2));
                                                         }
                                                     } else {
-                                                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Dùng lượng"}, idNpc, 3));
+                                                        // muc 1 (luong khoa) truoc chi goi tin tu che moi chon duoc - nay hien ro
+                                                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Dùng lượng (100)", "Dùng lượng khoá (200)"}, idNpc, 3));
                                                     }
                                                 } else if (Char.isOpenDauGiaChoiBlackFriday()) {
                                                     player.sendMessage(MessageCreator.createMsgInputText(idOptionMenu != 0 ? -32017 : -32018, 0, "Lượng đấu giá", 1));
@@ -3451,7 +3456,8 @@ class MapDoMenu {
 
                                     for (int ixxx = 0; ixxx < menu.length; ixxx++) {
                                         Item it = (Item) player.itemChange5.get(ixxx);
-                                        menu[ixxx] = it.getTemplate().name + " " + he[it.heItem] + " (" + gia + " lượng)";
+                                        // nhan dung loai tien that tru: luong khoa (thieu thi 100 lượng) / luong
+                                        menu[ixxx] = it.getTemplate().name + " " + he[it.heItem] + (idOptionMenu == 1 ? " (200 lượng khoá / 100 lượng)" : " (100 lượng)");
                                     }
 
                                     player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
@@ -3474,15 +3480,20 @@ class MapDoMenu {
                                 }
                             }
 
-                            if (player.getLuong() < gia && player.type_luong_doi_he == 0) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
+                            if (idOptionMenu < 0 || idOptionMenu >= player.itemChange5.size()) {
                                 return;
                             }
-
-                            if (player.getLuongLock() < giaLock && player.type_luong_doi_he == 1) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng khoá.", ""));
+                            // Kiem-va-tru MOT buoc (truoc: getLuong()/getLuongLock() roi doi he roi moi tru). Dung luong khoa:
+                            // thieu thi tru gia luong (luong nap mua duoc moi thu luong khoa mua duoc - chu game 31/10/2026).
+                            final int traBang = player.type_luong_doi_he != 0
+                                    ? player.truLuongKhoaRoiLuong(giaLock, gia)
+                                    : (PhiLuong.tru(player, gia) ? Char.TRA_LUONG : Char.TRA_KHONG);
+                            if (traBang == Char.TRA_KHONG) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(player.type_luong_doi_he != 0
+                                        ? "Không đủ " + giaLock + " lượng khoá hoặc " + gia + " lượng." : PhiLuong.khongDu(player, gia), ""));
                                 return;
                             }
+                            final String daTru = traBang == Char.TRA_LUONG_KHOA ? giaLock + " lượng khoá" : gia + " lượng";
 
                             Item it = (Item) player.itemChange5.get(idOptionMenu);
                             int oldHe = it.heItem;
@@ -3491,11 +3502,10 @@ class MapDoMenu {
                                 it.heItem = (byte) r.nextInt(5);
                             }
 
-                            if (player.type_luong_doi_he != 0) {
-                                player.subLuongLock((long) giaLock);
+                            if (traBang == Char.TRA_LUONG_KHOA) {
+                                it.khoaVinhVien(); // doi bang luong khoa -> do khoa (khong doi luong khoa ra gia tri giao dich duoc)
                                 Database.instance.saveLogThongKeChiTieu("Doi He luong khoa", 0, 1, (long) giaLock, "luong_lock");
                             } else {
-                                player.subLuong((long) gia);
                                 Database.instance.saveLogThongKeChiTieu("Doi He luong", 0, 1, (long) gia, "luong");
                             }
 
@@ -3516,14 +3526,16 @@ class MapDoMenu {
                                             + " sang "
                                             + he[it.heItem]
                                             + "_"
-                                            + (player.type_luong_doi_he != 0 ? giaLock + " lượng khoá" : gia + " lượng"),
+                                            + daTru,
                                             "c5"
                                     );
                             player.reCheckAtb5();
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                             player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                             player.sendMessage(
-                                    MessageCreator.createServerAlertMessage(it.getTemplate().name + " đã được đổi từ " + he[oldHe] + " sang " + he[it.heItem], "")
+                                    MessageCreator.createServerAlertMessage(it.getTemplate().name + " đã được đổi từ " + he[oldHe] + " sang " + he[it.heItem]
+                                            + " (trừ " + daTru + ").", "")
                             );
                         }
                     } else if (idOptionMenu != 0) {
@@ -3632,7 +3644,7 @@ class MapDoMenu {
                             player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 2));
                         }
                     } else {
-                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Dùng lượng"}, idNpc, 3));
+                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Dùng lượng (100)", "Dùng lượng khoá (200)"}, idNpc, 3));
                     }
                     break;
                 case -13:
@@ -3675,12 +3687,10 @@ class MapDoMenu {
                                     return;
                                 }
 
-                                if (player.getLuong() < 100) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
+                                if (!PhiLuong.tru(player, 100L)) { // kiem-va-tru nguyen tu (truoc: getLuong() < 100 roi subLuong)
+                                    player.sendMessage(MessageCreator.createServerAlertMessage(PhiLuong.khongDu(player, 100L), ""));
                                     return;
                                 }
-
-                                player.subLuong(100L);
                                 Database.instance.saveLogThongKeChiTieu("Diem Cong Hien", 0, 1, 100L, "luong");
                                 NewClan cl = NewClan.getClan(player.idClan);
                                 if (cl != null) {
@@ -4462,16 +4472,16 @@ class MapDoMenu {
 
                                     if (idOptionMenu != 0) {
                                         if (idOptionMenu == 1) {
-                                            if (player.getLuong() < Animal.price[2][player.animalRide.level]) {
-                                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
-                                                return;
-                                            }
-
+                                            // PhiLuong.lamRoiTru: kiem + nang + tru trong MOT khoi (truoc: kiem roi tru rieng)
+                                            final long giaNc = Animal.price[2][player.animalRide.level];
+                                            final data.Animal thuNc = player.animalRide;
                                             String oldInfo = player.animalRide.level + "_" + player.animalRide.getAttribute();
-                                            if (!player.animalRide.upAttribute(1)) {
+                                            final int kqNc = PhiLuong.lamRoiTru(player, giaNc, () -> thuNc.upAttribute(1));
+                                            if (kqNc == PhiLuong.THIEU) {
+                                                player.sendMessage(MessageCreator.createServerAlertMessage(PhiLuong.khongDu(player, giaNc), ""));
+                                            } else if (kqNc != PhiLuong.XONG) {
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Đã đạt max cấp độ hiện tại", ""));
                                             } else {
-                                                player.subLuong((long) Animal.price[2][player.animalRide.level]);
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Nâng cấp thành công", ""));
                                                 player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 100));
@@ -4479,17 +4489,18 @@ class MapDoMenu {
                                                         .saveOrtherLog("tob_log_other_animal", player.charname, oldInfo + "|" + player.animalRide.getAttribute(), "ndt");
                                                 Database.instance.saveAnimal(player.animalRide);
                                                 Database.instance
-                                                        .saveLogThongKeChiTieu("nang cap thuoc tinh thu", 0, 1, (long) Animal.price[2][player.animalRide.level], "luong");
+                                                        .saveLogThongKeChiTieu("nang cap thuoc tinh thu", 0, 1, giaNc, "luong");
                                             }
                                         }
                                     } else {
-                                        if (player.getLuong() < 10) {
-                                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
+                                        final data.Animal thuDoi = player.animalRide;
+                                        final int kqDoi = PhiLuong.lamRoiTru(player, 10L, () -> thuDoi.changeAtt(player, 1));
+                                        if (kqDoi == PhiLuong.THIEU) {
+                                            player.sendMessage(MessageCreator.createServerAlertMessage(PhiLuong.khongDu(player, 10L), ""));
                                             return;
                                         }
 
-                                        if (player.animalRide.changeAtt(player, 1)) {
-                                            player.subLuong(10L);
+                                        if (kqDoi == PhiLuong.XONG) {
                                             player.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi thành công", ""));
                                             player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 100));
@@ -4512,16 +4523,15 @@ class MapDoMenu {
                                             player.sendMessage(msg);
                                         }
                                     } else {
-                                        if (player.getLuong() < Animal.price[1][player.animalRide.level]) {
-                                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
-                                            return;
-                                        }
-
+                                        final long giaTn = Animal.price[1][player.animalRide.level];
+                                        final data.Animal thuTn = player.animalRide;
                                         String oldInfo = player.animalRide.level + "_" + player.animalRide.getAttribute();
-                                        if (!player.animalRide.upAttribute(0)) {
+                                        final int kqTn = PhiLuong.lamRoiTru(player, giaTn, () -> thuTn.upAttribute(0));
+                                        if (kqTn == PhiLuong.THIEU) {
+                                            player.sendMessage(MessageCreator.createServerAlertMessage(PhiLuong.khongDu(player, giaTn), ""));
+                                        } else if (kqTn != PhiLuong.XONG) {
                                             player.sendMessage(MessageCreator.createServerAlertMessage("Đã đạt max cấp độ hiện tại", ""));
                                         } else {
-                                            player.subLuong((long) Animal.price[1][player.animalRide.level]);
                                             player.sendMessage(MessageCreator.createServerAlertMessage("Nâng cấp thành công", ""));
                                             player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 100));
@@ -4534,20 +4544,19 @@ class MapDoMenu {
                                                     );
                                             Database.instance.saveAnimal(player.animalRide);
                                             Database.instance
-                                                    .saveLogThongKeChiTieu("nang cap thuoc tinh thu", 0, 1, (long) Animal.price[1][player.animalRide.level], "luong");
+                                                    .saveLogThongKeChiTieu("nang cap thuoc tinh thu", 0, 1, giaTn, "luong");
                                         }
                                     }
                                 } else {
-                                    if (player.getLuong() < Animal.price[0][player.animalRide.level]) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
-                                        return;
-                                    }
-
+                                    final long giaCb = Animal.price[0][player.animalRide.level];
+                                    final data.Animal thuCb = player.animalRide;
                                     String oldInfo = player.animalRide.level + "_" + player.animalRide.getAttribute();
-                                    if (!player.animalRide.upAttribute(2)) {
+                                    final int kqCb = PhiLuong.lamRoiTru(player, giaCb, () -> thuCb.upAttribute(2));
+                                    if (kqCb == PhiLuong.THIEU) {
+                                        player.sendMessage(MessageCreator.createServerAlertMessage(PhiLuong.khongDu(player, giaCb), ""));
+                                    } else if (kqCb != PhiLuong.XONG) {
                                         player.sendMessage(MessageCreator.createServerAlertMessage("Đã đạt max cấp độ hiện tại", ""));
                                     } else {
-                                        player.subLuong((long) Animal.price[0][player.animalRide.level]);
                                         player.sendMessage(MessageCreator.createServerAlertMessage("Nâng cấp thành công", ""));
                                         player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 100));
@@ -4559,7 +4568,7 @@ class MapDoMenu {
                                                         "ncc"
                                                 );
                                         Database.instance.saveAnimal(player.animalRide);
-                                        Database.instance.saveLogThongKeChiTieu("nang cap thuoc tinh thu", 0, 1, (long) Animal.price[0][player.animalRide.level], "luong");
+                                        Database.instance.saveLogThongKeChiTieu("nang cap thuoc tinh thu", 0, 1, giaCb, "luong");
                                     }
                                 }
                             }
@@ -4605,7 +4614,7 @@ class MapDoMenu {
                     
                                 String[] menu = new String[]{
                                     "Cơ bản (" + Animal.price[0][player.animalRide.level] + " lượng)",
-                                    "Tiềm năng(" + Animal.price[0][player.animalRide.level] + " lượng)",
+                                    "Tiềm năng(" + Animal.price[1][player.animalRide.level] + " lượng)", // tru price[1] (giaTn)
                                     "Đặc biệt"
                                 };
                                 Message msg = MessageCreator.createMsgMenu(menu, idNpc, 2);
@@ -4618,14 +4627,16 @@ class MapDoMenu {
                                     return;
                                 }
                     
-                                if (player.getLuong() < Animal.price[3][player.animalRide.level]) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
+                                final long giaLv = Animal.price[3][player.animalRide.level];
+                                final data.Animal thuLv = player.animalRide;
+                                final int kqLv = PhiLuong.lamRoiTru(player, giaLv, () -> thuLv.upLevel(player));
+                                if (kqLv == PhiLuong.THIEU) {
+                                    player.sendMessage(MessageCreator.createServerAlertMessage(PhiLuong.khongDu(player, giaLv), ""));
                                     return;
                                 }
-                    
-                                if (player.animalRide.upLevel(player)) {
-                                    player.subLuong((long) Animal.price[3][player.animalRide.level - 1]);
-                                    Database.instance.saveLogThongKeChiTieu("nang cap level thu", 0, 1, (long) Animal.price[3][player.animalRide.level - 1], "luong");
+
+                                if (kqLv == PhiLuong.XONG) {
+                                    Database.instance.saveLogThongKeChiTieu("nang cap level thu", 0, 1, giaLv, "luong");
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng, thú cưỡi của bạn đã đạt được cấp độ " + player.animalRide.level, ""));
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 100));
@@ -4647,16 +4658,29 @@ class MapDoMenu {
                                 if (player.animalRide == null ||
                                     (!player.animalRide.isPhuongHoangBang() && !player.animalRide.isPhuongHoangLua()
                                         && !player.animalRide.isLan() && !player.animalRide.isRongLon()) ||
-                                    player.animalRide.level < 4 ||
-                                    player.getLuong() < 200) {
+                                    player.animalRide.level < 4) {
                                     return;
                                 }
-                    
+                                // Da co dong khang -> khong tru; tru 200 luong NGUYEN TU (truoc: getLuong() < 200 roi subLuong rieng,
+                                // va log chi tieu ghi ca khi da co dong khang).
+                                {
+                                    final data.Animal a = player.animalRide;
+                                    final boolean daCo = a.isPhuongHoangBang() ? a.KHANG_BI_CHAY > 0
+                                            : a.isPhuongHoangLua() ? a.KHANG_DONG_BANG > 0
+                                            : a.isRongLon() ? (a.KHANG_BI_CHAY > 0 && a.KHANG_DONG_BANG > 0)
+                                            : a.KHANG_HOA_TUYET > 0;
+                                    if (daCo) {
+                                        return;
+                                    }
+                                    if (!PhiLuong.tru(player, 200L)) {
+                                        player.sendMessage(MessageCreator.createServerAlertMessage(PhiLuong.khongDu(player, 200L), ""));
+                                        return;
+                                    }
+                                }
+
                                 Database.instance.saveLogThongKeChiTieu("nang cap khang " + player.animalRide.getName(), 0, 1, 200L, "luong");
-                    
+
                                 if (player.animalRide.isPhuongHoangBang()) {
-                                    if (player.animalRide.KHANG_BI_CHAY > 0) return;
-                                    player.subLuong(200L);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_BI_CHAY = 95;
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi Articuno đã được thêm thuộc tính kháng bị cháy", ""));
@@ -4664,8 +4688,6 @@ class MapDoMenu {
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     Database.instance.saveOrtherLog("", player.charname, "them dong khang bi chay cho phb 200L", "kchay");
                                 } else if (player.animalRide.isPhuongHoangLua()) {
-                                    if (player.animalRide.KHANG_DONG_BANG > 0) return;
-                                    player.subLuong(200L);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_DONG_BANG = 95;
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi Moltres đã được thêm thuộc tính kháng đóng băng", ""));
@@ -4678,8 +4700,6 @@ class MapDoMenu {
                                     // Char.java:6525 dong bang, Char.java:6601 bi chay) va bang mo ta
                                     // cua thu cung hua ca hai. Truoc day khong co duong nao bat co,
                                     // nen 95% hien tren bang chi so la con so vo nghia.
-                                    if (player.animalRide.KHANG_BI_CHAY > 0 && player.animalRide.KHANG_DONG_BANG > 0) return;
-                                    player.subLuong(200L);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_BI_CHAY = 95;
                                     player.animalRide.KHANG_DONG_BANG = 95;
@@ -4688,8 +4708,6 @@ class MapDoMenu {
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     Database.instance.saveOrtherLog("", player.charname, "them dong khang cho rong bang 200L", "krongbang");
                                 } else if (player.animalRide.isLan()) {
-                                    if (player.animalRide.KHANG_HOA_TUYET > 0) return;
-                                    player.subLuong(200L);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     player.animalRide.KHANG_HOA_TUYET = 95;
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Thú cưỡi Suicune đã được thêm thuộc tính kháng hoá tuyết", ""));

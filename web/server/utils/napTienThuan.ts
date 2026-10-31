@@ -38,7 +38,7 @@ export const NHOM_CUA_HANG = ['trang_phuc', 'hao_quang', 'skin_thu', 'the_dong_h
 export const TANG_TOC: Record<string, { gia: number, tuanToiDa: number, diem: number }> = {
   ve_exp_15: { gia: 20, tuanToiDa: 14, diem: 15 },
   ve_exp_2: { gia: 40, tuanToiDa: 7, diem: 30 },
-  bua_the_luc: { gia: 60, tuanToiDa: 4, diem: 45 },
+  bua_the_luc: { gia: 30, tuanToiDa: 0, diem: 45 }, // 31/10/2026: không giới hạn mua (0); diem 45 chỉ danh nghĩa — bùa không tính trần điểm, bậc 50% EXP / 50% xu
   uy_thac: { gia: 15, tuanToiDa: 17, diem: 12 },
   keo_hiem: { gia: 40, tuanToiDa: 2, diem: 30 },
 }
@@ -51,7 +51,9 @@ function kiemTangToc(m: MonCuaHang): string | null {
   if (!t) return `Món tăng tốc chỉ gồm: ${Object.keys(TANG_TOC).join(', ')}.`
   if (m.nhom !== 'tang_toc') return 'Món tăng tốc phải thuộc nhóm tang_toc.'
   if (m.gia_luong !== t.gia) return `Giá ${m.ma} cố định ${t.gia} lượng.`
-  if (!Number.isInteger(m.gioi_han) || m.gioi_han < 1 || m.gioi_han > t.tuanToiDa) return `Giới hạn tuần ${m.ma} phải trong 1..${t.tuanToiDa}.`
+  if (t.tuanToiDa === 0) {
+    if (!Number.isInteger(m.gioi_han) || m.gioi_han < 0) return `Giới hạn tuần ${m.ma} phải >= 0 (0 = không giới hạn).`
+  } else if (!Number.isInteger(m.gioi_han) || m.gioi_han < 1 || m.gioi_han > t.tuanToiDa) return `Giới hạn tuần ${m.ma} phải trong 1..${t.tuanToiDa}.`
   const gd = Number(m.giao_dich_duoc) === 1 || m.giao_dich_duoc === true
   if (gd || m.han_ngay !== 0 || m.nhom_xoay !== 0) return 'Món tăng tốc: không giao dịch, không hạn, luôn bán.'
   return null

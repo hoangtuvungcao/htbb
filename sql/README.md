@@ -135,7 +135,16 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
 17. `them_chi_so_vps.sql` (31/10/2026, trang `/admin/he-thong` thẻ VPS): bảng `tob_chi_so_vps` — web lấy mẫu CPU / RAM / swap /
     đĩa / mạng toàn máy mỗi 2 giây, ghi một dòng mỗi phút mỗi máy (`may` = hostname), giữ 7 ngày. Web tự tạo bảng nếu thiếu
     (`SQL_TAO_BANG_VPS` ở `web/server/utils/vpsThuan.ts`, `web/tests/chi-so-vps.test.ts` so khớp với phần A + B). Phần A cũng có.
-18. `sua_gia_thuoc.sql` (01/11/2026): giá cửa sổ thuốc Chansey / Kecleon (`data_potion` 1–6) 100 / 500 / 800 xu (80 / 300 /
+18. `them_doi_luong.sql` (31/10/2026, chủ game, `docs/thiet-ke-game.md` 9.1): bảng đổi lượng → lượng khoá / xu và sàn
+    lượng ↔ xu (`tob_doi_tien_ngay`, `tob_doi_luong_log`, `tob_ti_gia_luong_xu`, `tob_san_luong_*`); máy chủ tự tạo nếu thiếu
+    (`DoiLuongDb.DDL`). Khoá danh mục `doi_luong.*` / `doi_luong_xu.*` / `san_luong.*` ở mục 2. `server/test/KiemDoiLuong`.
+19. `them_nang_luong_thanh_vien.sql` (31/10/2026, chủ game): Bùa thể lực không giới hạn (cửa hàng lượng 30 / Kecleon 25
+    lượng khoá), mô tả gói nạp +30 phút năng lượng (chỉ đổi dòng còn mô tả mặc định cũ). Khoá `exp.nang_luong_*_phut` /
+    `tang_toc.bua_*` ở mục 2. `server/test/KiemNangLuongThanhVien`.
+20. `sua_tien_te_cua_hang.sql` (31/10/2026, kiểm loại tiền mọi vật phẩm đang bán): `data_shop_gia_lau_dai` dòng 116..125
+    (nguyên liệu cấp 4-5 khoá) ghi đúng `tien_moi = 2` (lượng khoá) như máy chủ đang trừ; giá không đổi. Phần A cũng có.
+    `server/test/KiemLoaiTienCuaHang`.
+21. `sua_gia_thuoc.sql` (01/11/2026): giá cửa sổ thuốc Chansey / Kecleon (`data_potion` 1–6) 100 / 500 / 800 xu (80 / 300 /
     1.000 HP) và 50 / 150 / 500 xu (Ether 160 / 600 / 2.000 PP) → 2 / 4 / 7 xu, nối chuỗi với thuốc cấp cao bằng xu
     (`com.htbb.pokemon.ThuocCapCao`, thiết kế 9.3). `UPDATE … AND price = <cũ>` (giá admin đã sửa giữ nguyên). Phần A cũng có.
 

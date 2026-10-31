@@ -13,6 +13,7 @@
 #    bash tools/phat-hanh/len-tat-ca.sh --bot              # cai / cap nhat dich vu bot AI (htbb-hlv-ai); so bot chinh o /admin/hlv-ai
 #    bash tools/phat-hanh/len-tat-ca.sh --dang-nhap-moi    # chuyen VPS sang may chu dang nhap moi (htbb-login.jar)
 #    bash tools/phat-hanh/len-tat-ca.sh --bo-suite         # bo bo test may chu tren may (KHONG khuyen)
+#    bash tools/phat-hanh/len-tat-ca.sh --cong-day-du      # cong kiem DAY DU (~1 gio, moi nhom) thay vi cong nhanh mac dinh
 #    bash tools/phat-hanh/len-tat-ca.sh --bo-cong-kiem     # bo cong kiem staging: phai GO DUNG "LEN KHONG KIEM"
 #    bash tools/phat-hanh/len-tat-ca.sh --co               # khong hoi lai truoc khi len production
 #
@@ -21,9 +22,11 @@
 #    JAVA8_HOME=...                JDK 8 cho build jar J2ME (mac dinh /usr/lib/jvm/java-8-openjdk-amd64)
 #    NODE22=/duong/node22/bin      Node >= 22 cho web (mac dinh tim trong ~/.nvm)
 #    HTBB_KEY_PROPERTIES=...       khoa ky APK (mac dinh ~/.htbb-keys/htbb-release.properties)
-#    LUONG=6                       so luong cong kiem staging (HOI_QUY_SONG_SONG)
+#    LUONG=<n>                     so lan bot cong kiem chay cung luc (STG_BOT_LAN_NHANH / STG_BOT_LAN tren VPS; mac dinh
+#                                  de cong kiem tu chon: nhanh 9, day du 4)
 #
-#  Thu tu: (1) build + kiem tren may -> (2) tai ung vien len staging + cong kiem (32 nhom bot) -> (3) production:
+#  Thu tu: (1) build + kiem tren may -> (2) tai ung vien len staging + cong kiem NHANH (~10 phut; --cong-day-du = 32 nhom
+#  ~1 gio) -> (3) production:
 #  sao luu + bao nguoi choi 62 giay + nang cap CSDL + jar moi (vps/len-production.sh) -> ban do cMap doi -> web ->
 #  client + trang tai game -> bot AI -> dang nhap moi. Buoc nao hong la DUNG, khong lam buoc sau.
 #  Khong bao gio in mat khau / bi mat. Log day du: ../len_tat_ca_logs/<gio>.log
@@ -35,13 +38,13 @@ cd "$GOC"
 [ -f tools/phat-hanh/may_chu.conf ] && . tools/phat-hanh/may_chu.conf
 SO=${PHIEN_BAN%%-*}
 
-CLIENT=1; WEB=1; MAYCHU=1; BOT=0; DANGNHAP=0; SUITE=1; CONGKIEM=1; HOI=1; CHIBUILD=0
+CLIENT=1; WEB=1; MAYCHU=1; BOT=0; DANGNHAP=0; SUITE=1; CONGKIEM=1; HOI=1; CHIBUILD=0; CONG_CHE_DO=nhanh
 for a in "$@"; do
     case "$a" in
         --bo-client) CLIENT=0 ;; --bo-web) WEB=0 ;; --bo-may-chu) MAYCHU=0 ;; --bot) BOT=1 ;;
         --dang-nhap-moi) DANGNHAP=1 ;; --bo-suite) SUITE=0 ;; --bo-cong-kiem) CONGKIEM=0 ;; --co) HOI=0 ;;
-        --chi-build) CHIBUILD=1 ;;
-        -h|--help) sed -n 2,30p "$0"; exit 0 ;;
+        --chi-build) CHIBUILD=1 ;; --cong-day-du) CONG_CHE_DO=day-du ;;
+        -h|--help) sed -n 2,33p "$0"; exit 0 ;;
         *) echo "Tham so la: $a (xem --help)"; exit 2 ;;
     esac
 done
@@ -52,7 +55,9 @@ SCP="scp -o ConnectTimeout=20"
 JAVA8_HOME=${JAVA8_HOME:-/usr/lib/jvm/java-8-openjdk-amd64}
 HTBB_KEY_PROPERTIES=${HTBB_KEY_PROPERTIES:-$HOME/.htbb-keys/htbb-release.properties}
 export JAVA8_HOME HTBB_KEY_PROPERTIES
-LUONG=${LUONG:-6}
+# LUONG cu (=6) tung duoc truyen thanh HOI_QUY_SONG_SONG=6 - bien do chi nhan 1 (song song) -> cong kiem chay TUAN TU.
+# Nay: chi dat so lan cung luc khi nguoi chay ghi ro LUONG.
+LUONG=${LUONG:-}
 SHA=$(git rev-parse --short HEAD)
 LOGD="$(dirname "$GOC")/len_tat_ca_logs"; mkdir -p "$LOGD"
 LOG="$LOGD/$(date +%Y%m%d_%H%M)_$SHA.log"
@@ -131,18 +136,24 @@ fi
 UV=/opt/htbb-staging/ung-vien-tatca
 if [ $MAYCHU = 1 ]; then
     if [ $CONGKIEM = 1 ]; then
-        buoc "2. Cong kiem staging ($LUONG luong, 32 nhom bot, ~45-60 phut)"
+        if [ "$CONG_CHE_DO" = nhanh ]; then
+            buoc "2. Cong kiem staging NHANH (bo nhom loi cot, ~10 phut; --cong-day-du = 32 nhom ~1 gio)"
+            CHO_GIAY=30; LAN_ENV=${LUONG:+STG_BOT_LAN_NHANH=$LUONG}
+        else
+            buoc "2. Cong kiem staging DAY DU (32 nhom bot, ~1 gio)"
+            CHO_GIAY=120; LAN_ENV=${LUONG:+STG_BOT_LAN=$LUONG}
+        fi
         git archive HEAD vps tools/pokemon/kiem_tai server/src | gzip > "$TAM/goi_$SHA.tgz"
         $SSH "$VPS" "mkdir -p $UV" || loi "khong ket noi duoc $VPS"
         $SCP server/htbb-server.jar sql/htbb.sql "$TAM/goi_$SHA.tgz" "$VPS:$UV/" >>"$LOG" 2>&1 || loi "tai ung vien len staging hong"
         $SSH "$VPS" "pgrep -f '^bash /opt/htbb/vps/staging/kiem-truoc' >/dev/null" && loi "dang co cong kiem khac chay tren staging"
         $SSH "$VPS" "cd /opt/htbb && tar --no-overwrite-dir -xzf $UV/goi_$SHA.tgz 2>/dev/null;
-            HOI_QUY_SONG_SONG=$LUONG setsid nohup bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh --jar $UV/htbb-server.jar \
+            $LAN_ENV setsid nohup bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh --$CONG_CHE_DO --jar $UV/htbb-server.jar \
             --sql $UV/htbb.sql --nguon /opt/htbb-staging/ung-vien/nguon --ghi-chu $SHA > /opt/htbb-staging/logs/cong-kiem-$SHA.log 2>&1 < /dev/null &" \
             || loi "khong chay duoc cong kiem"
         echo "   log tren VPS: /opt/htbb-staging/logs/cong-kiem-$SHA.log" | tee -a "$LOG"
         until $SSH "$VPS" "grep -q 'CONG KIEM: ' /opt/htbb-staging/logs/cong-kiem-$SHA.log" 2>/dev/null; do
-            sleep 120
+            sleep $CHO_GIAY
             echo "   $(date +%T) $($SSH "$VPS" "grep -cE '^ *DAT ' /opt/htbb-staging/logs/cong-kiem-$SHA.log" 2>/dev/null) nhom DAT, $($SSH "$VPS" "grep -cE '^ *HONG ' /opt/htbb-staging/logs/cong-kiem-$SHA.log" 2>/dev/null) HONG"
         done
         $SSH "$VPS" "grep -E '^ *HONG|CONG KIEM:' /opt/htbb-staging/logs/cong-kiem-$SHA.log | tail -12" | tee -a "$LOG"

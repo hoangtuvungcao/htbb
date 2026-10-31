@@ -547,11 +547,23 @@ tính). `NangLuong` + `ThongSoLauDai.NANG_LUONG_PHUT_NGAY` / `BAC_MET`:
 - Đổi ngày lúc 00:00 giờ máy chủ. Ghi đè được bằng khoá `exp.nang_luong_phut` / `exp.nang_luong_tich_phut` (bảng
   `cau_hinh`); thiếu dòng thì dùng 90 / 180 của code.
 - Trạng thái hiện ở Quầy đổi thưởng → Sổ tay huấn luyện → Năng lượng và tinh thông.
+- **Thưởng gói** (chủ game 31/10/2026): mỗi ngày cộng thêm phút 100% khi đang có **Thành viên HTBB** (+30,
+  `exp.nang_luong_thanh_vien_phut`), **Thẻ tháng** (+30, `exp.nang_luong_the_thang_phut`), **Vé mùa cao cấp** của mùa
+  hiện tại (+30, `exp.nang_luong_ve_mua_phut`) — cộng dồn, tối đa +90 (90 + 90 = 180 phút 100% khi đủ 3 gói). Chốt **một lần**
+  lúc khởi tạo năng lượng của ngày (lần hạ quái / mở Sổ tay / Tự động đánh / Kẹo hiếm đầu tiên trong ngày) theo gói còn hạn
+  lúc đó — mua giữa ngày thì áp dụng từ hôm sau. **Chỉ EXP** (xu / đá / đồ rơi vẫn theo phút gốc — nạp
+  tiền không bán xu), **không tích** sang hôm sau. Sau phần 100% (đã cộng thưởng) vẫn là 120 phút 20%, 120 phút 5%, rồi 0%.
+  Lưu `HoSoLauDai` khoá `n1` / `n2` / `n3`; Sổ tay ghi chi tiết "cơ bản + tích luỹ, Bùa thể lực, Thành viên HTBB, Thẻ
+  tháng, Vé mùa cao cấp". CSDL lỗi / tắt nạp = không cộng. Bot Huấn luyện viên AI không nhận. Kiểm
+  `server/test/KiemNangLuongThanhVien`.
+  Ảnh hưởng cân bằng: người cày ≥ 5 giờ / ngày có đủ 3 gói được ≈ +70% EXP quái so với người không gói (90 → 180 phút
+  100%); người chơi 60–90 phút / ngày gần như không chênh. Chỉnh từng khoá trên web (0 = tắt) nếu mô phỏng / thực tế lệch.
 
 ### 3.4 Vật phẩm tăng tốc
 
 Mua **thời gian**, không mua sức mạnh: chỉ cho EXP — không xu, không đá, không vật phẩm, không đổi tỉ lệ rơi, không chỉ
-số (`com.htbb.pokemon.TangToc`, `real.TangTocGame`). Mỗi món có **bản cao cấp** (bán bằng lượng ở Cửa hàng lượng, lượng
+số (`com.htbb.pokemon.TangToc`, `real.TangTocGame`). Ngoại lệ từ 31/10/2026: **Bùa thể lực** cho bậc bùa EXP 50% + xu / đá /
+đồ rơi 50%, không giới hạn, ngoài trần điểm (xem cuối mục). Mỗi món có **bản cao cấp** (bán bằng lượng ở Cửa hàng lượng, lượng
 bị đốt; tắt bằng `nap.tang_toc.bat`) và **bản khoá** (kiếm bằng chơi). Cả hai đều khoá (không giao dịch) và **dùng chung
 một trần**.
 
@@ -559,7 +571,7 @@ một trần**.
 |---|---|---|---|---|
 | Vé EXP ×1,5 (30 phút) | 1250 / 1251 | 15 | EXP hạ quái ×1,5 trong 30 phút **đánh quái**, nhân sau năng lượng | 60 phút vé / ngày; không trộn ×1,5 với ×2 đang chạy |
 | Vé EXP ×2 (30 phút) | 1252 / 1253 | 30 | như trên, ×2 | chung 60 phút vé |
-| Bùa thể lực | 1254 / 1255 | 45 | +60 phút năng lượng 100% hôm nay, **chỉ EXP**, không tích sang hôm sau | 1 / ngày |
+| Bùa thể lực | 1254 / 1255 | — (không tính) | +60 phút **bậc bùa** hôm nay (EXP 50%, xu / đá / đồ rơi 50%), cộng dồn, không tích sang hôm sau | **không giới hạn** |
 | Phiếu ủy thác luyện tập (1 giờ) | 1256 / 1257 | 12 | Treo offline: thoát game, đăng nhập lại nhận 20% EXP của 1 giờ đánh quái ở cấp lúc thoát | 3 giờ / ngày (+1 với Thẻ tháng), đặt trước ≤ 4 giờ |
 | Kẹo hiếm | 1214 | 30 | EXP bằng 30 phút đánh quái, **trừ 30 phút năng lượng 100%** | 2 / tuần |
 
@@ -567,8 +579,31 @@ một trần**.
   **dùng**. Bot không vượt được trần.
 - **Không dùng ở cấp 100** (EXP vượt cấp thành tinh thông = sức mạnh).
 - Nguồn bản khoá: nhiệm vụ tuần (2/2 → 2 vé ×1,5 + 1 phiếu ủy thác), lịch đăng nhập (ngày 3 → vé ×1,5, ngày 7 → bùa),
-  vé mùa (nhánh miễn phí có nhiều điểm tăng tốc hơn nhánh cao cấp), Kecleon (bằng lượng khoá, 2 / tuần mỗi món). Người không
+  vé mùa (nhánh miễn phí có nhiều điểm tăng tốc hơn nhánh cao cấp), Kecleon (bằng lượng khoá, 2 / tuần mỗi món: vé ×1,5 khoá
+  15, phiếu ủy thác khoá 10; Bùa thể lực khoá 25 lượng khoá không giới hạn — dòng 130, thêm 31/10/2026). Người không
   nạp dùng khoảng 40–60% trần mỗi tuần.
+- **Bùa thể lực** (chủ game 31/10/2026: "không giới hạn sử dụng", rồi "EXP và xu 50%, giá vừa phải"):
+  - **Bán**: bản cao cấp 1254 ở NPC Tổng Quản → Cửa hàng và nạp → Cửa hàng lượng → Tăng tốc — **30 lượng, không giới hạn**
+    (`nap_cua_hang.gioi_han = 0`; chỉ hiện khi `sv.nap_tien=1` và `nap.tang_toc.bat=1`); bản khoá 1255 ở Quầy đổi thưởng →
+    Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm → Lượng khoá (Kecleon) — **Bùa thể lực khoá 25 lượng khoá**, không giới hạn
+    (`gioi_han_tuan = 0`). Admin đặt lại trần mua ở cột giới hạn của dòng cửa hàng.
+  - **Dùng**: không giới hạn số bùa / ngày (khoá `tang_toc.bua_ngay_toi_da`, mặc định 0 = không giới hạn) và **không tính**
+    vào trần 60 / 210 điểm (`TangToc.TINH_TRAN`) — vé / ủy thác / kẹo giữ nguyên trần. Vẫn không dùng ở cấp tối đa (EXP vượt
+    cấp thành tinh thông).
+  - **Hiệu ứng**: mỗi bùa +60 phút **bậc bùa** của hôm nay, nằm **sau** phần 100% và **trước** bậc mệt (100% → bậc bùa →
+    120 phút 20% → 120 phút 5% → 0%). Ở bậc bùa: **EXP 50%** (khoá `tang_toc.bua_exp_phan_tram`), **xu 50%** (`tang_toc.bua_xu_phan_tram`; cả hai
+    chỉnh trên web, áp dụng ngay, 0..100); đá
+    và đồ rơi dùng chung hệ số với xu (`RoiLauDai` lấy một hệ số cho xu / đá / bảng rơi). Bùa cộng dồn, phần chưa đánh hết
+    **không tích** sang hôm sau. Bùa dùng trước lần hạ quái đầu tiên trong ngày được giữ chờ, vào bậc bùa khi ngày khởi tạo.
+    Lưu `HoSoLauDai` `ze` / `zf` (phút bậc bùa / phút chờ); hồ sơ cũ (bùa 60 phút đã nằm trong phần 100%) được đổi sang bậc
+    bùa ở lần dùng bùa kế tiếp.
+  - **Kiểm giá xu** (tỷ giá tham chiếu 1 lượng = 1% thu nhập 1 giờ): 60 phút bậc bùa **thay** 60 phút lẽ ra ở bậc mệt 20%,
+    nên xu **tăng thêm** mỗi bùa = 60 phút × (50% − 20%) = **0,3 giờ thu nhập** cho 30 lượng = đúng 1% / lượng (không rẻ
+    hơn). Tính thô (không trừ phần 20%) là 0,5 giờ = 1,67% / lượng — chỉ xảy ra khi người chơi vốn không đánh tiếp sau phần
+    100%; vẫn cần 1 giờ đánh quái thật cho mỗi bùa. Bản khoá 25 lượng khoá ra cùng lượng xu (lượng khoá không mua được bằng
+    tiền). Nếu thực tế lệch: hạ `tang_toc.bua_xu_phan_tram` trên web.
+  - EXP: bùa 30 lượng = 30 phút EXP tương đương (60 × 50%) — 1 lượng / phút EXP, đắt hơn vé ×1,5 (20 lượng ≈ 15 phút EXP
+    thêm) một chút nhưng không bị trần.
 - Mục tiêu đã kiểm bằng mô phỏng: mua tối đa nhanh hơn người không dùng ≤ 40% cùng giờ chơi; sức mạnh cùng cấp chênh
   ≤ 1%.
 - Phân biệt với **Tự động đánh** (mục 8.2): Tự động đánh chỉ chạy khi online và chịu nguyên luật năng lượng; phiếu ủy
@@ -1721,9 +1756,15 @@ Một tính năng **Tự động đánh** do **máy chủ** điều khiển thay
    miễn phí còn lại + kho, "tối đa" = trần ngày + kho, kèm dòng "Kho giờ treo: …" khi đang tắt — client cũ (0.9.21 /
    0.9.22 / J2ME) không cần sửa. Vé từ giftcode luôn **khoá**, xếp chồng một ô (`Item.quanlity`), giá NPC 0. Nguồn: giftcode
    (`TREO400`: 40 vé = 400 giờ); không bán. `real.TuDongGame.dungVeTreo` / `traoVeTreo`, kiểm `server/test/KiemVeTreo`.
+   **Khi năng lượng huấn luyện 0%** (chủ game 31/10/2026; tính cả Bùa thể lực và thưởng gói): Tự động đánh **không tự
+   dừng**, máy chủ báo **một lần / ngày** "Đã hết năng lượng huấn luyện hôm nay — đánh quái không còn EXP/xu. Dùng Bùa thể
+   lực hoặc nghỉ tới 0 giờ." (thẻ thông báo + chữ trên đầu). Giờ miễn phí hôm nay **vẫn tính**, nhưng **không trừ kho** giờ
+   treo: hết giờ miễn phí lúc 0% thì dừng với lý do riêng (`TuDong.TAT_HET_GIO_GIU_KHO`, kho giữ nguyên) và bật lại lúc
+   0% chỉ còn kho bị từ chối — không có giờ treo vô hạn khi 0% (giữ trần giờ / ngày chống bot ở mục 2). Dùng Bùa thể lực
+   (năng lượng > 0%) hoặc qua 0 giờ thì kho dùng lại như cũ. Kiểm `server/test/KiemNangLuongThanhVien`.
 3. **Điều kiện bật**: chỉ ở bãi luyện tập có Pokémon hoang dã (không thành phố, nhà, sàn đấu, chiến trường, khu Chiếm Gym),
    không đang PK, không gục, còn giờ.
-4. **Tự dừng khi**: hết giờ, đổi bản đồ, ra khỏi bán kính (`tu_dong.ban_kinh` 240 px + 64 px), gục, và nếu
+4. **Tự dừng khi**: hết giờ (kể cả hết giờ miễn phí lúc năng lượng 0% — không trừ kho), đổi bản đồ, ra khỏi bán kính (`tu_dong.ban_kinh` 240 px + 64 px), gục, và nếu
    `tu_dong.tat_khi_pvp=1`: bị Pokémon khác tấn công, tự đánh người, bật PK, vào sàn đấu / Gym / chiến trường, đánh boss.
 5. **Chống bot**: nhịp đánh / thuốc / nhặt theo cửa sổ trượt (`tu_dong.nhip_*`); vượt thì bỏ lệnh và đếm vi phạm, đủ
    `tu_dong.vi_pham_tat` (20) thì dừng + ghi nghi vấn. Với mọi người chơi, nhịp đánh trên `tu_dong.nhip_nguoi` chỉ ghi nghi
@@ -1763,8 +1804,47 @@ hồi phục, vùng đánh 4..20 ô, tự hồi sinh (tắt / thuốc thường 
 | Đồng | Giao dịch | Nguồn | Dùng cho |
 |---|---|---|---|
 | **Xu** | được, qua chợ (thuế 6% + phí đăng 1%, đốt) | quái (rơi 30% số lần, theo lệch cấp × năng lượng), nhiệm vụ, ≤ 25% ngân sách sự kiện, phân rã | thuốc, sửa đồ, dịch chuyển, đồ theo bậc, **nâng cấp**, **ngọc hệ**, học chiêu, hồi sinh |
-| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục | bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá |
-| **Lượng** | được (chuyển, phí 5%) | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật | **chỉ** trang trí, tiện ích (đổi tên, mở rộng túi), bản cao cấp tăng tốc |
+| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục; **đổi từ lượng** (1 : 1) | bản **kiếm được trong game**: bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá, đổi hệ đồ, hồi sinh tại chỗ; **đồ mua bằng lượng khoá bị khoá** (không giao dịch) |
+| **Lượng** | được: chuyển ở NPC (phí 5%) và **sàn lượng ↔ xu**; không qua cửa sổ giao dịch | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật; mua trên sàn bằng xu | **tiền tốt nhất** (chủ game 31/10/2026): mua được **mọi thứ lượng khoá mua được** (cùng giá, đồ **không khoá**) + đồ đẹp / chỉ số cao cấp (trang bị thuê NPC, nguyên liệu Persian, Shop đặc biệt VIP, thú cưỡi, nâng cấp thú cưỡi, áo hoá Hỏa Kỳ Lân, đồ sự kiện), trang trí, tiện ích; không bao giờ kém lượng khoá; **đổi ra lượng khoá / xu** (một chiều, 9.1 Đổi lượng) |
+
+**Luật lượng ↔ lượng khoá (31/10/2026):** "lượng (nạp) mua được mọi thứ lượng khoá mua được + đồ đẹp / chỉ số cao cấp; lượng
+khoá là bản kiếm được trong game, đồ mua bị khoá". Mọi chỗ giá lượng khoá (Cửa hàng đặc biệt dòng "[Lượng khoá]", Kecleon,
+bùa nâng cấp, đổi hệ, hồi sinh) trừ **lượng khoá trước, thiếu thì trừ lượng cùng giá** (`Char.truLuongKhoaRoiLuong`), báo rõ
+loại tiền đã trừ; đồ mua bằng lượng không khoá (trừ đồ gắn tài khoản tự nhiên, vd Bản đồ khoá). Mọi phép trừ lượng / lượng
+khoá kiểm-và-trừ trong một bước (`Char.truNeuDu`, `real.PhiLuong`).
+
+**Đổi lượng (chủ game 31/10/2026, `real.DoiLuongGame`, luật thuần `com.htbb.pokemon.DoiLuong`)** — NPC Tổng Quản → *Đổi lượng
+(khoá / xu / sàn)*, và web `/account`. Chỉ từ **lượng thường trong người** (không dùng lượng trong kho, không bao giờ dùng
+lượng khoá); **không có đường nào ra lượng** từ hệ thống (lượng khoá / xu không đổi ngược):
+
+```
+lượng ──(1 : doi_luong.ti_le = 1, không trần)──────────────────────────────► lượng khoá
+lượng ──(tỉ giá chung hôm nay, ≤ doi_luong_xu.tran_ngay = 5.000 / tài khoản / ngày)──► xu (IN XU, đếm xu vào)
+lượng ◄──── sàn: lệnh bán / mua giữa người chơi, phí 5% xu bên mua bị đốt ────► xu (KHÔNG in xu)
+```
+
+| Đường | Luật | Chống lạm dụng / an toàn |
+|---|---|---|
+| Lượng → lượng khoá | 1 lượng = `doi_luong.ti_le` (1) lượng khoá, một chiều | trừ + cộng trong một lần giữ khoá tiền (`Char.truNeuDu`), lưu ngay; tỉ lệ đổi giữa chừng → từ chối |
+| Lượng → xu (hệ thống) | **một tỉ giá chung toàn máy chủ mỗi ngày**: 1 lượng = làm tròn(`doi_luong_xu.phan_tram_gio` (1)% × thu nhập 1 giờ ở **cấp trung vị** người chơi thật — không bot — hoạt động 7 ngày), tính lúc 00:00 (giờ VN) và đóng băng cả ngày (`tob_ti_gia_luong_xu`, `INSERT IGNORE`) | trần `doi_luong_xu.tran_ngay` (5.000) lượng / **tài khoản** / ngày (`tob_doi_tien_ngay`, tăng có điều kiện trong một câu UPDATE); xu sinh ra đếm vào `xu_vao` (`tob_kinh_te_ngay`) + thống kê `doi_luong_xu` |
+| Sàn lượng ↔ xu | lệnh bán (ký quỹ lượng thường) / mua (ký quỹ xu + phí); khớp giá tốt nhất rồi sớm nhất, giá khớp = giá lệnh đang chờ; lệnh hết hạn sau 24 giờ; giá trong 50%–500% tỉ giá hệ thống hôm nay; ≤ 10 lệnh mở / Pokémon | trần `san_luong.tran_ngay` (50.000) lượng đặt lệnh / tài khoản / ngày; phí `san_luong.phi_phan_tram` (5)% xu bên mua **bị đốt**; cổng chống clone như chợ ký gửi (cấp, tuổi tài khoản, giờ chơi, cùng thiết bị / IP); không tự khớp lệnh của cùng tài khoản; bot (huấn luyện viên AI) không dùng |
+
+Nguyên tử: ký quỹ trừ khỏi nhân vật và **lưu trước**, rồi mới ghi lệnh + khớp trong **một giao dịch** CSDL (dòng đối diện
+`FOR UPDATE`) — sập máy giữa chừng chỉ có thể làm người chơi mất, không bao giờ nhân đôi. Mọi khoản cộng (xu bán được,
+lượng mua được, hoàn ký quỹ) đi qua hàng đợi `tob_san_luong_tra`, giao khi nhân vật online (chốt 0 → 1 rồi mới cộng).
+Web `/account` chỉ chèn lệnh vào `web_lenh_nhan_vat` (loại `doi_luong_khoa` / `doi_luong_xu`): game chốt dòng rồi đổi
+trên RAM — online đổi ngay, offline đổi ngay khi vào game (huỷ được trước lúc đó). Web **không ghi** `tob_char` (lượng
+khoá nằm trong `pInfo`, game nạp / lưu nhân vật không khoá dòng). Nhật ký: `tob_doi_luong_log`, `tob_san_luong_khop`,
+thống kê chi tiêu tuần `tob_log_use_luong` (`doi_luong_khoa`, `doi_luong_xu`, `san_luong_phi` — hiện ở `/admin/kinh-te`).
+Kiểm: `server/test/KiemDoiLuong`, `web/tests/doi-luong.test.ts`.
+
+**Đồng tiền → kênh chuyển giữa người chơi:**
+
+| Đồng | Cửa sổ giao dịch 1-1 | NPC chuyển | Sàn | Ghi chú |
+|---|---|---|---|---|
+| Xu | **có** (0.9.27: ô xu trong cửa sổ giao dịch, trần ngày `thue.tran_chuyen_xu_gio` × thu nhập 1 giờ / tài khoản, `real.GiaoDichXu`) | không | có (bên mua trả xu) | chợ ký gửi / chợ trang trí / chợ sinh thái trả bằng xu |
+| Lượng | **không** | có (Meowth / Tổng Quản *Chuyển lượng*, phí 5%) | có (lệnh bán / mua) | |
+| Lượng khoá | **không** | **không** | **không** | không đường nào (9.6) |
 
 **Đã bỏ hẳn** khi bật `sv.lau_dai`: lượng / lượng khoá rơi từ quái; quà 10 triệu xu ở cấp 35 (nay 5.000 xu + 6 lượng khoá + 10 nguyên liệu khoá mỗi loại cấp 6 cho mọi chế độ, xem 9.6);
 giftcode ra lượng hoặc xu; mốc nạp; hoàn xu khi tiêu lượng; VIP theo nạp; shop lượng bán đồ có chỉ số; kẹo EXP cố định;
@@ -1778,8 +1858,11 @@ cộng lượng khoá hằng ngày cho mọi nhân vật cấp ≥ 40.
 | Nhiệm vụ | ~9% | Thuốc + sửa đồ | ~23% |
 | Sự kiện (25% ngân sách) | ~1% | Mua đồ theo bậc | ~4% |
 | Phân rã | ~0,5% | Ngọc hệ | ~4% |
-| | | Dịch chuyển | ~3% |
-| | | Học chiêu, thuế chợ, hồi sinh, phí hệ sinh thái | phần còn lại |
+| Đổi lượng → xu (hệ thống, 31/10/2026; ≤ 5.000 lượng / tài khoản / ngày × 1% giờ thu nhập trung vị) | theo lượng đem đổi | Dịch chuyển | ~3% |
+| | | Học chiêu, thuế chợ, hồi sinh, phí hệ sinh thái, **phí sàn lượng ↔ xu 5%** | phần còn lại |
+
+Lượng đổi ra lượng khoá / xu rời lưu thông (đếm như lượng tiêu khi bật nạp). Sàn lượng ↔ xu không sinh xu (chỉ chuyển giữa
+hai người), phí bị đốt.
 
 Mục tiêu: xu ra / vào 90–105%, lượng khoá ~95%; lượng tích chậm vì nguồn nhỏ và chỉ mua trang trí.
 
@@ -1862,11 +1945,16 @@ bản đồ / sự kiện đó nếu đỏ.
 - **Cửa hàng** (Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm, `real.CuaHangLauDai`): luật "không vật phẩm mồ côi" — mọi dòng **chỉ ra vật phẩm, không bao
   giờ ra xu / lượng / lượng khoá**. Trang bị bằng xu (Bronzong, 1,5 giờ), thuốc bằng xu (Chansey; thuốc cấp cao
   3.000–15.000 HP / PP mở theo cấp ở Chansey và Kecleon, 9.3), bùa / thuốc hiếm bằng lượng khoá có giới hạn tuần (Kecleon),
-  trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật).
-- **Nạp tiền không bán sức mạnh** (tắt mặc định, `sv.nap_tien` + cấu hình web): bán gói lượng, Thẻ tháng, Vé mùa cao cấp,
-  Thành viên, và bằng lượng trong game là bản cao cấp vật phẩm tăng tốc (chung trần với bản khoá). **Không bán** chỉ số, đồ,
-  đá, tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Mục tiêu mô phỏng: người nạp chênh sức mạnh cùng giờ chơi
-  ≤ 5%. Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
+  trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật). Dòng giá lượng khoá (Kecleon) thiếu lượng
+  khoá thì trừ lượng cùng số, đồ nhận không khoá (31/10/2026).
+- **Nạp tiền** (tắt mặc định, `sv.nap_tien` + cấu hình web): bán gói lượng, Thẻ tháng, Vé mùa cao cấp, Thành viên. Chủ game
+  31/10/2026 đổi luật: lượng nạp là tiền **tốt nhất** - mua được mọi thứ lượng khoá mua được (đồ không khoá) và đồ đẹp / chỉ
+  số cao cấp đang bán bằng lượng (trang bị thuê NPC 24, nguyên liệu cấp 4-5 Persian, Shop đặc biệt VIP, thú cưỡi và nâng cấp
+  thú cưỡi, ảo hoá Hỏa Kỳ Lân). Cổng nạp không bán trực tiếp tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Lượng nạp **được phép** mua đồ mạnh hơn (đồ chỉ số cao
+  cấp, nâng cấp thú cưỡi...), đồ mua bằng lượng không khoá; còn **xu / cày quái vẫn là đường tiến chính** (nâng cấp +1..+15,
+  ngọc hệ, đồ theo bậc chỉ bằng xu + đá). Bỏ mục tiêu cũ "người nạp chênh sức mạnh cùng giờ chơi ≤ 5%" (31/10/2026). Trần nạp, hoàn tiền, giấy phép, vận hành cổng thanh toán: [van-hanh.md](van-hanh.md).
+- **Đổi lượng** (9.1): lượng thường → lượng khoá 1 : 1 không trần; lượng → xu theo tỉ giá chung hằng ngày (≤ 5.000 lượng /
+  tài khoản / ngày); sàn lượng ↔ xu giữa người chơi. Xu đổi ra từ hệ thống bị trần ngày theo tài khoản.
 
 ---
 

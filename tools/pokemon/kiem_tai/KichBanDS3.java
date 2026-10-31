@@ -300,7 +300,9 @@ class KichBanDS3 {
             b.gm("smn " + b.ten + " 50000000 0 20000", 800);
             b.gm("gem " + b.ten + " 8 300 0", 800);
             b.gm("gem " + b.ten + " 0 20 0", 800);
-            for (int i = 0; i < 25; i++) aitMon(b, 1034, 5); // Bui sao (nguyen lieu +11..+15 bac so cap)
+            // Bui sao (nguyen lieu +11..+15 bac so cap, 1 / lan thu): 25 tung het o +14 khi xui (cong kiem 31/10/2026: 40 lan,
+            // 25 that bai) -> 45
+            for (int i = 0; i < 45; i++) aitMon(b, 1034, 5);
             b.lamMoi();
             int plusMax = 0, lan = 0, tc = 0, tb = 0, rot = 0;
             boolean pityTang = false, sai = false;

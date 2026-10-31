@@ -57,6 +57,10 @@ STG_DB_DU_TRU=${STG_DB_DU_TRU:-60}
 #   STG_BOT_JAVA  tuy chon JVM moi bot: VPS 4 GB (production + MariaDB + staging 1.2 GB) - JVM mac dinh lay toi 1/4 RAM
 #                 cho MOI bot; nhieu bot cung luc phai co tran heap.
 STG_BOT_LAN=${STG_BOT_LAN:-4}
+# Cong kiem NHANH (mac dinh, hoi_quy.conf "@nhanh lan"): 10 lan ngan (~5 phut) chay cung luc. Do tren may dev (31/10/2026):
+# dinh ket noi cua user staging 33 voi 9 lan (< 48 MAX_USER_CONNECTIONS); canh gac STG_DB_DU_TRU van giu cho production.
+# STG_BOT_LAN_NHANH < so lan @nhanh -> lan du doi lan khac xong (cham hon, khong sai): VPS qua tai thi ha xuong.
+STG_BOT_LAN_NHANH=${STG_BOT_LAN_NHANH:-10}
 STG_BOT_JAVA=${STG_BOT_JAVA:--Xmx384m -XX:+UseSerialGC}
 
 # Lenh mysql: mac dinh root qua unix_socket (Ubuntu). May dev: MYSQL="mysql -S /duong/sock -uroot".

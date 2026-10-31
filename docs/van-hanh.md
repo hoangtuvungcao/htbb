@@ -118,6 +118,29 @@ máy (`vps-db-tai-ve.bat` + `vps-db-nap-vao-local.bat`). Tên máy `htbb-vps` kh
 
 ---
 
+### Lên bản mới: cổng kiểm staging (bắt buộc trước production)
+
+Game server chỉ lên production qua `vps/len-production.sh`, và lệnh đó chỉ chạy khi **cổng kiểm staging DAT** cho đúng
+sha256 jar + SQL trong 24 giờ (chi tiết: [trien-khai.md mục 4.4](trien-khai.md)). Từ 31/10/2026 có hai chế độ, **cả hai
+DAT đều lên production được**; kết quả ký ghi `che_do=nhanh|day_du`:
+
+| Chế độ | Khi nào | Thời gian | Chạy gì |
+|---|---|---|---|
+| `--nhanh` (**mặc định**, cổng chuẩn) | mọi lần lên bản | ~10 phút tổng (làm mới staging ~2 phút + bot ~6–7 phút) | kế hoạch `@nhanh` cuối `tools/pokemon/kiem_tai/hoi_quy.conf`: đăng nhập, bản đồ, người chơi thật mới (đăng ký → vào game → hạ quái → đăng nhập lại), chiến đấu, vật phẩm, xã hội, bất thường tiền / đồ (đủ 11 kịch bản), Pokémon người thường, hỗn loạn 1 phút, cập nhật bản, tải nhẹ — 10 làn song song |
+| `--day-du` | bản lớn, đổi hệ thống Gym / cốt truyện / nhiệm vụ / cổng bản đồ / PvP xếp hạng / đồng hồ ảo, hoặc khi nghi ngờ | ~1 giờ bot | mọi nhóm (`@lan` / `@rieng`) |
+
+```bash
+sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh --jar <jar> --sql <sql>            # nhanh (mặc định)
+sudo bash /opt/htbb/vps/staging/kiem-truoc-khi-len.sh --day-du --jar <jar> --sql <sql>   # đầy đủ
+bash tools/phat-hanh/len-tat-ca.sh                  # từ máy dev: build + cổng nhanh + lên production
+bash tools/phat-hanh/len-tat-ca.sh --cong-day-du    # ... với cổng đầy đủ
+```
+
+Giữ nguyên ở cả hai chế độ: chạy lại **một** lần nhóm hỏng vì mục bất định đã biết (`hoi_quy_bat_dinh.txt`; bản rút gọn
+`<nhóm>_nhanhN` dùng chung danh sách của nhóm gốc), staging còn sống sau bot, không Exception / Error mới trong log
+(trừ `vps/staging/loi-bo-qua.txt`), canh kết nối CSDL. `--nhom "…"` (gỡ lỗi) = `DAT_MOT_PHAN`, không lên production
+được. Thử trước trên máy dev: `htbb_cong_cu/kiem_truoc.sh <commit>` (mặc định nhanh, `--day-du` cho đầy đủ).
+
 ## 2. Nhật ký (log)
 
 | Tệp / nguồn | Nội dung |
@@ -760,11 +783,44 @@ cũng chung máy); xử lý bằng cấm theo máy nếu chắc chắn.
 
 ---
 
-## 11. Email (Gmail OAuth)
+## 11. Email (Gmail OAuth hoặc SMTP mật khẩu ứng dụng)
 
-Web gửi thư (quên mật khẩu, đổi email/mật khẩu) qua Gmail API bằng refresh token, quyền **duy nhất** `gmail.send`
-(không đọc được hộp thư). Thiếu một trong bốn biến `HTBB_GMAIL_CLIENT_ID`, `HTBB_GMAIL_CLIENT_SECRET`,
-`HTBB_GMAIL_REFRESH_TOKEN`, `HTBB_GMAIL_SENDER` = tắt gửi mail. Tên người gửi: `HTBB_MAIL_FROM_NAME`.
+Web gửi thư (quên mật khẩu, đổi email/mật khẩu) theo **một trong hai đường** (`web/server/utils/guiMail.ts`):
+
+| Đường | Bật khi | Ghi chú |
+|---|---|---|
+| A. Gmail API (OAuth) — **ưu tiên** | đủ bốn biến `HTBB_GMAIL_CLIENT_ID`, `HTBB_GMAIL_CLIENT_SECRET`, `HTBB_GMAIL_REFRESH_TOKEN`, `HTBB_GMAIL_SENDER` | quyền duy nhất `gmail.send`; cài theo bước 1–3 dưới |
+| B. SMTP + mật khẩu ứng dụng | đường A chưa đủ **và** có `HTBB_SMTP_USER` + `HTBB_SMTP_PASS` | nhanh nhất để bật; mục 11.1 |
+
+Không đường nào đủ = tắt gửi mail (trang Quên mật khẩu báo "chưa bật"). Tên người gửi: `HTBB_MAIL_FROM_NAME`.
+
+### 11.1 Đường B — Gmail SMTP với mật khẩu ứng dụng
+
+1. Tài khoản Gmail gửi thư phải bật **Xác minh 2 bước**; rồi vào https://myaccount.google.com/apppasswords tạo mật
+   khẩu ứng dụng (tên tuỳ ý, VD `htbb-web`). Google hiện 16 ký tự theo nhóm 4 (`abcd efgh ijkl mnop`) — dán nguyên
+   cũng được, web tự bỏ khoảng trắng.
+2. Đặt biến (GitHub Secrets → deploy web gộp vào `/etc/htbb/htbb.env`, hoặc sửa thẳng file đó, root 0600), rồi
+   `sudo systemctl restart htbb-web`:
+
+| Biến | Bắt buộc | Mặc định / ý nghĩa |
+|---|---|---|
+| `HTBB_SMTP_USER` | có | địa chỉ Gmail đăng nhập SMTP |
+| `HTBB_SMTP_PASS` | có | mật khẩu ứng dụng (**bí mật**, không phải mật khẩu Gmail) |
+| `HTBB_SMTP_HOST` | không | `smtp.gmail.com` |
+| `HTBB_SMTP_PORT` | không | `465` (TLS ngay từ đầu). Cổng khác (VD `587`) = kết nối thường + **bắt buộc** STARTTLS; máy chủ không có STARTTLS thì web từ chối gửi mật khẩu |
+| `HTBB_SMTP_FROM` | không | địa chỉ "From"; trống → `HTBB_GMAIL_SENDER` → `HTBB_SMTP_USER`. Gmail chỉ giữ địa chỉ khác `HTBB_SMTP_USER` nếu đó là bí danh "Send mail as" đã xác minh, nếu không sẽ tự đổi về tài khoản đăng nhập |
+
+3. Thử bằng Quên mật khẩu với tài khoản của bạn. Lỗi ghi `journalctl -u htbb-web | grep -i smtp` (không bao giờ có
+   mật khẩu hay chuỗi AUTH): `535` = sai mật khẩu ứng dụng / chưa bật Xác minh 2 bước / mật khẩu đã bị thu hồi (đổi
+   mật khẩu Gmail là thu hồi hết) → tạo lại; `khong ket noi duoc ... 465` = VPS chặn cổng ra → thử `HTBB_SMTP_PORT=587`.
+   Gmail cá nhân giới hạn ~500 thư/ngày — đủ cho quên mật khẩu.
+
+Máy khách SMTP tự viết bằng `node:tls` (`web/server/utils/mailThuan.ts`, không thêm thư viện), test:
+`web/tests/gui-mail.test.ts` (máy chủ SMTP giả trên 127.0.0.1).
+
+### 11.2 Đường A — Gmail API (OAuth)
+
+Quyền **duy nhất** `gmail.send` (không đọc được hộp thư).
 
 **Bước 1 — Google Cloud Console** (một lần, đăng nhập đúng tài khoản Gmail sẽ gửi thư):
 
@@ -935,7 +991,7 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 | `/admin/he-thong` (khối Bật/tắt) báo watcher không sống | `sudo crontab -l` | cài cron `dieu-khien-server.sh` (mục 1) |
 | `/admin/naptien` có hộp đỏ | đọc danh sách lý do | thiếu/yếu biến môi trường hoặc chưa có giấy phép — đúng thiết kế (fail closed) |
 | Người chơi báo không nhận giftcode | `tob_giftcode` (bat, han, da_dung/tong_luot, cap), `tob_giftcode_log`, log `[GIFTCODE]` | xem luật 8.1; tài khoản chưa kích hoạt có thể bị khoá tính năng `giftcode` |
-| Mail quên mật khẩu không tới | `journalctl -u htbb-web \| grep -i gmail` | đủ 4 biến `HTBB_GMAIL_*`? `invalid_grant` → lấy lại refresh token (mục 11) |
+| Mail quên mật khẩu không tới | `journalctl -u htbb-web \| grep -iE 'gmail\|smtp'`; tài khoản có email chưa (`team_user.email`)? | đủ 4 biến `HTBB_GMAIL_*` hoặc `HTBB_SMTP_USER`+`PASS`? `invalid_grant` → lấy lại refresh token; SMTP `535` → tạo lại mật khẩu ứng dụng (mục 11) |
 
 ---
 
@@ -944,8 +1000,8 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 Bot chơi như người chơi thật để máy chủ ít người vẫn có đối thủ và bạn đồng hành (chủ game duyệt 31/10/2026). Mỗi bot là
 một tài khoản thường (cột `account.team_user.la_bot = 1`, không gửi xuống client), đăng nhập qua giao thức thật như một
 client (bộ bot `tools/pokemon/kiem_tai` + `tools/pokemon/hlv_ai`), không GM, không lệnh đặc biệt: máy chủ áp mọi luật như
-người chơi (chống spam, khoá bản đồ, chống clone, cấp mở tính năng…). Mặc định tên bot hiển thị như người chơi bình thường ở mọi chỗ người
-chơi thấy tên (trên đầu, chat, tổ đội, bạn bè, đội, bảng xếp hạng trong game và trên web, giao dịch, chợ). Có thể đặt tiền tố tuỳ chọn bằng khoá `hlv_ai.tien_to_ten`.
+người chơi (chống spam, khoá bản đồ, chống clone, cấp mở tính năng…). Tên bot luôn có **tiền tố** (khoá `hlv_ai.tien_to_ten`, mặc định `ai ` → `ai minhanh`) ở mọi chỗ người
+chơi thấy tên (trên đầu, chat, tổ đội, bạn bè, đội, bảng xếp hạng trong game và trên web, giao dịch, chợ).
 
 **Bật lần đầu (VPS, root).** Tiến trình riêng `htbb-hlv-ai` — deploy không cài, không bật:
 
@@ -963,6 +1019,12 @@ tác): `hlv_ai.bat` (tắt = mọi bot thoát dần, tiến trình vẫn chạy)
 mỗi 20 giây, tự tạo tài khoản bot còn thiếu (mật khẩu = HMAC của `HLV_AI_BI_MAT`, không lưu chữ rõ), ghi
 `tob_hlv_ai_trang_thai` mỗi phút (danh sách bot online trên trang). Log: `/opt/htbb/logs/hlv-ai.out` (mỗi 5 phút một dòng
 online / heap / số việc).
+
+**Cấp mục tiêu theo người chơi thật** (`hlv_ai.cap_theo_nguoi`, mặc định bật): lúc khởi động và mỗi ngày dịch vụ lấy cấp
+người chơi thật hoạt động 7 ngày (`la_bot = 0`, bỏ tài khoản `sv.adminAccounts`): thấp = phân vị 25%, cao = trung bình
+top 10 trừ 2 (không quá mức cao của `hlv_ai.cap_muc_tieu`, không dưới thấp + 5). Bot mới nhận mục tiêu trong khoảng; bot
+cũ dưới mức thấp được nâng mục tiêu tối đa +3 / ngày (vẫn phải tự cày); tới mức cao bot thôi các việc ra EXP (top người
+thật luôn trên bot). Kết quả ghi `tob_hlv_ai_cap_nguoi`, hiện ở /admin/hlv-ai. Tắt = dùng khoảng cố định `hlv_ai.cap_muc_tieu`.
 
 **Bot làm gì.** Nhiệm vụ chính / phụ / cửa ải, cày, treo máy (Tự động đánh), Gym, boss, bắt Pokémon hoang dã, Đấu trường
 (khi đủ 3 loài), mua khăn PK rồi chỉ đánh người đang đeo khăn, thách đấu cược nhỏ (cấp 40+), phó bản nhóm (cấp 45+),
@@ -985,7 +1047,8 @@ nhận lượng, không nhập giftcode (máy chủ chặn theo cờ). Thống k
 chuyển, tổng xu bot / người thật) và `tob_hlv_ai_moc` (ảnh chụp 10 phút) — biểu đồ ở /admin/hlv-ai.
 
 **Đổi tiền tố tên bot.** /admin/hlv-ai → khung *Cấu hình* → mục **Tên bot** → ô *Tiền tố tên bot* (xem trước ngay
-bên dưới) → ghi *Lý do* → **Lưu cấu hình**. Để trống để không hiện tiền tố; hoặc gõ tự do tối đa 12 ký tự, không dùng `:`. Máy chủ áp dụng trong
+bên dưới) → ghi *Lý do* → **Lưu cấu hình**. Gõ tự do 1–12 ký tự, có thể dính liền tên (`AI` → `AIminhanh`), nhưng phải
+có chữ AI hoặc BOT và không dùng `:`; giá trị sai bị từ chối (máy chủ vẫn dùng mặc định `ai `). Máy chủ áp dụng trong
 ≤ 15 giây, không khởi động lại; tên người chơi gửi lại theo tiền tố cũ vẫn được nhận ra. Bot cấp 50 được lập đội miễn
 100 triệu xu khi số đội do bot làm chủ dưới `hlv_ai.doi_bot_toi_da` (3); lương đội bot trả cho người thật tính vào hạn mức.
 

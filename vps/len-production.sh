@@ -12,6 +12,8 @@
 #  kiem lai bang /etc/htbb/cong-kiem.key (sua tay tep ket qua = chu ky sai = tu choi).
 #    --co-sql  : sql ung vien phai la dung tep da qua cong kiem.
 #    --chi-jar : cong kiem phai da chay voi SQL GIONG /opt/htbb/sql/htbb.sql dang cai (CSDL production khong doi).
+#    Nhan DAT cua ca hai che do cong kiem (che_do=nhanh - mac dinh tu 31/10/2026 - hoac day_du; ket qua cu khong co
+#    truong che_do = day_du). DAT_MOT_PHAN (--nhom) / HONG / ket qua che do thu: tu choi.
 #
 #  Lam DUNG cac buoc van hanh tay (17-24/10/2026):
 #    1. kiem jar (zip) / sql (phan B) / cong kiem / gio (KHONG chay thu Hai 04:00-05:00 - moc tuan - tru --force)
@@ -106,7 +108,7 @@ fi
 
 # ---------------------------------------------------------------- cong kiem
 kiem_cong() {
-    local sj=$1 ss=$2 f="$CONG_KIEM_DIR/${1}_${2}.txt" noi ky tinh luc tuoi kq
+    local sj=$1 ss=$2 f="$CONG_KIEM_DIR/${1}_${2}.txt" noi ky tinh luc tuoi kq cd_kiem
     [ -r "$f" ] || { echo "chua co ket qua cong kiem cho jar $sj + sql $ss (chay vps/staging/kiem-truoc-khi-len.sh)"; return 1; }
     [ -r "$CONG_KIEM_KHOA" ] || { echo "khong doc duoc khoa $CONG_KIEM_KHOA"; return 1; }
     noi=$(grep -v '^chu_ky=' "$f"); ky=$(sed -n 's/^chu_ky=//p' "$f")
@@ -119,10 +121,16 @@ kiem_cong() {
         echo "ket qua cong kiem la CHE DO THU (bo hoi quy bi thay: $(sed -n 's/^doi_bo=//p' <<< "$noi")) - khong dung cho production"; return 1
     fi
     kq=$(sed -n 's/^ket_qua=//p' <<< "$noi")
+    # DAT_MOT_PHAN (--nhom go loi / bo hoi quy bi cat) khong bao gio du; DAT cua che do nhanh (mac dinh) hoac day du deu du.
     [ "$kq" = DAT ] || { echo "cong kiem ket qua $kq (khong phai DAT) - xem $(sed -n 's/^nhat_ky=//p' <<< "$noi")"; return 1; }
+    cd_kiem=$(sed -n 's/^che_do=//p' <<< "$noi")
+    case "${cd_kiem:-day_du}" in
+        nhanh|day_du) ;;
+        *) echo "cong kiem che do la '$cd_kiem' (chi nhan nhanh / day_du)"; return 1 ;;
+    esac
     luc=$(sed -n 's/^luc=//p' <<< "$noi"); tuoi=$(( ( $(date +%s) - ${luc:-0} ) / 3600 ))
     [ "$tuoi" -lt "$CONG_KIEM_GIO" ] || { echo "cong kiem DAT nhung da $tuoi gio (> $CONG_KIEM_GIO) - chay lai"; return 1; }
-    echo "DAT luc $(sed -n 's/^luc_doc=//p' <<< "$noi") ($tuoi gio truoc)"
+    echo "DAT (${cd_kiem:-day_du}) luc $(sed -n 's/^luc_doc=//p' <<< "$noi") ($tuoi gio truoc)"
 }
 
 if [ "$CHE_DO" != chi-web ]; then
