@@ -1065,6 +1065,9 @@ final class KichBanCap140 {
             if (ma.find()) {
                 if (lan > 6) return "Arcanine khong dua toi " + ma.group(1) + " sau 6 lan";
                 String noi = ma.group(1).trim();
+                // goi y may chu "(hãy tới Chân núi Silver - nhờ Arcanine gác cổng ở làng dẫn đường)": ten ban do truoc " - "
+                int gach = noi.indexOf(" - ");
+                if (gach > 0) noi = noi.substring(0, gach).trim();
                 KichBanCap140TinhNang.veLangDiBo(this);
                 String l = KichBanHuongDan.toiNpc(b, 4);
                 if (l != null) return "khong toi Arcanine gac cong: " + l;
