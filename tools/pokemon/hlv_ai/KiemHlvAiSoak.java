@@ -271,7 +271,7 @@ final class KiemHlvAiSoak {
             KichBanTinhNangThuong.ganHop(id, 16 + id % 3);
             GHI_CHU.add("SQL: Hop PC " + user + " 1 con (thu trao doi Pokemon voi bot)");
             vao();
-            boolean chu = user.equals("kt109") || user.equals("kt113");
+            boolean chu = user.equals("kt109") || user.equals("kt116");
             gm("slv " + b.ten + " " + (chu ? 50 : 45) + " 0");
             gm("smn " + b.ten + " 300000 0 0");
             if (chu) {
@@ -482,7 +482,7 @@ final class KiemHlvAiSoak {
         BotChucNang.sql("UPDATE cau_hinh_phien_ban SET phien_ban = phien_ban + 1");
         GHI_CHU.add("SQL: hlv_ai.chuyen_moi_nguoi_ngay = 5000 (moi lan chuyen bot -> nguoi sau lan dau phai bi chan)");
         List<NguoiThat> nt = new ArrayList<>();
-        for (int i = 113; i <= 115; i++) {
+        for (int i = 116; i <= 118; i++) {
             NguoiThat n = new NguoiThat(String.format("kt%03d", i));
             n.chuanBi();
             nt.add(n);
@@ -495,20 +495,22 @@ final class KiemHlvAiSoak {
                 HlvAiNguoiChoi p = h.dang;
                 if (p != null && p.b != null && !p.b.dut && !bots.contains(p) && bots.size() < 3) {
                     gm("slv " + p.b.ten + " " + (45 + DichVuHlvAi.RD.nextInt(10)) + " 0");
-                    p.dungYen = nt.get(0).b.mapId;
+                    p.dungYen = nt.get(bots.size()).b.mapId; // moi bot dung canh mot nguoi that
                     bots.add(p);
                 }
             }
             Thread.sleep(5000);
         }
-        ghi("\nBot đứng yên: " + bots.size() + " ở bản đồ " + nt.get(0).b.mapId + "; người thật: kt113..kt115 (kt113 chủ đội).\n");
+        ghi("\nBot đứng yên: " + bots.size() + " ở bản đồ " + nt.get(0).b.mapId + "; người thật: kt116..kt118 (kt116 chủ đội).\n");
         Thread.sleep(90000); // bot ve lang
         long ketThuc = System.currentTimeMillis() + Long.getLong("hlv.khaiThacPhut", 25L) * 60000L;
         int vong = 0;
         while (System.currentTimeMillis() < ketThuc) {
-            for (NguoiThat n : nt) {
-                for (HlvAiNguoiChoi bot : bots) {
-                    if (bot.b == null || bot.b.dut || bot.b.mapId != n.b.mapId) continue;
+            for (int i = 0; i < nt.size(); i++) {
+                NguoiThat n = nt.get(i);
+                if (n.b == null || n.b.dut) { try { n.vao(); } catch (Exception e) { System.out.println("[KHAI THAC] vao lai " + n.user + ": " + e); } continue; }
+                for (HlvAiNguoiChoi bot : bots.subList(Math.min(i, bots.size()), bots.size())) {
+                    if (bot.b == null || bot.b.dut || bot.b.mapId != n.b.mapId) { bot.dungYen = n.b.mapId; n.cho(3000); continue; }
                     try {
                         switch (vong % 5) {
                             case 0: n.gdLap(bot, true); break;
@@ -522,7 +524,6 @@ final class KiemHlvAiSoak {
                         System.out.println("[KHAI THAC] " + n.user + ": " + e);
                     }
                     n.cho(5000);
-                    if (n.b.mapId != nt.get(0).b.mapId && !KichBanDS.laLang(n.b.mapId)) n.toi(nt.get(0).b.mapId);
                 }
             }
             vong++;
@@ -533,7 +534,7 @@ final class KiemHlvAiSoak {
         for (HlvAiNguoiChoi bot : bots) bot.dungYen = -1;
         ghi("\n| Kiểu | Hướng | Lần | Bị chặn | Giá trị |\n|---|---|---|---|---|");
         for (String d : BotChucNang.sql("SELECT kieu, IF(huong=1,'bot→người','người→bot'), COUNT(*), SUM(bi_chan), SUM(gia_tri) FROM tob_hlv_ai_chuyen"
-                + " WHERE nguoi_ten IN ('kt113','kt114','kt115') OR nguoi_id >= 1000000000 GROUP BY kieu, huong")) {
+                + " WHERE nguoi_ten IN ('kt116','kt117','kt118') OR nguoi_id >= 1000000000 GROUP BY kieu, huong")) {
             ghi("| " + d.replace("\t", " | ") + " |");
         }
         ketThuc();
