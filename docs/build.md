@@ -244,6 +244,40 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.26 (`BAN=926`: chợ kiểu chung, menu chữ cũ -> thẻ lệnh, 4 cửa sổ cũ có vùng chạm, Machamp có lối thẳng Chế tạo, đăng nhập nơi khác không tự nối lại)
+
+Client `PHIEN_BAN=0.9.26-opentest` (`BAN = 0*10000 + 9*100 + 26`; `MIDlet-Version` 0.9.26) trên main c4720b22. Báo lý do
+"đăng nhập ở thiết bị khác" cần máy chủ có 1ca4b4e6 (máy chủ cũ: client vẫn tự nối lại như trước); lối thẳng Chế tạo ở
+Machamp chỉ hiện khi máy chủ có Chế tạo. `htbb-server.jar` không build lại khi phát hành.
+
+1. **Giao diện vòng 4** (91d33145): Chợ (`ShopOnline`) kiểu chung ở máy có con trỏ - tấm + chip 6 tab, hàng món chạm =
+   chọn, bộ lọc Tìm chạm được, nút Thông tin / Mua-Menu trong tấm, nhập giá bán = ô nhập chung hai bước; menu chữ cũ
+   (`Canvas.menu`) mở trên màn khác màn chơi -> thẻ lệnh chung; `ViewTextDlg` -> hộp chung; Bản đồ vùng J2ME 320x240 tên
+   gọn, không vẽ ô khoá.
+2. **Giao diện vòng 5** (346503d7): 4 cửa sổ cũ `WindowInfoScr` (gian hàng của tôi / người khác, chế đồ, ép đồ thú) vẽ kiểu
+   chung có vùng chạm (đặt / lấy đồ bán, đặt giá, mua + xem đồ, đặt nguyên liệu, Hợp); J2ME bấm phím giữ vẽ cũ. Bản đồ vùng
+   320x240 đủ 14 nhãn Kanto; Xếp hạng không vẽ đồng xu ngoài mép màn (apk720x1600d2.25 / apk1080x2340d2.75); `MenuNguCanh`
+   bề ngang 2 cột không bị tiêu đề ép rộng.
+3. **Machamp có lối thẳng "Chế tạo trang bị" / "Khảm ngọc hệ"** (28442300): báo lỗi 0.9.25 không tìm thấy chế tạo (chỉ có
+   ở Mua bán › menu máy chủ › "Chế tạo & khảm ngọc"). Lần đầu mở Machamp client hỏi ngầm menu Mua bán; máy chủ có Chế tạo
+   thì chèn hai lệnh ngay sau "Mua bán" (cùng gói menu con). Máy chủ cũ / tắt Chế tạo: menu như cũ.
+4. **Đăng nhập ở thiết bị khác** (22d99604): client nhận thông báo lệnh 37 "Tài khoản của bạn vừa đăng nhập ở thiết bị
+   khác." thì không tự nối lại (hai máy cùng tài khoản trước đá nhau ~3 giây một lần); hộp mất kết nối ghi đúng lý do, chỉ
+   nút "Kết nối lại" thủ công. Rớt mạng thường vẫn tự nối lại. Kiểm: `client_pc/test/KiemDangNhapKhac`.
+5. **Thẻ thời tiết** (ab8ddd6a): tự đóng sau 8 giây và khi có hộp / menu / màn khác mở; HUD rộng: không đè bản đồ nhỏ.
+6. **Bỏ tên game cũ (NQSH)** (15d830d8 / fa8aae2b): PC Unity `ServerListScr` mặc định một máy chủ HTBB (bỏ nhánh NQSH-H2 /
+   danh sách 7 server game gốc; danh sách lưu từ bản cũ trỏ về server game gốc thì bỏ); tên kho RMS cũ giữ nguyên chuỗi
+   (`RMS.KHO_*`, không mất dữ liệu người chơi); `KiemTenCu` quét thêm client PC Unity / APK / PC. Trong jar / APK / jar PC
+   chỉ còn chữ "NQSH" của bộ lọc bỏ server cũ (`TaiDanhSach`), không còn `nqsh-h2` / IP game gốc.
+
+Kiểm (bản PC phát hành, main c4720b22): KiemPc 257/0, KiemCapNhat 509/0, KiemBanDoVung 448/0 (+ J2ME 448/0),
+KiemTrungLap 252/0, KiemTaoNhanVat 5094/0, KiemChamHud 5714/0, KiemThuatNgu 19/0; ChupTrongGame J2ME chạm 240x320,
+320x240, 400x240, 360x640, 640x360 (72160/0, gồm `menu_machamp_che_tao`, `menu_npc_dai*`, `so_nhiem_vu*`, `phu_x_*`) +
+apk1080x1920d3 / apk720x1600d2 (72278/0); J2ME phím (`-Dhtbb.khongCham=true`) cho các màn đó 5286 đạt, 6 hỏng - chỉ
+`phu_x_che_do_dat` / `phu_x_ep_do_thu_dat` (bộ kiểm chạm ô nguyên liệu + "Bỏ vào" nhưng máy phím giữ cửa sổ cũ không vùng
+chạm theo 346503d7 - ảnh màn phím vẽ đúng; thiếu chặn `khongCham` trong ChupTrongGame, không phải lỗi người chơi).
+KiemDangNhapKhac / KiemHanhTrinhUI / KiemSoNhiemVuThat không chạy ở máy build (cần máy chủ game đang chạy).
+
 ### Bản 0.9.25 (`BAN=925`, vá nóng: sổ nhiệm vụ J2ME trống khi chỉ có cửa ải, menu NPC dài lật "Thêm" nhảy cóc mục)
 
 Client `PHIEN_BAN=0.9.25-opentest` (`BAN = 0*10000 + 9*100 + 25`; `MIDlet-Version` 0.9.25) trên main 187f1772 - bản vá
