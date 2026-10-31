@@ -121,7 +121,7 @@ public final class KiemNangLuongThanhVien {
         final String b2 = DayDu.nangCap();
         Kiem.dung("phan B: INSERT IGNORE dong Kecleon 130",
                 b2.contains("(130,'Lượng khoá (Kecleon)','Bùa thể lực (+60 phút) - khoá','luong_khoa:25','ITEM:1255:1',1,0,-1,0);"));
-        Kiem.dung("data_vat_pham_lau_dai 1254 / 1255: ghi khong gioi han", "không giới hạn, không tính điểm tăng tốc".equals(
+        Kiem.dung("data_vat_pham_lau_dai 1254 / 1255: ghi khong gioi han", "không giới hạn, ngoài tăng tốc".equals(
                 DayDu.giaTri("data_vat_pham_lau_dai", "id_item", "1255", "gioi_han")));
         // dung: cong don, khong an diem, khong chan diem cua mon khac
         final HoSoLauDai h = new HoSoLauDai();
