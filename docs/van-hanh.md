@@ -783,11 +783,44 @@ cũng chung máy); xử lý bằng cấm theo máy nếu chắc chắn.
 
 ---
 
-## 11. Email (Gmail OAuth)
+## 11. Email (Gmail OAuth hoặc SMTP mật khẩu ứng dụng)
 
-Web gửi thư (quên mật khẩu, đổi email/mật khẩu) qua Gmail API bằng refresh token, quyền **duy nhất** `gmail.send`
-(không đọc được hộp thư). Thiếu một trong bốn biến `HTBB_GMAIL_CLIENT_ID`, `HTBB_GMAIL_CLIENT_SECRET`,
-`HTBB_GMAIL_REFRESH_TOKEN`, `HTBB_GMAIL_SENDER` = tắt gửi mail. Tên người gửi: `HTBB_MAIL_FROM_NAME`.
+Web gửi thư (quên mật khẩu, đổi email/mật khẩu) theo **một trong hai đường** (`web/server/utils/guiMail.ts`):
+
+| Đường | Bật khi | Ghi chú |
+|---|---|---|
+| A. Gmail API (OAuth) — **ưu tiên** | đủ bốn biến `HTBB_GMAIL_CLIENT_ID`, `HTBB_GMAIL_CLIENT_SECRET`, `HTBB_GMAIL_REFRESH_TOKEN`, `HTBB_GMAIL_SENDER` | quyền duy nhất `gmail.send`; cài theo bước 1–3 dưới |
+| B. SMTP + mật khẩu ứng dụng | đường A chưa đủ **và** có `HTBB_SMTP_USER` + `HTBB_SMTP_PASS` | nhanh nhất để bật; mục 11.1 |
+
+Không đường nào đủ = tắt gửi mail (trang Quên mật khẩu báo "chưa bật"). Tên người gửi: `HTBB_MAIL_FROM_NAME`.
+
+### 11.1 Đường B — Gmail SMTP với mật khẩu ứng dụng
+
+1. Tài khoản Gmail gửi thư phải bật **Xác minh 2 bước**; rồi vào https://myaccount.google.com/apppasswords tạo mật
+   khẩu ứng dụng (tên tuỳ ý, VD `htbb-web`). Google hiện 16 ký tự theo nhóm 4 (`abcd efgh ijkl mnop`) — dán nguyên
+   cũng được, web tự bỏ khoảng trắng.
+2. Đặt biến (GitHub Secrets → deploy web gộp vào `/etc/htbb/htbb.env`, hoặc sửa thẳng file đó, root 0600), rồi
+   `sudo systemctl restart htbb-web`:
+
+| Biến | Bắt buộc | Mặc định / ý nghĩa |
+|---|---|---|
+| `HTBB_SMTP_USER` | có | địa chỉ Gmail đăng nhập SMTP |
+| `HTBB_SMTP_PASS` | có | mật khẩu ứng dụng (**bí mật**, không phải mật khẩu Gmail) |
+| `HTBB_SMTP_HOST` | không | `smtp.gmail.com` |
+| `HTBB_SMTP_PORT` | không | `465` (TLS ngay từ đầu). Cổng khác (VD `587`) = kết nối thường + **bắt buộc** STARTTLS; máy chủ không có STARTTLS thì web từ chối gửi mật khẩu |
+| `HTBB_SMTP_FROM` | không | địa chỉ "From"; trống → `HTBB_GMAIL_SENDER` → `HTBB_SMTP_USER`. Gmail chỉ giữ địa chỉ khác `HTBB_SMTP_USER` nếu đó là bí danh "Send mail as" đã xác minh, nếu không sẽ tự đổi về tài khoản đăng nhập |
+
+3. Thử bằng Quên mật khẩu với tài khoản của bạn. Lỗi ghi `journalctl -u htbb-web | grep -i smtp` (không bao giờ có
+   mật khẩu hay chuỗi AUTH): `535` = sai mật khẩu ứng dụng / chưa bật Xác minh 2 bước / mật khẩu đã bị thu hồi (đổi
+   mật khẩu Gmail là thu hồi hết) → tạo lại; `khong ket noi duoc ... 465` = VPS chặn cổng ra → thử `HTBB_SMTP_PORT=587`.
+   Gmail cá nhân giới hạn ~500 thư/ngày — đủ cho quên mật khẩu.
+
+Máy khách SMTP tự viết bằng `node:tls` (`web/server/utils/mailThuan.ts`, không thêm thư viện), test:
+`web/tests/gui-mail.test.ts` (máy chủ SMTP giả trên 127.0.0.1).
+
+### 11.2 Đường A — Gmail API (OAuth)
+
+Quyền **duy nhất** `gmail.send` (không đọc được hộp thư).
 
 **Bước 1 — Google Cloud Console** (một lần, đăng nhập đúng tài khoản Gmail sẽ gửi thư):
 
@@ -958,7 +991,7 @@ du -sh /opt/htbb/logs /opt/htbb/backups
 | `/admin/he-thong` (khối Bật/tắt) báo watcher không sống | `sudo crontab -l` | cài cron `dieu-khien-server.sh` (mục 1) |
 | `/admin/naptien` có hộp đỏ | đọc danh sách lý do | thiếu/yếu biến môi trường hoặc chưa có giấy phép — đúng thiết kế (fail closed) |
 | Người chơi báo không nhận giftcode | `tob_giftcode` (bat, han, da_dung/tong_luot, cap), `tob_giftcode_log`, log `[GIFTCODE]` | xem luật 8.1; tài khoản chưa kích hoạt có thể bị khoá tính năng `giftcode` |
-| Mail quên mật khẩu không tới | `journalctl -u htbb-web \| grep -i gmail` | đủ 4 biến `HTBB_GMAIL_*`? `invalid_grant` → lấy lại refresh token (mục 11) |
+| Mail quên mật khẩu không tới | `journalctl -u htbb-web \| grep -iE 'gmail\|smtp'`; tài khoản có email chưa (`team_user.email`)? | đủ 4 biến `HTBB_GMAIL_*` hoặc `HTBB_SMTP_USER`+`PASS`? `invalid_grant` → lấy lại refresh token; SMTP `535` → tạo lại mật khẩu ứng dụng (mục 11) |
 
 ---
 
