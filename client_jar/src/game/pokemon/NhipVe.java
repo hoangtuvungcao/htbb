@@ -206,6 +206,9 @@ public final class NhipVe {
             if (dx == 0 && dy == 0 || dx > 48 || dx < -48 || dy > 48 || dy < -48) {
                 continue;
             }
+            if (soTam >= tam.length || soTam >= tamX.length || soTam >= datX.length) {
+                break; // danh sach actor doi giua khung (luong mang them actor): bo noi suy phan con lai, khong nem loi
+            }
             int k = soTam++;
             tam[k] = a;
             tamX[k] = a.x;

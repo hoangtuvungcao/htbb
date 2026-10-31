@@ -89,7 +89,10 @@ public final class KhoiDong {
 
     /** Có nên hiện dòng chẩn đoán không: có lỗi, hoặc khởi động chưa xong sau 10 s. */
     public static boolean nenHien() {
-        return loi != null || !xong && System.currentTimeMillis() - T0 > 10000L;
+        // 0.9.27+: loi da bat (game van chay) KHONG hien cho nguoi choi nua - chi hien khi khoi dong ket > 10 s
+        // hoac nhip game dung > 5 s (treo that); loi van ghi vao dong() / System.out de chan doan.
+        long t = System.currentTimeMillis();
+        return !xong && t - T0 > 10000L || xong && nhipCuoi > 0 && t - nhipCuoi > 5000L;
     }
 
     /** Vẽ dòng chẩn đoán ở đáy màn (ngắt nhiều dòng), phông hệ thống. */
