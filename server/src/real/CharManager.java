@@ -298,7 +298,7 @@ public class CharManager {
     }
 
     public Char getCharByCharName(String name) {
-        // ten client gui nguoc lai co the la ten hien thi cua huan luyen vien AI ("bot_ai: ten")
+        // ten client gui nguoc lai co the la ten hien thi cua huan luyen vien AI (tien to + ten)
         return (Char)this.charName.get(com.htbb.pokemon.HlvAi.boTienTo(name).toLowerCase());
     }
 

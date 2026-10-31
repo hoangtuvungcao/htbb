@@ -146,7 +146,7 @@ public class SelectCharHandler implements ICommandHandler {
             }
             p.userID = session.userID;
             p.initInfoFromDB(charItem, lastLog);
-            // Huan luyen vien AI: co la_bot cua tai khoan (account.team_user) - luat kinh te + ten hien "bot_ai: "
+            // Huan luyen vien AI: co la_bot cua tai khoan (account.team_user) - luat kinh te + ten hien tien to hlv_ai.tien_to_ten
             real.HlvAiGame.vaoGame(p);
             p.timeXP = (short) session.timeXp;
 

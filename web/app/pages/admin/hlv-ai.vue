@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Bot / Huấn luyện viên AI: bot lấp máy chủ chơi như người (tên hiện "bot_ai: …"). Trang này chỉnh nhóm cấu hình hlv_ai
+ * Bot / Huấn luyện viên AI: bot lấp máy chủ chơi như người (tên hiện tiền tố hlv_ai.tien_to_ten + tên, mặc định "ai "). Trang này chỉnh nhóm cấu hình hlv_ai
  * (lưu qua /api/admin/cau-hinh-he-thong/luu - có lịch sử, hoàn tác ở trang Cấu hình hệ thống), xem bot đang online và
  * kinh tế của bot (máy chủ game ghi: tob_hlv_ai_kinh_te_ngay / tob_hlv_ai_moc / tob_hlv_ai_chuyen).
  */
@@ -31,7 +31,7 @@ const dangSua = ref(false)
 const f = reactive({
   bat: false, soLuong: 30, lich: Array.from({ length: 24 }, () => 50), lop: [20, 20, 20, 20, 20], tinhCach: [30, 15, 15, 20, 20],
   capThap: 10, capCao: 60, banDo: '', viec: [] as string[],
-  heSo: 60, tranXu: 2000000, tranTui: 60, giaBan: 100, chuyenNguoi: 50000, chuyenTong: 500000,
+  heSo: 60, tranXu: 300000, tranTui: 60, giaBan: 100, chuyenNguoi: 50000, chuyenTong: 500000, doiBot: 3, tienTo: 'ai ',
 })
 const lyDo = ref('')
 const dangLuu = ref(false)
@@ -53,7 +53,9 @@ function napForm() {
   f.banDo = g('hlv_ai.ban_do') ?? ''
   f.viec = String(g('hlv_ai.hoat_dong') ?? '').split(',').map(x => x.trim()).filter(Boolean)
   f.heSo = so(g('hlv_ai.he_so_thu_nhap'), 60)
-  f.tranXu = so(g('hlv_ai.tran_xu'), 2000000)
+  f.tranXu = so(g('hlv_ai.tran_xu'), 300000)
+  f.doiBot = so(g('hlv_ai.doi_bot_toi_da'), 3)
+  f.tienTo = g('hlv_ai.tien_to_ten') ?? 'ai '
   f.tranTui = so(g('hlv_ai.tran_vat_pham'), 60)
   f.giaBan = so(g('hlv_ai.gia_ban_toi_thieu'), 100)
   f.chuyenNguoi = so(g('hlv_ai.chuyen_moi_nguoi_ngay'), 50000)
@@ -78,10 +80,16 @@ function giaTriForm(): Record<string, string> {
     'hlv_ai.gia_ban_toi_thieu': String(Math.trunc(f.giaBan)),
     'hlv_ai.chuyen_moi_nguoi_ngay': String(Math.trunc(f.chuyenNguoi)),
     'hlv_ai.chuyen_tong_ngay': String(Math.trunc(f.chuyenTong)),
+    'hlv_ai.doi_bot_toi_da': String(Math.trunc(f.doiBot)),
+    'hlv_ai.tien_to_ten': f.tienTo,
   }
 }
 
+const loiTienTo = computed(() => loiTienToHlvAi(f.tienTo))
+const xemTruoc = computed(() => ['minhanh', 'BeoMap', 'Pika99'].map(t => tenHienThiHlvAi(t, true, loiTienTo.value ? null : f.tienTo)))
+
 async function luu(chiBat?: boolean) {
+  if (chiBat === undefined && loiTienTo.value) { toast.add({ title: loiTienTo.value, color: 'error', icon: 'i-lucide-circle-alert' }); return }
   const moi = giaTriForm()
   if (chiBat !== undefined) moi['hlv_ai.bat'] = chiBat ? '1' : '0'
   const cu = data.value?.cauHinh ?? {}
@@ -139,8 +147,8 @@ const gioHienTai = new Date().getHours()
       title="CSDL chưa có bảng tob_hlv_ai_* - chạy nâng cấp CSDL (vps/nang_cap_csdl.sh, khối them_hlv_ai.sql)." />
 
     <p class="mb-4 text-sm text-muted">
-      Bot chơi qua giao thức thật như người chơi (tiến trình riêng <code>htbb-hlv-ai</code> trên VPS, không tự bật), tên luôn hiện
-      <b>"bot_ai: …"</b>. Bot không nạp, không mua gói, không chuyển / nhận lượng, không nhập giftcode. Máy chủ giữ lạm phát bằng hệ số
+      Bot chơi qua giao thức thật như người chơi (tiến trình riêng <code>htbb-hlv-ai</code> trên VPS, không tự bật), tên luôn có
+      tiền tố <b>"{{ chuanTienToHlvAi(f.tienTo) }}"</b> (đổi ở ô <i>Tiền tố tên bot</i> bên dưới). Bot không nạp, không mua gói, không chuyển / nhận lượng, không nhập giftcode. Máy chủ giữ lạm phát bằng hệ số
       thu nhập, trần xu / túi, giá rao tối thiểu và hạn mức bot → người thật mỗi ngày.
     </p>
 
@@ -235,6 +243,11 @@ const gioHienTai = new Date().getHours()
           <div class="grid grid-cols-5 gap-2">
             <UFormField v-for="(t, i) in Object.values(TINH_CACH)" :key="t" :label="t"><UInput v-model.number="f.tinhCach[i]" type="number" :min="0" :max="100" size="sm" /></UFormField>
           </div>
+          <h3 class="pt-2 font-semibold">Tên bot</h3>
+          <UFormField label="Tiền tố tên bot (1–12 ký tự, phải có AI hoặc BOT; được dính liền tên)" :error="loiTienTo ?? undefined">
+            <UInput v-model="f.tienTo" :maxlength="12" class="w-48" placeholder="ai " />
+          </UFormField>
+          <p class="text-sm">Xem trước: <span v-for="t in xemTruoc" :key="t" class="mr-3 rounded bg-elevated px-2 py-0.5 font-mono">{{ t }}</span></p>
           <h3 class="pt-2 font-semibold">Cấp mục tiêu và bản đồ</h3>
           <div class="flex flex-wrap gap-3">
             <UFormField label="Cấp mục tiêu thấp"><UInput v-model.number="f.capThap" type="number" :min="1" :max="200" class="w-24" /></UFormField>
@@ -256,10 +269,11 @@ const gioHienTai = new Date().getHours()
             <UFormField label="Giá rao tối thiểu (% trung vị)" help="Bot không bán phá giá"><UInput v-model.number="f.giaBan" type="number" :min="50" :max="1000" /></UFormField>
             <UFormField label="Bot → mỗi người thật / ngày (xu)" help="0 = cấm"><UInput v-model.number="f.chuyenNguoi" type="number" :min="0" /></UFormField>
             <UFormField label="Bot → người thật / ngày, cả máy chủ"><UInput v-model.number="f.chuyenTong" type="number" :min="0" /></UFormField>
+            <UFormField label="Số đội do bot làm chủ tối đa" help="Bot cấp 50 lập đội miễn 100 triệu xu khi còn dưới số này"><UInput v-model.number="f.doiBot" type="number" :min="0" :max="50" /></UFormField>
           </div>
           <div class="flex flex-wrap items-end gap-2 pt-2">
             <UFormField label="Lý do thay đổi (ghi lịch sử)" class="grow"><UInput v-model="lyDo" placeholder="vd: tăng bot giờ tối" /></UFormField>
-            <UButton icon="i-lucide-save" label="Lưu cấu hình" :loading="dangLuu" :disabled="lyDo.trim().length < 3" @click="luu()" />
+            <UButton icon="i-lucide-save" label="Lưu cấu hình" :loading="dangLuu" :disabled="lyDo.trim().length < 3 || !!loiTienTo" @click="luu()" />
             <UButton color="neutral" variant="ghost" label="Bỏ thay đổi" @click="dangSua = false; napForm()" />
           </div>
         </section>

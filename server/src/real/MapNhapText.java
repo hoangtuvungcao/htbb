@@ -273,9 +273,14 @@ class MapNhapText {
                     return;
                 }
 
+                // huan luyen vien AI lam chu doi: luong cho nguoi that tinh vao han muc ngay bot -> nguoi
+                if (HlvAiGame.chanChuyen(player, p, player, "luong_doi", player.salaryClan)) {
+                    return;
+                }
                 player.pointCongHienClan = player.pointCongHienClan - clanInfo.getDCHPhatLuongNhanh();
                 String info = p.getxu() + " mc= " + clanInfo.money;
                 p.addXu(player.salaryClan, "map 35");
+                HlvAiGame.ghiChuyen(player, p, "luong_doi", player.salaryClan, "luong doi");
                 clanInfo.money = clanInfo.money - player.salaryClan;
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 info = info
@@ -1201,9 +1206,14 @@ class MapNhapText {
                     return;
                 }
 
+                // huan luyen vien AI lam chu doi: luong cho nguoi that tinh vao han muc ngay bot -> nguoi
+                if (HlvAiGame.chanChuyen(player, p, player, "luong_doi", player.salaryClan)) {
+                    return;
+                }
                 player.pointCongHienClan = player.pointCongHienClan - clanInfox.getDCHPhatLuong();
                 String info = p.getxu() + " mc= " + clanInfox.money;
                 p.addXu(player.salaryClan, "map 35");
+                HlvAiGame.ghiChuyen(player, p, "luong_doi", player.salaryClan, "luong doi");
                 clanInfox.money = clanInfox.money - player.salaryClan;
                 info = info
                         + "_"
@@ -1267,6 +1277,10 @@ class MapNhapText {
                     return;
                 }
 
+                if (HlvAiGame.laBot(player)) { // bot chu doi: phat luong tung nguoi (qua han muc), khong phat dong loat
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Huấn luyện viên AI chỉ phát lương từng người.", ""));
+                    return;
+                }
                 clanInfoxx.addMoney2Clan(-moneySub);
                 clanInfoxx.updateNewClandata2DB();
 

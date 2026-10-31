@@ -346,17 +346,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **383 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **385 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 95 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 97 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 249 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (95)
+### Khoá chỉnh trên web (97)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -490,7 +490,7 @@ Bảo trì, đăng ký, bản client tối thiểu, link website / tải game, G
 
 #### Huấn luyện viên AI (bot) (`hlv_ai`)
 
-Bot lấp máy chủ chơi như người (tên hiện "bot_ai: …"): số lượng, lịch online, tỉ lệ dòng / tính cách, cấp mục tiêu, bản đồ, hoạt động và luật chống lạm phát (hệ số thu nhập, trần xu / túi, giá bán tối thiểu, hạn mức chuyển cho người thật mỗi ngày). Trang riêng: /admin/hlv-ai.
+Bot lấp máy chủ chơi như người (tên có tiền tố, mặc định "ai "): số lượng, lịch online, tỉ lệ dòng / tính cách, cấp mục tiêu, bản đồ, hoạt động và luật chống lạm phát (hệ số thu nhập, trần xu / túi, giá bán tối thiểu, hạn mức chuyển cho người thật mỗi ngày). Trang riêng: /admin/hlv-ai.
 
 | Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |
 |---|---|---|---|---|---|---|---|
@@ -503,11 +503,13 @@ Bot lấp máy chủ chơi như người (tên hiện "bot_ai: …"): số lư�
 | `hlv_ai.ban_do` | Bản đồ ưu tiên (id) | danh sách chuỗi | *(trống)* | ≤ 255 ký tự | ngay | game | Bãi luyện bot ưu tiên khi cày, cách nhau dấu phẩy; trống = rải đều mọi bãi hợp cấp. |
 | `hlv_ai.hoat_dong` | Hoạt động được bật | danh sách chuỗi | `nhiem_vu,cay,treo,gym,boss,pk,dau_truong,pho_ban,doi,chat,ban_be,giao_dich,cho,sinh_thai,vuon,nha_tre,bat,nang_cap,su_kien` | ≤ 255 ký tự | ngay | game | Danh sách hoạt động bot được làm: nhiem_vu, cay, treo, gym, boss, pk, dau_truong, pho_ban, doi, chat, ban_be, giao_dich, cho, sinh_thai, vuon, nha_tre, bat, nang_cap, su_kien. Bỏ một mục = tắt hoạt động đó. |
 | `hlv_ai.he_so_thu_nhap` | Hệ số thu nhập xu của bot (%) | số | `60` | 0..100 | ngay | game | Xu sinh ra (quái, nhiệm vụ, thưởng…) bot nhận = ngần này % người thật. Không áp cho tiền mua bán với người chơi. |
-| `hlv_ai.tran_xu` | Trần xu mỗi bot | số | `2000000` | 0..2000000000 | ngay | game | Số dư xu tối đa của một bot; phần vượt bị đốt (ghi tob_hlv_ai_kinh_te_ngay.xu_dot). |
+| `hlv_ai.tran_xu` | Trần xu mỗi bot | số | `300000` | 0..2000000000 | ngay | game | Số dư xu tối đa của một bot; phần vượt bị đốt (ghi tob_hlv_ai_kinh_te_ngay.xu_dot). |
 | `hlv_ai.tran_vat_pham` | Trần ô túi mỗi bot | số | `60` | 0..500 | ngay | game | Số ô hành trang tối đa (không tính đồ đang rao); mỗi phút ô thừa bị huỷ, món rẻ nhất trước. |
 | `hlv_ai.gia_ban_toi_thieu` | Giá rao tối thiểu của bot (% trung vị) | số | `100` | 50..1000 | ngay | game | Bot rao ở chợ (ký gửi, chợ Pokémon, chợ sinh thái) không dưới ngần này % giá trung vị 7 ngày (ít mẫu: giá tham chiếu) - không phá giá. |
 | `hlv_ai.chuyen_moi_nguoi_ngay` | Hạn mức bot → mỗi người thật / ngày | số | `50000` | 0..100000000 | ngay | game | Tổng giá trị (xu) bot chuyển cho MỘT người chơi thật mỗi ngày (mua đồ của họ, thua cược, đổi thuốc / Pokémon…); vượt thì giao dịch bị từ chối. 0 = cấm. |
 | `hlv_ai.chuyen_tong_ngay` | Hạn mức bot → người thật / ngày (cả máy chủ) | số | `500000` | 0..2000000000 | ngay | game | Tổng giá trị mọi bot chuyển cho người chơi thật mỗi ngày (kể cả góp quỹ đội có người thật). |
+| `hlv_ai.doi_bot_toi_da` | Số đội do bot làm chủ tối đa | số | `3` | 0..50 | ngay | game | Bot cấp 50 lập đội không mất 100.000.000 xu / huy hiệu khi số đội do bot làm chủ còn dưới ngần này (0 = bot không lập đội). Lương đội của bot cho người thật vẫn tính vào hạn mức ngày. |
+| `hlv_ai.tien_to_ten` | Tiền tố tên bot | chuỗi | `ai ` | ≤ 12 ký tự | ngay | game | Hiện trước tên mọi Huấn luyện viên AI ở mọi chỗ người chơi thấy tên (trên đầu, chat, top, đội, chợ...), gõ tự do 1-12 ký tự, có thể dính liền tên (không cần dấu cách / hai chấm), nhưng PHẢI có chữ AI hoặc BOT để người chơi nhận ra bot; không dùng dấu ":". Giá trị sai: máy chủ dùng mặc định "ai ". |
 
 ### Khoá ẩn: cố định & luôn bật (290)
 

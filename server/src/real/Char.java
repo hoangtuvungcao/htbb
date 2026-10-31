@@ -16285,7 +16285,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     /**
      * Ten GUI CHO CLIENT (dau dau, chat, to doi, ban be, bang, top, giao dich, cho...): Huan luyen vien AI hien
-     * "bot_ai: ten". KHONG dung lam khoa tra cuu (CharManager, CSDL, GM) - dung {@link #getName()} / charname.
+     * tien to (hlv_ai.tien_to_ten) + ten. KHONG dung lam khoa tra cuu (CharManager, CSDL, GM) - dung {@link #getName()} / charname.
      */
     public String tenHienThi() {
         return com.htbb.pokemon.HlvAi.hienThi(this.charname, this.laHlvAi);

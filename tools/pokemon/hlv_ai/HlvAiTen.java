@@ -3,7 +3,7 @@ import java.util.Random;
 /**
  * Ten nhan vat kieu game thu Viet cho Huan luyen vien AI: 4..10 ky tu [0-9a-zA-Z] (luat CreateCharHandler.loiTen /
  * checkInfo). May chu van kiem tu cam (bang bad_word) va trung ten - bi tu choi thi dich vu thu ten khac. Client hien
- * "bot_ai: <ten>" (may chu them tien to), nen ten khong can danh dau la bot.
+ * tien to + ten (hlv_ai.tien_to_ten, may chu them), nen ten khong can danh dau la bot.
  */
 final class HlvAiTen {
 

@@ -340,7 +340,7 @@ public final class Kiem {
         KiemChanKhiGuc.chay(); // chu game 31/10/2026: dang guc khong dung NPC / di chuyen bang NPC / mua ban / giao dich / qua cong
         KiemGucLapLai.chay(); // cong kiem bot 31/10/2026: client guc van gui di chuyen / danh -> khong tinh them lan guc
         KiemBossLangThang.chay(); // chu game 31/10/2026: boss lang thang cu bi dong - chi danh nguoi da danh no
-        KiemHlvAi.chay(); // chu game 31/10/2026: huan luyen vien AI (bot lap may chu) - ten bot_ai, luat chong lam phat, danh muc hlv_ai
+        KiemHlvAi.chay(); // chu game 31/10/2026: huan luyen vien AI (bot lap may chu) - tien to ten bot, luat chong lam phat, danh muc hlv_ai
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.
         System.exit(ma);

@@ -220,6 +220,8 @@ class MapDoi {
 
     static void doRequestCreateClan(Map map, Char player) {
         int price = 100000000;
+        // huan luyen vien AI: mien 100 trieu xu + huy hieu lap doi, toi da hlv_ai.doi_bot_toi_da doi do bot lam chu
+        final boolean mienPhi = HlvAiGame.mienPhiLapDoi(player);
 
         try {
             if (idIconClan.size() <= 0) {
@@ -235,7 +237,7 @@ class MapDoi {
                 return;
             }
 
-            if (player.potions[31] == 0) {
+            if (player.potions[31] == 0 && !mienPhi) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có huy hiệu lập đội", ""));
                 return;
             }
@@ -245,7 +247,7 @@ class MapDoi {
                 return;
             }
 
-            if (player.getxu() < (long) price) {
+            if (!mienPhi && player.getxu() < (long) price) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có " + price + " xu mới có thể lập đội", ""));
                 return;
             }
@@ -1066,6 +1068,8 @@ class MapDoi {
 
     static void doCreateNewClan(Map map, Char player, Message message) {
         int price = 100000000;
+        // huan luyen vien AI: mien 100 trieu xu + huy hieu lap doi, toi da hlv_ai.doi_bot_toi_da doi do bot lam chu
+        final boolean mienPhi = HlvAiGame.mienPhiLapDoi(player);
 
         try {
             if (player.idClan != -1) {
@@ -1076,7 +1080,7 @@ class MapDoi {
                 return;
             }
 
-            if (player.potions[31] == 0) {
+            if (player.potions[31] == 0 && !mienPhi) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có huy hiệu lập đội", ""));
                 return;
             }
@@ -1086,7 +1090,7 @@ class MapDoi {
                 return;
             }
 
-            if (player.getxu() < (long) price) {
+            if (!mienPhi && player.getxu() < (long) price) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có " + price + " xu mới có thể lập đội", ""));
                 return;
             }
@@ -1138,7 +1142,7 @@ class MapDoi {
             // da di qua hai luot round-trip CSDL (checkClanName, sap toi la addNewClan), du
             // thoi gian de luong phien tieu het xu. Chot cu "getxu() > 0" con sai hon nua:
             // CHI CAN CON 1 XU la qua, subXu(price) roi chan ve 0 - lap bang gan nhu mien phi.
-            if (!player.truXuNeuDu((long) price, true, "map 79")) {
+            if (!mienPhi && !player.truXuNeuDu((long) price, true, "map 79")) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có " + price + " xu mới có thể lập đội", ""));
                 return;
             }
@@ -1181,7 +1185,9 @@ class MapDoi {
             } else {
                 // addNewClan that bai SAU khi da tru xu (o tren) - hoan lai, khong de nguoi
                 // choi mat xu ma khong nhan duoc gi.
-                player.addXu((long) price, "map 79 hoan lai", Char.XU_HOAN);
+                if (!mienPhi) {
+                    player.addXu((long) price, "map 79 hoan lai", Char.XU_HOAN);
+                }
                 player.sendMessage(MessageCreator.createServerAlertMessage("Tạo đội thất bại. Xin thử lại", ""));
                 if (clan.id != -1) {
                     idIconClan.remove(new Integer(cID));

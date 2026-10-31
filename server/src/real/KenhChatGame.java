@@ -149,7 +149,7 @@ public final class KenhChatGame {
         }
     }
 
-    /** Ten nguoi gui hien tren kenh chat (huan luyen vien AI: "bot_ai: ten"; khoaTen bo tien to khi tra cuu). */
+    /** Ten nguoi gui hien tren kenh chat (huan luyen vien AI: tien to + ten; khoaTen bo tien to khi tra cuu). */
     static String ten(final Char p) {
         return p.charname == null ? "" : p.tenHienThi();
     }

@@ -123,6 +123,14 @@ public final class HlvAiGame {
         });
         nhip.scheduleWithFixedDelay(HlvAiGame::moiPhut, 20, 60, TimeUnit.SECONDS);
         nhip.scheduleWithFixedDelay(HlvAiGame::chupMoc, 90, 600, TimeUnit.SECONDS);
+        // tien to ten (hlv_ai.tien_to_ten): doi tren web la ap dung trong <= 15 giay, khong khoi dong lai
+        HlvAi.datLaTenBot(HlvAiGame::laTenBotThat);
+        nhip.scheduleWithFixedDelay(() -> {
+            try {
+                HlvAi.datTienTo(CauHinhTrungTam.chuoi(HlvAi.K_TIEN_TO));
+            } catch (final Throwable ignored) {
+            }
+        }, 5, 15, TimeUnit.SECONDS);
     }
 
     static void moiPhut() {
@@ -183,12 +191,50 @@ public final class HlvAiGame {
         khoiDong();
     }
 
+    /**
+     * Bot lap doi: mien 100 trieu xu + huy hieu lap doi khi so doi do bot lam chu < hlv_ai.doi_bot_toi_da (mac dinh 3).
+     * Cap 50 + ten doi + icon van nhu nguoi choi. Quy doi cua doi bot -> nguoi that van qua han muc ngay (luong doi).
+     */
+    public static boolean mienPhiLapDoi(final Char p) {
+        if (!laBot(p)) {
+            return false;
+        }
+        final long tran = CauHinhTrungTam.so(HlvAi.K_DOI_BOT, HlvAi.DOI_BOT);
+        if (tran <= 0L) {
+            return false;
+        }
+        int dem = 0;
+        Connection conn = null;
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            conn = Database.instance.getConnection();
+            st = conn.createStatement();
+            rs = st.executeQuery("SELECT charMaster FROM tob_clan");
+            while (rs.next()) {
+                if (laTenBot(rs.getString(1) == null ? "" : rs.getString(1).trim())) {
+                    dem++;
+                }
+            }
+        } catch (final Exception e) {
+            return false;
+        } finally {
+            dong(rs, st, conn);
+        }
+        return dem < tran;
+    }
+
     public static boolean laBot(final Char p) {
         return p != null && p.laHlvAi;
     }
 
     public static boolean laTenBot(final String ten) {
-        return ten != null && tenBot.contains(HlvAi.boTienTo(ten).toLowerCase());
+        return ten != null && (laTenBotThat(ten) || tenBot.contains(HlvAi.boTienTo(ten).toLowerCase()));
+    }
+
+    /** Ten (khong tien to) co phai nhan vat bot (danh sach nap moi phut + bot vua vao game). */
+    static boolean laTenBotThat(final String ten) {
+        return ten != null && tenBot.contains(ten.trim().toLowerCase());
     }
 
     public static boolean laCharBot(final int charId) {
@@ -265,7 +311,7 @@ public final class HlvAiGame {
 
     private static volatile List<Integer> dsTaiKhoan = Collections.emptyList();
 
-    static List<Char> dsOnline() {
+    public static List<Char> dsOnline() {
         final List<Char> ra = new ArrayList<Char>();
         try {
             synchronized (CharManager.instance.vChars) {
@@ -734,7 +780,7 @@ public final class HlvAiGame {
         return daTaoBang;
     }
 
-    static void capNhat(final String sql, final Object... ts) {
+    public static void capNhat(final String sql, final Object... ts) {
         if (!taoBang()) {
             return;
         }

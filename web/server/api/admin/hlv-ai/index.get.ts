@@ -26,11 +26,12 @@ export default defineAdminHandler(async () => {
     ? await q(game, `SELECT luc, huong, kieu, bot_ten, nguoi_ten, xu, gia_tri, bi_chan, chi_tiet FROM tob_hlv_ai_chuyen ORDER BY id DESC LIMIT 60`)
     : []
   const dongNay = Date.now()
+  const tienTo = cauHinh['hlv_ai.tien_to_ten']?.giaTri ?? ''
   return {
     coBang: coTrangThai && coNgay,
     cauHinh,
     bot: bot.map(r => ({
-      taiKhoan: String(r.tai_khoan), charId: Number(r.char_id), ten: tenHienThiHlvAi(String(r.ten ?? ''), true), lop: Number(r.lop),
+      taiKhoan: String(r.tai_khoan), charId: Number(r.char_id), ten: tenHienThiHlvAi(String(r.ten ?? ''), true, tienTo), lop: Number(r.lop),
       tinhCach: String(r.tinh_cach), cap: Number(r.cap), capMucTieu: Number(r.cap_muc_tieu), mapId: Number(r.map_id),
       tenMap: String(r.ten_map ?? ''), hoatDong: String(r.hoat_dong ?? ''), xu: Number(r.xu),
       // dịch vụ ghi mỗi phút: quá 3 phút không cập nhật = dịch vụ đã dừng -> coi như offline
@@ -48,7 +49,7 @@ export default defineAdminHandler(async () => {
       soBotOnline: Number(r.so_bot_online), soNguoiOnline: Number(r.so_nguoi_online),
     })),
     chuyen: chuyen.map(r => ({
-      luc: String(r.luc), huong: Number(r.huong), kieu: String(r.kieu), bot: tenHienThiHlvAi(String(r.bot_ten), true), nguoi: String(r.nguoi_ten),
+      luc: String(r.luc), huong: Number(r.huong), kieu: String(r.kieu), bot: tenHienThiHlvAi(String(r.bot_ten), true, tienTo), nguoi: String(r.nguoi_ten),
       xu: Number(r.xu), giaTri: Number(r.gia_tri), biChan: Number(r.bi_chan) === 1, chiTiet: String(r.chi_tiet ?? ''),
     })),
   }

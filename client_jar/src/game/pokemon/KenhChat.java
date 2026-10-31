@@ -353,25 +353,12 @@ public final class KenhChat {
         them(taoDong(BAN_DO, tenMinh(), noiDung, CO_CUA_MINH));
     }
 
-    /**
-     * Vị trí ": " ngăn tên và nội dung trong dòng chat kiểu cũ. Tên Huấn luyện viên AI máy chủ gửi là "bot_ai: tên" -
-     * dấu ": " đầu tiên thuộc tên, nên tìm dấu sau nó.
-     */
-    static int nganTen(String s) {
-        int i = s.indexOf(": ");
-        int b = s.indexOf("bot_ai: ");
-        if (b >= 0 && i == b + 6) {
-            i = s.indexOf(": ", b + 8);
-        }
-        return i;
-    }
-
     /** Gói -60 (loa / chữ chạy). Máy chủ mới gửi kèm -124 nên chỉ ghi khi máy chủ cũ. */
     public static void loaCu(String s) {
         if (coMayChu || s == null) {
             return;
         }
-        int i = nganTen(s);
+        int i = s.indexOf(": ");
         them(i > 0 ? taoDong(THE_GIOI, s.substring(0, i), s.substring(i + 2), CO_LOA) : taoDong(HE_THONG, "", s, 0));
     }
 
@@ -380,7 +367,7 @@ public final class KenhChat {
         if (s == null) {
             return;
         }
-        int i = nganTen(s);
+        int i = s.indexOf(": ");
         String ten = i > 0 ? s.substring(0, i) : "";
         String nhan = "";
         if (ten.startsWith("(") && ten.indexOf(')') > 0) {
@@ -395,7 +382,7 @@ public final class KenhChat {
     /** Gói -5 (máy chủ cũ): tin riêng từ ten. "Nhóm" = chat đội kiểu cũ. */
     public static void riengCu(String ten, String noiDung) {
         if ("Nhóm".equals(ten)) {
-            int i = nganTen(noiDung);
+            int i = noiDung.indexOf(": ");
             them(taoDong(DOI, i > 0 ? noiDung.substring(0, i) : "", i > 0 ? noiDung.substring(i + 2) : noiDung, 0));
             return;
         }

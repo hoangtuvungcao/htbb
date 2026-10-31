@@ -158,8 +158,9 @@ async function tinhLoaiTru(cd: XhCaiDat): Promise<{ luat: XhLuatTen, userIds: nu
   return { luat, userIds: [...ids].slice(0, MAX_ID_LOAI_TRU * 3) }
 }
 
-/** Tên (chữ thường) nhân vật của Huấn luyện viên AI (account.team_user.la_bot = 1) - bảng xếp hạng hiện "bot_ai: tên". */
+/** Tên (chữ thường) nhân vật của Huấn luyện viên AI (account.team_user.la_bot = 1) - bảng xếp hạng hiện tiền tố + tên (hlv_ai.tien_to_ten). */
 let tenHlvAi = new Set<string>()
+let tienToHlvAi = ''
 
 async function napTenHlvAi(): Promise<void> {
   try {
@@ -171,6 +172,7 @@ async function napTenHlvAi(): Promise<void> {
       for (const r of rows) moi.add(String(r.charname).toLowerCase())
     }
     tenHlvAi = moi
+    tienToHlvAi = await chGiaTri('hlv_ai.tien_to_ten').catch(() => '')
   }
   catch {
     // CSDL chưa có cột la_bot (chưa nâng cấp): không có bot
@@ -219,7 +221,7 @@ function dongNv(r: Record<string, any>, giaTri: number | null, phu = '', vung?: 
   const lv = soNguyen(r.lastLv)
   const cls = soNguyen(r.class)
   return {
-    ten: tenHienThiHlvAi(String(r.charname ?? ''), tenHlvAi.has(String(r.charname ?? '').toLowerCase())),
+    ten: tenHienThiHlvAi(String(r.charname ?? ''), tenHlvAi.has(String(r.charname ?? '').toLowerCase()), tienToHlvAi),
     loai: speciesName(cls, lv, r.dex),
     dex: dexHienTai(cls, lv, r.dex),
     shiny: soNguyen(r.shiny) > 0,

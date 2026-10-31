@@ -7,10 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Huan luyen vien AI (bot lap may chu, chu game 31/10/2026): luat thuan com.htbb.pokemon.HlvAi (ten "bot_ai: ", he so thu
+ * Huan luyen vien AI (bot lap may chu, chu game 31/10/2026): luat thuan com.htbb.pokemon.HlvAi (tien to ten cau hinh duoc, he so thu
  * nhap, tran xu / tui, gia san cho, han muc bot -> nguoi that), danh muc nhom hlv_ai (14 khoa chinh, mac dinh hop le,
  * chong lam phat: he so < 100), noi game (moi duong cong xu / chuyen gia tri / rao ban / tien that deu qua real.HlvAiGame),
- * khoi SQL them_hlv_ai.sql, dich vu bot + unit systemd (khong tu bat), client cu tach ten "bot_ai: x: noi dung".
+ * khoi SQL them_hlv_ai.sql, dich vu bot + unit systemd (khong tu bat).
  */
 public final class KiemHlvAi {
 
@@ -34,15 +34,31 @@ public final class KiemHlvAi {
     }
 
     static void tenHienThi() {
-        Kiem.bang("ten bot co tien to", "bot_ai: minhanh", HlvAi.hienThi("minhanh", true));
+        HlvAi.datLaTenBot(t -> t.equalsIgnoreCase("minhanh"));
+        HlvAi.datTienTo("ai ");
+        Kiem.bang("tien to mac dinh 'ai '", "ai minhanh", HlvAi.hienThi("minhanh", true));
         Kiem.bang("ten nguoi giu nguyen", "minhanh", HlvAi.hienThi("minhanh", false));
-        Kiem.bang("khong them tien to hai lan", "bot_ai: minhanh", HlvAi.hienThi("bot_ai: minhanh", true));
-        Kiem.bang("bo tien to (tra loi tin rieng)", "minhanh", HlvAi.boTienTo("bot_ai: minhanh"));
-        Kiem.bang("bo tien to khong phan biet hoa thuong / mat dau cach", "minhanh", HlvAi.boTienTo("BOT_AI:minhanh"));
+        Kiem.bang("khong them tien to hai lan", "ai minhanh", HlvAi.hienThi("ai minhanh", true));
+        Kiem.bang("bo tien to (tra loi tin rieng)", "minhanh", HlvAi.boTienTo("ai minhanh"));
+        Kiem.bang("bo tien to khong phan biet hoa thuong", "minhanh", HlvAi.boTienTo("AI minhanh"));
         Kiem.bang("ten thuong khong doi khi bo tien to", "minhanh", HlvAi.boTienTo(" minhanh "));
-        // ten that chi [0-9a-zA-Z] (CreateCharHandler.checkInfo) -> tien to khong bao gio trung ten nguoi choi
-        Kiem.sai("tien to khong phai ten hop le", HlvAi.TIEN_TO.matches("[0-9a-zA-Z]+"));
-        Kiem.dung("ten bot dai nhat (10 ky tu) van gon cho J2ME (<= 18 ky tu)", HlvAi.hienThi("abcdefghij", true).length() <= 18);
+        HlvAi.datTienTo("AI");
+        Kiem.bang("doi tien to ngay, dinh lien ten", "AIminhanh", HlvAi.hienThi("minhanh", true));
+        Kiem.bang("tien to moi bo duoc (phan con lai la bot)", "minhanh", HlvAi.boTienTo("AIminhanh"));
+        Kiem.bang("tien to CU van bo duoc (ten client con giu)", "minhanh", HlvAi.boTienTo("ai minhanh"));
+        // tien to dinh lien: nguoi choi that "aikhanh" (khong phai bot) KHONG bi cat thanh "khanh"
+        Kiem.bang("ten nguoi bat dau bang 'ai' khong bi cat", "aikhanh", HlvAi.boTienTo("aikhanh"));
+        for (final String dung : new String[]{"ai ", "AI", "[Bot] ", "BOT-", "bạn ai ", "robot_"}) {
+            Kiem.dung("tien to hop le: '" + dung + "'", HlvAi.tienToHopLe(dung));
+        }
+        for (final String sai : new String[]{"", "   ", "abc ", "ai:", "qua dai hon 12 ai", "\t", "pk "}) {
+            Kiem.sai("tien to bi tu choi (phai co AI / BOT, khong ':'): '" + sai + "'", HlvAi.tienToHopLe(sai));
+        }
+        HlvAi.datTienTo("xyz");
+        Kiem.bang("gia tri sai luu trong CSDL -> mac dinh 'ai '", "ai minhanh", HlvAi.hienThi("minhanh", true));
+        Kiem.dung("ten bot dai nhat (tien to 12 + ten 10) <= 22 ky tu cho J2ME", HlvAi.TIEN_TO_TOI_DA + 10 <= 22);
+        HlvAi.datTienTo("ai ");
+        HlvAi.datLaTenBot(null);
     }
 
     static void kinhTe() {
@@ -86,20 +102,25 @@ public final class KiemHlvAi {
     static void danhMuc() throws Exception {
         final String[] khoa = {HlvAi.K_HE_SO, HlvAi.K_TRAN_XU, HlvAi.K_TRAN_VAT_PHAM, HlvAi.K_GIA_BAN, HlvAi.K_CHUYEN_NGUOI,
             HlvAi.K_CHUYEN_TONG, "hlv_ai.bat", "hlv_ai.so_luong", "hlv_ai.lich_gio", "hlv_ai.ty_le_lop", "hlv_ai.ty_le_tinh_cach",
-            "hlv_ai.cap_muc_tieu", "hlv_ai.ban_do", "hlv_ai.hoat_dong"};
+            "hlv_ai.cap_muc_tieu", "hlv_ai.ban_do", "hlv_ai.hoat_dong", HlvAi.K_DOI_BOT, HlvAi.K_TIEN_TO};
         int chinh = 0;
         for (final DinhNghiaKhoa d : CauHinhTrungTam.danhMuc()) {
             if ("hlv_ai".equals(d.nhom)) {
                 chinh += "chinh".equals(d.lop()) ? 1 : 0;
             }
         }
-        Kiem.bang("danh muc: nhom hlv_ai co 14 khoa chinh", 14, chinh);
+        Kiem.bang("danh muc: nhom hlv_ai co 16 khoa chinh", 16, chinh);
         for (final String k : khoa) {
             Kiem.dung("danh muc co khoa " + k, CauHinhTrungTam.dinhNghia(k) != null);
         }
         Kiem.bang("mac dinh he so thu nhap (khop HlvAi.HE_SO)", String.valueOf(HlvAi.HE_SO), CauHinhTrungTam.dinhNghia(HlvAi.K_HE_SO).macDinh);
         Kiem.dung("chong lam phat: he so mac dinh < 100", HlvAi.HE_SO < 100);
         Kiem.bang("mac dinh tran xu", String.valueOf(HlvAi.TRAN_XU), CauHinhTrungTam.dinhNghia(HlvAi.K_TRAN_XU).macDinh);
+        Kiem.bang("tran xu mac dinh 300.000 (chu game duyet)", 300000L, HlvAi.TRAN_XU);
+        Kiem.bang("mac dinh so doi bot", String.valueOf(HlvAi.DOI_BOT), CauHinhTrungTam.dinhNghia(HlvAi.K_DOI_BOT).macDinh);
+        Kiem.bang("mac dinh tien to", HlvAi.TIEN_TO_MAC_DINH, CauHinhTrungTam.dinhNghia(HlvAi.K_TIEN_TO).macDinh);
+        Kiem.dung("mau tien to danh muc == luat may chu", CauHinhTrungTam.dinhNghia(HlvAi.K_TIEN_TO).mauChu().equals(HlvAi.MAU_TIEN_TO));
+        Kiem.dung("mac dinh tien to hop le", HlvAi.tienToHopLe(CauHinhTrungTam.dinhNghia(HlvAi.K_TIEN_TO).macDinh));
         Kiem.bang("mac dinh tran tui", String.valueOf(HlvAi.TRAN_VAT_PHAM), CauHinhTrungTam.dinhNghia(HlvAi.K_TRAN_VAT_PHAM).macDinh);
         Kiem.bang("mac dinh gia ban toi thieu", String.valueOf(HlvAi.GIA_BAN), CauHinhTrungTam.dinhNghia(HlvAi.K_GIA_BAN).macDinh);
         Kiem.bang("mac dinh han muc moi nguoi", String.valueOf(HlvAi.CHUYEN_NGUOI), CauHinhTrungTam.dinhNghia(HlvAi.K_CHUYEN_NGUOI).macDinh);
@@ -133,8 +154,12 @@ public final class KiemHlvAi {
         Kiem.dung("ten goi 5 (vao tam nhin) co tien to", doc("src/real/MessageCreator.java").contains("HlvAi.hienThi(ch.getName(), ch.laHlvAi)"));
         Kiem.dung("tra cuu ten bo tien to (CharManager + kenh chat)", doc("src/real/CharManager.java").contains("HlvAi.boTienTo(name)")
                 && doc("src/com/htbb/pokemon/KenhChatLogic.java").contains("HlvAi.boTienTo(ten)"));
-        final String kc = doc("../client_jar/src/game/pokemon/KenhChat.java");
-        Kiem.dung("client cu: tach ten 'bot_ai: x: noi dung' dung cho", kc.contains("static int nganTen(String s)") && kc.split("nganTen\\(", -1).length - 1 == 4);
+        Kiem.dung("tien to doi tren web ap dung ngay (nhip 15 giay)", doc("src/real/HlvAiGame.java").contains("HlvAi.datTienTo(CauHinhTrungTam.chuoi(HlvAi.K_TIEN_TO))"));
+        Kiem.dung("doi bot: mien 100 trieu + huy hieu chi qua HlvAiGame.mienPhiLapDoi", doc("src/real/MapDoi.java").split("HlvAiGame.mienPhiLapDoi\\(", -1).length - 1 == 2
+                && doc("src/real/MapDoi.java").contains("if (!mienPhi && !player.truXuNeuDu((long) price, true, \"map 79\"))"));
+        Kiem.dung("luong doi cua bot cho nguoi that qua han muc", doc("src/real/MapNhapText.java").split("HlvAiGame.chanChuyen\\(player, p, player, \"luong_doi\"", -1).length - 1 == 2);
+        Kiem.dung("tien to khong ':' -> chat kieu cu tach ten o ': ' khong can xu ly rieng", !HlvAi.tienToHopLe("ai:"));
+        Kiem.dung("web cung mau + cau bao loi tien to", doc("../web/shared/utils/hlvAi.ts").contains(HlvAi.LOI_TIEN_TO));
         final String sql = doc("../sql/htbb.sql");
         final String khoi = sql.substring(sql.indexOf("-- >>> them_hlv_ai.sql"));
         Kiem.dung("sql: cot la_bot (them neu chua co)", khoi.contains("ALTER TABLE `account`.`team_user` ADD COLUMN IF NOT EXISTS `la_bot`"));

@@ -1734,7 +1734,7 @@ public class MessageCreator {
         int indexdxyDaGui = -1;
         try {
             m.dos.writeShort(ch.id);
-            // huan luyen vien AI: "bot_ai: ten" (ban sao CharCopy giu getName rieng)
+            // huan luyen vien AI: tien to + ten (ban sao CharCopy giu getName rieng)
             final String name = com.htbb.pokemon.HlvAi.hienThi(ch.getName(), ch.laHlvAi);
             m.dos.writeUTF(name);
             m.dos.writeShort(ch.x);

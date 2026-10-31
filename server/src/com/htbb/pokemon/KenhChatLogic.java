@@ -225,7 +225,7 @@ public final class KenhChatLogic {
     }
 
     public static String khoaTen(final String ten) {
-        // ten huan luyen vien AI client thay la "bot_ai: ten" -> khoa tra cuu la ten that
+        // ten huan luyen vien AI client thay la tien to + ten -> khoa tra cuu la ten that
         return ten == null ? "" : HlvAi.boTienTo(ten).toLowerCase(Locale.ROOT);
     }
 

@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * <pre>
  *  Nhan dien: cot account.team_user.la_bot = 1 (KHONG gui xuong client). Ten nhan vat luu nguyen; moi cho may chu GUI
- *             ten cho client hien {@link #TIEN_TO} + ten ({@link #hienThi}). Ten that chi co [0-9a-zA-Z] (CreateCharHandler)
+ *             ten cho client hien tien to (cau hinh hlv_ai.tien_to_ten, mac dinh "ai ") + ten ({@link #hienThi}). Ten that chi co [0-9a-zA-Z] (CreateCharHandler)
  *             nen tien to (co '_' ':' ' ') khong trung ten nguoi choi nao; ten client gui nguoc lai (tin rieng, ket ban,
  *             tim ten) duoc {@link #boTienTo} truoc khi tra cuu.
  *  Kinh te:   bot choi tu do nhu nguoi, may chu ghim lam phat:
@@ -28,7 +28,6 @@ import java.util.Set;
  */
 public final class HlvAi {
 
-    public static final String TIEN_TO = "bot_ai: ";
 
     /** Khoa cau_hinh nhom hlv_ai (chinh tren web, ap dung ngay). */
     public static final String K_HE_SO = "hlv_ai.he_so_thu_nhap";
@@ -37,9 +36,12 @@ public final class HlvAi {
     public static final String K_GIA_BAN = "hlv_ai.gia_ban_toi_thieu";
     public static final String K_CHUYEN_NGUOI = "hlv_ai.chuyen_moi_nguoi_ngay";
     public static final String K_CHUYEN_TONG = "hlv_ai.chuyen_tong_ngay";
+    public static final String K_DOI_BOT = "hlv_ai.doi_bot_toi_da";
+    /** So doi (bang) toi da do bot lam chu - bot lap doi khong mat 100 trieu xu / huy hieu. */
+    public static final int DOI_BOT = 3;
 
     public static final int HE_SO = 60;
-    public static final long TRAN_XU = 2000000L;
+    public static final long TRAN_XU = 300000L;
     public static final int TRAN_VAT_PHAM = 60;
     public static final int GIA_BAN = 100;
     public static final long CHUYEN_NGUOI = 50000L;
@@ -57,29 +59,79 @@ public final class HlvAi {
     private HlvAi() {
     }
 
-    // ------------------------------------------------------------------ ten hien thi
+    // ------------------------------------------------------------------ ten hien thi (tien to cau hinh hlv_ai.tien_to_ten)
+    /** Khoa cau hinh tien to ten (chinh tren /admin/hlv-ai, ap dung ngay). */
+    public static final String K_TIEN_TO = "hlv_ai.tien_to_ten";
+    /** Mac dinh: "ai " -> ten hien "ai minhanh". */
+    public static final String TIEN_TO_MAC_DINH = "ai ";
+    public static final int TIEN_TO_TOI_DA = 12;
+    /**
+     * Mau tien to (danh muc + web + may chu dung chung): 1-12 ky tu, khong ':' / ky tu dieu khien (chu chat kieu cu tach ten
+     * o ": "), PHAI chua "ai" hoac "bot" (khong phan biet hoa thuong) de nguoi choi nhan ra Huan luyen vien AI.
+     */
+    public static final String MAU_TIEN_TO = "^(?=.*([Aa][Ii]|[Bb][Oo][Tt]))[^:\\u0000-\\u001F]{1,12}$";
+    public static final String LOI_TIEN_TO = "Tiền tố phải có chữ AI hoặc BOT để người chơi nhận ra Huấn luyện viên AI";
 
-    /** Ten client thay cho mot nhan vat: bot -> "bot_ai: ten", nguoi -> nguyen ten. */
-    public static String hienThi(final String ten, final boolean laBot) {
-        if (ten == null || !laBot || ten.startsWith(TIEN_TO)) {
-            return ten;
-        }
-        return TIEN_TO + ten;
+    private static volatile String tienTo = TIEN_TO_MAC_DINH;
+    /** Moi tien to da dung tu luc bat may (ten client con giu tu truoc khi doi). */
+    private static final java.util.Set<String> DA_DUNG = new java.util.concurrent.CopyOnWriteArraySet<String>(
+            Arrays.asList(TIEN_TO_MAC_DINH, "bot_ai: "));
+    /** Ten (khong tien to) co phai bot dang biet khong - real.HlvAiGame dat; null = coi moi ten la bot (kiem thu). */
+    private static volatile java.util.function.Predicate<String> laTenBot = null;
+
+    public static boolean tienToHopLe(final String cauHinh) {
+        return cauHinh != null && !cauHinh.trim().isEmpty() && cauHinh.matches(MAU_TIEN_TO);
     }
 
-    /** Bo tien to (ten client gui nguoc lai khi tra loi tin rieng / ket ban / tim ten). */
+    /** Tien to that dung: gia tri cau hinh hop le giu NGUYEN (co the dinh lien ten), sai luat = mac dinh "ai ". */
+    public static String chuan(final String cauHinh) {
+        return tienToHopLe(cauHinh) ? cauHinh : TIEN_TO_MAC_DINH;
+    }
+
+    /** Dat tien to moi (nhip 15 giay cua real.HlvAiGame). Tien to cu van duoc boTienTo nhan ra. */
+    public static void datTienTo(final String cauHinh) {
+        final String t = chuan(cauHinh);
+        DA_DUNG.add(t);
+        tienTo = t;
+    }
+
+    public static void datLaTenBot(final java.util.function.Predicate<String> p) {
+        laTenBot = p;
+    }
+
+    public static String tienTo() {
+        return tienTo;
+    }
+
+    /** Ten client thay cho mot nhan vat: bot -> tien to + ten, nguoi -> nguyen ten. */
+    public static String hienThi(final String ten, final boolean laBot) {
+        if (ten == null || !laBot) {
+            return ten;
+        }
+        final String t = tienTo;
+        return ten.startsWith(t) ? ten : t + ten;
+    }
+
+    /**
+     * Bo tien to (hien tai hoac da dung) khoi ten client gui nguoc lai (tin rieng, ket ban, tim ten). Tien to co the dinh
+     * lien ten ("ai" + "minh" = "aiminh" trung ten nguoi choi "aiminh") nen CHI cat khi phan con lai la ten mot bot.
+     */
     public static String boTienTo(final String ten) {
         if (ten == null) {
             return null;
         }
-        String t = ten.trim();
-        // client co the cat mat dau cach cuoi tien to hoac doi hoa thuong
-        if (t.regionMatches(true, 0, TIEN_TO, 0, TIEN_TO.length())) {
-            return t.substring(TIEN_TO.length()).trim();
-        }
-        final String gon = TIEN_TO.trim();
-        if (t.regionMatches(true, 0, gon, 0, gon.length())) {
-            return t.substring(gon.length()).trim();
+        final String t = ten.trim();
+        final java.util.function.Predicate<String> la = laTenBot;
+        for (final String tt : DA_DUNG) {
+            final String g = tt.trim();
+            for (final String x : new String[]{tt, g}) {
+                if (!x.isEmpty() && t.length() > x.length() && t.regionMatches(true, 0, x, 0, x.length())) {
+                    final String con = t.substring(x.length()).trim();
+                    if (la == null || la.test(con)) {
+                        return con;
+                    }
+                }
+            }
         }
         return t;
     }
