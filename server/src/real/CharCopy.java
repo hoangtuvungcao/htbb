@@ -774,7 +774,7 @@ public class CharCopy extends Char {
 
                     this.map.checkTrade(c);
                     if (c.mapID == Map.idMapTown && c.idClan != -1 && Map.getTown[p.inCountry] && Map.giveCardFail(c)) {
-                        this.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(c.charname + " giao thẻ thất bại"), c.myCountry);
+                        this.map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(c.tenHienThi() + " giao thẻ thất bại"), c.myCountry);
                         this.map.sendAllPlayer(MessageCreator.createMsgStartGetTown(p.inCountry), p.inCountry);
                     }
 
@@ -829,11 +829,11 @@ public class CharCopy extends Char {
                     if (c.myCountry != p.myCountry && this.map.mapIDLoadMap != 118 && this.map.mapIDLoadMap != 17 && !this.map.isMapMonster()) {
                         if (p.myCountry == p.inCountry) {
                             if (!timeAutoPK) {
-                                Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage(p.charname + " " + Map.nameCountry[p.myCountry] + " đánh bại " + c.charname + " " + Map.nameCountry[c.myCountry] + " tại " + Map.getNameMap(this.map.mapId)));
+                                Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage(p.tenHienThi() + " " + Map.nameCountry[p.myCountry] + " đánh bại " + c.charname + " " + Map.nameCountry[c.myCountry] + " tại " + Map.getNameMap(this.map.mapId)));
                             }
                         } else {
                             if (!timeAutoPK) {
-                                Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage(c.charname + " " + Map.nameCountry[c.myCountry] + " bị " + p.charname + " " + Map.nameCountry[p.myCountry] + " đánh bại tại " + Map.getNameMap(this.map.mapId)));
+                                Map.sendAllCharServer(17, MessageCreator.createServerAlertAutoOffMessage(c.tenHienThi() + " " + Map.nameCountry[c.myCountry] + " bị " + p.charname + " " + Map.nameCountry[p.myCountry] + " đánh bại tại " + Map.getNameMap(this.map.mapId)));
                             }
 
                             Map.addCharKiller(p, p.inCountry);

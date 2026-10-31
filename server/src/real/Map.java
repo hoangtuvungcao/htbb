@@ -5738,7 +5738,7 @@ public class Map implements Runnable {
                     try {
                         sendAllCharServer(
                                 -1,
-                                MessageCreator.createServerAlertAutoOffMessage(p.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi dùng bóng vàng")
+                                MessageCreator.createServerAlertAutoOffMessage(p.tenHienThi() + " đã nhận được " + gemTemplate[idgift[index]].name + " khi dùng bóng vàng")
                         );
                     } catch (IOException var14) {
                     }
@@ -9938,7 +9938,7 @@ public class Map implements Runnable {
                 for (int i = 0; i < allmem.size(); i++) {
                     Char p = CharManager.instance.getCharByCharName(((CharClan) allmem.get(i)).charname);
                     if (p != null) {
-                        p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã quyên góp " + money + " xu cho bang.", ""));
+                        p.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " đã quyên góp " + money + " xu cho bang.", ""));
                     }
                 }
 
@@ -10070,7 +10070,7 @@ public class Map implements Runnable {
                             player.nameTangPet = "";
                             p.nameTangPet = "";
                             QuanLyThuGame.chanNhan(player, "giao dich pet tu " + p.charname);
-                            p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã đầy ô thú, không nhận thêm được.", ""));
+                            p.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " đã đầy ô thú, không nhận thêm được.", ""));
                             return;
                         }
 
@@ -10078,7 +10078,7 @@ public class Map implements Runnable {
                             player.nameTangPet = "";
                             p.nameTangPet = "";
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
-                            p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " không đủ xu", ""));
+                            p.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " không đủ xu", ""));
                             return;
                         }
 
@@ -10171,7 +10171,7 @@ public class Map implements Runnable {
                         p.nameTangPet = player.charname;
                         p.sendMessage(
                                 MessageCreator.createMsgPopUp(
-                                        112, 112, player.charname + " muốn giao dịch " + pet.getName() + " với giá " + player.moneyTrade + ". Bạn có đồng ý không?"
+                                        112, 112, player.tenHienThi() + " muốn giao dịch " + pet.getName() + " với giá " + player.moneyTrade + ". Bạn có đồng ý không?"
                                 )
                         );
                         break;
@@ -10204,7 +10204,7 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chuyển kim cương hiện không khả dụng.", ""));
                     } else {
                         ch.sendMessage(
-                                MessageCreator.createServerAlertMessage(player.charname + " không đồng ý nhận " + cReceive.soluong + " kim cương của bạn.", "")
+                                MessageCreator.createServerAlertMessage(player.tenHienThi() + " không đồng ý nhận " + cReceive.soluong + " kim cương của bạn.", "")
                         );
                     }
 
@@ -10378,7 +10378,7 @@ public class Map implements Runnable {
                         p.potions[92]--;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                        p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã nhận lời dự Lễ kết đôi của bạn", ""));
+                        p.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " đã nhận lời dự Lễ kết đôi của bạn", ""));
                         player.sendMessage(
                                 MessageCreator.createServerAlertMessage(
                                         "Bạn đã nhận lời dự Lễ kết đôi của " + p.charname + ". Lễ diễn ra ngày " + wd.dayParty, ""
@@ -10508,7 +10508,7 @@ public class Map implements Runnable {
                         if (ok == 0) {
                             px.nameCompetitor = "";
                             px.moneyThachdau = 0;
-                            px.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " không chấp nhận lời thách đấu của bạn", ""));
+                            px.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " không chấp nhận lời thách đấu của bạn", ""));
                             return;
                         }
 
@@ -12296,11 +12296,11 @@ public class Map implements Runnable {
             try {
                 if (idgift[index] == 70) {
                     sendAllCharServer(
-                            -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Articuno khi mở hộp quà Halloween")
+                            -1, MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " đã nhận được Articuno khi mở hộp quà Halloween")
                     );
                 } else if (idgift[index] == 86) {
                     sendAllCharServer(
-                            -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được Moltres khi mở hộp quà Halloween")
+                            -1, MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " đã nhận được Moltres khi mở hộp quà Halloween")
                     );
                 }
             } catch (IOException var14) {
@@ -12679,7 +12679,7 @@ public class Map implements Runnable {
                 if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_40) {
                     try {
                         sendAllCharServer(
-                                -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " đốt đèn")
+                                -1, MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " đã nhận được " + gemTemplate[idgift[index]].name + " đốt đèn")
                         );
                     } catch (IOException var12) {
                     }
@@ -12737,7 +12737,7 @@ public class Map implements Runnable {
             if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_40) {
                 try {
                     sendAllCharServer(
-                            -1, MessageCreator.createServerAlertAutoOffMessage(player.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " đốt đèn")
+                            -1, MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " đã nhận được " + gemTemplate[idgift[index]].name + " đốt đèn")
                     );
                 } catch (IOException var12) {
                 }
@@ -16896,7 +16896,7 @@ public class Map implements Runnable {
         try {
             Map toMap = (Map) RealController.mapList.get(mapID);
             if (getTown[player.inCountry] && giveCardFail(player)) {
-                this.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(player.charname + " giao thẻ thất bại"), player.inCountry);
+                this.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " giao thẻ thất bại"), player.inCountry);
                 this.sendAllPlayer(MessageCreator.createMsgStartGetTown(player.inCountry), player.inCountry);
             }
 

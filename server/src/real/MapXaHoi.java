@@ -133,7 +133,7 @@ class MapXaHoi {
             }
 
             if (p.idArena > -1) {
-                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã chấp nhận tham gia một trận đấu khác.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " đã chấp nhận tham gia một trận đấu khác.", ""));
                 return;
             }
 
@@ -268,9 +268,9 @@ class MapXaHoi {
                 Database.instance.saveFriendList(player);
                 p.sendMessage(MessageCreator.createMsgFriendList(p));
                 player.sendMessage(MessageCreator.createMsgFriendList(player));
-                p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã đồng ý kết bạn", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " đã đồng ý kết bạn", ""));
             } else {
-                p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " không đồng ý kết bạn với bạn", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " không đồng ý kết bạn với bạn", ""));
             }
         } catch (Exception var8) {
             var8.printStackTrace();
@@ -344,7 +344,7 @@ class MapXaHoi {
                     return;
                 }
 
-                player.sendMessage(MessageCreator.createServerAlertMessage(p.charname + " đã nhận lời dự một Lễ kết đôi khác.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage(p.tenHienThi() + " đã nhận lời dự một Lễ kết đôi khác.", ""));
                 return;
             }
         } catch (Exception var7) {

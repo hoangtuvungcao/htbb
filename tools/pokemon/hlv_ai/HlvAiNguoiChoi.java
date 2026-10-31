@@ -40,6 +40,9 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
     final DichVuHlvAi.Ho ho;
     final Random rd;
     volatile boolean dungLai;
+    /** Kiem khai thac: >= 0 = dung yen o ban do nay (van tra loi giao dich / thach dau / trao doi / vao doi); khan = deo khan PK. */
+    volatile int dungYen = -1;
+    volatile boolean dungYenKhan;
     volatile String viec = "dang_nhap";
     volatile long vaoLuc, henRa;
     volatile boolean daChao;
@@ -219,6 +222,25 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         if (nay != ngayDanh) { ngayDanh = nay; phutDanhNgay = 0; } // nang luong danh quai: ngay moi (khong tua dong ho)
         if (ket.size() > 50) ket.clear();
         if (loi.size() > 50) loi.clear();
+        if (dungYen >= 0) { // kiem khai thac: dung yen cho nguoi that
+            viec = "dung_yen";
+            if (b.hp <= 0) hoiSinh();
+            if (b.mapId != dungYen && b.mapId != 205) toi(dungYen);
+            if (dungYenKhan && khanMinh < 0 && !KichBanDS.laLang(b.mapId)) {
+                int k = -1;
+                for (int t = 14; t <= 18; t++) if (b.soThuoc(t) > 0) k = t;
+                if (k < 0) k = muaKhan();
+                else { b.gui(22, (byte) k); b.bom(800); khanMinh = k; }
+            } else if (!dungYenKhan && khanMinh >= 14) {
+                b.gui(22, (byte) khanMinh);
+                khanMinh = -1;
+            }
+            if (b.mapId == 205) sanDau(-1);
+            xuLyXaHoi();
+            b.bom(3000);
+            b.lamMoi();
+            return;
+        }
         if (b.mapId == 205) { viec = "thach_dau"; sanDau(-1); return; } // bi keo vao san thach dau (dong y loi moi)
         if (b.mapId == KichBanPhoBanCup.MAP_PB) { viec = "pho_ban"; trongPhoBan(System.currentTimeMillis() + 8 * 60000L); return; } // vao cung nhom
         String v = chonViec();

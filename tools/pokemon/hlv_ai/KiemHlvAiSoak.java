@@ -48,6 +48,19 @@ final class KiemHlvAiSoak {
     static final Map<String, Object[]> VI_TRI = new ConcurrentHashMap<>(); // tai khoan -> {map, ox, oy, luc doi cuoi, viec}
     static long viTriLog;
 
+    static void batDauKhaiThac() {
+        Thread t = new Thread(() -> {
+            try {
+                khaiThacTapTrung();
+            } catch (Throwable e) {
+                System.out.println("[KHAI THAC] dung: " + e);
+                e.printStackTrace(System.out);
+            }
+        }, "hlv-khai-thac");
+        t.setDaemon(true);
+        t.start();
+    }
+
     static void batDau() {
         Thread t = new Thread(() -> {
             try {
@@ -258,7 +271,7 @@ final class KiemHlvAiSoak {
             KichBanTinhNangThuong.ganHop(id, 16 + id % 3);
             GHI_CHU.add("SQL: Hop PC " + user + " 1 con (thu trao doi Pokemon voi bot)");
             vao();
-            boolean chu = user.equals("kt109");
+            boolean chu = user.equals("kt109") || user.equals("kt113");
             gm("slv " + b.ten + " " + (chu ? 50 : 45) + " 0");
             gm("smn " + b.ten + " 300000 0 0");
             if (chu) {
@@ -395,6 +408,45 @@ final class KiemHlvAiSoak {
 
         boolean chuDoi;
 
+        /** PK canh lang: nguoi that + bot cung deo khan, ra ban do ngoai lang ke ben, nguoi danh bot; doi chieu xu / mon. */
+        void pkBotCanh(HlvAiNguoiChoi bot) throws Exception {
+            int lang = b.mapId;
+            int dich = BotXuyenSuot.duong(lang, 1) != null ? 1 : BotXuyenSuot.duong(lang, 2) != null ? 2 : -1;
+            if (dich < 0) { khaiThac("pk_canh.khong_co_bai", 0, false); return; }
+            int khan = -1;
+            for (int t = 14; t <= 18; t++) if (b.soThuoc(t) > 0) khan = t;
+            if (khan < 0 && KichBanDS2.vaoNha(b, 103)) { khan = 15; b.gui(24, (byte) 1, (byte) 4, (short) khan, (short) 1); b.bom(1200); KichBanDS2.raNgoai(b); }
+            bot.dungYenKhan = true;
+            bot.dungYen = dich;
+            b.lamMoi();
+            long xu0 = b.xu;
+            int mon0 = b.tongMon();
+            int don = 0;
+            if (khan >= 0 && toi(dich)) {
+                b.gui(22, (byte) khan);
+                b.bom(800);
+                long cho = System.currentTimeMillis() + 90000;
+                while (System.currentTimeMillis() < cho && !(bot.b.mapId == dich && bot.khanMinh >= 14 && bot.khanMinh != khan)) b.bom(2000);
+                BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
+                for (int lan = 0; lan < 40 && bot.b.mapId == b.mapId && b.hp > 0; lan++) {
+                    int[] vt = b.nguoi.get(bot.b.actor);
+                    if (vt != null && lan % 6 == 0 && bd != null) { int[] o = bd.oGan(vt[0] / 16, vt[1] / 16, 2); if (o != null) b.diDuong(bd, o[0], o[1]); }
+                    b.gui(6, (short) bot.b.actor, (byte) 0);
+                    don++;
+                    b.bom(500);
+                }
+                b.bom(11000);
+                b.gui(22, (byte) khan);
+                b.bom(500);
+            }
+            if (b.hp <= 0) hoiSinh();
+            b.lamMoi();
+            khaiThac(don > 0 ? "pk_canh" : "pk_canh.khong_danh", Math.max(0, b.xu - xu0) + Math.max(0, b.tongMon() - mon0) * 1000L, false);
+            bot.dungYenKhan = false;
+            bot.dungYen = lang;
+            if (b.mapId != lang) toi(lang);
+        }
+
         void dauTruong() throws Exception {
             if (KichBanDauTruong.chonDauTruong(b, "Đấu trường Bảo Bối") < 0) { khaiThac("dau_truong.khong_mo", 0, false); return; }
             int m = b.moc();
@@ -413,6 +465,78 @@ final class KiemHlvAiSoak {
             b.lamMoi();
             khaiThac("dau_truong", Math.max(0, b.xu - xu0), bd == null);
         }
+    }
+
+    // ================================================================== khai thac tap trung (-Dhlv.khaiThac=1)
+    /**
+     * Thu khai thac CO Y, chac chan gap duoc bot: 3 bot (cap 45-55 qua GM) DUNG YEN trong lang canh nguoi that (bot van
+     * tu tra loi giao dich / thach dau / trao doi Pokemon / loi moi vao doi trong luong doc goi nhu luc choi). Moi nguoi that
+     * lap: giao dich thuoc, thach dau cuoc 5.000, trao doi Pokemon, PK (ca hai deo khan, ra bai canh lang), chu doi moi bot vao
+     * doi (bot gop quy). Han muc bot -> moi nguoi dat thap (5.000) tu dau -> moi lan sau lan dau phai bi chan.
+     */
+    static void khaiThacTapTrung() throws Exception {
+        ghi("# Khai thác tập trung - " + new Date());
+        Thread.sleep(60000);
+        BotChucNang.sql("INSERT INTO cau_hinh (khoa,gia_tri,sua_boi,sua_luc) VALUES ('hlv_ai.chuyen_moi_nguoi_ngay','5000','khai-thac',NOW())"
+                + " ON DUPLICATE KEY UPDATE gia_tri='5000'");
+        BotChucNang.sql("UPDATE cau_hinh_phien_ban SET phien_ban = phien_ban + 1");
+        GHI_CHU.add("SQL: hlv_ai.chuyen_moi_nguoi_ngay = 5000 (moi lan chuyen bot -> nguoi sau lan dau phai bi chan)");
+        List<NguoiThat> nt = new ArrayList<>();
+        for (int i = 113; i <= 115; i++) {
+            NguoiThat n = new NguoiThat(String.format("kt%03d", i));
+            n.chuanBi();
+            nt.add(n);
+        }
+        // bot dung yen canh nguoi that
+        List<HlvAiNguoiChoi> bots = new ArrayList<>();
+        long het = System.currentTimeMillis() + 5 * 60000L;
+        while (bots.size() < 3 && System.currentTimeMillis() < het) {
+            for (DichVuHlvAi.Ho h : DichVuHlvAi.HO) {
+                HlvAiNguoiChoi p = h.dang;
+                if (p != null && p.b != null && !p.b.dut && !bots.contains(p) && bots.size() < 3) {
+                    gm("slv " + p.b.ten + " " + (45 + DichVuHlvAi.RD.nextInt(10)) + " 0");
+                    p.dungYen = nt.get(0).b.mapId;
+                    bots.add(p);
+                }
+            }
+            Thread.sleep(5000);
+        }
+        ghi("\nBot đứng yên: " + bots.size() + " ở bản đồ " + nt.get(0).b.mapId + "; người thật: kt113..kt115 (kt113 chủ đội).\n");
+        Thread.sleep(90000); // bot ve lang
+        long ketThuc = System.currentTimeMillis() + Long.getLong("hlv.khaiThacPhut", 25L) * 60000L;
+        int vong = 0;
+        while (System.currentTimeMillis() < ketThuc) {
+            for (NguoiThat n : nt) {
+                for (HlvAiNguoiChoi bot : bots) {
+                    if (bot.b == null || bot.b.dut || bot.b.mapId != n.b.mapId) continue;
+                    try {
+                        switch (vong % 5) {
+                            case 0: n.gdLap(bot, true); break;
+                            case 1: n.thachDauBot(bot); break;
+                            case 2: n.traoDoiBot(bot); break;
+                            case 3: n.moiDoi(bot); break;
+                            default: n.pkBotCanh(bot); break;
+                        }
+                    } catch (Exception e) {
+                        khaiThac("loi", 0, false);
+                        System.out.println("[KHAI THAC] " + n.user + ": " + e);
+                    }
+                    n.cho(5000);
+                    if (n.b.mapId != nt.get(0).b.mapId && !KichBanDS.laLang(n.b.mapId)) n.toi(nt.get(0).b.mapId);
+                }
+            }
+            vong++;
+            StringBuilder kt = new StringBuilder("vòng " + vong + ":");
+            for (Map.Entry<String, long[]> e : new TreeMap<>(KHAI_THAC).entrySet()) kt.append(' ').append(e.getKey()).append('=').append(e.getValue()[0]).append('/').append(e.getValue()[1]).append('/').append(e.getValue()[2]);
+            System.out.println("[KHAI THAC] " + kt);
+        }
+        for (HlvAiNguoiChoi bot : bots) bot.dungYen = -1;
+        ghi("\n| Kiểu | Hướng | Lần | Bị chặn | Giá trị |\n|---|---|---|---|---|");
+        for (String d : BotChucNang.sql("SELECT kieu, IF(huong=1,'bot→người','người→bot'), COUNT(*), SUM(bi_chan), SUM(gia_tri) FROM tob_hlv_ai_chuyen"
+                + " WHERE nguoi_ten IN ('kt113','kt114','kt115') OR nguoi_id >= 1000000000 GROUP BY kieu, huong")) {
+            ghi("| " + d.replace("\t", " | ") + " |");
+        }
+        ketThuc();
     }
 
     // ================================================================== kiem toan

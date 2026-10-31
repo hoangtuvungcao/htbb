@@ -561,7 +561,7 @@ class MapDoi {
                 for (CharClan c : clanInfo.member.values()) {
                     Char pp = CharManager.instance.getCharByCharName(c.charname);
                     if (pp != null) {
-                        pp.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " đã rời khỏi đội", ""));
+                        pp.sendMessage(MessageCreator.createServerAlertMessage(player.tenHienThi() + " đã rời khỏi đội", ""));
                     } else {
                         CharInboxMessage newMsg = new CharInboxMessage();
                         newMsg.sender = player.charname;
@@ -627,7 +627,7 @@ class MapDoi {
 
                 for (int i = 0; i < players.size(); i++) {
                     try {
-                        ((Char) players.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage(player.charname + " giao thẻ thất bại"));
+                        ((Char) players.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " giao thẻ thất bại"));
                         ((Char) players.get(i)).sendMessage(MessageCreator.createMsgStartGetTown(((Char) players.get(i)).inCountry));
                     } catch (Exception var10) {
                     }
@@ -751,7 +751,7 @@ class MapDoi {
 
                 for (int i = 0; i < players.size(); i++) {
                     try {
-                        ((Char) players.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage(player.charname + " giao thẻ thất bại"));
+                        ((Char) players.get(i)).sendMessage(MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " giao thẻ thất bại"));
                         ((Char) players.get(i)).sendMessage(MessageCreator.createMsgStartGetTown(((Char) players.get(i)).inCountry));
                     } catch (Exception var10) {
                     }
@@ -881,7 +881,7 @@ class MapDoi {
                             }
 
                             player.sendMessage(
-                                    MessageCreator.createServerAlertMessage(p.charname + " chỉ có thể tham gia vào đội sau " + time + " " + (isPhut ? "phút" : "giây"), "")
+                                    MessageCreator.createServerAlertMessage(p.tenHienThi() + " chỉ có thể tham gia vào đội sau " + time + " " + (isPhut ? "phút" : "giây"), "")
                             );
                             return;
                         }

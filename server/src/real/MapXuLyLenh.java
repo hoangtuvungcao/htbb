@@ -2038,7 +2038,7 @@ class MapXuLyLenh {
                 player.idItemQuest.removeAllElements();
                 player.idPotion.removeAllElements();
                 if (Map.getTown[player.inCountry] && Map.giveCardFail(player)) {
-                    map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(player.charname + " giao thẻ thất bại"), player.inCountry);
+                    map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(player.tenHienThi() + " giao thẻ thất bại"), player.inCountry);
                     map.sendAllPlayer(MessageCreator.createMsgStartGetTown(player.inCountry), player.inCountry);
                 }
 

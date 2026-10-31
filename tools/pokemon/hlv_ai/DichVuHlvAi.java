@@ -464,6 +464,7 @@ public final class DichVuHlvAi {
         napHo();
         System.out.println("[HLV AI] bat dau: " + HO.size() + " tai khoan bot, cau hinh " + CH);
         if ("1".equals(System.getProperty("hlv.soak"))) KiemHlvAiSoak.batDau();
+        if ("1".equals(System.getProperty("hlv.khaiThac"))) KiemHlvAiSoak.batDauKhaiThac();
         long lanTT = 0, lanIn = 0, lanDon = 0;
         while (System.currentTimeMillis() < het) {
             try {
