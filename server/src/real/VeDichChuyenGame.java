@@ -69,9 +69,10 @@ public final class VeDichChuyenGame {
 
     // ================================================================== Kecleon / mua
 
-    /** Menu Kecleon (goi 23 loai 1 / 26). */
+    /** Menu Kecleon (goi 23 loai 1 / 26): cua so thuoc cu, ve dich chuyen, thuoc cap cao (real.ThuocCapCaoGame). */
     public static String[] menuKecleon(final Char p) {
-        return new String[]{MUC_KECLEON_THUOC, VeDichChuyen.TEN + " (" + so(VeDichChuyen.gia(cap(p))) + " xu/vé)"};
+        return new String[]{MUC_KECLEON_THUOC, VeDichChuyen.TEN + " (" + so(VeDichChuyen.gia(cap(p))) + " xu/vé)",
+            ThuocCapCaoGame.TEN_MUC};
     }
 
     public static void moMua(final Char p) {

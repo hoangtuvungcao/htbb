@@ -167,6 +167,32 @@ public final class NpcTinhBanDo {
         return false;
     }
 
+    /**
+     * Chat hon {@link #oNoiDichVu} (cung y goi 24 {@link #banTaiCho}): trong nha - nha do phai co NPC loai {@code loai}
+     * (tep cMap khong co danh sach NPC thi giu luat cu: moi nha); ngoai troi - trong {@link #BAN_KINH_O} o quanh NPC do.
+     * Dung cho menu mua co gia rieng (real.ThuocCapCaoGame): goi menu tu che trong nha Machamp khong mua duoc thuoc.
+     */
+    public static boolean dungCanh(final Char p, final int... loai) {
+        if (p == null || p.map == null) {
+            return false;
+        }
+        if (!p.map.isMapOffline) {
+            return gan(p, loai);
+        }
+        final List<int[]> ds = cua(p.mapID);
+        if (ds.isEmpty()) {
+            return true;
+        }
+        for (final int[] n : ds) {
+            for (final int l : loai) {
+                if (n[2] == l) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /** Thay "player.map.isMapOffline" o cac ham dich vu NPC: trong nha (luat cu) HOAC dung canh NPC dung loai. */
     public static boolean oNoiDichVu(final Char p, final int... loai) {
         if (p == null || p.map == null) {

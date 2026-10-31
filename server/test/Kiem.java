@@ -295,6 +295,14 @@ public final class Kiem {
             }
         };
         real.KiemVeDichChuyen.chay();
+        Kiem.nhom("Thuoc cap cao bang xu (Chansey / Kecleon, mo cap 30 / 50 / 70, gia 0,05-5% thu nhap 1 gio, chi canh NPC ban thuoc)");
+        real.KiemThuocCapCao.BAO = new real.KiemThuocCapCao.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        real.KiemThuocCapCao.chay();
         Kiem.nhom("Ve lang mien phi (So tay, luot ngay + thang Gym, hoi chieu chung ve) + qua huy hieu Gym dau tien (1 Ve dich chuyen)");
         real.KiemVeLangMienPhi.BAO = new real.KiemVeLangMienPhi.Bao() {
             @Override

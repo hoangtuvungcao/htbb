@@ -66,8 +66,8 @@ Mọi NPC có mặt trong game đều dùng được, ở **mọi bản đồ** 
 
 | NPC (type) | Vai trò |
 |---|---|
-| Y tá Chansey (0) | Trung tâm Pokémon: hồi phục HP / PP miễn phí, mua thuốc (`real.NpcDichVu`) |
-| Kecleon (1, 26), Golem / Tauros (11–20), Sableye (24) | Bán thuốc, gian hàng, đá quý |
+| Y tá Chansey (0) | Trung tâm Pokémon: hồi phục HP / PP miễn phí, mua thuốc, **thuốc cấp cao** bằng xu mở theo cấp (`real.NpcDichVu`, `real.ThuocCapCaoGame`, 9.3) |
+| Kecleon (1, 26), Golem / Tauros (11–20), Sableye (24) | Bán thuốc (Kecleon có cả thuốc cấp cao như Chansey, vé dịch chuyển), gian hàng, đá quý |
 | Machamp (2), Farfetch'd (28) | Thợ rèn: mua đồ cầm tay / trang bị thú, luyện, khảm, sửa, khoá, nghiền bột |
 | Bronzong (3, 27) | Bán trang bị theo dòng |
 | Persian (6, 29) | Bán đá quý, nguyên liệu |
@@ -1790,8 +1790,31 @@ Mục tiêu: xu ra / vào 90–105%, lượng khoá ~95%; lượng tích chậm 
 | Sửa đồ | 10% giá món × **phần độ bền đã mất** (31/10/2026, `DoBenLogic.giaSua`; trước luôn 10% giá dù mất 2%), trần 8% thu nhập 1 giờ mỗi món | `tieu_hao.sua_do_phan_tram_thu_nhap` |
 | Bán đồ cho NPC | 5% giá, không cộng theo cấp cường hoá | `phi.ban_npc_phan_tram` |
 | Rơi xu / đá | 30% số quái / 15‰ (khi lệch cấp ≤ 5) | `roi.xu.phan_tram`, `roi.da_nang_cap.phan_nghin` |
-| Thuốc | tổng chi thuốc ≤ 12% thu nhập; mỗi món 0,05–5% thu nhập 1 giờ | (dữ liệu) |
+| Thuốc | tổng chi thuốc ≤ 12% thu nhập; mỗi món 0,05–5% thu nhập 1 giờ (thuốc cấp cao: bảng dưới) | (dữ liệu) / `com.htbb.pokemon.ThuocCapCao` |
 | Xổ số | thuế 10% xu / 15% lượng | — |
+
+**Thuốc cấp cao bằng xu** (31/10/2026, chủ game + người chơi: cửa sổ thuốc chỉ tới 1.000 HP / 2.000 PP trong khi cấp 50+
+có 11–22 nghìn HP, nên phải đốt lượng khoá vào gói 200 bình). Y tá Chansey và Kecleon có thêm mục "Thuốc cấp cao (cấp 30+)":
+bán **đúng các bình** của gói lượng khoá (cùng id `data_potion`, cùng lượng hồi), giá xu một bình = max(giá gốc, 0,05% thu
+nhập 1 giờ ở cấp người mua). Gói lượng khoá 200 bình ở Cửa hàng đặc biệt giữ nguyên (tiện, không bắt buộc).
+
+| Bình (id) | Hồi | Mở từ cấp | Giá gốc (xu / bình) | Thu nhập 1 giờ ở cấp mở | % thu nhập / bình |
+|---|---|---|---|---|---|
+| Thuốc hồi máu tối đa (22) | 3.000 HP | 30 | 8 | 13.803 | 0,058% |
+| Thuốc hồi máu 7k (93) | 7.000 HP | 50 | 18 | 33.925 | 0,053% |
+| Thuốc hồi máu 15k (94) | 15.000 HP | 70 | 60 | 81.776 | 0,073% |
+| Elixir tối đa (24) | 3.500 PP | 30 | 9 | 13.803 | 0,065% |
+| Ether 7k (95) | 7.000 PP | 50 | 18 | 33.925 | 0,053% |
+
+Cơ sở giá (số đo cấp 50+: mỗi đòn quái ~3–6% HP tối đa, vài đòn mỗi con; hồi 1% / 5 giây ngoài trận ≈ 1,8 × HP tối đa /
+giờ): đánh quái đúng cấp ở cấp mở (3 đòn × 4,5%, HP tối đa ~8k / 15k / 22k; PP giả định bằng nửa số điểm HP) tổng chi
+thuốc HP + PP ≈ 9,5% / 6,5% / 6,4% thu nhập ở cấp 30 / 50 / 70 (cấp 50 với 11k–22k HP: 4,8–9,5%); nặng nhất số đo
+(4 đòn × 6%) ở cấp 50 / 70: 11,8% / 11,7% - vẫn ≤ 12%. Lên cấp, sàn 0,05% đẩy giá lên dần
+(cấp 100: bình 15.000 HP ~152 xu) nên vẫn là hố hút xu nhỏ. `data_potion.price` của các bình này giữ 0: gói 24 (cửa sổ
+thuốc giá cố định, client chỉ biết giá 20 dòng đầu) không mua được, chỉ qua menu máy chủ (mọi client cũ / mới) - kiểm
+cấp mở, đứng cạnh Chansey / Kecleon (trong nhà: nhà có NPC đó, nhà Machamp không; ngoài trời ≤ 7 ô -
+`NpcTinhBanDo.dungCanh`, cùng ý gói 24 chỉ mua ở NPC đang đứng cạnh), giá không đổi từ lúc xem, ô ≤ 999 bình. Kiểm:
+`server/test/KiemThuocCapCao`.
 
 Bot: xu, đá, đồ rơi đều theo năng lượng; thuốc và sửa đồ tính theo giờ thật, nên treo máy lâu bị lỗ. Tín hiệu nghi bot: năng
 lượng = 0 liên tục nhiều ngày, nhặt đồ đều hơn 20 giờ / ngày, nhịp đánh bất thường (kết hợp cấm theo máy).
@@ -1820,9 +1843,9 @@ bản đồ / sự kiện đó nếu đỏ.
   `giftcode.gia_tri_toi_da` (30); tổng giá trị phát / tháng toàn máy chủ ≤ `giftcode.ngan_sach_thang` (20.000); mỗi tài khoản 1
   lần / mã, mỗi Pokémon ≤ `giftcode.toi_da_thang` (2) mã / tháng; nhập sai 5 lần khoá 10 phút. Server kiểm lại khi phát.
 - **Cửa hàng** (Quầy đổi thưởng → Sổ tay huấn luyện → Cửa hàng và đổi vật phẩm, `real.CuaHangLauDai`): luật "không vật phẩm mồ côi" — mọi dòng **chỉ ra vật phẩm, không bao
-  giờ ra xu / lượng / lượng khoá**. Trang bị bằng xu (Bronzong, 1,5 giờ), thuốc bằng xu (Chansey), bùa / thuốc hiếm bằng lượng
-  khoá có giới hạn tuần (Kecleon), trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện
-  lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật).
+  giờ ra xu / lượng / lượng khoá**. Trang bị bằng xu (Bronzong, 1,5 giờ), thuốc bằng xu (Chansey; thuốc cấp cao
+  3.000–15.000 HP / PP mở theo cấp ở Chansey và Kecleon, 9.3), bùa / thuốc hiếm bằng lượng khoá có giới hạn tuần (Kecleon),
+  trang trí bằng lượng (Delcatty), đổi Huy chương Gym / tín vật đột kích / vật phẩm sự kiện lấy đồ giữ, đá tiến hoá, Kẹo hiếm, Mảnh tinh hoa (giá trị ra ≤ giá trị tín vật).
 - **Nạp tiền không bán sức mạnh** (tắt mặc định, `sv.nap_tien` + cấu hình web): bán gói lượng, Thẻ tháng, Vé mùa cao cấp,
   Thành viên, và bằng lượng trong game là bản cao cấp vật phẩm tăng tốc (chung trần với bản khoá). **Không bán** chỉ số, đồ,
   đá, tỉ lệ nâng cấp. Lượng tiêu cho tăng tốc / trang trí bị đốt. Mục tiêu mô phỏng: người nạp chênh sức mạnh cùng giờ chơi
