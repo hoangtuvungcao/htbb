@@ -2054,6 +2054,15 @@ public class WindowInfoScr extends Screen {
         Object item2 = null;
         int aa2 = this.selected % this.numW;
         if (aa2 <= 2) {
+            // 0.9.27: đưa xu (số tuyệt đối, 0 = rút) - game.pokemon.XuGiaoDich
+            menu.addElement(new Command("Đưa xu", new IAction() {
+                @Override
+                public void perform() {
+                    game.pokemon.XuGiaoDich.hoi();
+                }
+            }));
+        }
+        if (aa2 <= 2) {
             int bb2 = this.selected / this.numW;
             final int cc = (bb2 * 3) + aa2;
             final Vector tItem = Canvas.gameScr.mainChar.tItems;
