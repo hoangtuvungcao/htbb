@@ -81,7 +81,8 @@ final class KiemHlvAiSoak {
     static BotChucNang.Bot gm;
 
     static synchronized void gm(String lenh) throws Exception {
-        if (gm == null || gm.dut) {
+        if (gm == null || gm.dut || !gm.conSong()) {
+            if (gm != null) gm.close();
             gm = new BotChucNang.Bot("kt040");
             String l = gm.dangNhap("123456");
             if (l == null) l = gm.vaoGame(0);
@@ -160,7 +161,9 @@ final class KiemHlvAiSoak {
                 ghi(v + ": " + e);
                 khaiThac(v + ".loi", 0, false);
             }
-            b.bom(60000 + rd.nextInt(60000));
+            // nguoi that cho 1-2 phut (client that van gui nhip: may chu ngat sau 180 giay im lang)
+            long het = System.currentTimeMillis() + 60000 + rd.nextInt(60000);
+            while (System.currentTimeMillis() < het && !b.dut) { b.bom(20000); b.lamMoi(); }
         }
 
         HlvAiNguoiChoi chonBot() {
@@ -196,7 +199,9 @@ final class KiemHlvAiSoak {
             if (dua && b.soThuoc(1) > 0) b.gui(66, (byte) 2, (byte) 1, (byte) 1, (short) 1);
             b.bom(1000);
             b.gui(66, (byte) 4);
-            b.bom(25000); // cho bot quyet dinh (bot cho toi 20 giay doi phuong dat)
+            b.bom(12000); // bot tra loi ngay khi thay minh dat (goi 66/2); cho them cho cham mang
+            b.lamMoi();
+            b.bom(12000);
             b.gui(66, (byte) 5);
             b.bom(3000);
             b.gui(66, (byte) 3);
