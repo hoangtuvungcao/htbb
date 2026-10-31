@@ -2849,8 +2849,9 @@ public class WindowInfoScr extends Screen {
             if (Canvas.h < 196) {
                 hMoney = this.hk - 24;
             }
-            // pokemon: biểu tượng tiền (lượng trái, lượng khoá giữa, xu phải) thay "l" / "lk" / "$"; chạm = chú thích
-            game.pokemon.TienTe.veHangTien(g, 5, 63 + dl, this.rk - 16, hMoney - 2, Font.smallFontColor[0]);
+            // pokemon: biểu tượng tiền (lượng trái, lượng khoá giữa, xu phải) thay "l" / "lk" / "$"; chạm = chú thích. 31/10/2026: xu
+            // canh phải cách góc khung 22 px (số gọn "1,25 Tr" bằng arialFont không chui dưới hoa văn góc)
+            game.pokemon.TienTe.veHangTien(g, 5, 63 + dl, this.rk - 22, hMoney - 2, Font.smallFontColor[0]);
         }
         // pokemon: mũi tên đổi tab vàng viền tối
         g.setColor(game.pokemon.GiaoDien.VIEN);
@@ -3668,7 +3669,10 @@ public class WindowInfoScr extends Screen {
     public static String getInfoQuestPaint(int type) {
         String info = "";
         if (type == 0 && GameScr.mainQuest != null) {
-            info = GameScr.mainQuest.getInfoPaintScr().replace((char) 194, (char) 226).replace((char) 212, (char) 244);
+            try {
+                info = GameScr.mainQuest.getInfoPaintScr().replace((char) 194, (char) 226).replace((char) 212, (char) 244);
+            } catch (Exception e) {
+            }
         }
         if (GameScr.subQuest != null && type == 1) {
             try {
@@ -3686,63 +3690,54 @@ public class WindowInfoScr extends Screen {
         return info;
     }
 
+    /**
+     * 31/10/2026 (báo lỗi J2ME "sổ nhiệm vụ trống"): dòng của tab Nhiệm vụ cũ - mỗi nhiệm vụ đang làm / đã xong = tên (đầu
+     * ký tự 1 = chữ đậm) + các dòng mục tiêu / thưởng, tự xuống dòng theo bề ngang wc (trước cắt ngang mép khung:
+     * "Cửa ải: 60 Golem ở Golde"). Nhiệm vụ không có chữ vẫn có dòng tên. Cùng danh sách cho vẽ và cho giới hạn cuộn.
+     */
+    static Vector dongNhiemVu(int wc) {
+        Vector v = new Vector();
+        game.model.Quest[] qs = {GameScr.mainQuest, GameScr.subQuest, GameScr.clanQuest};
+        for (int t = 0; t < 3; t++) {
+            game.model.Quest q = qs[t];
+            if (q == null || q.stateQuest != 1 && q.stateQuest != 2) {
+                continue;
+            }
+            String[] ten = Font.normalFont[0].splitFontBStrInLine(q.name, wc);
+            for (int i = 0; i < ten.length; i++) {
+                v.addElement("\u0001" + ten[i]);
+            }
+            String info = getInfoQuestPaint(t);
+            String[] data = info.equals("") ? new String[0] : Util.split(info, "|");
+            for (int i = 0; i < data.length; i++) {
+                if (data[i] == null || data[i].length() == 0) {
+                    continue;
+                }
+                String[] d = Font.arialFontW.splitFontBStrInLine(data[i], wc);
+                for (int k = 0; k < d.length; k++) {
+                    v.addElement(d[k]);
+                }
+            }
+        }
+        return v;
+    }
+
+    static final int RONG_CHU_NV = 124;
+
     private void paintQuest(Graphics g) {
         paintKhung(g);
-        String infoMain = getInfoQuestPaint(0);
-        String infoSub = getInfoQuestPaint(1);
-        String infoClan = getInfoQuestPaint(2);
-        if (infoMain.equals("") && infoSub.equals("") && infoClan.equals("")) {
+        Vector v = dongNhiemVu(RONG_CHU_NV);
+        if (v.size() == 0) {
             Font.arialFontW.drawString(g, "Chưa nhận nhiệm vụ", 8, 1, 0);
             return;
         }
-        String[] info = (String[]) null;
-        if (!infoMain.equals("")) {
-            String[] data = Util.split(infoMain, "|");
-            info = new String[data.length + 1];
-            info[0] = GameScr.mainQuest.name;
-            for (int i = 0; i < data.length; i++) {
-                info[i + 1] = data[i];
+        for (int i = 0; i < v.size(); i++) {
+            String d = (String) v.elementAt(i);
+            if (d.length() > 0 && d.charAt(0) == '\u0001') {
+                Font.normalFont[0].drawString(g, d.substring(1), 4, i * 15, 0);
+            } else {
+                Font.arialFontW.drawString(g, d, 4, i * 15, 0);
             }
-        }
-        int ii = 0;
-        if (info != null) {
-            Font.normalFont[0].drawString(g, info[0], 4, 0 * 15, 0);
-            for (int i2 = 1; i2 < info.length; i2++) {
-                Font.arialFontW.drawString(g, info[i2], 4, i2 * 15, 0);
-            }
-            ii = info.length;
-        }
-        String[] info2 = (String[]) null;
-        if (!infoSub.equals("")) {
-            String[] data2 = Util.split(infoSub, "|");
-            info2 = new String[data2.length + 1];
-            info2[0] = GameScr.subQuest.name;
-            for (int i3 = 0; i3 < data2.length; i3++) {
-                info2[i3 + 1] = data2[i3];
-            }
-        }
-        if (info2 != null) {
-            Font.normalFont[0].drawString(g, info2[0], 4, ii * 15, 0);
-            for (int i4 = 1; i4 < info2.length; i4++) {
-                Font.arialFontW.drawString(g, info2[i4], 4, (i4 + ii) * 15, 0);
-            }
-            ii += info2.length;
-        }
-        String[] info3 = (String[]) null;
-        if (!infoClan.equals("")) {
-            String[] data3 = Util.split(infoClan, "|");
-            info3 = new String[data3.length + 1];
-            info3[0] = GameScr.clanQuest.name;
-            for (int i5 = 0; i5 < data3.length; i5++) {
-                info3[i5 + 1] = data3[i5];
-            }
-        }
-        if (info3 != null) {
-            Font.normalFont[0].drawString(g, info3[0], 4, ii * 15, 0);
-            for (int i6 = 1; i6 < info3.length; i6++) {
-                Font.arialFontW.drawString(g, info3[i6], 4, (i6 + ii) * 15, 0);
-            }
-            int length = info3.length;
         }
     }
 
@@ -5284,31 +5279,8 @@ public class WindowInfoScr extends Screen {
     }
 
     private void setQuestInfo() {
-        this.questInfo = new Vector();
-        String infoMain = getInfoQuestPaint(0);
-        String infoSub = getInfoQuestPaint(1);
-        String infoClan = getInfoQuestPaint(2);
-        if (!infoMain.equals("")) {
-            String[] data = Util.split(infoMain, "|");
-            this.questInfo.addElement(GameScr.mainQuest.name);
-            for (String str : data) {
-                this.questInfo.addElement(str);
-            }
-        }
-        if (!infoSub.equals("")) {
-            String[] data2 = Util.split(infoSub, "|");
-            this.questInfo.addElement(GameScr.subQuest.name);
-            for (String str2 : data2) {
-                this.questInfo.addElement(str2);
-            }
-        }
-        if (!infoClan.equals("")) {
-            String[] data3 = Util.split(infoClan, "|");
-            this.questInfo.addElement(GameScr.clanQuest.name);
-            for (String str3 : data3) {
-                this.questInfo.addElement(str3);
-            }
-        }
+        // 31/10/2026: số dòng đã xuống dòng (giới hạn cuộn đúng với chữ vẽ ở paintQuest)
+        this.questInfo = dongNhiemVu(RONG_CHU_NV);
     }
 
     public void questClan(String text1, byte finishQ) {

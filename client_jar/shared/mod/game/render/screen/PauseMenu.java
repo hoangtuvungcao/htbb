@@ -598,7 +598,7 @@ extends Screen {
                         break;
                     }
                     case 4: {
-                        this.showMe(6);
+                        this.moSoNhiemVu();
                         return;
                     }
                     case 6: {
@@ -625,7 +625,7 @@ extends Screen {
             // 0.9.16 hàng Nhiệm vụ: Sổ nhiệm vụ / Nhiệm vụ của tôi / Sổ tay huấn luyện (mở ở mọi nơi, không phải về làng)
             if (this.index == 4) {
                 if (this.selected == 0) {
-                    this.showMe(6);
+                    this.moSoNhiemVu();
                 } else if (this.selected == 1) {
                     GameScr.moNhiemVuCuaToi();
                 } else if (this.selected == 2) {
@@ -931,6 +931,20 @@ extends Screen {
             }
         }
         return 0;
+    }
+
+    /**
+     * Menu › Nhiệm vụ › Sổ nhiệm vụ. 31/10/2026 (báo lỗi 0.9.24 J2ME giả lập có chạm ~500 px: "sổ nhiệm vụ trống" dù đang làm
+     * cửa ải): máy có chạm mở CÙNG sổ với thẻ nhiệm vụ HUD (ManNhiemVu: tab Đang làm / Có thể nhận, chạm hàng = chi tiết,
+     * nút Nhiệm vụ của tôi); máy chỉ bấm phím giữ tab Nhiệm vụ cũ (Quest.getInfoPaintScr không còn rỗng khi thiếu mẫu quái).
+     */
+    void moSoNhiemVu() {
+        if (cham() && Canvas.gameScr != null && Canvas.gameScr.mainChar != null) {
+            Canvas.gameScr.switchToMe();
+            game.pokemon.ManNhiemVu.mo();
+            return;
+        }
+        this.showMe(6);
     }
 
     public void showMe(int n) {

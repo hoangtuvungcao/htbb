@@ -439,13 +439,19 @@ public final class TienTe {
         if (mc == null) {
             return;
         }
-        veGiaCham(g, LUONG, mc.luong, xTrai, y, f, true);
-        if (mc.luongKhoa > -1 && xGiua >= 0) {
-            int w = rongGia(LUONG_KHOA, mc.luongKhoa, f, true);
-            veGiaCham(g, LUONG_KHOA, mc.luongKhoa, xGiua - w / 2, y, f, true);
-        }
+        int wl = veGiaCham(g, LUONG, mc.luong, xTrai, y, f, true);
         int w = rongGia(XU, mc.charXu, f, true);
-        veGiaCham(g, XU, mc.charXu, xPhai - w, y, f, true);
+        int xXu = Math.max(xTrai + wl + 4, xPhai - w);
+        // 31/10/2026 (J2ME bấm phím, cửa sổ cũ 134 px: "320 ● 16,7 N ● 1,25 Tr" chồng nhau / tràn mép): lượng khoá chỉ vẽ khi
+        // còn chỗ giữa lượng và xu (chạm lượng / xu vẫn có chú thích; số lượng khoá xem ở Hành trang)
+        if (mc.luongKhoa > -1 && xGiua >= 0) {
+            int wk = rongGia(LUONG_KHOA, mc.luongKhoa, f, true);
+            int xk = Math.max(xTrai + wl + 4, xGiua - wk / 2);
+            if (xk + wk + 4 <= xXu) {
+                veGiaCham(g, LUONG_KHOA, mc.luongKhoa, xk, y, f, true);
+            }
+        }
+        veGiaCham(g, XU, mc.charXu, xXu, y, f, true);
     }
 
     /** Bề ngang viên tiền (vePill) cao h. */

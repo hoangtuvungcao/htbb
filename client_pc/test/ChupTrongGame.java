@@ -74,7 +74,7 @@ public class ChupTrongGame {
      */
     static final String MAN_J2ME_GIA_LAP = ",the_gioi,menu,nv_ky_nang,nv_hanh_trang,tu_dong,tu_dong_dang,xac_nhan,hop_thong_bao,"
         + "hop_len_cap,menu_ngu_canh,nhiem_vu,cua_hang_thuoc,pokedex,hop_dang_xuat,hst_vuon_gieo,menu_chu_vuon_gieo,"
-        + "ban_do_vung,ban_do_vung_johto,ban_do_vung_hoenn,";
+        + "ban_do_vung,ban_do_vung_johto,ban_do_vung_hoenn,so_nhiem_vu_cua_ai,so_nhiem_vu_cua_ai_the,";
 
     /** Máy J2ME thật: màn logic đúng W x H, x1 (không phóng). */
     static void datCoJ2me(int W, int H) {
@@ -309,6 +309,12 @@ public class ChupTrongGame {
             htbb.pc.GiaoDienHD.bat = false;
             htbb.pc.ChuHD.bat = false;
             game.pokemon.ChuUI.bo = null;
+            try {
+                Class.forName("htbb.pc.LopPhu");   // khối static của LopPhu cài PhongVe.bo - chạy trước rồi mới bỏ
+            } catch (Throwable e) {
+                // không có
+            }
+            game.pokemon.PhongVe.bo = null;   // máy J2ME thật không có bộ vẽ chữ vector (TienTe.fontSo: số tiền bằng arialFont)
         }
         String[] man = {"the_gioi", "menu", "nv_trang_bi", "nv_o_co_do", "nv_o_trong", "nv_chi_tiet", "nv_hanh_trang", "nv_chi_so",
             "nv_ky_nang", "nv_thu", "nv_ngoai_hinh", "nv_cuoi_trang_bi", "nv_cuoi_ds_thu", "nv_cuoi_thu",
@@ -331,7 +337,10 @@ public class ChupTrongGame {
             "menu_su_kien",
             "menu_ngu_canh", "tui_loc_thuoc", "tui_loc_nguyen_lieu", "xac_nhan", "cua_hang_thuoc", "cua_hang_thuoc_chi_tiet",
             "cua_hang_do", "cua_hang_do_chi_tiet", "cua_hang_ban", "cua_hang_dac_biet", "cua_hang_dac_biet_loc",
-            "cua_hang_dac_biet_the", "nhiem_vu", "nhiem_vu_chi_tiet", "giao_dich", "pokedex",
+            "cua_hang_dac_biet_the", "nhiem_vu", "nhiem_vu_chi_tiet",
+            // 31/10/2026 (báo lỗi 0.9.24 J2ME "sổ nhiệm vụ trống"): chỉ có cửa ải ở ô đội, quái mục tiêu ở bản đồ khác (client chưa
+            // có mẫu quái) - sổ mở từ Menu › Nhiệm vụ › Sổ nhiệm vụ và từ thẻ HUD phải hiện nhiệm vụ
+            "so_nhiem_vu_cua_ai", "so_nhiem_vu_cua_ai_the", "giao_dich", "pokedex",
             "pokedex_chi_tiet", "xep_hang", "doi", "ky_nang_hoc", "ky_nang_chi_tiet", "thong_bao_kich_hoat", "hop_thong_bao",
             "hop_thong_bao_dai", "suc_khoe", "chon_chieu", "goi_y_chieu", "tu_dong", "hop_ban", "hop_mac_do", "hop_len_cap", "hop_tien_hoa",
             "hop_phan_thuong", "hop_nhan_nhiem_vu", "hop_bao_tri", "hop_loi", "hop_mat_ket_noi", "hop_hoi_sinh", "hop_giftcode",
@@ -364,7 +373,10 @@ public class ChupTrongGame {
         man = noi(man, PhuTrang.MAN);
         man = noi(man, PhuTrang2.MAN);
         man = noi(man, PhuTrang3.MAN);
-        kiemMenuNhiemVu();
+        // Menu kiểu GO / Sổ tay / thẻ Sự kiện là đường của máy CHẠM (MenuNguCanh); -Dhtbb.khongCham (máy J2ME chỉ phím) không có
+        if (game.pokemon.MenuNguCanh.bat()) {
+            kiemMenuNhiemVu();
+        }
         chay(new Runnable() {
             public void run() {
                 kiemMenuChuHL();
@@ -502,6 +514,9 @@ public class ChupTrongGame {
                 kiemTrongMan(ten + " " + TEN_COV[c]);
                 if ("nhiem_vu".equals(ten) || "nhiem_vu_chi_tiet".equals(ten)) {
                     kiemMucNhiemVu(ten + " " + TEN_COV[c]);
+                }
+                if (ten.startsWith("so_nhiem_vu_cua_ai")) {
+                    kiemSoCuaAi(ten + " " + TEN_COV[c]);
                 }
                 kiemXemThu(ten, ten + " " + TEN_COV[c]);
                 if ("menu_su_kien".equals(ten)) {
@@ -1582,9 +1597,19 @@ public class ChupTrongGame {
         }
         if (QUEST_GOC != null) {
             game.render.screen.GameScr.mainQuest = (game.model.Quest) QUEST_GOC[0];
+            if (QUEST_GOC.length >= 4) {
+                game.render.screen.GameScr.subQuest = (game.model.Quest) QUEST_GOC[1];
+                game.render.screen.GameScr.clanQuest = (game.model.Quest) QUEST_GOC[2];
+                Object[] mq = (Object[]) QUEST_GOC[3];
+                if (mq != null) {
+                    game.render.Res.monsterTemplates[(Integer) mq[0]] = (game.model.MonsterTemplate) mq[1];
+                }
+            }
             QUEST_GOC = null;
         }
-        if (ten.startsWith("ban_do_vung")) {
+        if (ten.startsWith("so_nhiem_vu_cua_ai")) {
+            moSoCuaAi(ten.endsWith("_the"));
+        } else if (ten.startsWith("ban_do_vung")) {
             // nhiệm vụ có bản đồ đích Cerulean (id 4) -> dấu sao ở Kanto
             QUEST_GOC = new Object[]{game.render.screen.GameScr.mainQuest};
             game.model.Quest q = new game.model.Quest(14);
@@ -2234,6 +2259,75 @@ public class ChupTrongGame {
 
     /** 0.9.7: phần HUD / giao diện (khung pixel + biểu tượng đã ghi) nằm TRỌN trong màn (logic). */
     /** 0.9.15: sổ nhiệm vụ vẽ mục tiêu (quái + bản đồ) và NPC trả ngay trên hàng / thẻ, không cắt. */
+    /**
+     * 31/10/2026 (báo lỗi 0.9.24 J2ME "sổ nhiệm vụ trống", nhân vật chỉ có cửa ải CA-09.1 "60 Golem ở Goldenrod" ở ô đội + nhiệm
+     * vụ ngày / thành tựu ở Sổ tay): như gói -64 thật - không chính / phụ, ô đội = cửa ải, quái mục tiêu KHÔNG có mẫu ở client
+     * (mẫu quái chỉ nạp theo bản đồ đang đứng). the = mở như thẻ HUD (ManNhiemVu.mo); không thì Menu (phím mềm trái) ›
+     * Nhiệm vụ › Sổ nhiệm vụ (máy chạm: ManNhiemVu; máy phím -Dhtbb.khongCham: tab Nhiệm vụ cũ).
+     */
+    static void moSoCuaAi(boolean the) {
+        int id = -1;
+        game.model.MonsterTemplate[] mt = game.render.Res.monsterTemplates;
+        for (int i = mt.length - 1; i >= 0 && id < 0; i--) {
+            if (mt[i] == null) {
+                id = i;
+            }
+        }
+        Object[] mq = null;
+        if (id < 0) {
+            id = mt.length - 1;
+            mq = new Object[]{Integer.valueOf(id), mt[id]};
+            mt[id] = null;
+        }
+        QUEST_GOC = new Object[]{game.render.screen.GameScr.mainQuest, game.render.screen.GameScr.subQuest,
+            game.render.screen.GameScr.clanQuest, mq};
+        game.model.Quest q = new game.model.Quest(30091);
+        q.name = "Cửa ải: 60 Golem ở Goldenrod";
+        q.main_sub = 2;
+        q.stateQuest = 2;
+        q.type = 0;
+        q.idMonsKill = new short[]{(short) id};
+        q.allMonsKilled = new short[]{12};
+        q.totalMonskill = new short[]{60};
+        q.decript = "Mục tiêu: Hạ 60 Golem ở Goldenrod (12/60). Nhận thưởng ở: Quầy đổi thưởng → Nhiệm vụ của tôi.";
+        q.infoGift = "";
+        q.idNpcResponse = -1;
+        q.muc = "Hạ 60 Golem ở Goldenrod";
+        q.tra = "";
+        q.khoa = "";
+        q.co = game.model.Quest.CO_CUA_AI;
+        game.render.screen.GameScr.mainQuest = null;
+        game.render.screen.GameScr.subQuest = null;
+        game.render.screen.GameScr.clanQuest = q;
+        game.render.screen.GameScr.coMucTieuNv = true;
+        game.render.Canvas.gameScr.switchToMe();
+        if (the) {
+            game.pokemon.ManNhiemVu.mo();
+            return;
+        }
+        game.pokemon.HanhDong.moMenuChinh();
+        try {
+            java.lang.reflect.Method m = game.render.screen.PauseMenu.class.getDeclaredMethod("moSoNhiemVu");
+            m.setAccessible(true);
+            m.invoke(game.render.screen.PauseMenu.gI());
+        } catch (Throwable e) {
+            e.printStackTrace();
+            kiem(false, "PauseMenu.moSoNhiemVu: " + e);
+        }
+    }
+
+    /** Sổ nhiệm vụ đang vẽ (GhiChu một khung) có cửa ải, không có dòng "trống". */
+    static void kiemSoCuaAi(String nhan) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
+            if (game.pokemon.GhiChu.CS[i] != null) b.append(game.pokemon.GhiChu.CS[i]).append('|');
+        }
+        String t = b.toString();
+        kiem((t.contains("Cửa ải: 60") || t.contains("Cửa ải: 60 Golem")) && !t.contains("Chưa nhận nhiệm vụ"),
+                nhan + " so nhiem vu (chi co cua ai, thieu mau quai) phai hien nhiem vu, khong trong: " + (t.length() > 300 ? t.substring(0, 300) : t));
+        kiem(t.contains("12/60"), nhan + " so nhiem vu hien tien do cua ai 12/60");
+    }
+
     static void kiemMucNhiemVu(String nhan) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < game.pokemon.GhiChu.soChu; i++) {
