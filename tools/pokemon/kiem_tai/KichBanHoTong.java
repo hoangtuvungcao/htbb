@@ -62,6 +62,22 @@ class KichBanHoTong {
             ket("ho_tong.co_trong_bang", true, b.ten + " cap " + b.lv + ": " + ds);
             String t = idx >= 0 ? KichBanDS4.nhan(b, idx) : "Đã nhận (lan truoc)";
             ket("ho_tong.nhan", t.contains("Đã nhận") || t.contains("Hộ tống") || t.contains("nhận"), t.replace('\n', ' '));
+            if (Boolean.getBoolean("htHetLuot")) {
+                // nguoi choi da dung het 3 luot van tieu trong ngay: luot_van_tieu (tob_char.pInfo[71]) = 0, dang nhap lai
+                String u = b.user;
+                b.close();
+                Thread.sleep(4000);
+                String pi = BotChucNang.sql1("SELECT pInfo FROM tob_char WHERE id=" + b.charDb);
+                String[] a = pi.split(",", -1);
+                a[71] = "0";
+                BotChucNang.sql("UPDATE tob_char SET pInfo='" + String.join(",", a) + "' WHERE id=" + b.charDb);
+                b = new BotChucNang.Bot(u);
+                String l = b.dangNhap(HoiQuy.MAT_KHAU);
+                if (l == null) l = b.vaoGame(0);
+                ket("ho_tong.het_luot_vao_lai", l == null, "pInfo[71]=0, vao lai: " + l);
+                if (l != null) return;
+                b.lamMoi();
+            }
             String chu = chuDangLam(b, tenNv);
             ket("ho_tong.chu_co_chi_dan", chu != null && chu.contains("Tổng tiêu đầu") && chu.contains("Kecleon"), String.valueOf(chu).replace('\n', ' '));
             // ---- Tong tieu dau
@@ -113,6 +129,11 @@ class KichBanHoTong {
             if (dang != null) for (int i = 0; i < dang.size(); i++) if (BotChucNang.khongDau(dang.get(i)).contains(BotChucNang.khongDau(tenNv))) iDang = i;
             String dong = iDang >= 0 ? dang.get(iDang) : String.valueOf(dang);
             String tt0 = BotChucNang.sql1("SELECT l.trang_thai FROM tob_nhiem_vu_lau_dai l WHERE l.id_char=" + b.charDb + " AND l.ma='" + MA + "'");
+            if (Boolean.getBoolean("htHetLuot")) {
+                ket("ho_tong.mien_phi_chi_thuong_nhiem_vu", String.valueOf(giao).contains("chỉ nhận thưởng nhiệm vụ") && !String.valueOf(giao).contains("exp"), String.valueOf(giao).replace('\n', ' '));
+            } else {
+                ket("ho_tong.luot_thuong_co_thuong_van_tieu", String.valueOf(giao).contains("exp") && !String.valueOf(giao).contains("chỉ nhận thưởng nhiệm vụ"), String.valueOf(giao).replace('\n', ' '));
+            }
             ket("ho_tong.giao_tinh_buoc", dong.contains("1/1") || "1".equals(tt0) || "2".equals(tt0), "CSDL trang_thai=" + tt0 + " | Kecleon: " + String.valueOf(giao).replace('\n', ' ') + " | dang lam: " + dong);
             if (iDang >= 0 && dong.contains("1/1")) {
                 m = b.moc();
