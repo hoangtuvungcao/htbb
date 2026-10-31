@@ -1398,7 +1398,24 @@ final class KichBanCap140 {
             return t == null ? -1 : t[0];
         }
 
-        long lanNangVk, lanIndigo;
+        long lanNangVk, lanIndigo, lanSua;
+
+        /**
+         * Sua do o Machamp (lenh 72, 2 = tat ca) moi lan vao tiem (nha 103) - nguoi choi that sua khi do ben thap. Tu 31/10/2026
+         * (main: guc mat 2% do ben, dang nhap lai KHONG con hoi day do ben) vu khi hong -> danh 0 sat thuong (bo1 / lamp3 Gym
+         * 'boss 137000/137000 (0 sat thuong/giay)'); truoc day bot dua vao dang nhap lai de sua mien phi.
+         */
+        void suaDo() throws IOException {
+            if (System.currentTimeMillis() - lanSua < 10 * 60000L) return;
+            lanSua = System.currentTimeMillis();
+            long x0 = b.xu;
+            int m = b.moc();
+            b.gui(72, (byte) 2);
+            b.bom(800);
+            b.lamMoi();
+            if (b.xu < x0) { xuTieu += x0 - b.xu; ghi("sua do (Machamp): xu " + x0 + " -> " + b.xu); }
+            else if (b.chuTu(m).contains("tiền") || b.chuTu(m).contains("xu")) ghi("sua do khong du xu: " + b.chuTu(m));
+        }
 
         /**
          * Giap / phu kien cap 64-79 (bo "chuyên gia" / "tinh anh", tpl 467..506) chi ban o Bronzong ban giap (NPC 27) Cao
@@ -1746,7 +1763,8 @@ final class KichBanCap140 {
                     if (giap == null || g[2] < giap[2]) { giap = g; giap = new int[]{g[0], g[1], g[2], type}; }
                 }
             }
-            if (!canVk && giap == null && co >= DU_TRU || System.currentTimeMillis() - lanMuaThuoc < 3 * 60000L || b.xu < 300) return;
+            boolean canSua = System.currentTimeMillis() - lanSua > 20 * 60000L; // ghe Machamp sua do moi 20 phut
+            if (!canVk && giap == null && co >= DU_TRU && !canSua || System.currentTimeMillis() - lanMuaThuoc < 3 * 60000L || b.xu < 300 && !canSua) return;
             lanMuaThuoc = System.currentTimeMillis();
             long xu0 = b.xu;
             if (!KichBanDS.laLang(b.mapId)) {
@@ -1755,6 +1773,7 @@ final class KichBanCap140 {
                 if ((tot < 0 || !toi(tot)) && !KichBanCap140TinhNang.veLangSoTay(this)) { ghi("khong ve duoc lang de mua thuoc"); return; }
             }
             if (!KichBanDS2.vaoNha(b, 103)) { ketLai("khong vao duoc nha tiem 103 o lang " + b.mapId); return; }
+            suaDo();
             if (canVk) {
                 long x1 = b.xu;
                 int id = KichBanDS3.muaVuKhi(b, tplVk);
