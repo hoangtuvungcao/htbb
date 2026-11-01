@@ -234,7 +234,7 @@ bị chặn, giới hạn số kết nối mỗi IP và tốc độ mở kết n
 
 - `server/loginServer/htbb-login.jar` (31/10/2026, mã nguồn
   [com.htbb.dangnhap](../server/src/com/htbb/dangnhap/MayChuDangNhap.java)) nghe TCP 8023 và đọc CSDL `account` qua
-  JDBC (Connector/J 5.1.49 đóng gói bên trong). Nó thay [CheckLoginSocket.jar](../server/loginServer/CheckLoginSocket.jar)
+  JDBC (Connector/J 5.1.49 đóng gói bên trong). Nó thay `CheckLoginSocket.jar` (bản cũ, đã xoá khỏi repo 01/11/2026; VPS giữ để quay lui)
   — jar có sẵn từ game gốc, không có mã nguồn — với **cùng giao thức và ngữ nghĩa**; jar cũ giữ làm bản quay lui.
   Giao thức, mã kết quả, cấu hình, số đo, quay lui: [dang-nhap.md](dang-nhap.md).
 - Cấu hình ở `server/loginServer/server.ini` (`db.url`, `db.user`, `db.password`, `port`, khoá `login.*` tuỳ chọn). Tệp
