@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = ["crates/peerova-core", "crates/peerova-cli", "crates/peerova-ffi"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Proprietary"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

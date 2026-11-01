@@ -5261,7 +5261,11 @@ public class GameScr extends Screen {
             hopMatKetNoi(tk, mk);   // hết 3 lần: hộp mất kết nối, "Kết nối lại" vẫn dùng được
             return;
         }
-        Canvas.startOKDlg("Không kết nối được máy chủ. Kiểm tra mạng rồi đăng nhập lại.", new IAction() {
+        // nhanh p2p: PC / Android noi qua Peerova - lop Connector ghi ly do cu the (vd "Không kết nối P2P được tới
+        // máy chủ: ...") vao Session_ME.lyDoLoiKetNoi; J2ME khong bao gio dat -> cau cu.
+        final String lyDo = Session_ME.lyDoLoiKetNoi;
+        Canvas.startOKDlg(lyDo != null && lyDo.length() > 0 ? lyDo + ". Kiểm tra mạng rồi đăng nhập lại."
+                : "Không kết nối được máy chủ. Kiểm tra mạng rồi đăng nhập lại.", new IAction() {
             @Override
             public void perform() {
                 Canvas.currentDialog = null;

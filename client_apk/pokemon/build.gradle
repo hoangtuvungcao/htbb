@@ -28,7 +28,7 @@ def docConf = { String tep, String khoa ->
     return kq ? kq : null
 }
 def ban = (project.findProperty('htbbBan') ?: docConf('phien_ban.conf', 'BAN') ?: '1') as int
-def phienBan = docConf('phien_ban.conf', 'PHIEN_BAN') ?: "1.$ban"
+def phienBan = project.findProperty('phienBan') ?: System.getenv('PHIEN_BAN') ?: docConf('phien_ban.conf', 'PHIEN_BAN') ?: "1.$ban"
 def mayChu = project.findProperty('mayChu') ?: System.getenv('MAY_CHU')
 def mayChuRelease = mayChu ?: System.getenv('MAY_CHU_CHINH') ?: docConf('may_chu.conf', 'MAY_CHU_CHINH')
 // Khoá ký release (luôn NGOÀI repo), một trong hai:
@@ -55,6 +55,14 @@ if (keyProps) {
 } else if (keyDir && file("$keyDir/key.properties").exists()) {
     file("$keyDir/key.properties").withInputStream { khoa.load(it) }
 }
+// nhanh p2p: ticket Peerova (-Pp2pTicket / P2P_TICKET / P2P_TICKET_FILE=<ticket.txt cua may chu>) -> game noi QUA P2P
+// (JNI libpeerova_jni.so tu ../p2p/out/dist/android/<abi>/ - sh p2p/build/build-peerova.sh android). Loi P2P khong lui ve TCP.
+def p2pTicket = project.findProperty('p2pTicket') ?: System.getenv('P2P_TICKET')
+if (!p2pTicket && System.getenv('P2P_TICKET_FILE')) p2pTicket = new File(System.getenv('P2P_TICKET_FILE')).text.trim()
+if (p2pTicket && !p2pTicket.toString().startsWith('pvt_')) throw new GradleException("P2P_TICKET phai bat dau bang pvt_")
+def p2pNative = rootProject.file('../p2p/out/dist/android')
+if (p2pTicket && !new File(p2pNative, 'arm64-v8a/libpeerova_jni.so').isFile())
+    throw new GradleException("P2P: thieu $p2pNative/<abi>/libpeerova_jni.so - chay sh p2p/build/build-peerova.sh android")
 def j2me = rootProject.file('../client_jar')
 def codeSinh = layout.buildDirectory.dir('generated/htbb-j2me/java')
 def tsDebug = layout.buildDirectory.dir('generated/htbb-thuoc-tinh/debug')
@@ -110,6 +118,7 @@ android {
         // Banner.java (code jar) thấy /bn/hd/nen.png thì vẽ đúng khung hình key art, jar J2ME không có -> dải lớp nhỏ
         def banner = rootProject.file('../client_jar/shared/banner/res')
         if (banner.isDirectory()) main.assets.srcDirs += banner
+        if (p2pTicket) main.jniLibs.srcDirs += p2pNative
         debug.assets.srcDirs += tsDebug
         release.assets.srcDirs += tsRelease
     }
@@ -166,12 +175,15 @@ def thuocTinh = { String kieu, File ra ->
     p.setProperty('HTBB-Phien-Ban', phienBan.toString())
     p.setProperty('HTBB-Ban', ban.toString())
     if (kieu == 'debug') p.setProperty('HTBB-Ban-Thu', '1')
+    if (p2pTicket) p.setProperty('HTBB-P2P-Ticket', p2pTicket.toString())
+    if (p2pTicket && System.getenv('P2P_TOKEN')) p.setProperty('HTBB-P2P-Token', System.getenv('P2P_TOKEN'))
     ra.mkdirs()
     new File(ra, 'htbb-app.properties').withWriter('UTF-8') { w -> p.store(w, 'Sinh boi Gradle (pokemon/build.gradle) - KHONG sua tay') }
 }
 def thuocTinhDebug = tasks.register('thuocTinhDebug') {
     inputs.file(new File(j2me, 'MANIFEST.MF'))
     inputs.property('mayChu', (mayChu ?: '').toString())
+    inputs.property('p2pTicket', (p2pTicket ?: '').toString())
     inputs.property('phienBan', phienBan.toString())
     inputs.property('ban', ban)
     outputs.dir(tsDebug)
@@ -180,6 +192,7 @@ def thuocTinhDebug = tasks.register('thuocTinhDebug') {
 def thuocTinhRelease = tasks.register('thuocTinhRelease') {
     inputs.file(new File(j2me, 'MANIFEST.MF'))
     inputs.property('mayChu', (mayChuRelease ?: '').toString())
+    inputs.property('p2pTicket', (p2pTicket ?: '').toString())
     inputs.property('phienBan', phienBan.toString())
     inputs.property('ban', ban)
     outputs.dir(tsRelease)

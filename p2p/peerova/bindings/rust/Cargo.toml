@@ -1,0 +1,19 @@
+# Standalone example crate — NOT a member of the root workspace.
+# The empty [workspace] table makes this its own workspace root, so the repo's
+# root Cargo.toml (members = crates/*) is unaffected and needs no `exclude`.
+[package]
+name = "peerova-rust-example"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+# The `peerova` SDK crate (package peerova-ffi, lib name `peerova`): safe Rust API `peerova::Sdk`.
+# Outside this repo: peerova = { package = "peerova-ffi", git = "<repo url>" } or a vendored path.
+peerova = { package = "peerova-ffi", path = "../../crates/peerova-ffi" }
+
+[profile.release]
+lto = true
+codegen-units = 1

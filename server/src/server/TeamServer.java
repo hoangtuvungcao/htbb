@@ -30,6 +30,8 @@ public class TeamServer {
     public static int PORT;
     /** sv.ipLangNghe - trong = moi giao dien. */
     public static String ipLangNghe = "";
+    /** server.ini cho Peerova (com.htbb.p2p.MayChuP2P), null = chua doc. */
+    static java.util.Properties cauHinhP2P;
     private static ServerControllerManager controllerManager;
     private static ServerSocket listenSocket;
     public static long timeStartServer;
@@ -703,6 +705,8 @@ public class TeamServer {
             // sv.ipLangNghe: dia chi lang nghe cong game (trong = moi giao dien, nhu cu). Staging dat 127.0.0.1 de
             // cong 29129 khong bao gio lo ra internet (vps/staging/sinh-server-ini.sh).
             TeamServer.ipLangNghe = p.getProperty("sv.ipLangNghe", "").trim();
+            // Nhanh p2p: Peerova nhung trong server (sv.p2p=1), bat ngay truoc vong accept ben duoi.
+            TeamServer.cauHinhP2P = p;
             TeamServer.LIMIT_CCU = Short.parseShort(p.getProperty("limit.ccu"));
             TeamServer.server = Integer.parseInt(p.getProperty("sv.server"));
             TeamServer.portNapTien = Integer.parseInt(p.getProperty("sv.portnap"));
@@ -1306,6 +1310,9 @@ public class TeamServer {
 
         RealController.add_more_idMapSend2Client();
 
+        if (TeamServer.cauHinhP2P != null) {
+            com.htbb.p2p.MayChuP2P.khoiDongNen(TeamServer.cauHinhP2P, TeamServer.PORT);
+        }
         try {
             TeamServer.listenSocket = TeamServer.ipLangNghe.isEmpty()
                     ? new ServerSocket(TeamServer.PORT, 200)
@@ -1319,6 +1326,14 @@ public class TeamServer {
                     try {
                         InetAddress inet = clientSocket.getInetAddress();
                         ipconnect = inet.getHostAddress();
+                        // Nguoi choi qua Peerova P2P den tu 127.0.0.1 (tunnel trong tien trinh): lay IP that
+                        // cua peer de chong DoS / chan IP / nhat ky theo nguoi choi nhu ket noi thang.
+                        if (inet.isLoopbackAddress() && com.htbb.p2p.MayChuP2P.dangChay()) {
+                            final String ipP2P = com.htbb.p2p.MayChuP2P.ipThat(clientSocket.getPort());
+                            if (ipP2P != null) {
+                                ipconnect = ipP2P;
+                            }
+                        }
                         if (TeamServer.ALL_IPCONNECT_BLOCK.get(ipconnect) != null && !TeamServer.mienGioiHanIp(ipconnect)) {
                             System.out.println("IP BLOCK " + ipconnect);
                             clientSocket.close();

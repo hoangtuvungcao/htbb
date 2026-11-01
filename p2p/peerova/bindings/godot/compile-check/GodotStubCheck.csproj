@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- NOT a Godot test. Compiles addons/peerova/*.cs against a stub of the Godot API (incl. what the
+       Godot source generator would emit) and drives two PeerovaNodes through _Process(). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GodotStubs.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="../addons/peerova/*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../../../target/release/libpeerova.so" Condition="Exists('../../../target/release/libpeerova.so')" CopyToOutputDirectory="PreserveNewest" Link="libpeerova.so" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,13 @@
+[package]
+name = "peerova-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "peerova"
+path = "src/main.rs"
+
+[dependencies]
+peerova-core = { path = "../peerova-core" }
+peerova-ffi = { path = "../peerova-ffi" }

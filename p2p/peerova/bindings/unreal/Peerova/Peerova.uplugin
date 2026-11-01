@@ -1,0 +1,20 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "Peerova",
+	"Description": "Direct P2P networking (no relay, end-to-end encrypted) — Blueprint/C++ subsystem over the peerova C ABI.",
+	"Category": "Networking",
+	"CreatedBy": "Peerova",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "Peerova",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [ "Win64", "Linux", "Mac", "Android", "IOS" ]
+		}
+	]
+}

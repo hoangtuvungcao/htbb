@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Unreal Plugin Language: package libpeerova.so for each Android ABI. -->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<init>
+		<log text="Peerova: packaging libpeerova.so"/>
+	</init>
+
+	<androidManifestUpdates>
+		<addPermission android:name="android.permission.INTERNET"/>
+		<addPermission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	</androidManifestUpdates>
+
+	<resourceCopies>
+		<isArch arch="arm64-v8a">
+			<copyFile src="$S(PluginDir)/../ThirdParty/PeerovaLibrary/lib/Android/arm64-v8a/libpeerova.so"
+			          dst="$S(BuildDir)/libs/arm64-v8a/libpeerova.so"/>
+		</isArch>
+		<isArch arch="armeabi-v7a">
+			<copyFile src="$S(PluginDir)/../ThirdParty/PeerovaLibrary/lib/Android/armeabi-v7a/libpeerova.so"
+			          dst="$S(BuildDir)/libs/armeabi-v7a/libpeerova.so"/>
+		</isArch>
+		<isArch arch="x86_64">
+			<copyFile src="$S(PluginDir)/../ThirdParty/PeerovaLibrary/lib/Android/x86_64/libpeerova.so"
+			          dst="$S(BuildDir)/libs/x86_64/libpeerova.so"/>
+		</isArch>
+	</resourceCopies>
+
+	<!-- Load before libUnreal.so resolves its DT_NEEDED entry (older Android linkers need this). -->
+	<soLoadLibrary>
+		<loadLibrary name="peerova" failmsg="Peerova: libpeerova.so not loaded"/>
+	</soLoadLibrary>
+</root>

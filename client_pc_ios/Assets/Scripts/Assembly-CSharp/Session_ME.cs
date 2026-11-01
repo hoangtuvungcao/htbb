@@ -340,6 +340,13 @@ public class Session_ME : ISession
 
 	public void doConnect(string host, int port)
 	{
+		// nhanh p2p: ban build co ticket Peerova -> noi qua tunnel P2P trong tien trinh (127.0.0.1:<cong>), loi P2P
+		// KHONG lui ve TCP thang (P2PPeerova.loiCuoi = ly do).
+		if (P2PPeerova.bat())
+		{
+			port = P2PPeerova.congCucBo(port);
+			host = "127.0.0.1";
+		}
 		sc = new TcpClient();
 		sc.Connect(host, port);
 		dataStream = sc.GetStream();

@@ -40,6 +40,9 @@
 # bộ cập nhật (0.9.7): game.pokemon.CapNhat tạo htbb.pc.CapNhatPc bằng Class.forName; lớp chung SE giữ tên cho dễ đọc log
 -keep class htbb.capnhat.** { *; }
 -keep class javax.microedition.** { *; }
+# nhanh p2p: Peerova JNI (ten lop / ham native phai giu nguyen) + lop noi P2P
+-keep class dev.peerova.** { *; }
+-keep class htbb.p2p.** { *; }
 -keep class javax.wireless.** { *; }
 -keep class game.model.Char {
     public static int tinhDyTen(...);

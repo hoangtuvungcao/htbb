@@ -1,0 +1,38 @@
+# systemd unit — /etc/systemd/system/peerova.service
+#   sudo useradd --system --home /opt/peerova --shell /usr/sbin/nologin peerova
+#   sudo install -o peerova -g peerova -m 0750 -d /opt/peerova && sudo cp peerova peerova.json /opt/peerova/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now peerova
+#   journalctl -u peerova -f
+[Unit]
+Description=peerova direct P2P tunnel server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=peerova
+Group=peerova
+WorkingDirectory=/opt/peerova
+ExecStart=/opt/peerova/peerova server --config /opt/peerova/peerova.json
+StandardInput=null
+Restart=always
+RestartSec=2
+# Hardening: no privileges, read-only system, only its own directory writable.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/peerova
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+# Allow binding ports < 1024 (e.g. 443 for networks that only allow HTTPS) without root.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

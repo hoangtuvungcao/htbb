@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Peerova.cs" Link="Peerova.cs" />
+  </ItemGroup>
+  <!-- Copy the native lib next to the test binary if it was built in the repo. -->
+  <ItemGroup>
+    <None Include="../../../target/release/libpeerova.so" Condition="Exists('../../../target/release/libpeerova.so')" CopyToOutputDirectory="PreserveNewest" Link="libpeerova.so" />
+    <None Include="../../../target/release/libpeerova.dylib" Condition="Exists('../../../target/release/libpeerova.dylib')" CopyToOutputDirectory="PreserveNewest" Link="libpeerova.dylib" />
+    <None Include="../../../target/release/peerova.dll" Condition="Exists('../../../target/release/peerova.dll')" CopyToOutputDirectory="PreserveNewest" Link="peerova.dll" />
+  </ItemGroup>
+</Project>

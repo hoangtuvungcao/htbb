@@ -1,0 +1,11 @@
+{
+  "port": 47000,
+  "key": "server.key",
+  "ticket_file": "ticket.txt",
+  "expose": ["https:443", "tcp:22", "udp:19132", "udp:10000-10100"],
+  "license": "PVA-XXXXX-XXXXX-XXXXX-XXXXX",
+  "private": true,
+  "access_key": "<public key từ: peerova keygen --access>",
+  "revoked": "revoked.txt",
+  "audit_log": "audit.jsonl"
+}

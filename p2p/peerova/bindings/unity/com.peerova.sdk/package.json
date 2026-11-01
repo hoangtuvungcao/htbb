@@ -1,0 +1,16 @@
+{
+  "name": "com.peerova.sdk",
+  "version": "0.1.0",
+  "displayName": "peerova SDK",
+  "description": "Direct P2P game networking (no relay, end-to-end encrypted). C# wrapper over the peerova native library plus a polling MonoBehaviour.",
+  "unity": "2021.3",
+  "keywords": ["networking", "p2p", "multiplayer", "udp"],
+  "author": { "name": "peerova" },
+  "samples": [
+    {
+      "displayName": "Chat",
+      "description": "Minimal host/join chat using PeerovaBehaviour.",
+      "path": "Samples~/Chat"
+    }
+  ]
+}

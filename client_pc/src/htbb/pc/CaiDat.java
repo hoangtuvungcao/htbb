@@ -36,6 +36,8 @@ public final class CaiDat {
     public static boolean goiYMo = true;
     /** máy chủ ghi trong cài đặt (rỗng = theo bản build) */
     public static String mayChu = "";
+    /** Nhanh p2p: ticket Peerova ghi de ban build (p2p_ticket= trong cai_dat.properties), "" = theo ban build. */
+    public static String p2pTicket = "";
 
     /** bản thử (build.sh mặc định: HTBB-Ban-Thu=1) hoặc cờ dev - mới có công tắc / lớp FPS, đo khung */
     public static boolean choDo() {
@@ -129,6 +131,7 @@ public final class CaiDat {
         hieuUngCao = co(p, "hieu_ung_cao", true);
         goiYMo = co(p, "goi_y_mo", true);
         mayChu = p.getProperty("may_chu", "").trim();
+        p2pTicket = p.getProperty("p2p_ticket", "").trim();
         BanPhim.nap(p);
     }
 
@@ -149,6 +152,7 @@ public final class CaiDat {
         p.setProperty("hieu_ung_cao", hieuUngCao ? "1" : "0");
         p.setProperty("goi_y_mo", goiYMo ? "1" : "0");
         if (mayChu.length() > 0) p.setProperty("may_chu", mayChu);
+        if (p2pTicket.length() > 0) p.setProperty("p2p_ticket", p2pTicket);
         BanPhim.luu(p);
         try {
             File f = tep();

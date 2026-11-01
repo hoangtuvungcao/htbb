@@ -1,0 +1,5 @@
+module CPeerova {
+    header "peerova.h"
+    link "peerova"
+    export *
+}

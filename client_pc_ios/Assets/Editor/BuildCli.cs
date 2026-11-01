@@ -168,9 +168,17 @@ public static class BuildCli
             UnityEngine.Debug.LogError("HTBB LOI: so ban '" + ban + "' khong phai so nguyen");
             return false;
         }
+        string p2pTicket = khongRong(thamSo("-htbbP2PTicket"), System.Environment.GetEnvironmentVariable("P2P_TICKET"));
+        if (p2pTicket != null && !p2pTicket.StartsWith("pvt_"))
+        {
+            UnityEngine.Debug.LogError("HTBB LOI: P2P_TICKET phai bat dau bang pvt_");
+            return false;
+        }
         System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(TEP_PHAT_HANH));
         System.IO.File.WriteAllText(TEP_PHAT_HANH, "# Sinh boi BuildCli.Win64 luc build - KHONG sua tay, KHONG dua len git\n"
-            + "MAY_CHU_CHINH=" + mayChu + "\nCAP_NHAT_URL=" + capNhat + "\nPHIEN_BAN=" + phienBan + "\n");
+            + "MAY_CHU_CHINH=" + mayChu + "\nCAP_NHAT_URL=" + capNhat + "\nPHIEN_BAN=" + phienBan + "\n"
+            // nhanh p2p: ticket Peerova (-htbbP2PTicket / bien P2P_TICKET) -> P2PPeerova.cs noi game qua P2P
+            + (p2pTicket != null ? "P2P_TICKET=" + p2pTicket + "\n" : ""));
         AssetDatabase.ImportAsset(TEP_PHAT_HANH);
         UnityEngine.Debug.Log("HTBB phat hanh: may chu " + mayChu + ", cap nhat " + (capNhat.Length > 0 ? capNhat : "(TAT)")
             + ", phien ban " + phienBan);

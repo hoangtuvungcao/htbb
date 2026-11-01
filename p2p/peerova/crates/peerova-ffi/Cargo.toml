@@ -1,0 +1,13 @@
+[package]
+name = "peerova-ffi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "C ABI for peerova — bind from C/C++, C#, Java, Python, Go, Swift, Dart, GDScript..."
+
+[lib]
+name = "peerova"
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+peerova-core = { path = "../peerova-core" }

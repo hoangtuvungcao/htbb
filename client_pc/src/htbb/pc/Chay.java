@@ -34,6 +34,7 @@ public final class Chay {
         // ảnh đọc trong bộ nhớ (không tạo tệp tạm -> không cần SecureRandom; wine thiếu API mạng mà nó dò)
         javax.imageio.ImageIO.setUseCache(false);
         String mayChu = null;
+        String p2pTicket = null;
         String cuaSo = null;
         boolean toanMan = false;
         boolean chuAnh = false;
@@ -46,6 +47,9 @@ public final class Chay {
             String tiep = i + 1 < args.length ? args[i + 1] : null;
             if (("--may-chu".equals(a) || "--server".equals(a)) && tiep != null) {
                 mayChu = tiep;
+                i++;
+            } else if ("--p2p-ticket".equals(a) && tiep != null) {
+                p2pTicket = tiep;
                 i++;
             } else if (a.startsWith("--may-chu=")) {
                 mayChu = a.substring(10);
@@ -70,7 +74,7 @@ public final class Chay {
                     chupSau = Integer.parseInt(args[++i]);
                 }
             } else if ("--help".equals(a) || "-h".equals(a)) {
-                System.out.println("java -jar HTBB-PC.jar [--may-chu host:cong] [--cua-so 1280x720] [--toan-man] [--du-lieu <thu muc>] [--chu-anh] [--khong-am] [--fps]");
+                System.out.println("java -jar HTBB-PC.jar [--may-chu host:cong] [--p2p-ticket pvt_...] [--cua-so 1280x720] [--toan-man] [--du-lieu <thu muc>] [--chu-anh] [--khong-am] [--fps]");
                 return;
             } else {
                 System.err.println("HTBB: bo qua tham so " + a);
@@ -86,6 +90,13 @@ public final class Chay {
         if (mayChu != null && mayChu.length() > 0) {
             if (!mayChu.matches("^[^:\\s]+:\\d+$")) loi("--may-chu phai co dang host:cong (vd 127.0.0.1:19129)");
             MIDlet.GHI_DE.put("HTBB-May-Chu", mayChu);
+        }
+        // Nhanh p2p (Peerova JNI): --p2p-ticket > HTBB_P2P_TICKET > p2p_ticket= trong cai_dat.properties > ticket gan luc build.
+        if (p2pTicket == null) p2pTicket = System.getenv("HTBB_P2P_TICKET");
+        if ((p2pTicket == null || p2pTicket.length() == 0) && CaiDat.p2pTicket.length() > 0) p2pTicket = CaiDat.p2pTicket;
+        if (p2pTicket != null && p2pTicket.trim().length() > 0) MIDlet.GHI_DE.put("HTBB-P2P-Ticket", p2pTicket.trim());
+        if (System.getProperty("peerova.extract.dir") == null) {
+            System.setProperty("peerova.extract.dir", new java.io.File(CaiDat.thuMucDuLieu(), "p2p").getAbsolutePath());
         }
         if (cuaSo == null && CaiDat.lanDau && !java.awt.GraphicsEnvironment.isHeadless()) {
             // lần đầu: cửa sổ 16:9 lớn nhất vừa ~85% màn hình (màn 4K: 2560x1440 thay vì 1280x720 bé tí)
@@ -122,7 +133,8 @@ public final class Chay {
         CaiDat.apAmThanh();
         NhatKy.ghi("HTBB PC: java " + System.getProperty("java.version") + " " + System.getProperty("os.name")
                 + ", du lieu " + CaiDat.thuMucDuLieu() + ", may chu " + MIDlet.thuocTinh("HTBB-May-Chu")
-                + ", phien ban " + MIDlet.thuocTinh("HTBB-Phien-Ban"));
+                + ", phien ban " + MIDlet.thuocTinh("HTBB-Phien-Ban")
+                + (htbb.p2p.KetNoiP2P.bat() ? ", P2P Peerova (ticket " + htbb.p2p.KetNoiP2P.ticket().substring(0, Math.min(16, htbb.p2p.KetNoiP2P.ticket().length())) + "...)" : ""));
         // thuộc tính máy J2ME mà code game đọc
         System.setProperty("microedition.platform", "HTBB-PC/" + System.getProperty("os.name", "?"));
         System.setProperty("microedition.configuration", "CLDC-1.1");

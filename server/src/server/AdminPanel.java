@@ -215,6 +215,31 @@ public class AdminPanel extends JFrame {
         phai.setToolTipText("Tệp kiểm toán: " + KiemToanQuanTri.tep().getAbsolutePath() + " · Java "
                 + System.getProperty("java.version") + " · phông " + GiaoDien.tenFont());
         duoi.add(phai, BorderLayout.EAST);
+        // Nhanh p2p: nut xem / chep TICKET Peerova (sv.p2p=1) de phat cho client PC / Android / Unity.
+        final javax.swing.JButton nutP2P = new javax.swing.JButton("Ticket P2P");
+        nutP2P.setFont(GiaoDien.font(12));
+        nutP2P.setToolTipText("Peerova P2P: xem và chép ticket cho client");
+        nutP2P.addActionListener(e -> {
+            final String tk = com.htbb.p2p.MayChuP2P.ticket();
+            final String tt = "Peerova P2P: " + com.htbb.p2p.MayChuP2P.trangThai()
+                    + " · người chơi P2P: " + com.htbb.p2p.MayChuP2P.soNguoi()
+                    + (com.htbb.p2p.MayChuP2P.tepTicket().isEmpty() ? "" : " · tệp: " + com.htbb.p2p.MayChuP2P.tepTicket());
+            if (tk.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(duoi, tt + "\n(chưa có ticket - đặt sv.p2p=1 trong server.ini)");
+                return;
+            }
+            try {
+                java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
+                        .setContents(new java.awt.datatransfer.StringSelection(tk), null);
+            } catch (Throwable ignored) {
+                // không có clipboard: vẫn hiện ô chữ để chép tay
+            }
+            final javax.swing.JTextArea o = new javax.swing.JTextArea(tk, 4, 60);
+            o.setLineWrap(true);
+            o.setEditable(false);
+            javax.swing.JOptionPane.showMessageDialog(duoi, new Object[] {tt + " · ĐÃ CHÉP vào clipboard", new javax.swing.JScrollPane(o)});
+        });
+        duoi.add(nutP2P, BorderLayout.WEST);
         goc.add(duoi, BorderLayout.SOUTH);
         return goc;
     }

@@ -37,6 +37,18 @@ public class Connector {
             if (c <= 0) throw new IllegalArgumentException(name);
             String host = hp.substring(0, c);
             int port = Integer.parseInt(hp.substring(c + 1));
+            // Nhanh p2p: ban build co ticket Peerova -> moi ket noi game di qua tunnel P2P trong tien trinh
+            // (127.0.0.1:<cong tu chon> -> cong game cua may chu). Loi P2P KHONG lui ve TCP thang.
+            if (htbb.p2p.KetNoiP2P.bat()) {
+                network.Session_ME.lyDoLoiKetNoi = null;
+                try {
+                    port = htbb.p2p.KetNoiP2P.congCucBo(port);
+                    host = "127.0.0.1";
+                } catch (IOException e) {
+                    network.Session_ME.lyDoLoiKetNoi = htbb.p2p.KetNoiP2P.loiCuoi;
+                    throw e;
+                }
+            }
             Socket s = new Socket();
             s.connect(new InetSocketAddress(host, port), 15000);
             s.setTcpNoDelay(true);

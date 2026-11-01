@@ -58,6 +58,11 @@ public abstract class MIDlet {
         return key == null ? null : (String) t.get(key);
     }
 
+    /** Thuộc tính ứng dụng (htbb-app.properties) - cùng tên với bản PC, cho mã dùng chung (htbb.p2p.KetNoiP2P). */
+    public static String thuocTinh(String key) {
+        return key == null ? null : (String) thuocTinh().get(key);
+    }
+
     private static synchronized Hashtable thuocTinh() {
         if (thuocTinh == null) {
             thuocTinh = new Hashtable();

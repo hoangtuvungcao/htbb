@@ -1,0 +1,9 @@
+{
+    "name": "peerova/peerova",
+    "description": "Direct P2P networking (no relay, end-to-end encrypted) for PHP: ext/ffi binding over libpeerova + a pure-PHP sidecar fallback (peerova stdio).",
+    "type": "library",
+    "license": "proprietary",
+    "require": { "php": ">=7.4", "ext-json": "*" },
+    "suggest": { "ext-ffi": "Native in-process binding (Peerova\\Peerova). Without it use Peerova\\PeerovaStdio (needs the peerova CLI binary)." },
+    "autoload": { "classmap": ["src/"] }
+}

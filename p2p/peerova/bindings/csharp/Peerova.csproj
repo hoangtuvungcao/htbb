@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Library build of the binding: netstandard2.1 (Unity) + net6.0 (Godot 4 .NET / desktop). -->
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>Peerova</AssemblyName>
+    <RootNamespace>Peerova</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Test/**" />
+  </ItemGroup>
+</Project>

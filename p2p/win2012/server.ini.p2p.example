@@ -1,0 +1,26 @@
+# ==== PEEROVA P2P (nhanh p2p) - THEM khoi nay vao cuoi server.ini cua may chu Windows Server 2012 ====
+# server.ini KHONG dua vao git. License PVA-... la BI MAT: chi ghi o day tren may chu, khong commit, khong gui chat.
+sv.p2p=1
+# Cong Peerova: mo UDP (va TCP cung so, du phong khi mang chan UDP) tren Windows Firewall + router/NAT.
+sv.p2p_port=47000
+# License Peerova (tao tren https://peerova.pages.dev). De trong = goi DEV: toi da 3 nguoi choi P2P cung luc.
+sv.p2p_license=
+# (tuy chon) chi client co token nay moi vao duoc - client build voi P2P_TOKEN cung gia tri.
+sv.p2p_token=
+# Danh tinh server: GIU file nay (sao luu) thi ticket khong doi khi khoi dong lai / cai lai.
+sv.p2p_key=p2p/server.key
+sv.p2p_ticket_file=p2p/ticket.txt
+# UPnP / NAT-PMP: tu mo cong tren router gia dinh. Server co IP public hoac da port-forward: de 1 cung khong sao.
+sv.p2p_upnp=1
+# 1 = dung website Peerova lam diem hen (server sau NAT khong mo duoc cong). Mac dinh 0.
+sv.p2p_rdv=0
+sv.p2p_private=0
+# (tuy chon) tran CCU P2P thap hon goi license
+sv.p2p_max_ccu=
+
+# ---- khac voi ban mau Linux (vps/server.ini.linux.example) ----
+# Duong dan Windows: dau / hoac \ deu duoc, PHAI co dau / cuoi, thu muc phai ton tai.
+sv.pathLog=logs/
+db.run=
+# J2ME van vao THANG cong game sv.port (19129): mo TCP 19129 tren firewall neu con nguoi choi J2ME.
+# Khong co nguoi choi J2ME -> co the dat sv.ipLangNghe=127.0.0.1 (cong game chi con vao qua P2P).

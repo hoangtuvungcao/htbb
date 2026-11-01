@@ -77,3 +77,12 @@ key.properties
 /tools/pokemon/nguon_loai/*/*
 !/tools/pokemon/nguon_loai/*/LICENSE
 !/tools/pokemon/nguon_loai/*/LICENSE.md
+
+# ---- nhánh p2p: Peerova (build ra p2p/out, kết quả build cũ trong bản chép peerova) ----
+/p2p/out/
+/p2p/peerova/target/
+/p2p/peerova/bindings/java/build/
+/p2p/peerova/bindings/csharp/Test/bin/
+/p2p/peerova/bindings/csharp/Test/obj/
+/p2p/peerova/**/node_modules/
+/p2p/peerova/**/.dart_tool/

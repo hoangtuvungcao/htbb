@@ -180,6 +180,9 @@ public class Session_ME implements ISession {
         this.sender.AddMessage(message);
     }
 
+    /** Nhanh p2p: ly do loi ket noi cu the do lop Connector cua PC / Android dat (P2P Peerova); null = khong co. */
+    public static volatile String lyDoLoiKetNoi;
+
     /** 0.9.4: lúc gửi gói cuối (giữ kết nối: server cắt socket im lặng quá sv.socketTimeout = 180 s). */
     public volatile long lucGuiCuoi = System.currentTimeMillis();
     /** Chu kỳ gói giữ kết nối (ms). */

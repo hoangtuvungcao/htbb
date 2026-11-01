@@ -1,0 +1,10 @@
+name: peerova
+description: Direct P2P networking (no relay, end-to-end encrypted) — dart:ffi binding over the peerova C ABI. Flutter-ready.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  ffi: ^2.1.0

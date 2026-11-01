@@ -1,0 +1,5 @@
+bin/
+obj/
+java/build/
+__pycache__/
+*.key
