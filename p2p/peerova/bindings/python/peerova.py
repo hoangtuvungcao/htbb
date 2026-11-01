@@ -22,7 +22,8 @@ is: never call ``close()`` while another thread is still inside ``poll`` on
 the same node — stop the polling thread first, then close.
 
 Errors: functions that fail raise :class:`PeerovaError`; its message is the
-native library's error text.
+native library's English error text (``"E_NAME: message"``) and ``.code`` is the
+stable error code (one of the ``E_*`` constants, same values as ``PEEROVA_E_*``).
 
 Library lookup order: ``$PEEROVA_LIB`` (full path to the file) → next to this
 file → the SDK's ``lib/<platform>`` folder → the system loader search path.
@@ -38,7 +39,10 @@ from typing import Iterator, Optional, Union
 
 __all__ = [
     "CONNECTED", "DISCONNECTED", "MESSAGE", "CONNECT_FAILED", "MAX_UNRELIABLE_PAYLOAD",
-    "Event", "PeerovaError", "Server", "Client", "version",
+    "Event", "PeerovaError", "Server", "Client", "version", "error_code_name",
+    "E_OK", "E_INVALID_ARG", "E_TOO_LARGE", "E_UNKNOWN_PEER", "E_CLOSED", "E_CODE_NOT_FOUND",
+    "E_NETWORK", "E_TIMEOUT", "E_LICENSE", "E_CCU_LIMIT", "E_ACCESS_DENIED", "E_INVALID_TICKET",
+    "E_IO", "E_INTERNAL",
 ]
 
 #: Event type: a peer connected (server: a new client; client: the server accepted us).
@@ -52,6 +56,38 @@ CONNECT_FAILED = 4
 
 #: Largest payload accepted by ``send(..., reliable=False)``, in bytes.
 MAX_UNRELIABLE_PAYLOAD = 1180
+
+# Stable error codes (``PEEROVA_E_*`` in peerova.h). ``PeerovaError.code`` and ``Event.error_code``.
+E_OK = 0  #: no error
+E_INVALID_ARG = 1  #: invalid argument / config JSON / connect code format
+E_TOO_LARGE = 2  #: unreliable payload larger than 1180 bytes
+E_UNKNOWN_PEER = 3  #: peer id not connected
+E_CLOSED = 4  #: connection closed (node closed, disconnect reasons)
+E_CODE_NOT_FOUND = 5  #: 6-character connect code unknown or expired
+E_NETWORK = 6  #: socket / port in use / website or license server unreachable
+E_TIMEOUT = 7  #: connect timed out, server not ready, peer stopped responding
+E_LICENSE = 8  #: license / lease invalid, expired or rejected
+E_CCU_LIMIT = 9  #: server's concurrent-client limit reached
+E_ACCESS_DENIED = 10  #: access token wrong / expired / revoked
+E_INVALID_TICKET = 11  #: ticket malformed, corrupted or unsupported
+E_IO = 12  #: server key file unreadable / unwritable / corrupted
+E_INTERNAL = 99  #: internal or unclassified error
+
+_CODE_NAMES = {v: k for k, v in globals().items() if k.startswith("E_") and isinstance(v, int)}
+
+
+def error_code_name(code: int) -> str:
+    """``"E_TOO_LARGE"`` for ``E_TOO_LARGE`` etc."""
+    return _CODE_NAMES.get(code, f"E_{code}")
+
+
+def _code_from_text(text: str, default: int = E_INTERNAL) -> int:
+    name = text.split(":", 1)[0].strip()
+    for code, n in _CODE_NAMES.items():
+        if n == name:
+            return code
+    return default
+
 
 Bytes = Union[bytes, bytearray, memoryview, str]
 
@@ -85,9 +121,22 @@ class Event:
         """``data`` decoded as UTF-8 (invalid bytes are replaced)."""
         return self.data.decode("utf-8", "replace")
 
+    @property
+    def error_code(self) -> int:
+        """For ``CONNECT_FAILED`` / ``DISCONNECTED``: the ``E_*`` code of the reason (``text`` is
+        English, ``"E_TIMEOUT: ..."``). ``E_OK`` for other events."""
+        if self.type in (CONNECT_FAILED, DISCONNECTED):
+            return _code_from_text(self.text)
+        return E_OK
+
 
 class PeerovaError(RuntimeError):
-    """Raised when a native call fails. The message is the library's error text."""
+    """Raised when a call fails. ``str(err)`` is English text ``"E_NAME: message"``;
+    ``err.code`` is the stable ``E_*`` code."""
+
+    def __init__(self, message: str, code: Optional[int] = None):
+        super().__init__(message)
+        self.code = _code_from_text(message) if code is None else code
 
 
 def _platform_dir() -> str:
@@ -138,13 +187,23 @@ _lib.peerova_free.restype = None
 _lib.peerova_free.argtypes = [ctypes.c_void_p]
 _lib.peerova_last_error.restype = ctypes.c_char_p
 _lib.peerova_last_error.argtypes = []
+_has_code = hasattr(_lib, "peerova_last_error_code")  # absent in older native libraries
+if _has_code:
+    _lib.peerova_last_error_code.restype = ctypes.c_int32
+    _lib.peerova_last_error_code.argtypes = []
 _lib.peerova_version.restype = ctypes.c_char_p
 _lib.peerova_version.argtypes = []
 
 
-def _last_error() -> str:
+def _last_error() -> PeerovaError:
+    """PeerovaError for the last failed native call on this thread."""
     msg = _lib.peerova_last_error()
-    return msg.decode("utf-8", "replace") if msg else "unknown error"
+    text = msg.decode("utf-8", "replace") if msg else "E_INTERNAL: unknown error"
+    return PeerovaError(text, _lib.peerova_last_error_code() if _has_code else None)
+
+
+def _err(code: int, text: str) -> PeerovaError:
+    return PeerovaError(f"{error_code_name(code)}: {text}", code)
 
 
 def _read_string(fn, handle) -> Optional[str]:
@@ -167,12 +226,12 @@ class _Node:
 
     def __init__(self, handle):
         if not handle:
-            raise PeerovaError(_last_error())
+            raise _last_error()
         self._h = handle
 
     def _handle(self):
         if not self._h:
-            raise PeerovaError("node is closed")
+            raise _err(E_CLOSED, "node is closed")
         return self._h
 
     def send(self, peer: int, data: Bytes, channel: int = 0, reliable: bool = True) -> None:
@@ -196,9 +255,9 @@ class _Node:
         elif not isinstance(data, bytes):
             data = bytes(data)
         if not 0 <= channel <= 255:
-            raise PeerovaError("channel must be 0..255")
+            raise _err(E_INVALID_ARG, "channel must be 0..255")
         if _lib.peerova_send(self._handle(), peer, channel, data, len(data), 1 if reliable else 0) != 0:
-            raise PeerovaError(_last_error())
+            raise _last_error()
 
     def poll(self, timeout: float = 0) -> Optional[Event]:
         """Return the next event, or ``None`` if there is none.
@@ -276,6 +335,9 @@ class Server(_Node):
     * ``token`` (str): shared secret that clients must present.
     * ``upnp`` (bool, default True): try to open the port on the router.
     * ``private`` (bool): the ticket does not contain the server's IP addresses.
+    * ``hide_ip`` (bool): hide the server IP — players never learn its real
+      address (DDoS protection); clients connect through the automatic
+      encrypted route, with slightly higher latency.
     * ``app`` (str, project id from the Peerova website) and ``share``
       (dict: ``name``, ``public``, ``max``, ``mode``, ``region``): publish a
       6-character connect code, see :attr:`room_code`.
@@ -308,8 +370,13 @@ class Client(_Node):
 
     Args:
         ticket: The server's ticket (``"pvt_..."``) or its 6-character connect code.
-        **config: ``token`` (str, the server's shared secret) and
-            ``timeout_ms`` (int, default 20000).
+        **config: ``token`` (str, the server's shared secret),
+            ``timeout_ms`` (int, default 20000) and ``key_file`` (str, optional:
+            the client's identity key, created if missing — keep it, e.g. in
+            ``<appdata>/<game>/peerova-client.key``, so the player keeps the same
+            identity and the same stable address on the server across runs;
+            without it every run uses a new random key. Bans by address only hold
+            while the player keeps the file; accounts/tokens are the robust way).
 
     Returns immediately; wait for a ``CONNECTED`` or ``CONNECT_FAILED`` event
     with :meth:`poll`. Connections are automatic: direct first, with an

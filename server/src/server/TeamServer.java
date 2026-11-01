@@ -1326,14 +1326,8 @@ public class TeamServer {
                     try {
                         InetAddress inet = clientSocket.getInetAddress();
                         ipconnect = inet.getHostAddress();
-                        // Nguoi choi qua Peerova P2P den tu 127.0.0.1 (tunnel trong tien trinh): lay IP that
-                        // cua peer de chong DoS / chan IP / nhat ky theo nguoi choi nhu ket noi thang.
-                        if (inet.isLoopbackAddress() && com.htbb.p2p.MayChuP2P.dangChay()) {
-                            final String ipP2P = com.htbb.p2p.MayChuP2P.ipThat(clientSocket.getPort());
-                            if (ipP2P != null) {
-                                ipconnect = ipP2P;
-                            }
-                        }
+                        // Nguoi choi qua Peerova P2P: dia chi rieng 127.a.b.c moi nguoi choi (Peerova tunnel::player_ip, on dinh
+                        // theo khoa client) -> gioi han / chan IP / nhat ky theo tung nguoi choi, khong can tra cuu them.
                         if (TeamServer.ALL_IPCONNECT_BLOCK.get(ipconnect) != null && !TeamServer.mienGioiHanIp(ipconnect)) {
                             System.out.println("IP BLOCK " + ipconnect);
                             clientSocket.close();

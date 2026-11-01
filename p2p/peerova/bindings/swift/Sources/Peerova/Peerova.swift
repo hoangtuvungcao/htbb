@@ -205,7 +205,7 @@ public class PeerovaNode: @unchecked Sendable {
 }
 
 /// A server node: accepts client connections. Give clients its ``ticket`` (or its ``roomCode``).
-public final class PeerovaServer: PeerovaNode {
+public final class PeerovaServer: PeerovaNode, @unchecked Sendable {
     /// The shareable connection ticket (`"pvt_..."`). Same `key_file` ⇒ same ticket.
     public let ticket: String
 
@@ -261,7 +261,7 @@ public final class PeerovaServer: PeerovaNode {
 /// The initializer returns immediately; then wait for ``PeerovaEvent/connected(peer:)`` or
 /// ``PeerovaEvent/connectFailed(reason:)``. Connections are automatic: direct first, with an automatic
 /// encrypted fallback route when networks block direct connections.
-public final class PeerovaClient: PeerovaNode {
+public final class PeerovaClient: PeerovaNode, @unchecked Sendable {
     /// Connects to a server.
     ///
     /// - Parameters:

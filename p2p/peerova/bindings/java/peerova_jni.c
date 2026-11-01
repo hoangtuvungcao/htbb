@@ -157,6 +157,11 @@ JNIEXPORT jbyteArray JNICALL Java_dev_peerova_Peerova_nLastError(JNIEnv* env, jc
     return cstr_bytes(env, peerova_last_error());
 }
 
+JNIEXPORT jint JNICALL Java_dev_peerova_Peerova_nLastErrorCode(JNIEnv* env, jclass cls) {
+    (void)env; (void)cls;
+    return (jint)peerova_last_error_code();
+}
+
 JNIEXPORT jbyteArray JNICALL Java_dev_peerova_Peerova_nVersion(JNIEnv* env, jclass cls) {
     (void)cls;
     return cstr_bytes(env, peerova_version());
@@ -223,14 +228,6 @@ JNIEXPORT jbyteArray JNICALL Java_dev_peerova_PeerovaTunnel_nError(JNIEnv* env, 
 JNIEXPORT jbyteArray JNICALL Java_dev_peerova_PeerovaTunnel_nNextLog(JNIEnv* env, jclass cls, jlong h) {
     (void)cls;
     return tun_str(env, h, peerova_tunnel_next_log);
-}
-
-JNIEXPORT jbyteArray JNICALL Java_dev_peerova_PeerovaTunnel_nPeerOf(JNIEnv* env, jclass cls, jlong h, jint port, jint wait_ms) {
-    (void)cls;
-    char buf[128];
-    int32_t need = peerova_tunnel_peer_of(TUN(h), (uint16_t)port, wait_ms < 0 ? 0u : (uint32_t)wait_ms, buf, (int32_t)sizeof buf);
-    if (need <= 0 || need > (int32_t)sizeof buf) return NULL;
-    return cstr_bytes(env, buf);
 }
 
 JNIEXPORT jlong JNICALL Java_dev_peerova_PeerovaTunnel_nPeerCount(JNIEnv* env, jclass cls, jlong h) {

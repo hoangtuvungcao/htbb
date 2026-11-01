@@ -24,7 +24,9 @@ peerova stdio client <TICKET | CODE | @file> ['<json config>']
   | server | `private` | the ticket contains no IP addresses, so sharing it does not reveal the server's address, default `false` |
   | server | `app`, `share` | get a 6-character connect code: `app` = project id from the Peerova website, `share` = `{"name","public","max","mode","region"}` |
   | client | `token` | must match the server's `token` |
+  | server | `hide_ip` | hide the server IP: players never learn its real address (DDoS protection); slightly higher latency |
   | client | `timeout_ms` | give up after this long, default `20000` |
+  | client | `key_file` | client identity key (created if missing), e.g. `<appdata>/<game>/peerova-client.key`; keeps the player's identity and stable address on the server across runs |
 
   Example server config: `{"port":0,"upnp":false,"key_file":"/var/lib/myapp/server.key"}`.
 * The client argument is a ticket (`pvt_...`), a **6-character connect code** (e.g. `K7Q2XD`, resolved
@@ -40,23 +42,24 @@ peerova stdio client <TICKET | CODE | @file> ['<json config>']
 | Status | When |
 |---|---|
 | `0` | after `{"cmd":"quit"}` or when stdin is closed |
-| `1` | startup failed (bad config JSON, invalid ticket/code, port in use, ...). The reason is printed on stderr, and **no** `ready` line is written |
+| `1` | startup failed (bad config JSON, invalid ticket/code, port in use, ...). One `{"event":"error","message":"E_NAME: ...","code":"E_NAME"}` line is written first (a human-readable reason also goes to stderr), and **no** `ready` line is written |
 
 ## Output (sidecar → you)
 
 | Line | Meaning |
 |---|---|
-| `{"event":"ready","ticket":"pvt_..."}` | Server is listening; share `ticket` with clients. Always the first line. |
+| `{"event":"ready","ticket":"pvt_..."}` | Server is listening; share `ticket` with clients. The first line on success. |
 | `{"event":"ready"}` | Client started (no ticket); now wait for `connected` or `connect_failed`. |
 | `{"event":"connected","peer":N}` | A peer connected. Server: a client (one event per client). Client: the server. |
 | `{"event":"message","peer":N,"channel":C,"reliable":true,"data":"<b64url>"}` | Payload from peer `N` on channel `C` (0..255). |
-| `{"event":"disconnected","peer":N,"reason":"..."}` | Peer `N` is gone. |
-| `{"event":"connect_failed","reason":"..."}` | Client could not reach the server (timeout, wrong token, server full...). The node stays alive; send `quit`. |
-| `{"event":"error","message":"..."}` | A command was rejected (unparsable JSON, unknown `cmd`, unknown peer, unreliable payload > 1180 bytes...). Non-fatal. |
+| `{"event":"disconnected","peer":N,"reason":"...","code":"E_CLOSED"}` | Peer `N` is gone. |
+| `{"event":"connect_failed","reason":"...","code":"E_TIMEOUT"}` | Client could not reach the server (timeout, wrong token, server full...). The node stays alive; send `quit`. |
+| `{"event":"error","message":"...","code":"E_UNKNOWN_PEER"}` | A command was rejected (unparsable JSON, unknown `cmd`, unknown peer, unreliable payload > 1180 bytes...). Non-fatal. Also written once before exit status `1` when startup fails. |
 
 * `peer` is an unsigned 32-bit connection id; on a server it identifies the client, on a client it identifies
   the server. Store it as an integer type that holds values up to 4294967295.
-* `reason` and `message` are human-readable text (possibly localized). Log them; do not parse them.
+* `reason` and `message` are English text `"E_NAME: description"`; `code` is the stable error code name
+  (table: [Error codes](../DEVELOPER-GUIDE.md#error-codes)). Branch on `code`; log the text.
 * Unknown fields may be added in later versions: ignore fields you don't know.
 
 ## Input (you → sidecar)
@@ -100,8 +103,8 @@ Payloads are arbitrary bytes; UTF-8 text is just a common case.
 ## Lifecycle
 
 1. Spawn with stdin/stdout as pipes (stderr: inherit, log, or discard).
-2. Read the first line; it must be `ready` (server: keep `ticket`). EOF before that = startup failure → read
-   stderr and the exit status.
+2. Read lines until `ready` (server: keep `ticket`). An `error` line followed by EOF before `ready` = startup
+   failure: its `code` tells why (exit status `1`).
 3. Loop: read event lines; write command lines. Read stdout continuously (a full pipe stalls the sidecar).
 4. Stop: write `{"cmd":"quit"}` (or close stdin) and wait for exit; kill it after a grace period (e.g. 3 s).
 
@@ -113,7 +116,7 @@ $ peerova stdio server '{"port":0,"upnp":false}'
 {"event":"connected","peer":2633379007}
 {"event":"message","peer":2633379007,"channel":0,"reliable":true,"data":"aGVsbG8"}
 {"cmd":"send","peer":2633379007,"channel":0,"reliable":true,"data":"aGkgYmFjaw"}          <- typed by you
-{"event":"disconnected","peer":2633379007,"reason":"..."}
+{"event":"disconnected","peer":2633379007,"reason":"E_CLOSED: the peer closed the connection","code":"E_CLOSED"}
 {"cmd":"quit"}
 ```
 

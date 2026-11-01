@@ -62,6 +62,13 @@ public class PeerovaTest {
             check(r != null && r.text().equals("pong"), "no pong");
             boolean rejected = !cli.trySend(peer, new byte[Peerova.MAX_UNRELIABLE_PAYLOAD + 100], 0, Peerova.MAX_UNRELIABLE_PAYLOAD + 100, 4, false);
             System.out.println("oversized unreliable send rejected: " + rejected);
+            try { cli.send(peer, new byte[Peerova.MAX_UNRELIABLE_PAYLOAD + 1], 4, false); check(false, "oversized send did not throw"); }
+            catch (Peerova.PeerovaException e) { check(e.code == Peerova.E_TOO_LARGE && e.getMessage().startsWith("E_TOO_LARGE: "), "code " + e.code + " " + e.getMessage()); }
+            try { srv.send(424242, "x", 0, true); check(false, "send to unknown peer did not throw"); }
+            catch (Peerova.PeerovaException e) { check(e.code == Peerova.E_UNKNOWN_PEER, "unknown peer code " + e.code); }
+            try { Peerova.Client.connect("pvt_@@@").close(); check(false, "bad ticket accepted"); }
+            catch (Peerova.PeerovaException e) { check(e.code == Peerova.E_INVALID_TICKET, "bad ticket code " + e.code + " " + e.getMessage()); }
+            check(Peerova.errorCodeOf("E_TIMEOUT: x") == Peerova.E_TIMEOUT && Peerova.errorCodeName(Peerova.E_INTERNAL).equals("E_INTERNAL"), "code helpers");
             System.out.printf("server peers=%d, %d reliable in order + 1 unreliable + direct + pong in %.1f ms%n",
                     srv.peerCount(), n, (System.nanoTime() - t0) / 1e6);
             cli.close();

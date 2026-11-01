@@ -33,6 +33,10 @@ public class HtbbActivity extends Activity {
         super.onCreate(b);
         NenAndroid.hoatDong = this;
         NenAndroid.ungDung = getApplicationContext();
+        // nhanh p2p: danh tinh Peerova co dinh cua may (khoa client trong bo nho rieng cua app) -> may chu thay cung 127.a.b.c
+        if (System.getProperty("htbb.p2p.key") == null) {
+            System.setProperty("htbb.p2p.key", new java.io.File(new java.io.File(getFilesDir(), "p2p"), "peerova-client.key").getAbsolutePath());
+        }
         // như máy J2ME: lỗi không bắt ở luồng phụ của game (tải dữ liệu, mạng...) chỉ dừng luồng đó,
         // không làm chết cả ứng dụng (Android mặc định giết tiến trình)
         final Thread.UncaughtExceptionHandler goc = Thread.getDefaultUncaughtExceptionHandler();

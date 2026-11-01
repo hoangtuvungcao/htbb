@@ -1,0 +1,17 @@
+; Minimal Godot 4 .NET project used by test.sh (copied into a temporary folder together with
+; ../addons/peerova and ../examples/net_demo, so the repository copy stays clean).
+config_version=5
+
+[application]
+
+config/name="PeerovaGodotTest"
+run/main_scene="res://roundtrip_cs.tscn"
+config/features=PackedStringArray("4.2", "C#")
+
+[dotnet]
+
+project/assembly_name="PeerovaGodotTest"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/peerova/plugin.cfg")

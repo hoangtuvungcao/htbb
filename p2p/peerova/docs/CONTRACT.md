@@ -72,7 +72,8 @@ Bindings: C/C++ (Unreal), C# (Unity, Godot .NET), Python, Java/Kotlin, Go (cgo),
 ## 8. Amendment v3: website as rendezvous (no VPS, no supernode, no relay)
 The website only exchanges addresses at connection start; data always flows peer-to-peer.
 The observed public IP is `CF-Connecting-IP` on Cloudflare, or the socket peer address on the Node adapter
-(`X-Forwarded-For` only when `TRUST_PROXY=1`). `sid` = b64url of the 32-byte server static public key (it is in the ticket).
+(`TRUST_PROXY=N`: the N-th X-Forwarded-For entry from the right, i.e. the hop written by our own proxy — entries further
+left are client-controlled and never used). `sid` = b64url of the 32-byte server static public key (it is in the ticket).
 
 * `POST /api/v1/rdv/poll` (server, every ~2 s; also acts as announce/refresh)
   body `{"sid":"<b64url32>","port":<local udp port>,"lan":["10.1.0.2:47000"],"v6":["[2001:db8::1]:47000"],"tcp":true}`
@@ -84,10 +85,26 @@ The observed public IP is `CF-Connecting-IP` on Cloudflare, or the socket peer a
   -> 200 `{"ip":"<client public ip as seen>","server":{"ip":"...","port":47000,"lan":[...],"v6":[...],"tcp":true,"age":<seconds since last poll>}}`
   -> 404 `{"error":"offline"}` if no fresh server entry.
   * Queues the request for the server (max 64 pending per sid, expire after 30 s).
+* §8.5 Fast punching (optional fields; old clients/servers ignore them):
+  * connect body may add `"nat":"easy"|"seq"|"hard"` (the client's own NAT as remembered for its network) and
+    `"peer_nat":"easy"|"seq"|"hard"` (the server's NAT as remembered from earlier connections). Other values are dropped.
+  * connect response adds `"now":<website ms since epoch>` and `"punch_at":<ms>` (= now + long-poll tick + 150 ms).
+  * poll response adds `"now":<ms>`; each client adds `"punch_at"` (never in the past) and the `nat` / `peer_nat` hints.
+  * Each side maps `punch_at` onto its own clock with `now` (minus half the request RTT), so the first full-TTL bursts
+    cross. Long-poll DB check interval: env `RDV_TICK_MS` (default 250, 50..1000).
 * Validation & abuse limits: sid must decode to 32 bytes; ports 1..65535; lan/v6 at most 8 entries each, valid `ip:port` /
   `[v6]:port` strings; per-IP rate limit (poll: 60/min, connect: 30/min) → 429 `{"error":"rate_limited"}`.
-  No auth (anyone holding the ticket may look up the server address — same trust level as the ticket itself).
-* Storage: D1 tables `rdv_servers(sid PK, ip, port, lan, v6, tcp, ts)` and `rdv_requests(id, sid, session, ip, port, lan, v6, ts)`;
+  `connect` needs no auth (anyone holding the ticket may look up the server address — same trust level as the ticket itself).
+* §8.4 Poll binding (anti-impersonation; the sid is public because it is in the ticket):
+  * Once a sid has polled with a licensed lease whose `spk` equals the sid, it is **owned** for 24 h (renewed on every such
+    poll): any other poll for that sid (no lease, invalid lease, lease without/with another `spk`) → 401
+    `{"error":"unauthorized"}` and never receives the sid's queued clients.
+  * Otherwise each poll response carries `"tok":"<random>"`. The server echoes it as `"tok"` in every later poll. While the
+    token is fresh (< 2 min since the last poll) a poll without the right token → 401 `{"error":"unauthorized"}`.
+    After 2 min without a poll the next poll (with or without `tok`) is accepted and gets a new token — this is the only
+    backward-compatible path for old servers that do not send `tok`. The website stores only SHA-256(tok).
+  * Owner polls (`spk == sid`) never need `tok` and immediately take the sid over from dev pollers.
+* Storage: D1 tables `rdv_servers(sid PK, ip, port, lan, v6, tcp, ts)` and `rdv_requests(id, sid, session, ip, port, lan, v6, ts, x)` (`x` = JSON extras of §8.5; existing DBs: `ALTER TABLE rdv_requests ADD COLUMN x TEXT NOT NULL DEFAULT ''` — without it the website still works, minus §8.5);
   the Node adapter's memory/sqlite engines must support them. Cache-Control: no-store.
 
 ## 9. Amendment v4: lobbies, room codes, live server directory (metadata only, no relay)
@@ -128,7 +145,15 @@ public metadata; the service data path is still peer-to-peer.
   * No/invalid lease → **dev mode**: rdv poll delivers at most 3 client requests per minute per sid (extra requests are
     dropped silently, client sees offline); lobby upsert allowed only with `public:false` and `max ≤ 3`, and its code
     resolves at most 10 times per hour. Response field `"mode":"dev"|"licensed"` (no other hints).
+  * Lobby ownership: a licensed lobby upsert must use a lease of a license owned by the `app`'s owner (same user);
+    otherwise 403 `{"error":"license_required"}` — nobody can list rooms under someone else's app. Dev lobbies
+    (private, `max ≤ 3`) are limited to 5 live per app and are not counted in `/lobby/stats` or the dashboard samples.
+  * rdv poll binding: see §8.4 (an owned sid rejects every non-owner poll with 401).
 * Rationale: a cracked server cannot forge leases, so it only gets dev-mode service from our network.
+* Accounts: an email address must be verified (one-time link, 24 h, `POST /api/v1/auth/verify {"token"}`, resend
+  `POST /api/v1/auth/verify/resend`, rate-limited) before the account starts its trial, can create orders
+  (403 `{"error":"email_unverified"}`) or counts as admin (`ADMIN_EMAILS` + verified + 2FA). Emailed links are always
+  built from `SITE_URL`, never from the request `Host`.
 
 ## 12. Amendment v7: automatic last-resort relay (fallback only)
 Used only when every direct path (LAN, IPv6, public IP, UPnP/NAT-PMP, hole punching, direct TCP) fails.
@@ -154,3 +179,12 @@ Payload stays end-to-end encrypted (Noise); the relay forwards opaque packets an
   trying/preferring direct paths and switch back when a direct path becomes available.
 * Long-poll (same amendment): `POST /api/v1/rdv/poll` accepts optional `"wait": N` (0..25 s). With no pending client
   requests the server re-checks every ~500 ms until one arrives or N seconds pass. Omitting `wait` keeps the old behaviour.
+
+### §12.1 Multiple relays (internal)
+- `RELAY_URL` (website env), `PEEROVA_RELAY_URL` (build) and the rdv `relay` field may hold a
+  comma-separated list (max 8, http(s) only), e.g. `https://peerova.pages.dev,https://relay2.example.com`.
+- Servers keep a standby room (`mux=1`) on **every** listed relay; idle standby costs nothing.
+- Clients race up to 3 relays (`cid=<16 hex>`); the first completed handshake wins, losers are closed.
+- If the relay carrying a connection dies (outage, quota close 4002/4003), the client re-dials the next
+  relay in the list with the same cid; the server roams on the first authenticated packet. One relay
+  in the list = the same relay is retried.

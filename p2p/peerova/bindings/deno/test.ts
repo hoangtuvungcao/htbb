@@ -5,7 +5,7 @@ function assert(cond: unknown, msg: string): asserts cond {
   if (!cond) throw new Error(msg);
 }
 
-Deno.test("peerova roundtrip: 200 reliable in order + unreliable + reply", async () => {
+Deno.test("peerova roundtrip: 200 reliable in order + unreliable both ways + reply + disconnect", async () => {
   const N = 200;
   const dir = Deno.makeTempDirSync({ prefix: "peerova-deno-" });
   using srv = await PeerovaServer.startAsync({ port: 0, upnp: false, key_file: `${dir}/deno.key` });
@@ -46,8 +46,25 @@ Deno.test("peerova roundtrip: 200 reliable in order + unreliable + reply", async
   }
   assert(unreliable === 1, "unreliable datagram not received");
   srv.send(sp, new Uint8Array([0x70, 0x6f, 0x6e, 0x67, 0, 0xff]));
-  let reply = await cli.pollAsync(5000);
-  while (reply && reply.type !== EventType.Message) reply = await cli.pollAsync(5000);
-  assert(reply && reply.data.length === 6 && reply.data[5] === 0xff, "binary reply");
-  console.log(`deno PASS: peerova ${version()}, ${N} reliable msgs in order, unreliable=${unreliable}, reply ok, peers=${srv.peerCount}`);
+  srv.send(sp, "srv-realtime", { channel: 3, reliable: false });
+  let binOk = false, backUnreliable = false;
+  for (let i = 0; i < 20 && !(binOk && backUnreliable); i++) {
+    const r = await cli.pollAsync(1000);
+    if (!r || r.type !== EventType.Message) continue;
+    if (r.reliable && r.data.length === 6 && r.data[5] === 0xff) binOk = true;
+    else if (!r.reliable && r.channel === 3 && r.text === "srv-realtime") backUnreliable = true;
+  }
+  assert(binOk, "binary reply");
+  assert(backUnreliable, "server->client unreliable not received");
+  const peers = srv.peerCount;
+
+  // client leaves -> server sees DISCONNECTED
+  cli.close();
+  let gone = false;
+  for (let i = 0; i < 10 && !gone; i++) {
+    const e = await srv.pollAsync(1000);
+    if (e?.type === EventType.Disconnected && e.peer === sp) gone = true;
+  }
+  assert(gone, "server did not see DISCONNECTED");
+  console.log(`deno PASS: peerova ${version()}, ${N} reliable msgs in order, unreliable both ways, reply ok, peers=${peers}, disconnect ok`);
 });

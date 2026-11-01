@@ -25,6 +25,8 @@ pub struct Ticket {
     pub tcp: bool,
     /// Server announces itself at the website rendezvous (no supernode/VPS needed).
     pub rdv: bool,
+    /// Hidden server: no address anywhere; clients reach it only through relays.
+    pub hidden: bool,
     pub candidates: Vec<Candidate>,
     pub supernodes: Vec<SocketAddr>,
 }
@@ -36,10 +38,8 @@ impl Ticket {
 
     pub fn encode(&self) -> String {
         let mut w = W::new();
-        w.u8(2)
-            .bytes(&self.server_pub)
-            .u8(self.private as u8 | (self.tcp as u8) << 1 | (self.rdv as u8) << 2);
-        w.cands(if self.private { &[] } else { &self.candidates });
+        w.u8(2).bytes(&self.server_pub).u8(self.private as u8 | (self.tcp as u8) << 1 | (self.rdv as u8) << 2 | (self.hidden as u8) << 3);
+        w.cands(if self.private || self.hidden { &[] } else { &self.candidates });
         let sn = &self.supernodes[..self.supernodes.len().min(8)];
         w.u8(sn.len() as u8);
         for a in sn {
@@ -53,9 +53,7 @@ impl Ticket {
         if s.starts_with("pvt1_") {
             return Err("ticket v1 (PoC) không còn hỗ trợ, hãy lấy ticket mới từ server".into());
         }
-        let body = s
-            .strip_prefix(TICKET_PREFIX)
-            .ok_or("ticket phải bắt đầu bằng pvt_")?;
+        let body = s.strip_prefix(TICKET_PREFIX).ok_or("ticket phải bắt đầu bằng pvt_")?;
         let raw = b64_decode(body).ok_or("ticket không phải base64 hợp lệ")?;
         let mut r = R::new(&raw);
         let bad = || "ticket hỏng".to_string();
@@ -64,21 +62,11 @@ impl Ticket {
         }
         let server_pub: [u8; 32] = r.take(32).ok_or_else(bad)?.try_into().unwrap();
         let flags = r.u8().ok_or_else(bad)?;
-        let (private, tcp, rdv) = (flags & 1 != 0, flags & 2 != 0, flags & 4 != 0);
+        let (private, tcp, rdv, hidden) = (flags & 1 != 0, flags & 2 != 0, flags & 4 != 0, flags & 8 != 0);
         let candidates = r.cands().ok_or_else(bad)?;
         let n = r.u8().ok_or_else(bad)? as usize;
-        let supernodes = (0..n.min(8))
-            .map(|_| r.addr())
-            .collect::<Option<Vec<_>>>()
-            .ok_or_else(bad)?;
-        Ok(Ticket {
-            server_pub,
-            private,
-            tcp,
-            rdv,
-            candidates,
-            supernodes,
-        })
+        let supernodes = (0..n.min(8)).map(|_| r.addr()).collect::<Option<Vec<_>>>().ok_or_else(bad)?;
+        Ok(Ticket { server_pub, private, tcp, rdv, hidden, candidates, supernodes })
     }
 }
 
@@ -96,20 +84,14 @@ impl JoinCode {
     }
 
     pub fn decode(s: &str) -> Result<JoinCode, String> {
-        let body = s
-            .trim()
-            .strip_prefix(JOIN_PREFIX)
-            .ok_or("join code phải bắt đầu bằng pvj_")?;
+        let body = s.trim().strip_prefix(JOIN_PREFIX).ok_or("join code phải bắt đầu bằng pvj_")?;
         let raw = b64_decode(body).ok_or("join code không phải base64 hợp lệ")?;
         let mut r = R::new(&raw);
         let bad = || "join code hỏng".to_string();
         if r.u8().ok_or_else(bad)? != 1 {
             return Err("phiên bản join code không hỗ trợ".into());
         }
-        Ok(JoinCode {
-            session: r.u64().ok_or_else(bad)?,
-            candidates: r.cands().ok_or_else(bad)?,
-        })
+        Ok(JoinCode { session: r.u64().ok_or_else(bad)?, candidates: r.cands().ok_or_else(bad)? })
     }
 }
 
@@ -125,35 +107,24 @@ mod tests {
             private: false,
             tcp: true,
             rdv: true,
+            hidden: false,
             candidates: vec![
-                Candidate {
-                    kind: CandKind::Mapped,
-                    addr: "113.161.2.3:47000".parse().unwrap(),
-                },
-                Candidate {
-                    kind: CandKind::Ipv6,
-                    addr: "[2402:800:6314::5]:47000".parse().unwrap(),
-                },
+                Candidate { kind: CandKind::Mapped, addr: "113.161.2.3:47000".parse().unwrap() },
+                Candidate { kind: CandKind::Ipv6, addr: "[2402:800:6314::5]:47000".parse().unwrap() },
             ],
             supernodes: vec!["14.225.1.2:47000".parse().unwrap()],
         };
         assert_eq!(Ticket::decode(&t.encode()).unwrap(), t);
         t.private = true;
         let d = Ticket::decode(&t.encode()).unwrap();
-        assert!(
-            d.private && d.candidates.is_empty(),
-            "private ticket must not leak IPs"
-        );
+        assert!(d.private && d.candidates.is_empty(), "private ticket must not leak IPs");
     }
 
     #[test]
     fn join_roundtrip() {
         let j = JoinCode {
             session: 42,
-            candidates: vec![Candidate {
-                kind: CandKind::Host,
-                addr: "192.168.1.9:5000".parse().unwrap(),
-            }],
+            candidates: vec![Candidate { kind: CandKind::Host, addr: "192.168.1.9:5000".parse().unwrap() }],
         };
         assert_eq!(JoinCode::decode(&j.encode()).unwrap(), j);
     }

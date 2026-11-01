@@ -60,13 +60,8 @@ impl RangeSet {
         if s >= e {
             return;
         }
-        let touching: Vec<u64> = self
-            .m
-            .range(..=e)
-            .rev()
-            .take_while(|(_, &end)| end >= s)
-            .map(|(&k, _)| k)
-            .collect();
+        let touching: Vec<u64> =
+            self.m.range(..=e).rev().take_while(|(_, &end)| end >= s).map(|(&k, _)| k).collect();
         for k in touching {
             let end = self.m.remove(&k).unwrap();
             s = s.min(k);
@@ -79,13 +74,8 @@ impl RangeSet {
         if s >= e {
             return;
         }
-        let over: Vec<(u64, u64)> = self
-            .m
-            .range(..e)
-            .rev()
-            .take_while(|(_, &end)| end > s)
-            .map(|(&k, &v)| (k, v))
-            .collect();
+        let over: Vec<(u64, u64)> =
+            self.m.range(..e).rev().take_while(|(_, &end)| end > s).map(|(&k, &v)| (k, v)).collect();
         for (k, v) in over {
             self.m.remove(&k);
             if k < s {
@@ -125,31 +115,13 @@ impl RangeSet {
 pub enum Frame {
     Ping,
     /// Ranges [start, end) of received packet numbers, descending.
-    Ack {
-        delay_ms: u16,
-        ranges: Vec<(u64, u64)>,
-    },
-    Stream {
-        id: u32,
-        off: u64,
-        fin: bool,
-        data: Vec<u8>,
-    },
-    MaxData {
-        id: u32,
-        max: u64,
-    },
-    Reset {
-        id: u32,
-    },
+    Ack { delay_ms: u16, ranges: Vec<(u64, u64)> },
+    Stream { id: u32, off: u64, fin: bool, data: Vec<u8> },
+    MaxData { id: u32, max: u64 },
+    Reset { id: u32 },
     /// Unreliable datagram; `seq` lets the receiver drop redundant copies.
-    Datagram {
-        seq: u32,
-        data: Vec<u8>,
-    },
-    Close {
-        code: u8,
-    },
+    Datagram { seq: u32, data: Vec<u8> },
+    Close { code: u8 },
 }
 
 mod ft {
@@ -237,29 +209,16 @@ impl Frame {
                     let off = u64_(&mut b)?;
                     let fin = take(&mut b, 1)?[0] != 0;
                     let len = u16_(&mut b)? as usize;
-                    Frame::Stream {
-                        id,
-                        off,
-                        fin,
-                        data: take(&mut b, len)?.to_vec(),
-                    }
+                    Frame::Stream { id, off, fin, data: take(&mut b, len)?.to_vec() }
                 }
-                ft::MAX_DATA => Frame::MaxData {
-                    id: u32_(&mut b)?,
-                    max: u64_(&mut b)?,
-                },
+                ft::MAX_DATA => Frame::MaxData { id: u32_(&mut b)?, max: u64_(&mut b)? },
                 ft::RESET => Frame::Reset { id: u32_(&mut b)? },
                 ft::DATAGRAM => {
                     let seq = u32_(&mut b)?;
                     let len = u16_(&mut b)? as usize;
-                    Frame::Datagram {
-                        seq,
-                        data: take(&mut b, len)?.to_vec(),
-                    }
+                    Frame::Datagram { seq, data: take(&mut b, len)?.to_vec() }
                 }
-                ft::CLOSE => Frame::Close {
-                    code: take(&mut b, 1)?[0],
-                },
+                ft::CLOSE => Frame::Close { code: take(&mut b, 1)?[0] },
                 _ => return None,
             });
         }
@@ -303,9 +262,7 @@ impl SendStream {
         self.base + self.buf.len() as u64
     }
     fn has_pending(&self) -> bool {
-        !self.lost.is_empty()
-            || (self.next < self.end() && self.next < self.max_data)
-            || self.fin_pending
+        !self.lost.is_empty() || (self.next < self.end() && self.next < self.max_data) || self.fin_pending
     }
     /// Next chunk to (re)send: (offset, data, fin).
     fn next_chunk(&mut self, max: usize) -> Option<(u64, Vec<u8>, bool)> {
@@ -388,15 +345,7 @@ struct RecvStream {
 
 impl Default for RecvStream {
     fn default() -> Self {
-        RecvStream {
-            read: 0,
-            pending: BTreeMap::new(),
-            pending_bytes: 0,
-            fin: None,
-            fin_delivered: false,
-            consumed: 0,
-            advertised: RECV_WINDOW,
-        }
+        RecvStream { read: 0, pending: BTreeMap::new(), pending_bytes: 0, fin: None, fin_delivered: false, consumed: 0, advertised: RECV_WINDOW }
     }
 }
 
@@ -454,18 +403,9 @@ pub enum ConnEvent {
 
 #[derive(Debug, Clone, Copy)]
 enum Retx {
-    Stream {
-        id: u32,
-        off: u64,
-        len: u16,
-        fin: bool,
-    },
-    MaxData {
-        id: u32,
-    },
-    Reset {
-        id: u32,
-    },
+    Stream { id: u32, off: u64, len: u16, fin: bool },
+    MaxData { id: u32 },
+    Reset { id: u32 },
     Close,
 }
 
@@ -665,10 +605,7 @@ impl Conn {
             r.consumed += n as u64;
             if r.advertised - r.consumed < RECV_WINDOW / 2 {
                 r.advertised = r.consumed + RECV_WINDOW;
-                self.ctrl.push_back(Frame::MaxData {
-                    id,
-                    max: r.advertised,
-                });
+                self.ctrl.push_back(Frame::MaxData { id, max: r.advertised });
             }
         }
     }
@@ -715,9 +652,7 @@ impl Conn {
         if self.closed {
             return;
         }
-        let Some(frames) = Frame::decode_all(payload) else {
-            return;
-        };
+        let Some(frames) = Frame::decode_all(payload) else { return };
         self.last_recv = now;
         self.stats.recv_packets += 1;
         self.stats.recv_bytes += payload.len() as u64;
@@ -747,9 +682,7 @@ impl Conn {
                 Frame::Ack { delay_ms, ranges } => self.on_ack(ranges, delay_ms, now),
                 Frame::Stream { id, off, fin, data } => {
                     if !self.recv.contains_key(&id) {
-                        if self.finished.contains(&id)
-                            || (self.is_local(id) && !self.send.contains_key(&id))
-                        {
+                        if self.finished.contains(&id) || (self.is_local(id) && !self.send.contains_key(&id)) {
                             continue; // stale frame for a stream we already finished
                         }
                         if !self.is_local(id) && self.recv.len() >= MAX_STREAMS {
@@ -849,11 +782,7 @@ impl Conn {
             }
         }
         let queueing = self.queue_building();
-        if queueing
-            && self
-                .last_delay_cut
-                .is_none_or(|t| now.duration_since(t) >= self.rtt())
-        {
+        if queueing && self.last_delay_cut.is_none_or(|t| now.duration_since(t) >= self.rtt()) {
             // Delay signal: back off by 1/8 once per RTT and leave slow start.
             self.last_delay_cut = Some(now);
             self.cwnd = (self.cwnd - self.cwnd / 16).max(MIN_CWND);
@@ -866,9 +795,7 @@ impl Conn {
                 // NewReno: no growth for packets sent before recovery started,
                 // and no growth while the bottleneck queue is building.
                 if !queueing && self.recovery_start.is_none_or(|r| sent.time > r) {
-                    if self.cwnd < self.ssthresh
-                        || (self.reliable_path && self.cwnd < RELIABLE_PATH_CWND_MAX)
-                    {
+                    if self.cwnd < self.ssthresh || (self.reliable_path && self.cwnd < RELIABLE_PATH_CWND_MAX) {
                         // Reliable underlay: keep exponential growth up to a cap — linear
                         // growth would take ~200 RTTs to fill a 100+ ms path.
                         self.cwnd += sent.size;
@@ -892,12 +819,7 @@ impl Conn {
         for (id, n) in acked_per_stream {
             self.events.push_back(ConnEvent::StreamAcked(id, n));
         }
-        let ids: Vec<u32> = self
-            .send
-            .iter()
-            .filter(|(_, s)| s.done())
-            .map(|(&id, _)| id)
-            .collect();
+        let ids: Vec<u32> = self.send.iter().filter(|(_, s)| s.done()).map(|(&id, _)| id).collect();
         for id in ids {
             self.gc(id);
         }
@@ -907,18 +829,14 @@ impl Conn {
 
     /// True when RTT is clearly above the path's base RTT (a queue is forming).
     fn queue_building(&self) -> bool {
-        let Some(min) = self.min_rtt else {
-            return false;
-        };
+        let Some(min) = self.min_rtt else { return false };
         if self.reliable_path {
             // Reliable underlay: its own jitter is large (30–40 ms) but harmless; only
             // react once our queue has roughly doubled the base RTT (self-inflicted bloat).
             let srtt = self.srtt.unwrap_or(self.latest_rtt);
             return srtt > min + min.max(Duration::from_millis(60));
         }
-        let target = (min / 4)
-            .max(Duration::from_millis(5))
-            .min(Duration::from_millis(20));
+        let target = (min / 4).max(Duration::from_millis(5)).min(Duration::from_millis(20));
         self.latest_rtt > min + target
     }
 
@@ -951,9 +869,7 @@ impl Conn {
 
     fn detect_loss(&mut self, now: Instant) {
         self.loss_time = None;
-        let Some(largest) = self.largest_acked else {
-            return;
-        };
+        let Some(largest) = self.largest_acked else { return };
         let delay = self.loss_delay();
         let mut lost = vec![];
         for (&pn, sent) in self.sent.range(..largest) {
@@ -980,12 +896,7 @@ impl Conn {
             self.recovery_start = Some(now);
             // Reliable underlay: a "loss" is a stale drop or late arrival, not a full
             // bottleneck queue (TCP below already adapts) → back off gently.
-            self.cwnd = if self.reliable_path {
-                self.cwnd - self.cwnd / 4
-            } else {
-                self.cwnd / 2
-            }
-            .max(MIN_CWND);
+            self.cwnd = if self.reliable_path { self.cwnd - self.cwnd / 4 } else { self.cwnd / 2 }.max(MIN_CWND);
             self.ssthresh = self.cwnd;
         }
     }
@@ -1001,10 +912,7 @@ impl Conn {
                 }
                 Retx::MaxData { id } => {
                     if let Some(r) = self.recv.get(&id) {
-                        self.ctrl.push_back(Frame::MaxData {
-                            id,
-                            max: r.advertised,
-                        });
+                        self.ctrl.push_back(Frame::MaxData { id, max: r.advertised });
                     }
                 }
                 Retx::Reset { id } => self.ctrl.push_back(Frame::Reset { id }),
@@ -1025,11 +933,7 @@ impl Conn {
         if self.closed {
             return None;
         }
-        let tail = self
-            .last_small
-            .as_ref()
-            .filter(|(_, _, _, r)| !r)
-            .map(|(_, _, t, _)| *t + REDUNDANT_TAIL);
+        let tail = self.last_small.as_ref().filter(|(_, _, _, r)| !r).map(|(_, _, t, _)| *t + REDUNDANT_TAIL);
         [
             tail,
             self.ack_deadline,
@@ -1072,12 +976,9 @@ impl Conn {
             }
             // Peer silent through repeated probes (≈5–8 s): declare it dead so the
             // app can fail over to another instance instead of waiting 30 s.
-            if self.pto_count >= DEAD_AFTER_PTOS
-                && now.duration_since(self.last_recv) >= DEAD_MIN_SILENCE
-            {
+            if self.pto_count >= DEAD_AFTER_PTOS && now.duration_since(self.last_recv) >= DEAD_MIN_SILENCE {
                 self.closed = true;
-                self.events
-                    .push_back(ConnEvent::Closed("server không phản hồi (mất kết nối)"));
+                self.events.push_back(ConnEvent::Closed("server không phản hồi (mất kết nối)"));
                 return;
             }
         }
@@ -1100,34 +1001,18 @@ impl Conn {
         let ack_due = self.ack_pending
             && (self.eliciting_unacked >= 2 || self.ack_deadline.is_some_and(|t| now >= t));
         let cwnd_ok = self.in_flight + MAX_PAYLOAD <= self.cwnd || self.probes > 0;
-        let have_data = cwnd_ok
-            && self
-                .order
-                .iter()
-                .any(|id| self.send.get(id).is_some_and(|s| s.has_pending()));
+        let have_data = cwnd_ok && self.order.iter().any(|id| self.send.get(id).is_some_and(|s| s.has_pending()));
         let tail_due = self.datagrams.is_empty()
-            && self
-                .last_small
-                .as_ref()
-                .is_some_and(|(_, _, t, resent)| !resent && now >= *t + REDUNDANT_TAIL);
-        let want =
-            ack_due || !self.ctrl.is_empty() || !self.datagrams.is_empty() || have_data || tail_due;
+            && self.last_small.as_ref().is_some_and(|(_, _, t, resent)| !resent && now >= *t + REDUNDANT_TAIL);
+        let want = ack_due || !self.ctrl.is_empty() || !self.datagrams.is_empty() || have_data || tail_due;
         if !want {
             return None;
         }
 
         if self.ack_pending {
             let ranges: Vec<(u64, u64)> = self.received.iter().rev().take(MAX_ACK_RANGES).collect();
-            let delay = self.largest_recv.map_or(0, |(_, t)| {
-                now.saturating_duration_since(t)
-                    .as_millis()
-                    .min(u16::MAX as u128) as u16
-            });
-            Frame::Ack {
-                delay_ms: delay,
-                ranges,
-            }
-            .encode(&mut out);
+            let delay = self.largest_recv.map_or(0, |(_, t)| now.saturating_duration_since(t).as_millis().min(u16::MAX as u128) as u16);
+            Frame::Ack { delay_ms: delay, ranges }.encode(&mut out);
             self.ack_pending = false;
             self.eliciting_unacked = 0;
             self.ack_deadline = None;
@@ -1162,26 +1047,17 @@ impl Conn {
             // packet costs ~1 tick of delay instead of a missing game update.
             if let Some((pseq, pdata, _, _)) = &self.last_small {
                 if out.len() + 14 + data.len() + pdata.len() <= MAX_PAYLOAD {
-                    Frame::Datagram {
-                        seq: *pseq,
-                        data: pdata.clone(),
-                    }
-                    .encode(&mut out);
+                    Frame::Datagram { seq: *pseq, data: pdata.clone() }.encode(&mut out);
                 }
             }
-            self.last_small =
-                (data.len() <= REDUNDANT_MAX).then(|| (seq, data.clone(), now, false));
+            self.last_small = (data.len() <= REDUNDANT_MAX).then(|| (seq, data.clone(), now, false));
             Frame::Datagram { seq, data }.encode(&mut out);
             eliciting = true;
         }
         if tail_due {
             if let Some((seq, data, _, resent)) = &mut self.last_small {
                 if out.len() + 7 + data.len() <= MAX_PAYLOAD {
-                    Frame::Datagram {
-                        seq: *seq,
-                        data: data.clone(),
-                    }
-                    .encode(&mut out);
+                    Frame::Datagram { seq: *seq, data: data.clone() }.encode(&mut out);
                     *resent = true;
                     eliciting = true;
                 }
@@ -1192,12 +1068,8 @@ impl Conn {
             let mut rounds = self.order.len();
             while rounds > 0 && out.len() + STREAM_HDR + 1 < MAX_PAYLOAD {
                 rounds -= 1;
-                let Some(id) = self.order.pop_front() else {
-                    break;
-                };
-                let Some(s) = self.send.get_mut(&id) else {
-                    continue;
-                };
+                let Some(id) = self.order.pop_front() else { break };
+                let Some(s) = self.send.get_mut(&id) else { continue };
                 let room = MAX_PAYLOAD - out.len() - STREAM_HDR;
                 if let Some((off, data, fin)) = s.next_chunk(room) {
                     let len = data.len() as u16;
@@ -1224,15 +1096,7 @@ impl Conn {
         }
         self.stats.sent_packets += 1;
         self.stats.sent_bytes += out.len() as u64;
-        self.sent.insert(
-            pn,
-            Sent {
-                time: now,
-                size: out.len(),
-                eliciting,
-                frames,
-            },
-        );
+        self.sent.insert(pn, Sent { time: now, size: out.len(), eliciting, frames });
         // ACK-only packets are never acked back; don't track them forever.
         if !eliciting {
             self.sent.remove(&pn);
@@ -1252,13 +1116,7 @@ mod tests {
         // Many streams opened by the peer: capped.
         for i in 0..(MAX_STREAMS as u32 + 500) {
             let mut b = vec![];
-            Frame::Stream {
-                id: i * 2 + 1,
-                off: 5,
-                fin: false,
-                data: vec![1; 10],
-            }
-            .encode(&mut b);
+            Frame::Stream { id: i * 2 + 1, off: 5, fin: false, data: vec![1; 10] }.encode(&mut b);
             c.on_packet(i as u64, &b, now);
         }
         assert!(c.recv.len() <= MAX_STREAMS);
@@ -1266,13 +1124,7 @@ mod tests {
         let mut c = Conn::new(false, now);
         for i in 0..20_000u64 {
             let mut b = vec![];
-            Frame::Stream {
-                id: 1,
-                off: 1 + i * 37,
-                fin: false,
-                data: vec![0; 1100],
-            }
-            .encode(&mut b);
+            Frame::Stream { id: 1, off: 1 + i * 37, fin: false, data: vec![0; 1100] }.encode(&mut b);
             c.on_packet(i, &b, now);
         }
         assert!(c.recv[&1].pending_bytes <= MAX_PENDING_BYTES);
@@ -1296,25 +1148,11 @@ mod tests {
     fn frames_roundtrip() {
         let fs = vec![
             Frame::Ping,
-            Frame::Ack {
-                delay_ms: 3,
-                ranges: vec![(10, 12), (1, 5)],
-            },
-            Frame::Stream {
-                id: 7,
-                off: 99,
-                fin: true,
-                data: b"abc".to_vec(),
-            },
-            Frame::MaxData {
-                id: 7,
-                max: 1 << 30,
-            },
+            Frame::Ack { delay_ms: 3, ranges: vec![(10, 12), (1, 5)] },
+            Frame::Stream { id: 7, off: 99, fin: true, data: b"abc".to_vec() },
+            Frame::MaxData { id: 7, max: 1 << 30 },
             Frame::Reset { id: 3 },
-            Frame::Datagram {
-                seq: 9,
-                data: b"udp".to_vec(),
-            },
+            Frame::Datagram { seq: 9, data: b"udp".to_vec() },
             Frame::Close { code: 0 },
         ];
         let mut b = vec![];
@@ -1328,10 +1166,7 @@ mod tests {
     struct Lcg(u64);
     impl Lcg {
         fn next(&mut self) -> u64 {
-            self.0 = self
-                .0
-                .wrapping_mul(6364136223846793005)
-                .wrapping_add(1442695040888963407);
+            self.0 = self.0.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
             self.0 >> 33
         }
     }
@@ -1378,17 +1213,8 @@ mod tests {
                     if rng.next() % 100 < loss_pct {
                         continue;
                     }
-                    let jitter = Duration::from_micros(if jitter_us > 0 {
-                        rng.next() % jitter_us
-                    } else {
-                        0
-                    });
-                    net.push(InFlight {
-                        at: now + Duration::from_millis(20) + jitter,
-                        to_b,
-                        pn,
-                        data,
-                    });
+                    let jitter = Duration::from_micros(if jitter_us > 0 { rng.next() % jitter_us } else { 0 });
+                    net.push(InFlight { at: now + Duration::from_millis(20) + jitter, to_b, pn, data });
                 }
             }
             // Deliver everything due.
@@ -1399,11 +1225,7 @@ mod tests {
             };
             let delivered_any = !due.is_empty();
             for p in due {
-                if p.to_b {
-                    b.on_packet(p.pn, &p.data, now)
-                } else {
-                    a.on_packet(p.pn, &p.data, now)
-                }
+                if p.to_b { b.on_packet(p.pn, &p.data, now) } else { a.on_packet(p.pn, &p.data, now) }
             }
             while let Some(e) = b.poll_event() {
                 match e {
@@ -1431,33 +1253,17 @@ mod tests {
                 return (now - t0, a.stats);
             }
             if std::env::var("SIMDBG").is_ok() && (now - t0).as_millis() % 1000 < 1 {
-                eprintln!(
-                    "t={:?} cwnd={} inflight={} sent={} b_got={} rtt={:?} order={:?} pending={:?}",
-                    now - t0,
-                    a.cwnd,
-                    a.in_flight,
-                    a.sent.len(),
-                    b_got.len(),
-                    a.rtt(),
-                    a.order,
-                    a.send
-                        .get(&sid)
-                        .map(|s| (s.base, s.next, s.end(), s.max_data, s.lost.len()))
-                );
+                eprintln!("t={:?} cwnd={} inflight={} sent={} b_got={} rtt={:?} order={:?} pending={:?}", now - t0, a.cwnd, a.in_flight, a.sent.len(), b_got.len(), a.rtt(), a.order, a.send.get(&sid).map(|s| (s.base, s.next, s.end(), s.max_data, s.lost.len())));
             }
             if delivered_any {
                 continue; // let both sides react (transmit) at the same instant
             }
             // Advance virtual time to the next interesting moment.
-            let next = [
-                a.poll_timeout(),
-                b.poll_timeout(),
-                net.iter().map(|p| p.at).min(),
-            ]
-            .into_iter()
-            .flatten()
-            .min()
-            .unwrap_or(now + Duration::from_millis(1));
+            let next = [a.poll_timeout(), b.poll_timeout(), net.iter().map(|p| p.at).min()]
+                .into_iter()
+                .flatten()
+                .min()
+                .unwrap_or(now + Duration::from_millis(1));
             now = next.max(now + Duration::from_micros(50));
             a.on_timeout(now);
             b.on_timeout(now);
@@ -1495,31 +1301,17 @@ mod tests {
             while let Some((pn, data)) = a.poll_transmit(now) {
                 let start = link_free.max(now);
                 link_free = start + per_byte * (data.len() as u32 + 29);
-                net.push(InFlight {
-                    at: link_free + prop,
-                    to_b: true,
-                    pn,
-                    data,
-                });
+                net.push(InFlight { at: link_free + prop, to_b: true, pn, data });
             }
             while let Some((pn, data)) = b.poll_transmit(now) {
-                net.push(InFlight {
-                    at: now + prop,
-                    to_b: false,
-                    pn,
-                    data,
-                });
+                net.push(InFlight { at: now + prop, to_b: false, pn, data });
             }
             net.sort_by_key(|p| p.at);
             let k = net.iter().take_while(|p| p.at <= now).count();
             let due: Vec<InFlight> = net.drain(..k).collect();
             let delivered = !due.is_empty();
             for p in due {
-                if p.to_b {
-                    b.on_packet(p.pn, &p.data, now)
-                } else {
-                    a.on_packet(p.pn, &p.data, now)
-                }
+                if p.to_b { b.on_packet(p.pn, &p.data, now) } else { a.on_packet(p.pn, &p.data, now) }
             }
             while let Some(e) = b.poll_event() {
                 match e {
@@ -1545,16 +1337,11 @@ mod tests {
             if delivered {
                 continue;
             }
-            let next = [
-                a.poll_timeout(),
-                b.poll_timeout(),
-                net.iter().map(|p| p.at).min(),
-                Some(next_ping),
-            ]
-            .into_iter()
-            .flatten()
-            .min()
-            .unwrap();
+            let next = [a.poll_timeout(), b.poll_timeout(), net.iter().map(|p| p.at).min(), Some(next_ping)]
+                .into_iter()
+                .flatten()
+                .min()
+                .unwrap();
             now = next.max(now + Duration::from_micros(50));
             a.on_timeout(now);
             b.on_timeout(now);
@@ -1598,22 +1385,13 @@ mod tests {
                     if rng.next() % 100 < 10 {
                         continue;
                     }
-                    net.push(InFlight {
-                        at: now + Duration::from_millis(20),
-                        to_b,
-                        pn,
-                        data,
-                    });
+                    net.push(InFlight { at: now + Duration::from_millis(20), to_b, pn, data });
                 }
             }
             net.sort_by_key(|p| p.at);
             let k = net.iter().take_while(|p| p.at <= now).count();
             for p in net.drain(..k).collect::<Vec<_>>() {
-                if p.to_b {
-                    b.on_packet(p.pn, &p.data, now)
-                } else {
-                    a.on_packet(p.pn, &p.data, now)
-                }
+                if p.to_b { b.on_packet(p.pn, &p.data, now) } else { a.on_packet(p.pn, &p.data, now) }
             }
             while let Some(e) = b.poll_event() {
                 if let ConnEvent::Datagram(d) = e {
@@ -1622,16 +1400,8 @@ mod tests {
                     }
                 }
             }
-            let next = [
-                a.poll_timeout(),
-                b.poll_timeout(),
-                net.iter().map(|p| p.at).min(),
-                Some(next_tick),
-            ]
-            .into_iter()
-            .flatten()
-            .min()
-            .unwrap();
+            let next = [a.poll_timeout(), b.poll_timeout(), net.iter().map(|p| p.at).min(), Some(next_tick)]
+                .into_iter().flatten().min().unwrap();
             now = next.max(now + Duration::from_micros(50));
             a.on_timeout(now);
             b.on_timeout(now);
@@ -1653,13 +1423,9 @@ mod tests {
         let sid = a.open_stream();
         a.stream_write(sid, b"hello");
         for _ in 0..3 {
-            while let Some((pn, d)) = a.poll_transmit(now) {
-                b.on_packet(pn, &d, now + Duration::from_millis(20));
-            }
+            while let Some((pn, d)) = a.poll_transmit(now) { b.on_packet(pn, &d, now + Duration::from_millis(20)); }
             now += Duration::from_millis(40);
-            while let Some((pn, d)) = b.poll_transmit(now) {
-                a.on_packet(pn, &d, now);
-            }
+            while let Some((pn, d)) = b.poll_transmit(now) { a.on_packet(pn, &d, now); }
         }
         a.stream_write(sid, &[7u8; 5000]); // unacked data, peer gone
         let died_at = loop {

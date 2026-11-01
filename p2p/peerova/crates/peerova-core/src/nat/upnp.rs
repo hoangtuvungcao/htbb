@@ -37,11 +37,7 @@ fn parse_url(url: &str) -> Option<Url> {
         Some((h, p)) => (h.to_string(), p.parse().ok()?),
         None => (hostport.to_string(), 80),
     };
-    Some(Url {
-        host,
-        port,
-        path: path.to_string(),
-    })
+    Some(Url { host, port, path: path.to_string() })
 }
 
 fn header<'a>(head: &'a str, name: &str) -> Option<&'a str> {
@@ -55,12 +51,9 @@ fn dechunk(body: &[u8]) -> Vec<u8> {
     let mut out = Vec::new();
     let mut p = 0;
     while p < body.len() {
-        let Some(eol) = body[p..].windows(2).position(|w| w == b"\r\n") else {
-            break;
-        };
+        let Some(eol) = body[p..].windows(2).position(|w| w == b"\r\n") else { break };
         let line = String::from_utf8_lossy(&body[p..p + eol]);
-        let size =
-            usize::from_str_radix(line.split(';').next().unwrap_or("").trim(), 16).unwrap_or(0);
+        let size = usize::from_str_radix(line.split(';').next().unwrap_or("").trim(), 16).unwrap_or(0);
         p += eol + 2;
         if size == 0 || p + size > body.len() {
             break;
@@ -71,21 +64,13 @@ fn dechunk(body: &[u8]) -> Vec<u8> {
     out
 }
 
-fn http(
-    host: &str,
-    port: u16,
-    method: &str,
-    path: &str,
-    extra: &[(&str, String)],
-    body: &str,
-) -> Result<(u16, String), String> {
+fn http(host: &str, port: u16, method: &str, path: &str, extra: &[(&str, String)], body: &str) -> Result<(u16, String), String> {
     let addr: SocketAddr = (host, port)
         .to_socket_addrs()
         .map_err(|e| e.to_string())?
         .next()
         .ok_or("không phân giải được host")?;
-    let mut s =
-        TcpStream::connect_timeout(&addr, Duration::from_secs(3)).map_err(|e| e.to_string())?;
+    let mut s = TcpStream::connect_timeout(&addr, Duration::from_secs(3)).map_err(|e| e.to_string())?;
     s.set_read_timeout(Some(Duration::from_secs(4))).ok();
     s.set_write_timeout(Some(Duration::from_secs(4))).ok();
     let mut req = format!("{method} {path} HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\nUser-Agent: peerova/0.1 UPnP/1.1\r\n");
@@ -105,10 +90,7 @@ fn http(
             Err(e) => return Err(e.to_string()),
         }
     }
-    let split = raw
-        .windows(4)
-        .position(|w| w == b"\r\n\r\n")
-        .ok_or("phản hồi HTTP hỏng")?;
+    let split = raw.windows(4).position(|w| w == b"\r\n\r\n").ok_or("phản hồi HTTP hỏng")?;
     let head = String::from_utf8_lossy(&raw[..split]).to_string();
     let mut body = raw[split + 4..].to_vec();
     if header(&head, "Transfer-Encoding").is_some_and(|v| v.eq_ignore_ascii_case("chunked")) {
@@ -144,9 +126,7 @@ fn find_service(xml: &str) -> Option<(String, String)> {
     let mut best: Option<(String, String)> = None;
     for block in xml.split("<service>").skip(1) {
         let block = block.split("</service>").next().unwrap_or("");
-        let (Some(st), Some(cu)) = (tag(block, "serviceType"), tag(block, "controlURL")) else {
-            continue;
-        };
+        let (Some(st), Some(cu)) = (tag(block, "serviceType"), tag(block, "controlURL")) else { continue };
         if st.contains("WANIPConnection") {
             return Some((st.to_string(), cu.to_string()));
         }
@@ -163,8 +143,7 @@ fn igd_from_location(location: &str) -> Result<Igd, String> {
     if status != 200 {
         return Err(format!("tải mô tả thiết bị lỗi HTTP {status}"));
     }
-    let (service_type, control) =
-        find_service(&xml).ok_or("router không có dịch vụ WANIP/WANPPPConnection")?;
+    let (service_type, control) = find_service(&xml).ok_or("router không có dịch vụ WANIP/WANPPPConnection")?;
     let base = tag(&xml, "URLBase")
         .map(|b| b.trim_end_matches('/').to_string())
         .unwrap_or_else(|| format!("http://{}:{}", u.host, u.port));
@@ -176,13 +155,7 @@ fn igd_from_location(location: &str) -> Result<Igd, String> {
         format!("{base}/{control}")
     };
     let c = parse_url(&full).ok_or("controlURL không hợp lệ")?;
-    Ok(Igd {
-        location: location.to_string(),
-        service_type,
-        host: c.host,
-        port: c.port,
-        path: c.path,
-    })
+    Ok(Igd { location: location.to_string(), service_type, host: c.host, port: c.port, path: c.path })
 }
 
 /// Find the Internet Gateway Device on the LAN.
@@ -193,18 +166,14 @@ pub fn discover(local_ip: Ipv4Addr, timeout: Duration) -> Result<Igd, String> {
         let msg = format!(
             "M-SEARCH * HTTP/1.1\r\nHOST: {SSDP_ADDR}\r\nMAN: \"ssdp:discover\"\r\nMX: 2\r\nST: {st}\r\n\r\n"
         );
-        sock.send_to(msg.as_bytes(), SSDP_ADDR)
-            .map_err(|e| e.to_string())?;
+        sock.send_to(msg.as_bytes(), SSDP_ADDR).map_err(|e| e.to_string())?;
     }
     let deadline = Instant::now() + timeout;
     let mut locations: Vec<String> = Vec::new();
     let mut buf = [0u8; 2048];
     while let Some(left) = deadline.checked_duration_since(Instant::now()) {
-        sock.set_read_timeout(Some(left.max(Duration::from_millis(10))))
-            .ok();
-        let Ok((n, _)) = sock.recv_from(&mut buf) else {
-            break;
-        };
+        sock.set_read_timeout(Some(left.max(Duration::from_millis(10)))).ok();
+        let Ok((n, _)) = sock.recv_from(&mut buf) else { break };
         let text = String::from_utf8_lossy(&buf[..n]);
         if let Some(loc) = header(&text, "LOCATION") {
             if !locations.iter().any(|l| l == loc) {
@@ -219,10 +188,7 @@ pub fn discover(local_ip: Ipv4Addr, timeout: Duration) -> Result<Igd, String> {
     if locations.is_empty() {
         Err("không tìm thấy router UPnP (UPnP tắt hoặc mạng chặn multicast)".into())
     } else {
-        Err(format!(
-            "tìm thấy {} thiết bị UPnP nhưng không có IGD dùng được",
-            locations.len()
-        ))
+        Err(format!("tìm thấy {} thiết bị UPnP nhưng không có IGD dùng được", locations.len()))
     }
 }
 
@@ -254,24 +220,11 @@ impl Igd {
             .ok_or_else(|| "router không trả IP ngoài".into())
     }
 
-    pub fn add_udp_mapping(
-        &self,
-        ext_port: u16,
-        int_port: u16,
-        client: Ipv4Addr,
-        lease: u32,
-    ) -> Result<u32, String> {
+    pub fn add_udp_mapping(&self, ext_port: u16, int_port: u16, client: Ipv4Addr, lease: u32) -> Result<u32, String> {
         self.add_mapping("UDP", ext_port, int_port, client, lease)
     }
 
-    pub fn add_mapping(
-        &self,
-        proto: &str,
-        ext_port: u16,
-        int_port: u16,
-        client: Ipv4Addr,
-        lease: u32,
-    ) -> Result<u32, String> {
+    pub fn add_mapping(&self, proto: &str, ext_port: u16, int_port: u16, client: Ipv4Addr, lease: u32) -> Result<u32, String> {
         let args = |lease: u32| {
             format!(
                 "<NewRemoteHost></NewRemoteHost><NewExternalPort>{ext_port}</NewExternalPort>\
@@ -321,18 +274,12 @@ mod tests {
 
     #[test]
     fn dechunks() {
-        assert_eq!(
-            dechunk(b"5\r\nhello\r\n6\r\n world\r\n0\r\n\r\n"),
-            b"hello world"
-        );
+        assert_eq!(dechunk(b"5\r\nhello\r\n6\r\n world\r\n0\r\n\r\n"), b"hello world");
     }
 
     #[test]
     fn parses_urls() {
         let u = parse_url("http://192.168.1.1:1900/rootDesc.xml").unwrap();
-        assert_eq!(
-            (u.host.as_str(), u.port, u.path.as_str()),
-            ("192.168.1.1", 1900, "/rootDesc.xml")
-        );
+        assert_eq!((u.host.as_str(), u.port, u.path.as_str()), ("192.168.1.1", 1900, "/rootDesc.xml"));
     }
 }

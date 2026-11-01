@@ -66,69 +66,26 @@ mod tests {
     #[test]
     fn fuzz_wire_and_frames() {
         let mut r = Rng(0x9E37_79B9_7F4A_7C15);
-        let cands = vec![Candidate {
-            kind: CandKind::Host,
-            addr: "10.0.0.2:47000".parse().unwrap(),
-        }];
+        let cands = vec![Candidate { kind: CandKind::Host, addr: "10.0.0.2:47000".parse().unwrap() }];
         let samples: Vec<Vec<u8>> = vec![
-            Packet::Ping {
-                session: 1,
-                nonce: 2,
-            }
-            .encode(),
-            Packet::IntroReq {
-                server_id: [1; 16],
-                session: 5,
-                candidates: cands.clone(),
-                proof: [2; 16],
-            }
-            .encode(),
-            Packet::Intro {
-                session: 9,
-                candidates: cands,
-            }
-            .encode(),
-            Packet::Register {
-                server_pub: [3; 32],
-                lease: b"pvl1.x.y".to_vec(),
-            }
-            .encode(),
+            Packet::Ping { session: 1, nonce: 2 }.encode(),
+            Packet::IntroReq { server_id: [1; 16], session: 5, candidates: cands.clone(), proof: [2; 16] }.encode(),
+            Packet::Intro { session: 9, candidates: cands }.encode(),
+            Packet::Register { server_pub: [3; 32], lease: b"pvl1.x.y".to_vec() }.encode(),
         ];
         let mut frames = vec![];
         for f in [
-            Frame::Ack {
-                delay_ms: 3,
-                ranges: vec![(10, 20), (1, 5)],
-            },
-            Frame::Stream {
-                id: 7,
-                off: 99,
-                fin: true,
-                data: b"abc".to_vec(),
-            },
-            Frame::Datagram {
-                seq: 4,
-                data: b"udp".to_vec(),
-            },
-            Frame::MaxData {
-                id: 7,
-                max: 1 << 20,
-            },
+            Frame::Ack { delay_ms: 3, ranges: vec![(10, 20), (1, 5)] },
+            Frame::Stream { id: 7, off: 99, fin: true, data: b"abc".to_vec() },
+            Frame::Datagram { seq: 4, data: b"udp".to_vec() },
+            Frame::MaxData { id: 7, max: 1 << 20 },
         ] {
             f.encode(&mut frames);
         }
         for i in 0..N {
-            let input = if i % 3 == 0 {
-                r.bytes(300)
-            } else {
-                r.mutate(&samples[i % samples.len()])
-            };
+            let input = if i % 3 == 0 { r.bytes(300) } else { r.mutate(&samples[i % samples.len()]) };
             let _ = Packet::decode(&input);
-            let fin = if i % 2 == 0 {
-                r.mutate(&frames)
-            } else {
-                r.bytes(400)
-            };
+            let fin = if i % 2 == 0 { r.mutate(&frames) } else { r.bytes(400) };
             let _ = Frame::decode_all(&fin);
         }
     }
@@ -141,31 +98,19 @@ mod tests {
             private: false,
             tcp: true,
             rdv: true,
-            candidates: vec![Candidate {
-                kind: CandKind::Ipv6,
-                addr: "[2402:800::5]:47000".parse().unwrap(),
-            }],
+            hidden: false,
+            candidates: vec![Candidate { kind: CandKind::Ipv6, addr: "[2402:800::5]:47000".parse().unwrap() }],
             supernodes: vec![],
         }
         .encode();
-        let j = JoinCode {
-            session: 7,
-            candidates: vec![],
-        }
-        .encode();
-        let json = "{\"a\":[1,2,{\"b\":\"c\\u00e9\"}],\"d\":-1.5e3,\"e\":true,\"f\":null}"
-            .as_bytes()
-            .to_vec();
+        let j = JoinCode { session: 7, candidates: vec![] }.encode();
+        let json = "{\"a\":[1,2,{\"b\":\"c\\u00e9\"}],\"d\":-1.5e3,\"e\":true,\"f\":null}".as_bytes().to_vec();
         for i in 0..N {
             let s = String::from_utf8_lossy(&r.mutate(t.as_bytes())).to_string();
             let _ = Ticket::decode(&s);
             let s = String::from_utf8_lossy(&r.mutate(j.as_bytes())).to_string();
             let _ = JoinCode::decode(&s);
-            let raw = if i % 4 == 0 {
-                r.bytes(200)
-            } else {
-                r.mutate(&json)
-            };
+            let raw = if i % 4 == 0 { r.bytes(200) } else { r.mutate(&json) };
             let _ = Json::parse(&String::from_utf8_lossy(&raw));
             let _ = crate::lobby::is_room_code(&String::from_utf8_lossy(&r.bytes(8)));
         }
@@ -181,10 +126,7 @@ mod tests {
         let pk = sk.verifying_key().to_bytes();
         let payload = r#"{"v":1,"lid":"l","pid":"p","plan":"indie","srv":3,"ccu":200,"mid":"m","iat":1,"exp":99999999999}"#;
         let signed = format!("pvl1.{}", crate::util::b64_encode(payload.as_bytes()));
-        let lease = format!(
-            "{signed}.{}",
-            crate::util::b64_encode(&sk.sign(signed.as_bytes()).to_bytes())
-        );
+        let lease = format!("{signed}.{}", crate::util::b64_encode(&sk.sign(signed.as_bytes()).to_bytes()));
         let access = crate::access::issue(&[3; 32], "alice", &["tcp:443".into()], 3600, 1000);
         let apk = crate::access::public_key(&[3; 32]);
         let none = HashSet::new();
@@ -235,27 +177,11 @@ mod tests {
             // Random but well-formed frames: huge offsets, fins, resets, acks of unsent pns…
             let mut buf = vec![];
             let f = match r.below(6) {
-                0 => Frame::Stream {
-                    id: r.next() as u32,
-                    off: r.next() % (1 << 40),
-                    fin: r.below(2) == 0,
-                    data: r.bytes(900),
-                },
-                1 => Frame::Ack {
-                    delay_ms: r.next() as u16,
-                    ranges: vec![(r.next() % 1000, r.next() % 1000 + 1000)],
-                },
-                2 => Frame::MaxData {
-                    id: r.next() as u32,
-                    max: r.next(),
-                },
-                3 => Frame::Reset {
-                    id: r.next() as u32,
-                },
-                4 => Frame::Datagram {
-                    seq: r.next() as u32,
-                    data: r.bytes(1000),
-                },
+                0 => Frame::Stream { id: r.next() as u32, off: r.next() % (1 << 40), fin: r.below(2) == 0, data: r.bytes(900) },
+                1 => Frame::Ack { delay_ms: r.next() as u16, ranges: vec![(r.next() % 1000, r.next() % 1000 + 1000)] },
+                2 => Frame::MaxData { id: r.next() as u32, max: r.next() },
+                3 => Frame::Reset { id: r.next() as u32 },
+                4 => Frame::Datagram { seq: r.next() as u32, data: r.bytes(1000) },
                 _ => Frame::Ping,
             };
             f.encode(&mut buf);

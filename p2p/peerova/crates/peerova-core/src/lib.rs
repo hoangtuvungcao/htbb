@@ -15,6 +15,7 @@ pub mod keyfile;
 pub mod license;
 pub mod lobby;
 pub mod nat;
+pub mod pathcache;
 pub mod netinfo;
 pub mod node;
 pub mod rdv;

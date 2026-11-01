@@ -39,26 +39,13 @@ impl Json {
     }
     pub fn str_list(&self, k: &str) -> Vec<String> {
         match self.get(k) {
-            Some(Json::Arr(a)) => a
-                .iter()
-                .filter_map(|v| {
-                    if let Json::Str(s) = v {
-                        Some(s.clone())
-                    } else {
-                        None
-                    }
-                })
-                .collect(),
+            Some(Json::Arr(a)) => a.iter().filter_map(|v| if let Json::Str(s) = v { Some(s.clone()) } else { None }).collect(),
             _ => vec![],
         }
     }
 
     pub fn parse(s: &str) -> Result<Json, String> {
-        let mut p = P {
-            b: s.as_bytes(),
-            i: 0,
-            depth: 0,
-        };
+        let mut p = P { b: s.as_bytes(), i: 0, depth: 0 };
         let v = p.value()?;
         p.ws();
         if p.i != p.b.len() {
@@ -113,9 +100,7 @@ impl P<'_> {
     }
     fn value(&mut self) -> Result<Json, String> {
         self.ws();
-        let Some(&c) = self.b.get(self.i) else {
-            return self.err("hết dữ liệu");
-        };
+        let Some(&c) = self.b.get(self.i) else { return self.err("hết dữ liệu") };
         match c {
             b'{' | b'[' => {
                 self.depth += 1;
@@ -136,12 +121,7 @@ impl P<'_> {
     }
     fn num(&mut self) -> Result<Json, String> {
         let s = self.i;
-        while self.i < self.b.len()
-            && matches!(
-                self.b[self.i],
-                b'-' | b'+' | b'.' | b'e' | b'E' | b'0'..=b'9'
-            )
-        {
+        while self.i < self.b.len() && matches!(self.b[self.i], b'-' | b'+' | b'.' | b'e' | b'E' | b'0'..=b'9') {
             self.i += 1;
         }
         std::str::from_utf8(&self.b[s..self.i])
@@ -153,23 +133,18 @@ impl P<'_> {
     fn hex4(&mut self) -> Result<u32, String> {
         let h = self.b.get(self.i..self.i + 4).ok_or("thiếu \\u")?;
         self.i += 4;
-        u32::from_str_radix(std::str::from_utf8(h).map_err(|e| e.to_string())?, 16)
-            .map_err(|e| e.to_string())
+        u32::from_str_radix(std::str::from_utf8(h).map_err(|e| e.to_string())?, 16).map_err(|e| e.to_string())
     }
     fn string(&mut self) -> Result<String, String> {
         self.i += 1;
         let mut out = Vec::new();
         loop {
-            let Some(&c) = self.b.get(self.i) else {
-                return self.err("chuỗi chưa đóng");
-            };
+            let Some(&c) = self.b.get(self.i) else { return self.err("chuỗi chưa đóng") };
             self.i += 1;
             match c {
                 b'"' => break,
                 b'\\' => {
-                    let Some(&e) = self.b.get(self.i) else {
-                        return self.err("escape hỏng");
-                    };
+                    let Some(&e) = self.b.get(self.i) else { return self.err("escape hỏng") };
                     self.i += 1;
                     match e {
                         b'"' => out.push(b'"'),
@@ -182,14 +157,10 @@ impl P<'_> {
                         b't' => out.push(b'\t'),
                         b'u' => {
                             let mut cp = self.hex4()?;
-                            if (0xD800..0xDC00).contains(&cp)
-                                && self.b[self.i..].starts_with(b"\\u")
-                            {
+                            if (0xD800..0xDC00).contains(&cp) && self.b[self.i..].starts_with(b"\\u") {
                                 self.i += 2;
                                 let lo = self.hex4()?;
-                                cp = 0x10000
-                                    + ((cp - 0xD800) << 10)
-                                    + (lo.wrapping_sub(0xDC00) & 0x3ff);
+                                cp = 0x10000 + ((cp - 0xD800) << 10) + (lo.wrapping_sub(0xDC00) & 0x3ff);
                             }
                             let ch = char::from_u32(cp).unwrap_or('\u{fffd}');
                             let mut b = [0u8; 4];
@@ -263,8 +234,7 @@ mod tests {
 
     #[test]
     fn parses() {
-        let j = Json::parse(r#" {"a":1,"b":"x\"y\u00e9","c":[true,null,"s"],"d":{"e":-2.5}} "#)
-            .unwrap();
+        let j = Json::parse(r#" {"a":1,"b":"x\"y\u00e9","c":[true,null,"s"],"d":{"e":-2.5}} "#).unwrap();
         assert_eq!(j.u64("a"), Some(1));
         assert_eq!(j.str("b"), Some("x\"yé"));
         assert_eq!(j.str_list("c"), vec!["s"]);

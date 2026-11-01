@@ -2,10 +2,11 @@
 
 [Tiếng Việt](#tiếng-việt) · [English](#english)
 
-> **Trạng thái / Status:** binding này và ví dụ **chưa được chạy thử** — máy build không cài Deno. Code đã được
-> kiểm tra kiểu bằng TypeScript với khai báo `Deno` rút gọn, nhưng chưa từng chạy trên Deno thật.
-> This binding and its example are **untested** — Deno is not installed on the build machine. The code was
-> type-checked with TypeScript against a reduced `Deno` declaration, but has never run on a real Deno.
+> **Trạng thái / Status:** **TESTED** với Deno 2.9.8 trên Linux x86_64: `deno test ...` chạy round-trip thật
+> (200 reliable đúng thứ tự, unreliable hai chiều, trả lời nhị phân, disconnect) và `examples/chat.ts` chạy với 1 server + 2 client.
+> Windows / macOS chưa được kiểm tra.
+> **TESTED** with Deno 2.9.8 on Linux x86_64: the test runs a real round-trip (200 reliable in order, unreliable both ways,
+> binary reply, disconnect) and `examples/chat.ts` runs with 1 server + 2 clients. Windows / macOS are not tested yet.
 
 ---
 
@@ -173,7 +174,7 @@ Client (`PeerovaClient.connect(ticketOrCode, config)`): `token` (phải trùng s
 
 ### Ví dụ
 
-[`examples/chat.ts`](examples/chat.ts) (chưa chạy thử): chat + đồng bộ vị trí (vị trí unreliable ~20 Hz, chat
+[`examples/chat.ts`](examples/chat.ts): chat + đồng bộ vị trí (vị trí unreliable ~20 Hz, chat
 reliable; server chuyển tiếp cho các client khác).
 
 ```sh
@@ -363,7 +364,7 @@ Client (`PeerovaClient.connect(ticketOrCode, config)`): `token` (must match the 
 
 ### Example
 
-[`examples/chat.ts`](examples/chat.ts) (untested): chat + position sync (positions unreliable at ~20 Hz, chat
+[`examples/chat.ts`](examples/chat.ts): chat + position sync (positions unreliable at ~20 Hz, chat
 reliable; the server forwards to the other clients).
 
 ```sh

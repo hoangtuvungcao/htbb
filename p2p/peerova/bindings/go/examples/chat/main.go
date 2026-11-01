@@ -20,7 +20,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/peerova/peerova-go"
+	"peerova.sdk/go"
 )
 
 const (

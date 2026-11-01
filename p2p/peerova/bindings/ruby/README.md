@@ -4,6 +4,13 @@
 
 Website: https://peerova.pages.dev · Khái niệm và toàn bộ C API: [../DEVELOPER-GUIDE.md](../DEVELOPER-GUIDE.md)
 
+> **Trạng thái / Status:** **TESTED** với Ruby 4.0.9 (Fiddle 1.1.8) trên Linux x86_64: `test/test_peerova.rb` chạy
+> round-trip thật (200 reliable đúng thứ tự, unreliable hai chiều, trả lời nhị phân, disconnect), `examples/chat.rb`
+> chạy với 1 server + 2 client, và `require "peerova"` qua Bundler (`gem "peerova", path: ...`). Ruby 3.x, Windows, macOS chưa chạy.
+> **TESTED** with Ruby 4.0.9 (Fiddle 1.1.8) on Linux x86_64: real round-trip test (200 reliable in order, unreliable
+> both ways, binary reply, disconnect), `examples/chat.rb` with 1 server + 2 clients, and loading through Bundler.
+> Ruby 3.x, Windows and macOS have not been run yet.
+
 ---
 
 ## Tiếng Việt

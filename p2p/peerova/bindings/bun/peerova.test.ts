@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { EventType, PeerovaClient, PeerovaError, PeerovaServer, version } from "./peerova.ts";
 
-test("roundtrip: 200 reliable in order + unreliable + reply", () => {
+test("roundtrip: 200 reliable in order + unreliable both ways + reply + disconnect", () => {
   const N = 200;
   const key = join(mkdtempSync(join(tmpdir(), "peerova-bun-")), "bun.key");
   using srv = PeerovaServer.start({ port: 0, upnp: false, key_file: key });
@@ -40,8 +40,28 @@ test("roundtrip: 200 reliable in order + unreliable + reply", () => {
   }
   expect(unreliable).toBe(1);
   srv.send(sp, new Uint8Array([0x70, 0x6f, 0x6e, 0x67, 0, 0xff]));
-  let reply = cli.poll(5000);
-  while (reply && reply.type !== EventType.Message) reply = cli.poll(5000);
-  expect(Array.from(reply!.data)).toEqual([0x70, 0x6f, 0x6e, 0x67, 0, 0xff]);
-  console.log(`bun PASS: peerova ${version()}, ${N} reliable msgs in order, unreliable=${unreliable}, reply ok, peers=${srv.peerCount}`);
+  srv.send(sp, "srv-realtime", { channel: 3, reliable: false });
+  let binOk = false;
+  let backUnreliable = false;
+  for (let i = 0; i < 20 && !(binOk && backUnreliable); i++) {
+    const r = cli.poll(1000);
+    if (!r || r.type !== EventType.Message) continue;
+    if (r.reliable) {
+      expect(Array.from(r.data)).toEqual([0x70, 0x6f, 0x6e, 0x67, 0, 0xff]);
+      binOk = true;
+    } else if (r.channel === 3 && r.text === "srv-realtime") backUnreliable = true;
+  }
+  expect(binOk).toBe(true);
+  expect(backUnreliable).toBe(true);
+  const peers = srv.peerCount;
+
+  // client leaves -> server sees DISCONNECTED
+  cli.close();
+  let gone = false;
+  for (let i = 0; i < 10 && !gone; i++) {
+    const e = srv.poll(1000);
+    if (e?.type === EventType.Disconnected && e.peer === sp) gone = true;
+  }
+  expect(gone).toBe(true);
+  console.log(`bun PASS: peerova ${version()}, ${N} reliable msgs in order, unreliable both ways, reply ok, peers=${peers}, disconnect ok`);
 });

@@ -10,8 +10,36 @@ import { EventEmitter } from "node:events";
 /** Largest payload accepted by `send(..., { reliable: false })`, in bytes. */
 export declare const MAX_UNRELIABLE_PAYLOAD: 1180;
 
-/** Error thrown (or emitted as "error") by this package. `message` is the SDK's error text. */
-export declare class PeerovaError extends Error {}
+/** Stable SDK error codes (same values as `PEEROVA_E_*` in peerova.h). */
+export declare const ErrorCode: Readonly<{
+  E_OK: 0;
+  E_INVALID_ARG: 1;
+  E_TOO_LARGE: 2;
+  E_UNKNOWN_PEER: 3;
+  E_CLOSED: 4;
+  E_CODE_NOT_FOUND: 5;
+  E_NETWORK: 6;
+  E_TIMEOUT: 7;
+  E_LICENSE: 8;
+  E_CCU_LIMIT: 9;
+  E_ACCESS_DENIED: 10;
+  E_INVALID_TICKET: 11;
+  E_IO: 12;
+  E_INTERNAL: 99;
+}>;
+
+/** Name of an error code, e.g. `"E_TOO_LARGE"`. */
+export type ErrorCodeName = keyof typeof ErrorCode;
+
+/**
+ * Error thrown (or emitted as "error") by this package. `message` is English text
+ * `"E_NAME: description"`; `code` is the stable error code name.
+ */
+export declare class PeerovaError extends Error {
+  constructor(message: string, code?: ErrorCodeName);
+  /** Stable error code name, e.g. `"E_UNKNOWN_PEER"`. */
+  readonly code: ErrorCodeName;
+}
 
 /** Settings for publishing a 6-character connect code (requires `ServerConfig.app`). */
 export interface ShareConfig {
@@ -43,6 +71,8 @@ export interface ServerConfig {
   upnp?: boolean;
   /** The ticket does not contain the server's IP addresses. */
   private?: boolean;
+  /** Hide the server IP: players never learn its real address (DDoS protection); slightly higher latency. */
+  hide_ip?: boolean;
   /** Project id from the Peerova website; needed for a connect code. */
   app?: string;
   /** Publish a 6-character connect code for this server. */
@@ -56,6 +86,11 @@ export interface ClientConfig {
   token?: string;
   /** Give up (→ "connectFailed") if not connected within this time. Default 20000. */
   timeout_ms?: number;
+  /**
+   * Client identity key file (created if missing), e.g. `<appdata>/<game>/peerova-client.key`. Keeping it keeps
+   * the player's identity and stable address on the server across runs. Default: a new random key per run.
+   */
+  key_file?: string;
   [key: string]: unknown;
 }
 
@@ -98,9 +133,9 @@ export interface PeerovaEvents {
   /** A message arrived. */
   message: [peer: number, data: Buffer, info: MessageInfo];
   /** A peer left. */
-  disconnected: [peer: number, reason: string];
-  /** Client only: the connection attempt failed (e.g. timeout). */
-  connectFailed: [reason: string];
+  disconnected: [peer: number, reason: string, code: ErrorCodeName];
+  /** Client only: the connection attempt failed (e.g. code `"E_TIMEOUT"`). `reason` is English. */
+  connectFailed: [reason: string, code: ErrorCodeName];
   /** Non-fatal sidecar error (e.g. send to a peer that has left). Not thrown when unhandled. */
   error: [err: PeerovaError];
   /** The sidecar exited; the node is unusable afterwards. */

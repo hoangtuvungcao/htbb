@@ -155,9 +155,20 @@ Hiện addon cần bản .NET của Godot. Một GDExtension (C/C++, bọc `peer
 
 ### Tình trạng kiểm thử
 
-`compile-check/` biên dịch `addons/peerova/*.cs` và `examples/**/*.cs` với một stub của Godot API (gồm cả phần source generator của Godot sinh ra),
-chạy một host + join `PeerovaNode` qua `_Process()`, rồi chạy `NetDemo` (host + client) và kiểm tra vị trí và chat:
-`cd compile-check && dotnet run -c Release`. Chưa được chạy bên trong Godot trong quy trình kiểm thử tự động; `net_demo.gd` chưa được kiểm thử.
+**TESTED trong Godot 4.7.2 .NET thật (Linux x86_64, headless):** `test/test.sh` dựng một project tạm (thư mục `test/` +
+`addons/peerova` + `examples/net_demo` + `libpeerova.so` trong `addons/peerova/bin/linux/`), build bằng `dotnet`, rồi chạy engine với `--headless`:
+
+1. `roundtrip_cs.tscn` (C#): host + client `PeerovaNode` trong cùng scene — 100 tin reliable đúng thứ tự, unreliable hai chiều,
+   trả lời nhị phân, client `Shutdown()` → host nhận `Disconnected`; thoát với mã 0/1.
+2. `roundtrip_gd.tscn`: cùng luồng đó viết bằng GDScript (gọi node C#).
+3. `examples/net_demo`: `NetDemo.cs` làm host, một client `NetDemo.cs` và một client `net_demo.gd` (3 process riêng) — chat được chuyển tiếp, host thấy cả hai rời đi.
+
+```sh
+GODOT=/đường/dẫn/Godot_v4.x-stable_mono_linux.x86_64 test/test.sh    # cần .NET 8 SDK; PEEROVA_LIB nếu thư viện không ở target/release
+```
+
+`compile-check/` (không cần Godot) biên dịch `addons/peerova/*.cs` và `examples/**/*.cs` với một stub của Godot API và chạy round-trip qua
+`_Process()`: `cd compile-check && dotnet run -c Release`. Windows / macOS / Android / iOS và bản export chưa được kiểm thử.
 
 ---
 
@@ -308,6 +319,17 @@ The addon currently requires the .NET edition of Godot. A GDExtension (C/C++, wr
 
 ### Testing status
 
-`compile-check/` compiles `addons/peerova/*.cs` and `examples/**/*.cs` against a stub of the Godot API (including what Godot's source generator emits),
-runs a host + join `PeerovaNode` through `_Process()`, then runs `NetDemo` (host + client) and checks positions and chat:
-`cd compile-check && dotnet run -c Release`. Not run inside Godot as part of automated testing; `net_demo.gd` is untested.
+**TESTED in a real Godot 4.7.2 .NET engine (Linux x86_64, headless):** `test/test.sh` assembles a temporary project (`test/` +
+`addons/peerova` + `examples/net_demo` + `libpeerova.so` in `addons/peerova/bin/linux/`), builds it with `dotnet`, then runs the engine with `--headless`:
+
+1. `roundtrip_cs.tscn` (C#): a host and a client `PeerovaNode` in one scene — 100 reliable messages in order, unreliable both ways,
+   binary reply, client `Shutdown()` → host gets `Disconnected`; exits with code 0/1.
+2. `roundtrip_gd.tscn`: the same flow written in GDScript (calling the C# node).
+3. `examples/net_demo`: `NetDemo.cs` as host, one `NetDemo.cs` client and one `net_demo.gd` client (3 separate processes) — chat is forwarded, the host sees both leave.
+
+```sh
+GODOT=/path/to/Godot_v4.x-stable_mono_linux.x86_64 test/test.sh    # needs the .NET 8 SDK; PEEROVA_LIB if the library is not in target/release
+```
+
+`compile-check/` (no Godot needed) compiles `addons/peerova/*.cs` and `examples/**/*.cs` against a stub of the Godot API and runs the round-trip through
+`_Process()`: `cd compile-check && dotnet run -c Release`. Windows / macOS / Android / iOS and exported builds are not tested yet.

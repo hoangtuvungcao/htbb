@@ -10,7 +10,7 @@
 //
 // Threading: send/poll/disconnect are thread-safe; run one poll loop per node; never close a node while
 // another thread is inside poll/send on it (close() stops a startPolling loop itself).
-// Errors: native failures throw PeerovaException with the library's error text; a closed node throws
+// Errors: native failures throw PeerovaException (English message "E_NAME: ...", stable `code`); a closed node throws
 // IllegalStateException.
 package dev.peerova.kt
 
@@ -24,7 +24,7 @@ const val MAX_UNRELIABLE_PAYLOAD: Int = Peerova.MAX_UNRELIABLE_PAYLOAD
 /** @return the native library version string. */
 fun peerovaVersion(): String = Peerova.version()
 
-/** Thrown when a native call fails; the message is the native library's error text. */
+/** Thrown when a native call fails; message = English text "E_NAME: ...", `code` = stable code (`Peerova.E_*`). */
 typealias PeerovaException = Peerova.PeerovaException
 
 /**
@@ -38,8 +38,10 @@ sealed class PeerovaEvent {
     /** Server: a client connected. Client: connected to the server. */
     data class Connected(override val peer: Long) : PeerovaEvent()
 
-    /** [peer] left; [reason] is a human-readable explanation. */
-    data class Disconnected(override val peer: Long, val reason: String) : PeerovaEvent()
+    /** [peer] left; [reason] is English text "E_NAME: ...", [errorCode] its code (`Peerova.E_CLOSED`, ...). */
+    data class Disconnected(override val peer: Long, val reason: String) : PeerovaEvent() {
+        val errorCode: Int get() = Peerova.errorCodeOf(reason)
+    }
 
     /**
      * A message from [peer] on [channel] (0..255). [reliable] tells how it was sent. [data] is the raw
@@ -53,6 +55,8 @@ sealed class PeerovaEvent {
     /** Client only: the connection attempt failed (timeout, wrong ticket/code, token mismatch, ...). */
     data class ConnectFailed(val reason: String) : PeerovaEvent() {
         override val peer: Long get() = 0
+        /** Error code of [reason] (English text "E_TIMEOUT: ..."), e.g. `Peerova.E_TIMEOUT`. */
+        val errorCode: Int get() = Peerova.errorCodeOf(reason)
     }
 
     companion object {

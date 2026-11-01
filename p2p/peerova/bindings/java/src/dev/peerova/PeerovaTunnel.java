@@ -20,7 +20,7 @@ public final class PeerovaTunnel implements AutoCloseable {
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
     static {
-        Peerova.ensureLoaded();
+        Peerova.version(); // loads the native library (dev.peerova.NativeLoader)
     }
 
     static native long nServer(byte[] json);
@@ -31,7 +31,6 @@ public final class PeerovaTunnel implements AutoCloseable {
     static native byte[] nTicket(long h);
     static native byte[] nError(long h);
     static native byte[] nNextLog(long h);
-    static native byte[] nPeerOf(long h, int port, int waitMs);
     static native long nPeerCount(long h);
     static native void nFree(long h);
 
@@ -74,9 +73,6 @@ public final class PeerovaTunnel implements AutoCloseable {
 
     /** Oldest pending log line, or null. */
     public String nextLog() { long x = h; return x == 0 ? null : str(nNextLog(x)); }
-
-    /** Server: "ip:port" of the peer behind the loopback socket with this source port, or null. */
-    public String peerOf(int srcPort, int waitMs) { return str(nPeerOf(handle(), srcPort, waitMs)); }
 
     public long peerCount() { long x = h; return x == 0 ? 0 : nPeerCount(x); }
 

@@ -70,38 +70,23 @@ pub fn issue(seed: &[u8; 32], sub: &str, ports: &[String], ttl_secs: u64, now: u
         escape(&jti)
     );
     let signed = format!("{PREFIX}.{}", b64_encode(payload.as_bytes()));
-    let sig = SigningKey::from_bytes(seed)
-        .sign(signed.as_bytes())
-        .to_bytes();
+    let sig = SigningKey::from_bytes(seed).sign(signed.as_bytes()).to_bytes();
     format!("{signed}.{}", b64_encode(&sig))
 }
 
-pub fn verify(
-    token: &[u8],
-    authority: &[u8; 32],
-    revoked: &HashSet<String>,
-    now: u64,
-) -> Result<AccessToken, String> {
-    let token = std::str::from_utf8(token)
-        .map_err(|_| "token không phải UTF-8")?
-        .trim();
+pub fn verify(token: &[u8], authority: &[u8; 32], revoked: &HashSet<String>, now: u64) -> Result<AccessToken, String> {
+    let token = std::str::from_utf8(token).map_err(|_| "token không phải UTF-8")?.trim();
     let mut parts = token.split('.');
-    let (Some(PREFIX), Some(p), Some(sig), None) =
-        (parts.next(), parts.next(), parts.next(), parts.next())
-    else {
+    let (Some(PREFIX), Some(p), Some(sig), None) = (parts.next(), parts.next(), parts.next(), parts.next()) else {
         return Err("access token sai định dạng".into());
     };
     let signed = &token[..PREFIX.len() + 1 + p.len()];
-    let sig: [u8; 64] = b64_decode(sig)
-        .and_then(|s| s.try_into().ok())
-        .ok_or("chữ ký token hỏng")?;
+    let sig: [u8; 64] = b64_decode(sig).and_then(|s| s.try_into().ok()).ok_or("chữ ký token hỏng")?;
     VerifyingKey::from_bytes(authority)
         .map_err(|_| "access public key không hợp lệ")?
         .verify(signed.as_bytes(), &Signature::from_bytes(&sig))
         .map_err(|_| "chữ ký access token không hợp lệ")?;
-    let j = Json::parse(
-        std::str::from_utf8(&b64_decode(p).ok_or("payload hỏng")?).map_err(|_| "payload hỏng")?,
-    )?;
+    let j = Json::parse(std::str::from_utf8(&b64_decode(p).ok_or("payload hỏng")?).map_err(|_| "payload hỏng")?)?;
     let t = AccessToken {
         sub: j.str("sub").unwrap_or("").to_string(),
         ports: j.str_list("ports"),
@@ -125,32 +110,19 @@ mod tests {
     fn issue_verify_scope_revoke() {
         let seed = [3u8; 32];
         let pk = public_key(&seed);
-        let t = issue(
-            &seed,
-            "alice",
-            &["tcp:443".into(), "udp:10000-10100".into()],
-            3600,
-            1000,
-        );
+        let t = issue(&seed, "alice", &["tcp:443".into(), "udp:10000-10100".into()], 3600, 1000);
         let none = HashSet::new();
         let a = verify(t.as_bytes(), &pk, &none, 2000).unwrap();
         assert_eq!(a.sub, "alice");
         assert!(a.allows(Proto::Tcp, 443) && !a.allows(Proto::Tcp, 22));
         assert!(a.allows(Proto::Udp, 10050) && !a.allows(Proto::Udp, 10101));
-        assert!(verify(t.as_bytes(), &pk, &none, 5000)
-            .unwrap_err()
-            .contains("hết hạn"));
+        assert!(verify(t.as_bytes(), &pk, &none, 5000).unwrap_err().contains("hết hạn"));
         let revoked: HashSet<String> = ["alice".to_string()].into();
-        assert!(verify(t.as_bytes(), &pk, &revoked, 2000)
-            .unwrap_err()
-            .contains("thu hồi"));
+        assert!(verify(t.as_bytes(), &pk, &revoked, 2000).unwrap_err().contains("thu hồi"));
         assert!(verify(t.as_bytes(), &public_key(&[4u8; 32]), &none, 2000).is_err());
         let forged = t.replacen('.', ".x", 1);
         assert!(verify(forged.as_bytes(), &pk, &none, 2000).is_err());
         assert!(scope_allows(&["*".into()], Proto::Udp, 1));
-        assert!(
-            scope_allows(&["tcp:*".into()], Proto::Tcp, 8080)
-                && !scope_allows(&["tcp:*".into()], Proto::Udp, 8080)
-        );
+        assert!(scope_allows(&["tcp:*".into()], Proto::Tcp, 8080) && !scope_allows(&["tcp:*".into()], Proto::Udp, 8080));
     }
 }

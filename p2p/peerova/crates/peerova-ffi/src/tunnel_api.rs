@@ -3,8 +3,8 @@
 //! without rewriting its network code and without a sidecar process.
 //!
 //! * Server: exposes local services (`"expose":["tcp:19129"]`); every forwarded TCP connection is
-//!   a plain loopback connection to the service. `peer_of(src_port)` maps such a socket back to the
-//!   remote peer's address (for per-IP limits / logs in the app).
+//!   a plain loopback connection to the service, from the player's own stable 127.a.b.c address
+//!   (Peerova `tunnel::player_ip`), so per-IP limits / bans / logs in the app work per player.
 //! * Client: listens on `127.0.0.1:<local>` (`"forward":["tcp:0=19129"]`, 0 = free port) and
 //!   tunnels each accepted connection as an independent reliable stream.
 
@@ -35,8 +35,6 @@ struct St {
     logs: VecDeque<String>,
     /// conn id -> remote address of the peer.
     peers: HashMap<u32, SocketAddr>,
-    /// local source port of a server->service TCP socket -> conn id.
-    src: HashMap<u16, u32>,
     /// client: (rule index -> local port), listeners still pending.
     local_ports: Vec<u16>,
     pending_listeners: usize,
@@ -134,15 +132,11 @@ impl Tunnel {
             ));
         }
         let handle = engine.handle.clone();
-        let (sh, sh2, sh3) = (shared.clone(), shared.clone(), shared.clone());
-        let on_tcp: tunnel::TcpHook = Arc::new(move |conn, local: SocketAddr| {
-            sh2.st.lock().unwrap().src.insert(local.port(), conn);
-            sh2.cv.notify_all();
-        });
+        let (sh, sh3) = (shared.clone(), shared.clone());
         let thread = thread::Builder::new()
             .name("peerova-tunnel-srv".into())
             .spawn(move || {
-                tunnel::serve_hooked(
+                tunnel::serve_audited(
                     &engine,
                     rules,
                     |e| match e {
@@ -167,7 +161,6 @@ impl Tunnel {
                             {
                                 let mut g = sh.st.lock().unwrap();
                                 g.peers.remove(conn);
-                                g.src.retain(|_, c| c != conn);
                             }
                             sh.log(format!("client {conn:08x} ngắt: {reason}"));
                         }
@@ -175,7 +168,6 @@ impl Tunnel {
                         _ => {}
                     },
                     |_| {},
-                    on_tcp,
                 );
                 sh3.set_state(TUNNEL_DOWN, Some("tunnel server đã dừng".into()));
             })
@@ -310,24 +302,6 @@ impl Tunnel {
         self.shared.st.lock().unwrap().logs.pop_front()
     }
 
-    /// Server: remote peer address for the loopback socket whose source port is `src_port`
-    /// (as seen by the exposed service). Waits up to `wait` for the mapping to appear.
-    /// None for unknown sockets and for peers connected through the relay (no real IP known).
-    pub fn peer_of(&self, src_port: u16, wait: Duration) -> Option<SocketAddr> {
-        let deadline = Instant::now() + wait;
-        let mut g = self.shared.st.lock().unwrap();
-        loop {
-            if let Some(a) = g.src.get(&src_port).and_then(|c| g.peers.get(c)).copied() {
-                // relay path: the address is a pseudo address (100::/64), not the player's IP
-                return (!peerova_core::relay::is_relay(&a)).then_some(a);
-            }
-            let left = deadline.saturating_duration_since(Instant::now());
-            if left.is_zero() {
-                return None;
-            }
-            g = self.shared.cv.wait_timeout(g, left).unwrap().0;
-        }
-    }
 }
 
 impl Drop for Tunnel {
@@ -464,25 +438,6 @@ pub unsafe extern "C" fn peerova_tunnel_next_log(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn peerova_tunnel_peer_of(
-    t: *mut peerova_tunnel,
-    src_port: u16,
-    wait_ms: u32,
-    buf: *mut c_char,
-    buf_len: i32,
-) -> i32 {
-    guard(0, || {
-        match t
-            .as_ref()
-            .and_then(|t| t.t.peer_of(src_port, Duration::from_millis(wait_ms as u64)))
-        {
-            Some(a) => copy_out(&a.to_string(), buf, buf_len),
-            None => 0,
-        }
-    })
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn peerova_tunnel_peer_count(t: *mut peerova_tunnel) -> u32 {
     guard(0, || t.as_ref().map_or(0, |t| t.t.peer_count() as u32))
 }
@@ -503,7 +458,7 @@ mod tests {
     /// Echo service exposed through the tunnel; two concurrent TCP connections through one P2P
     /// connection, and the server maps each loopback socket back to the peer.
     #[test]
-    fn tunnel_tcp_round_trip_and_peer_of() {
+    fn tunnel_tcp_round_trip_and_player_ip() {
         let dir = std::env::temp_dir().join(format!("peerova-tunnel-test-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let svc = TcpListener::bind("127.0.0.1:0").unwrap();
@@ -513,7 +468,7 @@ mod tests {
         thread::spawn(move || {
             for s in svc.incoming() {
                 let mut s = s.unwrap();
-                srcs2.lock().unwrap().push(s.peer_addr().unwrap().port());
+                srcs2.lock().unwrap().push(s.peer_addr().unwrap().ip());
                 thread::spawn(move || {
                     let mut b = [0u8; 4096];
                     while let Ok(n) = s.read(&mut b) {
@@ -551,14 +506,12 @@ mod tests {
             assert_eq!(got, msg);
             socks.push(s);
         }
-        let ports = srcs.lock().unwrap().clone();
-        assert_eq!(ports.len(), 2);
-        for p in ports {
-            let a = srv.peer_of(p, Duration::from_secs(1)).expect("peer_of");
-            assert!(a.ip().is_loopback() || a.ip().is_ipv4() || a.ip().is_ipv6());
-        }
-        assert!(srv.peer_of(1, Duration::from_millis(10)).is_none());
-        assert_eq!(srv.peer_count(), 1); // direct (LAN) path: real address known
+        let ips = srcs.lock().unwrap().clone();
+        assert_eq!(ips.len(), 2);
+        // the service sees the player's own loopback address (same peer -> same 127.a.b.c)
+        assert!(ips.iter().all(|ip| ip.is_loopback()));
+        assert_eq!(ips[0], ips[1]);
+        assert_eq!(srv.peer_count(), 1);
         drop(socks);
         drop(cli);
         drop(srv);

@@ -38,11 +38,11 @@ final class LineQueue: @unchecked Sendable {
     }
 }
 let input = LineQueue()
-if deadline == nil || isatty(STDIN_FILENO) != 0 {
-    Thread.detachNewThread {
-        while let line = readLine() { input.push(line) }
-        input.close()
-    }
+// Line-buffer stdout so the ticket shows up immediately even when stdout is a pipe or a file.
+setvbuf(stdout, nil, _IOLBF, 0)
+Thread.detachNewThread {
+    while let line = readLine() { input.push(line) }
+    input.close()
 }
 
 func encodePosition(_ x: Float, _ y: Float) -> Data {
@@ -114,7 +114,7 @@ do {
         // 2. Chat lines typed by the user → reliable.
         let (lines, closed) = input.drain()
         for line in lines { for p in peers { try node.send(line, to: p, channel: chatChannel) } }
-        if closed { break }
+        if closed && deadline == nil { break }   // with [seconds], end of input does not stop the demo
         // 3. Client: 20 Hz position updates → unreliable.
         let now = Date()
         if !isServer && now >= nextPos {

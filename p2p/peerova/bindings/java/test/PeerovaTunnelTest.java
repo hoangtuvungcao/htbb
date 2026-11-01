@@ -24,7 +24,7 @@ public class PeerovaTunnelTest {
         Thread t = new Thread(() -> {
             try {
                 Socket s = svc.accept();
-                peer[0] = srv.peerOf(s.getPort(), 1000);
+                peer[0] = s.getInetAddress().getHostAddress(); // player address as seen by the service (127.a.b.c)
                 InputStream in = s.getInputStream();
                 OutputStream out = s.getOutputStream();
                 byte[] b = new byte[8192];

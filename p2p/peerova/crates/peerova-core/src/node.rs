@@ -16,17 +16,15 @@
 
 use std::collections::HashMap;
 use std::io::{self, Read, Write};
-use std::net::{
-    IpAddr, Ipv4Addr, Ipv6Addr, Shutdown, SocketAddr, TcpListener, TcpStream, UdpSocket,
-};
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, Shutdown, SocketAddr, TcpListener, TcpStream, UdpSocket};
 use std::sync::atomic::AtomicU64;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{sync_channel, SyncSender, TrySendError};
-use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Instant;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
-use std::time::Instant;
 
 /// Which local transport a packet arrived on / should leave from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -86,18 +84,11 @@ const MAX_TCP_PEERS: usize = 4096;
 
 /// Register a TCP connection as a lane for `peer`: writer thread + reader thread.
 fn add_lane(s: TcpStream, peer: SocketAddr, sink: Sink, map: TcpMap, stop: Arc<AtomicBool>) {
-    let (Ok(mut w), Ok(shut)) = (s.try_clone(), s.try_clone()) else {
-        return;
-    };
+    let (Ok(mut w), Ok(shut)) = (s.try_clone(), s.try_clone()) else { return };
     w.set_nodelay(true).ok();
     let id = LANE_ID.fetch_add(1, Ordering::Relaxed);
     let (tx, rx) = sync_channel::<(Instant, Vec<u8>)>(LANE_QUEUE);
-    map.lock().unwrap().entry(peer).or_default().push(TcpLane {
-        id,
-        tx,
-        stream: shut,
-        prefix: None,
-    });
+    map.lock().unwrap().entry(peer).or_default().push(TcpLane { id, tx, stream: shut, prefix: None });
     spawn_small(move || {
         for (t, frame) in rx {
             if t.elapsed() > LANE_MAX_AGE {
@@ -111,14 +102,7 @@ fn add_lane(s: TcpStream, peer: SocketAddr, sink: Sink, map: TcpMap, stop: Arc<A
     tcp_reader(s, peer, id, sink, map, stop);
 }
 
-fn tcp_reader(
-    mut s: TcpStream,
-    peer: SocketAddr,
-    lane: u64,
-    sink: Sink,
-    map: TcpMap,
-    stop: Arc<AtomicBool>,
-) {
+fn tcp_reader(mut s: TcpStream, peer: SocketAddr, lane: u64, sink: Sink, map: TcpMap, stop: Arc<AtomicBool>) {
     s.set_nodelay(true).ok();
     s.set_read_timeout(Some(Duration::from_secs(60))).ok();
     spawn_small(move || {
@@ -147,52 +131,33 @@ fn tcp_reader(
 
 /// One relay WebSocket used as a lane. Reader and writer run independently and block
 /// on real events only (socket data / queued packets): ~0% CPU when idle, no added delay.
-fn relay_lane(
-    ws: crate::relay::Ws,
-    peer: SocketAddr,
-    sink: Sink,
-    map: TcpMap,
-    stop: Arc<AtomicBool>,
-    up: impl Fn(),
-) {
-    let (Ok(shut), Ok(lane_sock)) = (ws.tcp.try_clone(), ws.tcp.try_clone()) else {
-        return;
-    };
-    let Ok((mut reader, mut writer)) = ws.split() else {
-        return;
-    };
+fn relay_lane(ws: crate::relay::Ws, peer: SocketAddr, sink: Sink, map: TcpMap, stop: Arc<AtomicBool>, up: impl Fn()) {
+    let (Ok(shut), Ok(lane_sock)) = (ws.tcp.try_clone(), ws.tcp.try_clone()) else { return };
+    let Ok((mut reader, mut writer)) = ws.split() else { return };
     let id = LANE_ID.fetch_add(1, Ordering::Relaxed);
     let (tx, rx) = sync_channel::<(Instant, Vec<u8>)>(RELAY_QUEUE);
-    map.lock().unwrap().entry(peer).or_default().push(TcpLane {
-        id,
-        tx,
-        stream: lane_sock,
-        prefix: None,
-    });
+    map.lock().unwrap().entry(peer).or_default().push(TcpLane { id, tx, stream: lane_sock, prefix: None });
     up();
-    let _ = thread::Builder::new()
-        .name("peerova-relay-tx".into())
-        .stack_size(LANE_STACK)
-        .spawn(move || {
-            let mut out = Vec::with_capacity(16 * 1024);
-            while let Ok((t, f)) = rx.recv() {
-                out.clear();
-                if t.elapsed() <= RELAY_MAX_AGE {
-                    out.extend_from_slice(&f);
-                }
-                // Whatever else is already queued goes in the same message (no waiting).
-                while out.len() < 16 * 1024 {
-                    match rx.try_recv() {
-                        Ok((t, f)) if t.elapsed() <= RELAY_MAX_AGE => out.extend_from_slice(&f),
-                        Ok(_) => {}
-                        Err(_) => break,
-                    }
-                }
-                if !out.is_empty() && writer.send(&out).is_err() {
-                    break;
+    let _ = thread::Builder::new().name("peerova-relay-tx".into()).stack_size(LANE_STACK).spawn(move || {
+        let mut out = Vec::with_capacity(16 * 1024);
+        while let Ok((t, f)) = rx.recv() {
+            out.clear();
+            if t.elapsed() <= RELAY_MAX_AGE {
+                out.extend_from_slice(&f);
+            }
+            // Whatever else is already queued goes in the same message (no waiting).
+            while out.len() < 16 * 1024 {
+                match rx.try_recv() {
+                    Ok((t, f)) if t.elapsed() <= RELAY_MAX_AGE => out.extend_from_slice(&f),
+                    Ok(_) => {}
+                    Err(_) => break,
                 }
             }
-        });
+            if !out.is_empty() && writer.send(&out).is_err() {
+                break;
+            }
+        }
+    });
     let mut msgs = vec![];
     while !stop.load(Ordering::Relaxed) {
         msgs.clear();
@@ -222,30 +187,19 @@ fn relay_lane(
 }
 
 /// One standby connection: demultiplex clients by their 8-byte id.
-fn standby_lane(
-    ws: crate::relay::Ws,
-    sink: &Sink,
-    map: &TcpMap,
-    stop: &Arc<AtomicBool>,
-    cids: &Arc<Mutex<HashMap<[u8; 8], SocketAddr>>>,
-) {
+fn standby_lane(ws: crate::relay::Ws, sink: &Sink, map: &TcpMap, stop: &Arc<AtomicBool>, cids: &Arc<Mutex<HashMap<[u8; 8], SocketAddr>>>) {
     let Ok(sock) = ws.tcp.try_clone() else { return };
-    let Ok((mut reader, mut writer)) = ws.split() else {
-        return;
-    };
+    let Ok((mut reader, mut writer)) = ws.split() else { return };
     let id = LANE_ID.fetch_add(1, Ordering::Relaxed);
     let (tx, rx) = sync_channel::<(Instant, Vec<u8>)>(RELAY_QUEUE);
-    let _ = thread::Builder::new()
-        .name("peerova-standby-tx".into())
-        .stack_size(LANE_STACK)
-        .spawn(move || {
-            // Each item is already `cid | len | packet`: one WebSocket message per item.
-            while let Ok((t, f)) = rx.recv() {
-                if t.elapsed() <= RELAY_MAX_AGE && writer.send(&f).is_err() {
-                    break;
-                }
+    let _ = thread::Builder::new().name("peerova-standby-tx".into()).stack_size(LANE_STACK).spawn(move || {
+        // Each item is already `cid | len | packet`: one WebSocket message per item.
+        while let Ok((t, f)) = rx.recv() {
+            if t.elapsed() <= RELAY_MAX_AGE && writer.send(&f).is_err() {
+                break;
             }
-        });
+        }
+    });
     let mut msgs = vec![];
     while !stop.load(Ordering::Relaxed) {
         msgs.clear();
@@ -269,12 +223,7 @@ fn standby_lane(
                 let lanes = mp.entry(peer).or_default();
                 if !lanes.iter().any(|l| l.id == id) {
                     if let Ok(s) = sock.try_clone() {
-                        lanes.push(TcpLane {
-                            id,
-                            tx: tx.clone(),
-                            stream: s,
-                            prefix: Some(cid),
-                        });
+                        lanes.push(TcpLane { id, tx: tx.clone(), stream: s, prefix: Some(cid) });
                     }
                 }
             }
@@ -297,6 +246,53 @@ fn standby_lane(
     });
 }
 
+/// Best effort SO_RCVBUF / SO_SNDBUF (the OS may cap it, e.g. Linux `net.core.rmem_max`).
+mod sockbuf {
+    use std::net::UdpSocket;
+
+    #[cfg(unix)]
+    pub fn grow(s: &UdpSocket, bytes: usize) {
+        use std::os::fd::AsRawFd;
+        extern "C" {
+            fn setsockopt(fd: i32, level: i32, name: i32, val: *const std::ffi::c_void, len: u32) -> i32;
+        }
+        #[cfg(any(target_os = "linux", target_os = "android"))]
+        const OPTS: (i32, i32, i32) = (1, 7, 8); // SOL_SOCKET, SO_SNDBUF, SO_RCVBUF
+        #[cfg(not(any(target_os = "linux", target_os = "android")))]
+        const OPTS: (i32, i32, i32) = (0xffff, 0x1001, 0x1002);
+        let v = bytes.min(i32::MAX as usize) as i32;
+        for name in [OPTS.1, OPTS.2] {
+            // SAFETY: valid fd owned by `s`, pointer to a live i32 of the given length.
+            unsafe { setsockopt(s.as_raw_fd(), OPTS.0, name, &v as *const i32 as *const _, 4) };
+        }
+    }
+
+    #[cfg(windows)]
+    pub fn grow(s: &UdpSocket, bytes: usize) {
+        use std::os::windows::io::AsRawSocket;
+        #[link(name = "ws2_32")]
+        extern "system" {
+            fn setsockopt(s: usize, level: i32, name: i32, val: *const u8, len: i32) -> i32;
+        }
+        let v = bytes.min(i32::MAX as usize) as i32;
+        for name in [0x1001, 0x1002] {
+            // SAFETY: valid socket owned by `s`, pointer to a live i32 of the given length.
+            unsafe { setsockopt(s.as_raw_socket() as usize, 0xffff, name, &v as *const i32 as *const u8, 4) };
+        }
+    }
+
+    #[cfg(not(any(unix, windows)))]
+    pub fn grow(_: &UdpSocket, _: usize) {}
+
+    #[cfg(test)]
+    #[test]
+    fn grows_receive_buffer() {
+        let s = UdpSocket::bind("127.0.0.1:0").unwrap();
+        grow(&s, 1 << 20); // must not fail or crash; the effective size is OS policy
+        s.send_to(b"x", s.local_addr().unwrap()).unwrap();
+    }
+}
+
 fn canonical(a: SocketAddr) -> SocketAddr {
     SocketAddr::new(a.ip().to_canonical(), a.port())
 }
@@ -316,13 +312,7 @@ fn spawn_recv_as(sock: UdpSocket, sink: Sink, stop: Arc<AtomicBool>, id: u16) {
                 match sock.recv_from(&mut buf) {
                     Ok((n, from)) => sink(canonical(from), &buf[..n], Via::Udp(id)),
                     // Timeout, or Windows reporting ICMP port-unreachable as ConnectionReset.
-                    Err(e)
-                        if matches!(
-                            e.kind(),
-                            io::ErrorKind::WouldBlock
-                                | io::ErrorKind::TimedOut
-                                | io::ErrorKind::ConnectionReset
-                        ) => {}
+                    Err(e) if matches!(e.kind(), io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::ConnectionReset) => {}
                     Err(_) => thread::sleep(Duration::from_millis(5)),
                 }
             }
@@ -333,6 +323,12 @@ fn spawn_recv_as(sock: UdpSocket, sink: Sink, stop: Arc<AtomicBool>, id: u16) {
 impl Node {
     /// `port` 0 = random. `v6` = our global IPv6 (None disables IPv6).
     pub fn bind(port: u16, v6: Option<Ipv6Addr>, sink: Sink) -> io::Result<Node> {
+        Self::bind_with(port, v6, sink, 1, None)
+    }
+
+    /// Like `bind`, with `rx_threads` receive threads per socket and, for servers, larger
+    /// kernel socket buffers (`buffers` bytes) so bursts from thousands of players fit.
+    pub fn bind_with(port: u16, v6: Option<Ipv6Addr>, sink: Sink, rx_threads: usize, buffers: Option<usize>) -> io::Result<Node> {
         let s4 = UdpSocket::bind((Ipv4Addr::UNSPECIFIED, port)).ok();
         let p = match &s4 {
             Some(s) => s.local_addr()?.port(),
@@ -347,14 +343,16 @@ impl Node {
                 .ok()
         });
         if s4.is_none() && s6.is_none() {
-            return Err(io::Error::new(
-                io::ErrorKind::AddrInUse,
-                format!("không bind được UDP port {port}"),
-            ));
+            return Err(io::Error::new(io::ErrorKind::AddrInUse, format!("không bind được UDP port {port}")));
         }
         let stop = Arc::new(AtomicBool::new(false));
         for s in [&s4, &s6].into_iter().flatten() {
-            spawn_recv(s.try_clone()?, sink.clone(), stop.clone());
+            if let Some(n) = buffers {
+                sockbuf::grow(s, n);
+            }
+            for _ in 0..rx_threads.max(1) {
+                spawn_recv(s.try_clone()?, sink.clone(), stop.clone());
+            }
         }
         Ok(Node {
             v4: s4,
@@ -373,9 +371,7 @@ impl Node {
         let mut ids = vec![];
         let mut m = self.spray.lock().unwrap();
         for _ in 0..n {
-            let Ok(s) = UdpSocket::bind((Ipv4Addr::UNSPECIFIED, 0)) else {
-                break;
-            };
+            let Ok(s) = UdpSocket::bind((Ipv4Addr::UNSPECIFIED, 0)) else { break };
             let Ok(r) = s.try_clone() else { break };
             let id = self.next_spray.fetch_add(1, Ordering::Relaxed);
             let stop = Arc::new(AtomicBool::new(false));
@@ -400,9 +396,7 @@ impl Node {
     /// IPv4 send with a small TTL: the packet opens OUR NAT mapping but expires
     /// in the ISP network before it can reach (and pollute) the peer's NAT.
     pub fn send_low_ttl(&self, to: SocketAddr, data: &[u8], ttl: u32) -> io::Result<usize> {
-        let Some(s) = self.v4.as_ref().filter(|_| to.is_ipv4()) else {
-            return self.send(to, data);
-        };
+        let Some(s) = self.v4.as_ref().filter(|_| to.is_ipv4()) else { return self.send(to, data) };
         let old = s.ttl().unwrap_or(64);
         s.set_ttl(ttl)?;
         let r = s.send_to(data, to);
@@ -411,13 +405,7 @@ impl Node {
     }
 
     /// Like `send_on` but with a low TTL (birthday sockets: open our mappings only).
-    pub fn send_on_low_ttl(
-        &self,
-        via: Via,
-        to: SocketAddr,
-        data: &[u8],
-        ttl: u32,
-    ) -> io::Result<usize> {
+    pub fn send_on_low_ttl(&self, via: Via, to: SocketAddr, data: &[u8], ttl: u32) -> io::Result<usize> {
         match via {
             Via::Udp(0) => self.send_low_ttl(to, data, ttl),
             Via::Udp(id) => match self.spray.lock().unwrap().get(&id) {
@@ -459,23 +447,21 @@ impl Node {
         for l in ls {
             l.set_nonblocking(true)?;
             let (sink, map, stop) = (self.sink.clone(), self.tcp.clone(), self.stop.clone());
-            thread::Builder::new()
-                .name("peerova-tcp-accept".into())
-                .spawn(move || {
-                    while !stop.load(Ordering::Relaxed) {
-                        match l.accept() {
-                            Ok((s, peer)) => {
-                                let peer = canonical(peer);
-                                s.set_nonblocking(false).ok();
-                                if map.lock().unwrap().len() >= MAX_TCP_PEERS {
-                                    continue; // drop: protects against connection floods
-                                }
-                                add_lane(s, peer, sink.clone(), map.clone(), stop.clone());
+            thread::Builder::new().name("peerova-tcp-accept".into()).spawn(move || {
+                while !stop.load(Ordering::Relaxed) {
+                    match l.accept() {
+                        Ok((s, peer)) => {
+                            let peer = canonical(peer);
+                            s.set_nonblocking(false).ok();
+                            if map.lock().unwrap().len() >= MAX_TCP_PEERS {
+                                continue; // drop: protects against connection floods
                             }
-                            Err(_) => thread::sleep(Duration::from_millis(20)),
+                            add_lane(s, peer, sink.clone(), map.clone(), stop.clone());
                         }
+                        Err(_) => thread::sleep(Duration::from_millis(20)),
                     }
-                })?;
+                }
+            })?;
         }
         Ok(p)
     }
@@ -497,30 +483,12 @@ impl Node {
 
     /// Last resort: open `RELAY_LANES` WebSockets to the website relay room. Returns the
     /// pseudo address the engine uses for this path (packets flow like a TCP lane).
-    pub fn connect_relay(
-        &self,
-        base: &str,
-        room: &str,
-        role: &'static str,
-        auth: Option<String>,
-        extra: &str,
-        log: impl Fn(String) + Send + Sync + 'static,
-        up: impl Fn() + Send + Sync + 'static,
-    ) -> SocketAddr {
+    pub fn connect_relay(&self, base: &str, room: &str, role: &'static str, auth: Option<String>, extra: &str, log: impl Fn(String) + Send + Sync + 'static, up: impl Fn() + Send + Sync + 'static) -> SocketAddr {
         let peer = crate::relay::pseudo_addr();
         let (log, up) = (Arc::new(log), Arc::new(up));
         for lane in 0..crate::relay::RELAY_LANES {
-            let (sink, map, stop, log, up) = (
-                self.sink.clone(),
-                self.tcp.clone(),
-                self.stop.clone(),
-                log.clone(),
-                up.clone(),
-            );
-            let (url, auth) = (
-                crate::relay::url(base, room, role, lane) + extra,
-                auth.clone(),
-            );
+            let (sink, map, stop, log, up) = (self.sink.clone(), self.tcp.clone(), self.stop.clone(), log.clone(), up.clone());
+            let (url, auth) = (crate::relay::url(base, room, role, lane) + extra, auth.clone());
             thread::Builder::new()
                 .name("peerova-relay".into())
                 .stack_size(LANE_STACK)
@@ -540,49 +508,33 @@ impl Node {
     /// Server: keep `RELAY_LANES` standby connections in our own relay room (reconnecting
     /// forever). Clients join with a client id and reach us with zero extra handshakes;
     /// each client id becomes its own pseudo peer address.
-    pub fn relay_standby(
-        &self,
-        base: &str,
-        room: &str,
-        auth: Arc<dyn Fn() -> Option<String> + Send + Sync>,
-        log: impl Fn(String) + Send + Sync + 'static,
-    ) {
+    pub fn relay_standby(&self, base: &str, room: &str, auth: Arc<dyn Fn() -> Option<String> + Send + Sync>, log: impl Fn(String) + Send + Sync + 'static) {
         let log = Arc::new(log);
         let cids: Arc<Mutex<HashMap<[u8; 8], SocketAddr>>> = Arc::new(Mutex::new(HashMap::new()));
         for lane in 0..crate::relay::RELAY_LANES {
-            let (sink, map, stop, log, auth, cids) = (
-                self.sink.clone(),
-                self.tcp.clone(),
-                self.stop.clone(),
-                log.clone(),
-                auth.clone(),
-                cids.clone(),
-            );
+            let (sink, map, stop, log, auth, cids) = (self.sink.clone(), self.tcp.clone(), self.stop.clone(), log.clone(), auth.clone(), cids.clone());
             let url = crate::relay::url(base, room, "s", lane) + "&mux=1";
-            let _ = thread::Builder::new()
-                .name("peerova-standby".into())
-                .stack_size(LANE_STACK)
-                .spawn(move || {
-                    let mut backoff = 1;
-                    let mut warned = false;
-                    while !stop.load(Ordering::Relaxed) {
-                        match crate::relay::connect(&url, auth().as_deref()) {
-                            Ok(ws) => {
-                                backoff = 1;
-                                warned = false;
-                                standby_lane(ws, &sink, &map, &stop, &cids);
-                            }
-                            Err(e) => {
-                                if lane == 0 && !warned {
-                                    warned = true;
-                                    log(format!("đường dự phòng chưa sẵn sàng: {e} (tự thử lại)"));
-                                }
+            let _ = thread::Builder::new().name("peerova-standby".into()).stack_size(LANE_STACK).spawn(move || {
+                let mut backoff = 1;
+                let mut warned = false;
+                while !stop.load(Ordering::Relaxed) {
+                    match crate::relay::connect(&url, auth().as_deref()) {
+                        Ok(ws) => {
+                            backoff = 1;
+                            warned = false;
+                            standby_lane(ws, &sink, &map, &stop, &cids);
+                        }
+                        Err(e) => {
+                            if lane == 0 && !warned {
+                                warned = true;
+                                log(format!("đường dự phòng chưa sẵn sàng: {e} (tự thử lại)"));
                             }
                         }
-                        thread::sleep(Duration::from_secs(backoff));
-                        backoff = (backoff * 2).min(30);
                     }
-                });
+                    thread::sleep(Duration::from_secs(backoff));
+                    backoff = (backoff * 2).min(30);
+                }
+            });
         }
     }
 
@@ -610,10 +562,7 @@ impl Node {
         let m = self.tcp.lock().unwrap();
         let lanes: Vec<&TcpLane> = paths.iter().filter_map(|p| m.get(p)).flatten().collect();
         if lanes.is_empty() {
-            return Err(io::Error::new(
-                io::ErrorKind::NotConnected,
-                "chưa có kết nối TCP",
-            ));
+            return Err(io::Error::new(io::ErrorKind::NotConnected, "chưa có kết nối TCP"));
         }
         let mut f = Vec::with_capacity(2 + data.len());
         f.extend_from_slice(&(data.len() as u16).to_be_bytes());
@@ -638,10 +587,7 @@ impl Node {
             }
         }
         if sent == 0 {
-            return Err(io::Error::new(
-                io::ErrorKind::WouldBlock,
-                "mọi làn TCP đang nghẽn",
-            ));
+            return Err(io::Error::new(io::ErrorKind::WouldBlock, "mọi làn TCP đang nghẽn"));
         }
         Ok(data.len())
     }
@@ -651,17 +597,11 @@ impl Node {
     }
 
     pub fn port_v4(&self) -> Option<u16> {
-        self.v4
-            .as_ref()
-            .and_then(|s| s.local_addr().ok())
-            .map(|a| a.port())
+        self.v4.as_ref().and_then(|s| s.local_addr().ok()).map(|a| a.port())
     }
 
     pub fn port_v6(&self) -> Option<u16> {
-        self.v6
-            .as_ref()
-            .and_then(|s| s.local_addr().ok())
-            .map(|a| a.port())
+        self.v6.as_ref().and_then(|s| s.local_addr().ok()).map(|a| a.port())
     }
 
     pub fn supports(&self, a: &SocketAddr) -> bool {
@@ -686,10 +626,7 @@ impl Node {
         };
         match sock {
             Some(s) => s.send_to(data, to),
-            None => Err(io::Error::new(
-                io::ErrorKind::Unsupported,
-                "không có socket cho họ địa chỉ này",
-            )),
+            None => Err(io::Error::new(io::ErrorKind::Unsupported, "không có socket cho họ địa chỉ này")),
         }
     }
 }
@@ -711,19 +648,11 @@ mod tests {
     fn spray_sockets_send_and_receive() {
         let (tx, rx) = mpsc::channel::<(SocketAddr, Vec<u8>, Via)>();
         let tx = std::sync::Mutex::new(tx);
-        let a = Node::bind(
-            0,
-            None,
-            Arc::new(move |f, d, v| {
-                let _ = tx.lock().unwrap().send((f, d.to_vec(), v));
-            }),
-        )
-        .unwrap();
+        let a = Node::bind(0, None, Arc::new(move |f, d, v| { let _ = tx.lock().unwrap().send((f, d.to_vec(), v)); })).unwrap();
         let ids = a.open_spray(8);
         assert_eq!(ids.len(), 8);
         let peer = UdpSocket::bind("127.0.0.1:0").unwrap();
-        a.send_on(Via::Udp(ids[3]), peer.local_addr().unwrap(), b"probe")
-            .unwrap();
+        a.send_on(Via::Udp(ids[3]), peer.local_addr().unwrap(), b"probe").unwrap();
         let mut buf = [0u8; 16];
         let (n, from) = peer.recv_from(&mut buf).unwrap();
         assert_eq!(&buf[..n], b"probe");
@@ -738,17 +667,9 @@ mod tests {
     fn loopback() {
         let (tx, rx) = mpsc::channel::<(SocketAddr, Vec<u8>)>();
         let tx = std::sync::Mutex::new(tx);
-        let b = Node::bind(
-            0,
-            None,
-            Arc::new(move |f, d, _| {
-                let _ = tx.lock().unwrap().send((f, d.to_vec()));
-            }),
-        )
-        .unwrap();
+        let b = Node::bind(0, None, Arc::new(move |f, d, _| { let _ = tx.lock().unwrap().send((f, d.to_vec())); })).unwrap();
         let a = Node::bind(0, None, Arc::new(|_, _, _| {})).unwrap();
-        a.send((Ipv4Addr::LOCALHOST, b.port_v4().unwrap()).into(), b"hi")
-            .unwrap();
+        a.send((Ipv4Addr::LOCALHOST, b.port_v4().unwrap()).into(), b"hi").unwrap();
         let (from, d) = rx.recv_timeout(Duration::from_secs(2)).unwrap();
         assert_eq!(d, b"hi");
         assert_eq!(from.port(), a.port_v4().unwrap());

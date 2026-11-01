@@ -9,10 +9,13 @@ Prerequisite (production build, from repo root):
   CARGO_TARGET_X86_64_WIN7_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc \\
     cargo +nightly build --release -Zbuild-std=std,panic_abort --target x86_64-win7-windows-gnu -p peerova-cli -p peerova-ffi
 
+The single-file Java SDK (java/peerova.jar: Java API + Windows / Windows legacy / Linux natives) is built here
+from those static libraries with `bindings/java/build.sh dist` (needs a JDK and x86_64-w64-mingw32-gcc).
+
 Customer packages must not contain internal details: source-tree paths, build-from-source
 instructions, developer scripts or the Rust example. A final scan fails the build if any slip in.
 """
-import glob, hashlib, io, json, os, re, sys, tarfile, zipfile
+import glob, hashlib, io, json, os, re, subprocess, sys, tarfile, zipfile
 
 R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = f"{R}/web/public/downloads"
@@ -98,6 +101,29 @@ def rd(path):
     return open(path, "rb").read()
 
 
+def build_java_jar():
+    """bindings/java/build.sh dist → peerova.jar bytes; fails unless every desktop native is inside."""
+    ver = re.search(r'(?m)^version\s*=\s*"([^"]+)"', open(f"{R}/Cargo.toml").read()).group(1)
+    env = dict(os.environ, PEEROVA_LIB_DIR=REL, PEEROVA_WIN_LIB_DIR=W, PEEROVA_WIN7_LIB_DIR=W7, PEEROVA_VERSION=ver)
+    subprocess.run(["sh", f"{R}/bindings/java/build.sh", "dist"], check=True, stdout=subprocess.DEVNULL, env=env)
+    data = rd(f"{R}/bindings/java/build/peerova.jar")
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        names = set(z.namelist())
+        need = {f"dev/peerova/native/{p}" for p in ("linux-x86_64/libpeerova_java.so", "windows-x86_64/peerova_java.dll",
+                                                     "windows-x86_64-legacy/peerova_java.dll", "natives.properties")}
+        if need - names:
+            sys.exit("peerova.jar is missing: " + ", ".join(sorted(need - names)))
+        # Same rule as the release binaries: no build-machine paths inside the natives.
+        home, user = os.path.expanduser("~"), os.environ.get("USER", "")
+        for n in sorted(names):
+            if n.startswith("dev/peerova/native/") and not n.endswith(".properties"):
+                blob = z.read(n)
+                bad = [w for w in (home, "tunnel_p2p", user) if w and w.encode() in blob]
+                if bad:
+                    sys.exit(f"build-machine paths in peerova.jar:{n}: {bad} (build with the release RUSTFLAGS)")
+    return data
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     for f in glob.glob(f"{OUT}/*"):
@@ -124,7 +150,8 @@ def main():
            ("lib/windows-x86_64/peerova.exe", rd(f"{W}/peerova.exe"), 0o755),
            ("lib/windows-x86_64/wintun.dll", rd(WINTUN), 0o644),
            ("lib/windows-legacy-x86_64/peerova.dll", rd(f"{W7}/peerova.dll"), 0o644),
-           ("lib/windows-legacy-x86_64/wintun.dll", rd(WINTUN), 0o644)] + base
+           ("lib/windows-legacy-x86_64/wintun.dll", rd(WINTUN), 0o644),
+           ("java/peerova.jar", build_java_jar(), 0o644)] + base
     for dp, dns, fns in os.walk(f"{R}/bindings"):
         dns[:] = [d for d in dns if d not in SKIP_DIRS]
         for fn in fns:
@@ -135,12 +162,44 @@ def main():
     # Final guard: no internal details in any text file of any package.
     leaks = []
     for arc, data, _ in sdk + base:
-        if not arc.startswith("lib/") and DENY.search(data.decode("utf-8", "ignore")):
+        if not arc.startswith("lib/") and not arc.endswith(BIN_EXT) and DENY.search(data.decode("utf-8", "ignore")):
             leaks.append(arc)
     if leaks:
         sys.exit("internal details found in: " + ", ".join(sorted(set(leaks))))
-    arts.append(("SDK", "all", "SDK: C/C++, C#, Unity, Godot, Unreal, Java/Kotlin, Python, Go, Node.js, Dart, PHP, Lua, Swift…",
-                 zip_pkg("peerova-sdk.zip", sdk)))
+    # Per-platform SDK packages: only that binding + the native files it needs.
+    by_path = {arc: (arc, d, m) for arc, d, m in sdk}
+    # Shared libraries only; the large static lib (libpeerova.a) ships in the C/C++ package.
+    libs = [by_path[k] for k in ("include/peerova.h", "lib/linux-x86_64/libpeerova.so",
+                                  "lib/windows-x86_64/peerova.dll", "lib/windows-legacy-x86_64/peerova.dll")]
+    static = [by_path["lib/linux-x86_64/libpeerova.a"]]
+    cli = [by_path[k] for k in ("lib/linux-x86_64/peerova", "lib/windows-x86_64/peerova.exe")]
+    guides = [e for e in sdk if e[0] in ("bindings/README.md", "bindings/DEVELOPER-GUIDE.md")]
+    PLATFORMS = [
+        ("unity", "Unity (C#)", ["unity"], libs),
+        ("godot", "Godot 4 (.NET / GDScript)", ["godot"], libs),
+        ("unreal", "Unreal Engine 5", ["unreal"], libs),
+        ("java", "Java · Kotlin · Android (peerova.jar)", ["java", "kotlin-android"], [by_path["java/peerova.jar"]]),
+        ("dotnet", "C# / .NET", ["csharp"], libs),
+        ("c", "C / C++", ["c"], libs + static),
+        ("python", "Python", ["python"], libs),
+        ("nodejs", "Node.js · Electron", ["nodejs", "stdio"], cli),
+        ("deno-bun", "Deno · Bun", ["deno", "bun"], libs),
+        ("go", "Go", ["go"], libs),
+        ("dart", "Dart · Flutter", ["dart"], libs),
+        ("php", "PHP", ["php", "stdio"], libs + cli),
+        ("lua", "Lua · LuaJIT", ["lua", "stdio"], libs + cli),
+        ("ruby", "Ruby", ["ruby"], libs),
+        ("swift", "Swift", ["swift"], libs),
+    ]
+    for key, label, folders, natives in PLATFORMS:
+        files = [e for e in sdk if any(e[0].startswith(f"bindings/{f}/") for f in folders)]
+        if not files:
+            sys.exit(f"SDK package {key}: no files for {folders}")
+        arts.append(("SDK", key, label, zip_pkg(f"peerova-sdk-{key}.zip", natives + guides + files + base)))
+    # Full bundle without the static lib (it's in the C/C++ package): keeps it under
+    # the 25 MiB per-file limit of static hosting.
+    arts.append(("SDK", "all", "SDK đầy đủ: mọi ngôn ngữ và engine",
+                 zip_pkg("peerova-sdk.zip", [e for e in sdk if e[0] != "lib/linux-x86_64/libpeerova.a"])))
     man = []
     for os_, arch, label, p in arts:
         man.append({"os": os_, "arch": arch, "label": label, "file": os.path.basename(p),

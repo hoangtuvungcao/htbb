@@ -6,9 +6,7 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, UdpSocket};
 /// routing table; no packet is sent. Documentation ranges are used as targets.
 pub fn local_ipv4() -> Option<Ipv4Addr> {
     for target in ["192.0.2.1:9", "198.51.100.1:9"] {
-        let Ok(s) = UdpSocket::bind("0.0.0.0:0") else {
-            continue;
-        };
+        let Ok(s) = UdpSocket::bind("0.0.0.0:0") else { continue };
         if s.connect(target).is_err() {
             continue;
         }
@@ -26,9 +24,7 @@ pub fn local_ipv4() -> Option<Ipv4Addr> {
 /// Primary global IPv6 (2000::/3) of this machine, if the ISP provides one.
 pub fn global_ipv6() -> Option<Ipv6Addr> {
     for target in ["[2001:db8::1]:9", "[2400::1]:9"] {
-        let Ok(s) = UdpSocket::bind("[::]:0") else {
-            return None;
-        };
+        let Ok(s) = UdpSocket::bind("[::]:0") else { return None };
         if s.connect(target).is_err() {
             continue;
         }
@@ -100,10 +96,7 @@ mod tests {
     #[test]
     fn classify() {
         assert_eq!(classify_v4(&"100.72.1.1".parse().unwrap()), V4Class::Cgnat);
-        assert_eq!(
-            classify_v4(&"192.168.1.5".parse().unwrap()),
-            V4Class::Private
-        );
+        assert_eq!(classify_v4(&"192.168.1.5".parse().unwrap()), V4Class::Private);
         assert_eq!(classify_v4(&"14.160.1.1".parse().unwrap()), V4Class::Public);
         assert!(is_global_v6(&"2402:800:6314::1".parse().unwrap()));
         assert!(!is_global_v6(&"fe80::1".parse().unwrap()));

@@ -29,12 +29,7 @@ pub fn map_udp_port(local_ip: Ipv4Addr, port: u16, log: &mut dyn FnMut(String)) 
 }
 
 /// Map a UDP or TCP port: NAT-PMP/PCP first, then UPnP-IGD.
-pub fn map_port(
-    local_ip: Ipv4Addr,
-    port: u16,
-    tcp: bool,
-    log: &mut dyn FnMut(String),
-) -> Option<Mapping> {
+pub fn map_port(local_ip: Ipv4Addr, port: u16, tcp: bool, log: &mut dyn FnMut(String)) -> Option<Mapping> {
     let proto = if tcp { "TCP" } else { "UDP" };
     if let Some(gw) = netinfo::default_gateway_v4() {
         match natpmp::external_address(gw) {

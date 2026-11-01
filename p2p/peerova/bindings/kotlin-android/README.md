@@ -14,6 +14,17 @@ của Java trong [`../java`](../java) (`dev.peerova.Peerova` + `peerova_jni.c`).
 Khái niệm (server, client, ticket, connect code, channel, sự kiện) và toàn bộ C API: [../DEVELOPER-GUIDE.md](../DEVELOPER-GUIDE.md).
 Website: https://peerova.pages.dev
 
+### Chọn cách tích hợp
+
+- **Android:** chỉ dùng SDK (tình huống 3/4 — game mới hoặc host trong game). Android không chạy được công cụ dòng lệnh `peerova`
+  như process con, nên không có cách "game có sẵn chạy peerova ẩn" trên Android.
+- **Kotlin trên JVM desktop/server** (Windows, Linux, macOS): dùng SDK như trên, hoặc — nếu game đã có code socket TCP/UDP — chạy
+  `peerova client` ẩn rồi kết nối `127.0.0.1` (tình huống 2): xem [Game có sẵn: chạy peerova ẩn](#game-có-sẵn-chạy-peerova-ẩn-jvm-desktop).
+- Bảng đầy đủ 4 tình huống: [Chọn cách tích hợp](../DEVELOPER-GUIDE.md#1-chọn-cách-tích-hợp).
+
+**Người chơi không phải gõ gì:** nhúng ticket vào app, hoặc tải ticket mới nhất từ URL của bạn khi khởi động; mã 6 ký tự chỉ
+dùng để mời bạn bè vào phòng do người chơi mở. Chi tiết: [Người chơi không phải gõ gì](../DEVELOPER-GUIDE.md#2-người-chơi-không-phải-gõ-gì).
+
 ```
 kotlin-android/
 ├── test.sh                         test trên JVM (kotlinc + JDK)          → "kotlin PASS: ..."
@@ -34,16 +45,15 @@ kotlin-android/
 
 - Kotlin 1.8+ (đã kiểm tra với Kotlin 2.x), JVM 8+. Coroutines (`PeerovaFlow.kt`) cần `kotlinx-coroutines` 1.6+ (tuỳ chọn).
 - Android: minSdk 21, Android Gradle Plugin + NDK r23 trở lên nếu để Gradle build `libpeerova_jni.so` (cách A bên dưới).
-- Desktop/JVM: như binding Java — `peerova.jar`, `libpeerova_jni` và thư viện lõi (`lib/linux-x86_64/libpeerova.so`,
-  `lib/windows-x86_64/peerova.dll` trong gói SDK). Xem [`../java/README.md`](../java/README.md).
+- Desktop/JVM: `java/peerova.jar` của gói SDK (một file, có sẵn thư viện native cho Windows x86_64 — kèm bản legacy cho Windows 7 /
+  8.1 / Server 2012 — và Linux x86_64, tự giải nén vào thư mục cache của người dùng) + hai file `.kt`. Xem [`../java/README.md`](../java/README.md).
 
 ### Đặt thư viện native ở đâu
 
 | Nền tảng | Tệp | Vị trí |
 |---|---|---|
 | Android | `libpeerova.so` + `libpeerova_jni.so` cho từng ABI | liên hệ Peerova để nhận bản build Android. Đặt vào `src/main/jniLibs/<abi>/` (`arm64-v8a`, `armeabi-v7a`, `x86_64`); APK cuối cùng chứa `lib/<abi>/libpeerova.so` và `lib/<abi>/libpeerova_jni.so` |
-| Linux x86_64 (JVM) | `libpeerova.so` + `libpeerova_jni.so` | cùng thư mục, `java -Djava.library.path=<thư mục>` (hoặc `LD_LIBRARY_PATH`) |
-| Windows x86_64 (JVM) | `peerova.dll` + `peerova_jni.dll` | cạnh `.exe`/launcher hoặc trong `-Djava.library.path`. **Không** cần `wintun.dll` (chỉ công cụ dòng lệnh `peerova` cần cho chế độ VPN) |
+| Linux / Windows x86_64 (JVM) | — | không cần đặt gì: có sẵn trong `peerova.jar`. Muốn tự đặt thư viện: xem [`../java/README.md`](../java/README.md). **Không** cần `wintun.dll` (chỉ công cụ dòng lệnh `peerova` cần cho chế độ VPN) |
 | macOS (JVM) | `libpeerova.dylib` + `libpeerova_jni.dylib` | liên hệ Peerova; trong app bundle đặt ở `Contents/Frameworks` |
 | iOS | — | Kotlin/JNI không dùng trên iOS; liên hệ Peerova (thư viện tĩnh `libpeerova.a`, binding Swift) |
 
@@ -64,7 +74,7 @@ kotlin-android/
    Nếu chép module ra khỏi gói SDK, truyền `-DPEEROVA_REPO=<thư mục SDK>` cho CMake (cần `bindings/java/peerova_jni.c` và `bindings/c/peerova.h`).
 
 **Cách B — không cần NDK:** đặt cả `libpeerova.so` và `libpeerova_jni.so` (bản build sẵn) vào
-`app/src/main/jniLibs/<abi>/`, chép `../java/src/dev/peerova/Peerova.java` và hai file `.kt` vào app, thêm nội dung
+`app/src/main/jniLibs/<abi>/`, chép `../java/src/dev/peerova/Peerova.java`, `../java/src/dev/peerova/NativeLoader.java` và hai file `.kt` vào app, thêm nội dung
 `peerova/consumer-rules.pro` vào luật R8 của app.
 
 Cả hai cách:
@@ -124,7 +134,7 @@ lifecycleScope.launch {
 }
 ```
 
-Kết nối là tự động: thử kết nối trực tiếp trước, và có đường dự phòng mã hoá tự động khi mạng chặn kết nối trực tiếp.
+Kết nối là tự động: thử kết nối trực tiếp trước; khi mạng chặn kết nối trực tiếp, Peerova tự dùng **đường mã hoá tự động** (vẫn mã hoá đầu-cuối).
 
 Ví dụ đầy đủ: [`examples/ChatDemo.kt`](examples/ChatDemo.kt) (chat + đồng bộ vị trí 20 Hz, chạy trên JVM). Cách chạy ở đầu file.
 
@@ -166,9 +176,12 @@ Không bao giờ `close()` khi thread khác đang ở trong `poll`/`send`: huỷ
 
 ### Xử lý lỗi
 
-- Lỗi native ném `PeerovaException` với văn bản lỗi từ thư viện (`peerova_last_error`).
+- Lỗi native ném `PeerovaException` (= `dev.peerova.Peerova.PeerovaException`): `e.code` là mã lỗi ổn định (`Peerova.E_TOO_LARGE`,
+  `E_UNKNOWN_PEER`, `E_CODE_NOT_FOUND`…, hằng số trong `dev.peerova.Peerova`; bảng đầy đủ: [Mã lỗi](../DEVELOPER-GUIDE.md#mã-lỗi));
+  `message` là văn bản tiếng Anh `"E_NAME: ..."`.
 - `trySend(...)` trả `false` thay vì ném ngoại lệ.
-- Lỗi kết nối tới qua sự kiện `ConnectFailed(reason)`, không phải ngoại lệ.
+- Lỗi kết nối tới qua sự kiện `ConnectFailed(reason)`, không phải ngoại lệ. Mã lỗi: `ev.errorCode` (cũng có ở `Disconnected`), ví dụ
+  `if (ev.errorCode == Peerova.E_TIMEOUT) …`.
 - `UnsatisfiedLinkError` khi nạp lần đầu: thiếu `libpeerova.so`/`libpeerova_jni.so` cho ABI của thiết bị.
 
 ### Cấu hình
@@ -184,16 +197,105 @@ Server (`PeerovaServer.start(map)` hoặc `start(json)`):
 | `token` | — | bí mật chung; client phải gửi đúng `token` mới được vào |
 | `upnp` | `true` | tự mở cổng trên router qua UPnP |
 | `private` | `false` | ticket riêng tư: ticket không chứa địa chỉ IP của server |
+| `hide_ip` | `false` | Ẩn IP máy chủ: người chơi không bao giờ biết IP thật của máy chủ (chống DDoS); ping cao hơn một chút. Gói Pro/Studio/Enterprise và bản dùng thử |
 | `app` | — | mã project trên website Peerova (cần cho connect code) |
 | `share` | — | map `{"name","public","max","mode","region"}`: thông tin đăng lên website để nhận connect code |
 
-Client (`PeerovaClient.connect(ticket, map)`): `token` (phải khớp server), `timeout_ms` (mặc định `20000`).
+Client (`PeerovaClient.connect(ticket, map)`): `token` (phải khớp server), `timeout_ms` (mặc định `20000`), `key_file` (tuỳ chọn:
+file danh tính client, tạo nếu chưa có, thư mục phải tồn tại — Android: `"$filesDir/peerova-client.key"`; desktop: thư mục dữ liệu ứng dụng,
+ví dụ `"<appdata>/<game>/peerova-client.key"`. Giữ file thì người chơi giữ cùng danh tính và cùng địa chỉ ổn định trên server giữa các lần
+chạy; chặn theo địa chỉ chỉ có tác dụng khi họ còn giữ file này, muốn chắc chắn hãy dùng tài khoản / token).
+
+### Game có sẵn: chạy peerova ẩn (JVM desktop)
+
+**Chỉ cho Kotlin trên JVM desktop/server — không dùng được trên Android.** Khi game đã có code socket TCP/UDP và người chơi
+**không được phải chạy gì**: phát hành `peerova.exe` (Windows) / `peerova` (Linux, macOS) kèm game (lấy từ `lib/<nền tảng>/` của gói SDK).
+Game chạy `peerova client <TICKET> --forward tcp:8888 --key <appdata>/<game>/peerova-client.key` (JVM không mở cửa sổ console trên
+Windows), đọc output (UTF-8) từng dòng, coi là **sẵn sàng** khi một dòng chứa chuỗi ASCII `server port` (công cụ in `✔ ĐÃ KẾT NỐI …` rồi
+`✔ Tcp 127.0.0.1:8888 → server port 8888`, mỗi `--forward` một dòng), rồi code socket cũ kết nối `127.0.0.1:8888`. Thất bại khi process
+thoát trước (mã thoát `1`, dòng bắt đầu bằng `lỗi:`) hoặc quá 30 giây (process bị dừng). Process bị dừng khi JVM thoát.
+Cách này không cần `peerova.jar`. (Bản Kotlin của đoạn Java trong hướng dẫn; đã chạy thử trên Linux.)
+
+```kotlin
+// PeerovaTunnel.kt — Kotlin on a desktop JVM (Windows/Linux/macOS), not Android.
+// Runs the bundled `peerova` CLI and waits until the local port is open.
+// The JVM starts console programs without a console window on Windows.
+import java.io.File
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
+
+class PeerovaTunnel : AutoCloseable {
+    private var proc: Process? = null
+
+    /** Returns true once the forwarded port is open on 127.0.0.1; false on failure or timeout. */
+    fun start(
+        exe: String, ticket: String, forward: String, keyFile: File, timeoutMs: Long = 30_000,
+        log: (String) -> Unit = { println("[peerova] $it") },
+    ): Boolean {
+        keyFile.absoluteFile.parentFile.mkdirs()                       // the --key folder must exist
+        val p = ProcessBuilder(exe, "client", ticket, "--forward", forward, "--key", keyFile.path)
+            .redirectErrorStream(true)                                 // stdout + stderr in one stream
+            .start()
+        proc = p
+        Runtime.getRuntime().addShutdownHook(Thread { close() })
+
+        val ready = CountDownLatch(1)
+        thread(isDaemon = true, name = "peerova-output") {
+            try {
+                p.inputStream.bufferedReader(Charsets.UTF_8).forEachLine { line ->
+                    log(line)
+                    // "✔ Tcp 127.0.0.1:8888 → server port 8888" = connected and the local port is open
+                    if ("server port" in line) ready.countDown()
+                }
+            } catch (_: IOException) { }
+        }
+
+        val deadline = System.currentTimeMillis() + timeoutMs
+        while (!ready.await(100, TimeUnit.MILLISECONDS)) {
+            if (!p.isAlive || System.currentTimeMillis() > deadline) { close(); return false }
+        }
+        return true
+    }
+
+    val isAlive: Boolean get() = proc?.isAlive == true
+
+    override fun close() { proc?.takeIf { it.isAlive }?.destroyForcibly()?.waitFor(2, TimeUnit.SECONDS) }
+}
+```
+```kotlin
+// Usage (desktop JVM)
+val win = System.getProperty("os.name").startsWith("Windows")
+val appData = if (win) System.getenv("APPDATA") else System.getProperty("user.home") + "/.local/share"
+val key = File(appData, "MyGame/peerova-client.key")
+val exe = if (win) "peerova\\peerova.exe" else "peerova/peerova"   // next to your game
+
+val tunnel = PeerovaTunnel()
+if (tunnel.start(exe, "pvt_...", "tcp:8888", key)) {
+    connectToGameServer("127.0.0.1", 8888)      // your existing socket code, unchanged
+} else {
+    showError("Could not reach the server")
+}
+```
+
+- Linux/macOS: file `peerova` phải có quyền chạy (`chmod +x`). Thư mục chứa `--key` phải tồn tại (code trên tự tạo).
+- Nếu cổng 8888 có thể đang bận trên máy người chơi, chọn cổng local khác: `tcp:38888=8888`.
+- Tuỳ chọn khác của `peerova client`: `--reconnect`, `--token SECRET`, `--bind IP`.
+- `peerova stdio` **không** mở cổng local (nó là SDK message dạng JSON lines), nên không dùng cho cách này.
+- Chi tiết: [Game tự chạy peerova ẩn](../DEVELOPER-GUIDE.md#4-game-tự-chạy-peerova-ẩn-người-chơi-không-chạy-gì).
+
+### Máy chủ game
+
+Nhiều cổng trong một process (`--expose` lặp lại), tách Remote Desktop cho admin và game công khai thành các process riêng, mỗi người
+chơi một địa chỉ `127.a.b.c` riêng + cấm bằng `--banned`, ẩn IP máy chủ (`--hide-ip` / `"hide_ip" to true`), chế độ VPN:
+[Tính năng máy chủ game](../DEVELOPER-GUIDE.md#7-tính-năng-máy-chủ-game).
 
 ### Bảo mật
 
 - `server.key` là danh tính của server: ai có file này có thể giả làm server của bạn. Giữ bí mật, **không commit** vào git;
   trên Android để trong `filesDir` (không phải bộ nhớ ngoài).
-- Ticket và connect code dùng để chia sẻ cho client, coi như thông tin bán công khai.
+- Ticket và connect code không phải bí mật: cứ nhúng vào app hoặc chia sẻ cho client.
 - `token` và `license` là bí mật: không nhúng vào APK phát hành công khai nếu không cần.
 - Toàn bộ dữ liệu được mã hoá đầu-cuối.
 
@@ -206,6 +308,13 @@ Client (`PeerovaClient.connect(ticket, map)`): `token` (phải khớp server), `
 - `ConnectFailed` sau khoảng 20 giây (timeout): server chưa chạy, ticket/code sai, `token` không khớp, hoặc thiếu quyền `INTERNET`.
 - Client thứ 4 bị từ chối: server đang ở chế độ dev (không có `license`), tối đa 3 client.
 - `PeerovaException` khi gửi unreliable: payload vượt 1180 byte — chia nhỏ hoặc gửi reliable.
+
+### FAQ
+
+- **Người chơi có phải gõ mã không?** Không. Nhúng ticket vào app hoặc tải từ URL của bạn; mã 6 ký tự chỉ để mời bạn bè.
+- **Trên Android có chạy `peerova client` ẩn được không?** Không — Android không chạy được công cụ dòng lệnh như process con; dùng SDK.
+- **Ticket có phải bí mật không?** Không; `server.key`, `license`, `token` mới là bí mật.
+- **Kết nối không được?** Chạy `peerova doctor` trên máy tính cùng mạng. Thêm: [Khắc phục sự cố](../DEVELOPER-GUIDE.md#15-khắc-phục-sự-cố) · [FAQ](../DEVELOPER-GUIDE.md#16-faq).
 
 ### Trạng thái kiểm thử
 
@@ -223,6 +332,17 @@ and on Android (API 21+).
 
 Concepts (server, client, ticket, connect code, channels, events) and the full C API: [../DEVELOPER-GUIDE.md](../DEVELOPER-GUIDE.md).
 Website: https://peerova.pages.dev
+
+### Choosing an integration
+
+- **Android:** SDK only (scenarios 3/4 — new game or host-in-game). Android can't run the `peerova` command-line tool as a child
+  process, so the "existing game runs peerova hidden" pattern is not available on Android.
+- **Kotlin on a desktop/server JVM** (Windows, Linux, macOS): use the SDK as well, or — if the game already has TCP/UDP socket code —
+  start `peerova client` hidden and connect to `127.0.0.1` (scenario 2): see [Existing game: run peerova hidden](#existing-game-run-peerova-hidden-desktop-jvm).
+- All 4 scenarios: [Choosing an integration](../DEVELOPER-GUIDE.md#1-choosing-an-integration).
+
+**Players never type anything:** embed the ticket in the app, or fetch the latest ticket from your own URL at startup; 6-character
+codes are only for inviting friends to player-hosted rooms. Details: [Players never type anything](../DEVELOPER-GUIDE.md#2-players-never-type-anything).
 
 ```
 kotlin-android/
@@ -244,16 +364,15 @@ kotlin-android/
 
 - Kotlin 1.8+ (tested with Kotlin 2.x), JVM 8+. Coroutines (`PeerovaFlow.kt`) need `kotlinx-coroutines` 1.6+ (optional).
 - Android: minSdk 21, Android Gradle Plugin + NDK r23 or newer if Gradle builds `libpeerova_jni.so` (option A below).
-- Desktop/JVM: same as the Java binding — `peerova.jar`, `libpeerova_jni` and the core library (`lib/linux-x86_64/libpeerova.so`,
-  `lib/windows-x86_64/peerova.dll` in the SDK package). See [`../java/README.md`](../java/README.md).
+- Desktop/JVM: the SDK package's `java/peerova.jar` (a single file with the native libraries for Windows x86_64 — plus a legacy build
+  for Windows 7 / 8.1 / Server 2012 — and Linux x86_64, auto-extracted to a per-user cache directory) + the two `.kt` files. See [`../java/README.md`](../java/README.md).
 
 ### Where to put the native libraries
 
 | Platform | Files | Location |
 |---|---|---|
 | Android | `libpeerova.so` + `libpeerova_jni.so` per ABI | contact Peerova for Android builds. Put them in `src/main/jniLibs/<abi>/` (`arm64-v8a`, `armeabi-v7a`, `x86_64`); the final APK contains `lib/<abi>/libpeerova.so` and `lib/<abi>/libpeerova_jni.so` |
-| Linux x86_64 (JVM) | `libpeerova.so` + `libpeerova_jni.so` | same directory, `java -Djava.library.path=<dir>` (or `LD_LIBRARY_PATH`) |
-| Windows x86_64 (JVM) | `peerova.dll` + `peerova_jni.dll` | next to the `.exe`/launcher or in `-Djava.library.path`. `wintun.dll` is **not** needed (only the `peerova` command-line tool needs it, for VPN mode) |
+| Linux / Windows x86_64 (JVM) | — | nothing to place: included in `peerova.jar`. To place the libraries yourself see [`../java/README.md`](../java/README.md). `wintun.dll` is **not** needed (only the `peerova` command-line tool needs it, for VPN mode) |
 | macOS (JVM) | `libpeerova.dylib` + `libpeerova_jni.dylib` | contact Peerova; inside an app bundle put them in `Contents/Frameworks` |
 | iOS | — | Kotlin/JNI is not used on iOS; contact Peerova (static library `libpeerova.a`, Swift binding) |
 
@@ -274,7 +393,7 @@ kotlin-android/
    If you copy the module out of the SDK package, pass `-DPEEROVA_REPO=<SDK dir>` to CMake (it needs `bindings/java/peerova_jni.c` and `bindings/c/peerova.h`).
 
 **Option B — no NDK:** put both prebuilt `libpeerova.so` and `libpeerova_jni.so` in `app/src/main/jniLibs/<abi>/`,
-copy `../java/src/dev/peerova/Peerova.java` and the two `.kt` files into your app, and add the contents of
+copy `../java/src/dev/peerova/Peerova.java`, `../java/src/dev/peerova/NativeLoader.java` and the two `.kt` files into your app, and add the contents of
 `peerova/consumer-rules.pro` to your app's R8 rules.
 
 Either way:
@@ -334,7 +453,7 @@ lifecycleScope.launch {
 }
 ```
 
-Connections are automatic: direct first, with an automatic encrypted fallback route when networks block direct connections.
+Connections are automatic: direct first; when a network blocks direct connections Peerova uses the **automatic encrypted route** (still end-to-end encrypted).
 
 Complete example: [`examples/ChatDemo.kt`](examples/ChatDemo.kt) (chat + 20 Hz position sync, runs on the JVM). How to run is at the top of the file.
 
@@ -376,9 +495,12 @@ Never `close()` while another thread is inside `poll`/`send`: cancel the corouti
 
 ### Error handling
 
-- Native failures throw `PeerovaException` with the library's error text (`peerova_last_error`).
+- Native failures throw `PeerovaException` (= `dev.peerova.Peerova.PeerovaException`): `e.code` is a stable error code (`Peerova.E_TOO_LARGE`,
+  `E_UNKNOWN_PEER`, `E_CODE_NOT_FOUND`, ..., constants in `dev.peerova.Peerova`; full table: [Error codes](../DEVELOPER-GUIDE.md#error-codes));
+  `message` is English text `"E_NAME: ..."`.
 - `trySend(...)` returns `false` instead of throwing.
-- Connection failures arrive as a `ConnectFailed(reason)` event, not as an exception.
+- Connection failures arrive as a `ConnectFailed(reason)` event, not as an exception. Error code: `ev.errorCode` (also on `Disconnected`), e.g.
+  `if (ev.errorCode == Peerova.E_TIMEOUT) …`.
 - `UnsatisfiedLinkError` on first load: `libpeerova.so`/`libpeerova_jni.so` missing for the device's ABI.
 
 ### Configuration
@@ -394,16 +516,106 @@ Server (`PeerovaServer.start(map)` or `start(json)`):
 | `token` | — | shared secret; clients must present the same `token` |
 | `upnp` | `true` | open the port on the router via UPnP |
 | `private` | `false` | private ticket: the ticket does not contain the server's IP addresses |
+| `hide_ip` | `false` | Hide the server IP: players never learn its real address (DDoS protection); slightly higher latency. Pro/Studio/Enterprise plans and the trial |
 | `app` | — | project id from the Peerova website (needed for connect codes) |
 | `share` | — | map `{"name","public","max","mode","region"}`: listing published on the website to get a connect code |
 
-Client (`PeerovaClient.connect(ticket, map)`): `token` (must match the server), `timeout_ms` (default `20000`).
+Client (`PeerovaClient.connect(ticket, map)`): `token` (must match the server), `timeout_ms` (default `20000`), `key_file` (optional:
+the client identity file, created if missing, the folder must exist — Android: `"$filesDir/peerova-client.key"`; desktop: the user's
+app-data folder, e.g. `"<appdata>/<game>/peerova-client.key"`. Keeping it keeps the player's identity and the same stable address on the
+server across runs; banning by address works per player only while they keep that file — accounts / tokens are the robust way).
+
+### Existing game: run peerova hidden (desktop JVM)
+
+**Kotlin on a desktop/server JVM only — not available on Android.** When the game already has TCP/UDP socket code and players
+**must not run anything**: ship `peerova.exe` (Windows) / `peerova` (Linux, macOS) with the game (from the SDK package's `lib/<platform>/`).
+The game starts `peerova client <TICKET> --forward tcp:8888 --key <appdata>/<game>/peerova-client.key` (the JVM opens no console window
+on Windows), reads the output (UTF-8) line by line, treats it as **ready** when a line contains the ASCII text `server port` (the tool prints
+`✔ ĐÃ KẾT NỐI …` ("connected") then `✔ Tcp 127.0.0.1:8888 → server port 8888`, once per `--forward`), then the existing socket code connects
+to `127.0.0.1:8888`. It fails if the process exits first (exit code `1`, a line starting with `lỗi:` = "error:") or after 30 seconds (the
+process is killed). The process is killed when the JVM exits. `peerova.jar` is not needed for this. (A Kotlin version of the guide's
+Java snippet; tested on Linux.)
+
+```kotlin
+// PeerovaTunnel.kt — Kotlin on a desktop JVM (Windows/Linux/macOS), not Android.
+// Runs the bundled `peerova` CLI and waits until the local port is open.
+// The JVM starts console programs without a console window on Windows.
+import java.io.File
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
+
+class PeerovaTunnel : AutoCloseable {
+    private var proc: Process? = null
+
+    /** Returns true once the forwarded port is open on 127.0.0.1; false on failure or timeout. */
+    fun start(
+        exe: String, ticket: String, forward: String, keyFile: File, timeoutMs: Long = 30_000,
+        log: (String) -> Unit = { println("[peerova] $it") },
+    ): Boolean {
+        keyFile.absoluteFile.parentFile.mkdirs()                       // the --key folder must exist
+        val p = ProcessBuilder(exe, "client", ticket, "--forward", forward, "--key", keyFile.path)
+            .redirectErrorStream(true)                                 // stdout + stderr in one stream
+            .start()
+        proc = p
+        Runtime.getRuntime().addShutdownHook(Thread { close() })
+
+        val ready = CountDownLatch(1)
+        thread(isDaemon = true, name = "peerova-output") {
+            try {
+                p.inputStream.bufferedReader(Charsets.UTF_8).forEachLine { line ->
+                    log(line)
+                    // "✔ Tcp 127.0.0.1:8888 → server port 8888" = connected and the local port is open
+                    if ("server port" in line) ready.countDown()
+                }
+            } catch (_: IOException) { }
+        }
+
+        val deadline = System.currentTimeMillis() + timeoutMs
+        while (!ready.await(100, TimeUnit.MILLISECONDS)) {
+            if (!p.isAlive || System.currentTimeMillis() > deadline) { close(); return false }
+        }
+        return true
+    }
+
+    val isAlive: Boolean get() = proc?.isAlive == true
+
+    override fun close() { proc?.takeIf { it.isAlive }?.destroyForcibly()?.waitFor(2, TimeUnit.SECONDS) }
+}
+```
+```kotlin
+// Usage (desktop JVM)
+val win = System.getProperty("os.name").startsWith("Windows")
+val appData = if (win) System.getenv("APPDATA") else System.getProperty("user.home") + "/.local/share"
+val key = File(appData, "MyGame/peerova-client.key")
+val exe = if (win) "peerova\\peerova.exe" else "peerova/peerova"   // next to your game
+
+val tunnel = PeerovaTunnel()
+if (tunnel.start(exe, "pvt_...", "tcp:8888", key)) {
+    connectToGameServer("127.0.0.1", 8888)      // your existing socket code, unchanged
+} else {
+    showError("Could not reach the server")
+}
+```
+
+- Linux/macOS: the `peerova` file must be executable (`chmod +x`). The `--key` folder must exist (the code above creates it).
+- If port 8888 may be in use on the player's machine, pick another local port: `tcp:38888=8888`.
+- Other `peerova client` options: `--reconnect`, `--token SECRET`, `--bind IP`.
+- `peerova stdio` does **not** open local ports (it is the message SDK as JSON lines), so it doesn't fit this pattern.
+- Details: [The game runs peerova hidden](../DEVELOPER-GUIDE.md#4-the-game-runs-peerova-hidden-players-run-nothing).
+
+### Game servers
+
+Several ports from one process (repeat `--expose`), Remote Desktop for admins and the public game as separate processes, a separate
+`127.a.b.c` address per player + bans with `--banned`, hiding the server IP (`--hide-ip` / `"hide_ip" to true`), VPN mode:
+[Game-server features](../DEVELOPER-GUIDE.md#7-game-server-features).
 
 ### Security
 
 - `server.key` is the server's identity: anyone with this file can impersonate your server. Keep it secret, **do not commit** it;
   on Android keep it in `filesDir` (not external storage).
-- The ticket and connect code are meant to be shared with clients; treat them as semi-public.
+- The ticket and connect code are not secrets: embed them in the app or share them with clients.
 - `token` and `license` are secrets: do not embed them in a publicly distributed APK unless required.
 - All traffic is end-to-end encrypted.
 
@@ -416,6 +628,13 @@ Client (`PeerovaClient.connect(ticket, map)`): `token` (must match the server), 
 - `ConnectFailed` after about 20 seconds (timeout): server not running, wrong ticket/code, `token` mismatch, or missing `INTERNET` permission.
 - The 4th client is refused: the server is in dev mode (no `license`), max 3 clients.
 - `PeerovaException` on an unreliable send: payload larger than 1180 bytes — split it or send it reliably.
+
+### FAQ
+
+- **Do players need to type a code?** No. Embed the ticket in the app or fetch it from your URL; 6-character codes are only for inviting friends.
+- **Can I run `peerova client` hidden on Android?** No — Android can't run the command-line tool as a child process; use the SDK.
+- **Is the ticket a secret?** No; `server.key`, `license` and `token` are.
+- **Can't connect?** Run `peerova doctor` on a computer on the same network. More: [Troubleshooting](../DEVELOPER-GUIDE.md#15-troubleshooting) · [FAQ](../DEVELOPER-GUIDE.md#16-faq-1).
 
 ### Test status
 

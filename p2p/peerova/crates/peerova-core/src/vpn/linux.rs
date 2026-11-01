@@ -38,62 +38,34 @@ impl Device {
     /// Create `pv0`, `pv1`, … (kernel picks the number).
     pub fn open() -> io::Result<(Device, String)> {
         let name = "pv%d";
-        let file = std::fs::OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open("/dev/net/tun")?;
-        let mut req = IfReq {
-            name: [0; 16],
-            flags: IFF_TUN | IFF_NO_PI,
-            pad: [0; 22],
-        };
+        let file = std::fs::OpenOptions::new().read(true).write(true).open("/dev/net/tun")?;
+        let mut req = IfReq { name: [0; 16], flags: IFF_TUN | IFF_NO_PI, pad: [0; 22] };
         req.name[..name.len()].copy_from_slice(name.as_bytes());
         // SAFETY: TUNSETIFF reads/writes a struct ifreq we own for the duration of the call.
         let rc = unsafe { ioctl(file.as_raw_fd(), TUNSETIFF, &mut req as *mut IfReq) };
         if rc < 0 {
             let e = io::Error::last_os_error();
-            return Err(io::Error::new(
-                e.kind(),
-                format!("tạo TUN: {e} (cần root / CAP_NET_ADMIN)"),
-            ));
+            return Err(io::Error::new(e.kind(), format!("tạo TUN: {e} (cần root / CAP_NET_ADMIN)")));
         }
         let end = req.name.iter().position(|&b| b == 0).unwrap_or(16);
-        Ok((
-            Device { file },
-            String::from_utf8_lossy(&req.name[..end]).to_string(),
-        ))
+        Ok((Device { file }, String::from_utf8_lossy(&req.name[..end]).to_string()))
     }
 
     /// One IP packet, or `None` after ~250 ms without traffic.
     pub fn recv(&self, buf: &mut [u8]) -> io::Result<Option<usize>> {
-        let mut p = PollFd {
-            fd: self.file.as_raw_fd(),
-            events: POLLIN,
-            revents: 0,
-        };
+        let mut p = PollFd { fd: self.file.as_raw_fd(), events: POLLIN, revents: 0 };
         // SAFETY: one valid pollfd for the duration of the call.
         let rc = unsafe { poll(&mut p, 1, 250) };
         if rc < 0 {
             let e = io::Error::last_os_error();
-            return if e.kind() == io::ErrorKind::Interrupted {
-                Ok(None)
-            } else {
-                Err(e)
-            };
+            return if e.kind() == io::ErrorKind::Interrupted { Ok(None) } else { Err(e) };
         }
         if rc == 0 {
             return Ok(None);
         }
         match (&self.file).read(buf) {
             Ok(n) => Ok(Some(n)),
-            Err(e)
-                if matches!(
-                    e.kind(),
-                    io::ErrorKind::Interrupted | io::ErrorKind::WouldBlock
-                ) =>
-            {
-                Ok(None)
-            }
+            Err(e) if matches!(e.kind(), io::ErrorKind::Interrupted | io::ErrorKind::WouldBlock) => Ok(None),
             Err(e) => Err(e),
         }
     }
@@ -104,14 +76,7 @@ impl Device {
 }
 
 /// Assign address/prefix, MTU and bring the interface up (iproute2).
-pub fn configure(
-    _dev: &Device,
-    name: &str,
-    addr: Ipv4Addr,
-    prefix: u8,
-    _peer: Ipv4Addr,
-    mtu: u32,
-) -> io::Result<()> {
+pub fn configure(_dev: &Device, name: &str, addr: Ipv4Addr, prefix: u8, _peer: Ipv4Addr, mtu: u32) -> io::Result<()> {
     run(&["addr", "add", &format!("{addr}/{prefix}"), "dev", name])?;
     run(&["link", "set", "dev", name, "mtu", &mtu.to_string(), "up"])
 }

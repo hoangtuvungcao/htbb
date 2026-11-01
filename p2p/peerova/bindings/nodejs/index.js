@@ -30,14 +30,52 @@ import { fileURLToPath } from "node:url";
 /** Largest payload accepted by `send(..., { reliable: false })`, in bytes. */
 export const MAX_UNRELIABLE_PAYLOAD = 1180;
 
-/** Error thrown (or emitted as "error") by this package. `message` is the SDK's error text. */
+/**
+ * Stable SDK error codes (same values as `PEEROVA_E_*` in peerova.h). `PeerovaError.code` and the
+ * `code` argument of "connectFailed" / "disconnected" hold the name, e.g. `"E_TOO_LARGE"`.
+ */
+export const ErrorCode = Object.freeze({
+  E_OK: 0,
+  E_INVALID_ARG: 1,
+  E_TOO_LARGE: 2,
+  E_UNKNOWN_PEER: 3,
+  E_CLOSED: 4,
+  E_CODE_NOT_FOUND: 5,
+  E_NETWORK: 6,
+  E_TIMEOUT: 7,
+  E_LICENSE: 8,
+  E_CCU_LIMIT: 9,
+  E_ACCESS_DENIED: 10,
+  E_INVALID_TICKET: 11,
+  E_IO: 12,
+  E_INTERNAL: 99,
+});
+
+/** `"E_NAME"` from SDK text `"E_NAME: message"`, else `fallback`. */
+function codeOf(text, fallback = "E_INTERNAL") {
+  const name = String(text ?? "").split(":")[0].trim();
+  return Object.hasOwn(ErrorCode, name) ? name : fallback;
+}
+
+/**
+ * Error thrown (or emitted as "error") by this package. `message` is English text
+ * `"E_NAME: description"`; `code` is the stable name (`"E_TOO_LARGE"`, ...), see {@link ErrorCode}.
+ */
 export class PeerovaError extends Error {
-  /** @param {string} message */
-  constructor(message) {
+  /**
+   * @param {string} message
+   * @param {string} [code] Error code name; parsed from the `"E_NAME: "` prefix of `message` when omitted.
+   */
+  constructor(message, code) {
     super(message);
     this.name = "PeerovaError";
+    /** @type {string} */
+    this.code = code ?? codeOf(message);
   }
 }
+
+/** PeerovaError raised by this package itself: message gets the `"E_NAME: "` prefix. */
+const err = (code, text) => new PeerovaError(`${code}: ${text}`, code);
 
 const here = dirname(fileURLToPath(import.meta.url));
 const exe = process.platform === "win32" ? "peerova.exe" : "peerova";
@@ -79,8 +117,9 @@ const toBuffer = (data) =>
  *  - "ready" (ticket?: string) — the sidecar is up (emitted before the factory promise resolves).
  *  - "connected" (peer: number) — server: a client joined; client: we joined the server.
  *  - "message" (peer: number, data: Buffer, info: { channel: number, reliable: boolean })
- *  - "disconnected" (peer: number, reason: string)
- *  - "connectFailed" (reason: string) — client only: the connection attempt failed (e.g. timeout).
+ *  - "disconnected" (peer: number, reason: string, code: string)
+ *  - "connectFailed" (reason: string, code: string) — client only: the connection attempt failed
+ *     (e.g. code "E_TIMEOUT"). `reason` is English text "E_NAME: ...", `code` the stable name.
  *  - "error" (err: PeerovaError) — non-fatal sidecar errors (e.g. send to a peer that has left).
  *     Unlike a plain EventEmitter, an unhandled "error" is NOT thrown (it is dropped).
  *  - "close" (code: number | null) — the sidecar exited; the node is unusable afterwards.
@@ -152,7 +191,7 @@ export class Peerova extends EventEmitter {
    *   malformed / the sidecar cannot be started.
    */
   static client(ticket, config = {}, options = {}) {
-    if (typeof ticket !== "string" || !ticket) throw new PeerovaError("ticket is required");
+    if (typeof ticket !== "string" || !ticket) throw err("E_INVALID_ARG", "ticket is required");
     return new Peerova(["client", ticket, JSON.stringify(config)], options).#ready();
   }
 
@@ -164,11 +203,11 @@ export class Peerova extends EventEmitter {
       };
       const onClose = (code) => {
         cleanup();
-        reject(new PeerovaError(this.#startError ?? `peerova sidecar exited (code ${code}) before ready`));
+        reject(this.#startError ?? err("E_INTERNAL", `peerova sidecar exited (code ${code}) before ready`));
       };
       const onSpawnError = (e) => {
         cleanup();
-        reject(new PeerovaError(`cannot start peerova sidecar: ${e.message} (set PEEROVA_BIN)`));
+        reject(err("E_INTERNAL", `cannot start peerova sidecar: ${e.message} (set PEEROVA_BIN)`));
       };
       const cleanup = () => {
         this.off("ready", onReady);
@@ -202,20 +241,22 @@ export class Peerova extends EventEmitter {
         break;
       case "disconnected":
         this.peers.delete(m.peer);
-        this.emit("disconnected", m.peer, m.reason ?? "");
+        this.emit("disconnected", m.peer, m.reason ?? "", m.code ?? codeOf(m.reason, "E_CLOSED"));
         break;
       case "connect_failed":
-        this.emit("connectFailed", m.reason ?? "");
+        this.emit("connectFailed", m.reason ?? "", m.code ?? codeOf(m.reason));
         break;
-      case "error":
-        this.#startError = m.message;
-        if (this.listenerCount("error") > 0) this.emit("error", new PeerovaError(m.message));
+      case "error": {
+        const e = new PeerovaError(m.message ?? "", m.code ?? codeOf(m.message));
+        this.#startError = e;
+        if (this.listenerCount("error") > 0) this.emit("error", e);
         break;
+      }
     }
   }
 
   #write(obj) {
-    if (this.#closed) throw new PeerovaError("node is closed");
+    if (this.#closed) throw err("E_CLOSED", "node is closed");
     // Writes are queued in order by the stream; returns false when the pipe buffer is full.
     return this.#proc.stdin.write(JSON.stringify(obj) + "\n");
   }
@@ -236,8 +277,9 @@ export class Peerova extends EventEmitter {
    */
   send(peer, data, { channel = 0, reliable = true } = {}) {
     const buf = toBuffer(data);
-    if (!Number.isInteger(channel) || channel < 0 || channel > 255) throw new PeerovaError("channel must be 0..255");
-    if (!reliable && buf.length > MAX_UNRELIABLE_PAYLOAD) throw new PeerovaError(`unreliable payload max ${MAX_UNRELIABLE_PAYLOAD} bytes`);
+    if (!Number.isInteger(channel) || channel < 0 || channel > 255) throw err("E_INVALID_ARG", "channel must be 0..255");
+    if (!reliable && buf.length > MAX_UNRELIABLE_PAYLOAD)
+      throw err("E_TOO_LARGE", `unreliable messages are limited to ${MAX_UNRELIABLE_PAYLOAD} bytes`);
     return this.#write({ cmd: "send", peer, channel, reliable, data: buf.toString("base64url") });
   }
 

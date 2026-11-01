@@ -110,13 +110,20 @@ if [ -n "$P2P_TICKET" ]; then
     case "$P2P_TICKET" in pvt_*) ;; *) echo "LOI: P2P_TICKET phai bat dau bang pvt_"; exit 1 ;; esac
     echo "HTBB-P2P-Ticket=$P2P_TICKET" >> "$B/res/htbb-app.properties"
     [ -n "$P2P_TOKEN" ] && echo "HTBB-P2P-Token=$P2P_TOKEN" >> "$B/res/htbb-app.properties"
+    # Bố cục của dev.peerova.NativeLoader (SDK Java chính thức): /dev/peerova/native/natives.properties + <nền>/<tệp>,
+    # kiểm SHA-256 trước khi nạp; Windows 7 / 8.1 / Server 2012 tự chọn "windows-x86_64-legacy" (bản win7).
     NAT=../p2p/out/dist
-    for cap in "windows-x86_64-win7/peerova_jni.dll:windows-x86_64" "linux-x86_64/libpeerova_jni.so:linux-x86_64"; do
+    ND="$B/res/dev/peerova/native"; mkdir -p "$ND"
+    echo "version=htbb-p2p-$BAN" > "$ND/natives.properties"
+    for cap in "windows-x86_64/peerova_jni.dll:windows-x86_64" "windows-x86_64-win7/peerova_jni.dll:windows-x86_64-legacy" \
+               "linux-x86_64/libpeerova_jni.so:linux-x86_64"; do
         f=${cap%%:*}; d=${cap##*:}
         [ -f "$NAT/$f" ] || { echo "LOI: thieu $NAT/$f - chay sh p2p/build/build-peerova.sh"; exit 1; }
-        mkdir -p "$B/res/peerova-native/$d" && cp "$NAT/$f" "$B/res/peerova-native/$d/"
+        mkdir -p "$ND/$d" && cp "$NAT/$f" "$ND/$d/"
+        echo "$d.file=$(basename "$f")" >> "$ND/natives.properties"
+        echo "$d.sha256=$(sha256sum "$NAT/$f" | cut -d' ' -f1)" >> "$ND/natives.properties"
     done
-    echo "P2P: bat (ticket ${P2P_TICKET%"${P2P_TICKET#????????????????}"}..., native windows-x86_64 + linux-x86_64)"
+    echo "P2P: bat (ticket ${P2P_TICKET%"${P2P_TICKET#????????????????}"}..., native windows-x86_64 (+ legacy win7) + linux-x86_64)"
 fi
 
 # ---- 4. fat jar ----

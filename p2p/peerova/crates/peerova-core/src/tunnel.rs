@@ -10,10 +10,7 @@
 
 use std::collections::HashMap;
 use std::io::{Read, Write};
-use std::net::{
-    IpAddr, Ipv4Addr, Ipv6Addr, Shutdown, SocketAddr, TcpListener, TcpStream, ToSocketAddrs,
-    UdpSocket,
-};
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, Shutdown, SocketAddr, TcpListener, TcpStream, ToSocketAddrs, UdpSocket};
 use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU8, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Condvar, Mutex};
@@ -95,13 +92,9 @@ impl Defrag {
         }
         if self.parts.len() > 4096 {
             let now = Instant::now();
-            self.parts
-                .retain(|_, (t, _, _)| now.duration_since(*t) < Duration::from_secs(2));
+            self.parts.retain(|_, (t, _, _)| now.duration_since(*t) < Duration::from_secs(2));
         }
-        let e = self
-            .parts
-            .entry((conn, flow, msg))
-            .or_insert_with(|| (Instant::now(), vec![None; count], 0));
+        let e = self.parts.entry((conn, flow, msg)).or_insert_with(|| (Instant::now(), vec![None; count], 0));
         if e.1.len() != count || e.1[idx].is_some() {
             return None;
         }
@@ -118,14 +111,9 @@ impl Defrag {
 fn split_range(spec: &str) -> Result<(u16, u16), String> {
     match spec.split_once('-') {
         Some((a, b)) => {
-            let (a, b): (u16, u16) = (
-                a.parse().map_err(|_| "port không hợp lệ")?,
-                b.parse().map_err(|_| "port không hợp lệ")?,
-            );
+            let (a, b): (u16, u16) = (a.parse().map_err(|_| "port không hợp lệ")?, b.parse().map_err(|_| "port không hợp lệ")?);
             if a > b || (b - a) as u32 + 1 > MAX_RANGE {
-                return Err(format!(
-                    "dải port {a}-{b} không hợp lệ (tối đa {MAX_RANGE} port)"
-                ));
+                return Err(format!("dải port {a}-{b} không hợp lệ (tối đa {MAX_RANGE} port)"));
             }
             Ok((a, b))
         }
@@ -138,13 +126,8 @@ fn split_range(spec: &str) -> Result<(u16, u16), String> {
 
 /// Like `parse_expose` but accepts ranges: `udp:10000-10100[=host:20000]` (target base port).
 pub fn parse_expose_list(s: &str) -> Result<Vec<Rule>, String> {
-    let (proto, rest) = s
-        .split_once(':')
-        .ok_or("dạng đúng: PROTO:PORT[-PORT][=HOST:PORT]")?;
-    let (ports, target) = rest
-        .split_once('=')
-        .map(|(a, b)| (a, Some(b)))
-        .unwrap_or((rest, None));
+    let (proto, rest) = s.split_once(':').ok_or("dạng đúng: PROTO:PORT[-PORT][=HOST:PORT]")?;
+    let (ports, target) = rest.split_once('=').map(|(a, b)| (a, Some(b))).unwrap_or((rest, None));
     let (lo, hi) = split_range(ports)?;
     if lo == hi {
         return Ok(vec![parse_expose(s)?]);
@@ -154,24 +137,13 @@ pub fn parse_expose_list(s: &str) -> Result<Vec<Rule>, String> {
         None => SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), lo),
     };
     let proto = proto_of(proto)?;
-    Ok((lo..=hi)
-        .map(|p| Rule {
-            proto,
-            port: p,
-            target: SocketAddr::new(base.ip(), base.port() + (p - lo)),
-        })
-        .collect())
+    Ok((lo..=hi).map(|p| Rule { proto, port: p, target: SocketAddr::new(base.ip(), base.port() + (p - lo)) }).collect())
 }
 
 /// Like `parse_forward` but accepts ranges: `udp:10000-10100` or `tcp:8000-8010=9000` (remote base).
 pub fn parse_forward_list(s: &str, bind: IpAddr) -> Result<Vec<Rule>, String> {
-    let (proto, rest) = s
-        .split_once(':')
-        .ok_or("dạng đúng: PROTO:LOCAL[-LOCAL][=REMOTE]")?;
-    let (local, remote) = rest
-        .split_once('=')
-        .map(|(a, b)| (a, Some(b)))
-        .unwrap_or((rest, None));
+    let (proto, rest) = s.split_once(':').ok_or("dạng đúng: PROTO:LOCAL[-LOCAL][=REMOTE]")?;
+    let (local, remote) = rest.split_once('=').map(|(a, b)| (a, Some(b))).unwrap_or((rest, None));
     let (lo, hi) = split_range(local)?;
     if lo == hi {
         return Ok(vec![parse_forward(s, bind)?]);
@@ -181,13 +153,7 @@ pub fn parse_forward_list(s: &str, bind: IpAddr) -> Result<Vec<Rule>, String> {
         None => lo,
     };
     let proto = proto_of(proto)?;
-    Ok((lo..=hi)
-        .map(|p| Rule {
-            proto,
-            port: rbase + (p - lo),
-            target: SocketAddr::new(bind, p),
-        })
-        .collect())
+    Ok((lo..=hi).map(|p| Rule { proto, port: rbase + (p - lo), target: SocketAddr::new(bind, p) }).collect())
 }
 const STREAM_CREDIT: usize = 512 << 10;
 const UDP_IDLE: Duration = Duration::from_secs(120);
@@ -211,40 +177,23 @@ fn proto_of(s: &str) -> Result<Proto, String> {
     match s.to_ascii_lowercase().as_str() {
         "tcp" | "http" | "https" | "ws" | "wss" | "ssh" | "rdp" => Ok(Proto::Tcp),
         "udp" | "quic" | "game" => Ok(Proto::Udp),
-        o => Err(format!(
-            "giao thức không hỗ trợ: {o} (dùng tcp/udp/http/https/ws/ssh/quic)"
-        )),
+        o => Err(format!("giao thức không hỗ trợ: {o} (dùng tcp/udp/http/https/ws/ssh/quic)")),
     }
 }
 
 fn resolve(s: &str) -> Result<SocketAddr, String> {
-    s.to_socket_addrs()
-        .map_err(|e| format!("{s}: {e}"))?
-        .next()
-        .ok_or_else(|| format!("{s}: không phân giải được"))
+    s.to_socket_addrs().map_err(|e| format!("{s}: {e}"))?.next().ok_or_else(|| format!("{s}: không phân giải được"))
 }
 
 /// `tcp:25565` | `https:443=10.0.0.5:8443` | `udp:19132=127.0.0.1:19133`
 pub fn parse_expose(s: &str) -> Result<Rule, String> {
-    let (proto, rest) = s
-        .split_once(':')
-        .ok_or("dạng đúng: PROTO:PORT[=HOST:PORT]")?;
+    let (proto, rest) = s.split_once(':').ok_or("dạng đúng: PROTO:PORT[=HOST:PORT]")?;
     let proto = proto_of(proto)?;
     let (port, target) = match rest.split_once('=') {
         Some((p, t)) => (p, resolve(t)?),
-        None => (
-            rest,
-            SocketAddr::new(
-                IpAddr::V4(Ipv4Addr::LOCALHOST),
-                rest.parse().map_err(|_| "port không hợp lệ")?,
-            ),
-        ),
+        None => (rest, SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), rest.parse().map_err(|_| "port không hợp lệ")?)),
     };
-    Ok(Rule {
-        proto,
-        port: port.parse().map_err(|_| "port không hợp lệ")?,
-        target,
-    })
+    Ok(Rule { proto, port: port.parse().map_err(|_| "port không hợp lệ")?, target })
 }
 
 /// `tcp:25565` (local 25565 → remote 25565) | `tcp:8443=443` | `udp:7777`
@@ -253,11 +202,7 @@ pub fn parse_forward(s: &str, bind: IpAddr) -> Result<Rule, String> {
     let proto = proto_of(proto)?;
     let (local, remote) = rest.split_once('=').unwrap_or((rest, rest));
     let local: u16 = local.parse().map_err(|_| "port local không hợp lệ")?;
-    Ok(Rule {
-        proto,
-        port: remote.parse().map_err(|_| "port remote không hợp lệ")?,
-        target: SocketAddr::new(bind, local),
-    })
+    Ok(Rule { proto, port: remote.parse().map_err(|_| "port remote không hợp lệ")?, target: SocketAddr::new(bind, local) })
 }
 
 // ------------------------------------------------------------- plumbing
@@ -270,10 +215,7 @@ struct Credit {
 
 impl Credit {
     fn new() -> Arc<Self> {
-        Arc::new(Credit {
-            m: Mutex::new((STREAM_CREDIT, false)),
-            cv: Condvar::new(),
-        })
+        Arc::new(Credit { m: Mutex::new((STREAM_CREDIT, false)), cv: Condvar::new() })
     }
     fn acquire(&self, n: usize) -> bool {
         let mut g = self.m.lock().unwrap();
@@ -321,15 +263,7 @@ impl Ctx {
 
 type Streams = Arc<Mutex<HashMap<(u32, u32), Ctx>>>;
 
-fn spawn_pipe(
-    h: Handle,
-    conn: u32,
-    sid: u32,
-    tcp: TcpStream,
-    wrx: Receiver<WMsg>,
-    credit: Arc<Credit>,
-    streams: Streams,
-) {
+fn spawn_pipe(h: Handle, conn: u32, sid: u32, tcp: TcpStream, wrx: Receiver<WMsg>, credit: Arc<Credit>, streams: Streams) {
     tcp.set_nodelay(true).ok();
     let done = Arc::new(AtomicU8::new(0));
     let finish = {
@@ -358,11 +292,7 @@ fn spawn_pipe(
                         credit2.close();
                         break;
                     }
-                    h2.send(Cmd::StreamConsumed {
-                        conn,
-                        id: sid,
-                        n: d.len(),
-                    });
+                    h2.send(Cmd::StreamConsumed { conn, id: sid, n: d.len() });
                 }
                 WMsg::Fin => {
                     let _ = w.shutdown(Shutdown::Write);
@@ -390,11 +320,7 @@ fn spawn_pipe(
                     if !credit.acquire(n) {
                         break;
                     }
-                    h.send(Cmd::StreamWrite {
-                        conn,
-                        id: sid,
-                        data: buf[..n].to_vec(),
-                    });
+                    h.send(Cmd::StreamWrite { conn, id: sid, data: buf[..n].to_vec() });
                 }
                 Err(_) => {
                     h.send(Cmd::StreamReset { conn, id: sid });
@@ -452,16 +378,167 @@ fn udp_frame(port: u16, flow: u32, payload: &[u8]) -> Vec<u8> {
 }
 
 fn parse_udp(d: &[u8]) -> Option<(u16, u32, &[u8])> {
-    (d.len() >= 7 && d[0] == HDR_UDP).then(|| {
-        (
-            u16::from_be_bytes([d[1], d[2]]),
-            u32::from_be_bytes([d[3], d[4], d[5], d[6]]),
-            &d[7..],
-        )
-    })
+    (d.len() >= 7 && d[0] == HDR_UDP).then(|| (u16::from_be_bytes([d[1], d[2]]), u32::from_be_bytes([d[3], d[4], d[5], d[6]]), &d[7..]))
 }
 
 // ------------------------------------------------------------- server
+
+// ------------------------------------------------------------ per-player loopback IPs
+//
+// The game behind `--expose` sees every player as a distinct, stable address
+// 127.a.b.c derived from the player's identity (access-token subject, else the
+// client's static key). IP bans / per-IP limits inside the game then work per player,
+// and the same address can be put in Peerova's ban list (`--banned FILE`).
+
+/// Stable loopback address for a player identity (never 127.0.0.1).
+pub fn player_ip(peer_key: &[u8; 32], subject: Option<&str>) -> Ipv4Addr {
+    use blake2::{Blake2s256, Digest};
+    let mut h = Blake2s256::new();
+    h.update(b"peerova player ip v1");
+    match subject {
+        Some(s) => h.update(s.as_bytes()),
+        None => h.update(peer_key),
+    }
+    let d = h.finalize();
+    Ipv4Addr::new(127, 1 + d[0] % 254, d[1], 1 + d[2] % 254)
+}
+
+fn banned() -> &'static Mutex<std::collections::HashSet<Ipv4Addr>> {
+    static B: std::sync::OnceLock<Mutex<std::collections::HashSet<Ipv4Addr>>> = std::sync::OnceLock::new();
+    B.get_or_init(|| Mutex::new(Default::default()))
+}
+
+/// Ban list file: one player address (127.a.b.c, as seen by the game) per line, `#` comments.
+/// Reloaded every few seconds; banned players are disconnected and can't come back.
+pub fn watch_banned(path: std::path::PathBuf, mut on_change: impl FnMut(usize) + Send + 'static) {
+    thread::spawn(move || {
+        let mut last = None;
+        loop {
+            if let Ok(text) = std::fs::read_to_string(&path) {
+                if last.as_ref() != Some(&text) {
+                    let set: std::collections::HashSet<Ipv4Addr> = text
+                        .lines()
+                        .map(|l| l.split('#').next().unwrap_or("").trim())
+                        .filter_map(|l| l.parse().ok())
+                        .collect();
+                    let n = set.len();
+                    *banned().lock().unwrap() = set;
+                    last = Some(text);
+                    on_change(n);
+                }
+            }
+            thread::sleep(Duration::from_secs(3));
+        }
+    });
+}
+
+pub fn is_banned(ip: Ipv4Addr) -> bool {
+    banned().lock().unwrap().contains(&ip)
+}
+
+/// Connect to a local service from a chosen loopback source address (so the service sees
+/// the player's own 127.a.b.c). Falls back to a normal connect where that isn't possible.
+fn connect_as(src: Option<Ipv4Addr>, target: SocketAddr) -> std::io::Result<TcpStream> {
+    if let (Some(src), SocketAddr::V4(t)) = (src, target) {
+        if t.ip().is_loopback() {
+            if let Ok(s) = sys::connect_from(src, t) {
+                return Ok(s);
+            }
+        }
+    }
+    TcpStream::connect_timeout(&target, Duration::from_secs(5))
+}
+
+fn udp_bind_as(src: Option<Ipv4Addr>, target: SocketAddr) -> std::io::Result<UdpSocket> {
+    if let (Some(src), SocketAddr::V4(t)) = (src, target) {
+        if t.ip().is_loopback() {
+            if let Ok(s) = UdpSocket::bind((src, 0)) {
+                return Ok(s);
+            }
+        }
+    }
+    UdpSocket::bind(if target.is_ipv6() { SocketAddr::from((Ipv6Addr::UNSPECIFIED, 0)) } else { SocketAddr::from((Ipv4Addr::UNSPECIFIED, 0)) })
+}
+
+fn sockaddr_in(a: std::net::SocketAddrV4) -> [u8; 16] {
+    let mut b = [0u8; 16];
+    b[..2].copy_from_slice(&2u16.to_ne_bytes()); // AF_INET (Linux / Windows layout)
+    b[2..4].copy_from_slice(&a.port().to_be_bytes());
+    b[4..8].copy_from_slice(&a.ip().octets());
+    b
+}
+
+#[cfg(target_os = "linux")]
+mod sys {
+    use std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
+    use std::os::fd::FromRawFd;
+    extern "C" {
+        fn socket(domain: i32, ty: i32, proto: i32) -> i32;
+        fn bind(fd: i32, addr: *const u8, len: u32) -> i32;
+        fn connect(fd: i32, addr: *const u8, len: u32) -> i32;
+        fn close(fd: i32) -> i32;
+    }
+    pub fn connect_from(src: Ipv4Addr, dst: SocketAddrV4) -> std::io::Result<TcpStream> {
+        unsafe {
+            let fd = socket(2, 1 | 0x80000, 0); // AF_INET, SOCK_STREAM | SOCK_CLOEXEC
+            if fd < 0 {
+                return Err(std::io::Error::last_os_error());
+            }
+            let (a, b) = (super::sockaddr_in(SocketAddrV4::new(src, 0)), super::sockaddr_in(dst));
+            if bind(fd, a.as_ptr(), 16) != 0 || connect(fd, b.as_ptr(), 16) != 0 {
+                let e = std::io::Error::last_os_error();
+                close(fd);
+                return Err(e);
+            }
+            Ok(TcpStream::from_raw_fd(fd))
+        }
+    }
+}
+
+#[cfg(windows)]
+mod sys {
+    use std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
+    use std::os::windows::io::FromRawSocket;
+    #[link(name = "ws2_32")]
+    extern "system" {
+        fn socket(af: i32, ty: i32, proto: i32) -> usize;
+        fn bind(s: usize, addr: *const u8, len: i32) -> i32;
+        fn connect(s: usize, addr: *const u8, len: i32) -> i32;
+        fn closesocket(s: usize) -> i32;
+    }
+    pub fn connect_from(src: Ipv4Addr, dst: SocketAddrV4) -> std::io::Result<TcpStream> {
+        // Winsock is initialised by std as soon as any std socket exists.
+        let _init = std::net::UdpSocket::bind("127.0.0.1:0");
+        unsafe {
+            let s = socket(2, 1, 6); // AF_INET, SOCK_STREAM, IPPROTO_TCP
+            if s == usize::MAX {
+                return Err(std::io::Error::last_os_error());
+            }
+            let (a, b) = (super::sockaddr_in(SocketAddrV4::new(src, 0)), super::sockaddr_in(dst));
+            if bind(s, a.as_ptr(), 16) != 0 || connect(s, b.as_ptr(), 16) != 0 {
+                let e = std::io::Error::last_os_error();
+                closesocket(s);
+                return Err(e);
+            }
+            Ok(TcpStream::from_raw_socket(s as u64))
+        }
+    }
+}
+
+#[cfg(not(any(target_os = "linux", windows)))]
+mod sys {
+    use std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
+    pub fn connect_from(_: Ipv4Addr, _: SocketAddrV4) -> std::io::Result<TcpStream> {
+        Err(std::io::Error::new(std::io::ErrorKind::Unsupported, "only 127.0.0.1 on this OS"))
+    }
+}
+
+static NEXT_FLOW: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(1);
+
+/// Per-client and server-wide caps on tunnelled TCP streams / UDP flows.
+const MAX_STREAMS_PER_PEER: usize = 256;
+const MAX_FLOWS_PER_PEER: usize = 256;
+const MAX_STREAMS_TOTAL: usize = 16_384;
 
 struct UdpFlow {
     sock: Arc<UdpSocket>,
@@ -476,65 +553,57 @@ pub fn serve(engine: &Engine, rules: Vec<Rule>, on_event: impl FnMut(&EngineEven
 }
 
 /// `serve` + per-connection port ACL (from access-token scopes) + audit callback.
-pub fn serve_audited(
-    engine: &Engine,
-    rules: Vec<Rule>,
-    on_event: impl FnMut(&EngineEvent),
-    audit: impl FnMut(&Audit),
-) {
-    serve_hooked(engine, rules, on_event, audit, Arc::new(|_, _| {}))
-}
-
-/// Callback with (connection id, local address of the TCP socket the server opened to the exposed
-/// service). Lets an embedding app map an accepted loopback socket back to the remote peer.
-pub type TcpHook = Arc<dyn Fn(u32, SocketAddr) + Send + Sync>;
-
-/// `serve_audited` + `on_tcp` called right after each outbound TCP connection to an exposed service.
-pub fn serve_hooked(
-    engine: &Engine,
-    rules: Vec<Rule>,
-    mut on_event: impl FnMut(&EngineEvent),
-    mut audit: impl FnMut(&Audit),
-    on_tcp: TcpHook,
-) {
+pub fn serve_audited(engine: &Engine, rules: Vec<Rule>, mut on_event: impl FnMut(&EngineEvent), mut audit: impl FnMut(&Audit)) {
     let h = engine.handle.clone();
     let mut scopes: HashMap<u32, Option<Vec<String>>> = HashMap::new();
+    let mut players: HashMap<u32, Ipv4Addr> = HashMap::new();
     let mut defrag = Defrag::default();
     let streams: Streams = Arc::new(Mutex::new(HashMap::new()));
-    let mut flows: HashMap<(u32, u32), UdpFlow> = HashMap::new();
+    // Keyed by (client, exposed port, flow id): flows of different ports never mix,
+    // even with older clients whose flow ids restart per forwarded port.
+    let mut flows: HashMap<(u32, u16, u32), UdpFlow> = HashMap::new();
     let mut last_gc = Instant::now();
     loop {
         let ev = match engine.events().recv_timeout(Duration::from_secs(1)) {
             Ok(ev) => ev,
             Err(mpsc::RecvTimeoutError::Timeout) => {
                 if !engine.is_running() {
-                    return; // engine stopped; relay helper threads may still hold the channel
+                    return; // HTBB: engine stopped; relay helper threads may still hold the channel
                 }
                 gc_flows(&mut flows, &mut last_gc);
+                // Ban list changed: kick players who are now banned.
+                for (&conn, &ip) in players.iter() {
+                    if is_banned(ip) {
+                        h.send(Cmd::Close { conn });
+                    }
+                }
                 continue;
             }
             Err(_) => return,
         };
         on_event(&ev);
         match &ev {
-            EngineEvent::Connected {
-                conn, scopes: sc, ..
-            } => {
+            EngineEvent::Connected { conn, scopes: sc, peer_key, subject, .. } => {
                 scopes.insert(*conn, sc.clone());
+                let ip = player_ip(peer_key, subject.as_deref());
+                if is_banned(ip) {
+                    h.send(Cmd::Close { conn: *conn });
+                    on_event(&EngineEvent::Log(format!("chặn người chơi {ip} (có trong danh sách cấm)")));
+                    continue;
+                }
+                players.insert(*conn, ip);
+                on_event(&EngineEvent::Log(format!("người chơi {conn:08x} → IP trong game: {ip}")));
             }
             EngineEvent::Disconnected { conn, .. } => {
                 scopes.remove(conn);
+                players.remove(conn);
             }
             _ => {}
         }
         if let EngineEvent::StreamFin { conn, id } = ev {
             let mut m = streams.lock().unwrap();
             if let Some(c) = m.get(&(conn, id)).filter(|c| c.bench_mode()) {
-                h.send(Cmd::StreamWrite {
-                    conn,
-                    id,
-                    data: c.bench.to_be_bytes().to_vec(),
-                });
+                h.send(Cmd::StreamWrite { conn, id, data: c.bench.to_be_bytes().to_vec() });
                 h.send(Cmd::StreamFinish { conn, id });
                 m.remove(&(conn, id));
                 continue;
@@ -545,30 +614,27 @@ pub fn serve_hooked(
         }
         match ev {
             EngineEvent::StreamOpened { conn, id } => {
+                // Resource caps: a single (even authorised) client can't exhaust threads/fds.
+                let (total, mine) = {
+                    let m = streams.lock().unwrap();
+                    (m.len(), m.keys().filter(|(c, _)| *c == conn).count())
+                };
+                if mine >= MAX_STREAMS_PER_PEER || total >= MAX_STREAMS_TOTAL {
+                    h.send(Cmd::StreamReset { conn, id });
+                    continue;
+                }
                 let (wtx, wrx) = mpsc::channel();
                 streams.lock().unwrap().insert(
                     (conn, id),
-                    Ctx {
-                        writer: wtx,
-                        credit: Credit::new(),
-                        header: Some(vec![]),
-                        pending_rx: Some(wrx),
-                        bench: u64::MAX,
-                    },
+                    Ctx { writer: wtx, credit: Credit::new(), header: Some(vec![]), pending_rx: Some(wrx), bench: u64::MAX },
                 );
             }
             EngineEvent::StreamData { conn, id, data } => {
                 let mut m = streams.lock().unwrap();
-                let Some(ctx) = m.get_mut(&(conn, id)) else {
-                    continue;
-                };
+                let Some(ctx) = m.get_mut(&(conn, id)) else { continue };
                 if ctx.bench_mode() {
                     ctx.bench += data.len() as u64;
-                    h.send(Cmd::StreamConsumed {
-                        conn,
-                        id,
-                        n: data.len(),
-                    });
+                    h.send(Cmd::StreamConsumed { conn, id, n: data.len() });
                     continue;
                 }
                 let Some(hdr) = ctx.header.as_mut() else {
@@ -582,42 +648,20 @@ pub fn serve_hooked(
                 let hdr = ctx.header.take().unwrap();
                 if hdr[0] == HDR_BENCH {
                     // Throughput sink: count bytes, reply with the total on FIN.
-                    h.send(Cmd::StreamConsumed {
-                        conn,
-                        id,
-                        n: hdr.len(),
-                    });
+                    h.send(Cmd::StreamConsumed { conn, id, n: hdr.len() });
                     ctx.bench = (hdr.len() - 3) as u64;
                     ctx.header = None;
                     continue;
                 }
                 let port = u16::from_be_bytes([hdr[1], hdr[2]]);
-                let permitted = scopes
-                    .get(&conn)
-                    .and_then(|s| s.as_ref())
-                    .is_none_or(|s| crate::access::scope_allows(s, Proto::Tcp, port));
-                let rule = rules
-                    .iter()
-                    .find(|r| r.proto == Proto::Tcp && r.port == port && hdr[0] == HDR_TCP)
-                    .filter(|_| permitted);
-                audit(&Audit {
-                    conn,
-                    proto: Proto::Tcp,
-                    port,
-                    allowed: rule.is_some(),
-                });
+                let permitted = scopes.get(&conn).and_then(|s| s.as_ref()).is_none_or(|s| crate::access::scope_allows(s, Proto::Tcp, port));
+                let rule = rules.iter().find(|r| r.proto == Proto::Tcp && r.port == port && hdr[0] == HDR_TCP).filter(|_| permitted);
+                audit(&Audit { conn, proto: Proto::Tcp, port, allowed: rule.is_some() });
                 h.send(Cmd::StreamConsumed { conn, id, n: 3 });
                 let Some(rule) = rule else {
                     m.remove(&(conn, id));
                     h.send(Cmd::StreamReset { conn, id });
-                    on_event(&EngineEvent::Log(format!(
-                        "client {conn:08x} xin TCP {port}: {} — từ chối",
-                        if permitted {
-                            "không được expose"
-                        } else {
-                            "token không có quyền"
-                        }
-                    )));
+                    on_event(&EngineEvent::Log(format!("client {conn:08x} xin TCP {port}: {} — từ chối", if permitted { "không được expose" } else { "token không có quyền" })));
                     continue;
                 };
                 if hdr.len() > 3 {
@@ -625,21 +669,14 @@ pub fn serve_hooked(
                 }
                 let wrx = ctx.pending_rx.take().unwrap();
                 let credit = ctx.credit.clone();
-                let (target, h2, streams2, hook) =
-                    (rule.target, h.clone(), streams.clone(), on_tcp.clone());
+                let (target, h2, streams2) = (rule.target, h.clone(), streams.clone());
+                let src = players.get(&conn).copied();
                 drop(m);
-                thread::spawn(move || {
-                    match TcpStream::connect_timeout(&target, Duration::from_secs(5)) {
-                        Ok(tcp) => {
-                            if let Ok(local) = tcp.local_addr() {
-                                hook(conn, local);
-                            }
-                            spawn_pipe(h2, conn, id, tcp, wrx, credit, streams2)
-                        }
-                        Err(_) => {
-                            streams2.lock().unwrap().remove(&(conn, id));
-                            h2.send(Cmd::StreamReset { conn, id });
-                        }
+                thread::spawn(move || match connect_as(src, target) {
+                    Ok(tcp) => spawn_pipe(h2, conn, id, tcp, wrx, credit, streams2),
+                    Err(_) => {
+                        streams2.lock().unwrap().remove(&(conn, id));
+                        h2.send(Cmd::StreamReset { conn, id });
                     }
                 });
             }
@@ -647,34 +684,18 @@ pub fn serve_hooked(
                 h.send(Cmd::Datagram { conn, data }); // latency probe: echo as-is
             }
             EngineEvent::Datagram { conn, data } => {
-                let Some((port, flow, payload)) = defrag.push(conn, &data) else {
-                    continue;
-                };
-                let key = (conn, flow);
+                let Some((port, flow, payload)) = defrag.push(conn, &data) else { continue };
+                let key = (conn, port, flow);
+                let peer_flows = flows.keys().filter(|(c, _, _)| *c == conn).count();
+                if !flows.contains_key(&key) && (peer_flows >= MAX_FLOWS_PER_PEER || flows.len() >= MAX_STREAMS_TOTAL) {
+                    continue; // UDP flow cap reached: drop new flows until old ones expire
+                }
                 if let std::collections::hash_map::Entry::Vacant(e) = flows.entry(key) {
-                    let permitted = scopes
-                        .get(&conn)
-                        .and_then(|s| s.as_ref())
-                        .is_none_or(|s| crate::access::scope_allows(s, Proto::Udp, port));
-                    let rule = rules
-                        .iter()
-                        .find(|r| r.proto == Proto::Udp && r.port == port)
-                        .filter(|_| permitted);
-                    audit(&Audit {
-                        conn,
-                        proto: Proto::Udp,
-                        port,
-                        allowed: rule.is_some(),
-                    });
+                    let permitted = scopes.get(&conn).and_then(|s| s.as_ref()).is_none_or(|s| crate::access::scope_allows(s, Proto::Udp, port));
+                    let rule = rules.iter().find(|r| r.proto == Proto::Udp && r.port == port).filter(|_| permitted);
+                    audit(&Audit { conn, proto: Proto::Udp, port, allowed: rule.is_some() });
                     let Some(rule) = rule else { continue };
-                    let bind: SocketAddr = if rule.target.is_ipv6() {
-                        (Ipv6Addr::UNSPECIFIED, 0).into()
-                    } else {
-                        (Ipv4Addr::UNSPECIFIED, 0).into()
-                    };
-                    let Ok(sock) = UdpSocket::bind(bind) else {
-                        continue;
-                    };
+                    let Ok(sock) = udp_bind_as(players.get(&conn).copied(), rule.target) else { continue };
                     if sock.connect(rule.target).is_err() {
                         continue;
                     }
@@ -694,11 +715,7 @@ pub fn serve_hooked(
                             }
                         }
                     });
-                    e.insert(UdpFlow {
-                        sock,
-                        last: Instant::now(),
-                        alive,
-                    });
+                    e.insert(UdpFlow { sock, last: Instant::now(), alive });
                 }
                 let f = flows.get_mut(&key).unwrap();
                 f.last = Instant::now();
@@ -706,7 +723,7 @@ pub fn serve_hooked(
             }
             EngineEvent::Disconnected { conn, .. } => {
                 reset_conn(&streams, conn);
-                flows.retain(|(c, _), f| {
+                flows.retain(|(c, _, _), f| {
                     if *c == conn {
                         f.alive.store(false, Ordering::Relaxed);
                     }
@@ -719,7 +736,7 @@ pub fn serve_hooked(
     }
 }
 
-fn gc_flows(flows: &mut HashMap<(u32, u32), UdpFlow>, last_gc: &mut Instant) {
+fn gc_flows(flows: &mut HashMap<(u32, u16, u32), UdpFlow>, last_gc: &mut Instant) {
     if last_gc.elapsed() < Duration::from_secs(5) {
         return;
     }
@@ -737,16 +754,12 @@ fn gc_flows(flows: &mut HashMap<(u32, u32), UdpFlow>, last_gc: &mut Instant) {
 
 /// Client side: listen locally and tunnel to the server. Returns when the
 /// connection drops (caller may reconnect) or fails.
-pub fn forward(
-    engine: &Engine,
-    rules: Vec<Rule>,
-    on_event: impl FnMut(&EngineEvent),
-) -> Result<(), String> {
+pub fn forward(engine: &Engine, rules: Vec<Rule>, on_event: impl FnMut(&EngineEvent)) -> Result<(), String> {
     forward_with(engine, rules, on_event, |_, _| {})
 }
 
 /// `forward` + `on_listen(rule, result)` once each local listener is bound (or failed), i.e. the
-/// moment an app may connect to the forwarded local port.
+/// moment an app may connect to the forwarded local port (HTBB: in-process tunnel API).
 pub fn forward_with(
     engine: &Engine,
     rules: Vec<Rule>,
@@ -758,12 +771,12 @@ pub fn forward_with(
     let conn_id = Arc::new(AtomicU32::new(0));
     let stop = Arc::new(AtomicBool::new(false));
     // flow id -> (local socket, app source address)
-    let udp_back: Arc<Mutex<HashMap<u32, (Arc<UdpSocket>, SocketAddr)>>> =
-        Arc::new(Mutex::new(HashMap::new()));
+    let udp_back: Arc<Mutex<HashMap<u32, (Arc<UdpSocket>, SocketAddr)>>> = Arc::new(Mutex::new(HashMap::new()));
     let mut started = false;
     let mut defrag = Defrag::default();
 
     let result = loop {
+        // HTBB: relay helper threads can keep the event channel open after shutdown -> also check the engine.
         let ev = match engine.events().recv_timeout(Duration::from_secs(1)) {
             Ok(ev) => ev,
             Err(mpsc::RecvTimeoutError::Timeout) if engine.is_running() => continue,
@@ -779,24 +792,11 @@ pub fn forward_with(
                 if !started {
                     started = true;
                     for r in &rules {
-                        if let Err(e) = start_listener(
-                            r.clone(),
-                            h.clone(),
-                            conn_id.clone(),
-                            streams.clone(),
-                            udp_back.clone(),
-                            stop.clone(),
-                        ) {
-                            on_event(&EngineEvent::Log(format!(
-                                "✘ không mở được {:?} {}: {e}",
-                                r.proto, r.target
-                            )));
+                        if let Err(e) = start_listener(r.clone(), h.clone(), conn_id.clone(), streams.clone(), udp_back.clone(), stop.clone()) {
+                            on_event(&EngineEvent::Log(format!("✘ không mở được {:?} {}: {e}", r.proto, r.target)));
                             on_listen(r, Err(e.to_string()));
                         } else {
-                            on_event(&EngineEvent::Log(format!(
-                                "✔ {:?} {} → server port {}",
-                                r.proto, r.target, r.port
-                            )));
+                            on_event(&EngineEvent::Log(format!("✔ {:?} {} → server port {}", r.proto, r.target, r.port)));
                             on_listen(r, Ok(()));
                         }
                     }
@@ -849,21 +849,11 @@ fn start_listener(
                             let credit = Credit::new();
                             streams.lock().unwrap().insert(
                                 (conn, sid),
-                                Ctx {
-                                    writer: wtx,
-                                    credit: credit.clone(),
-                                    header: None,
-                                    pending_rx: None,
-                                    bench: u64::MAX,
-                                },
+                                Ctx { writer: wtx, credit: credit.clone(), header: None, pending_rx: None, bench: u64::MAX },
                             );
                             let mut hdr = vec![HDR_TCP];
                             hdr.extend_from_slice(&r.port.to_be_bytes());
-                            h.send(Cmd::StreamWrite {
-                                conn,
-                                id: sid,
-                                data: hdr,
-                            });
+                            h.send(Cmd::StreamWrite { conn, id: sid, data: hdr });
                             spawn_pipe(h.clone(), conn, sid, tcp, wrx, credit, streams.clone());
                         }
                         Err(_) => thread::sleep(Duration::from_millis(10)),
@@ -876,16 +866,14 @@ fn start_listener(
             sock.set_read_timeout(Some(Duration::from_millis(500))).ok();
             thread::spawn(move || {
                 let mut by_src: HashMap<SocketAddr, u32> = HashMap::new();
-                let mut next_flow = 1u32;
                 let mut msg = 0u16;
                 let mut buf = vec![0u8; 65536];
                 while !stop.load(Ordering::Relaxed) {
-                    let Ok((n, src)) = sock.recv_from(&mut buf) else {
-                        continue;
-                    };
+                    let Ok((n, src)) = sock.recv_from(&mut buf) else { continue };
                     let flow = *by_src.entry(src).or_insert_with(|| {
-                        let f = next_flow;
-                        next_flow += 1;
+                        // Unique across every forwarded UDP port of this client (replies are
+                        // routed back by flow id alone).
+                        let f = NEXT_FLOW.fetch_add(1, Ordering::Relaxed);
                         udp_back.lock().unwrap().insert(f, (sock.clone(), src));
                         f
                     });
@@ -902,6 +890,28 @@ fn start_listener(
 }
 
 #[cfg(test)]
+mod player_ip_tests {
+    use super::*;
+
+    #[test]
+    fn stable_distinct_loopback_ips_and_source_binding() {
+        let a = player_ip(&[1; 32], None);
+        assert_eq!(a, player_ip(&[1; 32], None));
+        assert_ne!(a, player_ip(&[2; 32], None));
+        assert_eq!(player_ip(&[1; 32], Some("alice")), player_ip(&[9; 32], Some("alice")));
+        assert!(a.is_loopback() && a != Ipv4Addr::LOCALHOST);
+        // The local service really sees the player's address.
+        let l = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let t = l.local_addr().unwrap();
+        let _c = connect_as(Some(a), t).unwrap();
+        let (_s, peer) = l.accept().unwrap();
+        if cfg!(any(target_os = "linux", windows)) {
+            assert_eq!(peer.ip(), std::net::IpAddr::V4(a));
+        }
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::crypto::Keypair;
@@ -912,27 +922,14 @@ mod tests {
         let r = parse_expose("https:443=127.0.0.1:8443").unwrap();
         assert_eq!((r.proto, r.port, r.target.port()), (Proto::Tcp, 443, 8443));
         let r = parse_expose("udp:19132").unwrap();
-        assert_eq!(
-            (r.proto, r.target),
-            (Proto::Udp, "127.0.0.1:19132".parse().unwrap())
-        );
+        assert_eq!((r.proto, r.target), (Proto::Udp, "127.0.0.1:19132".parse().unwrap()));
         let r = parse_forward("tcp:8443=443", IpAddr::V4(Ipv4Addr::LOCALHOST)).unwrap();
         assert_eq!((r.port, r.target.port()), (443, 8443));
         assert!(parse_expose("sctp:1").is_err());
         let r = parse_expose_list("udp:10000-10002=127.0.0.1:20000").unwrap();
-        assert_eq!(
-            r.iter()
-                .map(|x| (x.port, x.target.port()))
-                .collect::<Vec<_>>(),
-            vec![(10000, 20000), (10001, 20001), (10002, 20002)]
-        );
+        assert_eq!(r.iter().map(|x| (x.port, x.target.port())).collect::<Vec<_>>(), vec![(10000, 20000), (10001, 20001), (10002, 20002)]);
         let r = parse_forward_list("tcp:8000-8001=9000", IpAddr::V4(Ipv4Addr::LOCALHOST)).unwrap();
-        assert_eq!(
-            r.iter()
-                .map(|x| (x.target.port(), x.port))
-                .collect::<Vec<_>>(),
-            vec![(8000, 9000), (8001, 9001)]
-        );
+        assert_eq!(r.iter().map(|x| (x.target.port(), x.port)).collect::<Vec<_>>(), vec![(8000, 9000), (8001, 9001)]);
         assert!(parse_expose_list("udp:5-1").is_err() && parse_expose_list("udp:1-5000").is_err());
         let mut d = Defrag::default();
         let big: Vec<u8> = (0..5000).map(|i| i as u8).collect();
@@ -946,11 +943,7 @@ mod tests {
     }
 
     fn free_port() -> u16 {
-        TcpListener::bind("127.0.0.1:0")
-            .unwrap()
-            .local_addr()
-            .unwrap()
-            .port()
+        TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
     }
 
     #[test]
@@ -987,33 +980,20 @@ mod tests {
         let mut cfg = ServerConfig::new(Keypair::generate());
         cfg.port = 0;
         cfg.try_map = false;
+        cfg.workers = 4; // multi-core server engine
         let server = Engine::start_server(cfg).unwrap();
         let ticket = loop {
-            if let Some(EngineEvent::Ready {
-                ticket: Some(t), ..
-            }) = server.recv_timeout(Duration::from_secs(5))
-            {
+            if let Some(EngineEvent::Ready { ticket: Some(t), .. }) = server.recv_timeout(Duration::from_secs(5)) {
                 break t;
             }
         };
-        let rules = vec![
-            parse_expose(&format!("tcp:{tcp_port}")).unwrap(),
-            parse_expose(&format!("udp:{udp_port}")).unwrap(),
-        ];
+        let rules = vec![parse_expose(&format!("tcp:{tcp_port}")).unwrap(), parse_expose(&format!("udp:{udp_port}")).unwrap()];
         thread::spawn(move || serve(&server, rules, |_| {}));
 
         let (lt, lu) = (free_port(), free_port());
         let fwd = vec![
-            parse_forward(
-                &format!("tcp:{lt}={tcp_port}"),
-                IpAddr::V4(Ipv4Addr::LOCALHOST),
-            )
-            .unwrap(),
-            parse_forward(
-                &format!("udp:{lu}={udp_port}"),
-                IpAddr::V4(Ipv4Addr::LOCALHOST),
-            )
-            .unwrap(),
+            parse_forward(&format!("tcp:{lt}={tcp_port}"), IpAddr::V4(Ipv4Addr::LOCALHOST)).unwrap(),
+            parse_forward(&format!("udp:{lu}={udp_port}"), IpAddr::V4(Ipv4Addr::LOCALHOST)).unwrap(),
         ];
         let (ready_tx, ready_rx) = mpsc::channel();
         thread::spawn(move || {
@@ -1035,9 +1015,7 @@ mod tests {
             joins.push(thread::spawn(move || {
                 let mut s = TcpStream::connect(("127.0.0.1", lt)).unwrap();
                 s.set_read_timeout(Some(Duration::from_secs(20))).unwrap();
-                let data: Vec<u8> = (0..1_000_000)
-                    .map(|i| b'a' + ((i + k as usize) % 26) as u8)
-                    .collect();
+                let data: Vec<u8> = (0..1_000_000).map(|i| b'a' + ((i + k as usize) % 26) as u8).collect();
                 let expect: Vec<u8> = data.iter().map(|b| b.to_ascii_uppercase()).collect();
                 let mut w = s.try_clone().unwrap();
                 let sender = thread::spawn(move || w.write_all(&data).unwrap());
@@ -1053,8 +1031,7 @@ mod tests {
 
         // UDP round trip.
         let u = UdpSocket::bind("127.0.0.1:0").unwrap();
-        u.set_read_timeout(Some(Duration::from_millis(500)))
-            .unwrap();
+        u.set_read_timeout(Some(Duration::from_millis(500))).unwrap();
         let mut ok = 0;
         for i in 0..20u8 {
             u.send_to(&[i; 100], ("127.0.0.1", lu)).unwrap();

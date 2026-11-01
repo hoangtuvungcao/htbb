@@ -15,7 +15,19 @@ Hai backend, **cùng một API** (interface `Peerova\Node`):
 | FFI (trong tiến trình) | `Peerova\Peerova` → `FfiNode` | extension `ffi` + thư viện `libpeerova.so` / `peerova.dll` | máy chủ riêng / VPS, hiệu năng cao nhất, đọc được mã kết nối |
 | Sidecar | `Peerova\PeerovaStdio` → `StdioNode` | chỉ `proc_open` + chương trình `peerova` | hosting không có ext/ffi |
 
-Kết nối hoàn toàn tự động: thử kết nối trực tiếp trước, nếu mạng chặn thì tự dùng một đường dự phòng đã mã hoá.
+Kết nối hoàn toàn tự động: thử kết nối trực tiếp trước, nếu mạng chặn thì tự dùng **đường mã hoá tự động** (vẫn mã hoá đầu-cuối).
+
+### Chọn cách tích hợp
+
+* **Máy chủ / worker PHP nói chuyện với game hoặc app dùng SDK Peerova** (tình huống 3/4 của hướng dẫn): dùng binding này (FFI hoặc sidecar).
+* **Chương trình có sẵn dùng socket TCP/UDP** (tình huống 1/2): không cần SDK — chạy `peerova client --forward` ở cạnh nó;
+  từ một script PHP CLI chạy lâu có thể tự chạy nó, xem [Chương trình có sẵn: chạy peerova ẩn](#chương-trình-có-sẵn-chạy-peerova-ẩn).
+  Không làm việc này trong request PHP-FPM.
+* Bảng so sánh đầy đủ: [hướng dẫn §1](../DEVELOPER-GUIDE.md#1-chọn-cách-tích-hợp).
+
+**Người chơi không phải gõ gì:** game nhúng ticket `pvt_...`, hoặc tải ticket mới nhất từ URL của bạn khi khởi động. Một worker PHP
+có thể ghi ticket của server ra file mà web của bạn phục vụ (`file_put_contents('/var/www/peerova-ticket.txt', $srv->ticket())`).
+Mã 6 ký tự chỉ để mời bạn bè vào phòng do người chơi mở. Chi tiết: [hướng dẫn §2](../DEVELOPER-GUIDE.md#2-người-chơi-không-phải-gõ-gì).
 
 ### Yêu cầu
 
@@ -93,7 +105,8 @@ while (true) {
 Client:
 
 ```php
-$cli = Peerova::client($ticketOrCode);   // ticket "pvt_..." hoặc mã 6 ký tự
+// ticket "pvt_..." hoặc mã 6 ký tự; key_file giữ danh tính client giữa các lần chạy (thư mục phải tồn tại)
+$cli = Peerova::client($ticketOrCode, ['key_file' => '/var/lib/myapp/peerova-client.key']);
 $ev = $cli->poll(20);                    // chờ CONNECTED / CONNECT_FAILED
 if ($ev && $ev->type === EventType::CONNECTED) {
     $cli->send($ev->peer, 'xin chào');   // reliable, kênh 0
@@ -141,6 +154,86 @@ là generator, dừng khi `$timeout` giây không có sự kiện.
 PHP không có event loop sẵn: hãy viết một vòng lặp `while` gọi `poll()` với timeout nhỏ (10–50 ms) và làm các việc
 định kỳ khác (gửi vị trí, đọc hàng đợi) giữa các lần poll — xem `examples/chat.php`.
 
+### Chương trình có sẵn: chạy peerova ẩn
+
+Khi một chương trình có sẵn (game client, bot, công cụ quản trị…) đã dùng socket TCP/UDP và bạn muốn một **script PHP CLI chạy lâu**
+mở nó tới máy chủ Peerova mà không sửa code: script chạy `peerova client`, chờ cổng local mở, rồi chương trình kết nối `127.0.0.1:8888`.
+Máy chủ chạy `peerova server --expose tcp:8888` ([hướng dẫn §3](../DEVELOPER-GUIDE.md#3-game-có-sẵn-không-sửa-code)). Chi tiết các dòng log:
+[hướng dẫn §4](../DEVELOPER-GUIDE.md#4-game-tự-chạy-peerova-ẩn-người-chơi-không-chạy-gì). Launcher game hiếm khi viết bằng PHP — nếu launcher của bạn
+dùng ngôn ngữ khác, lấy đoạn code tương ứng trong hướng dẫn §4.
+
+```php
+<?php
+// peerova_tunnel.php — PHP 7.4+ CLI / worker chạy lâu. Chạy chương trình `peerova` và chờ tới khi cổng local mở.
+// Output của CLI (UTF-8) ghi vào file log, nên PHP không phải liên tục đọc pipe.
+
+/** @return resource|null process đang chạy khi cổng forward đã mở trên 127.0.0.1, hoặc null nếu lỗi / hết giờ */
+function peerova_tunnel_start(string $exe, string $ticket, string $forward, string $keyFile, string $logFile, float $timeout = 30.0)
+{
+    if (!is_dir(dirname($keyFile))) {
+        mkdir(dirname($keyFile), 0700, true);                       // thư mục chứa key phải tồn tại
+    }
+    $proc = proc_open(
+        [$exe, 'client', $ticket, '--forward', $forward, '--key', $keyFile],   // mảng = không qua shell
+        [0 => ['file', PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null', 'r'],
+         1 => ['file', $logFile, 'w'],
+         2 => ['redirect', 1]],                                    // stderr ("lỗi: ...") vào cùng file log
+        $pipes);
+    if (!is_resource($proc)) {
+        return null;
+    }
+    register_shutdown_function('peerova_tunnel_stop', $proc);     // kill khi script thoát
+    $deadline = microtime(true) + $timeout;
+    while (microtime(true) < $deadline) {
+        clearstatcache();
+        // "✔ Tcp 127.0.0.1:8888 → server port 8888" = đã kết nối và cổng local đã mở
+        if (strpos((string)@file_get_contents($logFile), 'server port') !== false) {
+            return $proc;
+        }
+        if (!proc_get_status($proc)['running']) {                 // thoát trước = thất bại (xem log)
+            break;
+        }
+        usleep(100000);
+    }
+    peerova_tunnel_stop($proc);
+    return null;
+}
+
+/** @param resource $proc */
+function peerova_tunnel_stop($proc): void
+{
+    if (is_resource($proc)) {
+        if (proc_get_status($proc)['running']) {
+            proc_terminate($proc);
+        }
+        proc_close($proc);
+    }
+}
+```
+
+```php
+require __DIR__ . '/peerova_tunnel.php';
+
+$exe = __DIR__ . (PHP_OS_FAMILY === 'Windows' ? '/peerova.exe' : '/peerova');
+$appData = getenv('APPDATA') ?: getenv('HOME') . '/.local/share';
+$tunnel = peerova_tunnel_start($exe, $ticket, 'tcp:8888', "$appData/MyApp/peerova-client.key", "$appData/MyApp/peerova.log");
+if ($tunnel) {
+    $sock = stream_socket_client('tcp://127.0.0.1:8888');   // code socket có sẵn, không đổi
+    // ... proc_get_status($tunnel)['running'] === false ⇒ mất kết nối
+} else {
+    fwrite(STDERR, "Không kết nối được máy chủ (xem peerova.log)\n");
+}
+```
+
+* Đã kiểm thử trên Linux (PHP 8.2 CLI): đúng ticket → sẵn sàng rồi HTTP qua `127.0.0.1` chạy được; ticket sai → process thoát ngay,
+  log chứa dòng `lỗi: ...` và hàm trả về `null`.
+* Cần PHP 7.4+ (lệnh dạng mảng và `['redirect', 1]`). Lệnh dạng mảng không qua shell, nên `proc_terminate` dừng đúng process `peerova`.
+* Ghi ra file log thay vì pipe vì PHP chạy một luồng: nếu để pipe mà không đọc tiếp, pipe đầy có thể làm `peerova` dừng.
+* PHP CLI chạy trong console nên `peerova.exe` dùng chung console đó, không mở cửa sổ mới.
+* **PHP-FPM / Apache: không chạy tunnel cho từng request** — process sẽ bị kill (hoặc bị bỏ lại) khi request kết thúc. Chạy nó trong một
+  worker CLI cố định (systemd, supervisor) như mục PHP-FPM ở trên.
+* `peerova stdio` (backend `PeerovaStdio`) **không** mở cổng local: nó trao đổi message SDK dạng JSON lines — dùng cho cách này là sai.
+
 ### Ngắt kết nối và dọn dẹp
 
 * `$node->disconnect($peer)` đóng một kết nối (sau đó có sự kiện `DISCONNECTED`).
@@ -153,6 +246,20 @@ PHP không có event loop sẵn: hãy viết một vòng lặp `while` gọi `po
 
 * `Peerova\PeerovaException`: FFI — thông báo lấy từ thư viện native (`peerova_last_error`): cấu hình sai, cổng đang
   dùng, ticket hỏng, mã không tồn tại, peer không tồn tại, gói unreliable > 1180 byte…
+* Thông báo lỗi của thư viện, và lý do trong sự kiện `CONNECT_FAILED` / `DISCONNECTED` (`$ev->data`), bắt đầu bằng tên mã lỗi ổn định,
+  ví dụ `"E_INVALID_TICKET: ..."`, `"E_TIMEOUT: ..."`. Xử lý theo tiền tố, không phân tích phần còn lại:
+
+```php
+try {
+    $cli = Peerova::client($code);
+} catch (\Peerova\PeerovaException $e) {
+    if (strpos($e->getMessage(), 'E_CODE_NOT_FOUND') === 0) { /* phòng không tồn tại hoặc đã đóng */ }
+}
+if ($ev && $ev->type === EventType::CONNECT_FAILED && strpos($ev->data, 'E_CCU_LIMIT') === 0) { /* máy chủ đầy */ }
+```
+
+  Danh sách mã (`E_INVALID_ARG`, `E_TOO_LARGE`, `E_UNKNOWN_PEER`, `E_CLOSED`, `E_CODE_NOT_FOUND`, `E_NETWORK`, `E_TIMEOUT`, `E_LICENSE`,
+  `E_CCU_LIMIT`, `E_ACCESS_DENIED`, `E_INVALID_TICKET`, `E_IO`, `E_INTERNAL`): [hướng dẫn — Mã lỗi](../DEVELOPER-GUIDE.md#mã-lỗi).
 * Sidecar: lỗi khởi động → `PeerovaException('sidecar did not become ready ...')`, lý do chi tiết in ra stderr. Lỗi
   khi gửi (ví dụ peer không tồn tại) đến không đồng bộ: đọc bằng `$node->lastErrors()`.
 * `ext/ffi is not loaded` → bật extension hoặc dùng `PeerovaStdio`. `FFI\Exception: Failed loading ...` → không tìm
@@ -166,22 +273,34 @@ Server — `Peerova::server([...])` / `PeerovaStdio::server([...])`:
 | Khoá | Mặc định | Ý nghĩa |
 |---|---|---|
 | `port` | `47000` | cổng UDP; `0` = ngẫu nhiên |
-| `key_file` | `"server.key"` | file danh tính server; cùng key ⇒ cùng ticket |
+| `key_file` | `"server.key"` | file danh tính server; cùng key ⇒ cùng ticket. **Bí mật** |
 | `license` | — | khoá `PVA-...`; không có ⇒ chế độ dev, tối đa 3 client |
 | `max_ccu` | theo license | giới hạn số client đồng thời |
 | `token` | — | mật khẩu chung client phải gửi |
 | `upnp` | `true` | tự mở cổng trên router |
 | `private` | `false` | ticket không chứa địa chỉ IP của server |
+| `hide_ip` | `false` | Ẩn IP máy chủ: người chơi không bao giờ biết IP thật của máy chủ (chống DDoS); ping cao hơn một chút. Gói Pro/Studio/Enterprise và bản dùng thử |
 | `app` | — | mã dự án trên website Peerova (cần cho mã kết nối) |
-| `share` | — | `['name' => '...', 'public' => true, 'max' => 16, 'mode' => '...', 'region' => 'VN']` — đăng phòng và nhận mã 6 ký tự |
+| `share` | — | `['name' => '...', 'public' => true, 'max' => 16, 'mode' => '...', 'region' => 'VN']` — đăng phòng và nhận mã 6 ký tự; `public` = hiện trong danh sách phòng công khai |
 
-Client — `Peerova::client($ticketOrCode, [...])`: `token` (phải khớp server), `timeout_ms` (mặc định `20000`).
+Client — `Peerova::client($ticketOrCode, [...])` / `PeerovaStdio::client(...)`:
+
+| Khoá | Mặc định | Ý nghĩa |
+|---|---|---|
+| `token` | — | phải khớp server |
+| `timeout_ms` | `20000` | thời gian tối đa trước `CONNECT_FAILED` |
+| `key_file` | — (key ngẫu nhiên mỗi lần chạy) | file danh tính client; tạo mới nếu chưa có (**thư mục phải tồn tại**). Lưu trong thư mục dữ liệu của ứng dụng / người dùng, ví dụ `"<appdata>/<game>/peerova-client.key"`. Giữ file này thì máy chủ thấy client ở cùng một địa chỉ ổn định; cấm theo địa chỉ chỉ có tác dụng với từng người chơi khi họ còn giữ file này |
+
+### Máy chủ game
+
+Máy chủ game dedicated thường chạy công cụ dòng lệnh `peerova server` (nhiều `--expose`, tách process cho Remote Desktop và game,
+mỗi người chơi một địa chỉ `127.a.b.c` + `--banned`, `--hide-ip`, chế độ VPN): xem [hướng dẫn §7](../DEVELOPER-GUIDE.md#7-tính-năng-máy-chủ-game).
 
 ### Bảo mật
 
 * `server.key` là danh tính của server: ai có file này có thể giả mạo server. Giữ bí mật, đặt ngoài thư mục web
   (không để trong `public_html`), không commit vào git.
-* Ticket gần như công khai: cứ gửi cho client. `token` và `license` là bí mật — lấy từ biến môi trường, đừng ghi cứng.
+* Ticket không phải bí mật: cứ gửi cho client hoặc nhúng vào game. `token` và `license` là bí mật — lấy từ biến môi trường, đừng ghi cứng.
 * Mọi dữ liệu được mã hoá đầu-cuối.
 
 ### Khắc phục sự cố
@@ -192,6 +311,16 @@ Client — `Peerova::client($ticketOrCode, [...])`: `token` (phải khớp serve
 * Client thứ 4 bị từ chối: server đang ở chế độ dev (tối đa 3 client) — thêm `license`.
 * Gửi unreliable > 1180 byte bị từ chối — chia nhỏ hoặc dùng reliable.
 * Kết nối mất ngay sau khi request web kết thúc: xem mục PHP-FPM ở trên.
+* `E_IO`: thư mục chứa `key_file` không tồn tại hoặc không ghi được.
+* Server không khởi động khi bật `hide_ip`: gói hiện tại không có ẩn IP (cần Pro/Studio/Enterprise hoặc bản dùng thử).
+* Thêm: [hướng dẫn §15](../DEVELOPER-GUIDE.md#15-khắc-phục-sự-cố).
+
+### FAQ
+
+* **Người chơi có phải gõ mã không?** Không. Nhúng ticket hoặc tải từ URL của bạn; mã 6 ký tự chỉ để mời bạn bè vào phòng do người chơi mở.
+* **Chạy Peerova trong request PHP-FPM được không?** Không nên — kết nối và process đóng khi request kết thúc. Dùng worker CLI chạy lâu.
+* **Có cần mở port / IP tĩnh không?** Không; mở port chỉ giúp kết nối trực tiếp nhanh hơn.
+* Thêm: [hướng dẫn §16](../DEVELOPER-GUIDE.md#16-faq).
 
 ### Kiểm thử
 
@@ -210,8 +339,20 @@ Two backends, **one API** (interface `Peerova\Node`):
 | FFI (in-process) | `Peerova\Peerova` → `FfiNode` | the `ffi` extension + `libpeerova.so` / `peerova.dll` | your own server / VPS; fastest; can read the connect code |
 | Sidecar | `Peerova\PeerovaStdio` → `StdioNode` | only `proc_open` + the `peerova` program | hosting without ext/ffi |
 
-Connections are automatic: direct first, with an automatic encrypted fallback route when networks block direct
-connections.
+Connections are automatic: direct first, with the **automatic encrypted route** (still end-to-end encrypted) when networks
+block direct connections.
+
+### Choosing an integration
+
+* **A PHP server / worker talking to a game or app that uses the Peerova SDK** (scenarios 3/4 of the guide): use this binding (FFI or sidecar).
+* **An existing program with TCP/UDP socket code** (scenarios 1/2): no SDK needed — run `peerova client --forward` next to it;
+  a long-running PHP CLI script can start it itself, see [Existing program: run peerova hidden](#existing-program-run-peerova-hidden).
+  Don't do this inside a PHP-FPM request.
+* Full comparison: [guide §1](../DEVELOPER-GUIDE.md#1-choosing-an-integration).
+
+**Players never type anything:** the game embeds the `pvt_...` ticket, or fetches the latest ticket from your own URL at startup. A PHP
+worker can write the server's ticket to a file your website serves (`file_put_contents('/var/www/peerova-ticket.txt', $srv->ticket())`).
+6-character codes are only for inviting friends to player-hosted rooms. Details: [guide §2](../DEVELOPER-GUIDE.md#2-players-never-type-anything).
 
 ### Requirements
 
@@ -289,7 +430,8 @@ while (true) {
 Client:
 
 ```php
-$cli = Peerova::client($ticketOrCode);   // "pvt_..." ticket or 6-char code
+// "pvt_..." ticket or 6-char code; key_file keeps the client's identity across runs (the folder must exist)
+$cli = Peerova::client($ticketOrCode, ['key_file' => '/var/lib/myapp/peerova-client.key']);
 $ev = $cli->poll(20);                    // wait for CONNECTED / CONNECT_FAILED
 if ($ev && $ev->type === EventType::CONNECTED) {
     $cli->send($ev->peer, 'hello');      // reliable, channel 0
@@ -337,6 +479,86 @@ is a generator that stops after `$timeout` seconds without an event.
 PHP has no built-in event loop: write a `while` loop that calls `poll()` with a small timeout (10–50 ms) and does
 other periodic work (send positions, read a queue) between polls — see `examples/chat.php`.
 
+### Existing program: run peerova hidden
+
+When an existing program (game client, bot, admin tool…) already uses TCP/UDP sockets and you want a **long-running PHP CLI script**
+to open it to a Peerova server without code changes: the script starts `peerova client`, waits for the local port to open, then the
+program connects to `127.0.0.1:8888`. The server runs `peerova server --expose tcp:8888` ([guide §3](../DEVELOPER-GUIDE.md#3-existing-game-no-code-change)).
+Log lines in detail: [guide §4](../DEVELOPER-GUIDE.md#4-the-game-runs-peerova-hidden-players-run-nothing). Game launchers are rarely written in PHP — if
+yours uses another language, take the matching snippet from guide §4.
+
+```php
+<?php
+// peerova_tunnel.php — PHP 7.4+ CLI / long-running worker. Runs the bundled `peerova` CLI and waits until the local port is open.
+// The CLI's output (UTF-8) goes to a log file, so PHP never has to keep draining a pipe.
+
+/** @return resource|null the running process once the forwarded port is open on 127.0.0.1, or null on failure/timeout */
+function peerova_tunnel_start(string $exe, string $ticket, string $forward, string $keyFile, string $logFile, float $timeout = 30.0)
+{
+    if (!is_dir(dirname($keyFile))) {
+        mkdir(dirname($keyFile), 0700, true);                       // the key folder must exist
+    }
+    $proc = proc_open(
+        [$exe, 'client', $ticket, '--forward', $forward, '--key', $keyFile],   // array = no shell
+        [0 => ['file', PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null', 'r'],
+         1 => ['file', $logFile, 'w'],
+         2 => ['redirect', 1]],                                    // stderr ("lỗi: ...") into the same log
+        $pipes);
+    if (!is_resource($proc)) {
+        return null;
+    }
+    register_shutdown_function('peerova_tunnel_stop', $proc);     // kill it when the script exits
+    $deadline = microtime(true) + $timeout;
+    while (microtime(true) < $deadline) {
+        clearstatcache();
+        // "✔ Tcp 127.0.0.1:8888 → server port 8888" = connected and the local port is open
+        if (strpos((string)@file_get_contents($logFile), 'server port') !== false) {
+            return $proc;
+        }
+        if (!proc_get_status($proc)['running']) {                 // exited first = failure (see the log)
+            break;
+        }
+        usleep(100000);
+    }
+    peerova_tunnel_stop($proc);
+    return null;
+}
+
+/** @param resource $proc */
+function peerova_tunnel_stop($proc): void
+{
+    if (is_resource($proc)) {
+        if (proc_get_status($proc)['running']) {
+            proc_terminate($proc);
+        }
+        proc_close($proc);
+    }
+}
+```
+
+```php
+require __DIR__ . '/peerova_tunnel.php';
+
+$exe = __DIR__ . (PHP_OS_FAMILY === 'Windows' ? '/peerova.exe' : '/peerova');
+$appData = getenv('APPDATA') ?: getenv('HOME') . '/.local/share';
+$tunnel = peerova_tunnel_start($exe, $ticket, 'tcp:8888', "$appData/MyApp/peerova-client.key", "$appData/MyApp/peerova.log");
+if ($tunnel) {
+    $sock = stream_socket_client('tcp://127.0.0.1:8888');   // your existing socket code, unchanged
+    // ... proc_get_status($tunnel)['running'] === false ⇒ disconnected
+} else {
+    fwrite(STDERR, "Could not reach the server (see peerova.log)\n");
+}
+```
+
+* Tested on Linux (PHP 8.2 CLI): with a valid ticket it becomes ready and HTTP through `127.0.0.1` works; with a bad ticket the process
+  exits at once, the log contains a `lỗi: ...` line and the function returns `null`.
+* Needs PHP 7.4+ (array commands and `['redirect', 1]`). An array command bypasses the shell, so `proc_terminate` stops the `peerova` process itself.
+* Output goes to a log file instead of a pipe because PHP is single-threaded: a pipe nobody keeps reading can fill up and stall `peerova`.
+* PHP CLI runs in a console, so `peerova.exe` shares that console and opens no new window.
+* **PHP-FPM / Apache: don't start a tunnel per request** — the process is killed (or left behind) when the request ends. Run it in a
+  fixed CLI worker (systemd, supervisor) as in the PHP-FPM section above.
+* `peerova stdio` (the `PeerovaStdio` backend) does **not** open a local port: it exchanges SDK messages as JSON lines — it is the wrong tool here.
+
 ### Disconnect and cleanup
 
 * `$node->disconnect($peer)` closes one connection (a `DISCONNECTED` event follows).
@@ -349,6 +571,20 @@ other periodic work (send positions, read a queue) between polls — see `exampl
 
 * `Peerova\PeerovaException`: FFI — the message comes from the native library (`peerova_last_error`): bad config,
   port in use, malformed ticket, unknown code, unknown peer, unreliable payload > 1180 bytes, ...
+* Library error messages, and the reason in `CONNECT_FAILED` / `DISCONNECTED` events (`$ev->data`), start with a stable error-code name,
+  e.g. `"E_INVALID_TICKET: ..."`, `"E_TIMEOUT: ..."`. Branch on the prefix; don't parse the rest:
+
+```php
+try {
+    $cli = Peerova::client($code);
+} catch (\Peerova\PeerovaException $e) {
+    if (strpos($e->getMessage(), 'E_CODE_NOT_FOUND') === 0) { /* room does not exist or has closed */ }
+}
+if ($ev && $ev->type === EventType::CONNECT_FAILED && strpos($ev->data, 'E_CCU_LIMIT') === 0) { /* server is full */ }
+```
+
+  Code list (`E_INVALID_ARG`, `E_TOO_LARGE`, `E_UNKNOWN_PEER`, `E_CLOSED`, `E_CODE_NOT_FOUND`, `E_NETWORK`, `E_TIMEOUT`, `E_LICENSE`,
+  `E_CCU_LIMIT`, `E_ACCESS_DENIED`, `E_INVALID_TICKET`, `E_IO`, `E_INTERNAL`): [guide — Error codes](../DEVELOPER-GUIDE.md#error-codes).
 * Sidecar: a startup failure throws `PeerovaException('sidecar did not become ready ...')`; the exact reason is
   printed on stderr. Send errors (e.g. unknown peer) arrive asynchronously: read them with `$node->lastErrors()`.
 * `ext/ffi is not loaded` → enable the extension or use `PeerovaStdio`. `FFI\Exception: Failed loading ...` → the
@@ -362,23 +598,35 @@ Server — `Peerova::server([...])` / `PeerovaStdio::server([...])`:
 | Key | Default | Meaning |
 |---|---|---|
 | `port` | `47000` | UDP port; `0` = random |
-| `key_file` | `"server.key"` | server identity file; same key ⇒ same ticket |
+| `key_file` | `"server.key"` | server identity file; same key ⇒ same ticket. **Secret** |
 | `license` | — | `PVA-...` key; without it: dev mode, max 3 clients |
 | `max_ccu` | from license | cap on concurrent clients |
 | `token` | — | shared secret clients must present |
 | `upnp` | `true` | open the port on the router automatically |
 | `private` | `false` | the ticket does not contain the server's IP addresses |
+| `hide_ip` | `false` | Hide the server IP: players never learn its real address (DDoS protection); slightly higher latency. Pro/Studio/Enterprise plans and the trial |
 | `app` | — | project id from the Peerova website (needed for connect codes) |
-| `share` | — | `['name' => '...', 'public' => true, 'max' => 16, 'mode' => '...', 'region' => 'VN']` — list the room and get a 6-char code |
+| `share` | — | `['name' => '...', 'public' => true, 'max' => 16, 'mode' => '...', 'region' => 'VN']` — list the room and get a 6-char code; `public` = shown in the public room list |
 
-Client — `Peerova::client($ticketOrCode, [...])`: `token` (must match the server), `timeout_ms` (default `20000`).
+Client — `Peerova::client($ticketOrCode, [...])` / `PeerovaStdio::client(...)`:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `token` | — | must match the server |
+| `timeout_ms` | `20000` | max time before `CONNECT_FAILED` |
+| `key_file` | — (new random key per run) | the client's identity file; created if missing (**the folder must exist**). Store it in the app's / user's data folder, e.g. `"<appdata>/<game>/peerova-client.key"`. Keeping it lets the server see the client at the same stable address; banning by address works per player only while they keep that file |
+
+### Game servers
+
+Dedicated game servers usually run the `peerova server` command-line tool (several `--expose`, separate processes for Remote Desktop
+and the game, a `127.a.b.c` address per player + `--banned`, `--hide-ip`, VPN mode): see [guide §7](../DEVELOPER-GUIDE.md#7-game-server-features).
 
 ### Security
 
 * `server.key` is the server's identity: anyone who has it can impersonate the server. Keep it secret, outside the
   web root (not in `public_html`), and don't commit it.
-* The ticket is public-ish: share it with clients. `token` and `license` are secrets — read them from environment
-  variables, don't hard-code them.
+* The ticket is not a secret: share it with clients or embed it in the game. `token` and `license` are secrets — read them
+  from environment variables, don't hard-code them.
 * All traffic is end-to-end encrypted.
 
 ### Troubleshooting
@@ -390,6 +638,16 @@ Client — `Peerova::client($ticketOrCode, [...])`: `token` (must match the serv
 * A 4th client is refused: the server runs in dev mode (max 3 clients) — add a `license`.
 * Unreliable sends over 1180 bytes are rejected — split them or send reliably.
 * Connections drop as soon as the web request ends: see the PHP-FPM section above.
+* `E_IO`: the `key_file` folder doesn't exist or isn't writable.
+* The server won't start with `hide_ip`: your plan doesn't include hiding the IP (needs Pro/Studio/Enterprise or the trial).
+* More: [guide §15](../DEVELOPER-GUIDE.md#15-troubleshooting).
+
+### FAQ
+
+* **Do players need to type a code?** No. Embed the ticket or fetch it from your URL; 6-character codes are only for inviting friends to player-hosted rooms.
+* **Can I run Peerova inside a PHP-FPM request?** Not usefully — connections and processes end with the request. Use a long-running CLI worker.
+* **Do I need port forwarding / a static IP?** No; an open port only makes direct connections faster.
+* More: [guide §16](../DEVELOPER-GUIDE.md#16-faq-1).
 
 ### Tests
 

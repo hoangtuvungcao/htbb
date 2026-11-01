@@ -14,7 +14,7 @@ async function main(): Promise<void> {
   srv.on("disconnected", (peer, reason: string) => void peer);
   const cli = await Named.client(t ?? "", { timeout_ms: 5000 }, { binary: "/usr/local/bin/peerova" });
   cli.on("connected", (peer) => cli.send(peer, new Uint8Array(MAX_UNRELIABLE_PAYLOAD), { reliable: false }));
-  cli.on("connectFailed", (reason) => console.error(new PeerovaError(reason)));
+  cli.on("connectFailed", (reason, code) => console.error(new PeerovaError(reason, code), code === "E_TIMEOUT"));
   await cli.drain();
   await Promise.all([cli.close(), srv.close(500)]);
 }

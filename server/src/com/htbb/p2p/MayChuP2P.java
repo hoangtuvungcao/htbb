@@ -28,7 +28,8 @@ import java.util.Properties;
  *
  * Cach chay: Peerova expose dung cong game (sv.port) -> moi ket noi P2P la mot ket noi TCP loopback toi chinh
  * cong game, nen giao thuc game / Session khong doi. Client J2ME (khong nap duoc thu vien native) van vao thang
- * cong game nhu cu. {@link #ipThat(int)} tra IP that cua nguoi choi sau tunnel (chong DoS / log / chan IP).
+ * cong game nhu cu. Moi nguoi choi P2P den tu dia chi rieng 127.a.b.c (Peerova tunnel::player_ip, on dinh theo khoa
+ * client) nen chong DoS / chan IP / nhat ky van theo tung nguoi choi.
  */
 public final class MayChuP2P {
     private MayChuP2P() {
@@ -206,32 +207,6 @@ public final class MayChuP2P {
         final Thread th = new Thread(() -> khoiDong(p, congGame), "p2p-start");
         th.setDaemon(true);
         th.start();
-    }
-
-    /**
-     * IP that cua nguoi choi sau tunnel: socket game tu 127.0.0.1:<congNguon> do Peerova mo -> IP peer. null neu
-     * khong phai ket noi P2P (hoac P2P tat).
-     */
-    public static String ipThat(final int congNguon) {
-        final dev.peerova.PeerovaTunnel t = tunnel;
-        if (t == null || t.isClosed()) {
-            return null;
-        }
-        try {
-            final String a = t.peerOf(congNguon, 50);
-            if (a == null) {
-                return null;
-            }
-            // "1.2.3.4:5678" | "[::1]:5678"
-            final int c = a.lastIndexOf(':');
-            String ip = c > 0 ? a.substring(0, c) : a;
-            if (ip.startsWith("[") && ip.endsWith("]")) {
-                ip = ip.substring(1, ip.length() - 1);
-            }
-            return ip;
-        } catch (Throwable e) {
-            return null;
-        }
     }
 
     public static synchronized void dung() {

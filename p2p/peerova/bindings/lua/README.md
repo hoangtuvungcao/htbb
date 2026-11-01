@@ -15,7 +15,19 @@ Hai module, **cùng một API**:
 | `peerova.lua` | LuaJIT 2.0/2.1 (LÖVE, Defold, OpenResty…) | thư viện `libpeerova.so` / `peerova.dll` | không chặn, hoặc chờ tối đa `timeout` giây |
 | `peerova_stdio.lua` | Lua 5.1 / 5.2 / 5.3 / 5.4 thuần (POSIX) | chương trình sidecar `peerova` | **luôn chặn** tới sự kiện kế tiếp |
 
-Kết nối hoàn toàn tự động: thử kết nối trực tiếp trước, nếu mạng chặn thì tự dùng một đường dự phòng đã mã hoá.
+Kết nối hoàn toàn tự động: thử kết nối trực tiếp trước, nếu mạng chặn thì tự dùng **đường mã hoá tự động** (vẫn mã hoá đầu-cuối).
+
+### Chọn cách tích hợp
+
+* **Game mới, hoặc host trong game** (tình huống 3/4 của hướng dẫn): dùng SDK — `peerova.lua` với LuaJIT (LÖVE, Defold, OpenResty), hoặc
+  `peerova_stdio.lua` với Lua thuần.
+* **Game có sẵn dùng socket TCP/UDP, người chơi không phải chạy gì** (tình huống 2): Lua rất hạn chế trong việc chạy process — xem
+  [Game có sẵn: chạy peerova ẩn](#game-có-sẵn-chạy-peerova-ẩn) (chỉ Linux/macOS); thường tốt hơn là dùng SDK hoặc launcher native.
+* Bảng so sánh đầy đủ: [hướng dẫn §1](../DEVELOPER-GUIDE.md#1-chọn-cách-tích-hợp).
+
+**Người chơi không phải gõ gì:** nhúng ticket `pvt_...` vào game, hoặc tải ticket mới nhất từ URL của bạn khi game khởi động (dùng ticket
+nhúng nếu tải không được). Mã 6 ký tự chỉ để mời bạn bè vào phòng do người chơi mở. Chi tiết:
+[hướng dẫn §2](../DEVELOPER-GUIDE.md#2-người-chơi-không-phải-gõ-gì).
 
 ### Yêu cầu
 
@@ -58,14 +70,15 @@ Server:
 ```lua
 local peerova = require "peerova"                    -- hoặc require "peerova_stdio"
 local srv = peerova.server { port = 47000, key_file = "server.key" }  -- chặn tối đa ~3 s
-print("ticket: " .. srv.ticket)                      -- pvt_... — gửi cho client
+print("ticket: " .. srv.ticket)                      -- pvt_... — nhúng vào game / gửi cho client
 print("code: " .. tostring(srv:room_code()))         -- mã 6 ký tự (chỉ peerova.lua, chỉ khi có app + share); có thể nil lúc đầu
 ```
 
 Client:
 
 ```lua
-local cli = peerova.client(ticket_or_code)            -- ticket "pvt_..." hoặc mã 6 ký tự
+-- ticket "pvt_..." hoặc mã 6 ký tự; key_file giữ danh tính người chơi giữa các lần chạy (thư mục phải tồn tại)
+local cli = peerova.client(ticket_or_code, { key_file = save_dir .. "/peerova-client.key" })
 local ev = cli:poll(20)                              -- chờ "connected" / "connect_failed"
 if ev and ev.type == "connected" then
   cli:send(ev.peer, "xin chào")                      -- reliable, kênh 0
@@ -129,6 +142,100 @@ Server riêng (LuaJIT): `while running do local ev = srv:poll(0.05) ... end` (ch
 (`for ev in node:events() do ... end`, xem `examples/echo_stdio.lua`), mỗi node một tiến trình. Cần vòng lặp game
 không chặn thì dùng LuaJIT + `peerova.lua`.
 
+### Game có sẵn: chạy peerova ẩn
+
+Với game đã có code socket TCP/UDP: game tự chạy `peerova client`, chờ cổng local mở, rồi code socket cũ kết nối `127.0.0.1:8888`.
+Máy chủ chạy `peerova server --expose tcp:8888` ([hướng dẫn §3](../DEVELOPER-GUIDE.md#3-game-có-sẵn-không-sửa-code)). Chi tiết các dòng log:
+[hướng dẫn §4](../DEVELOPER-GUIDE.md#4-game-tự-chạy-peerova-ẩn-người-chơi-không-chạy-gì).
+
+**Nói thẳng về giới hạn của Lua:** Lua chuẩn chỉ có `io.popen` — đọc được một luồng, không chặn được việc đọc, không có PID nên
+không kill chắc chắn, và trên Windows nó chạy qua `cmd.exe` (cửa sổ console có thể hiện ra, không ẩn được). LÖVE không có API chạy process.
+Vì vậy:
+
+* **Khuyến nghị:** LÖVE / Defold / OpenResty đều là LuaJIT → dùng thẳng SDK `peerova.lua` ở trên (không cần process con, chạy cả Windows).
+  Hoặc để launcher viết bằng ngôn ngữ khác (C#, C++, Go, Python…) chạy `peerova` — có sẵn code trong hướng dẫn §4.
+* Chỉ khi buộc phải giữ code socket cũ trên **Linux/macOS**: dùng đoạn dưới. Nó chạy `peerova` nền qua `sh`, ghi PID (để dừng bằng
+  `kill`) và ghi output vào file log (nên không pipe nào bị đầy, và `status()` không chặn game loop).
+
+```lua
+-- peerova_tunnel.lua — POSIX only (Linux, macOS); plain Lua 5.1–5.4, LuaJIT, LÖVE.
+-- Chạy chương trình `peerova` đi kèm ở chế độ nền; output (UTF-8) ghi vào file log,
+-- nên không phải liên tục đọc pipe và status() không bao giờ chặn (gọi mỗi frame).
+local T = {}
+T.__index = T
+
+local function q(s) return "'" .. tostring(s):gsub("'", "'\\''") .. "'" end
+local function ok(r) return r == true or r == 0 end      -- os.execute: 5.1/LuaJIT → 0, 5.2+ → true
+
+--- Trả về đối tượng tunnel (process đang chạy), hoặc nil nếu không chạy được.
+local function start(exe, ticket, forward, key_file, log_file)
+  os.execute("mkdir -p " .. q(key_file:match("^(.*)/[^/]*$") or "."))   -- thư mục chứa key phải tồn tại
+  os.remove(log_file)
+  local p = io.popen(("(exec %s client %s --forward %s --key %s </dev/null >%s 2>&1) & echo $!")
+    :format(q(exe), q(ticket), q(forward), q(key_file), q(log_file)))
+  local pid = tonumber(p:read("*l"))                       -- PID của peerova chạy nền
+  p:close()
+  if not pid then return nil end
+  return setmetatable({ pid = pid, log = log_file }, T)
+end
+
+function T:alive() return ok(os.execute("kill -0 " .. self.pid .. " 2>/dev/null")) end
+
+--- Không chặn: "ready" (cổng local đã mở), "waiting", hoặc "failed" (thoát trước; xem log).
+function T:status()
+  local f = io.open(self.log, "r")
+  local text = f and f:read("*a") or ""
+  if f then f:close() end
+  -- "✔ Tcp 127.0.0.1:8888 → server port 8888" = đã kết nối và cổng local đã mở
+  if text:find("server port", 1, true) then return "ready" end
+  return self:alive() and "waiting" or "failed"
+end
+
+--- Chờ có chặn, cho script (không dùng trong game loop): true khi sẵn sàng, false khi lỗi / hết giờ.
+function T:wait(timeout)
+  local deadline = os.time() + (timeout or 30)
+  while os.time() <= deadline do
+    local s = self:status()
+    if s ~= "waiting" then if s == "failed" then self:stop() end return s == "ready" end
+    os.execute("sleep 0.1")
+  end
+  self:stop()
+  return false
+end
+
+--- Dừng peerova. Gọi khi game thoát.
+function T:stop() os.execute("kill " .. self.pid .. " 2>/dev/null") end
+
+return { start = start }
+```
+
+```lua
+local tunnel = require "peerova_tunnel"
+local key = os.getenv("HOME") .. "/.local/share/MyGame/peerova-client.key"
+local t = tunnel.start("./peerova", TICKET, "tcp:8888", key, os.getenv("HOME") .. "/.local/share/MyGame/peerova.log")
+
+-- LÖVE: kiểm tra mỗi frame, không bao giờ chặn
+local waited = 0
+function love.update(dt)
+  if t and not connected then
+    local s = t:status()
+    waited = waited + dt
+    if s == "ready" then connected = true; connect_to_game_server("127.0.0.1", 8888)   -- code socket có sẵn
+    elseif s == "failed" or waited > 30 then t:stop(); t = nil; show_error("Không kết nối được máy chủ") end
+  end
+end
+function love.quit() if t then t:stop() end end
+
+-- script thường: if t and t:wait(30) then ... end
+```
+
+* Đã kiểm thử trên Linux với Lua 5.4: đúng ticket → `ready`, HTTP qua `127.0.0.1` chạy được, `stop()` dừng process; ticket sai → `failed`,
+  log chứa dòng `lỗi: ...`.
+* Chỉ POSIX (cần `sh`, `kill`, `mkdir -p`; `wait()` dùng `sleep 0.1`). Windows: dùng `peerova.lua` hoặc launcher native.
+* File `peerova` phải có quyền chạy (`chmod +x`); macOS: ký (codesign) cùng app. Nhiều `--forward` → chờ đủ số dòng `server port`.
+* Mobile / console không chạy được process con → dùng SDK.
+* `peerova stdio` (module `peerova_stdio.lua`) **không** mở cổng local: nó trao đổi message SDK dạng JSON lines — không dùng được cho cách này.
+
 ### Ngắt kết nối và dọn dẹp
 
 * `node:disconnect(peer)` đóng một kết nối (sau đó có sự kiện `"disconnected"`).
@@ -143,7 +250,16 @@ không chặn thì dùng LuaJIT + `peerova.lua`.
   ```lua
   local ok, err = pcall(node.send, node, peer, data, { reliable = false })
   ```
-* `peerova_stdio.lua`: lỗi khởi động → `error("peerova_stdio: sidecar exited before ready ...")`, lý do chi tiết in ra
+* Thông báo lỗi của thư viện, và lý do trong sự kiện `"connect_failed"` / `"disconnected"` (`ev.data`), chứa tên mã lỗi ổn định,
+  ví dụ `"... peerova: E_INVALID_TICKET: ..."`, `"E_TIMEOUT: ..."`. Xử lý theo mã, không phân tích phần còn lại:
+  ```lua
+  local ok, err = pcall(peerova.client, code)
+  if not ok and tostring(err):match("E_CODE_NOT_FOUND") then show_error("Phòng không tồn tại hoặc đã đóng") end
+  if ev.type == "connect_failed" and ev.data:match("^E_CCU_LIMIT") then show_error("Máy chủ đầy") end
+  ```
+  Danh sách mã (`E_INVALID_ARG`, `E_TOO_LARGE`, `E_UNKNOWN_PEER`, `E_CLOSED`, `E_CODE_NOT_FOUND`, `E_NETWORK`, `E_TIMEOUT`, `E_LICENSE`,
+  `E_CCU_LIMIT`, `E_ACCESS_DENIED`, `E_INVALID_TICKET`, `E_IO`, `E_INTERNAL`): [hướng dẫn — Mã lỗi](../DEVELOPER-GUIDE.md#mã-lỗi).
+* `peerova_stdio.lua`: lỗi khởi động → `error("peerova_stdio: sidecar exited before ready ...")` (không kèm mã lỗi), lý do chi tiết in ra
   stderr; lỗi khi gửi (ví dụ peer không tồn tại) được thêm vào bảng `node.errors`.
 * Lỗi mạng của client đến dưới dạng sự kiện `"connect_failed"`, không phải error.
 
@@ -154,23 +270,36 @@ Server — `peerova.server { ... }`:
 | Khoá | Mặc định | Ý nghĩa |
 |---|---|---|
 | `port` | `47000` | cổng UDP; `0` = ngẫu nhiên |
-| `key_file` | `"server.key"` | file danh tính server; cùng key ⇒ cùng ticket |
+| `key_file` | `"server.key"` | file danh tính server; cùng key ⇒ cùng ticket. **Bí mật** |
 | `license` | — | khoá `PVA-...`; không có ⇒ chế độ dev, tối đa 3 client |
 | `max_ccu` | theo license | giới hạn số client đồng thời |
 | `token` | — | mật khẩu chung client phải gửi |
 | `upnp` | `true` | tự mở cổng trên router |
 | `private` | `false` | ticket không chứa địa chỉ IP của server |
+| `hide_ip` | `false` | Ẩn IP máy chủ: người chơi không bao giờ biết IP thật của máy chủ (chống DDoS); ping cao hơn một chút. Gói Pro/Studio/Enterprise và bản dùng thử |
 | `app` | — | mã dự án trên website Peerova (cần cho mã kết nối) |
-| `share` | — | `{ name = "...", public = true, max = 16, mode = "...", region = "VN" }` — đăng phòng và nhận mã 6 ký tự |
+| `share` | — | `{ name = "...", public = true, max = 16, mode = "...", region = "VN" }` — đăng phòng và nhận mã 6 ký tự; `public` = hiện trong danh sách phòng công khai |
 
-Client — `peerova.client(ticket_or_code, { ... })`: `token` (phải khớp server), `timeout_ms` (mặc định `20000`).
+Client — `peerova.client(ticket_or_code, { ... })`:
+
+| Khoá | Mặc định | Ý nghĩa |
+|---|---|---|
+| `token` | — | phải khớp server |
+| `timeout_ms` | `20000` | thời gian tối đa trước `"connect_failed"` |
+| `key_file` | — (key ngẫu nhiên mỗi lần chạy) | file danh tính người chơi; tạo mới nếu chưa có (**thư mục phải tồn tại**). Lưu trong thư mục dữ liệu của người dùng, ví dụ `"<appdata>/<game>/peerova-client.key"` (LÖVE: `love.filesystem.getSaveDirectory()`). Giữ file này thì máy chủ thấy người chơi ở cùng một địa chỉ ổn định; cấm theo địa chỉ chỉ có tác dụng với từng người chơi khi họ còn giữ file này |
+
 Có thể truyền chuỗi JSON thay cho bảng.
+
+### Máy chủ game
+
+Máy chủ dedicated thường chạy công cụ dòng lệnh `peerova server` (nhiều `--expose`, tách process cho Remote Desktop và game,
+mỗi người chơi một địa chỉ `127.a.b.c` + `--banned`, `--hide-ip`, chế độ VPN): xem [hướng dẫn §7](../DEVELOPER-GUIDE.md#7-tính-năng-máy-chủ-game).
 
 ### Bảo mật
 
 * `server.key` là danh tính của server: ai có file này có thể giả mạo server. Giữ bí mật, không commit vào git, không
   đóng gói vào bản game phát cho người chơi.
-* Ticket gần như công khai: cứ gửi cho client. `token` và `license` là bí mật.
+* Ticket không phải bí mật: nhúng vào game hoặc gửi cho client thoải mái. `token` và `license` là bí mật — không nhúng license vào bản game phát hành.
 * Mọi dữ liệu được mã hoá đầu-cuối.
 
 ### Khắc phục sự cố
@@ -180,6 +309,16 @@ Có thể truyền chuỗi JSON thay cho bảng.
 * `"connect_failed"` do hết giờ: server chưa chạy, sai ticket/mã, hoặc tường lửa; tăng `timeout_ms`, chạy `peerova doctor` ở cả hai đầu.
 * Client thứ 4 bị từ chối: server đang ở chế độ dev (tối đa 3 client) — thêm `license`.
 * Gửi unreliable > 1180 byte bị từ chối — chia nhỏ hoặc dùng reliable.
+* `E_IO`: thư mục chứa `key_file` không tồn tại hoặc không ghi được.
+* Server không khởi động khi bật `hide_ip`: gói hiện tại không có ẩn IP (cần Pro/Studio/Enterprise hoặc bản dùng thử).
+* Thêm: [hướng dẫn §15](../DEVELOPER-GUIDE.md#15-khắc-phục-sự-cố).
+
+### FAQ
+
+* **Người chơi có phải gõ mã không?** Không. Nhúng ticket hoặc tải từ URL của bạn; mã 6 ký tự chỉ để mời bạn bè vào phòng do người chơi mở.
+* **Game LÖVE có chạy `peerova client` ẩn được không?** Trên Windows thì không ẩn được bằng Lua; dùng `peerova.lua` (LÖVE có LuaJIT) — đơn giản và chắc chắn hơn.
+* **Có cần mở port / IP tĩnh không?** Không; mở port chỉ giúp kết nối trực tiếp nhanh hơn.
+* Thêm: [hướng dẫn §16](../DEVELOPER-GUIDE.md#16-faq).
 
 ### Kiểm thử
 
@@ -200,8 +339,20 @@ Two modules, **one API**:
 | `peerova.lua` | LuaJIT 2.0/2.1 (LÖVE, Defold, OpenResty, ...) | `libpeerova.so` / `peerova.dll` | non-blocking, or waits up to `timeout` seconds |
 | `peerova_stdio.lua` | plain Lua 5.1 / 5.2 / 5.3 / 5.4 (POSIX) | the `peerova` sidecar program | **always blocks** until the next event |
 
-Connections are automatic: direct first, with an automatic encrypted fallback route when networks block direct
-connections.
+Connections are automatic: direct first, with the **automatic encrypted route** (still end-to-end encrypted) when networks
+block direct connections.
+
+### Choosing an integration
+
+* **New game, or host-in-game** (scenarios 3/4 of the guide): use the SDK — `peerova.lua` with LuaJIT (LÖVE, Defold, OpenResty), or
+  `peerova_stdio.lua` with plain Lua.
+* **Existing game with TCP/UDP socket code, players must not run anything** (scenario 2): Lua is very limited at running processes — see
+  [Existing game: run peerova hidden](#existing-game-run-peerova-hidden) (Linux/macOS only); the SDK or a native launcher is usually better.
+* Full comparison: [guide §1](../DEVELOPER-GUIDE.md#1-choosing-an-integration).
+
+**Players never type anything:** embed the `pvt_...` ticket in the game, or fetch the latest ticket from your own URL at startup (falling
+back to the embedded one). 6-character codes are only for inviting friends to player-hosted rooms. Details:
+[guide §2](../DEVELOPER-GUIDE.md#2-players-never-type-anything).
 
 ### Requirements
 
@@ -244,14 +395,15 @@ Server:
 ```lua
 local peerova = require "peerova"                    -- or require "peerova_stdio"
 local srv = peerova.server { port = 47000, key_file = "server.key" }  -- blocks up to ~3 s
-print("ticket: " .. srv.ticket)                      -- pvt_... — give it to clients
+print("ticket: " .. srv.ticket)                      -- pvt_... — embed it in the game / give it to clients
 print("code: " .. tostring(srv:room_code()))         -- 6-char code (peerova.lua only, only with app + share); may be nil at first
 ```
 
 Client:
 
 ```lua
-local cli = peerova.client(ticket_or_code)            -- "pvt_..." ticket or 6-char code
+-- "pvt_..." ticket or 6-char code; key_file keeps the player's identity across runs (the folder must exist)
+local cli = peerova.client(ticket_or_code, { key_file = save_dir .. "/peerova-client.key" })
 local ev = cli:poll(20)                              -- wait for "connected" / "connect_failed"
 if ev and ev.type == "connected" then
   cli:send(ev.peer, "hello")                         -- reliable, channel 0
@@ -315,6 +467,99 @@ Dedicated server (LuaJIT): `while running do local ev = srv:poll(0.05) ... end` 
 (`for ev in node:events() do ... end`, see `examples/echo_stdio.lua`), one node per process. For a non-blocking game
 loop use LuaJIT + `peerova.lua`.
 
+### Existing game: run peerova hidden
+
+For a game that already has TCP/UDP socket code: the game starts `peerova client`, waits for the local port to open, then the existing
+socket code connects to `127.0.0.1:8888`. The server runs `peerova server --expose tcp:8888` ([guide §3](../DEVELOPER-GUIDE.md#3-existing-game-no-code-change)).
+Log lines in detail: [guide §4](../DEVELOPER-GUIDE.md#4-the-game-runs-peerova-hidden-players-run-nothing).
+
+**Lua's limits, honestly:** standard Lua only has `io.popen` — one stream, blocking reads, no PID so no reliable kill, and on Windows it
+goes through `cmd.exe` (a console window may appear and cannot be hidden). LÖVE has no process API. Therefore:
+
+* **Recommended:** LÖVE / Defold / OpenResty are all LuaJIT → use the `peerova.lua` SDK above directly (no child process, works on Windows too).
+  Or let a launcher written in another language (C#, C++, Go, Python…) run `peerova` — ready-made code is in guide §4.
+* Only when you must keep the old socket code on **Linux/macOS**: use the snippet below. It starts `peerova` in the background through `sh`,
+  records the PID (to stop it with `kill`) and sends the output to a log file (so no pipe fills up and `status()` never blocks the game loop).
+
+```lua
+-- peerova_tunnel.lua — POSIX only (Linux, macOS); plain Lua 5.1–5.4, LuaJIT, LÖVE.
+-- Starts the bundled `peerova` CLI in the background; its output (UTF-8) goes to a log file,
+-- so nothing has to keep draining a pipe and status() never blocks (call it once per frame).
+local T = {}
+T.__index = T
+
+local function q(s) return "'" .. tostring(s):gsub("'", "'\\''") .. "'" end
+local function ok(r) return r == true or r == 0 end      -- os.execute: 5.1/LuaJIT → 0, 5.2+ → true
+
+--- Returns a tunnel object (the process is running), or nil if it could not be started.
+local function start(exe, ticket, forward, key_file, log_file)
+  os.execute("mkdir -p " .. q(key_file:match("^(.*)/[^/]*$") or "."))   -- the key folder must exist
+  os.remove(log_file)
+  local p = io.popen(("(exec %s client %s --forward %s --key %s </dev/null >%s 2>&1) & echo $!")
+    :format(q(exe), q(ticket), q(forward), q(key_file), q(log_file)))
+  local pid = tonumber(p:read("*l"))                       -- PID of the background peerova
+  p:close()
+  if not pid then return nil end
+  return setmetatable({ pid = pid, log = log_file }, T)
+end
+
+function T:alive() return ok(os.execute("kill -0 " .. self.pid .. " 2>/dev/null")) end
+
+--- Non-blocking: "ready" (local port open), "waiting", or "failed" (exited first; see the log).
+function T:status()
+  local f = io.open(self.log, "r")
+  local text = f and f:read("*a") or ""
+  if f then f:close() end
+  -- "✔ Tcp 127.0.0.1:8888 → server port 8888" = connected and the local port is open
+  if text:find("server port", 1, true) then return "ready" end
+  return self:alive() and "waiting" or "failed"
+end
+
+--- Blocking wait for scripts (not for a game loop): true when ready, false on failure/timeout.
+function T:wait(timeout)
+  local deadline = os.time() + (timeout or 30)
+  while os.time() <= deadline do
+    local s = self:status()
+    if s ~= "waiting" then if s == "failed" then self:stop() end return s == "ready" end
+    os.execute("sleep 0.1")
+  end
+  self:stop()
+  return false
+end
+
+--- Stops peerova. Call it when the game exits.
+function T:stop() os.execute("kill " .. self.pid .. " 2>/dev/null") end
+
+return { start = start }
+```
+
+```lua
+local tunnel = require "peerova_tunnel"
+local key = os.getenv("HOME") .. "/.local/share/MyGame/peerova-client.key"
+local t = tunnel.start("./peerova", TICKET, "tcp:8888", key, os.getenv("HOME") .. "/.local/share/MyGame/peerova.log")
+
+-- LÖVE: check once per frame, never block
+local waited = 0
+function love.update(dt)
+  if t and not connected then
+    local s = t:status()
+    waited = waited + dt
+    if s == "ready" then connected = true; connect_to_game_server("127.0.0.1", 8888)   -- existing socket code
+    elseif s == "failed" or waited > 30 then t:stop(); t = nil; show_error("Could not reach the server") end
+  end
+end
+function love.quit() if t then t:stop() end end
+
+-- plain script: if t and t:wait(30) then ... end
+```
+
+* Tested on Linux with Lua 5.4: valid ticket → `ready`, HTTP through `127.0.0.1` works, `stop()` ends the process; bad ticket → `failed`,
+  the log contains a `lỗi: ...` line.
+* POSIX only (needs `sh`, `kill`, `mkdir -p`; `wait()` uses `sleep 0.1`). Windows: use `peerova.lua` or a native launcher.
+* The `peerova` file must be executable (`chmod +x`); macOS: codesign it with the app. Several `--forward` → wait for that many `server port` lines.
+* Mobile / consoles can't spawn child processes → use the SDK.
+* `peerova stdio` (the `peerova_stdio.lua` module) does **not** open a local port: it exchanges SDK messages as JSON lines — it can't be used here.
+
 ### Disconnect and cleanup
 
 * `node:disconnect(peer)` closes one connection (a `"disconnected"` event follows).
@@ -329,7 +574,16 @@ loop use LuaJIT + `peerova.lua`.
   ```lua
   local ok, err = pcall(node.send, node, peer, data, { reliable = false })
   ```
-* `peerova_stdio.lua`: a startup failure raises `error("peerova_stdio: sidecar exited before ready ...")` with the
+* Library error messages, and the reason in `"connect_failed"` / `"disconnected"` events (`ev.data`), contain a stable error-code name,
+  e.g. `"... peerova: E_INVALID_TICKET: ..."`, `"E_TIMEOUT: ..."`. Branch on the code; don't parse the rest:
+  ```lua
+  local ok, err = pcall(peerova.client, code)
+  if not ok and tostring(err):match("E_CODE_NOT_FOUND") then show_error("That room does not exist or has closed") end
+  if ev.type == "connect_failed" and ev.data:match("^E_CCU_LIMIT") then show_error("Server is full") end
+  ```
+  Code list (`E_INVALID_ARG`, `E_TOO_LARGE`, `E_UNKNOWN_PEER`, `E_CLOSED`, `E_CODE_NOT_FOUND`, `E_NETWORK`, `E_TIMEOUT`, `E_LICENSE`,
+  `E_CCU_LIMIT`, `E_ACCESS_DENIED`, `E_INVALID_TICKET`, `E_IO`, `E_INTERNAL`): [guide — Error codes](../DEVELOPER-GUIDE.md#error-codes).
+* `peerova_stdio.lua`: a startup failure raises `error("peerova_stdio: sidecar exited before ready ...")` (no error code) with the
   exact reason printed on stderr; send errors (e.g. unknown peer) are appended to the `node.errors` table.
 * Client network failures arrive as a `"connect_failed"` event, not as errors.
 
@@ -340,23 +594,36 @@ Server — `peerova.server { ... }`:
 | Key | Default | Meaning |
 |---|---|---|
 | `port` | `47000` | UDP port; `0` = random |
-| `key_file` | `"server.key"` | server identity file; same key ⇒ same ticket |
+| `key_file` | `"server.key"` | server identity file; same key ⇒ same ticket. **Secret** |
 | `license` | — | `PVA-...` key; without it: dev mode, max 3 clients |
 | `max_ccu` | from license | cap on concurrent clients |
 | `token` | — | shared secret clients must present |
 | `upnp` | `true` | open the port on the router automatically |
 | `private` | `false` | the ticket does not contain the server's IP addresses |
+| `hide_ip` | `false` | Hide the server IP: players never learn its real address (DDoS protection); slightly higher latency. Pro/Studio/Enterprise plans and the trial |
 | `app` | — | project id from the Peerova website (needed for connect codes) |
-| `share` | — | `{ name = "...", public = true, max = 16, mode = "...", region = "VN" }` — list the room and get a 6-char code |
+| `share` | — | `{ name = "...", public = true, max = 16, mode = "...", region = "VN" }` — list the room and get a 6-char code; `public` = shown in the public room list |
 
-Client — `peerova.client(ticket_or_code, { ... })`: `token` (must match the server), `timeout_ms` (default `20000`).
+Client — `peerova.client(ticket_or_code, { ... })`:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `token` | — | must match the server |
+| `timeout_ms` | `20000` | max time before `"connect_failed"` |
+| `key_file` | — (new random key per run) | the player's identity file; created if missing (**the folder must exist**). Store it in the user's data folder, e.g. `"<appdata>/<game>/peerova-client.key"` (LÖVE: `love.filesystem.getSaveDirectory()`). Keeping it lets the server see the player at the same stable address; banning by address works per player only while they keep that file |
+
 A JSON string may be passed instead of a table.
+
+### Game servers
+
+Dedicated servers usually run the `peerova server` command-line tool (several `--expose`, separate processes for Remote Desktop and
+the game, a `127.a.b.c` address per player + `--banned`, `--hide-ip`, VPN mode): see [guide §7](../DEVELOPER-GUIDE.md#7-game-server-features).
 
 ### Security
 
 * `server.key` is the server's identity: anyone who has it can impersonate the server. Keep it secret, don't commit
   it, and don't ship it inside the game build you give to players.
-* The ticket is public-ish: share it with clients. `token` and `license` are secrets.
+* The ticket is not a secret: embed it in the game or share it with clients. `token` and `license` are secrets — never embed the license in a shipped game.
 * All traffic is end-to-end encrypted.
 
 ### Troubleshooting
@@ -367,6 +634,16 @@ A JSON string may be passed instead of a table.
   `peerova doctor` on both ends.
 * A 4th client is refused: the server runs in dev mode (max 3 clients) — add a `license`.
 * Unreliable sends over 1180 bytes are rejected — split them or send reliably.
+* `E_IO`: the `key_file` folder doesn't exist or isn't writable.
+* The server won't start with `hide_ip`: your plan doesn't include hiding the IP (needs Pro/Studio/Enterprise or the trial).
+* More: [guide §15](../DEVELOPER-GUIDE.md#15-troubleshooting).
+
+### FAQ
+
+* **Do players need to type a code?** No. Embed the ticket or fetch it from your URL; 6-character codes are only for inviting friends to player-hosted rooms.
+* **Can a LÖVE game run `peerova client` hidden?** Not hidden on Windows from Lua; use `peerova.lua` (LÖVE has LuaJIT) — simpler and more robust.
+* **Do I need port forwarding / a static IP?** No; an open port only makes direct connections faster.
+* More: [guide §16](../DEVELOPER-GUIDE.md#16-faq-1).
 
 ### Tests
 

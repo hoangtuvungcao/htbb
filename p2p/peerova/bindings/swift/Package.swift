@@ -3,8 +3,8 @@
 //
 // Linking: the package links `-lpeerova`. Point the linker at the native library with
 //   PEEROVA_LIB_DIR=/abs/dir/with/libpeerova swift build      (the dir is also added as rpath)
-// When PEEROVA_LIB_DIR is unset and ../../target/release exists (the SDK's library folder),
-// that directory is used. For apps / iOS, prefer the XCFramework binaryTarget described in
+// When PEEROVA_LIB_DIR is unset, the SDK's library folder ../../lib/linux-x86_64 is used if it
+// exists, else ../../target/release (a source checkout). For apps / iOS, prefer the XCFramework binaryTarget described in
 // README.md (no unsafe flags needed, so the package can be consumed as a dependency).
 import PackageDescription
 import Foundation
@@ -12,8 +12,11 @@ import Foundation
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
 let libDir: String? = {
     if let d = ProcessInfo.processInfo.environment["PEEROVA_LIB_DIR"], !d.isEmpty { return d }
-    let repo = packageDir.appendingPathComponent("../../target/release").standardizedFileURL.path
-    return FileManager.default.fileExists(atPath: repo) ? repo : nil
+    for rel in ["../../lib/linux-x86_64", "../../target/release"] {
+        let dir = packageDir.appendingPathComponent(rel).standardizedFileURL.path
+        if FileManager.default.fileExists(atPath: dir) { return dir }
+    }
+    return nil
 }()
 
 var cLinker: [LinkerSetting] = [.linkedLibrary("peerova")]

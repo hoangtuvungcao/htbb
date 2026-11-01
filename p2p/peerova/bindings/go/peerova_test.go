@@ -3,6 +3,7 @@ package peerova
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -92,12 +93,21 @@ func TestRoundtrip(t *testing.T) {
 	}
 	if err := cli.Send(peer, make([]byte, MaxUnreliablePayload+100), 3, false); err == nil {
 		t.Error("oversized unreliable send was accepted")
-	} else {
-		t.Logf("oversized unreliable rejected: %v", err)
+	} else if CodeOf(err) != CodeTooLarge || !strings.HasPrefix(err.Error(), "peerova: E_TOO_LARGE: ") {
+		t.Errorf("oversized unreliable: code %v, %v", CodeOf(err), err)
+	}
+	if err := srv.Send(424242, []byte("x"), 0, true); CodeOf(err) != CodeUnknownPeer {
+		t.Errorf("send to unknown peer: %v", err)
+	}
+	if _, err := Connect("pvt_@@@", ""); CodeOf(err) != CodeInvalidTicket {
+		t.Errorf("bad ticket: %v", err)
+	}
+	if (Event{Type: ConnectFailed, Data: []byte("E_TIMEOUT: x")}).ErrorCode() != CodeTimeout || CodeTimeout.String() != "E_TIMEOUT" {
+		t.Error("Event.ErrorCode / Code.String")
 	}
 	t.Logf("peerova %s: %d reliable in order + 1 unreliable + pong in %v, server peers=%d", Version(), n, time.Since(start), srv.PeerCount())
 	cli.Close()
-	if err := cli.Send(peer, []byte("x"), 0, true); err != ErrClosed {
+	if err := cli.Send(peer, []byte("x"), 0, true); err != ErrClosed || CodeOf(err) != CodeClosed {
 		t.Fatalf("send after close: %v", err)
 	}
 }

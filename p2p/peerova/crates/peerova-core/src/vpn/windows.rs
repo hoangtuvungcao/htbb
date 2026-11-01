@@ -62,10 +62,7 @@ fn wide(s: &str) -> Vec<u16> {
 
 fn load() -> Result<Api, String> {
     let mut module: Handle = std::ptr::null_mut();
-    if let Some(dir) = std::env::current_exe()
-        .ok()
-        .and_then(|p| p.parent().map(|d| d.join("wintun.dll")))
-    {
+    if let Some(dir) = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("wintun.dll"))) {
         use std::os::windows::ffi::OsStrExt;
         let w: Vec<u16> = dir.as_os_str().encode_wide().chain(Some(0)).collect();
         // SAFETY: NUL-terminated wide path.
@@ -74,13 +71,7 @@ fn load() -> Result<Api, String> {
     if module.is_null() {
         // System32 only — never the current directory (DLL planting).
         // SAFETY: NUL-terminated wide name.
-        module = unsafe {
-            LoadLibraryExW(
-                wide("wintun.dll").as_ptr(),
-                std::ptr::null_mut(),
-                LOAD_LIBRARY_SEARCH_SYSTEM32,
-            )
-        };
+        module = unsafe { LoadLibraryExW(wide("wintun.dll").as_ptr(), std::ptr::null_mut(), LOAD_LIBRARY_SEARCH_SYSTEM32) };
     }
     if module.is_null() {
         return Err("không tìm thấy wintun.dll — đặt wintun.dll (có trong gói Peerova cho Windows) cùng thư mục với peerova.exe".into());
@@ -90,10 +81,7 @@ fn load() -> Result<Api, String> {
             // SAFETY: valid module handle and NUL-terminated symbol name.
             let p = unsafe { GetProcAddress(module, concat!($name, "\0").as_ptr()) };
             if p.is_null() {
-                return Err(format!(
-                    "wintun.dll thiếu hàm {} (cần Wintun 0.14 trở lên)",
-                    $name
-                ));
+                return Err(format!("wintun.dll thiếu hàm {} (cần Wintun 0.14 trở lên)", $name));
             }
             // SAFETY: signature matches wintun.h for this export.
             unsafe { std::mem::transmute::<*mut c_void, _>(p) }
@@ -116,9 +104,7 @@ fn load() -> Result<Api, String> {
 
 fn api() -> io::Result<&'static Api> {
     static API: OnceLock<Result<Api, String>> = OnceLock::new();
-    API.get_or_init(load)
-        .as_ref()
-        .map_err(|e| io::Error::new(io::ErrorKind::NotFound, e.clone()))
+    API.get_or_init(load).as_ref().map_err(|e| io::Error::new(io::ErrorKind::NotFound, e.clone()))
 }
 
 pub struct Device {
@@ -137,10 +123,7 @@ unsafe impl Sync for Device {}
 
 fn elevation_hint(e: io::Error, what: &str) -> io::Error {
     if e.raw_os_error() == Some(ERROR_ACCESS_DENIED) {
-        io::Error::new(
-            io::ErrorKind::PermissionDenied,
-            format!("{what}: cần chạy với quyền Administrator (chuột phải → Run as administrator)"),
-        )
+        io::Error::new(io::ErrorKind::PermissionDenied, format!("{what}: cần chạy với quyền Administrator (chuột phải → Run as administrator)"))
     } else {
         io::Error::new(e.kind(), format!("{what}: {e}"))
     }
@@ -153,11 +136,7 @@ impl Device {
         let tunnel_type = wide("Peerova");
         let mut last = io::Error::other("không tạo được adapter");
         for i in 0..8u8 {
-            let name = if i == 0 {
-                ADAPTER_NAME.to_string()
-            } else {
-                format!("{ADAPTER_NAME} {}", i + 1)
-            };
+            let name = if i == 0 { ADAPTER_NAME.to_string() } else { format!("{ADAPTER_NAME} {}", i + 1) };
             let wname = wide(&name);
             // SAFETY: NUL-terminated name; a non-null result is an adapter handle we must close.
             let existing = unsafe { (api.open)(wname.as_ptr()) };
@@ -168,12 +147,7 @@ impl Device {
                 continue;
             }
             // Stable GUID per name → Windows keeps the same network profile across runs.
-            let guid = Guid {
-                d1: 0x7065_6572,
-                d2: 0x6f76,
-                d3: 0x6100,
-                d4: [0x56, 0x50, 0x4e, 0x00, 0x00, 0x00, 0x00, i],
-            };
+            let guid = Guid { d1: 0x7065_6572, d2: 0x6f76, d3: 0x6100, d4: [0x56, 0x50, 0x4e, 0x00, 0x00, 0x00, 0x00, i] };
             // SAFETY: NUL-terminated strings and a valid GUID for the duration of the call.
             let adapter = unsafe { (api.create)(wname.as_ptr(), tunnel_type.as_ptr(), &guid) };
             if adapter.is_null() {
@@ -200,16 +174,7 @@ impl Device {
             }
             // SAFETY: valid session handle; the event is owned by the session.
             let event = unsafe { (api.event)(session) };
-            return Ok((
-                Device {
-                    api,
-                    adapter,
-                    session,
-                    event,
-                    index,
-                },
-                name,
-            ));
+            return Ok((Device { api, adapter, session, event, index }, name));
         }
         Err(last)
     }
@@ -237,12 +202,7 @@ impl Device {
                         return Ok(None);
                     }
                 }
-                Some(ERROR_HANDLE_EOF) => {
-                    return Err(io::Error::new(
-                        io::ErrorKind::UnexpectedEof,
-                        "adapter Wintun đã đóng",
-                    ))
-                }
+                Some(ERROR_HANDLE_EOF) => return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "adapter Wintun đã đóng")),
                 _ => return Err(e),
             }
         }
@@ -279,31 +239,11 @@ impl Drop for Device {
 
 /// `netsh interface ipv4 set address … static A MASK` + MTU (by interface index, so a
 /// renamed adapter still works).
-pub fn configure(
-    dev: &Device,
-    name: &str,
-    addr: Ipv4Addr,
-    prefix: u8,
-    _peer: Ipv4Addr,
-    mtu: u32,
-) -> io::Result<()> {
-    let ifname = if dev.index() != 0 {
-        dev.index().to_string()
-    } else {
-        name.to_string()
-    };
+pub fn configure(dev: &Device, name: &str, addr: Ipv4Addr, prefix: u8, _peer: Ipv4Addr, mtu: u32) -> io::Result<()> {
+    let ifname = if dev.index() != 0 { dev.index().to_string() } else { name.to_string() };
     let mask = Ipv4Addr::from(u32::MAX << (32 - prefix)).to_string();
     let a = addr.to_string();
-    let set_addr = [
-        "interface",
-        "ipv4",
-        "set",
-        "address",
-        &format!("name={ifname}"),
-        "static",
-        &a,
-        &mask,
-    ];
+    let set_addr = ["interface", "ipv4", "set", "address", &format!("name={ifname}"), "static", &a, &mask];
     // A brand-new adapter can take a moment to appear in the IP stack.
     let mut res = netsh(&set_addr);
     for _ in 0..20 {
@@ -314,28 +254,14 @@ pub fn configure(
         res = netsh(&set_addr);
     }
     res?;
-    netsh(&[
-        "interface",
-        "ipv4",
-        "set",
-        "subinterface",
-        &ifname,
-        &format!("mtu={mtu}"),
-        "store=active",
-    ])
+    netsh(&["interface", "ipv4", "set", "subinterface", &ifname, &format!("mtu={mtu}"), "store=active"])
 }
 
 fn netsh(args: &[&str]) -> io::Result<()> {
-    let out = std::process::Command::new("netsh")
-        .args(args)
-        .creation_flags(CREATE_NO_WINDOW)
-        .output()?;
+    let out = std::process::Command::new("netsh").args(args).creation_flags(CREATE_NO_WINDOW).output()?;
     if out.status.success() {
         return Ok(());
     }
     let msg = String::from_utf8_lossy(&out.stdout).trim().to_string();
-    Err(io::Error::other(format!(
-        "netsh {}: thất bại {msg}",
-        args.join(" ")
-    )))
+    Err(io::Error::other(format!("netsh {}: thất bại {msg}", args.join(" "))))
 }

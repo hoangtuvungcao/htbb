@@ -19,6 +19,12 @@ pub const TAG: usize = 16;
 
 pub const T_INIT: u8 = 0x20;
 pub const T_RESP: u8 = 0x21;
+/// Authenticated refusal of a valid handshake (server full, access denied...): same shape as
+/// T_RESP with an encrypted reason instead of an empty payload. Only a holder of the server's
+/// static key can produce it, and only a client that proved it holds the ticket receives it.
+pub const T_REJECT: u8 = 0x22;
+/// Longest reason payload in a T_REJECT.
+pub const REJECT_MAX: usize = 64;
 pub const T_PUNCH: u8 = 0x30;
 pub const T_DATA: u8 = 0x40;
 
@@ -129,9 +135,7 @@ impl Keypair {
         self.secret.to_bytes()
     }
     pub fn dh(&self, other: &[u8; 32]) -> [u8; 32] {
-        self.secret
-            .diffie_hellman(&PublicKey::from(*other))
-            .to_bytes()
+        self.secret.diffie_hellman(&PublicKey::from(*other)).to_bytes()
     }
 }
 
@@ -147,12 +151,7 @@ impl Symmetric {
     fn new() -> Self {
         // PROTOCOL is 33 bytes > HASHLEN, so h = HASH(protocol_name).
         let h = hash(&[PROTOCOL]);
-        let mut s = Symmetric {
-            ck: h,
-            h,
-            k: None,
-            n: 0,
-        };
+        let mut s = Symmetric { ck: h, h, k: None, n: 0 };
         s.mix_hash(PROLOGUE);
         s
     }
@@ -221,13 +220,7 @@ pub fn initiate(s: &Keypair, rs: &[u8; 32], sender_idx: u32, payload: &[u8]) -> 
     msg.extend_from_slice(&enc_p);
     let m = mac1(rs, &msg);
     msg.extend_from_slice(&m);
-    Initiator {
-        sym,
-        e,
-        s: s.clone(),
-        sender_idx,
-        packet: msg,
-    }
+    Initiator { sym, e, s: s.clone(), sender_idx, packet: msg }
 }
 
 impl Initiator {
@@ -254,6 +247,26 @@ impl Initiator {
         sym.decrypt_and_hash(&resp[41..41 + TAG])?;
         let (k1, k2) = sym.split();
         Some(Session::new(k1, k2, self.sender_idx, responder_idx))
+    }
+
+    /// Process a T_REJECT answering this initiation: the server's (authenticated) reason.
+    pub fn finish_reject(&self, msg: &[u8]) -> Option<Vec<u8>> {
+        let mut sym = self.sym.clone();
+        if msg.len() < RESP_LEN || msg.len() > RESP_LEN + REJECT_MAX || msg[0] != T_REJECT {
+            return None;
+        }
+        let (body, mac) = msg.split_at(msg.len() - 16);
+        if !ct_eq(mac, &mac1(&self.s.public, body)) {
+            return None;
+        }
+        if u32::from_le_bytes(msg[5..9].try_into().ok()?) != self.sender_idx {
+            return None;
+        }
+        let re: [u8; 32] = msg[9..41].try_into().ok()?;
+        sym.mix_hash(&re);
+        sym.mix_key(&self.e.dh(&re)); // ee
+        sym.mix_key(&self.s.dh(&re)); // se
+        sym.decrypt_and_hash(&body[41..])
     }
 }
 
@@ -285,19 +298,10 @@ pub fn read_init(s: &Keypair, msg: &[u8]) -> Option<Responder> {
     let re: [u8; 32] = body[5..37].try_into().ok()?;
     sym.mix_hash(&re);
     sym.mix_key(&s.dh(&re)); // es
-    let rs: [u8; 32] = sym
-        .decrypt_and_hash(&body[37..37 + 32 + TAG])?
-        .try_into()
-        .ok()?;
+    let rs: [u8; 32] = sym.decrypt_and_hash(&body[37..37 + 32 + TAG])?.try_into().ok()?;
     sym.mix_key(&s.dh(&rs)); // ss
     let payload = sym.decrypt_and_hash(&body[37 + 32 + TAG..])?;
-    Some(Responder {
-        sym,
-        re,
-        initiator_static: rs,
-        initiator_idx,
-        payload,
-    })
+    Some(Responder { sym, re, initiator_static: rs, initiator_idx, payload })
 }
 
 impl Responder {
@@ -316,6 +320,24 @@ impl Responder {
         msg.extend_from_slice(&m);
         let (k1, k2) = self.sym.split();
         (msg, Session::new(k2, k1, my_idx, self.initiator_idx))
+    }
+
+    /// Refuse this (valid) initiation with an encrypted, authenticated `reason` (T_REJECT).
+    pub fn reject(&self, reason: &[u8]) -> Vec<u8> {
+        let mut sym = self.sym.clone();
+        let reason = &reason[..reason.len().min(REJECT_MAX)];
+        let e = Keypair::generate();
+        let mut msg = vec![T_REJECT];
+        msg.extend_from_slice(&0u32.to_le_bytes());
+        msg.extend_from_slice(&self.initiator_idx.to_le_bytes());
+        msg.extend_from_slice(&e.public);
+        sym.mix_hash(&e.public);
+        sym.mix_key(&e.dh(&self.re)); // ee
+        sym.mix_key(&e.dh(&self.initiator_static)); // se
+        msg.extend_from_slice(&sym.encrypt_and_hash(reason));
+        let m = mac1(&self.initiator_static, &msg);
+        msg.extend_from_slice(&m);
+        msg
     }
 }
 
@@ -344,11 +366,7 @@ impl Replay {
     }
     fn commit(&mut self, n: u64) {
         if !self.any {
-            *self = Replay {
-                max: n,
-                bits: [0; 16],
-                any: true,
-            };
+            *self = Replay { max: n, bits: [0; 16], any: true };
             self.set(0);
             return;
         }
@@ -361,11 +379,7 @@ impl Replay {
                 let old = self.bits;
                 for i in (0..16).rev() {
                     let hi = if i >= w { old[i - w] << b } else { 0 };
-                    let lo = if b > 0 && i > w {
-                        old[i - w - 1] >> (64 - b)
-                    } else {
-                        0
-                    };
+                    let lo = if b > 0 && i > w { old[i - w - 1] >> (64 - b) } else { 0 };
                     self.bits[i] = hi | lo;
                 }
             }
@@ -404,10 +418,7 @@ impl Session {
         hdr.extend_from_slice(&counter.to_le_bytes());
         let ct = self
             .send
-            .encrypt(
-                Nonce::from_slice(&nonce(counter)),
-                Payload { msg: pt, aad: &hdr },
-            )
+            .encrypt(Nonce::from_slice(&nonce(counter)), Payload { msg: pt, aad: &hdr })
             .expect("chacha encrypt");
         hdr.extend_from_slice(&ct);
         hdr
@@ -415,8 +426,7 @@ impl Session {
 
     /// Receiver index of a data packet (to find the session).
     pub fn packet_index(pkt: &[u8]) -> Option<u32> {
-        (pkt.len() >= DATA_HDR + TAG && pkt[0] == T_DATA)
-            .then(|| u32::from_le_bytes(pkt[1..5].try_into().unwrap()))
+        (pkt.len() >= DATA_HDR + TAG && pkt[0] == T_DATA).then(|| u32::from_le_bytes(pkt[1..5].try_into().unwrap()))
     }
 
     pub fn open(&mut self, pkt: &[u8]) -> Option<(u64, Vec<u8>)> {
@@ -429,13 +439,7 @@ impl Session {
         }
         let pt = self
             .recv
-            .decrypt(
-                Nonce::from_slice(&nonce(counter)),
-                Payload {
-                    msg: &pkt[DATA_HDR..],
-                    aad: &pkt[..DATA_HDR],
-                },
-            )
+            .decrypt(Nonce::from_slice(&nonce(counter)), Payload { msg: &pkt[DATA_HDR..], aad: &pkt[..DATA_HDR] })
             .ok()?;
         self.replay.commit(counter);
         Some((counter, pt))
@@ -465,6 +469,25 @@ mod tests {
         assert!(s_sess.open(&p).is_none(), "replay must be rejected");
         let q = s_sess.seal(0, b"hello client");
         assert_eq!(c_sess.open(&q).unwrap().1, b"hello client");
+    }
+
+    #[test]
+    fn authenticated_rejection() {
+        let server = Keypair::generate();
+        let client = Keypair::generate();
+        let init = initiate(&client, &server.public, 11, b"t");
+        let r = read_init(&server, &init.packet).unwrap();
+        let rej = r.reject(b"\x01full");
+        assert_eq!(init.finish_reject(&rej).as_deref(), Some(&b"\x01full"[..]));
+        assert!(init.finish(&rej).is_none(), "a rejection is never a session");
+        // Forged / tampered rejections are ignored.
+        let mut bad = rej.clone();
+        bad[45] ^= 1;
+        assert!(init.finish_reject(&bad).is_none());
+        let other = initiate(&client, &server.public, 12, b"t");
+        assert!(other.finish_reject(&rej).is_none(), "bound to the initiation");
+        let fake = read_init(&server, &initiate(&Keypair::generate(), &server.public, 11, b"t").packet).unwrap().reject(b"x");
+        assert!(init.finish_reject(&fake).is_none(), "made for another client key");
     }
 
     #[test]

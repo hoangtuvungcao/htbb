@@ -18,8 +18,10 @@
 //
 // # Errors
 //
-// Functions that can fail return an error whose text comes from the native library (peerova_last_error),
-// prefixed with "peerova: ". Using a closed node returns ErrClosed.
+// Functions that can fail return an *Error: Code is a stable error code (CodeTooLarge, CodeUnknownPeer, ...,
+// same values as PEEROVA_E_* in peerova.h) and Message the English text from the native library
+// ("E_TOO_LARGE: unreliable messages are limited to 1180 bytes"); Error() prefixes it with "peerova: ".
+// Use CodeOf(err) to get the code of any error. Using a closed node returns ErrClosed (Code == CodeClosed).
 //
 // # Linking
 //
@@ -39,6 +41,8 @@ import "C"
 
 import (
 	"errors"
+	"runtime"
+	"strings"
 	"sync"
 	"time"
 	"unsafe"
@@ -86,16 +90,100 @@ type Event struct {
 	Data     []byte // message payload, or the UTF-8 reason for Disconnected / ConnectFailed; never nil
 }
 
-// ErrClosed is returned by Send after Close.
-var ErrClosed = errors.New("peerova: node is closed")
+// Code is a stable SDK error code (values mirror PEEROVA_E_* in peerova.h).
+type Code int32
 
-func lastError() error {
-	if p := C.peerova_last_error(); p != nil {
-		if s := C.GoString(p); s != "" {
-			return errors.New("peerova: " + s)
+const (
+	CodeOK            Code = 0  // no error
+	CodeInvalidArg    Code = 1  // invalid argument / config JSON / connect code format
+	CodeTooLarge      Code = 2  // unreliable payload larger than MaxUnreliablePayload
+	CodeUnknownPeer   Code = 3  // peer id not connected
+	CodeClosed        Code = 4  // connection or node closed
+	CodeCodeNotFound  Code = 5  // 6-character connect code unknown or expired
+	CodeNetwork       Code = 6  // socket / port in use / website or license server unreachable
+	CodeTimeout       Code = 7  // connect timed out, server not ready, peer stopped responding
+	CodeLicense       Code = 8  // license / lease invalid, expired or rejected
+	CodeCCULimit      Code = 9  // the server's concurrent-client limit was reached
+	CodeAccessDenied  Code = 10 // access token wrong / expired / revoked
+	CodeInvalidTicket Code = 11 // ticket malformed, corrupted or unsupported
+	CodeIO            Code = 12 // server key file unreadable / unwritable / corrupted
+	CodeInternal      Code = 99 // internal or unclassified error
+)
+
+var codeNames = map[Code]string{
+	CodeOK: "E_OK", CodeInvalidArg: "E_INVALID_ARG", CodeTooLarge: "E_TOO_LARGE", CodeUnknownPeer: "E_UNKNOWN_PEER",
+	CodeClosed: "E_CLOSED", CodeCodeNotFound: "E_CODE_NOT_FOUND", CodeNetwork: "E_NETWORK", CodeTimeout: "E_TIMEOUT",
+	CodeLicense: "E_LICENSE", CodeCCULimit: "E_CCU_LIMIT", CodeAccessDenied: "E_ACCESS_DENIED",
+	CodeInvalidTicket: "E_INVALID_TICKET", CodeIO: "E_IO", CodeInternal: "E_INTERNAL",
+}
+
+// String returns the stable name, e.g. "E_TOO_LARGE".
+func (c Code) String() string {
+	if n, ok := codeNames[c]; ok {
+		return n
+	}
+	return "E_UNKNOWN"
+}
+
+// CodeFromText parses the "E_NAME:" prefix of an SDK error text (e.g. a ConnectFailed reason).
+// Returns CodeInternal when there is no known prefix.
+func CodeFromText(text string) Code {
+	name := strings.TrimSpace(strings.SplitN(text, ":", 2)[0])
+	for c, n := range codeNames {
+		if n == name {
+			return c
 		}
 	}
-	return errors.New("peerova: unknown error")
+	return CodeInternal
+}
+
+// Error is the error type returned by this package.
+type Error struct {
+	Code    Code   // stable error code
+	Message string // English text "E_NAME: description"
+}
+
+func (e *Error) Error() string { return "peerova: " + e.Message }
+
+// CodeOf returns the Code of err (CodeOK for nil, CodeInternal for errors not from this package).
+func CodeOf(err error) Code {
+	if err == nil {
+		return CodeOK
+	}
+	var e *Error
+	if errors.As(err, &e) {
+		return e.Code
+	}
+	return CodeInternal
+}
+
+// ErrorCode returns the code of a ConnectFailed / Disconnected reason (Data is English text
+// "E_TIMEOUT: ..."), or CodeOK for other events.
+func (e Event) ErrorCode() Code {
+	if e.Type == ConnectFailed || e.Type == Disconnected {
+		return CodeFromText(string(e.Data))
+	}
+	return CodeOK
+}
+
+// ErrClosed is returned by Send after Close.
+var ErrClosed error = &Error{Code: CodeClosed, Message: "E_CLOSED: node is closed"}
+
+// lastError reads the native thread-local error. The caller must hold runtime.LockOSThread across the
+// failing call and this one, otherwise the goroutine may have moved to another OS thread.
+func lastError() error {
+	code := Code(C.peerova_last_error_code())
+	msg := ""
+	if p := C.peerova_last_error(); p != nil {
+		msg = C.GoString(p)
+	}
+	if msg == "" {
+		msg = "E_INTERNAL: unknown error"
+	}
+	if code == CodeOK {
+		code = CodeFromText(msg)
+	}
+	return &Error{Code: code, Message: msg}
 }
 
 // Version returns the native library version string.
@@ -176,6 +264,8 @@ func (n *node) Send(peer uint32, data []byte, channel uint8, reliable bool) erro
 	if reliable {
 		rel = 1
 	}
+	runtime.LockOSThread() // keep the thread-local native error readable
+	defer runtime.UnlockOSThread()
 	if C.peerova_send(n.h, C.uint32_t(peer), C.uint8_t(channel), p, C.uint32_t(len(data)), rel) != 0 {
 		return lastError()
 	}
@@ -225,11 +315,15 @@ type Client struct{ node }
 // StartServer starts a server. It blocks until the ticket is ready (about 3 s at most).
 //
 // configJSON may be "" for defaults, e.g. `{"port":47000,"key_file":"server.key","license":"PVA-...","token":"secret"}`.
-// Keys: port, key_file, license, max_ccu, token, upnp, private, app, share (see the README).
+// Keys: port, key_file, license, max_ccu, token, upnp, private, hide_ip, app, share (see the README).
+// "hide_ip": true hides the server IP: players never learn its real address (DDoS protection); clients
+// connect through the automatic encrypted route, with slightly higher latency.
 // Returns the native error if the server cannot start (port in use, bad config, invalid license, ...).
 func StartServer(configJSON string) (*Server, error) {
 	cfg := cstr(configJSON)
 	defer C.free(unsafe.Pointer(cfg))
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	h := C.peerova_server_start(cfg)
 	if h == nil {
 		return nil, lastError()
@@ -276,16 +370,22 @@ func (s *Server) RoomCode() (code string, ok bool) {
 // encrypted fallback route when networks block direct connections.
 //
 // ticket is the server's ticket ("pvt_...") or its 6-character connect code. configJSON may be "",
-// e.g. `{"token":"secret","timeout_ms":20000}`. Returns an error for an empty or malformed ticket or an
-// unknown/unreachable connect code.
+// e.g. `{"token":"secret","timeout_ms":20000,"key_file":"<appdata>/<game>/peerova-client.key"}`.
+// "key_file" (optional) is the client's identity key, created if missing: keep it (in the user's app-data
+// folder, see os.UserConfigDir) so the player keeps the same identity and the same stable address on the
+// server across runs; without it every run uses a new random key. Bans by address only hold while the player
+// keeps the file — accounts/tokens are the robust way. Returns an error for an empty or malformed ticket or
+// an unknown/unreachable connect code.
 func Connect(ticket, configJSON string) (*Client, error) {
 	if ticket == "" {
-		return nil, errors.New("peerova: empty ticket")
+		return nil, &Error{Code: CodeInvalidArg, Message: "E_INVALID_ARG: empty ticket"}
 	}
 	t := C.CString(ticket)
 	defer C.free(unsafe.Pointer(t))
 	cfg := cstr(configJSON)
 	defer C.free(unsafe.Pointer(cfg))
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	h := C.peerova_client_connect(t, cfg)
 	if h == nil {
 		return nil, lastError()

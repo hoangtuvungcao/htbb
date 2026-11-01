@@ -9,8 +9,9 @@
 Package SwiftPM `Peerova`: kết nối P2P trực tiếp, mã hoá đầu-cuối, bọc C API của Peerova
 (`Sources/CPeerova/include/peerova.h`, bản sao y hệt `include/peerova.h` của SDK).
 
-Trạng thái: **CHƯA TEST** — mã nhắm Swift 5.7+ nhưng chưa được biên dịch (máy viết mã không có Swift). Hãy báo
-cho Peerova nếu gặp lỗi biên dịch.
+Trạng thái: **TESTED trên Linux x86_64** (Swift 6.4.2, Ubuntu 24.04): `swift build` không cảnh báo, `swift test` PASS
+(round-trip thật: 100 reliable đúng thứ tự + unreliable hai chiều + trả lời nhị phân + disconnect, cả qua `events()`),
+demo `examples/PeerovaDemo` chạy với 1 server + 2 client. macOS / iOS / Windows chưa được kiểm tra.
 
 Khái niệm chung và C API đầy đủ: [../DEVELOPER-GUIDE.md](../DEVELOPER-GUIDE.md). Website: https://peerova.pages.dev
 
@@ -21,7 +22,7 @@ Package.swift
 Sources/CPeerova/include/{peerova.h,module.modulemap}   module C, link -lpeerova
 Sources/CPeerova/shim.c                                 (SwiftPM cần ít nhất một file C)
 Sources/Peerova/Peerova.swift                           PeerovaServer / PeerovaClient / PeerovaEvent
-Tests/PeerovaTests/PeerovaTests.swift                   100 message reliable đúng thứ tự + 1 unreliable + trả lời
+Tests/PeerovaTests/PeerovaTests.swift                   100 reliable đúng thứ tự + unreliable 2 chiều + trả lời + disconnect; stream events()
 examples/PeerovaDemo/                                   demo đồng bộ vị trí 20 Hz + chat (swift run)
 ```
 
@@ -40,7 +41,7 @@ examples/PeerovaDemo/                                   demo đồng bộ vị t
 | Windows | `peerova.dll` cạnh file exe (gói SDK: `lib/windows-x86_64/`) | Swift trên Windows chưa được kiểm tra. `wintun.dll` không cần cho SDK |
 
 Khi `PEEROVA_LIB_DIR` không được đặt, `Package.swift` tự dùng thư mục thư viện của gói SDK
-(`lib/linux-x86_64`) nếu có.
+(`lib/linux-x86_64`) nếu có, nếu không thì `target/release` (khi build từ mã nguồn).
 
 ### Cài đặt
 
@@ -213,8 +214,9 @@ PEEROVA_LIB_DIR=/abs/dir/with/libpeerova swift test
 The `Peerova` SwiftPM package: direct, end-to-end encrypted P2P connections, wrapping the Peerova C API
 (`Sources/CPeerova/include/peerova.h`, an identical copy of the SDK's `include/peerova.h`).
 
-Status: **UNTESTED** — the code targets Swift 5.7+ but has not been compiled yet (no Swift toolchain on the
-machine where it was written). Please report compile errors to Peerova.
+Status: **TESTED on Linux x86_64** (Swift 6.4.2, Ubuntu 24.04): `swift build` is warning-free, `swift test` passes
+(real round-trip: 100 reliable messages in order + unreliable both ways + binary reply + disconnect, also through
+`events()`), and `examples/PeerovaDemo` runs with 1 server + 2 clients. macOS / iOS / Windows are not tested yet.
 
 Concepts and the full C API: [../DEVELOPER-GUIDE.md](../DEVELOPER-GUIDE.md). Website: https://peerova.pages.dev
 
@@ -225,7 +227,7 @@ Package.swift
 Sources/CPeerova/include/{peerova.h,module.modulemap}   C module, links -lpeerova
 Sources/CPeerova/shim.c                                 (SwiftPM needs at least one C source)
 Sources/Peerova/Peerova.swift                           PeerovaServer / PeerovaClient / PeerovaEvent
-Tests/PeerovaTests/PeerovaTests.swift                   100 reliable messages in order + 1 unreliable + reply
+Tests/PeerovaTests/PeerovaTests.swift                   100 reliable in order + unreliable both ways + reply + disconnect; events() stream
 examples/PeerovaDemo/                                   20 Hz position sync + chat demo (swift run)
 ```
 
@@ -244,7 +246,7 @@ examples/PeerovaDemo/                                   20 Hz position sync + ch
 | Windows | `peerova.dll` next to the exe (SDK package: `lib/windows-x86_64/`) | Swift on Windows is untested. `wintun.dll` is not needed by the SDK |
 
 When `PEEROVA_LIB_DIR` is not set, `Package.swift` uses the SDK package's library folder (`lib/linux-x86_64`)
-if it exists.
+if it exists, else `target/release` (source checkout).
 
 ### Install
 

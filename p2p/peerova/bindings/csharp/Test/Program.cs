@@ -68,6 +68,14 @@ static class Program
             // Oversized unreliable must fail cleanly.
             bool tooBig = client.TrySend(peer, new byte[Library.MaxUnreliablePayload + 100], 3, false);
             Console.WriteLine($"oversized unreliable send rejected: {!tooBig}");
+            if (tooBig || Endpoint.LastErrorCode != ErrorCode.TooLarge || !Endpoint.LastError.StartsWith("E_TOO_LARGE: "))
+                return Fail($"oversized send: {Endpoint.LastErrorCode} {Endpoint.LastError}");
+            try { client.Send(9999, "x"); return Fail("send to unknown peer did not throw"); }
+            catch (PeerovaException ex) when (ex.Code == ErrorCode.UnknownPeer) { }
+            try { using var bad = Client.Connect("pvt_@@@"); return Fail("bad ticket accepted"); }
+            catch (PeerovaException ex) when (ex.Code == ErrorCode.InvalidTicket && ex.Message.StartsWith("E_INVALID_TICKET: ")) { }
+            if (ErrorCodes.FromText("E_TIMEOUT: x") != ErrorCode.Timeout || ErrorCodes.Name(ErrorCode.Internal) != "E_INTERNAL") return Fail("ErrorCodes helpers");
+            if (new ServerConfig { Port = 1 }.ToJson() != "{\"port\":1}") return Fail("server json");
 
             Console.WriteLine($"server peers={server.PeerCount} client peers={client.PeerCount}, {N} reliable in order + 1 unreliable + pong in {t.ElapsedMilliseconds} ms");
             client.Dispose();

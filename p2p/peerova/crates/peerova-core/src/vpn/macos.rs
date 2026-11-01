@@ -71,10 +71,7 @@ impl Device {
         }
         // SAFETY: fd is a fresh, valid descriptor we exclusively own (closed on drop).
         let file = unsafe { File::from_raw_fd(fd) };
-        let mut info = CtlInfo {
-            ctl_id: 0,
-            ctl_name: [0; 96],
-        };
+        let mut info = CtlInfo { ctl_id: 0, ctl_name: [0; 96] };
         let name = b"com.apple.net.utun_control";
         info.ctl_name[..name.len()].copy_from_slice(name);
         // SAFETY: CTLIOCGINFO reads/writes the ctl_info we own.
@@ -90,57 +87,27 @@ impl Device {
             sc_reserved: [0; 5],
         };
         // SAFETY: addr is a valid sockaddr_ctl of the stated length.
-        if unsafe {
-            connect(
-                fd,
-                &addr as *const SockaddrCtl as *const c_void,
-                std::mem::size_of::<SockaddrCtl>() as u32,
-            )
-        } < 0
-        {
+        if unsafe { connect(fd, &addr as *const SockaddrCtl as *const c_void, std::mem::size_of::<SockaddrCtl>() as u32) } < 0 {
             return Err(os_err("utun connect"));
         }
         let mut buf = [0u8; 32];
         let mut len = buf.len() as u32;
         // SAFETY: buf/len describe a writable buffer we own.
-        if unsafe {
-            getsockopt(
-                fd,
-                SYSPROTO_CONTROL,
-                UTUN_OPT_IFNAME,
-                buf.as_mut_ptr() as *mut c_void,
-                &mut len,
-            )
-        } < 0
-        {
+        if unsafe { getsockopt(fd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, buf.as_mut_ptr() as *mut c_void, &mut len) } < 0 {
             return Err(os_err("utun UTUN_OPT_IFNAME"));
         }
-        let end = buf[..len as usize]
-            .iter()
-            .position(|&b| b == 0)
-            .unwrap_or(len as usize);
-        Ok((
-            Device { file },
-            String::from_utf8_lossy(&buf[..end]).to_string(),
-        ))
+        let end = buf[..len as usize].iter().position(|&b| b == 0).unwrap_or(len as usize);
+        Ok((Device { file }, String::from_utf8_lossy(&buf[..end]).to_string()))
     }
 
     /// One IP packet (AF header stripped), or `None` after ~250 ms without traffic.
     pub fn recv(&self, buf: &mut [u8]) -> io::Result<Option<usize>> {
-        let mut p = PollFd {
-            fd: self.file.as_raw_fd(),
-            events: POLLIN,
-            revents: 0,
-        };
+        let mut p = PollFd { fd: self.file.as_raw_fd(), events: POLLIN, revents: 0 };
         // SAFETY: one valid pollfd for the duration of the call.
         let rc = unsafe { poll(&mut p, 1, 250) };
         if rc < 0 {
             let e = io::Error::last_os_error();
-            return if e.kind() == io::ErrorKind::Interrupted {
-                Ok(None)
-            } else {
-                Err(e)
-            };
+            return if e.kind() == io::ErrorKind::Interrupted { Ok(None) } else { Err(e) };
         }
         if rc == 0 {
             return Ok(None);
@@ -152,24 +119,13 @@ impl Device {
                 Ok(Some(n - HDR))
             }
             Ok(_) => Ok(None),
-            Err(e)
-                if matches!(
-                    e.kind(),
-                    io::ErrorKind::Interrupted | io::ErrorKind::WouldBlock
-                ) =>
-            {
-                Ok(None)
-            }
+            Err(e) if matches!(e.kind(), io::ErrorKind::Interrupted | io::ErrorKind::WouldBlock) => Ok(None),
             Err(e) => Err(e),
         }
     }
 
     pub fn send(&self, pkt: &[u8]) -> io::Result<()> {
-        let af = if pkt.first().is_some_and(|b| b >> 4 == 6) {
-            AF_INET6
-        } else {
-            AF_INET
-        };
+        let af = if pkt.first().is_some_and(|b| b >> 4 == 6) { AF_INET6 } else { AF_INET };
         let mut d = Vec::with_capacity(HDR + pkt.len());
         d.extend_from_slice(&af.to_be_bytes());
         d.extend_from_slice(pkt);
@@ -178,42 +134,11 @@ impl Device {
 }
 
 /// `ifconfig utunN A PEER netmask M mtu X up` + `route add -net NET/P -interface utunN`.
-pub fn configure(
-    _dev: &Device,
-    name: &str,
-    addr: Ipv4Addr,
-    prefix: u8,
-    peer: Ipv4Addr,
-    mtu: u32,
-) -> io::Result<()> {
+pub fn configure(_dev: &Device, name: &str, addr: Ipv4Addr, prefix: u8, peer: Ipv4Addr, mtu: u32) -> io::Result<()> {
     let mask = u32::MAX << (32 - prefix);
     let net = Ipv4Addr::from(u32::from(addr) & mask);
-    run(
-        "ifconfig",
-        &[
-            name,
-            "inet",
-            &addr.to_string(),
-            &peer.to_string(),
-            "netmask",
-            &Ipv4Addr::from(mask).to_string(),
-            "mtu",
-            &mtu.to_string(),
-            "up",
-        ],
-    )?;
-    run(
-        "route",
-        &[
-            "-q",
-            "-n",
-            "add",
-            "-net",
-            &format!("{net}/{prefix}"),
-            "-interface",
-            name,
-        ],
-    )
+    run("ifconfig", &[name, "inet", &addr.to_string(), &peer.to_string(), "netmask", &Ipv4Addr::from(mask).to_string(), "mtu", &mtu.to_string(), "up"])?;
+    run("route", &["-q", "-n", "add", "-net", &format!("{net}/{prefix}"), "-interface", name])
 }
 
 fn run(cmd: &str, args: &[&str]) -> io::Result<()> {
@@ -221,9 +146,6 @@ fn run(cmd: &str, args: &[&str]) -> io::Result<()> {
     if st.success() {
         Ok(())
     } else {
-        Err(io::Error::other(format!(
-            "{cmd} {}: thất bại",
-            args.join(" ")
-        )))
+        Err(io::Error::other(format!("{cmd} {}: thất bại", args.join(" "))))
     }
 }

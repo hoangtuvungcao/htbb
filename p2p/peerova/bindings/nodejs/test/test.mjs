@@ -4,7 +4,7 @@ import { once } from "node:events";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Peerova, PeerovaError } from "../index.js";
+import { Peerova, PeerovaError, ErrorCode } from "../index.js";
 
 const N = 200;
 const withTimeout = (p, ms, what) =>
@@ -37,7 +37,7 @@ const cli = await Peerova.client(srv.ticket, { timeout_ms: 10000 });
 const [peer] = await withTimeout(once(cli, "connected"), 10000, "client connected");
 for (let i = 0; i < N; i++) cli.send(peer, `msg ${i}`, { channel: 1, reliable: true });
 cli.send(peer, "realtime", { channel: 2, reliable: false });
-assert.throws(() => cli.send(peer, Buffer.alloc(2000), { reliable: false }), PeerovaError);
+assert.throws(() => cli.send(peer, Buffer.alloc(2000), { reliable: false }), (e) => e instanceof PeerovaError && e.code === "E_TOO_LARGE");
 
 const fromPeer = await withTimeout(allReliable, 5000, "reliable messages");
 assert.deepEqual(got, Array.from({ length: N }, (_, i) => `msg ${i}`));
@@ -62,7 +62,8 @@ srv.disconnect(fromPeer);
 await withTimeout(disc, 5000, "disconnected");
 
 // bad ticket -> startup error
-await assert.rejects(Peerova.client("pvt_garbage"), PeerovaError);
+await assert.rejects(Peerova.client("pvt_garbage"), (e) => e instanceof PeerovaError && e.code === "E_INVALID_TICKET" && /^E_INVALID_TICKET: [\x20-\x7e]+$/.test(e.message));
+assert.equal(ErrorCode.E_INVALID_TICKET, 11);
 
 await cli.close();
 await srv.close();

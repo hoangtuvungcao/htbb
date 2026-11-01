@@ -2,10 +2,11 @@
 
 [Tiếng Việt](#tiếng-việt) · [English](#english)
 
-> **Trạng thái / Status:** binding này và ví dụ **chưa được chạy thử** — máy build không cài Bun. Code đã được
-> kiểm tra kiểu bằng TypeScript với khai báo `bun:ffi` rút gọn, nhưng chưa từng chạy trên Bun thật.
-> This binding and its example are **untested** — Bun is not installed on the build machine. The code was
-> type-checked with TypeScript against a reduced `bun:ffi` declaration, but has never run on a real Bun.
+> **Trạng thái / Status:** **TESTED** với Bun 1.4.4 trên Linux x86_64: `bun test` chạy round-trip thật
+> (200 reliable đúng thứ tự, unreliable hai chiều, trả lời nhị phân, disconnect) và `examples/chat.ts` chạy với 1 server + 2 client. Gói sidecar [`../nodejs`](../nodejs) cũng chạy PASS dưới Bun (`bun ../nodejs/test/test.mjs`).
+> Windows / macOS chưa được kiểm tra.
+> **TESTED** with Bun 1.4.4 on Linux x86_64: the test runs a real round-trip (200 reliable in order, unreliable both ways,
+> binary reply, disconnect) and `examples/chat.ts` runs with 1 server + 2 clients. The sidecar package [`../nodejs`](../nodejs) also passes under Bun (`bun ../nodejs/test/test.mjs`). Windows / macOS are not tested yet.
 
 ---
 
@@ -161,7 +162,7 @@ Client (`PeerovaClient.connect(ticketOrCode, config)`): `token` (phải trùng s
 
 ### Ví dụ
 
-[`examples/chat.ts`](examples/chat.ts) (chưa chạy thử): chat + đồng bộ vị trí (vị trí unreliable ~20 Hz, chat
+[`examples/chat.ts`](examples/chat.ts): chat + đồng bộ vị trí (vị trí unreliable ~20 Hz, chat
 reliable; server chuyển tiếp cho các client khác).
 
 ```sh
@@ -339,7 +340,7 @@ Client (`PeerovaClient.connect(ticketOrCode, config)`): `token` (must match the 
 
 ### Example
 
-[`examples/chat.ts`](examples/chat.ts) (untested): chat + position sync (positions unreliable at ~20 Hz, chat
+[`examples/chat.ts`](examples/chat.ts): chat + position sync (positions unreliable at ~20 Hz, chat
 reliable; the server forwards to the other clients).
 
 ```sh

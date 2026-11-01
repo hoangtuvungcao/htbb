@@ -95,8 +95,9 @@ public final class Chay {
         if (p2pTicket == null) p2pTicket = System.getenv("HTBB_P2P_TICKET");
         if ((p2pTicket == null || p2pTicket.length() == 0) && CaiDat.p2pTicket.length() > 0) p2pTicket = CaiDat.p2pTicket;
         if (p2pTicket != null && p2pTicket.trim().length() > 0) MIDlet.GHI_DE.put("HTBB-P2P-Ticket", p2pTicket.trim());
-        if (System.getProperty("peerova.extract.dir") == null) {
-            System.setProperty("peerova.extract.dir", new java.io.File(CaiDat.thuMucDuLieu(), "p2p").getAbsolutePath());
+        // Danh tinh P2P co dinh cua may nguoi choi (= dia chi 127.a.b.c on dinh ma may chu thay), giai nen thu vien native
+        if (System.getProperty("htbb.p2p.key") == null) {
+            System.setProperty("htbb.p2p.key", new java.io.File(new java.io.File(CaiDat.thuMucDuLieu(), "p2p"), "peerova-client.key").getAbsolutePath());
         }
         if (cuaSo == null && CaiDat.lanDau && !java.awt.GraphicsEnvironment.isHeadless()) {
             // lần đầu: cửa sổ 16:9 lớn nhất vừa ~85% màn hình (màn 4K: 2560x1440 thay vì 1280x720 bé tí)

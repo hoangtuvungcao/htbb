@@ -57,57 +57,25 @@ pub struct Candidate {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Packet {
     /// Hole-punch probe. Any node answers with `Pong`.
-    Ping {
-        session: u64,
-        nonce: u64,
-    },
-    Pong {
-        session: u64,
-        nonce: u64,
-        observed: SocketAddr,
-    },
+    Ping { session: u64, nonce: u64 },
+    Pong { session: u64, nonce: u64, observed: SocketAddr },
     /// Our own STUN: "what address do you see me as?"
-    ReflectReq {
-        txid: u64,
-    },
-    ReflectResp {
-        txid: u64,
-        observed: SocketAddr,
-    },
+    ReflectReq { txid: u64 },
+    ReflectResp { txid: u64, observed: SocketAddr },
     /// Server -> supernode keepalive registration (also keeps NAT binding alive).
     /// `lease`: authority-signed lease token (empty = unlicensed). Licensed
     /// supernodes only serve registrations with a valid lease bound to `server_pub`.
-    Register {
-        server_pub: [u8; 32],
-        lease: Vec<u8>,
-    },
-    RegisterAck {
-        observed: SocketAddr,
-    },
+    Register { server_pub: [u8; 32], lease: Vec<u8> },
+    RegisterAck { observed: SocketAddr },
     /// Client -> supernode: please introduce me to `server_id`.
     /// `proof` = mac1(server_pub, session || server_id): only ticket holders can ask.
-    IntroReq {
-        server_id: [u8; 16],
-        session: u64,
-        candidates: Vec<Candidate>,
-        proof: [u8; 16],
-    },
+    IntroReq { server_id: [u8; 16], session: u64, candidates: Vec<Candidate>, proof: [u8; 16] },
     /// Supernode -> server: a client wants to connect, punch towards these.
-    Intro {
-        session: u64,
-        candidates: Vec<Candidate>,
-    },
+    Intro { session: u64, candidates: Vec<Candidate> },
     /// Supernode -> client. status 0 = forwarded, 1 = server unknown.
-    IntroResp {
-        session: u64,
-        status: u8,
-        server_addr: Option<SocketAddr>,
-    },
+    IntroResp { session: u64, status: u8, server_addr: Option<SocketAddr> },
     /// PoC application data (echo test). Replaced by encrypted frames in Phase 1.
-    Data {
-        session: u64,
-        payload: Vec<u8>,
-    },
+    Data { session: u64, payload: Vec<u8> },
 }
 
 mod ty {
@@ -225,10 +193,7 @@ impl<'a> R<'a> {
         (0..n)
             .map(|_| {
                 let kind = CandKind::from_u8(self.u8()?)?;
-                Some(Candidate {
-                    kind,
-                    addr: self.addr()?,
-                })
+                Some(Candidate { kind, addr: self.addr()? })
             })
             .collect()
     }
@@ -242,11 +207,7 @@ impl Packet {
             Packet::Ping { session, nonce } => {
                 w.u8(ty::PING).u64(*session).u64(*nonce);
             }
-            Packet::Pong {
-                session,
-                nonce,
-                observed,
-            } => {
+            Packet::Pong { session, nonce, observed } => {
                 w.u8(ty::PONG).u64(*session).u64(*nonce).addr(observed);
             }
             Packet::ReflectReq { txid } => {
@@ -261,33 +222,14 @@ impl Packet {
             Packet::RegisterAck { observed } => {
                 w.u8(ty::REGISTER_ACK).addr(observed);
             }
-            Packet::IntroReq {
-                server_id,
-                session,
-                candidates,
-                proof,
-            } => {
-                w.u8(ty::INTRO_REQ)
-                    .bytes(server_id)
-                    .u64(*session)
-                    .cands(candidates)
-                    .bytes(proof);
+            Packet::IntroReq { server_id, session, candidates, proof } => {
+                w.u8(ty::INTRO_REQ).bytes(server_id).u64(*session).cands(candidates).bytes(proof);
             }
-            Packet::Intro {
-                session,
-                candidates,
-            } => {
+            Packet::Intro { session, candidates } => {
                 w.u8(ty::INTRO).u64(*session).cands(candidates);
             }
-            Packet::IntroResp {
-                session,
-                status,
-                server_addr,
-            } => {
-                w.u8(ty::INTRO_RESP)
-                    .u64(*session)
-                    .u8(*status)
-                    .opt_addr(server_addr);
+            Packet::IntroResp { session, status, server_addr } => {
+                w.u8(ty::INTRO_RESP).u64(*session).u8(*status).opt_addr(server_addr);
             }
             Packet::Data { session, payload } => {
                 w.u8(ty::DATA).u64(*session).bytes(payload);
@@ -302,46 +244,25 @@ impl Packet {
             return None;
         }
         Some(match r.u8()? {
-            ty::PING => Packet::Ping {
-                session: r.u64()?,
-                nonce: r.u64()?,
-            },
-            ty::PONG => Packet::Pong {
-                session: r.u64()?,
-                nonce: r.u64()?,
-                observed: r.addr()?,
-            },
+            ty::PING => Packet::Ping { session: r.u64()?, nonce: r.u64()? },
+            ty::PONG => Packet::Pong { session: r.u64()?, nonce: r.u64()?, observed: r.addr()? },
             ty::REFLECT_REQ => Packet::ReflectReq { txid: r.u64()? },
-            ty::REFLECT_RESP => Packet::ReflectResp {
-                txid: r.u64()?,
-                observed: r.addr()?,
-            },
-            ty::REGISTER => Packet::Register {
-                server_pub: r.take(32)?.try_into().ok()?,
-                lease: r.rest().to_vec(),
-            },
-            ty::REGISTER_ACK => Packet::RegisterAck {
-                observed: r.addr()?,
-            },
+            ty::REFLECT_RESP => Packet::ReflectResp { txid: r.u64()?, observed: r.addr()? },
+            ty::REGISTER => Packet::Register { server_pub: r.take(32)?.try_into().ok()?, lease: r.rest().to_vec() },
+            ty::REGISTER_ACK => Packet::RegisterAck { observed: r.addr()? },
             ty::INTRO_REQ => Packet::IntroReq {
                 server_id: r.id16()?,
                 session: r.u64()?,
                 candidates: r.cands()?,
                 proof: r.id16()?,
             },
-            ty::INTRO => Packet::Intro {
-                session: r.u64()?,
-                candidates: r.cands()?,
-            },
+            ty::INTRO => Packet::Intro { session: r.u64()?, candidates: r.cands()? },
             ty::INTRO_RESP => Packet::IntroResp {
                 session: r.u64()?,
                 status: r.u8()?,
                 server_addr: r.opt_addr()?,
             },
-            ty::DATA => Packet::Data {
-                session: r.u64()?,
-                payload: r.rest().to_vec(),
-            },
+            ty::DATA => Packet::Data { session: r.u64()?, payload: r.rest().to_vec() },
             _ => return None,
         })
     }
@@ -356,59 +277,21 @@ mod tests {
         let a4: SocketAddr = "203.0.113.7:47000".parse().unwrap();
         let a6: SocketAddr = "[2402:800::1]:47001".parse().unwrap();
         let cands = vec![
-            Candidate {
-                kind: CandKind::Host,
-                addr: a4,
-            },
-            Candidate {
-                kind: CandKind::Ipv6,
-                addr: a6,
-            },
+            Candidate { kind: CandKind::Host, addr: a4 },
+            Candidate { kind: CandKind::Ipv6, addr: a6 },
         ];
         let pkts = vec![
-            Packet::Ping {
-                session: 1,
-                nonce: 2,
-            },
-            Packet::Pong {
-                session: 1,
-                nonce: 2,
-                observed: a6,
-            },
+            Packet::Ping { session: 1, nonce: 2 },
+            Packet::Pong { session: 1, nonce: 2, observed: a6 },
             Packet::ReflectReq { txid: 9 },
-            Packet::ReflectResp {
-                txid: 9,
-                observed: a4,
-            },
-            Packet::Register {
-                server_pub: [7; 32],
-                lease: b"pvl1.x.y".to_vec(),
-            },
+            Packet::ReflectResp { txid: 9, observed: a4 },
+            Packet::Register { server_pub: [7; 32], lease: b"pvl1.x.y".to_vec() },
             Packet::RegisterAck { observed: a4 },
-            Packet::IntroReq {
-                server_id: [3; 16],
-                session: 5,
-                candidates: cands.clone(),
-                proof: [1; 16],
-            },
-            Packet::Intro {
-                session: 5,
-                candidates: cands,
-            },
-            Packet::IntroResp {
-                session: 5,
-                status: 0,
-                server_addr: Some(a4),
-            },
-            Packet::IntroResp {
-                session: 5,
-                status: 1,
-                server_addr: None,
-            },
-            Packet::Data {
-                session: 5,
-                payload: b"hello".to_vec(),
-            },
+            Packet::IntroReq { server_id: [3; 16], session: 5, candidates: cands.clone(), proof: [1; 16] },
+            Packet::Intro { session: 5, candidates: cands },
+            Packet::IntroResp { session: 5, status: 0, server_addr: Some(a4) },
+            Packet::IntroResp { session: 5, status: 1, server_addr: None },
+            Packet::Data { session: 5, payload: b"hello".to_vec() },
         ];
         for p in pkts {
             assert_eq!(Packet::decode(&p.encode()), Some(p));

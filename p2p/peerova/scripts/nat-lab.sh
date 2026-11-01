@@ -85,7 +85,7 @@ run_case() { # server_nat client_nat
       PEEROVA_DB=memory PORT=8788 HOST=0.0.0.0 COOKIE_SECURE=0 ADMIN_EMAILS=a@lab \
       ip netns exec sn node "$ROOT/web/server/node-server.mjs" > web.log 2>&1 &)
     for _ in $(seq 40); do ns sn curl -s -o /dev/null http://127.0.0.1:8788/api/v1/health && break; sleep 0.2; done
-    (cd "$d" && ns ha "$BIN" server --port 47001 --no-map --rendezvous http://203.0.113.10:8788 --key a.key --ticket-file a.t < /dev/null > srv.log 2>&1 &)
+    (cd "$d" && ns ha "$BIN" server --port 47001 --no-map --rendezvous http://203.0.113.10:8788 --key a.key --ticket-file a.t ${LAB_SERVER_ARGS:-} < /dev/null > srv.log 2>&1 &)
     CLIENT_EXTRA="--rendezvous http://203.0.113.10:8788"
   else
   (cd "$d" && ns sn "$BIN" server --port 47000 --no-map --no-tcp --supernode-mode --key sn.key < /dev/null > sn.log 2>&1 &)
@@ -94,12 +94,19 @@ run_case() { # server_nat client_nat
   fi
   for _ in $(seq 30); do [ -s "$d/a.t" ] && break; sleep 0.2; done
   local t0=$(date +%s.%N)
-  (cd "$d" && timeout $(( ${LAB_TIMEOUT:-50} + 10 )) ip netns exec hb "$BIN" ping @a.t $CLIENT_EXTRA --timeout ${LAB_TIMEOUT:-50} --count 20 --interval-ms 20 --bench-mb 2 > cli.log 2>&1)
+  # LAB_REPEAT=N: connect N times in a row (later runs use what the first one learned: paths.cache).
+  local rep
+  for rep in $(seq 2 "${LAB_REPEAT:-1}"); do
+    (cd "$d" && timeout $(( ${LAB_TIMEOUT:-50} + 10 )) ip netns exec hb "$BIN" ping @a.t $CLIENT_EXTRA --key c.key --timeout ${LAB_TIMEOUT:-50} --count 3 --interval-ms 20 --bench-mb 1 ${LAB_CLIENT_ARGS:-} > "cli$rep.log" 2>&1)
+    sleep 0.5
+  done
+  (cd "$d" && timeout $(( ${LAB_TIMEOUT:-50} + 10 )) ip netns exec hb "$BIN" ping @a.t $CLIENT_EXTRA --key c.key --timeout ${LAB_TIMEOUT:-50} --count 20 --interval-ms 20 --bench-mb 2 ${LAB_CLIENT_ARGS:-} > cli.log 2>&1)
   local path rtt ok
   path=$(grep -oE '\[[a-z0-9+-]+\] trong [0-9]+ ms' "$d/cli.log" | head -1)
   rtt=$(grep -oE 'avg [0-9.]+' "$d/cli.log" | head -1)
   if grep -q "UPLOAD" "$d/cli.log" && grep -q "✔$" <(grep UPLOAD "$d/cli.log" | grep -o '✔'); then ok="✅ THÔNG"; else ok="❌ KHÔNG THÔNG"; fi
   printf "%-6s → %-6s  %-14s %-28s %s\n" "$S" "$C" "$ok" "${path:-—}" "${rtt:+RTT $rtt ms}"
+  for f in "$d"/cli[0-9]*.log; do [ -e "$f" ] && printf "        %s: %s\n" "$(basename "$f" .log)" "$(grep -oE '\[[a-z0-9+-]+\] trong [0-9]+ ms' "$f" | head -1)"; done
   grep -hE "birthday|punch NAT|điểm hẹn" "$d"/*.log | sed 's/^/        /' | cut -c1-150 | head -4
   if [ -n "${LAB_DEBUG:-}" ]; then
     for r in ra rb; do echo "    --- $r FORWARD/INPUT counters"; ns $r iptables -L FORWARD -v -n -x | sed 's/^/      /'; ns $r iptables -L INPUT -v -n -x | sed 's/^/      /'; ns $r iptables -t mangle -L PREROUTING -v -n -x | sed 's/^/      /'; done

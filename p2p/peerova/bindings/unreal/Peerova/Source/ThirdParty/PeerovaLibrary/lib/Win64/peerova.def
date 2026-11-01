@@ -11,4 +11,5 @@ EXPORTS
     peerova_peer_count
     peerova_free
     peerova_last_error
+    peerova_last_error_code
     peerova_version

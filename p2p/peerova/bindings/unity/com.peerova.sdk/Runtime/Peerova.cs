@@ -17,7 +17,6 @@
 // On .NET 6+ an extra resolver first tries Native.LibraryPath, the PEEROVA_LIB environment variable
 // and the application base directory. On iOS (Unity, IL2CPP) the static library is linked: "__Internal".
 using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -62,15 +61,89 @@ namespace Peerova
         /// <summary><see cref="Data"/> decoded as UTF-8 (for text messages and the <see cref="EventType.ConnectFailed"/> reason).</summary>
         public string Text => Encoding.UTF8.GetString(Data);
 
+        /// <summary>
+        /// For <see cref="EventType.ConnectFailed"/> / <see cref="EventType.Disconnected"/>: the error code of the reason
+        /// (<see cref="Text"/> is English, <c>"E_TIMEOUT: ..."</c>). <see cref="Peerova.ErrorCode.Ok"/> for other events.
+        /// </summary>
+        public ErrorCode ErrorCode =>
+            Type == EventType.ConnectFailed || Type == EventType.Disconnected ? ErrorCodes.FromText(Text, ErrorCode.Internal) : ErrorCode.Ok;
+
         /// <inheritdoc/>
         public override string ToString() => $"{Type} peer={Peer} ch={Channel} reliable={Reliable} len={Data.Length}";
     }
 
-    /// <summary>Thrown when a native Peerova call fails. <see cref="Exception.Message"/> is the text of <c>peerova_last_error()</c>.</summary>
+    /// <summary>Stable SDK error codes (same values as <c>PEEROVA_E_*</c> in peerova.h).</summary>
+    public enum ErrorCode
+    {
+        /// <summary>No error.</summary>
+        Ok = 0,
+        /// <summary>Invalid argument or config (null/invalid value, malformed JSON, bad connect code format).</summary>
+        InvalidArg = 1,
+        /// <summary>Unreliable payload larger than <see cref="Library.MaxUnreliablePayload"/> bytes.</summary>
+        TooLarge = 2,
+        /// <summary>The peer id is not (or no longer) connected.</summary>
+        UnknownPeer = 3,
+        /// <summary>The connection was closed (disconnect reasons).</summary>
+        Closed = 4,
+        /// <summary>The 6-character connect code is unknown or expired.</summary>
+        CodeNotFound = 5,
+        /// <summary>Network or service error (socket, port in use, website / license server unreachable).</summary>
+        Network = 6,
+        /// <summary>Timed out (connecting, server not ready, peer stopped responding).</summary>
+        Timeout = 7,
+        /// <summary>License / lease invalid, expired or rejected.</summary>
+        License = 8,
+        /// <summary>The server's concurrent-client (CCU) limit was reached.</summary>
+        CcuLimit = 9,
+        /// <summary>Access token wrong, expired or revoked.</summary>
+        AccessDenied = 10,
+        /// <summary>The ticket is malformed, corrupted or from an unsupported version.</summary>
+        InvalidTicket = 11,
+        /// <summary>Server key file unreadable, unwritable or corrupted.</summary>
+        Io = 12,
+        /// <summary>Internal or unclassified error.</summary>
+        Internal = 99,
+    }
+
+    /// <summary>Helpers for SDK error texts of the form <c>"E_NAME: message"</c>.</summary>
+    public static class ErrorCodes
+    {
+        static readonly string[] Names =
+        {
+            "E_OK", "E_INVALID_ARG", "E_TOO_LARGE", "E_UNKNOWN_PEER", "E_CLOSED", "E_CODE_NOT_FOUND", "E_NETWORK",
+            "E_TIMEOUT", "E_LICENSE", "E_CCU_LIMIT", "E_ACCESS_DENIED", "E_INVALID_TICKET", "E_IO",
+        };
+
+        /// <summary>The stable name of a code, e.g. <c>"E_TOO_LARGE"</c>.</summary>
+        public static string Name(ErrorCode code) =>
+            code == ErrorCode.Internal ? "E_INTERNAL" : (int)code >= 0 && (int)code < Names.Length ? Names[(int)code] : "E_" + (int)code;
+
+        /// <summary>Parses the <c>"E_NAME:"</c> prefix of an SDK error text; <paramref name="fallback"/> if there is none.</summary>
+        public static ErrorCode FromText(string text, ErrorCode fallback = ErrorCode.Internal)
+        {
+            if (string.IsNullOrEmpty(text)) return fallback;
+            int colon = text.IndexOf(':');
+            string name = (colon < 0 ? text : text.Substring(0, colon)).Trim();
+            if (name == "E_INTERNAL") return ErrorCode.Internal;
+            int i = Array.IndexOf(Names, name);
+            return i >= 0 ? (ErrorCode)i : fallback;
+        }
+    }
+
+    /// <summary>
+    /// Thrown when a native Peerova call fails. <see cref="Exception.Message"/> is the English text of
+    /// <c>peerova_last_error()</c> (<c>"E_NAME: message"</c>); <see cref="Code"/> is the stable error code.
+    /// </summary>
     public class PeerovaException : Exception
     {
-        /// <summary>Creates the exception with the given message.</summary>
-        public PeerovaException(string message) : base(message) { }
+        /// <summary>Stable error code (<c>peerova_last_error_code()</c>).</summary>
+        public ErrorCode Code { get; }
+
+        /// <summary>Creates the exception; the code is parsed from the <c>"E_NAME:"</c> prefix of the message.</summary>
+        public PeerovaException(string message) : this(message, ErrorCodes.FromText(message)) { }
+
+        /// <summary>Creates the exception with an explicit code.</summary>
+        public PeerovaException(string message, ErrorCode code) : base(message) { Code = code; }
     }
 
     /// <summary>Owns a native <c>peerova_node*</c>; released with <c>peerova_free</c> when disposed or finalized.</summary>
@@ -104,9 +177,6 @@ namespace Peerova
         public const string Lib = "peerova";
 #endif
 
-        /// <summary>Runs the static constructor (installs the .NET 6+ library resolver); used by <see cref="Tunnel"/>.</summary>
-        internal static void EnsureResolver() { }
-
         /// <summary>Mirror of the C struct <c>peerova_event</c> (sequential layout matches C on 32- and 64-bit).</summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct RawEvent
@@ -124,6 +194,9 @@ namespace Peerova
             /// <summary>Payload length in bytes.</summary>
             public uint len;
         }
+
+        /// <summary>Runs the static constructor (installs the .NET 6+ library resolver); used by <see cref="Tunnel"/>.</summary>
+        internal static void EnsureResolver() { }
 
 #if NET6_0_OR_GREATER
         /// <summary>
@@ -197,6 +270,10 @@ namespace Peerova
         [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr peerova_last_error();
 
+        /// <summary><c>peerova_last_error_code</c>: <c>PEEROVA_E_*</c> code of the last failed call on this thread.</summary>
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int peerova_last_error_code();
+
         /// <summary><c>peerova_version</c>: UTF-8 version string of the native library.</summary>
         [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr peerova_version();
@@ -231,7 +308,16 @@ namespace Peerova
             return Encoding.UTF8.GetString(buf, 0, m - 1);
         }
 
-        internal static string LastError() => FromUtf8Z(peerova_last_error()) ?? "unknown peerova error";
+        internal static string LastError() => FromUtf8Z(peerova_last_error()) ?? "E_INTERNAL: unknown peerova error";
+
+        internal static ErrorCode LastErrorCode()
+        {
+            try { return (ErrorCode)peerova_last_error_code(); }
+            catch (EntryPointNotFoundException) { return ErrorCodes.FromText(LastError()); } // older native library
+        }
+
+        /// <summary>Exception for the last failed native call on this thread (message and code).</summary>
+        internal static PeerovaException LastException() => new PeerovaException(LastError(), LastErrorCode());
     }
 
     /// <summary>Library-wide information.</summary>
@@ -260,9 +346,9 @@ namespace Peerova
         {
             if (handle == null || handle.IsInvalid)
             {
-                var err = Native.LastError();
+                var err = Native.LastException();
                 handle?.Dispose();
-                throw new PeerovaException(err);
+                throw err;
             }
             Handle = handle;
         }
@@ -302,10 +388,10 @@ namespace Peerova
         /// false: datagram with the lowest latency, may be lost or reordered, at most <see cref="Library.MaxUnreliablePayload"/> bytes
         /// (positions, inputs, other state that is resent often).
         /// </param>
-        /// <exception cref="PeerovaException">The send failed (unknown peer, payload too large, ...). Message = native error text.</exception>
+        /// <exception cref="PeerovaException">The send failed (<see cref="ErrorCode.UnknownPeer"/>, <see cref="ErrorCode.TooLarge"/>, ...).</exception>
         public void Send(uint peer, ReadOnlySpan<byte> data, byte channel = 0, bool reliable = true)
         {
-            if (!TrySend(peer, data, channel, reliable)) throw new PeerovaException(Native.LastError());
+            if (!TrySend(peer, data, channel, reliable)) throw Native.LastException();
         }
 
         /// <summary>Sends a string encoded as UTF-8. See <see cref="Send(uint, ReadOnlySpan{byte}, byte, bool)"/>.</summary>
@@ -328,8 +414,11 @@ namespace Peerova
         /// <summary>Number of currently connected peers (server: clients; client: 0 or 1).</summary>
         public uint PeerCount => Native.peerova_peer_count(Handle);
 
-        /// <summary>Error text of the last failed Peerova call on the calling thread.</summary>
+        /// <summary>English error text (<c>"E_NAME: message"</c>) of the last failed Peerova call on the calling thread.</summary>
         public static string LastError => Native.LastError();
+
+        /// <summary>Error code of the last failed Peerova call on the calling thread.</summary>
+        public static ErrorCode LastErrorCode => Native.LastErrorCode();
 
         /// <summary>Closes all connections and frees the native node. Safe to call more than once.</summary>
         public void Dispose()
@@ -432,8 +521,6 @@ namespace Peerova
         public string KeyFile;
         /// <summary>License key ("PVA-..."). Without it the server runs in dev mode (max 3 clients).</summary>
         public string License;
-        /// <summary>Advanced; leave unset.</summary>
-        [EditorBrowsable(EditorBrowsableState.Never)] public string LicenseServer;
         /// <summary>Shared secret clients must present (<see cref="ClientConfig.Token"/>). Null = no token required.</summary>
         public string Token;
         /// <summary>Maximum number of concurrent clients (capped by the license).</summary>
@@ -442,12 +529,15 @@ namespace Peerova
         public bool? Upnp;
         /// <summary>Private ticket: the ticket does not contain the server's IP addresses (default false).</summary>
         public bool? Private;
+        /// <summary>
+        /// Hide the server IP: players never learn its real address (DDoS protection); clients connect through the
+        /// automatic encrypted route, so latency is slightly higher (default false).
+        /// </summary>
+        public bool? HideIp;
         /// <summary>Project id from the Peerova website ("prj_..."). Needed, with <see cref="Share"/>, to get a connect code.</summary>
         public string App;
         /// <summary>Listing settings for the connect code. Needs <see cref="App"/>.</summary>
         public ShareConfig Share;
-        /// <summary>Advanced; leave unset.</summary>
-        [EditorBrowsable(EditorBrowsableState.Never)] public string[] Supernodes;
 
         /// <summary>Serializes the set fields to the JSON accepted by <see cref="Server.Start(string)"/>.</summary>
         public string ToJson()
@@ -456,19 +546,13 @@ namespace Peerova
             w.Int("port", Port);
             w.Str("key_file", KeyFile);
             w.Str("license", License);
-            w.Str("license_server", LicenseServer);
             w.Str("token", Token);
             w.Int("max_ccu", MaxCcu);
             w.Bool("upnp", Upnp);
             w.Bool("private", Private);
+            w.Bool("hide_ip", HideIp);
             w.Str("app", App);
             if (Share != null) w.Raw("share", Share.ToJson());
-            if (Supernodes != null)
-            {
-                var sb = new StringBuilder("[");
-                for (int i = 0; i < Supernodes.Length; i++) { if (i > 0) sb.Append(','); sb.Append(QuoteJson(Supernodes[i])); }
-                w.Raw("supernodes", sb.Append(']').ToString());
-            }
             return w.ToString();
         }
 
@@ -501,6 +585,14 @@ namespace Peerova
         public string Token;
         /// <summary>Give up and report <see cref="EventType.ConnectFailed"/> after this many milliseconds (default 20000).</summary>
         public int? TimeoutMs;
+        /// <summary>
+        /// Optional path of the client's identity key, created if missing (for example
+        /// <c>Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MyGame", "peerova-client.key")</c>).
+        /// Keeping it keeps the same identity across runs, so the server maps the player to the same stable address
+        /// (127.a.b.c) every time. Null = a new random key per run. Address bans only hold while the player keeps the
+        /// file; use accounts / tokens for robust identity.
+        /// </summary>
+        public string KeyFile;
 
         /// <summary>Serializes the set fields to the JSON accepted by <see cref="Client.Connect(string, string)"/>.</summary>
         public string ToJson()
@@ -508,6 +600,7 @@ namespace Peerova
             var w = new JsonObjectWriter();
             w.Str("token", Token);
             w.Int("timeout_ms", TimeoutMs);
+            w.Str("key_file", KeyFile);
             return w.ToString();
         }
     }
@@ -563,7 +656,6 @@ namespace Peerova
             [DllImport(Native.Lib, CallingConvention = CallingConvention.Cdecl)] internal static extern int peerova_tunnel_ticket(IntPtr t, byte[] buf, int len);
             [DllImport(Native.Lib, CallingConvention = CallingConvention.Cdecl)] internal static extern int peerova_tunnel_error(IntPtr t, byte[] buf, int len);
             [DllImport(Native.Lib, CallingConvention = CallingConvention.Cdecl)] internal static extern int peerova_tunnel_next_log(IntPtr t, byte[] buf, int len);
-            [DllImport(Native.Lib, CallingConvention = CallingConvention.Cdecl)] internal static extern int peerova_tunnel_peer_of(IntPtr t, ushort port, uint waitMs, byte[] buf, int len);
             [DllImport(Native.Lib, CallingConvention = CallingConvention.Cdecl)] internal static extern uint peerova_tunnel_peer_count(IntPtr t);
             [DllImport(Native.Lib, CallingConvention = CallingConvention.Cdecl)] internal static extern void peerova_tunnel_free(IntPtr t);
             [DllImport(Native.Lib, CallingConvention = CallingConvention.Cdecl)] internal static extern IntPtr peerova_last_error();
@@ -640,9 +732,6 @@ namespace Peerova
 
         /// <summary>Oldest pending log line, or null.</summary>
         public string NextLog() => Str(N.peerova_tunnel_next_log);
-
-        /// <summary>Server: "ip:port" of the peer behind the loopback socket with this source port (null if unknown / relayed).</summary>
-        public string PeerOf(int srcPort, int waitMs) => Str((t, b, n) => N.peerova_tunnel_peer_of(t, (ushort)srcPort, (uint)Math.Max(0, waitMs), b, n));
 
         /// <summary>Server: connected peers.</summary>
         public uint PeerCount { get { lock (gate) return h == IntPtr.Zero ? 0 : N.peerova_tunnel_peer_count(h); } }

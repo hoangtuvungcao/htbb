@@ -33,19 +33,69 @@ final class PeerovaTests: XCTestCase {
             }
         }
         XCTAssertEqual(got, (0..<n).map { "msg \($0)" })
-        // The unreliable datagram may legitimately be lost; on loopback it normally arrives.
-        if !gotUnreliable { print("note: unreliable datagram not observed (allowed)") }
+        // The datagram may land after the last reliable message (on loopback it is never lost).
+        let d1 = Date().addingTimeInterval(2)
+        while !gotUnreliable && Date() < d1 {
+            if case .message(_, 2, false, let data)? = server.poll(timeout: 0.2),
+               String(decoding: data, as: UTF8.self) == "realtime" { gotUnreliable = true }
+        }
+        XCTAssertTrue(gotUnreliable, "client->server unreliable datagram not received")
+        XCTAssertThrowsError(try client.send(Data(count: 2000), to: peer, reliable: false))
 
         let sp = try XCTUnwrap(serverPeer)
-        try server.send("pong", to: sp)
+        let binary = Data([0x70, 0x6f, 0x6e, 0x67, 0x00, 0xff])
+        try server.send(binary, to: sp)
+        try server.send("srv-realtime", to: sp, channel: 3, reliable: false)
         var reply: Data?
+        var backUnreliable = false
         let d2 = Date().addingTimeInterval(5)
-        while reply == nil && Date() < d2 {
-            if case .message(_, _, true, let data)? = client.poll(timeout: 0.2) { reply = data }
+        while (reply == nil || !backUnreliable) && Date() < d2 {
+            switch client.poll(timeout: 0.2) {
+            case .message(_, _, true, let data)?: reply = data
+            case .message(_, 3, false, let data)?:
+                if String(decoding: data, as: UTF8.self) == "srv-realtime" { backUnreliable = true }
+            default: break
+            }
         }
-        XCTAssertEqual(reply, Data("pong".utf8))
+        XCTAssertEqual(reply, binary)
+        XCTAssertTrue(backUnreliable, "server->client unreliable datagram not received")
         XCTAssertEqual(server.peerCount, 1)
-        print("swift OK: peerova \(peerovaVersion), \(n) reliable msgs in order, unreliable=\(gotUnreliable)")
+
+        // client leaves -> server sees .disconnected
+        client.close()
+        XCTAssertThrowsError(try client.send("late", to: peer))
+        var gone = false
+        let d3 = Date().addingTimeInterval(10)
+        while !gone && Date() < d3 {
+            if case .disconnected(let p, _)? = server.poll(timeout: 0.2), p == sp { gone = true }
+        }
+        XCTAssertTrue(gone, "server did not see .disconnected")
+        print("swift PASS: peerova \(peerovaVersion), \(n) reliable msgs in order, unreliable both ways, binary reply ok, disconnect ok")
+    }
+
+    /// Same flow through the async `events()` stream.
+    func testAsyncEventsStream() async throws {
+        let key = FileManager.default.temporaryDirectory
+            .appendingPathComponent("peerova-swift-\(UUID().uuidString).key").path
+        let server = try await PeerovaServer.start(config: ["port": 0, "upnp": false, "key_file": key])
+        defer { server.close(); try? FileManager.default.removeItem(atPath: key) }
+        let client = try PeerovaClient(ticket: server.ticket, config: ["timeout_ms": 10000])
+        defer { client.close() }
+        var cliPeer: UInt32?
+        for await ev in client.events() {
+            if case .connected(let p) = ev { cliPeer = p; break }
+            if case .connectFailed(let r) = ev { return XCTFail("connect failed: \(r)") }
+        }
+        let peer = try XCTUnwrap(cliPeer)
+        for i in 0..<60 { try client.send("m\(i)", to: peer, channel: 1) }
+        var got: [String] = []
+        for await ev in server.events() {
+            if case .message(_, 1, true, let data) = ev {
+                got.append(String(decoding: data, as: UTF8.self))
+                if got.count == 60 { break }
+            }
+        }
+        XCTAssertEqual(got, (0..<60).map { "m\($0)" })
     }
 
     func testBadTicketThrows() {

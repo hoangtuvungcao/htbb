@@ -6,10 +6,7 @@ use std::net::Ipv4Addr;
 pub struct Device;
 
 fn unsupported() -> io::Error {
-    io::Error::new(
-        io::ErrorKind::Unsupported,
-        "chế độ VPN chưa hỗ trợ hệ điều hành này (hỗ trợ: Linux, Windows, macOS)",
-    )
+    io::Error::new(io::ErrorKind::Unsupported, "chế độ VPN chưa hỗ trợ hệ điều hành này (hỗ trợ: Linux, Windows, macOS)")
 }
 
 impl Device {
@@ -24,13 +21,6 @@ impl Device {
     }
 }
 
-pub fn configure(
-    _dev: &Device,
-    _name: &str,
-    _addr: Ipv4Addr,
-    _prefix: u8,
-    _peer: Ipv4Addr,
-    _mtu: u32,
-) -> io::Result<()> {
+pub fn configure(_dev: &Device, _name: &str, _addr: Ipv4Addr, _prefix: u8, _peer: Ipv4Addr, _mtu: u32) -> io::Result<()> {
     Err(unsupported())
 }

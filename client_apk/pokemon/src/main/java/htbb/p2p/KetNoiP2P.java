@@ -71,6 +71,12 @@ public final class KetNoiP2P {
             if (token.length() > 0) {
                 j.append(",\"token\":\"").append(token.replace("\\", "\\\\").replace("\"", "\\\"")).append('"');
             }
+            // Danh tinh client co dinh (SDK: "key_file") -> may chu thay cung dia chi 127.a.b.c moi lan (PC: thu muc du lieu).
+            final String khoa = System.getProperty("htbb.p2p.key");
+            if (khoa != null && khoa.length() > 0) {
+                new java.io.File(khoa).getAbsoluteFile().getParentFile().mkdirs();
+                j.append(",\"key_file\":\"").append(khoa.replace("\\", "\\\\").replace("\"", "\\\"")).append('"');
+            }
             int to = 20000;
             try {
                 if (cauHinh("HTBB-P2P-Timeout").length() > 0) to = Integer.parseInt(cauHinh("HTBB-P2P-Timeout"));
