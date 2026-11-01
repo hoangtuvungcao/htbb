@@ -1,21 +1,36 @@
-// Package peerova is a cgo binding for the peerova C ABI: direct P2P networking (no relay, E2E encrypted).
+// Package peerova is a cgo binding for the Peerova C ABI (peerova.h): direct peer-to-peer networking,
+// end-to-end encrypted.
+//
+// A Server produces a ticket (and optionally a 6-character connect code); a Client connects with either.
+// Both sides receive Events by polling and exchange messages with Send.
 //
 //	srv, err := peerova.StartServer(`{"port":0}`)
 //	cli, err := peerova.Connect(srv.Ticket(), "")
 //	ev, ok := cli.PollWait(10 * time.Second) // ev.Type == peerova.Connected
 //	cli.Send(ev.Peer, []byte("hi"), 0, true)
 //
-// Each node is internally synchronized, so Send/Poll may be called from any goroutine.
-// Do not call Close concurrently with other calls on the same node.
+// # Concurrency
 //
-// Linking: by default links ../../target/release/libpeerova (repo layout) with an rpath.
-// Override with CGO_CFLAGS / CGO_LDFLAGS, e.g.
+// Each node is internally synchronized, so Send, Poll, PollWait, Disconnect and PeerCount may be called
+// from any goroutine. Run at most one polling goroutine per node. Close waits for in-flight calls on the
+// node to return and makes later calls fail with ErrClosed (Send) or return nothing (Poll); still, stop
+// the polling goroutine before calling Close so a long PollWait does not delay it.
 //
-//	CGO_CFLAGS=-I/opt/peerova/include CGO_LDFLAGS="-L/opt/peerova/lib -lpeerova" go build
+// # Errors
+//
+// Functions that can fail return an error whose text comes from the native library (peerova_last_error),
+// prefixed with "peerova: ". Using a closed node returns ErrClosed.
+//
+// # Linking
+//
+// By default the package links libpeerova from the SDK's lib/linux-x86_64 directory with an rpath, and
+// takes peerova.h from ../c. Override with CGO_CFLAGS / CGO_LDFLAGS, e.g.
+//
+//	CGO_CFLAGS=-I/opt/peerova/include CGO_LDFLAGS="-L/opt/peerova/lib -lpeerova -Wl,-rpath,/opt/peerova/lib" go build
 package peerova
 
 /*
-#cgo CFLAGS: -I${SRCDIR}/../../crates/peerova-ffi/include
+#cgo CFLAGS: -I${SRCDIR}/../c
 #cgo LDFLAGS: -L${SRCDIR}/../../target/release -lpeerova -Wl,-rpath,${SRCDIR}/../../target/release
 #include <stdlib.h>
 #include "peerova.h"
@@ -29,19 +44,25 @@ import (
 	"unsafe"
 )
 
-// EventType values mirror PEEROVA_EVENT_*.
+// EventType is the kind of an Event (values mirror PEEROVA_EVENT_* in peerova.h).
 type EventType int32
 
 const (
-	Connected     EventType = 1
-	Disconnected  EventType = 2
-	Message       EventType = 3
+	// Connected: server — a client joined; client — connected to the server.
+	Connected EventType = 1
+	// Disconnected: a peer left; Event.Data holds the UTF-8 reason.
+	Disconnected EventType = 2
+	// Message: a message arrived; see Event.Channel, Event.Reliable, Event.Data.
+	Message EventType = 3
+	// ConnectFailed (client only): the connection attempt failed; Event.Data holds the UTF-8 reason.
 	ConnectFailed EventType = 4
 )
 
-// MaxUnreliablePayload is the largest payload accepted by an unreliable Send.
+// MaxUnreliablePayload is the largest payload, in bytes, accepted by an unreliable Send.
+// Larger unreliable sends return an error.
 const MaxUnreliablePayload = 1180
 
+// String returns the event type name ("Connected", "Message", ...).
 func (t EventType) String() string {
 	switch t {
 	case Connected:
@@ -56,16 +77,16 @@ func (t EventType) String() string {
 	return "Unknown"
 }
 
-// Event is one network event. Data is a Go copy (safe to keep).
+// Event is one network event returned by Poll / PollWait. Data is a Go copy and is safe to keep.
 type Event struct {
 	Type     EventType
-	Peer     uint32
-	Channel  uint8
-	Reliable bool
-	Data     []byte // payload, or UTF-8 reason for ConnectFailed
+	Peer     uint32 // peer (connection) id; pass it to Send / Disconnect
+	Channel  uint8  // 0..255 (Message only)
+	Reliable bool   // true if the message was sent reliably (Message only)
+	Data     []byte // message payload, or the UTF-8 reason for Disconnected / ConnectFailed; never nil
 }
 
-// ErrClosed is returned when using a closed node.
+// ErrClosed is returned by Send after Close.
 var ErrClosed = errors.New("peerova: node is closed")
 
 func lastError() error {
@@ -77,7 +98,7 @@ func lastError() error {
 	return errors.New("peerova: unknown error")
 }
 
-// Version returns the native library version.
+// Version returns the native library version string.
 func Version() string { return C.GoString(C.peerova_version()) }
 
 func cstr(s string) *C.char {
@@ -117,10 +138,12 @@ func (n *node) poll(ms uint32, wait bool) (Event, bool) {
 	return Event{EventType(ev._type), uint32(ev.peer), uint8(ev.channel), ev.reliable != 0, data}, true
 }
 
-// Poll returns the next pending event without blocking.
+// Poll returns the next pending event without blocking. ok is false when no event is pending or the
+// node is closed. Typical game-loop use: `for ev, ok := n.Poll(); ok; ev, ok = n.Poll() { ... }`.
 func (n *node) Poll() (Event, bool) { return n.poll(0, false) }
 
-// PollWait waits up to timeout for an event.
+// PollWait waits up to timeout for an event; ok is false on timeout or when the node is closed.
+// A timeout <= 0 behaves like Poll. Blocks the calling goroutine (and its OS thread) while waiting.
 func (n *node) PollWait(timeout time.Duration) (Event, bool) {
 	ms := timeout.Milliseconds()
 	if ms <= 0 {
@@ -132,7 +155,13 @@ func (n *node) PollWait(timeout time.Duration) (Event, bool) {
 	return n.poll(uint32(ms), true)
 }
 
-// Send sends data to peer on channel (0..255). reliable=false: datagram, max 1180 bytes.
+// Send sends data to peer on channel (0..255).
+//
+// reliable=true: delivered and ordered per channel, may be large — chat, inventory, RPCs, file chunks.
+// reliable=false: one datagram, lowest latency, may be lost or reordered, at most MaxUnreliablePayload
+// bytes — positions, inputs, voice-like realtime state. Channels never block each other.
+//
+// Returns ErrClosed after Close, or the native error (unknown peer, oversized unreliable payload, ...).
 func (n *node) Send(peer uint32, data []byte, channel uint8, reliable bool) error {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
@@ -153,7 +182,7 @@ func (n *node) Send(peer uint32, data []byte, channel uint8, reliable bool) erro
 	return nil
 }
 
-// Disconnect drops a peer.
+// Disconnect closes the connection to peer; a Disconnected event follows. Unknown ids are ignored.
 func (n *node) Disconnect(peer uint32) {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
@@ -162,7 +191,7 @@ func (n *node) Disconnect(peer uint32) {
 	}
 }
 
-// PeerCount returns the number of connected peers.
+// PeerCount returns the number of connected peers (client: 0 or 1); 0 after Close.
 func (n *node) PeerCount() uint32 {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
@@ -172,7 +201,7 @@ func (n *node) PeerCount() uint32 {
 	return uint32(C.peerova_peer_count(n.h))
 }
 
-// Close frees the native node. Safe to call more than once.
+// Close disconnects all peers and frees the native node. Safe to call more than once; always returns nil.
 func (n *node) Close() error {
 	n.mu.Lock()
 	defer n.mu.Unlock()
@@ -183,16 +212,21 @@ func (n *node) Close() error {
 	return nil
 }
 
-// Server is a peerova server node.
+// Server is a server node: it accepts clients that connect with its ticket or connect code.
+// Its methods (Poll, PollWait, Send, Disconnect, PeerCount, Close) are described on the shared node type.
 type Server struct {
 	node
 	ticket string
 }
 
-// Client is a peerova client node.
+// Client is a client node: one connection to one server. Same methods as Server, minus Ticket/RoomCode.
 type Client struct{ node }
 
-// StartServer starts a server (configJSON may be ""); blocks until the ticket is ready (about 3 s max).
+// StartServer starts a server. It blocks until the ticket is ready (about 3 s at most).
+//
+// configJSON may be "" for defaults, e.g. `{"port":47000,"key_file":"server.key","license":"PVA-...","token":"secret"}`.
+// Keys: port, key_file, license, max_ccu, token, upnp, private, app, share (see the README).
+// Returns the native error if the server cannot start (port in use, bad config, invalid license, ...).
 func StartServer(configJSON string) (*Server, error) {
 	cfg := cstr(configJSON)
 	defer C.free(unsafe.Pointer(cfg))
@@ -210,11 +244,40 @@ func StartServer(configJSON string) (*Server, error) {
 	return s, nil
 }
 
-// Ticket returns the connection ticket to share with clients.
+// Ticket returns the ticket ("pvt_...") clients pass to Connect. It is stable for the same key_file and
+// safe to share with users.
 func (s *Server) Ticket() string { return s.ticket }
 
-// Connect starts connecting to a ticket (configJSON may be ""). Returns immediately;
-// wait for Connected / ConnectFailed via Poll.
+// RoomCode returns the 6-character connect code (e.g. "K7Q2XD") assigned by the Peerova website, a short
+// alternative to the ticket. It is only available when the server was started with "app" and "share" in
+// its config, and only once the website has registered it (shortly after start): call it periodically
+// until ok is true. ok is false if there is no code yet or the server is closed.
+func (s *Server) RoomCode() (code string, ok bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if s.h == nil {
+		return "", false
+	}
+	need := C.peerova_room_code(s.h, nil, 0)
+	if need <= 0 {
+		return "", false
+	}
+	buf := (*C.char)(C.malloc(C.size_t(need)))
+	defer C.free(unsafe.Pointer(buf))
+	if C.peerova_room_code(s.h, buf, need) <= 0 {
+		return "", false
+	}
+	return C.GoString(buf), true
+}
+
+// Connect starts connecting and returns immediately when given a ticket (with a 6-character connect code
+// it first looks the code up on the Peerova website, an HTTPS request). Then wait for a Connected (success) or ConnectFailed
+// (with reason) event via Poll / PollWait. Connections are automatic: direct first, with an automatic
+// encrypted fallback route when networks block direct connections.
+//
+// ticket is the server's ticket ("pvt_...") or its 6-character connect code. configJSON may be "",
+// e.g. `{"token":"secret","timeout_ms":20000}`. Returns an error for an empty or malformed ticket or an
+// unknown/unreachable connect code.
 func Connect(ticket, configJSON string) (*Client, error) {
 	if ticket == "" {
 		return nil, errors.New("peerova: empty ticket")

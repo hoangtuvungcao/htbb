@@ -43,7 +43,7 @@ void UPeerovaSubsystem::Tick(float DeltaTime)
 		{
 			break;
 		}
-		const int32 Peer = static_cast<int32>(Ev.peer);
+		const int32 Peer = static_cast<int32>(Ev.peer); // same bits; see "Peer ids" in PeerovaSubsystem.h
 		switch (Ev.type)
 		{
 		case peerova::EventType::Connected:
@@ -73,7 +73,7 @@ void UPeerovaSubsystem::Host(int32 Port, const FString& ExtraConfigJson)
 	const uint32 MyGen = ++Generation;
 	bHostPending = true;
 
-	// Build the config on the game thread (FJson* is fine off-thread, but keep it simple).
+	// Build the config JSON on the game thread; only the blocking native start runs in the background.
 	TSharedPtr<FJsonObject> Cfg = MakeShared<FJsonObject>();
 	if (!ExtraConfigJson.IsEmpty())
 	{
@@ -146,10 +146,17 @@ bool UPeerovaSubsystem::Join(const FString& Ticket, const FString& ConfigJson)
 
 bool UPeerovaSubsystem::Send(int32 Peer, const TArray<uint8>& Data, int32 Channel, bool bReliable)
 {
-	if (!Node || !*Node || Peer < 0 || Channel < 0 || Channel > 255)
+	if (!Node || !*Node)
 	{
+		LastError = TEXT("not hosting or joined");
 		return false;
 	}
+	if (Channel < 0 || Channel > 255)
+	{
+		LastError = TEXT("channel must be 0..255");
+		return false;
+	}
+	// Peer is the native uint32 id carried in an int32 (negative values are valid ids).
 	if (!Node->send(static_cast<uint32>(Peer), Data.GetData(), static_cast<uint32>(Data.Num()), static_cast<uint8>(Channel), bReliable))
 	{
 		LastError = UTF8_TO_TCHAR(Node->error.c_str());
@@ -168,9 +175,9 @@ bool UPeerovaSubsystem::SendString(int32 Peer, const FString& Text, int32 Channe
 
 void UPeerovaSubsystem::Disconnect(int32 Peer)
 {
-	if (Node && Peer >= 0)
+	if (Node)
 	{
-		Node->disconnect(static_cast<uint32>(Peer));
+		Node->disconnect(static_cast<uint32>(Peer)); // int32 -> uint32 bit-cast back to the native id
 	}
 }
 
@@ -185,6 +192,11 @@ void UPeerovaSubsystem::Shutdown()
 FString UPeerovaSubsystem::GetTicket() const
 {
 	return CachedTicket;
+}
+
+FString UPeerovaSubsystem::GetRoomCode() const
+{
+	return Node ? FString(UTF8_TO_TCHAR(Node->room_code().c_str())) : FString();
 }
 
 int32 UPeerovaSubsystem::GetPeerCount() const

@@ -19,7 +19,8 @@ import java.util.Properties;
  *   sv.p2p_key=p2p/server.key   danh tinh server (giu file nay = ticket khong doi khi khoi dong lai)
  *   sv.p2p_ticket_file=p2p/ticket.txt   noi ghi TICKET de phat cho client
  *   sv.p2p_upnp=1            tu mo cong tren router (UPnP / NAT-PMP)
- *   sv.p2p_rdv=0             1 = dung website Peerova lam diem hen (server sau NAT khong mo cong)
+ *   sv.p2p_rdv=1             diem hen qua website Peerova (server sau NAT khong mo cong); 0 = tat
+ *   sv.p2p_relay=1           duong du phong ma hoa qua website khi khong noi thang duoc; 0 = tat (chi P2P thang)
  *   sv.p2p_private=0         1 = ticket khong chua IP (can sv.p2p_rdv=1)
  *   sv.p2p_max_ccu=          (tuy chon) gioi han CCU thap hon goi license
  *   sv.p2p_lib=              (tuy chon) duong dan tuyet doi toi peerova_jni.dll / libpeerova_jni.so
@@ -92,8 +93,12 @@ public final class MayChuP2P {
         j.append(",\"key_file\":").append(js(g(p, "sv.p2p_key", "p2p/server.key")));
         j.append(",\"upnp\":").append(!"0".equals(g(p, "sv.p2p_upnp", "1")));
         j.append(",\"private\":").append("1".equals(g(p, "sv.p2p_private", "0")));
-        if ("1".equals(g(p, "sv.p2p_rdv", "0"))) {
-            j.append(",\"rendezvous\":true");
+        // Peerova moi: diem hen qua website va duong du phong ma hoa (relay) BAT mac dinh; 0 = tat.
+        if ("0".equals(g(p, "sv.p2p_rdv", "1"))) {
+            j.append(",\"rendezvous\":false");
+        }
+        if ("0".equals(g(p, "sv.p2p_relay", "1"))) {
+            j.append(",\"relay\":false");
         }
         final String token = g(p, "sv.p2p_token", "");
         if (!token.isEmpty()) {

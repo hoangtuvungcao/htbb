@@ -1,22 +1,46 @@
-# peerova stdio sidecar protocol (v1)
+# Peerova stdio sidecar protocol (v1)
 
-`peerova stdio` runs one peerova node (server or client) as a child process and talks
+`peerova stdio` runs one Peerova node (server or client) as a child process and talks
 **newline-delimited JSON** (one UTF-8 object per line) on stdin/stdout. Any language that can spawn a
-process and read/write lines gets the full SDK with no native bindings: Node.js, Electron, Bun, Deno,
-PHP, Ruby, Perl, Erlang/Elixir, Lua 5.x, Tcl, R, shell, ...
+process and read/write lines gets the full SDK with no native binding: Node.js, Electron, PHP, Ruby,
+Perl, Erlang/Elixir, Lua 5.x, Tcl, R, shell, ...
 
 ```
 peerova stdio server ['<json config>']
-peerova stdio client <TICKET> ['<json config>']
+peerova stdio client <TICKET | CODE | @file> ['<json config>']
 ```
 
 * The config JSON is the same object accepted by `peerova_server_start` / `peerova_client_connect`
-  (see [`crates/peerova-ffi/include/peerova.h`](../../crates/peerova-ffi/include/peerova.h)). Example server config:
-  `{"port":0,"upnp":false,"key_file":"/var/lib/myapp/server.key"}`. Without a `license` the server accepts 3 clients.
-* `<TICKET>` may also be `@path/to/file` containing the ticket (same rule as the other CLI commands).
-* stdout carries **only** protocol lines; diagnostics go to stderr (ignore or log it).
-* If startup fails (bad config, bad ticket, port in use) the process prints the error on stderr and exits
-  with a non-zero status **before** emitting `ready`.
+  (see `include/peerova.h` and [`../DEVELOPER-GUIDE.md`](../DEVELOPER-GUIDE.md)). Supported keys:
+
+  | Side | Key | Meaning |
+  |---|---|---|
+  | server | `port` | UDP port, default `47000`; `0` = random free port |
+  | server | `key_file` | identity key file, default `"server.key"` (created if missing). Same key ⇒ same ticket |
+  | server | `license` | `PVA-...` license key. Without it the server runs in dev mode (max 3 clients) |
+  | server | `max_ccu` | maximum concurrent clients |
+  | server | `token` | shared secret every client must present |
+  | server | `upnp` | ask the router for a port mapping, default `true` |
+  | server | `private` | the ticket contains no IP addresses, so sharing it does not reveal the server's address, default `false` |
+  | server | `app`, `share` | get a 6-character connect code: `app` = project id from the Peerova website, `share` = `{"name","public","max","mode","region"}` |
+  | client | `token` | must match the server's `token` |
+  | client | `timeout_ms` | give up after this long, default `20000` |
+
+  Example server config: `{"port":0,"upnp":false,"key_file":"/var/lib/myapp/server.key"}`.
+* The client argument is a ticket (`pvt_...`), a **6-character connect code** (e.g. `K7Q2XD`, resolved
+  through the Peerova website), or `@path/to/file` containing the ticket.
+* The sidecar does **not** print the server's connect code. Read it in the Peerova website dashboard, or use
+  a native binding (`peerova_room_code`) if your server needs it programmatically.
+* stdout carries **only** protocol lines; diagnostics go to stderr (log or discard it).
+* Connections are automatic: direct first, with an automatic encrypted fallback route when networks block
+  direct connections. Traffic is end-to-end encrypted.
+
+## Exit status
+
+| Status | When |
+|---|---|
+| `0` | after `{"cmd":"quit"}` or when stdin is closed |
+| `1` | startup failed (bad config JSON, invalid ticket/code, port in use, ...). The reason is printed on stderr, and **no** `ready` line is written |
 
 ## Output (sidecar → you)
 
@@ -24,13 +48,16 @@ peerova stdio client <TICKET> ['<json config>']
 |---|---|
 | `{"event":"ready","ticket":"pvt_..."}` | Server is listening; share `ticket` with clients. Always the first line. |
 | `{"event":"ready"}` | Client started (no ticket); now wait for `connected` or `connect_failed`. |
-| `{"event":"connected","peer":N}` | A peer connected. Server: a client (one per client). Client: the server. |
+| `{"event":"connected","peer":N}` | A peer connected. Server: a client (one event per client). Client: the server. |
 | `{"event":"message","peer":N,"channel":C,"reliable":true,"data":"<b64url>"}` | Payload from peer `N` on channel `C` (0..255). |
 | `{"event":"disconnected","peer":N,"reason":"..."}` | Peer `N` is gone. |
-| `{"event":"connect_failed","reason":"..."}` | Client could not reach the server (timeout, wrong token, server full...). |
-| `{"event":"error","message":"..."}` | A command was rejected (unparsable JSON, unknown peer, unreliable payload > 1180 bytes...). Non-fatal. |
+| `{"event":"connect_failed","reason":"..."}` | Client could not reach the server (timeout, wrong token, server full...). The node stays alive; send `quit`. |
+| `{"event":"error","message":"..."}` | A command was rejected (unparsable JSON, unknown `cmd`, unknown peer, unreliable payload > 1180 bytes...). Non-fatal. |
 
-`peer` is a `u32` connection id; on a server it identifies the client, on a client it identifies the server.
+* `peer` is an unsigned 32-bit connection id; on a server it identifies the client, on a client it identifies
+  the server. Store it as an integer type that holds values up to 4294967295.
+* `reason` and `message` are human-readable text (possibly localized). Log them; do not parse them.
+* Unknown fields may be added in later versions: ignore fields you don't know.
 
 ## Input (you → sidecar)
 
@@ -40,7 +67,7 @@ peerova stdio client <TICKET> ['<json config>']
 | `{"cmd":"disconnect","peer":N}` | Close the connection to peer `N`. |
 | `{"cmd":"quit"}` | Shut the node down and exit 0. Closing stdin does the same. |
 
-Blank lines are ignored. Commands are processed in order.
+Blank lines are ignored. Commands are processed in order. A successful `send` produces no output.
 
 ## Data encoding
 
@@ -50,19 +77,22 @@ Payloads are arbitrary bytes; UTF-8 text is just a common case.
 
 | Language | encode / decode |
 |---|---|
-| Node ≥16 / Bun | `buf.toString("base64url")` / `Buffer.from(s, "base64url")` |
+| Node ≥16 | `buf.toString("base64url")` / `Buffer.from(s, "base64url")` |
 | Python | `base64.urlsafe_b64encode(b).rstrip(b"=")` / `base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))` |
 | PHP | `rtrim(strtr(base64_encode($b), '+/', '-_'), '=')` / `base64_decode(strtr($s, '-_', '+/'))` |
+| Perl | see `b64e` / `b64d` in [`examples/demo.pl`](examples/demo.pl) (`MIME::Base64` + `tr{+/}{-_}`) |
 | Ruby | `Base64.urlsafe_encode64(b, padding: false)` / `Base64.urlsafe_decode64(s)` |
 | Go | `base64.RawURLEncoding` |
-| shell | `base64 \| tr -d '\n=' \| tr '+/' '-_'` / see `pv_b64d` in `peerova.sh` |
+| shell | `base64 \| tr -d '\n=' \| tr '+/' '-_'` / see `pv_b64d` in [`peerova.sh`](peerova.sh) |
 
 ## Semantics
 
 * **reliable=true**: ordered and retransmitted *per channel*; different channels never block each other.
+  Messages can be large. Use for chat, inventory, RPC, file chunks.
 * **reliable=false**: datagram, lowest latency, may be lost or reordered; max **1180 bytes** of payload.
+  Use for gameplay inputs, positions, voice-like real-time state where only the latest value matters.
 * The sidecar polls the node every ≤5 ms, so the added latency is a few ms plus a JSON/base64 round trip.
-  For tight game loops with thousands of messages/s per process prefer a native FFI binding.
+  For tight game loops with thousands of messages per second per process, prefer a native FFI binding.
 * Backpressure: the sidecar reads stdin as fast as it can; if you write faster than the network drains,
   memory grows inside the sidecar. Pace bulk transfers (e.g. wait for an application-level ack).
 * One process = one node. Run several processes for several nodes.
@@ -70,9 +100,10 @@ Payloads are arbitrary bytes; UTF-8 text is just a common case.
 ## Lifecycle
 
 1. Spawn with stdin/stdout as pipes (stderr: inherit, log, or discard).
-2. Read the first line; it must be `ready` (server: keep `ticket`). EOF before that = startup failure → read stderr / exit code.
-3. Loop: read event lines; write command lines.
-4. Stop: write `{"cmd":"quit"}` (or close stdin) and wait for exit; kill after a grace period.
+2. Read the first line; it must be `ready` (server: keep `ticket`). EOF before that = startup failure → read
+   stderr and the exit status.
+3. Loop: read event lines; write command lines. Read stdout continuously (a full pipe stalls the sidecar).
+4. Stop: write `{"cmd":"quit"}` (or close stdin) and wait for exit; kill it after a grace period (e.g. 3 s).
 
 ## Example session
 
@@ -86,11 +117,12 @@ $ peerova stdio server '{"port":0,"upnp":false}'
 {"cmd":"quit"}
 ```
 
-## Reference clients in this repo
+## Reference clients
 
 | Language | File |
 |---|---|
 | bash (≥4.1, jq optional) | [`peerova.sh`](peerova.sh) library, [`chat.sh`](chat.sh), test [`test_stdio.sh`](test_stdio.sh) |
-| Node.js / Electron / Bun | [`../nodejs/index.js`](../nodejs/index.js) |
+| Perl 5 (core modules only) | [`examples/demo.pl`](examples/demo.pl) |
+| Node.js / Electron | [`../nodejs/index.js`](../nodejs/index.js) |
 | PHP (no ext/ffi) | [`../php/src/PeerovaStdio.php`](../php/src/PeerovaStdio.php) |
 | Lua 5.1–5.4 | [`../lua/peerova_stdio.lua`](../lua/peerova_stdio.lua) |

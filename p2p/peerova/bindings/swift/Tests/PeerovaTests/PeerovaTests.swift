@@ -8,6 +8,7 @@ final class PeerovaTests: XCTestCase {
         let server = try PeerovaServer(config: ["port": 0, "upnp": false, "key_file": key])
         defer { server.close(); try? FileManager.default.removeItem(atPath: key) }
         XCTAssertTrue(server.ticket.hasPrefix("pvt_"), server.ticket)
+        XCTAssertNil(server.roomCode)   // no "app"/"share" in the config → no connect code
         let client = try PeerovaClient(ticket: server.ticket)
         defer { client.close() }
 

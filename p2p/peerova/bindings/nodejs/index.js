@@ -1,12 +1,25 @@
-// peerova — direct P2P networking for Node.js ≥18 / Electron (main process) / Bun.
-// Zero native deps: drives the `peerova stdio` sidecar (JSON lines over stdin/stdout).
-// Protocol: ../stdio/PROTOCOL.md
-//
-//   import { Peerova } from "peerova";
-//   const srv = await Peerova.server({ port: 47000 });
-//   srv.on("message", (peer, data, { channel, reliable }) => srv.send(peer, data));
-//   const cli = await Peerova.client(srv.ticket);
-//   cli.on("connected", (peer) => cli.send(peer, "hello"));
+/**
+ * peerova — direct peer-to-peer networking (end-to-end encrypted) for Node.js >= 18,
+ * Electron (main process) and Bun.
+ *
+ * Zero native dependencies: each node spawns the `peerova stdio` sidecar (the `peerova`
+ * command-line tool) and exchanges JSON lines with it over stdin/stdout
+ * (protocol: ../stdio/PROTOCOL.md). Everything is asynchronous and event-driven; nothing
+ * here blocks the event loop.
+ *
+ * ```js
+ * import { Peerova } from "peerova";
+ * const srv = await Peerova.server({ port: 47000 });
+ * srv.on("message", (peer, data, { channel, reliable }) => srv.send(peer, data));
+ * const cli = await Peerova.client(srv.ticket);   // a ticket or a 6-character connect code
+ * cli.on("connected", (peer) => cli.send(peer, "hello"));
+ * ```
+ *
+ * Errors: methods throw {@link PeerovaError}; asynchronous sidecar errors are emitted as
+ * "error" events.
+ *
+ * @module peerova
+ */
 import { spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { existsSync } from "node:fs";
@@ -14,10 +27,12 @@ import { dirname, join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 
-/** Max payload of an unreliable message (bytes). */
+/** Largest payload accepted by `send(..., { reliable: false })`, in bytes. */
 export const MAX_UNRELIABLE_PAYLOAD = 1180;
 
+/** Error thrown (or emitted as "error") by this package. `message` is the SDK's error text. */
 export class PeerovaError extends Error {
+  /** @param {string} message */
   constructor(message) {
     super(message);
     this.name = "PeerovaError";
@@ -26,15 +41,28 @@ export class PeerovaError extends Error {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const exe = process.platform === "win32" ? "peerova.exe" : "peerova";
+const platformDir = `${{ win32: "windows", darwin: "macos" }[process.platform] ?? process.platform}-${
+  { x64: "x86_64", arm64: "aarch64" }[process.arch] ?? process.arch
+}`;
 
 /**
- * Locate the `peerova` CLI: options.binary → $PEEROVA_BIN → next to this file (bin/) →
- * repo build (../../target/release) → "peerova" on PATH.
+ * Locate the `peerova` command-line tool used as the sidecar.
+ *
+ * Order: `explicit` → `$PEEROVA_BIN` → `bin/peerova[.exe]` inside this package → next to this
+ * file → the SDK's `lib/<platform>` folder → a development build → `peerova` on `PATH`.
+ *
+ * @param {string} [explicit] Path to use as-is (from `options.binary`).
+ * @returns {string} A path or a bare command name (resolved by the OS when spawning).
  */
 export function findBinary(explicit) {
   if (explicit) return explicit;
   if (process.env.PEEROVA_BIN) return process.env.PEEROVA_BIN;
-  for (const p of [join(here, "bin", exe), join(here, exe), join(here, "..", "..", "target", "release", exe)]) {
+  for (const p of [
+    join(here, "bin", exe),
+    join(here, exe),
+    join(here, "..", "..", "lib", platformDir, exe),
+    join(here, "..", "..", "target", "release", exe),
+  ]) {
     if (existsSync(p)) return p;
   }
   return exe;
@@ -44,28 +72,37 @@ const toBuffer = (data) =>
   typeof data === "string" ? Buffer.from(data, "utf8") : Buffer.isBuffer(data) ? data : Buffer.from(data.buffer, data.byteOffset, data.byteLength);
 
 /**
- * One peerova node (server or client) backed by a sidecar process.
+ * One Peerova node (server or client), backed by its own sidecar process.
+ * Create it with {@link Peerova.server} or {@link Peerova.client}.
  *
  * Events:
- *  - "ready" (ticket?: string)
- *  - "connected" (peer: number)
+ *  - "ready" (ticket?: string) — the sidecar is up (emitted before the factory promise resolves).
+ *  - "connected" (peer: number) — server: a client joined; client: we joined the server.
  *  - "message" (peer: number, data: Buffer, info: { channel: number, reliable: boolean })
  *  - "disconnected" (peer: number, reason: string)
- *  - "connectFailed" (reason: string)
- *  - "error" (err: PeerovaError) — non-fatal sidecar errors (e.g. send to a gone peer).
- *     Unlike plain EventEmitter, an unhandled "error" is NOT thrown (it is dropped).
- *  - "close" (code: number | null)
+ *  - "connectFailed" (reason: string) — client only: the connection attempt failed (e.g. timeout).
+ *  - "error" (err: PeerovaError) — non-fatal sidecar errors (e.g. send to a peer that has left).
+ *     Unlike a plain EventEmitter, an unhandled "error" is NOT thrown (it is dropped).
+ *  - "close" (code: number | null) — the sidecar exited; the node is unusable afterwards.
+ *
+ * All listeners run on the Node.js event loop; no extra threads are involved.
  */
 export class Peerova extends EventEmitter {
-  /** Server ticket (pvt_...) — null for clients. */
+  /** @type {string | null} Server ticket (`pvt_...`), to share with clients. `null` on clients. */
   ticket = null;
-  /** Currently connected peer ids. */
+  /** @type {Set<number>} Currently connected peer ids (kept up to date from events). */
   peers = new Set();
   #proc;
   #closed = false;
   #exited;
+  /** Last "error" message from the sidecar; used as the rejection text if it exits before ready. */
+  #startError = null;
 
-  /** @private use Peerova.server / Peerova.client */
+  /**
+   * @private Use {@link Peerova.server} / {@link Peerova.client}.
+   * @param {string[]} args Sidecar arguments after `stdio`.
+   * @param {{ binary?: string, stderr?: "ignore" | "inherit" | "pipe" }} [options]
+   */
   constructor(args, options = {}) {
     super();
     this.#proc = spawn(findBinary(options.binary), ["stdio", ...args], {
@@ -83,12 +120,37 @@ export class Peerova extends EventEmitter {
     });
   }
 
-  /** Start a server. Resolves once the ticket is ready (≤ ~3 s). */
+  /**
+   * Start a server.
+   *
+   * The sidecar cannot report the 6-character connect code; when you need one, read it with
+   * an in-process binding or from the `peerova` command-line tool. Clients of this package can
+   * still connect *with* a code (see {@link Peerova.client}).
+   *
+   * @param {object} [config] Server config (`port`, `key_file`, `license`, `max_ccu`, `token`,
+   *   `upnp`, `private`, `app`, `share`), passed to the SDK as JSON.
+   * @param {{ binary?: string, stderr?: "ignore" | "inherit" | "pipe" }} [options] Sidecar options.
+   * @returns {Promise<Peerova>} Resolves once the ticket is ready (<= ~3 s).
+   * @throws {PeerovaError} (rejection) the sidecar cannot be started or the server fails to start.
+   */
   static server(config = {}, options = {}) {
     return new Peerova(["server", JSON.stringify(config)], options).#ready();
   }
 
-  /** Connect to a server ticket. Resolves when the sidecar is up; wait for "connected" / "connectFailed". */
+  /**
+   * Connect to a server.
+   *
+   * Connections are automatic: direct first, with an automatic encrypted fallback route when
+   * networks block direct connections.
+   *
+   * @param {string} ticket The server's ticket (`pvt_...`) or its 6-character connect code.
+   * @param {object} [config] Client config: `token`, `timeout_ms` (default 20000).
+   * @param {{ binary?: string, stderr?: "ignore" | "inherit" | "pipe" }} [options] Sidecar options.
+   * @returns {Promise<Peerova>} Resolves when the sidecar is up; then wait for "connected" or
+   *   "connectFailed".
+   * @throws {PeerovaError} `ticket` is empty (thrown synchronously), or (rejection) the ticket is
+   *   malformed / the sidecar cannot be started.
+   */
   static client(ticket, config = {}, options = {}) {
     if (typeof ticket !== "string" || !ticket) throw new PeerovaError("ticket is required");
     return new Peerova(["client", ticket, JSON.stringify(config)], options).#ready();
@@ -118,8 +180,6 @@ export class Peerova extends EventEmitter {
       this.#proc.once("error", onSpawnError);
     });
   }
-
-  #startError = null;
 
   #onLine(line) {
     let m;
@@ -161,9 +221,18 @@ export class Peerova extends EventEmitter {
   }
 
   /**
-   * Send bytes (Buffer/Uint8Array) or a UTF-8 string to a peer.
-   * reliable (default true): ordered + retransmitted per channel. reliable=false: datagram ≤ 1180 bytes.
-   * Returns false if the pipe is congested (await `node.drain()` before sending lots more).
+   * Send a message to a peer.
+   *
+   * @param {number} peer Peer id from a "connected" / "message" event.
+   * @param {string | Uint8Array} data Payload; strings are sent as UTF-8.
+   * @param {{ channel?: number, reliable?: boolean }} [options]
+   *   `channel` 0..255 (default 0; channels never block each other).
+   *   `reliable` (default true): ordered and retransmitted per channel, any size.
+   *   `reliable: false`: lowest-latency datagram, may be lost or reordered, at most 1180 bytes.
+   * @returns {boolean} `false` if the pipe to the sidecar is congested — `await node.drain()`
+   *   before sending much more. The message is still queued.
+   * @throws {PeerovaError} channel out of range, unreliable payload too large, or node closed.
+   *   Failures detected by the SDK (e.g. the peer has left) arrive as "error" events.
    */
   send(peer, data, { channel = 0, reliable = true } = {}) {
     const buf = toBuffer(data);
@@ -172,24 +241,38 @@ export class Peerova extends EventEmitter {
     return this.#write({ cmd: "send", peer, channel, reliable, data: buf.toString("base64url") });
   }
 
-  /** Resolves when the sidecar's stdin pipe has drained (backpressure helper). */
+  /**
+   * Backpressure helper: resolves when the pipe to the sidecar has drained.
+   * @returns {Promise<void>}
+   */
   drain() {
     return this.#proc.stdin.writableNeedDrain ? new Promise((r) => this.#proc.stdin.once("drain", r)) : Promise.resolve();
   }
 
+  /**
+   * Close the connection to one peer (server: kick a client; client: leave the server).
+   * @param {number} peer
+   * @throws {PeerovaError} the node is closed.
+   */
   disconnect(peer) {
     this.#write({ cmd: "disconnect", peer });
   }
 
+  /** @returns {number} Number of currently connected peers. */
   get peerCount() {
     return this.peers.size;
   }
 
+  /** @returns {boolean} `true` once the sidecar has exited. */
   get closed() {
     return this.#closed;
   }
 
-  /** Stop the node. Resolves when the sidecar has exited (kills it after `timeoutMs`). */
+  /**
+   * Stop the node: disconnects all peers and ends the sidecar. Safe to call more than once.
+   * @param {number} [timeoutMs=2000] Kill the sidecar if it has not exited by then.
+   * @returns {Promise<void>} Resolves when the sidecar has exited.
+   */
   async close(timeoutMs = 2000) {
     if (!this.#closed) {
       try {

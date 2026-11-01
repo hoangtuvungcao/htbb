@@ -23,6 +23,9 @@ function roundtrip(string $name, callable $server, callable $client): void
     /** @var Node $srv */
     $srv = $server(['port' => 0, 'upnp' => false, 'key_file' => $key]);
     check(strpos((string)$srv->ticket(), 'pvt_') === 0, "$name ticket");
+    if ($srv instanceof Peerova\FfiNode) {
+        check($srv->roomCode() === null, "$name no connect code without app/share");
+    }
     /** @var Node $cli */
     $cli = $client($srv->ticket());
     $ev = $cli->poll(10);

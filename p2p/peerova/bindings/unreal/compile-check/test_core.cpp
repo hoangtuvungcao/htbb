@@ -14,6 +14,7 @@ int main(int argc, char** argv) {
     auto srv = peerova::Node::server(R"({"port":0,"upnp":false,"key_file":")" + key + "\"}");
     CHECK(srv, "server: %s", srv.error.c_str());
     CHECK(srv.ticket().rfind("pvt_", 0) == 0, "ticket %s", srv.ticket().c_str());
+    CHECK(srv.room_code().empty(), "room_code without app/share: %s", srv.room_code().c_str());
 
     auto bad = peerova::Node::client("garbage");
     CHECK(!bad, "bad ticket accepted");

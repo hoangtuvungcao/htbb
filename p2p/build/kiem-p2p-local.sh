@@ -1,7 +1,9 @@
 #!/bin/bash
 # ============================================================================
 #  KIEM P2P TREN MAY DEV: stack rieng (MariaDB tam + login + game co Peerova nhung) tu CAY LAM VIEC hien tai,
-#  roi bot nguoi choi thuong (khong GM) vao game QUA PEEROVA (p2p/test/KiemDangNhapP2P.java).
+#  roi bot nguoi choi thuong (khong GM) vao game QUA PEEROVA (p2p/test/KiemDangNhapP2P.java: 3 nguoi choi dang nhap,
+#  vao game, chat; tunnel moi + dang nhap lai; ticket hong), lop Connector that cua HTBB-PC.jar (KiemConnectorP2P,
+#  native giai nen tu jar) va ma Unity PC (P2PPeerova.cs + C# binding) chay tren .NET 8 (p2p/test/unity-net).
 #
 #      bash p2p/build/kiem-p2p-local.sh [--giu]
 #
@@ -40,14 +42,14 @@ JNI="$R/p2p/out/dist/linux-x86_64/libpeerova_jni.so"
 [ -f "$JNI" ] || sh "$R/p2p/build/build-peerova.sh" linux || loi "build peerova"
 sh "$R/p2p/build/sync-java.sh" --check || loi "ban chep Java p2p lech nguon (sh p2p/build/sync-java.sh)"
 
-buoc "1/4 build game server tu cay lam viec (javac --release 8)"
+buoc "1/5 build game server tu cay lam viec (javac --release 8)"
 mkdir -p "$STG/server/loginServer" "$STG/server/p2p" "$STG/logs" "$STG/sql"
 sh "$R/p2p/build/build-server.sh" "$STG/server/htbb-server.jar" || loi "build server"
 cp "$R/server/loginServer/htbb-login.jar" "$STG/server/loginServer/"
 for d in cMap map lib; do ln -sfn "$R/server/$d" "$STG/server/$d"; done
 cp "$JNI" "$STG/server/p2p/"
 
-buoc "2/4 MariaDB tam + sql/htbb.sql + tai khoan bot"
+buoc "2/5 MariaDB tam + sql/htbb.sql + tai khoan bot"
 export HTBB_GOC="$R" STG_GOC="$STG" STG_USER="$(id -un)" STG_DB_HOST=127.0.0.1 STG_DB_PORT="$CONG_DB" \
        STG_CONG_GAME="$CONG_GAME" STG_CONG_LOGIN="$CONG_LOGIN" STG_CONG_NAP="$CONG_NAP" STG_DB_PASS="kp2p_$$" \
        STG_ENV=/dev/null MYSQL="$LAMPP/bin/mysql -S $SOCK -uroot" PATH="$LAMPP/bin:$PATH"
@@ -80,7 +82,7 @@ myq "GRANT ALL ON \`$STG_DB\`.* TO '$STG_DB_USER'@'127.0.0.1', '$STG_DB_USER'@'l
     done
 } | my || loi "tai khoan bot"
 
-buoc "3/4 server.ini (sinh-server-ini.sh + sv.p2p=1) + bat login / game"
+buoc "3/5 server.ini (sinh-server-ini.sh + sv.p2p=1) + bat login / game"
 cp "$R/vps/server.ini.linux.example" "$RUN/nguon_server.ini"
 NGUON_INI="$RUN/nguon_server.ini" bash "$R/vps/staging/sinh-server-ini.sh" > "$RUN/sinh-ini.log" 2>&1 || { cat "$RUN/sinh-ini.log"; loi "sinh-server-ini.sh"; }
 cat >> "$STG/server/server.ini" <<EOF2
@@ -100,7 +102,7 @@ for _ in $(seq 1 240); do [ -s "$STG/server/p2p/ticket.txt" ] && ss -ltn | grep 
 [ -s "$STG/server/p2p/ticket.txt" ] || { tail -40 "$STG/logs/game.out"; loi "khong co ticket P2P"; }
 grep -a '\[P2P\]' "$STG/logs/game.out" | sed 's/^/   /' | cut -c1-200
 
-buoc "4/4 bot nguoi choi thuong qua P2P (KiemDangNhapP2P)"
+buoc "4/5 bot nguoi choi thuong qua P2P (KiemDangNhapP2P)"
 BOT="$RUN/bot-cls"; mkdir -p "$BOT"
 javac -encoding UTF-8 -nowarn -Xlint:none -cp "$R/server/lib/jxl-2.6.jar:$R/server/lib/mysql-connector-java-5.1.49.jar" \
     -sourcepath "$R/tools/pokemon/kiem_tai:$R/server/src" -d "$BOT" "$R/tools/pokemon/kiem_tai/BotChucNang.java" \
@@ -108,6 +110,26 @@ javac -encoding UTF-8 -nowarn -Xlint:none -cp "$R/server/lib/jxl-2.6.jar:$R/serv
 java -Dpeerova.jni.path="$JNI" -Dnoi="$STG" -Dgoc="$R" -Dgm=0 -cp "$BOT" KiemDangNhapP2P "@$STG/server/p2p/ticket.txt" "$CONG_GAME" kt101 kt102 kt103 \
     2>&1 | tee "$RUN/bot.txt"
 KQ=${PIPESTATUS[0]}
+
+buoc "5/5 lop ket noi cua client that qua P2P: PC Java (HTBB-PC.jar) + Unity PC (C# .NET 8)"
+PCJ="$R/p2p/out/client_pc/HTBB-PC.jar"
+if [ -f "$PCJ" ]; then
+    KC="$RUN/kc-cls"; mkdir -p "$KC"
+    javac --release 8 -nowarn -Xlint:none -cp "$PCJ" -d "$KC" "$R/p2p/test/KiemConnectorP2P.java" > /dev/null 2>&1 || { echo "   [HONG] javac KiemConnectorP2P"; KQ=1; }
+    java -Djava.awt.headless=true -Dpeerova.extract.dir="$RUN/pc-native" -cp "$PCJ:$KC" KiemConnectorP2P "@$STG/server/p2p/ticket.txt" "$CONG_GAME" 2>&1 \
+        | tee "$RUN/pc.txt" | grep -E "OK|HONG|DAT|thu vien" | sed 's/^/   /'
+    [ "${PIPESTATUS[0]}" = 0 ] || KQ=1
+else
+    echo "   (bo qua PC: chua co $PCJ - P2P_TICKET_FILE=... HTBB_PC_OUT=$R/p2p/out/client_pc sh client_pc/build.sh)"
+fi
+if command -v dotnet > /dev/null 2>&1; then
+    (cd "$R/p2p/test/unity-net" && dotnet build -c Release -o "$RUN/unity-net" > "$RUN/unity-build.txt" 2>&1) || { echo "   [HONG] dotnet build"; KQ=1; }
+    PEEROVA_LIB="$R/p2p/out/dist/linux-x86_64/libpeerova.so" dotnet "$RUN/unity-net/KiemUnityP2P.dll" "@$STG/server/p2p/ticket.txt" "$CONG_GAME" 2>&1 \
+        | tee "$RUN/unity.txt" | grep -E "OK|HONG|DAT" | sed 's/^/   /'
+    [ "${PIPESTATUS[0]}" = 0 ] || KQ=1
+else
+    echo "   (bo qua Unity .NET: khong co dotnet)"
+fi
 sleep 2
 echo "   --- may chu (dong P2P / IP that):"
 grep -a '\[P2P\]' "$STG/logs/game.out" | tail -15 | sed 's/^/   /' | cut -c1-200

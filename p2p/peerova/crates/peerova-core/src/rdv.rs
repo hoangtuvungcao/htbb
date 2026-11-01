@@ -13,6 +13,8 @@ pub struct Endpoint {
     pub port: u16,
     pub lan: Vec<SocketAddr>,
     pub v6: Vec<SocketAddr>,
+    /// Relay base URL announced by the website (overrides the built-in default), if any.
+    pub relay: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -40,23 +42,29 @@ fn parse_ep(j: &Json) -> Option<Endpoint> {
             .iter()
             .filter_map(|s| s.parse().ok())
             .collect(),
+        relay: None,
     })
 }
 
-fn post(base: &str, path: &str, body: &str) -> Result<Json, String> {
+fn post(base: &str, path: &str, body: &str, lease: Option<&str>) -> Result<Json, String> {
     let url = format!("{}{path}", base.trim_end_matches('/'));
-    let (resp, code) = curl(
-        &[
-            "-X",
-            "POST",
-            "-H",
-            "Content-Type: application/json",
-            "--data-binary",
-            "@-",
-            &url,
-        ],
-        Some(body),
-    )?;
+    let auth = lease.map(|l| format!("Authorization: Lease {l}"));
+    let mut args = vec!["-X", "POST", "-H", "Content-Type: application/json"];
+    if let Some(a) = &auth {
+        args.extend(["-H", a.as_str()]);
+    }
+    if path.ends_with("/poll") {
+        args.extend(["--max-time", "30"]); // long-poll (last --max-time wins)
+    }
+    args.extend(["--data-binary", "@-", &url]);
+    // Reach the website over IPv4 so it sees our public IPv4 (what the peer needs for
+    // NAT punching); IPv6 candidates travel in the body. IPv6-only hosts fall back.
+    let mut v4 = vec!["-4"];
+    v4.extend(args.iter().copied());
+    let (resp, code) = match curl(&v4, Some(body)) {
+        Ok(r) => r,
+        Err(_) => curl(&args, Some(body))?,
+    };
     let j =
         Json::parse(&resp).map_err(|_| format!("điểm hẹn trả về không phải JSON (HTTP {code})"))?;
     if code != "200" {
@@ -67,6 +75,22 @@ fn post(base: &str, path: &str, body: &str) -> Result<Json, String> {
 
 /// Server: announce ourselves and collect clients waiting to connect.
 /// Returns (our public IP as seen by the website, pending clients, poll interval s).
+/// Random client id for the server's standby fallback room.
+pub fn random_cid() -> u64 {
+    crate::util::random_u64()
+}
+
+/// Long-poll: the website holds the request up to `POLL_WAIT` s and answers as soon as a
+/// client arrives (older websites ignore `wait` and answer at once).
+pub const POLL_WAIT: u64 = 15;
+
+/// Relay URL the website wants clients/servers to use (validated: http(s) only).
+fn relay_of(j: &Json) -> Option<String> {
+    j.str("relay")
+        .filter(|u| (u.starts_with("https://") || u.starts_with("http://")) && u.len() < 300)
+        .map(String::from)
+}
+
 pub fn poll(
     base: &str,
     sid: &str,
@@ -74,14 +98,15 @@ pub fn poll(
     lan: &[SocketAddr],
     v6: &[SocketAddr],
     tcp: bool,
-) -> Result<(Option<IpAddr>, Vec<ClientReq>, u64), String> {
+    lease: Option<&str>,
+) -> Result<(Option<IpAddr>, Vec<ClientReq>, u64, Option<String>), String> {
     let body = format!(
-        "{{\"sid\":{},\"port\":{port},\"lan\":{},\"v6\":{},\"tcp\":{tcp}}}",
+        "{{\"sid\":{},\"port\":{port},\"lan\":{},\"v6\":{},\"tcp\":{tcp},\"wait\":{POLL_WAIT}}}",
         escape(sid),
         addr_list(lan),
         addr_list(v6)
     );
-    let j = post(base, "/api/v1/rdv/poll", &body)?;
+    let j = post(base, "/api/v1/rdv/poll", &body, lease)?;
     let clients = match j.get("clients") {
         Some(Json::Arr(list)) => list
             .iter()
@@ -98,6 +123,7 @@ pub fn poll(
         j.str("ip").and_then(|s| s.parse().ok()),
         clients,
         j.u64("poll").unwrap_or(2).clamp(1, 10),
+        relay_of(&j),
     ))
 }
 
@@ -116,17 +142,18 @@ pub fn connect(
         addr_list(lan),
         addr_list(v6)
     );
-    let j = post(base, "/api/v1/rdv/connect", &body).map_err(|e| {
+    let j = post(base, "/api/v1/rdv/connect", &body, None).map_err(|e| {
         if e == "offline" {
             "server chưa online ở điểm hẹn (website)".into()
         } else {
             e
         }
     })?;
-    let server = j
+    let mut server = j
         .get("server")
         .and_then(parse_ep)
         .ok_or("điểm hẹn trả về thiếu địa chỉ server")?;
+    server.relay = relay_of(&j);
     Ok((j.str("ip").and_then(|s| s.parse().ok()), server))
 }
 

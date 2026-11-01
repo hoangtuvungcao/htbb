@@ -1,7 +1,7 @@
 {
   "name": "peerova",
   "version": "0.1.0",
-  "description": "Direct P2P networking (no relay, end-to-end encrypted) for Node.js, Electron and Bun — zero native deps (stdio sidecar).",
+  "description": "Direct P2P networking (end-to-end encrypted) for Node.js, Electron and Bun — zero native deps (stdio sidecar).",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",

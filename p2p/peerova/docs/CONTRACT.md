@@ -111,3 +111,46 @@ public metadata; the service data path is still peer-to-peer.
 * `GET /api/v1/lobby/stats?app=prj_x` -> `{"lobbies":N,"players":M}` (for app UIs: "M người đang dùng").
 * Dashboard (owner of the project): live table of the project's lobbies/servers (code, name, players/max, public, last heartbeat,
   version, region) + total players chart; admin overview KPI: live lobbies and players.
+
+## 10. Amendment v5: no public information disclosure
+* `GET /api/v1/supernodes` now REQUIRES `Authorization: Lease <pvl1 token>`; the lease must verify (signature, not expired,
+  license active and not trial). Otherwise 401 `{"error":"unauthorized"}` with no hint. Rate limit 30/min per license.
+  (Supernode IPs are customers' server addresses — never public.)
+* `GET /api/v1/stats/public` returns only coarse, rounded marketing aggregates (no server/supernode counts, no per-path
+  numbers) — or `{}` until a minimum sample size is reached.
+* `GET /api/v1/health` → `{"ok":true}` only. No version, time, build or stack info anywhere in responses; errors are
+  generic codes (`{"error":"internal"}`), details only in server logs.
+
+## 11. Amendment v6: network-side license enforcement for rendezvous & connect codes
+* `POST /api/v1/rdv/poll` and `POST /api/v1/lobby/upsert` accept `Authorization: Lease <pvl1 token>`.
+  * Valid lease (signature, not expired, license active; trial counts as licensed) whose `spk` (if present) equals the
+    request's `sid` → normal service. For lobby: `players`/`max` are capped at the lease's `ccu`.
+  * No/invalid lease → **dev mode**: rdv poll delivers at most 3 client requests per minute per sid (extra requests are
+    dropped silently, client sees offline); lobby upsert allowed only with `public:false` and `max ≤ 3`, and its code
+    resolves at most 10 times per hour. Response field `"mode":"dev"|"licensed"` (no other hints).
+* Rationale: a cracked server cannot forge leases, so it only gets dev-mode service from our network.
+
+## 12. Amendment v7: automatic last-resort relay (fallback only)
+Used only when every direct path (LAN, IPv6, public IP, UPnP/NAT-PMP, hole punching, direct TCP) fails.
+Payload stays end-to-end encrypted (Noise); the relay forwards opaque packets and never sees plaintext.
+
+* Endpoint: `GET /api/v1/relay/<room>?role=s|c&lane=N` with `Upgrade: websocket` (RFC 6455).
+  * `<room>` = 32 lowercase hex chars (128-bit random, chosen per session and exchanged via the rendezvous).
+  * `role` = `s` (server) or `c` (client); `lane` = 0..3 (parallel sockets; default 0). Same room + lane pairs `s` with `c`.
+    A message on a lane whose partner lane is missing goes to any open lane of the partner.
+  * Errors (no upgrade): bad path 404 `not_found`, bad role/lane 400 `bad_request`, missing `Upgrade: websocket` 426
+    `websocket_required`. A new socket for the same role+lane replaces the old one.
+* Framing: every WebSocket **binary** message carries one or more frames `len u16 BE | packet` (concatenated).
+  Text messages are ignored. Max message size 64 KiB (larger → connection closed).
+* Tiers: the server side (`role=s`) may send `Authorization: Lease <pvl1 token>`; a valid lease (signature, not expired,
+  license active; trial counts) makes the room **licensed**, otherwise **dev**. Client sockets cannot raise the tier.
+  * dev: at most 50 MiB forwarded and 10 minutes per room, then the room is closed (close code 4002 quota / 4003 time).
+  * licensed: no byte cap; 24 h per room.
+  * A room whose partner does not arrive within 30 s is closed (4001). When one side is gone, the other is closed.
+  * Messages sent before the partner connects are dropped (the engine retransmits).
+* Discovery: when the operator sets `RELAY_URL` (an `https://` base URL), `POST /api/v1/rdv/poll` and
+  `POST /api/v1/rdv/connect` include `"relay": "<base url>"`; clients then connect to `<relay>/api/v1/relay/<room>…`.
+  Without the field, clients use the same site as the API. The relay is a **fallback only**: clients must keep
+  trying/preferring direct paths and switch back when a direct path becomes available.
+* Long-poll (same amendment): `POST /api/v1/rdv/poll` accepts optional `"wait": N` (0..25 s). With no pending client
+  requests the server re-checks every ~500 ms until one arrives or N seconds pass. Omitting `wait` keeps the old behaviour.

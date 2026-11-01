@@ -17,6 +17,7 @@ void main() {
   final cli = PeerovaClient.connect(srv.ticket);
   try {
     check(srv.ticket.startsWith('pvt_'), 'ticket ${srv.ticket}');
+    check(srv.roomCode == null, 'no connect code without app/share');
     int? peer;
     final end = DateTime.now().add(const Duration(seconds: 10));
     while (peer == null && DateTime.now().isBefore(end)) {

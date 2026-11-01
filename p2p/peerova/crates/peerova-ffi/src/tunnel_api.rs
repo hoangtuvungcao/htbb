@@ -312,12 +312,14 @@ impl Tunnel {
 
     /// Server: remote peer address for the loopback socket whose source port is `src_port`
     /// (as seen by the exposed service). Waits up to `wait` for the mapping to appear.
+    /// None for unknown sockets and for peers connected through the relay (no real IP known).
     pub fn peer_of(&self, src_port: u16, wait: Duration) -> Option<SocketAddr> {
         let deadline = Instant::now() + wait;
         let mut g = self.shared.st.lock().unwrap();
         loop {
             if let Some(a) = g.src.get(&src_port).and_then(|c| g.peers.get(c)).copied() {
-                return Some(a);
+                // relay path: the address is a pseudo address (100::/64), not the player's IP
+                return (!peerova_core::relay::is_relay(&a)).then_some(a);
             }
             let left = deadline.saturating_duration_since(Instant::now());
             if left.is_zero() {
@@ -556,7 +558,7 @@ mod tests {
             assert!(a.ip().is_loopback() || a.ip().is_ipv4() || a.ip().is_ipv6());
         }
         assert!(srv.peer_of(1, Duration::from_millis(10)).is_none());
-        assert_eq!(srv.peer_count(), 1);
+        assert_eq!(srv.peer_count(), 1); // direct (LAN) path: real address known
         drop(socks);
         drop(cli);
         drop(srv);
@@ -591,8 +593,14 @@ mod tests {
         let srv = Tunnel::server(Some(&cfg)).expect("server");
         let ticket = srv.ticket().unwrap();
         for round in 0..4 {
-            let cli = Tunnel::client(&ticket, Some("{\"forward\":[\"tcp:0=19129\"]}")).expect("client");
-            assert_eq!(cli.wait(Duration::from_secs(15)), TUNNEL_UP, "round {round}: {}", cli.error());
+            let cli =
+                Tunnel::client(&ticket, Some("{\"forward\":[\"tcp:0=19129\"]}")).expect("client");
+            assert_eq!(
+                cli.wait(Duration::from_secs(15)),
+                TUNNEL_UP,
+                "round {round}: {}",
+                cli.error()
+            );
             let mut s = TcpStream::connect(("127.0.0.1", cli.local_port(0))).unwrap();
             s.set_read_timeout(Some(Duration::from_secs(5))).unwrap();
             s.write_all(b"ping").unwrap();

@@ -1,4 +1,4 @@
-# Peerova — kết nối trực tiếp mọi dịch vụ sau NAT (không relay, mã hoá E2E)
+# Peerova — kết nối trực tiếp mọi dịch vụ sau NAT (mã hoá E2E)
 
 Client kết nối **thẳng** tới máy chủ dịch vụ (web/API, SSH, RDP, database, game…), kể cả khi cả hai bên đều nằm sau NAT và **không ai mở port**. Không có relay hay máy chủ trung gian, dịch vụ mạng không phụ thuộc bên thứ 3. Tunnel được **mọi giao thức** (TCP: HTTP/HTTPS/WebSocket/SSH…; UDP: game, QUIC, voice). Có SDK cho mọi ngôn ngữ qua C ABI.
 

@@ -21,6 +21,12 @@ pub const DEFAULT_LICENSE_SERVER: &str = match option_env!("PEEROVA_LICENSE_SERV
     Some(s) => s,
     None => "https://peerova.pages.dev",
 };
+/// Built-in last-resort relay (release builds: `PEEROVA_RELAY_URL`, see scripts/release.env).
+/// The website can announce another one at runtime (rdv `relay` field).
+pub const DEFAULT_RELAY: &str = match option_env!("PEEROVA_RELAY_URL") {
+    Some(s) => s,
+    None => DEFAULT_LICENSE_SERVER,
+};
 /// Renew every 30 min so a payment takes effect quickly; the lease itself stays valid 7 days offline.
 pub const RENEW_EVERY_SECS: u64 = 30 * 60;
 
@@ -208,9 +214,14 @@ pub(crate) fn curl(args: &[&str], body: Option<&str>) -> Result<(String, String)
     })
     .stdout(Stdio::piped())
     .stderr(Stdio::piped());
-    let mut child = cmd
-        .spawn()
-        .map_err(|e| format!("không chạy được curl: {e}"))?;
+    let mut child = match cmd.spawn() {
+        Ok(c) => c,
+        // Windows 7 / 8.1 / Server 2012 R2 ship without curl.exe: use PowerShell (always present).
+        Err(e) if cfg!(windows) && e.kind() == std::io::ErrorKind::NotFound => {
+            return powershell_http(args, body)
+        }
+        Err(e) => return Err(format!("không chạy được curl: {e}")),
+    };
     if let Some(b) = body {
         use std::io::Write;
         child
@@ -236,10 +247,129 @@ pub(crate) fn curl(args: &[&str], body: Option<&str>) -> Result<(String, String)
     Ok((resp, code))
 }
 
-/// Licensed supernodes currently online (for automatic rendezvous).
-pub fn fetch_supernodes(server: &str) -> Vec<String> {
+/// Minimal curl replacement via PowerShell/.NET (HttpWebRequest, TLS 1.2). Understands the
+/// curl flags this crate uses: `-X M`, `-H "K: V"`, `--data-binary @-`, `-4`, URL.
+fn powershell_http(args: &[&str], body: Option<&str>) -> Result<(String, String), String> {
+    let q = |s: &str| format!("'{}'", s.replace('\'', "''"));
+    let (mut method, mut url, mut headers) = ("GET".to_string(), String::new(), vec![]);
+    let mut i = 0;
+    while i < args.len() {
+        match args[i] {
+            "-X" => {
+                method = args.get(i + 1).unwrap_or(&"GET").to_string();
+                i += 1;
+            }
+            "-H" => {
+                if let Some((k, v)) = args.get(i + 1).and_then(|h| h.split_once(':')) {
+                    headers.push((k.trim().to_string(), v.trim().to_string()));
+                }
+                i += 1;
+            }
+            "--data-binary" => i += 1,
+            a if !a.starts_with('-') => url = a.to_string(),
+            _ => {}
+        }
+        i += 1;
+    }
+    let mut ps = String::from(
+        "$ErrorActionPreference='Stop';[Console]::InputEncoding=[Text.Encoding]::UTF8;[Console]::OutputEncoding=[Text.Encoding]::UTF8;\
+         [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;",
+    );
+    ps += &format!(
+        "$r=[Net.WebRequest]::Create({});$r.Method={};$r.Timeout=20000;$r.UserAgent='peerova';",
+        q(&url),
+        q(&method)
+    );
+    for (k, v) in &headers {
+        if k.eq_ignore_ascii_case("content-type") {
+            ps += &format!("$r.ContentType={};", q(v));
+        } else {
+            ps += &format!("$r.Headers.Add({},{});", q(k), q(v));
+        }
+    }
+    if body.is_some() {
+        ps += "$b=[Text.Encoding]::UTF8.GetBytes([Console]::In.ReadToEnd());$r.ContentLength=$b.Length;$s=$r.GetRequestStream();$s.Write($b,0,$b.Length);$s.Close();";
+    }
+    ps += "try{$p=$r.GetResponse()}catch [Net.WebException]{$p=$_.Exception.Response;if(-not $p){throw}};\
+           $t=(New-Object IO.StreamReader($p.GetResponseStream(),[Text.Encoding]::UTF8)).ReadToEnd();\
+           [Console]::Out.Write($t+\"`n\"+[int]$p.StatusCode)";
+    // -EncodedCommand takes base64 of UTF-16LE: no quoting issues, stdin stays free for the body.
+    let utf16: Vec<u8> = ps.encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+    let mut cmd = Command::new("powershell");
+    cmd.args([
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-EncodedCommand",
+        &b64_std(&utf16),
+    ]);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
+    }
+    cmd.stdin(if body.is_some() {
+        Stdio::piped()
+    } else {
+        Stdio::null()
+    })
+    .stdout(Stdio::piped())
+    .stderr(Stdio::piped());
+    let mut child = cmd
+        .spawn()
+        .map_err(|e| format!("không chạy được curl hay PowerShell: {e}"))?;
+    if let Some(b) = body {
+        use std::io::Write;
+        child
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(b.as_bytes())
+            .map_err(|e| e.to_string())?;
+    }
+    let out = child.wait_with_output().map_err(|e| e.to_string())?;
+    let text = String::from_utf8_lossy(&out.stdout).to_string();
+    match text.trim_end().rsplit_once('\n') {
+        Some((resp, code)) if out.status.success() && code.trim().parse::<u16>().is_ok() => {
+            Ok((resp.to_string(), code.trim().to_string()))
+        }
+        _ => Err(format!(
+            "không kết nối được license server: {}",
+            String::from_utf8_lossy(&out.stderr)
+                .lines()
+                .next()
+                .unwrap_or("")
+                .trim()
+        )),
+    }
+}
+
+/// Standard (padded) base64, as PowerShell -EncodedCommand expects.
+fn b64_std(data: &[u8]) -> String {
+    const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut o = String::with_capacity(data.len().div_ceil(3) * 4);
+    for c in data.chunks(3) {
+        let n = (c[0] as u32) << 16
+            | (*c.get(1).unwrap_or(&0) as u32) << 8
+            | *c.get(2).unwrap_or(&0) as u32;
+        for (k, sh) in [18, 12, 6, 0].iter().enumerate() {
+            o.push(if k <= c.len() {
+                T[(n >> sh & 63) as usize] as char
+            } else {
+                '='
+            });
+        }
+    }
+    o
+}
+
+/// Licensed supernodes currently online. Requires our lease (CONTRACT §10): the list
+/// contains customers' server addresses and is never public.
+pub fn fetch_supernodes(server: &str, lease: &str) -> Vec<String> {
     let url = format!("{}/api/v1/supernodes", server.trim_end_matches('/'));
-    match curl(&[&url], None) {
+    let auth = format!("Authorization: Lease {lease}");
+    match curl(&["-H", &auth, &url], None) {
         Ok((resp, code)) if code == "200" => Json::parse(&resp)
             .map(|j| j.str_list("supernodes"))
             .unwrap_or_default(),
@@ -359,7 +489,10 @@ pub fn prepare(cfg: &LicenseConfig) -> (Result<Lease, String>, Vec<std::net::Soc
         None,
     );
     let sn_cache = cfg.cache.with_extension("supernodes");
-    let mut list = fetch_supernodes(&cfg.server);
+    let mut list = match &lease {
+        Ok(l) => fetch_supernodes(&cfg.server, &l.token),
+        Err(_) => vec![],
+    };
     if list.is_empty() {
         list = std::fs::read_to_string(&sn_cache)
             .map(|s| s.lines().map(String::from).collect())
@@ -413,6 +546,15 @@ mod tests {
         let signed = format!("pvl1.{}", b64_encode(payload.as_bytes()));
         let sig = sk.sign(signed.as_bytes());
         format!("{signed}.{}", b64_encode(&sig.to_bytes()))
+    }
+
+    #[test]
+    fn b64_std_matches_rfc4648() {
+        assert_eq!(b64_std(b""), "");
+        assert_eq!(b64_std(b"f"), "Zg==");
+        assert_eq!(b64_std(b"fo"), "Zm8=");
+        assert_eq!(b64_std(b"foo"), "Zm9v");
+        assert_eq!(b64_std(b"foob"), "Zm9vYg==");
     }
 
     #[test]

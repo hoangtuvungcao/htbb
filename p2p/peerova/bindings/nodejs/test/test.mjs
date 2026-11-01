@@ -1,4 +1,4 @@
-// node test/test.mjs   (needs target/release/peerova or PEEROVA_BIN)
+// node test/test.mjs   (needs the peerova sidecar binary: see README "Where to put the binary", or set PEEROVA_BIN)
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { mkdtempSync } from "node:fs";

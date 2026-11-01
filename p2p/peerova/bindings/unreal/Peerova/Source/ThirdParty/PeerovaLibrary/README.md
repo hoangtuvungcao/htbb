@@ -1,17 +1,14 @@
-# PeerovaLibrary (third-party native lib for the Unreal plugin)
+# PeerovaLibrary (native library for the Unreal plugin)
 
-`include/peerova.h` is a copy of `crates/peerova-ffi/include/peerova.h` (refresh: `bindings/sync-headers.sh`).
-Drop the prebuilt libraries here (from the repo root):
+`include/peerova.h` is an identical copy of the SDK's `include/peerova.h`. Put the native libraries here:
 
-| Folder | File(s) | Build command |
+| Folder | File(s) | Where to get it |
 |---|---|---|
-| `lib/Win64/` | `peerova.dll`, `peerova.dll.lib` | `cargo build --release -p peerova-ffi --target x86_64-pc-windows-msvc` (needs MSVC; the `-gnu` target's `libpeerova.dll.a` is not usable by UE's MSVC linker) |
-| `lib/Linux/` | `libpeerova.so` | `cargo build --release -p peerova-ffi` |
-| `lib/Mac/` | `libpeerova.dylib` (universal) | build `aarch64-apple-darwin` + `x86_64-apple-darwin`, `lipo -create -output libpeerova.dylib …`, `install_name_tool -id @rpath/libpeerova.dylib libpeerova.dylib` |
-| `lib/Android/arm64-v8a/` etc. | `libpeerova.so` per ABI | `RUSTFLAGS="-C link-arg=-Wl,-soname,libpeerova.so" cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o out build --release -p peerova-ffi`, copy `out/<abi>/libpeerova.so` |
-| `lib/IOS/` | `libpeerova.a` | `cargo build --release -p peerova-ffi --target aarch64-apple-ios` |
+| `lib/Win64/` | `peerova.dll` + `peerova.dll.lib` | `peerova.dll` from the SDK's `lib/windows-x86_64/`. The MSVC import library `peerova.dll.lib`: if your package does not include it, generate it from `lib/Win64/peerova.def` in a *x64 Native Tools Command Prompt for VS*: `lib /def:peerova.def /machine:x64 /out:peerova.dll.lib` |
+| `lib/Linux/` | `libpeerova.so` | SDK `lib/linux-x86_64/libpeerova.so` |
+| `lib/Mac/` | `libpeerova.dylib` (universal arm64 + x86_64, install name `@rpath/libpeerova.dylib`) | contact Peerova |
+| `lib/Android/arm64-v8a/`, `armeabi-v7a/`, `x86_64/` | `libpeerova.so` per ABI (SONAME `libpeerova.so`) | contact Peerova |
+| `lib/IOS/` | `libpeerova.a` (static, arm64) | contact Peerova |
 
-Why the SONAME on Android: the Rust cdylib has no `SONAME`, and UBT links Android libs by full
-path, which would bake the build machine's absolute path into `libUnreal.so`'s `DT_NEEDED`.
-(Linux avoids this because `Peerova.Build.cs` links with `-L … -lpeerova`.) Check with
-`readelf -d libpeerova.so | grep SONAME`.
+You only need the platforms you ship. `wintun.dll` is **not** needed (it is only used by the `peerova`
+command-line tool's VPN mode). Check a Linux/Android library with `readelf -d libpeerova.so | grep SONAME`.

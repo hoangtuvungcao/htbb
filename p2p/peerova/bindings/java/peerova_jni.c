@@ -1,6 +1,10 @@
-/* JNI glue for dev.peerova.Peerova -> peerova C ABI (peerova.h).
- * Strings cross the boundary as UTF-8 byte[] (NUL-terminated on input) to avoid JNI's "modified UTF-8".
- * Build: see build.sh. */
+/* JNI glue: dev.peerova.Peerova (Java) -> peerova C ABI (peerova.h).
+ *
+ * Built into libpeerova_jni (.so / .dll / .dylib), which links against libpeerova.
+ * Strings cross the boundary as UTF-8 byte[] (the C side appends the NUL) instead of jstring, so
+ * JNI's "modified UTF-8" never touches tickets, config JSON or error text.
+ * Every native method takes the node handle (peerova_node* widened to jlong); the Java side guarantees
+ * the handle is non-zero and not yet freed. Build: see build.sh (desktop) or the Android CMakeLists.txt. */
 #include <jni.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +35,7 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved) {
         (*env)->DeleteGlobalRef(env, g_event_cls);
 }
 
-/* byte[] (already NUL-terminated by Java) -> malloc'd C string, or NULL for null array. */
+/* byte[] (UTF-8, no NUL) -> malloc'd C string, or NULL for null array. */
 static char* dup_bytes(JNIEnv* env, jbyteArray a) {
     if (!a) return NULL;
     jsize n = (*env)->GetArrayLength(env, a);
@@ -67,6 +71,7 @@ JNIEXPORT jlong JNICALL Java_dev_peerova_Peerova_nClientConnect(JNIEnv* env, jcl
     return (jlong)(intptr_t)n;
 }
 
+/* Ticket string ("pvt_...") or NULL. peerova_ticket returns the size incl. NUL; call once to size, once to fill. */
 JNIEXPORT jbyteArray JNICALL Java_dev_peerova_Peerova_nTicket(JNIEnv* env, jclass cls, jlong h) {
     (void)cls;
     int32_t need = peerova_ticket(NODE(h), NULL, 0);
@@ -79,6 +84,21 @@ JNIEXPORT jbyteArray JNICALL Java_dev_peerova_Peerova_nTicket(JNIEnv* env, jclas
     return a;
 }
 
+/* Connect code ("K7Q2XD") or NULL if the server has none (yet). Same size-then-fill pattern as nTicket. */
+JNIEXPORT jbyteArray JNICALL Java_dev_peerova_Peerova_nRoomCode(JNIEnv* env, jclass cls, jlong h) {
+    (void)cls;
+    int32_t need = peerova_room_code(NODE(h), NULL, 0);
+    if (need <= 0) return NULL;
+    char* buf = (char*)malloc((size_t)need);
+    if (!buf) return NULL;
+    jbyteArray a = NULL;
+    if (peerova_room_code(NODE(h), buf, need) > 0) { buf[need - 1] = 0; a = cstr_bytes(env, buf); }
+    free(buf);
+    return a;
+}
+
+/* Sends len bytes of data[off..]. Small payloads are copied through a stack buffer (no malloc on the
+ * hot path). Returns 0 on success, non-zero on error (text via nLastError). */
 JNIEXPORT jint JNICALL Java_dev_peerova_Peerova_nSend(JNIEnv* env, jclass cls, jlong h, jlong peer, jint channel,
                                                  jbyteArray data, jint off, jint len, jboolean reliable) {
     (void)cls;
@@ -92,6 +112,7 @@ JNIEXPORT jint JNICALL Java_dev_peerova_Peerova_nSend(JNIEnv* env, jclass cls, j
     return r;
 }
 
+/* Zero-copy send straight from a direct ByteBuffer's memory. */
 JNIEXPORT jint JNICALL Java_dev_peerova_Peerova_nSendDirect(JNIEnv* env, jclass cls, jlong h, jlong peer, jint channel,
                                                        jobject direct, jint off, jint len, jboolean reliable) {
     (void)cls;
@@ -100,7 +121,7 @@ JNIEXPORT jint JNICALL Java_dev_peerova_Peerova_nSendDirect(JNIEnv* env, jclass 
     return peerova_send(NODE(h), (uint32_t)peer, (uint8_t)channel, p + off, (uint32_t)len, reliable ? 1 : 0);
 }
 
-/* Returns a new Event or null. Payload is copied into a Java byte[] before returning
+/* Returns a new Event, or null if none arrived (timeout_ms <= 0: non-blocking). Payload is copied into a Java byte[] before returning
  * (the native pointer is only valid until the next poll). */
 JNIEXPORT jobject JNICALL Java_dev_peerova_Peerova_nPoll(JNIEnv* env, jclass cls, jlong h, jint timeout_ms) {
     (void)cls;

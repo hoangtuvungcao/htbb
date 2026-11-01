@@ -86,3 +86,6 @@ key.properties
 /p2p/peerova/bindings/csharp/Test/obj/
 /p2p/peerova/**/node_modules/
 /p2p/peerova/**/.dart_tool/
+/p2p/test/unity-net/obj/
+/p2p/test/unity-net/bin/
+/p2p/peerova/scripts/__pycache__/

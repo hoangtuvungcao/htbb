@@ -1,0 +1,18 @@
+# Minimal Flutter chat using Peerova. Copy lib/main.dart and these dependencies into a
+# `flutter create` project, then bundle the native library (see ../../README.md, "Flutter").
+name: peerova_flutter_chat
+description: Peerova chat example for Flutter.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  peerova:
+    path: ../..          # the bindings/dart folder of the Peerova SDK
+
+flutter:
+  uses-material-design: true

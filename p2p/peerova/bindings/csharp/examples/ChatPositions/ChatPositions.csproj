@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Console example: tiny chat + position sync. Uses the binding source directly (../../Peerova.cs). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Peerova.cs" Link="Peerova.cs" />
+  </ItemGroup>
+  <!-- Copy the native library next to the program if it is present in the SDK lib folder. -->
+  <ItemGroup>
+    <None Include="../../../../target/release/libpeerova.so" Condition="Exists('../../../../target/release/libpeerova.so')" CopyToOutputDirectory="PreserveNewest" Link="libpeerova.so" />
+    <None Include="../../../../target/release/peerova.dll" Condition="Exists('../../../../target/release/peerova.dll')" CopyToOutputDirectory="PreserveNewest" Link="peerova.dll" />
+  </ItemGroup>
+</Project>

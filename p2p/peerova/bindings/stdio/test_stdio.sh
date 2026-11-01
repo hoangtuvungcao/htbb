@@ -7,9 +7,11 @@ cd "$(dirname "$0")"
 if [[ -n ${PV_NO_JQ:-} ]]; then command() { [[ $1 == -v && $2 == jq ]] && return 1; builtin command "$@"; }; fi
 source ./peerova.sh
 N=100
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
 fail() { echo "bash FAIL: $*"; pv_stop cli; pv_stop srv; exit 1; }
 
-key=$(mktemp -d)/sh.key
+key=$tmp/sh.key
 t0=$(date +%s%N)
 pv_start srv server "{\"port\":0,\"upnp\":false,\"key_file\":\"$key\"}" || fail "server start"
 [[ $PV_TICKET == pvt_* ]] || fail "bad ticket '$PV_TICKET'"

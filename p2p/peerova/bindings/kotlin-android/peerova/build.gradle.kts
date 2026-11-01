@@ -1,5 +1,5 @@
 // Android library module ":peerova" — Kotlin wrapper + Java JNI binding + native libs.
-// settings.gradle.kts of your app:   include(":peerova"); project(":peerova").projectDir = file("<repo>/bindings/kotlin-android/peerova")
+// settings.gradle.kts of your app:   include(":peerova"); project(":peerova").projectDir = file("<sdk>/bindings/kotlin-android/peerova")
 // app/build.gradle.kts:              dependencies { implementation(project(":peerova")) }
 plugins {
     id("com.android.library")
@@ -18,7 +18,7 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
-    // libpeerova_jni.so from CMake; libpeerova.so prebuilt in src/main/jniLibs/<abi>/ (build-android-libs.sh).
+    // libpeerova_jni.so is built by CMake; libpeerova.so (prebuilt, from Peerova) goes in src/main/jniLibs/<abi>/.
     externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "3.22.1" } }
 
     sourceSets["main"].java.srcDirs("src/main/kotlin", "../../java/src")  // dev.peerova.Peerova (Java)

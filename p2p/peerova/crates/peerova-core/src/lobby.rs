@@ -37,6 +37,7 @@ pub fn upsert(
     ticket: &str,
     players: u32,
     secret: &str,
+    lease: Option<&str>,
 ) -> Result<(String, String), String> {
     let tags: Vec<String> = info.tags.iter().take(8).map(|t| escape(t)).collect();
     let body = format!(
@@ -53,18 +54,13 @@ pub fn upsert(
         escape(secret)
     );
     let u = format!("{}/api/v1/lobby/upsert", base(url));
-    let (resp, code) = curl(
-        &[
-            "-X",
-            "POST",
-            "-H",
-            "Content-Type: application/json",
-            "--data-binary",
-            "@-",
-            &u,
-        ],
-        Some(&body),
-    )?;
+    let auth = lease.map(|l| format!("Authorization: Lease {l}"));
+    let mut args = vec!["-X", "POST", "-H", "Content-Type: application/json"];
+    if let Some(a) = &auth {
+        args.extend(["-H", a.as_str()]);
+    }
+    args.extend(["--data-binary", "@-", u.as_str()]);
+    let (resp, code) = curl(&args, Some(&body))?;
     let j =
         Json::parse(&resp).map_err(|_| format!("lobby: phản hồi không phải JSON (HTTP {code})"))?;
     if code != "200" {
@@ -100,6 +96,7 @@ pub fn spawn_heartbeat(
     info: LobbyInfo,
     ticket: String,
     players: impl Fn() -> u32 + Send + 'static,
+    lease: impl Fn() -> Option<String> + Send + 'static,
     on_event: impl Fn(Result<String, String>) + Send + 'static,
 ) {
     std::thread::Builder::new()
@@ -108,7 +105,7 @@ pub fn spawn_heartbeat(
             let mut secret = String::new();
             let mut announced = false;
             loop {
-                match upsert(&url, &info, &ticket, players(), &secret) {
+                match upsert(&url, &info, &ticket, players(), &secret, lease().as_deref()) {
                     Ok((code, s)) => {
                         secret = s;
                         if !announced {

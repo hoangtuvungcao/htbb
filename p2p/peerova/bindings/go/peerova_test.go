@@ -14,6 +14,9 @@ func TestRoundtrip(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer srv.Close()
+	if code, ok := srv.RoomCode(); ok {
+		t.Fatalf("connect code %q without app/share config", code)
+	}
 	cli, err := Connect(srv.Ticket(), "")
 	if err != nil {
 		t.Fatal(err)

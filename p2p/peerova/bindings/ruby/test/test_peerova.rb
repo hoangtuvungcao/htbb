@@ -1,4 +1,4 @@
-# Run: ruby -Ilib test/test_peerova.rb   (needs target/release/libpeerova.so or PEEROVA_LIB)
+# Run: ruby -Ilib test/test_peerova.rb   (needs libpeerova next to lib/peerova.rb, or PEEROVA_LIB)
 require "minitest/autorun"
 require "tmpdir"
 require "peerova"
@@ -10,6 +10,7 @@ class TestPeerova < Minitest::Test
     key = File.join(Dir.mktmpdir, "rb.key")
     Peerova::Server.open(port: 0, upnp: false, key_file: key) do |srv|
       assert_match(/\Apvt_/, srv.ticket)
+      assert_nil srv.room_code # no connect code without app/share
       Peerova::Client.open(srv.ticket) do |cli|
         ev = cli.poll(10)
         refute_nil ev

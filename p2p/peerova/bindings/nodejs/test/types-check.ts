@@ -1,8 +1,10 @@
-// Type-level check of index.d.ts: tsc --noEmit -p test/tsconfig.json (see README)
+// Type-level check of index.d.ts: tsc -p test/tsconfig.json (see README)
 import Peerova, { Peerova as Named, PeerovaError, MAX_UNRELIABLE_PAYLOAD, type ServerConfig } from "peerova";
 
 async function main(): Promise<void> {
   const cfg: ServerConfig = { port: 0, upnp: false };
+  const shared: ServerConfig = { app: "prj_x", share: { name: "Room", public: true, max: 8, region: "VN" } };
+  void shared;
   const srv: Peerova = await Peerova.server(cfg);
   const t: string | null = srv.ticket;
   srv.on("message", (peer: number, data: Buffer, info) => {

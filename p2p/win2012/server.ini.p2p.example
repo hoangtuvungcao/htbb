@@ -12,8 +12,11 @@ sv.p2p_key=p2p/server.key
 sv.p2p_ticket_file=p2p/ticket.txt
 # UPnP / NAT-PMP: tu mo cong tren router gia dinh. Server co IP public hoac da port-forward: de 1 cung khong sao.
 sv.p2p_upnp=1
-# 1 = dung website Peerova lam diem hen (server sau NAT khong mo duoc cong). Mac dinh 0.
-sv.p2p_rdv=0
+# Diem hen qua website Peerova (giup noi khi server sau NAT). Mac dinh 1.
+sv.p2p_rdv=1
+# Duong du phong MA HOA qua website (relay, Peerova ban moi) khi khong noi thang duoc; nhanh len thang khi duoc.
+# 0 = chi P2P thang (khong qua ben thu ba). Mac dinh 1.
+sv.p2p_relay=1
 sv.p2p_private=0
 # (tuy chon) tran CCU P2P thap hon goi license
 sv.p2p_max_ccu=

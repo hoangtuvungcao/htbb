@@ -4,7 +4,7 @@
 //!
 //! TCP fallback: for networks that block UDP (corporate/school Wi-Fi), the same
 //! packets travel over a direct TCP connection framed as `len u16 | packet`.
-//! Still peer-to-peer (no relay); the server stays silent to anything without a
+//! Still peer-to-peer (); the server stays silent to anything without a
 //! valid handshake, TCP or UDP.
 //!
 //! TCP multipath (smoothness): the client opens several parallel TCP connections.
@@ -47,6 +47,8 @@ struct TcpLane {
     id: u64,
     tx: SyncSender<(Instant, Vec<u8>)>,
     stream: TcpStream,
+    /// Standby relay room: every message to this peer starts with its 8-byte client id.
+    prefix: Option<[u8; 8]>,
 }
 
 type TcpMap = Arc<Mutex<HashMap<SocketAddr, Vec<TcpLane>>>>;
@@ -55,8 +57,19 @@ type TcpMap = Arc<Mutex<HashMap<SocketAddr, Vec<TcpLane>>>>;
 pub const TCP_LANES: usize = 3;
 const LANE_QUEUE: usize = 256;
 const LANE_MAX_AGE: Duration = Duration::from_millis(150);
+/// Fallback-route lanes have a longer path (RTT ~100 ms): only drop truly stale data.
+const RELAY_MAX_AGE: Duration = Duration::from_millis(600);
+/// Deeper queues on fallback lanes: a full queue drops packets, which the transport
+/// reads as loss; the stale-age cap above still bounds the added delay.
+const RELAY_QUEUE: usize = 4096;
 const DUP_MAX: usize = 300;
 static LANE_ID: AtomicU64 = AtomicU64::new(1);
+/// Small stacks for I/O threads (they never recurse): less memory per connection.
+const LANE_STACK: usize = 256 * 1024;
+
+fn spawn_small(f: impl FnOnce() + Send + 'static) {
+    let _ = thread::Builder::new().stack_size(LANE_STACK).spawn(f);
+}
 
 pub struct Node {
     v4: Option<UdpSocket>,
@@ -83,8 +96,9 @@ fn add_lane(s: TcpStream, peer: SocketAddr, sink: Sink, map: TcpMap, stop: Arc<A
         id,
         tx,
         stream: shut,
+        prefix: None,
     });
-    thread::spawn(move || {
+    spawn_small(move || {
         for (t, frame) in rx {
             if t.elapsed() > LANE_MAX_AGE {
                 continue; // stale realtime data: dropping beats delaying (reliable data is retransmitted)
@@ -107,7 +121,7 @@ fn tcp_reader(
 ) {
     s.set_nodelay(true).ok();
     s.set_read_timeout(Some(Duration::from_secs(60))).ok();
-    thread::spawn(move || {
+    spawn_small(move || {
         let mut len = [0u8; 2];
         let mut buf = vec![0u8; 65536];
         while !stop.load(Ordering::Relaxed) {
@@ -131,6 +145,158 @@ fn tcp_reader(
     });
 }
 
+/// One relay WebSocket used as a lane. Reader and writer run independently and block
+/// on real events only (socket data / queued packets): ~0% CPU when idle, no added delay.
+fn relay_lane(
+    ws: crate::relay::Ws,
+    peer: SocketAddr,
+    sink: Sink,
+    map: TcpMap,
+    stop: Arc<AtomicBool>,
+    up: impl Fn(),
+) {
+    let (Ok(shut), Ok(lane_sock)) = (ws.tcp.try_clone(), ws.tcp.try_clone()) else {
+        return;
+    };
+    let Ok((mut reader, mut writer)) = ws.split() else {
+        return;
+    };
+    let id = LANE_ID.fetch_add(1, Ordering::Relaxed);
+    let (tx, rx) = sync_channel::<(Instant, Vec<u8>)>(RELAY_QUEUE);
+    map.lock().unwrap().entry(peer).or_default().push(TcpLane {
+        id,
+        tx,
+        stream: lane_sock,
+        prefix: None,
+    });
+    up();
+    let _ = thread::Builder::new()
+        .name("peerova-relay-tx".into())
+        .stack_size(LANE_STACK)
+        .spawn(move || {
+            let mut out = Vec::with_capacity(16 * 1024);
+            while let Ok((t, f)) = rx.recv() {
+                out.clear();
+                if t.elapsed() <= RELAY_MAX_AGE {
+                    out.extend_from_slice(&f);
+                }
+                // Whatever else is already queued goes in the same message (no waiting).
+                while out.len() < 16 * 1024 {
+                    match rx.try_recv() {
+                        Ok((t, f)) if t.elapsed() <= RELAY_MAX_AGE => out.extend_from_slice(&f),
+                        Ok(_) => {}
+                        Err(_) => break,
+                    }
+                }
+                if !out.is_empty() && writer.send(&out).is_err() {
+                    break;
+                }
+            }
+        });
+    let mut msgs = vec![];
+    while !stop.load(Ordering::Relaxed) {
+        msgs.clear();
+        if reader.recv(&mut msgs).is_err() {
+            break;
+        }
+        for m in &msgs {
+            let mut b = &m[..];
+            while b.len() >= 2 {
+                let n = u16::from_be_bytes([b[0], b[1]]) as usize;
+                if n == 0 || b.len() < 2 + n {
+                    break;
+                }
+                sink(peer, &b[2..2 + n], Via::Tcp);
+                b = &b[2 + n..];
+            }
+        }
+    }
+    let _ = shut.shutdown(Shutdown::Both);
+    let mut m = map.lock().unwrap();
+    if let Some(v) = m.get_mut(&peer) {
+        v.retain(|l| l.id != id);
+        if v.is_empty() {
+            m.remove(&peer);
+        }
+    }
+}
+
+/// One standby connection: demultiplex clients by their 8-byte id.
+fn standby_lane(
+    ws: crate::relay::Ws,
+    sink: &Sink,
+    map: &TcpMap,
+    stop: &Arc<AtomicBool>,
+    cids: &Arc<Mutex<HashMap<[u8; 8], SocketAddr>>>,
+) {
+    let Ok(sock) = ws.tcp.try_clone() else { return };
+    let Ok((mut reader, mut writer)) = ws.split() else {
+        return;
+    };
+    let id = LANE_ID.fetch_add(1, Ordering::Relaxed);
+    let (tx, rx) = sync_channel::<(Instant, Vec<u8>)>(RELAY_QUEUE);
+    let _ = thread::Builder::new()
+        .name("peerova-standby-tx".into())
+        .stack_size(LANE_STACK)
+        .spawn(move || {
+            // Each item is already `cid | len | packet`: one WebSocket message per item.
+            while let Ok((t, f)) = rx.recv() {
+                if t.elapsed() <= RELAY_MAX_AGE && writer.send(&f).is_err() {
+                    break;
+                }
+            }
+        });
+    let mut msgs = vec![];
+    while !stop.load(Ordering::Relaxed) {
+        msgs.clear();
+        if reader.recv(&mut msgs).is_err() {
+            break;
+        }
+        for m in &msgs {
+            if m.len() < 10 {
+                continue;
+            }
+            let cid: [u8; 8] = m[..8].try_into().unwrap();
+            let peer = {
+                let mut c = cids.lock().unwrap();
+                if c.len() > 65_536 {
+                    c.clear();
+                }
+                *c.entry(cid).or_insert_with(crate::relay::pseudo_addr)
+            };
+            {
+                let mut mp = map.lock().unwrap();
+                let lanes = mp.entry(peer).or_default();
+                if !lanes.iter().any(|l| l.id == id) {
+                    if let Ok(s) = sock.try_clone() {
+                        lanes.push(TcpLane {
+                            id,
+                            tx: tx.clone(),
+                            stream: s,
+                            prefix: Some(cid),
+                        });
+                    }
+                }
+            }
+            let mut b = &m[8..];
+            while b.len() >= 2 {
+                let n = u16::from_be_bytes([b[0], b[1]]) as usize;
+                if n == 0 || b.len() < 2 + n {
+                    break;
+                }
+                sink(peer, &b[2..2 + n], Via::Tcp);
+                b = &b[2 + n..];
+            }
+        }
+    }
+    let _ = sock.shutdown(Shutdown::Both);
+    let mut mp = map.lock().unwrap();
+    mp.retain(|_, v| {
+        v.retain(|l| l.id != id);
+        !v.is_empty()
+    });
+}
+
 fn canonical(a: SocketAddr) -> SocketAddr {
     SocketAddr::new(a.ip().to_canonical(), a.port())
 }
@@ -143,6 +309,7 @@ fn spawn_recv_as(sock: UdpSocket, sink: Sink, stop: Arc<AtomicBool>, id: u16) {
     sock.set_read_timeout(Some(Duration::from_millis(500))).ok();
     thread::Builder::new()
         .name("peerova-udp-rx".into())
+        .stack_size(LANE_STACK)
         .spawn(move || {
             let mut buf = vec![0u8; 65536];
             while !stop.load(Ordering::Relaxed) {
@@ -315,16 +482,116 @@ impl Node {
 
     /// Open `TCP_LANES` parallel TCP-fallback connections to `addr` in the background.
     pub fn connect_tcp(&self, addr: SocketAddr) {
-        if self.tcp.lock().unwrap().contains_key(&addr) {
+        if crate::relay::is_relay(&addr) || self.tcp.lock().unwrap().contains_key(&addr) {
             return;
         }
         for _ in 0..TCP_LANES {
             let (sink, map, stop) = (self.sink.clone(), self.tcp.clone(), self.stop.clone());
-            thread::spawn(move || {
+            spawn_small(move || {
                 if let Ok(s) = TcpStream::connect_timeout(&addr, Duration::from_secs(4)) {
                     add_lane(s, addr, sink, map, stop);
                 }
             });
+        }
+    }
+
+    /// Last resort: open `RELAY_LANES` WebSockets to the website relay room. Returns the
+    /// pseudo address the engine uses for this path (packets flow like a TCP lane).
+    pub fn connect_relay(
+        &self,
+        base: &str,
+        room: &str,
+        role: &'static str,
+        auth: Option<String>,
+        extra: &str,
+        log: impl Fn(String) + Send + Sync + 'static,
+        up: impl Fn() + Send + Sync + 'static,
+    ) -> SocketAddr {
+        let peer = crate::relay::pseudo_addr();
+        let (log, up) = (Arc::new(log), Arc::new(up));
+        for lane in 0..crate::relay::RELAY_LANES {
+            let (sink, map, stop, log, up) = (
+                self.sink.clone(),
+                self.tcp.clone(),
+                self.stop.clone(),
+                log.clone(),
+                up.clone(),
+            );
+            let (url, auth) = (
+                crate::relay::url(base, room, role, lane) + extra,
+                auth.clone(),
+            );
+            thread::Builder::new()
+                .name("peerova-relay".into())
+                .stack_size(LANE_STACK)
+                .spawn(move || match crate::relay::connect(&url, auth.as_deref()) {
+                    Ok(ws) => relay_lane(ws, peer, sink, map, stop, move || up()),
+                    Err(e) => {
+                        if lane == 0 {
+                            log(format!("đường dự phòng lỗi: {e}"));
+                        }
+                    }
+                })
+                .expect("spawn relay");
+        }
+        peer
+    }
+
+    /// Server: keep `RELAY_LANES` standby connections in our own relay room (reconnecting
+    /// forever). Clients join with a client id and reach us with zero extra handshakes;
+    /// each client id becomes its own pseudo peer address.
+    pub fn relay_standby(
+        &self,
+        base: &str,
+        room: &str,
+        auth: Arc<dyn Fn() -> Option<String> + Send + Sync>,
+        log: impl Fn(String) + Send + Sync + 'static,
+    ) {
+        let log = Arc::new(log);
+        let cids: Arc<Mutex<HashMap<[u8; 8], SocketAddr>>> = Arc::new(Mutex::new(HashMap::new()));
+        for lane in 0..crate::relay::RELAY_LANES {
+            let (sink, map, stop, log, auth, cids) = (
+                self.sink.clone(),
+                self.tcp.clone(),
+                self.stop.clone(),
+                log.clone(),
+                auth.clone(),
+                cids.clone(),
+            );
+            let url = crate::relay::url(base, room, "s", lane) + "&mux=1";
+            let _ = thread::Builder::new()
+                .name("peerova-standby".into())
+                .stack_size(LANE_STACK)
+                .spawn(move || {
+                    let mut backoff = 1;
+                    let mut warned = false;
+                    while !stop.load(Ordering::Relaxed) {
+                        match crate::relay::connect(&url, auth().as_deref()) {
+                            Ok(ws) => {
+                                backoff = 1;
+                                warned = false;
+                                standby_lane(ws, &sink, &map, &stop, &cids);
+                            }
+                            Err(e) => {
+                                if lane == 0 && !warned {
+                                    warned = true;
+                                    log(format!("đường dự phòng chưa sẵn sàng: {e} (tự thử lại)"));
+                                }
+                            }
+                        }
+                        thread::sleep(Duration::from_secs(backoff));
+                        backoff = (backoff * 2).min(30);
+                    }
+                });
+        }
+    }
+
+    /// Close the lanes of one path (e.g. the relays that lost the race).
+    pub fn close_lanes(&self, addr: &SocketAddr) {
+        if let Some(lanes) = self.tcp.lock().unwrap().remove(addr) {
+            for l in lanes {
+                let _ = l.stream.shutdown(Shutdown::Both);
+            }
         }
     }
 
@@ -360,7 +627,12 @@ impl Node {
             if sent == copies {
                 break;
             }
-            match lanes[(start + k) % n].tx.try_send((now, f.clone())) {
+            let lane = lanes[(start + k) % n];
+            let item = match lane.prefix {
+                Some(p) => [&p[..], &f[..]].concat(),
+                None => f.clone(),
+            };
+            match lane.tx.try_send((now, item)) {
                 Ok(()) => sent += 1,
                 Err(TrySendError::Full(_)) | Err(TrySendError::Disconnected(_)) => continue,
             }

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Kiem ma Unity PC (P2PPeerova.cs + C# binding Peerova.cs) tren .NET 8, khong can Unity:
+       dotnet run -c Release [dau gach doi] ticket|@tep cong_game   (PEEROVA_LIB=libpeerova.so hoac peerova.dll) -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <DefineConstants>UNITY_STANDALONE</DefineConstants>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <BaseOutputPath>../../out/unity-net/bin/</BaseOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../client_pc_ios/Assets/Scripts/Assembly-CSharp/P2PPeerova.cs" />
+    <Compile Include="../../../client_pc_ios/Assets/Plugins/Peerova/Peerova.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

@@ -1,9 +1,11 @@
---- peerova_stdio — peerova for plain Lua 5.1 / 5.2 / 5.3 / 5.4 (no FFI, no C module) through the
---- `peerova stdio` sidecar process (JSON lines). Same API as peerova.lua (LuaJIT FFI).
+--- peerova_stdio — Peerova for plain Lua 5.1 / 5.2 / 5.3 / 5.4 (no FFI, no C module) through the
+--- `peerova stdio` sidecar process (JSON lines). Same API as peerova.lua (LuaJIT FFI), except that
+--- poll() always blocks and there is no room_code() (the sidecar does not report the server's
+--- connect code; clients can still connect with a 6-character code instead of a ticket).
 ---
 ---   local peerova = require "peerova_stdio"
 ---   local srv = peerova.server{ port = 0, upnp = false }
----   local cli = peerova.client(srv.ticket)
+---   local cli = peerova.client(srv.ticket)   -- or a 6-character connect code
 ---   local ev = cli:poll()                    -- blocks until the next event: "connected"
 ---   cli:send(ev.peer, "hello", { channel = 0, reliable = true })
 ---   print(srv:poll().type, srv:poll().data)  -- "connected", then "message" "hello"
@@ -13,7 +15,10 @@
 --- Limitations: POSIX only (sh + mkfifo; on Windows use LuaJIT + peerova.lua, or a socket library);
 --- poll() BLOCKS until the next event (pure Lua has no select/timeouts) — run one node per
 --- coroutine-free loop/process, or use the LuaJIT binding when you need non-blocking polling.
---- Binary lookup: opts.binary, os.getenv("PEEROVA_BIN"), ../../target/release/peerova, `peerova` on PATH.
+--- Binary lookup: opts.binary, os.getenv("PEEROVA_BIN"), the SDK development tree, `peerova` on PATH.
+--- Errors: failures raise a Lua error "peerova_stdio: <message>"; catch with pcall.
+---
+--- @module peerova_stdio
 local M = { CONNECTED = 1, DISCONNECTED = 2, MESSAGE = 3, CONNECT_FAILED = 4, MAX_UNRELIABLE_PAYLOAD = 1180 }
 
 ---------------------------------------------------------------- base64url (no padding), 5.1-safe
@@ -24,6 +29,7 @@ DEC[("+"):byte()] = 62
 DEC[("/"):byte()] = 63
 local floor = math.floor
 
+--- base64url-encodes a binary string (no padding), as used by the sidecar protocol.
 function M.b64url_encode(s)
   local out, n = {}, #s
   for i = 1, n, 3 do
@@ -39,6 +45,7 @@ function M.b64url_encode(s)
   return table.concat(out)
 end
 
+--- Decodes base64url (padding optional) into a binary string.
 function M.b64url_decode(s)
   s = s:gsub("[=%s]", "")
   local out = {}
@@ -53,28 +60,33 @@ function M.b64url_decode(s)
   return table.concat(out)
 end
 
----------------------------------------------------------------- tiny JSON (flat objects only)
-local function jstr(x)
-  return '"' .. x:gsub('[%c"\\]', function(c) return string.format("\\u%04x", c:byte()) end) .. '"'
-end
-
+---------------------------------------------------------------- tiny JSON
+--- Encodes a config table as JSON (strings, numbers, booleans, arrays, nested tables such as
+--- `share = { ... }`). A string is passed through as-is.
+--- @param t table|string|nil
+--- @treturn string
 local function to_json(t)
   if t == nil then return "{}" end
   if type(t) == "string" then return t end
+  local function str(x)
+    return '"' .. x:gsub('[%c"\\]', function(c) return string.format("\\u%04x", c:byte()) end) .. '"'
+  end
   local function v(x)
     local tx = type(x)
-    if tx == "string" then return jstr(x) end
+    if tx == "string" then return str(x) end
     if tx == "number" or tx == "boolean" then return tostring(x) end
     if tx == "table" then
-      local a = {}
-      for i = 1, #x do a[i] = v(x[i]) end
-      return "[" .. table.concat(a, ",") .. "]"
+      local parts = {}
+      if #x > 0 then -- array
+        for i = 1, #x do parts[i] = v(x[i]) end
+        return "[" .. table.concat(parts, ",") .. "]"
+      end
+      for k, y in pairs(x) do parts[#parts + 1] = str(tostring(k)) .. ":" .. v(y) end -- object
+      return "{" .. table.concat(parts, ",") .. "}"
     end
     error("unsupported config value type " .. tx)
   end
-  local parts = {}
-  for k, x in pairs(t) do parts[#parts + 1] = jstr(tostring(k)) .. ":" .. v(x) end
-  return "{" .. table.concat(parts, ",") .. "}"
+  return v(t)
 end
 M.to_json = to_json
 
@@ -145,6 +157,9 @@ local function exists(p)
   return false
 end
 
+--- Resolves the sidecar binary path (see the module comment for the lookup order).
+--- @tparam[opt] string override explicit path
+--- @treturn string
 function M.binary(override)
   local here = (debug.getinfo(1, "S").source:match("^@(.*[/\\])") or "./")
   local cands = { override or false, os.getenv "PEEROVA_BIN" or false, here .. "../../target/release/peerova" }
@@ -175,12 +190,21 @@ local function spawn(args)
   return self
 end
 
---- Starts a sidecar server (waits for its ticket). opts = { binary = "/path/peerova" }.
+--- Starts a sidecar server and waits for its ticket (node.ticket).
+--- @param config table|string|nil same keys as peerova.server (port, key_file, license, max_ccu,
+---   token, upnp, private, app, share)
+--- @param opts table|nil `{ binary = "/path/to/peerova" }`
+--- @return node; raises an error if the binary is missing or the server cannot start (the sidecar
+---   prints the exact reason on stderr)
 function M.server(config, opts)
   return spawn { M.binary(opts and opts.binary), "stdio", "server", to_json(config) }
 end
 
---- Starts a sidecar client. Wait for the "connected" / "connect_failed" event with poll().
+--- Starts a sidecar client; wait for the "connected" / "connect_failed" event with poll().
+--- @param ticket string server ticket ("pvt_...") or 6-character connect code
+--- @param config table|string|nil `{ token = "...", timeout_ms = 20000 }`
+--- @param opts table|nil `{ binary = "/path/to/peerova" }`
+--- @return node; raises an error if the ticket is invalid or the code unknown (reason on stderr)
 function M.client(ticket, config, opts)
   return spawn { M.binary(opts and opts.binary), "stdio", "client", ticket, to_json(config) }
 end
@@ -191,8 +215,10 @@ local function write(self, line)
   self._proc:flush()
 end
 
---- Sends a binary-safe string. opts = { channel = 0..255, reliable = true }. Send errors reported by
---- the sidecar (e.g. unknown peer) are appended to node.errors when later read by poll().
+--- Sends a binary-safe string. opts = { channel = 0..255, reliable = true }.
+--- reliable=true: ordered, retransmitted per channel, any size. reliable=false: datagram, may be
+--- lost/reordered, max 1180 bytes (checked locally, raises an error). Errors reported by the
+--- sidecar (e.g. unknown peer) are appended to node.errors when poll() reads them.
 function Node:send(peer, data, opts)
   local ch, rel = 0, true
   if opts then
@@ -205,7 +231,8 @@ function Node:send(peer, data, opts)
 end
 
 --- Blocks until the next event and returns { type, peer, channel, reliable, data }, or nil when the
---- sidecar has exited.
+--- sidecar has exited. type is "connected" | "message" | "disconnected" | "connect_failed"; data is
+--- the payload for "message" and the reason text for "disconnected" / "connect_failed".
 function Node:poll()
   while self._out do
     local line = self._out:read("*l")
@@ -232,9 +259,12 @@ end
 --- Iterator over events (blocking; ends when the sidecar exits — break out yourself).
 function Node:events() return function() return self:poll() end end
 
+--- Closes the connection to peer; a "disconnected" event follows.
 function Node:disconnect(peer) write(self, ('{"cmd":"disconnect","peer":%d}'):format(peer)) end
+--- Connected peers, as seen by the events polled so far.
 function Node:peer_count() return self._npeers end
 
+--- Asks the sidecar to quit, waits for it, and removes the pipe. Idempotent.
 function Node:close()
   if self._proc then
     pcall(function() self._proc:write('{"cmd":"quit"}\n'); self._proc:flush() end)

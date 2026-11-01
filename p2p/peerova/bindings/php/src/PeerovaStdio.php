@@ -5,16 +5,19 @@ namespace Peerova;
 
 /**
  * Pure-PHP binding through the `peerova stdio` sidecar process (JSON lines). Same API as Peerova (FFI),
- * no extension needed — only proc_open and the peerova CLI binary.
+ * no extension needed — only proc_open and the `peerova` command-line binary.
  *
  *   $srv = Peerova\PeerovaStdio::server(['port' => 0, 'upnp' => false]);
- *   $cli = Peerova\PeerovaStdio::client($srv->ticket());
+ *   $cli = Peerova\PeerovaStdio::client($srv->ticket());   // or a 6-character connect code
  *
- * Binary lookup: $binary argument, getenv('PEEROVA_BIN'), ../../../target/release/peerova (repo checkout),
- * then `peerova` on PATH. Note: a php-fpm request is short-lived — run long-lived servers from the CLI.
+ * Binary lookup: $binary argument, getenv('PEEROVA_BIN'), the SDK development tree, then `peerova`
+ * on PATH. The sidecar does not report the server's connect code (use the FFI binding for that);
+ * clients can still connect with a code. A php-fpm request is short-lived — run long-lived
+ * servers and clients as CLI worker processes.
  */
 final class PeerovaStdio
 {
+    /** Resolves the sidecar binary path (see the class comment for the lookup order). */
     public static function binary(?string $override = null): string
     {
         $exe = PHP_OS_FAMILY === 'Windows' ? 'peerova.exe' : 'peerova';
@@ -26,13 +29,28 @@ final class PeerovaStdio
         return $exe;
     }
 
-    /** Starts the sidecar server and waits (up to 15 s) for its ticket. */
+    /**
+     * Starts the sidecar server and waits (up to 15 s) for its ticket.
+     *
+     * @param array<string,mixed> $config same keys as Peerova::server()
+     * @param string|null $binary explicit path of the `peerova` binary
+     * @throws PeerovaException if the binary is missing or the server cannot start (the sidecar prints
+     *         the exact reason on stderr)
+     */
     public static function server(array $config = [], ?string $binary = null): StdioNode
     {
         return new StdioNode([self::binary($binary), 'stdio', 'server', json_encode((object)$config)]);
     }
 
-    /** Starts the sidecar client; wait for CONNECTED / CONNECT_FAILED with poll(). */
+    /**
+     * Starts the sidecar client; poll() for CONNECTED or CONNECT_FAILED.
+     *
+     * @param string $ticket server ticket ("pvt_...") or 6-character connect code
+     * @param array<string,mixed> $config token, timeout_ms (default 20000)
+     * @param string|null $binary explicit path of the `peerova` binary
+     * @throws PeerovaException if the binary is missing, the ticket is invalid or the connect code is
+     *         unknown (the sidecar prints the exact reason on stderr)
+     */
     public static function client(string $ticket, array $config = [], ?string $binary = null): StdioNode
     {
         return new StdioNode([self::binary($binary), 'stdio', 'client', $ticket, json_encode((object)$config)]);
@@ -52,6 +70,7 @@ final class PeerovaStdio
     }
 }
 
+/** A Peerova node running in a `peerova stdio` child process. */
 final class StdioNode implements Node
 {
     /** @var resource|null */
@@ -99,12 +118,17 @@ final class StdioNode implements Node
         }
     }
 
+    /** {@inheritdoc} */
     public function ticket(): ?string
     {
         return $this->ticket;
     }
 
-    /** Asynchronous: send errors (e.g. unknown peer) come back via lastErrors(). Throws only for local checks. */
+    /**
+     * {@inheritdoc}
+     * Asynchronous: errors detected by the sidecar (e.g. unknown peer) are collected by poll() and
+     * returned by lastErrors(). Throws only for local checks (unreliable > 1180 bytes, closed node).
+     */
     public function send(int $peer, string $data, int $channel = 0, bool $reliable = true): void
     {
         if (!$reliable && strlen($data) > 1180) {
@@ -113,6 +137,7 @@ final class StdioNode implements Node
         $this->write(['cmd' => 'send', 'peer' => $peer, 'channel' => $channel, 'reliable' => $reliable, 'data' => PeerovaStdio::b64url($data)]);
     }
 
+    /** {@inheritdoc} Returns null also when the sidecar has exited. */
     public function poll(float $timeout = 0): ?Event
     {
         $deadline = microtime(true) + $timeout;
@@ -139,6 +164,7 @@ final class StdioNode implements Node
         }
     }
 
+    /** {@inheritdoc} */
     public function events(float $timeout = 1.0): \Generator
     {
         while (($ev = $this->poll($timeout)) !== null) {
@@ -146,6 +172,7 @@ final class StdioNode implements Node
         }
     }
 
+    /** {@inheritdoc} */
     public function disconnect(int $peer): void
     {
         $this->write(['cmd' => 'disconnect', 'peer' => $peer]);
@@ -165,6 +192,7 @@ final class StdioNode implements Node
         return $e;
     }
 
+    /** {@inheritdoc} Asks the sidecar to quit and waits for it to exit. */
     public function close(): void
     {
         if ($this->proc === null) {
@@ -177,6 +205,7 @@ final class StdioNode implements Node
         $this->proc = null;
     }
 
+    /** Stops the sidecar if close() was not called. */
     public function __destruct()
     {
         $this->close();

@@ -507,6 +507,9 @@ pub fn serve_hooked(
         let ev = match engine.events().recv_timeout(Duration::from_secs(1)) {
             Ok(ev) => ev,
             Err(mpsc::RecvTimeoutError::Timeout) => {
+                if !engine.is_running() {
+                    return; // engine stopped; relay helper threads may still hold the channel
+                }
                 gc_flows(&mut flows, &mut last_gc);
                 continue;
             }
@@ -761,8 +764,10 @@ pub fn forward_with(
     let mut defrag = Defrag::default();
 
     let result = loop {
-        let Ok(ev) = engine.events().recv() else {
-            break Err("engine dừng".into());
+        let ev = match engine.events().recv_timeout(Duration::from_secs(1)) {
+            Ok(ev) => ev,
+            Err(mpsc::RecvTimeoutError::Timeout) if engine.is_running() => continue,
+            Err(_) => break Err("engine dừng".into()),
         };
         on_event(&ev);
         if route_stream_event(&ev, &streams) {

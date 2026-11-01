@@ -35,6 +35,8 @@ struct Args {
 const FLAGS: &[&str] = &[
     "access",
     "rdv",
+    "no-rdv",
+    "vpn",
     "public",
     "no-map",
     "upnp",
@@ -470,6 +472,44 @@ fn cmd_doctor() -> Result<(), String> {
         "IPv6 global  : {}",
         v6.map(|i| i.to_string()).unwrap_or("KHÔNG CÓ".into())
     );
+    // Automatic fallback route: open a test room (both roles) and exchange one message.
+    let relay_url =
+        std::env::var("PEEROVA_RELAY").unwrap_or(peerova_core::license::DEFAULT_RELAY.to_string());
+    let t0 = std::time::Instant::now();
+    let room = peerova_core::relay::room(&[0x5a; 32], peerova_core::crypto::random_u32() as u64);
+    let check = (|| -> Result<u128, String> {
+        let mut s = peerova_core::relay::connect(
+            &peerova_core::relay::url(&relay_url, &room, "s", 0),
+            None,
+        )
+        .map_err(|e| e.to_string())?;
+        let mut c = peerova_core::relay::connect(
+            &peerova_core::relay::url(&relay_url, &room, "c", 0),
+            None,
+        )
+        .map_err(|e| e.to_string())?;
+        s.tcp
+            .set_read_timeout(Some(Duration::from_millis(100)))
+            .ok();
+        let t1 = std::time::Instant::now();
+        for _ in 0..30 {
+            c.send(b"ping").map_err(|e| e.to_string())?;
+            let mut got = vec![];
+            s.recv(&mut got).map_err(|e| e.to_string())?;
+            if !got.is_empty() {
+                return Ok(t1.elapsed().as_millis());
+            }
+        }
+        Err("không nhận được dữ liệu qua đường dự phòng".into())
+    })();
+    match &check {
+        Ok(ms) => println!(
+            "Dự phòng     : ✔ sẵn sàng (mở {} ms, trễ một chiều ~{} ms)",
+            t0.elapsed().as_millis(),
+            ms
+        ),
+        Err(e) => println!("Dự phòng     : ✘ {e}"),
+    }
     let mut ext: Option<Ipv4Addr> = v4.filter(|ip| netinfo::classify_v4(ip) == V4Class::Public);
     if ext.is_some() {
         println!("             → máy có IPv4 public trực tiếp (VPS / modem bridge)");
@@ -581,13 +621,23 @@ fn cmd_server(a: &Args) -> Result<(), String> {
     cfg.private_ticket = a.flag("private");
     cfg.tcp_fallback = !a.flag("no-tcp");
     cfg.auto_supernode = !a.flag("no-auto-supernode");
-    cfg.rendezvous = a.opt("rendezvous").map(String::from).or_else(|| {
-        a.flag("rdv").then(|| {
-            a.opt("license-server")
-                .unwrap_or(license::DEFAULT_LICENSE_SERVER)
-                .to_string()
-        })
-    });
+    // Website rendezvous is ON by default (no VPS / supernode needed); `--no-rdv` turns it off.
+    cfg.rendezvous = if a.flag("no-rdv") {
+        None
+    } else {
+        Some(a.opt("rendezvous").unwrap_or(site()).to_string())
+    };
+    // Last-resort relay (only when punching fails): ON by default; `--relay URL` / `--no-relay`.
+    cfg.relay = if a.flag("no-relay") {
+        None
+    } else {
+        Some(
+            a.opt("relay")
+                .map(String::from)
+                .or(a.opt("rendezvous").map(String::from))
+                .unwrap_or(peerova_core::license::DEFAULT_RELAY.to_string()),
+        )
+    };
     if let Some(t) = a.opt("token") {
         cfg.access = Access::Token(t.as_bytes().to_vec());
     }
@@ -762,6 +812,33 @@ fn cmd_server(a: &Args) -> Result<(), String> {
             o.allowed
         ))
     };
+    if a.flag("vpn") {
+        let subnet = a.opt("subnet").unwrap_or("10.77.0.0/24").to_string();
+        return peerova_core::vpn::serve(&engine, &subnet, |e| match e {
+            EngineEvent::Ready {
+                ticket: Some(t), ..
+            } => {
+                println!("\n┌─ TICKET (VPN) ────────────────────────────────────────");
+                println!("{t}");
+                println!("└───────────────────────────────────────────────────────");
+                if let Some(p) = &ticket_file {
+                    let _ = std::fs::write(p, t);
+                }
+                let admin = if cfg!(windows) {
+                    "(Administrator) "
+                } else {
+                    "sudo "
+                };
+                println!("Client: {admin}peerova client <TICKET> --vpn   → ping / FTP / mọi giao thức IP\n");
+            }
+            EngineEvent::Connected {
+                conn, addr, path, ..
+            } => log!("✔ client {conn:08x} kết nối từ {addr} [{path}]"),
+            EngineEvent::Disconnected { conn, reason } => log!("client {conn:08x} ngắt: {reason}"),
+            EngineEvent::Log(m) => log!("{m}"),
+            _ => {}
+        });
+    }
     tunnel::serve_audited(
         &engine,
         rules,
@@ -792,7 +869,11 @@ fn cmd_server(a: &Args) -> Result<(), String> {
                         site().to_string(),
                         info,
                         t.clone(),
-                        move || h.stats.lock().unwrap().ccu as u32,
+                        {
+                            let h = h.clone();
+                            move || h.stats.lock().unwrap().ccu as u32
+                        },
+                        move || h.lease.lock().unwrap().clone(),
                         move |r| match r {
                             Ok(code) => {
                                 println!("\n┌─ MÃ KẾT NỐI ──────────────");
@@ -871,27 +952,20 @@ fn client_cfg(a: &Args) -> Result<ClientConfig, String> {
         try_map: a.flag("upnp"),
         force_tcp: a.flag("tcp"),
         rendezvous: a.opt("rendezvous").map(String::from),
+        relay: a.opt("relay").map(String::from),
+        no_relay: a.flag("no-relay"),
         ..Default::default()
     })
 }
 
 fn print_client_event(e: &EngineEvent, show_join: bool) {
     match e {
-        EngineEvent::Ready {
-            candidates,
-            session,
-            ..
-        } if show_join => {
-            let code = JoinCode {
-                session: *session,
-                candidates: candidates.clone(),
-            }
-            .encode();
+        EngineEvent::Ready { candidates, session, .. } if show_join => {
+            let code = JoinCode { session: *session, candidates: candidates.clone() }.encode();
             println!("Không có supernode? Dán join code này vào console server:\n  {code}\n");
         }
-        EngineEvent::Connected { addr, path, .. } => {
-            log!("✔ ĐÃ KẾT NỐI TRỰC TIẾP tới {addr} [{path}] — mã hoá E2E, không relay")
-        }
+        EngineEvent::Connected { addr, path, .. } if *path == "relay" => log!("✔ ĐÃ KẾT NỐI qua đường dự phòng tự động — mã hoá E2E (sẽ tự chuyển sang trực tiếp khi mạng cho phép)"),
+        EngineEvent::Connected { addr, path, .. } => log!("✔ ĐÃ KẾT NỐI TRỰC TIẾP tới {addr} [{path}] — mã hoá E2E"),
         EngineEvent::Disconnected { reason, .. } => log!("mất kết nối: {reason}"),
         EngineEvent::ConnectFailed(e) => log!("✘ {e}"),
         EngineEvent::Log(m) => log!("{m}"),
@@ -917,14 +991,18 @@ fn cmd_client(a: &Args) -> Result<(), String> {
     for f in a.all("forward") {
         rules.extend(tunnel::parse_forward_list(f, bind)?);
     }
-    if rules.is_empty() {
-        return Err("cần ít nhất một --forward, ví dụ --forward tcp:25565 --forward udp:19132 --forward tcp:8443=443".into());
+    if rules.is_empty() && !a.flag("vpn") {
+        return Err("cần ít nhất một --forward (hoặc --vpn), ví dụ --forward tcp:25565 --forward udp:19132 --forward tcp:8443=443".into());
     }
     let manual = peerova_core::Ticket::decode(&ticket)?.supernodes.is_empty()
         && a.all("supernode").is_empty();
     loop {
         let engine = Engine::connect(&ticket, client_cfg(a)?)?;
-        let r = tunnel::forward(&engine, rules.clone(), |e| print_client_event(e, manual));
+        let r = if a.flag("vpn") {
+            peerova_core::vpn::client(&engine, |e| print_client_event(e, manual))
+        } else {
+            tunnel::forward(&engine, rules.clone(), |e| print_client_event(e, manual))
+        };
         if !a.flag("reconnect") {
             return r;
         }
@@ -1095,9 +1173,80 @@ fn cmd_lease_info(a: &Args) -> Result<(), String> {
     Ok(())
 }
 
-const HELP: &str = "peerova — tunnel P2P trực tiếp cho mọi giao thức · mã hoá E2E · không relay · không bên thứ 3
+/// `peerova relay [--port 8443] [--bind 0.0.0.0]`: standalone fallback relay for any
+/// machine with a public IP. Put it behind nginx/Caddy for TLS, then point servers and
+/// clients at it with `--relay https://relay.example.com` (or set RELAY_URL on the website).
+fn cmd_relay(a: &Args) -> Result<(), String> {
+    let addr = format!(
+        "{}:{}",
+        a.opt("bind").unwrap_or("0.0.0.0"),
+        a.num("port", 8443)?
+    );
+    peerova_core::relay::server::serve(
+        &addr,
+        |l| {
+            println!("relay dự phòng đang chạy trên {l}");
+            println!(
+                "  dùng: --relay http://<IP-hoặc-tên-miền>:{}   (đặt sau nginx/Caddy để có https)",
+                l.port()
+            );
+            println!("  dữ liệu đi qua đây vẫn mã hoá đầu-cuối; relay không giải mã được.");
+        },
+        |m| eprintln!("{m}"),
+    )
+    .map_err(|e| format!("không mở được {addr}: {e}"))
+}
+
+/// `peerova verify <file> [--sums SHA256SUMS.txt] [--sig SHA256SUMS.sig]`
+fn cmd_verify(a: &Args) -> Result<(), String> {
+    use peerova_core::release;
+    let file = a.pos.get(1).ok_or("thiếu file cần kiểm tra")?;
+    let dir = std::path::Path::new(file)
+        .parent()
+        .map(|d| d.to_path_buf())
+        .unwrap_or_default();
+    let sums_path = a
+        .opt("sums")
+        .map(Into::into)
+        .unwrap_or_else(|| dir.join("SHA256SUMS.txt"));
+    let sig_path = a
+        .opt("sig")
+        .map(Into::into)
+        .unwrap_or_else(|| dir.join("SHA256SUMS.sig"));
+    let pk = a
+        .opt("release-pubkey")
+        .map(String::from)
+        .or(release::RELEASE_PUBKEY.map(String::from))
+        .ok_or("bản build này không có khoá phát hành; dùng --release-pubkey")?;
+    let sums =
+        std::fs::read(&sums_path).map_err(|e| format!("đọc {}: {e}", sums_path.display()))?;
+    let sig = std::fs::read_to_string(&sig_path)
+        .map_err(|e| format!("đọc {}: {e}", sig_path.display()))?;
+    release::verify_sums(&sums, &sig, &license::parse_pubkey(&pk)?)?;
+    let sums = String::from_utf8_lossy(&sums);
+    let name = std::path::Path::new(file)
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or(file);
+    let want = release::expected_hash(&sums, name)
+        .ok_or_else(|| format!("{name} không có trong danh sách phát hành"))?;
+    let got = release::sha256_hex(&std::fs::read(file).map_err(|e| format!("đọc {file}: {e}"))?);
+    if got != want {
+        return Err(format!(
+            "SHA-256 KHÔNG KHỚP — {name} đã bị sửa hoặc tải lỗi. Đừng chạy file này."
+        ));
+    }
+    println!(
+        "✔ {name}: chữ ký Peerova hợp lệ, SHA-256 khớp ({}…)",
+        &got[..16]
+    );
+    Ok(())
+}
+
+const HELP: &str = "peerova — kết nối P2P trực tiếp cho mọi giao thức · mã hoá đầu-cuối · tự động đường dự phòng
 
   peerova doctor                         chẩn đoán mạng (IPv6, UPnP, NAT-PMP, CGNAT, double NAT)
+  peerova verify <file.zip>               kiểm tra file tải về là bản chính thức (chữ ký + SHA-256)
   peerova keygen [--key server.key]      tạo danh tính server (ticket cố định theo key)
   peerova keygen --access [--key access.key]   tạo khoá cấp quyền doanh nghiệp (giữ ở backend/SSO)
   peerova token issue --access-key access.key --sub alice --ports tcp:443,udp:10000-10100 --ttl 8h
@@ -1107,7 +1256,7 @@ const HELP: &str = "peerova — tunnel P2P trực tiếp cho mọi giao thức �
               [--license PVA-...] [--private] [--no-map] [--no-tcp] [--max-ccu N] [--ticket-file FILE]
               [--token SECRET | --access-key PUB [--revoked revoked.txt]] [--audit-log audit.jsonl]
               [--supernode HOST:PORT]... [--supernode-mode] [--no-auto-supernode]
-              [--rdv | --rendezvous URL]   website làm điểm hẹn → không cần VPS/supernode/relay
+              [--rendezvous URL | --no-rdv]   website làm điểm hẹn (MẶC ĐỊNH BẬT) → không cần mở port
       PROTO: tcp http https ws wss ssh rdp grpc (TCP) · udp quic game (UDP). UDP tới 64 KB.
       Server 'dark': không trả lời gói nào thiếu ticket hợp lệ, quét port không thấy.
 
@@ -1122,6 +1271,9 @@ const HELP: &str = "peerova — tunnel P2P trực tiếp cho mọi giao thức �
     peerova server --app <project id> --share \"Tên dịch vụ\" --expose https:443 [--public] [--max N] [--mode M] [--region VN] [--tag T]...
     peerova client K7Q2XD --forward ...   (thay cho ticket dài; --site URL nếu không dùng website mặc định)
   peerova server ... --metrics 127.0.0.1:9184    endpoint Prometheus
+  Chế độ VPN L3 (Linux/macOS: sudo · Windows: Administrator + wintun.dll cạnh peerova.exe):
+    ping/ICMP, FTP active+passive, broadcast LAN, mọi giao thức IP
+    sudo peerova server --vpn [--subnet 10.77.0.0/24] ...    sudo peerova client <TICKET|MÃ> --vpn
   peerova ticket merge <T1> <T2>...   gộp ticket nhiều máy cùng server.key → client tự failover
   peerova lease-info <LEASE> [--authority-pubkey B64]
 
@@ -1156,6 +1308,8 @@ fn main() -> ExitCode {
         Some("client") => cmd_client(&a),
         Some("ping") => cmd_ping(&a),
         Some("lease-info") => cmd_lease_info(&a),
+        Some("verify") => cmd_verify(&a),
+        Some("relay") => cmd_relay(&a),
         Some("token") => cmd_token(&a),
         Some("ticket") => cmd_ticket(&a),
         Some("stdio") => cmd_stdio(&a),

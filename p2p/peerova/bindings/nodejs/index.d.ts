@@ -1,86 +1,153 @@
 /// <reference types="node" />
+/**
+ * peerova — direct peer-to-peer networking (end-to-end encrypted) for Node.js >= 18,
+ * Electron (main process) and Bun. Each node drives a `peerova stdio` sidecar process.
+ *
+ * @module peerova
+ */
 import { EventEmitter } from "node:events";
 
-/** Max payload of an unreliable message (bytes). */
+/** Largest payload accepted by `send(..., { reliable: false })`, in bytes. */
 export declare const MAX_UNRELIABLE_PAYLOAD: 1180;
 
+/** Error thrown (or emitted as "error") by this package. `message` is the SDK's error text. */
 export declare class PeerovaError extends Error {}
 
-/** Server config, passed verbatim to the native SDK (see crates/peerova-ffi/include/peerova.h). */
+/** Settings for publishing a 6-character connect code (requires `ServerConfig.app`). */
+export interface ShareConfig {
+  /** Display name shown on the Peerova website. */
+  name?: string;
+  /** List the server publicly on the website. */
+  public?: boolean;
+  /** Maximum players / users advertised. */
+  max?: number;
+  /** Free-form mode label (e.g. a game mode). */
+  mode?: string;
+  /** Region label, e.g. "VN". */
+  region?: string;
+}
+
+/** Server config, passed to the SDK as JSON. */
 export interface ServerConfig {
+  /** Listening port. Default 47000; 0 = random free port. */
   port?: number;
+  /** Server identity file (default "server.key"). Same key ⇒ same ticket. Keep it secret. */
   key_file?: string;
+  /** License key ("PVA-..."). Without it the server runs in dev mode (at most 3 clients). */
   license?: string;
-  license_server?: string;
-  authority_pubkey?: string;
-  supernodes?: string[];
-  supernode_mode?: boolean;
-  private?: boolean;
-  token?: string;
+  /** Maximum concurrent clients. */
   max_ccu?: number;
-  upnp?: boolean;
-  tcp_fallback?: boolean;
-  auto_supernode?: boolean;
-  rendezvous?: boolean | string;
-  [key: string]: unknown;
-}
-
-export interface ClientConfig {
+  /** Shared secret clients must present (`ClientConfig.token`). */
   token?: string;
-  timeout_ms?: number;
-  supernodes?: string[];
-  force_tcp?: boolean;
-  rendezvous?: string;
+  /** Try to open the port on the router (default true). */
+  upnp?: boolean;
+  /** The ticket does not contain the server's IP addresses. */
+  private?: boolean;
+  /** Project id from the Peerova website; needed for a connect code. */
+  app?: string;
+  /** Publish a 6-character connect code for this server. */
+  share?: ShareConfig;
   [key: string]: unknown;
 }
 
+/** Client config, passed to the SDK as JSON. */
+export interface ClientConfig {
+  /** Must match the server's `token`. */
+  token?: string;
+  /** Give up (→ "connectFailed") if not connected within this time. Default 20000. */
+  timeout_ms?: number;
+  [key: string]: unknown;
+}
+
+/** How the sidecar process is started. */
 export interface SpawnOptions {
-  /** Path to the `peerova` CLI. Default: $PEEROVA_BIN, ./bin/peerova, ../../target/release/peerova, PATH. */
+  /**
+   * Path to the `peerova` command-line tool. Default: $PEEROVA_BIN, then `bin/peerova[.exe]` in
+   * this package, then the SDK's `lib/<platform>` folder, then `peerova` on PATH.
+   */
   binary?: string;
   /** What to do with the sidecar's stderr (default "ignore"). */
   stderr?: "ignore" | "inherit" | "pipe";
 }
 
+/** Options for {@link Peerova.send}. */
 export interface SendOptions {
-  /** 0..255, default 0 */
+  /** 0..255, default 0. Channels never block each other. */
   channel?: number;
-  /** default true. false = unreliable datagram (≤ 1180 bytes, may be lost/reordered). */
+  /**
+   * Default true: ordered and retransmitted per channel, any size.
+   * false: lowest-latency datagram, may be lost or reordered, at most 1180 bytes.
+   */
   reliable?: boolean;
 }
 
+/** Extra data delivered with a "message" event. */
 export interface MessageInfo {
+  /** Channel 0..255 the message arrived on. */
   channel: number;
+  /** True if it was sent reliably. */
   reliable: boolean;
 }
 
+/** Event names and listener arguments of a {@link Peerova} node. */
 export interface PeerovaEvents {
+  /** The sidecar is up (fires before the factory promise resolves). Server: the ticket. */
   ready: [ticket?: string];
+  /** Server: a client joined. Client: we joined the server. */
   connected: [peer: number];
+  /** A message arrived. */
   message: [peer: number, data: Buffer, info: MessageInfo];
+  /** A peer left. */
   disconnected: [peer: number, reason: string];
+  /** Client only: the connection attempt failed (e.g. timeout). */
   connectFailed: [reason: string];
+  /** Non-fatal sidecar error (e.g. send to a peer that has left). Not thrown when unhandled. */
   error: [err: PeerovaError];
+  /** The sidecar exited; the node is unusable afterwards. */
   close: [code: number | null];
 }
 
+/** Locate the `peerova` sidecar binary (see {@link SpawnOptions.binary}). */
 export declare function findBinary(explicit?: string): string;
 
+/**
+ * One Peerova node (server or client) backed by its own sidecar process.
+ * Listeners run on the event loop; nothing blocks.
+ */
 export declare class Peerova extends EventEmitter {
-  /** Start a server; resolves when the ticket is ready (≤ ~3 s). */
+  /**
+   * Start a server; resolves when the ticket is ready (<= ~3 s).
+   * The sidecar does not report the 6-character connect code.
+   * @throws {PeerovaError} (rejection) the sidecar or the server cannot start.
+   */
   static server(config?: ServerConfig, options?: SpawnOptions): Promise<Peerova>;
-  /** Connect to a ticket; wait for "connected" or "connectFailed". */
+  /**
+   * Connect to a server by ticket (`pvt_...`) or 6-character connect code. Resolves when the
+   * sidecar is up; then wait for "connected" or "connectFailed".
+   * @throws {PeerovaError} empty ticket (sync), or (rejection) malformed ticket / sidecar cannot start.
+   */
   static client(ticket: string, config?: ClientConfig, options?: SpawnOptions): Promise<Peerova>;
 
-  /** Server ticket (pvt_...), null for clients. */
+  /** Server ticket (`pvt_...`) to share with clients; `null` on clients. */
   readonly ticket: string | null;
+  /** Currently connected peer ids. */
   readonly peers: Set<number>;
+  /** Number of currently connected peers. */
   readonly peerCount: number;
+  /** True once the sidecar has exited. */
   readonly closed: boolean;
 
-  /** Returns false when the pipe is congested — `await drain()` before sending more. */
+  /**
+   * Send a message (strings are UTF-8). Returns false when the pipe to the sidecar is congested —
+   * `await drain()` before sending much more.
+   * @throws {PeerovaError} channel out of range, unreliable payload > 1180 bytes, or node closed.
+   */
   send(peer: number, data: string | Uint8Array, options?: SendOptions): boolean;
+  /** Resolves when the pipe to the sidecar has drained. */
   drain(): Promise<void>;
+  /** Close the connection to one peer. @throws {PeerovaError} node closed. */
   disconnect(peer: number): void;
+  /** Stop the node; resolves when the sidecar has exited (killed after `timeoutMs`, default 2000). */
   close(timeoutMs?: number): Promise<void>;
 
   on<K extends keyof PeerovaEvents>(event: K, listener: (...args: PeerovaEvents[K]) => void): this;

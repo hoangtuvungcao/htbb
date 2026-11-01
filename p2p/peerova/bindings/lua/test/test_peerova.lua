@@ -9,6 +9,8 @@ local key = os.tmpname()
 os.remove(key)
 local srv = peerova.server { port = 0, upnp = false, key_file = key }
 assert(srv.ticket:sub(1, 4) == "pvt_", srv.ticket)
+assert(srv:room_code() == nil, "no connect code without app/share")
+assert(peerova.to_json { share = { public = true } } == [[{"share":{"public":true}}]])
 local cli = peerova.client(srv.ticket)
 local ev = cli:poll(10)
 assert(ev and ev.type == "connected", "client not connected")

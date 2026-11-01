@@ -1,0 +1,14 @@
+LIBRARY peerova.dll
+EXPORTS
+    peerova_server_start
+    peerova_client_connect
+    peerova_ticket
+    peerova_room_code
+    peerova_send
+    peerova_poll
+    peerova_poll_wait
+    peerova_disconnect
+    peerova_peer_count
+    peerova_free
+    peerova_last_error
+    peerova_version

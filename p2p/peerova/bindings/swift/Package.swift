@@ -1,11 +1,11 @@
 // swift-tools-version:5.7
-// Peerova Swift package — wraps the C ABI (Sources/CPeerova/include/peerova.h).
+// Peerova Swift package — wraps the Peerova C API (Sources/CPeerova/include/peerova.h).
 //
-// Linking: the package links `-lpeerova`. Point the linker at the native lib with
-//   PEEROVA_LIB_DIR=/abs/dir/with/libpeerova swift build      (dir is also added as rpath)
-// When PEEROVA_LIB_DIR is unset and ../../target/release exists (inside the repo), that
-// directory is used. Outside the repo / on iOS, prefer the XCFramework binaryTarget
-// described in README.md (no unsafe flags needed, so the package can be a dependency).
+// Linking: the package links `-lpeerova`. Point the linker at the native library with
+//   PEEROVA_LIB_DIR=/abs/dir/with/libpeerova swift build      (the dir is also added as rpath)
+// When PEEROVA_LIB_DIR is unset and ../../target/release exists (the SDK's library folder),
+// that directory is used. For apps / iOS, prefer the XCFramework binaryTarget described in
+// README.md (no unsafe flags needed, so the package can be consumed as a dependency).
 import PackageDescription
 import Foundation
 
@@ -29,7 +29,7 @@ let package = Package(
         .library(name: "Peerova", targets: ["Peerova"]),
     ],
     targets: [
-        // C module exposing peerova.h (copy kept in sync by bindings/sync-headers.sh).
+        // C module exposing peerova.h (identical copy of the SDK's include/peerova.h).
         .target(
             name: "CPeerova",
             path: "Sources/CPeerova",

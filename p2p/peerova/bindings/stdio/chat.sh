@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
-# Minimal P2P chat in pure bash over the peerova stdio sidecar.
-#   ./chat.sh server [port]      # (key: $PEEROVA_KEY_FILE or ./server.key) prints a ticket; every line you type goes to all connected peers
-#   ./chat.sh client <TICKET>    # every line you type goes to the server
+# Minimal P2P chat in pure bash over the peerova stdio sidecar (library: peerova.sh, protocol: PROTOCOL.md).
+#   ./chat.sh server [port]          # prints the ticket; every line you type goes to all connected clients
+#                                    # identity key: $PEEROVA_KEY_FILE, else ./server.key (keep it secret)
+#   ./chat.sh client <TICKET|CODE>   # ticket or 6-character connect code; every line you type goes to the server
+# Ctrl+C or end of input quits.
 set -u
 source "$(dirname "$0")/peerova.sh"
 
 case ${1:-} in
   server) pv_start me server "{\"port\":${2:-47000},\"key_file\":\"${PEEROVA_KEY_FILE:-server.key}\"}" || exit 1; echo "ticket: $PV_TICKET" ;;
-  client) [[ -n ${2:-} ]] || { echo "usage: $0 client <TICKET>"; exit 2; }
+  client) [[ -n ${2:-} ]] || { echo "usage: $0 client <TICKET|CODE>"; exit 2; }
           pv_start me client "$2" || exit 1; echo "connecting..." ;;
-  *) echo "usage: $0 server [port] | client <TICKET>"; exit 2 ;;
+  *) echo "usage: $0 server [port] | client <TICKET|CODE>"; exit 2 ;;
 esac
 trap 'pv_stop me; exit 0' INT TERM
 

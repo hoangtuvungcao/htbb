@@ -1,13 +1,16 @@
 //! Direct use of the `peerova` SDK crate from Rust — no C ABI, no unsafe.
 //!
-//!   cargo run --release                       # in-process demo: server + client, echo
-//!   cargo run --release -- server [port]      # print a ticket, echo every message back
-//!   cargo run --release -- client <TICKET>    # send stdin lines, print replies
+//!   cargo run --release                           # in-process demo: server + client, echo
+//!   cargo run --release -- server [port]          # print a ticket, echo every message back
+//!   cargo run --release -- client <TICKET|CODE>   # send stdin lines, print replies
+//!
+//! See examples/chat.rs for a chat + position-sync demo.
 use std::io::BufRead;
 use std::time::Duration;
 
 use peerova::{Sdk, SdkEvent, EV_CONNECTED, EV_CONNECT_FAILED, EV_DISCONNECTED, EV_MESSAGE};
 
+/// One-line, human-readable description of an event.
 fn describe(ev: &SdkEvent) -> String {
     let text = String::from_utf8_lossy(&ev.data);
     match ev.kind {
@@ -19,6 +22,7 @@ fn describe(ev: &SdkEvent) -> String {
     }
 }
 
+/// Echo server: prints its ticket, then sends every message back on the same channel and mode.
 fn server(port: u16) -> Result<(), String> {
     let mut srv = Sdk::server(Some(&format!(r#"{{"port":{port},"key_file":"server.key"}}"#)))?;
     println!("{}", srv.ticket().unwrap_or_default());
@@ -32,6 +36,7 @@ fn server(port: u16) -> Result<(), String> {
     }
 }
 
+/// Interactive client: `ticket` may be a ticket or a 6-character connect code.
 fn client(ticket: &str) -> Result<(), String> {
     let mut cli = Sdk::client(ticket, None)?;
     let peer = match cli.poll_wait(Duration::from_secs(20)) {
@@ -49,6 +54,7 @@ fn client(ticket: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// Server and client in one process: connect, send one message, receive the reply.
 fn demo() -> Result<(), String> {
     let key = std::env::temp_dir().join(format!("peerova-rs-demo-{}.key", std::process::id()));
     let cfg = format!(r#"{{"port":0,"upnp":false,"key_file":{:?}}}"#, key.to_string_lossy());

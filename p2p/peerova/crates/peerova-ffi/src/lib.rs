@@ -75,38 +75,6 @@ fn addrs(list: Vec<String>) -> Result<Vec<std::net::SocketAddr>, String> {
     Ok(v)
 }
 
-impl Sdk {
-    pub fn server(config_json: Option<&str>) -> Result<Sdk, String> {
-        let j = cfg_json(config_json)?;
-        let (cfg, lic) = server_config(&j)?;
-        let engine = Engine::start_server(cfg).map_err(|e| e.to_string())?;
-        if let Some(l) = lic {
-            license::spawn_renewal(l, engine.handle.clone());
-        }
-        let sdk = Sdk {
-            engine,
-            ticket: None,
-            room_code: Default::default(),
-            queue: VecDeque::new(),
-            reasm: HashMap::new(),
-            peers: HashSet::new(),
-        };
-        Sdk::server_ready(sdk, j)
-    }
-}
-
-/// Client engine config from the JSON config (shared by the SDK and the tunnel API).
-pub(crate) fn client_config(j: &Json) -> Result<ClientConfig, String> {
-    Ok(ClientConfig {
-        token: j.str("token").unwrap_or("").as_bytes().to_vec(),
-        timeout: Duration::from_millis(j.u64("timeout_ms").unwrap_or(20_000)),
-        extra_supernodes: addrs(j.str_list("supernodes"))?,
-        force_tcp: j.bool("force_tcp").unwrap_or(false),
-        rendezvous: j.str("rendezvous").map(String::from),
-        ..Default::default()
-    })
-}
-
 /// Server engine config + optional license from the JSON config (shared by the SDK and the tunnel API).
 pub(crate) fn server_config(j: &Json) -> Result<(ServerConfig, Option<LicenseConfig>), String> {
     let key_path = PathBuf::from(j.str("key_file").unwrap_or("server.key"));
@@ -123,10 +91,21 @@ pub(crate) fn server_config(j: &Json) -> Result<(ServerConfig, Option<LicenseCon
     cfg.try_map = j.bool("upnp").unwrap_or(true);
     cfg.tcp_fallback = j.bool("tcp_fallback").unwrap_or(true);
     cfg.auto_supernode = j.bool("auto_supernode").unwrap_or(true);
+    // Website rendezvous on by default; "rendezvous": false disables, a string sets the URL.
     cfg.rendezvous = match (j.str("rendezvous"), j.bool("rendezvous")) {
         (Some(u), _) => Some(u.to_string()),
-        (None, Some(true)) => Some(license::DEFAULT_LICENSE_SERVER.to_string()),
-        _ => None,
+        (None, Some(false)) => None,
+        _ => Some(site_of(&j)),
+    };
+    // Last-resort relay on by default; "relay": false disables, a string sets the URL.
+    cfg.relay = match (j.str("relay"), j.bool("relay")) {
+        (Some(u), _) => Some(u.to_string()),
+        (None, Some(false)) => None,
+        _ => Some(
+            j.str("rendezvous")
+                .map(String::from)
+                .unwrap_or(peerova_core::license::DEFAULT_RELAY.to_string()),
+        ),
     };
     if let Some(t) = j.str("token") {
         cfg.access = Access::Token(t.as_bytes().to_vec());
@@ -175,8 +154,36 @@ pub(crate) fn server_config(j: &Json) -> Result<(ServerConfig, Option<LicenseCon
     Ok((cfg, lic))
 }
 
+/// Client engine config from the JSON config (shared by the SDK and the tunnel API).
+pub(crate) fn client_config(j: &Json) -> Result<ClientConfig, String> {
+    Ok(ClientConfig {
+        token: j.str("token").unwrap_or("").as_bytes().to_vec(),
+        timeout: Duration::from_millis(j.u64("timeout_ms").unwrap_or(20_000)),
+        extra_supernodes: addrs(j.str_list("supernodes"))?,
+        force_tcp: j.bool("force_tcp").unwrap_or(false),
+        rendezvous: j.str("rendezvous").map(String::from),
+        relay: j.str("relay").map(String::from),
+        no_relay: j.bool("relay") == Some(false),
+        ..Default::default()
+    })
+}
+
 impl Sdk {
-    fn server_ready(mut sdk: Sdk, j: Json) -> Result<Sdk, String> {
+    pub fn server(config_json: Option<&str>) -> Result<Sdk, String> {
+        let j = cfg_json(config_json)?;
+        let (cfg, lic) = server_config(&j)?;
+        let engine = Engine::start_server(cfg).map_err(|e| e.to_string())?;
+        if let Some(l) = lic {
+            license::spawn_renewal(l, engine.handle.clone());
+        }
+        let mut sdk = Sdk {
+            engine,
+            ticket: None,
+            room_code: Default::default(),
+            queue: VecDeque::new(),
+            reasm: HashMap::new(),
+            peers: HashSet::new(),
+        };
         let deadline = Instant::now() + Duration::from_secs(5);
         while sdk.ticket.is_none() && Instant::now() < deadline {
             sdk.pump(Duration::from_millis(50));
@@ -198,12 +205,14 @@ impl Sdk {
                 tags: l.str_list("tags"),
             };
             let stats = sdk.engine.handle.stats.clone();
+            let lease = sdk.engine.handle.lease.clone();
             let slot = sdk.room_code.clone();
             peerova_core::lobby::spawn_heartbeat(
                 site_of(&j),
                 info,
                 sdk.ticket.clone().unwrap(),
                 move || stats.lock().unwrap().ccu as u32,
+                move || lease.lock().unwrap().clone(),
                 move |r| {
                     if let Ok(code) = r {
                         *slot.lock().unwrap() = Some(code);
@@ -224,7 +233,8 @@ impl Sdk {
         } else {
             ticket
         };
-        let engine = Engine::connect(ticket, client_config(&j)?)?;
+        let cfg = client_config(&j)?;
+        let engine = Engine::connect(ticket, cfg)?;
         Ok(Sdk {
             engine,
             ticket: None,
@@ -570,12 +580,20 @@ pub unsafe extern "C" fn peerova_poll_wait(
 ) -> i32 {
     guard(0, || {
         let Some(n) = node.as_ref() else { return 0 };
-        let e = n
-            .sdk
-            .lock()
-            .unwrap()
-            .poll_wait(Duration::from_millis(timeout_ms as u64));
-        fill(n, e, out)
+        // Wait in short slices and release the lock between them, so `peerova_send`
+        // from another thread is never blocked for the whole timeout.
+        let deadline = Instant::now() + Duration::from_millis(timeout_ms as u64);
+        loop {
+            let left = deadline.saturating_duration_since(Instant::now());
+            let e = n
+                .sdk
+                .lock()
+                .unwrap()
+                .poll_wait(left.min(Duration::from_millis(5)));
+            if e.is_some() || left.is_zero() {
+                return fill(n, e, out);
+            }
+        }
     })
 }
 

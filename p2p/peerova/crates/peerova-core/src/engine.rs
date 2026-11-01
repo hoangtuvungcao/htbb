@@ -36,9 +36,36 @@ pub const DEV_MODE_CCU: usize = 3;
 const PROBE_INTERVAL: Duration = Duration::from_millis(200);
 const PUNCH_FOR: Duration = Duration::from_secs(15);
 const REGISTER_EVERY: Duration = Duration::from_secs(15);
-const HANDSHAKES_PER_IP_PER_SEC: u32 = 20;
+/// Per source IP. Generous because many mobile users share one CGNAT address;
+/// retransmissions of already-answered handshakes are served from cache first.
+const HANDSHAKES_PER_IP_PER_SEC: u32 = 200;
+/// Invalid packets per second from one IP before it is blocked.
+const BAD_PPS_PER_IP: u32 = 500;
+const BLOCK_FOR: Duration = Duration::from_secs(60);
+/// Authenticated packets per second per peer considered abusive (sustained 3 s).
+/// ~50k pps ≈ 500 Mbit/s of small packets — far above any game/app, below a flood.
+const PEER_MAX_PPS: u32 = 50_000;
+const BAN_FOR: Duration = Duration::from_secs(600);
 const OVERFLOW_LIMIT: usize = 64 << 20;
 const TCP_FALLBACK_AFTER: Duration = Duration::from_millis(1500);
+/// Client: direct paths had this long → also open the website relay (last resort).
+/// Last working direct address per server (process-wide): reconnects skip discovery.
+fn path_cache() -> &'static Mutex<HashMap<[u8; 32], SocketAddr>> {
+    static C: std::sync::OnceLock<Mutex<HashMap<[u8; 32], SocketAddr>>> =
+        std::sync::OnceLock::new();
+    C.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+/// Client: open the fallback route in parallel from the start (racing the direct paths);
+/// whichever completes the handshake first wins, and relay → direct upgrades later.
+const RELAY_AFTER: Duration = Duration::from_millis(0);
+/// A fallback path with no live lane for this long is failed over to another relay.
+const RELAY_FAILOVER_GRACE: Duration = Duration::from_secs(3);
+/// Relay → direct upgrade: first probe, fast phase (count × interval), then slow probing.
+const UPGRADE_FIRST: Duration = Duration::from_millis(500);
+const UPGRADE_FAST_PROBES: u32 = 30;
+const UPGRADE_EVERY_FAST: Duration = Duration::from_secs(1);
+const UPGRADE_EVERY_SLOW: Duration = Duration::from_secs(20);
 const PREDICT_PORTS: u16 = 12;
 const BIRTHDAY_AFTER: Duration = Duration::from_millis(1200);
 /// Client probes website-rendezvous targets with a low TTL for this long (opens our NAT first).
@@ -114,6 +141,9 @@ pub struct ServerConfig {
     pub auto_supernode: bool,
     /// Website rendezvous base URL (CONTRACT §8): no VPS/supernode needed.
     pub rendezvous: Option<String>,
+    /// Last-resort relay (only when punching fails). None = off.
+    /// Usually the website; any host running the relay endpoint works (VPS, `peerova relay`).
+    pub relay: Option<String>,
 }
 
 impl ServerConfig {
@@ -132,6 +162,7 @@ impl ServerConfig {
             authority: None,
             auto_supernode: true,
             rendezvous: None,
+            relay: None,
         }
     }
 }
@@ -146,6 +177,9 @@ pub struct ClientConfig {
     pub force_tcp: bool,
     /// Website rendezvous base URL; used when the ticket says the server announces there.
     pub rendezvous: Option<String>,
+    /// Last-resort relay URL (default: the rendezvous website). `no_relay` disables it.
+    pub relay: Option<String>,
+    pub no_relay: bool,
 }
 
 impl Default for ClientConfig {
@@ -158,6 +192,8 @@ impl Default for ClientConfig {
             try_map: false,
             force_tcp: false,
             rendezvous: None,
+            relay: None,
+            no_relay: false,
         }
     }
 }
@@ -249,6 +285,10 @@ pub enum Cmd {
     RdvClients(Vec<crate::rdv::ClientReq>),
     /// Internal: server address learned from the website rendezvous (client side).
     RdvServer(crate::rdv::Endpoint),
+    /// Website announced where the relay lives (lets us move it without new builds).
+    SetRelay(String),
+    /// A fallback lane just opened: send our handshake through it right away.
+    RelayUp,
     /// Internal: log line from a helper thread.
     Note(String),
     Shutdown,
@@ -276,6 +316,8 @@ pub struct Handle {
     tx: Sender<Input>,
     next_stream: Arc<AtomicU32>,
     pub stats: Arc<Mutex<EngineStats>>,
+    /// Current license lease (shared with helper threads: rendezvous, connect codes).
+    pub lease: Arc<Mutex<Option<String>>>,
 }
 
 impl Handle {
@@ -305,15 +347,23 @@ impl Engine {
     pub fn events(&self) -> &Receiver<EngineEvent> {
         &self.events
     }
+    /// False once the engine thread has exited (after `Cmd::Shutdown`). Helper threads (relay
+    /// standby lanes) may keep the event channel open a while longer, so loops over `events()`
+    /// should also check this.
+    pub fn is_running(&self) -> bool {
+        self.thread.as_ref().is_some_and(|t| !t.is_finished())
+    }
 
     pub fn start_server(cfg: ServerConfig) -> std::io::Result<Engine> {
         let (core, rx, handle, events) = Core::new(Role::Server, cfg.key.clone(), cfg.port, 2)?;
         let mut core = core;
+        *handle.lease.lock().unwrap() = cfg.lease.clone();
         core.srv = Some(ServerState {
             supernodes: cfg.supernodes,
             supernode_mode: cfg.supernode_mode,
             access: Some(cfg.access),
             rendezvous: cfg.rendezvous,
+            relay: cfg.relay,
             tcp_fallback: cfg.tcp_fallback,
             lease: cfg.lease,
             authority: cfg.authority,
@@ -342,6 +392,13 @@ impl Engine {
             timeout: cfg.timeout,
             try_map: cfg.try_map,
             force_tcp: cfg.force_tcp,
+            relay: if cfg.no_relay {
+                None
+            } else {
+                cfg.relay
+                    .or(cfg.rendezvous.clone())
+                    .or_else(|| Some(crate::license::DEFAULT_RELAY.to_string()))
+            },
             rendezvous: cfg
                 .rendezvous
                 .or_else(|| Some(crate::license::DEFAULT_LICENSE_SERVER.to_string())),
@@ -386,6 +443,8 @@ enum Role {
 }
 
 struct Peer {
+    /// Authenticated-flood detection: (window start, packets in window, strikes).
+    rate: (Instant, u32, u8),
     /// Path goes over the TCP fallback.
     tcp: bool,
     /// Local UDP socket for this peer (0 = main, >0 = winning birthday socket).
@@ -399,6 +458,13 @@ struct Peer {
     addr: SocketAddr,
     key: [u8; 32],
     overflow: HashMap<u32, (VecDeque<u8>, bool)>,
+    /// Connected through the relay: keep probing direct paths and move off the relay as
+    /// soon as one answers ("relay first, P2P after"). (targets, next probe, probes sent)
+    upgrade: Option<(Vec<SocketAddr>, Instant, u32)>,
+    /// One-shot: also send the next sealed packets over UDP to these addresses.
+    probe_udp: Vec<SocketAddr>,
+    /// Fallback path: when it was (re)assigned — failover waits a grace period after this.
+    relay_since: Option<Instant>,
 }
 
 struct PunchJob {
@@ -421,6 +487,9 @@ struct PunchJob {
 #[derive(Default)]
 struct ServerState {
     rendezvous: Option<String>,
+    relay: Option<String>,
+    /// Relays we keep a standby room on (every configured/announced relay).
+    standby: Vec<String>,
     tcp_fallback: bool,
     lease: Option<String>,
     authority: Option<[u8; 32]>,
@@ -480,9 +549,25 @@ struct ClientState {
     rdv_targets: Vec<SocketAddr>,
     rdv_low_ttl_until: Option<Instant>,
     spray: Vec<u16>,
+    relay: Option<String>,
+    relay_started: bool,
+    /// Fallback relays tried by this client: (pseudo path, relay base URL).
+    relay_paths: Vec<(SocketAddr, String)>,
+    relay_room: String,
+    relay_cid: String,
+}
+
+/// Flood protection state (per source IP / per authenticated key).
+#[derive(Default)]
+struct Guard {
+    bad: HashMap<IpAddr, (Instant, u32)>,
+    blocked: HashMap<IpAddr, Instant>,
+    banned_keys: HashMap<[u8; 32], Instant>,
 }
 
 struct Core {
+    guard: Guard,
+    lease_slot: Arc<Mutex<Option<String>>>,
     self_tx: Sender<Input>,
     role: Role,
     node: Node,
@@ -490,6 +575,9 @@ struct Core {
     out: Sender<EngineEvent>,
     stats: Arc<Mutex<EngineStats>>,
     peers: HashMap<u32, Peer>,
+    /// Peers with queued app commands / new state: flushed on the next tick
+    /// (avoids walking every connection on every packet → scales to thousands).
+    dirty: std::collections::HashSet<u32>,
     srv: Option<ServerState>,
     cli: Option<ClientState>,
 }
@@ -542,8 +630,11 @@ impl Core {
             tx,
             next_stream: Arc::new(AtomicU32::new(first_stream)),
             stats: stats.clone(),
+            lease: Arc::default(),
         };
         let core = Core {
+            guard: Guard::default(),
+            lease_slot: handle.lease.clone(),
             self_tx: handle.tx.clone(),
             role,
             node,
@@ -551,6 +642,7 @@ impl Core {
             out: etx,
             stats,
             peers: HashMap::new(),
+            dirty: Default::default(),
             srv: None,
             cli: None,
         };
@@ -687,6 +779,17 @@ impl Core {
                 let session = random_u64();
                 let c = self.cli.as_mut().unwrap();
                 c.targets = node_supports;
+                // Reconnect fast: the direct address that worked last time goes first.
+                if let Some(a) = path_cache()
+                    .lock()
+                    .unwrap()
+                    .get(&c.ticket.as_ref().unwrap().server_pub)
+                    .copied()
+                {
+                    if self.node.supports(&a) && !c.targets.contains(&a) {
+                        c.targets.insert(0, a);
+                    }
+                }
                 c.mine = mine.clone();
                 c.session = session;
                 c.deadline = Some(now + c.timeout);
@@ -821,6 +924,15 @@ impl Core {
     }
 
     fn cmd(&mut self, c: Cmd, now: Instant) {
+        if let Cmd::StreamWrite { conn, .. }
+        | Cmd::StreamFinish { conn, .. }
+        | Cmd::StreamReset { conn, .. }
+        | Cmd::StreamConsumed { conn, .. }
+        | Cmd::Datagram { conn, .. }
+        | Cmd::Close { conn } = &c
+        {
+            self.dirty.insert(*conn);
+        }
         match c {
             Cmd::StreamWrite { conn, id, data } => {
                 if let Some(p) = self.peers.get_mut(&conn) {
@@ -891,6 +1003,7 @@ impl Core {
                 }
             }
             Cmd::SetLease(l) => {
+                *self.lease_slot.lock().unwrap() = l.clone();
                 if let Some(s) = self.srv.as_mut() {
                     s.lease = l;
                 }
@@ -920,8 +1033,31 @@ impl Core {
                     self.start_punch_ex(t, spray, false, now);
                 }
             }
+            Cmd::RelayUp => {
+                if let Some(c) = self.cli.as_mut() {
+                    if !c.done {
+                        c.next_probe = Some(now);
+                    }
+                }
+            }
+            Cmd::SetRelay(url) => {
+                if let Some(s) = self.srv.as_mut() {
+                    if s.relay.is_some() {
+                        s.relay = Some(url.clone());
+                        // Newly announced relays: join their standby rooms too (old ones stay).
+                        for base in crate::relay::list(&url) {
+                            self.start_standby(base);
+                        }
+                    }
+                }
+            }
             Cmd::RdvServer(ep) => {
                 if let Some(c) = self.cli.as_mut() {
+                    let mut redial = false;
+                    if let (Some(r), true) = (&ep.relay, c.relay.is_some()) {
+                        c.relay = Some(r.clone());
+                        redial = c.relay_started && !c.done;
+                    }
                     let guess = SocketAddr::new(ep.ip, ep.port);
                     let mut t = vec![guess];
                     t.extend(predict_ports(&guess));
@@ -939,6 +1075,9 @@ impl Core {
                     let _ = self.out.send(EngineEvent::Log(format!(
                         "điểm hẹn website: server ở {guess} → đang đục NAT"
                     )));
+                    if redial {
+                        self.dial_relays(); // the website announced relays we haven't tried yet
+                    }
                 }
             }
             Cmd::Shutdown => {}
@@ -946,8 +1085,36 @@ impl Core {
         let _ = now;
     }
 
+    /// Count an invalid packet from `ip`; block the IP for a while above the threshold.
+    /// Never blocks an address that currently carries an authenticated peer (anti-framing).
+    fn bad_packet(&mut self, ip: IpAddr, now: Instant) {
+        self.stats.lock().unwrap().dropped_unauthenticated += 1;
+        let e = self.guard.bad.entry(ip).or_insert((now, 0));
+        if now.duration_since(e.0) >= Duration::from_secs(1) {
+            *e = (now, 0);
+        }
+        e.1 += 1;
+        if e.1 > BAD_PPS_PER_IP && !self.peers.values().any(|p| p.addr.ip() == ip) {
+            if self.guard.blocked.insert(ip, now + BLOCK_FOR).is_none() {
+                self.log(format!(
+                    "chặn {ip} trong {}s: gửi dồn gói không hợp lệ",
+                    BLOCK_FOR.as_secs()
+                ));
+            }
+        }
+        if self.guard.bad.len() > 50_000 {
+            self.guard.bad.clear();
+        }
+    }
+
     fn packet(&mut self, from: SocketAddr, data: &[u8], via: Via, now: Instant) {
         let Some(&t) = data.first() else { return };
+        if let Some(until) = self.guard.blocked.get(&from.ip()) {
+            if now < *until {
+                return; // cheapest possible drop: no parsing, no crypto
+            }
+            self.guard.blocked.remove(&from.ip());
+        }
         let tcp = via == Via::Tcp;
         let sock = match via {
             Via::Udp(s) => s,
@@ -964,7 +1131,7 @@ impl Core {
                     self.on_control(from, p, now);
                 }
             }
-            _ => self.stats.lock().unwrap().dropped_unauthenticated += 1,
+            _ => self.bad_packet(from.ip(), now),
         }
     }
 
@@ -984,15 +1151,16 @@ impl Core {
             self.stats.lock().unwrap().dropped_unauthenticated += 1;
             return; // dark: silently ignore
         }
-        if !self.rate_ok(from.ip(), now) {
-            return;
-        }
         let h = crypto::hash(&[data]);
         if self.srv.as_ref().unwrap().reject_cache.contains_key(&h) {
             return; // same rejected handshake retransmitted: no crypto, no log
         }
         if let Some((resp, _)) = self.srv.as_ref().unwrap().resp_cache.get(&h) {
             let _ = self.node.send_on(via, from, resp); // retransmitted init over another path
+            return;
+        }
+        // Only NEW handshakes (expensive DH) count against the per-IP budget.
+        if !self.rate_ok(from.ip(), now) {
             return;
         }
         let Some(r) = crypto::read_init(&self.key, data) else {
@@ -1033,6 +1201,14 @@ impl Core {
             self.reject(h, from, &why, now);
             return;
         }
+        if self
+            .guard
+            .banned_keys
+            .get(&r.initiator_static)
+            .is_some_and(|until| now < *until)
+        {
+            return; // temporarily banned for flooding
+        }
         if s.last_ts
             .get(&r.initiator_static)
             .is_some_and(|&last| ts <= last)
@@ -1067,7 +1243,9 @@ impl Core {
         let s = self.srv.as_mut().unwrap();
         s.resp_cache.insert(h, (resp, now));
         s.last_ts.insert(key, ts);
-        s.jobs.clear();
+        // Stop punching toward this client only (others may be connecting right now).
+        s.jobs
+            .retain(|j| !j.targets.iter().any(|t| t.ip() == from.ip()));
         let (subject, scopes) = match &ident {
             Some(t) => (Some(t.sub.clone()), Some(t.ports.clone())),
             None => (None, None),
@@ -1076,6 +1254,7 @@ impl Core {
         self.peers.insert(
             idx,
             Peer {
+                rate: (now, 0, 0),
                 tcp,
                 sock: if tcp { 0 } else { sock },
                 tcp_paths: if tcp { vec![from] } else { vec![] },
@@ -1085,9 +1264,18 @@ impl Core {
                 addr: from,
                 key,
                 overflow: HashMap::new(),
+                upgrade: None,
+                probe_udp: vec![],
+                relay_since: crate::relay::is_relay(&from).then_some(now),
             },
         );
-        let path = if tcp { "tcp" } else { path_of(&from) };
+        let path = if crate::relay::is_relay(&from) {
+            "relay"
+        } else if tcp {
+            "tcp"
+        } else {
+            path_of(&from)
+        };
         self.on_connected_ident(idx, from, path, key, subject, scopes);
     }
 
@@ -1131,6 +1319,7 @@ impl Core {
             *st.connects.entry(path).or_default() += 1;
             st.ccu = self.peers.len();
         }
+        self.dirty.insert(conn);
         self.emit(EngineEvent::Connected {
             conn,
             addr,
@@ -1181,7 +1370,9 @@ impl Core {
             } else {
                 "punched"
             });
-        let path = if tcp {
+        let path = if crate::relay::is_relay(&from) {
+            "relay"
+        } else if tcp {
             "tcp"
         } else if sock > 0 {
             "birthday"
@@ -1190,6 +1381,12 @@ impl Core {
         };
         let key = ticket.server_pub;
         if !tcp {
+            let mut pc = path_cache().lock().unwrap();
+            if pc.len() > 1024 {
+                pc.clear();
+            }
+            pc.insert(key, from);
+            drop(pc);
             self.node.close_tcp(); // UDP won: drop fallback connections
             if sock > 0 {
                 self.log(format!(
@@ -1202,9 +1399,42 @@ impl Core {
         let idx = session.local_idx;
         let mut conn = Conn::new(true, now);
         conn.ping();
+        if crate::relay::is_relay(&from) {
+            let losers: Vec<SocketAddr> = self
+                .cli
+                .as_ref()
+                .map(|c| {
+                    c.relay_paths
+                        .iter()
+                        .map(|(a, _)| *a)
+                        .filter(|a| *a != from)
+                        .collect()
+                })
+                .unwrap_or_default();
+            for a in losers {
+                self.node.close_lanes(&a);
+            }
+        }
+        let upgrade = crate::relay::is_relay(&from)
+            .then(|| {
+                let t: Vec<SocketAddr> = self
+                    .cli
+                    .as_ref()
+                    .map(|c| {
+                        c.targets
+                            .iter()
+                            .filter(|t| !crate::relay::is_relay(t))
+                            .copied()
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                (t, now + UPGRADE_FIRST, 0)
+            })
+            .filter(|u| !u.0.is_empty());
         self.peers.insert(
             idx,
             Peer {
+                rate: (now, 0, 0),
                 tcp,
                 sock,
                 tcp_paths: if tcp { vec![from] } else { vec![] },
@@ -1214,6 +1444,9 @@ impl Core {
                 addr: from,
                 key,
                 overflow: HashMap::new(),
+                upgrade,
+                probe_udp: vec![],
+                relay_since: crate::relay::is_relay(&from).then_some(now),
             },
         );
         self.on_connected(idx, from, path, key);
@@ -1221,15 +1454,35 @@ impl Core {
 
     fn on_data(&mut self, from: SocketAddr, data: &[u8], tcp: bool, sock: u16, now: Instant) {
         let Some(idx) = Session::packet_index(data) else {
-            return;
+            return self.bad_packet(from.ip(), now);
         };
         let Some(p) = self.peers.get_mut(&idx) else {
-            self.stats.lock().unwrap().dropped_unauthenticated += 1;
-            return;
+            return self.bad_packet(from.ip(), now);
         };
         let Some((pn, pt)) = p.session.open(data) else {
-            return;
+            return self.bad_packet(from.ip(), now);
         };
+        // Authenticated flood: an authorized client hammering the server is disconnected
+        // and its key banned for a while (legit traffic, even bulk transfers, stays far below).
+        if now.duration_since(p.rate.0) >= Duration::from_secs(1) {
+            p.rate.2 = if p.rate.1 > PEER_MAX_PPS {
+                p.rate.2 + 1
+            } else {
+                0
+            };
+            p.rate.0 = now;
+            p.rate.1 = 0;
+        }
+        p.rate.1 += 1;
+        if p.rate.2 >= 3 {
+            let key = p.key;
+            p.conn.close();
+            self.guard.banned_keys.insert(key, now + BAN_FOR);
+            self.stats.lock().unwrap().rejected += 1;
+            self.log(format!("từ chối client {idx:08x}: gửi quá {PEER_MAX_PPS} gói/s liên tục → ngắt và cấm key {} phút", BAN_FOR.as_secs() / 60));
+            self.flush(idx, now);
+            return;
+        }
         let mut roamed = None;
         if tcp && p.tcp && from != p.addr {
             // Another TCP lane of the same peer (multipath): just remember it.
@@ -1247,7 +1500,16 @@ impl Core {
         }
         p.conn.on_packet(pn, &pt, now);
         if let Some(old) = roamed {
-            self.log(format!("peer {idx:08x} đổi mạng {old} → {from}"));
+            if crate::relay::is_relay(&old) && !tcp {
+                if let Some(p) = self.peers.get_mut(&idx) {
+                    p.upgrade = None;
+                }
+                self.log(format!(
+                    "peer {idx:08x}: đã chuyển từ đường dự phòng sang P2P trực tiếp ({from})"
+                ));
+            } else {
+                self.log(format!("peer {idx:08x} đổi mạng {old} → {from}"));
+            }
         }
         self.flush(idx, now);
     }
@@ -1450,14 +1712,22 @@ impl Core {
             .collect();
         let tcp = self.srv.as_ref().is_some_and(|s| s.tcp_fallback);
         let tx = self.self_tx.clone();
+        let lease = self.lease_slot.clone();
         thread::Builder::new()
             .name("peerova-rdv".into())
             .spawn(move || {
                 let mut announced = false;
                 let mut last_err = String::new();
                 loop {
-                    let wait = match crate::rdv::poll(&url, &sid, port, &lan, &v6, tcp) {
-                        Ok((ip, clients, secs)) => {
+                    let cur = lease.lock().unwrap().clone();
+                    let t0 = Instant::now();
+                    let wait = match crate::rdv::poll(&url, &sid, port, &lan, &v6, tcp, cur.as_deref()) {
+                        Ok((ip, clients, secs, relay)) => {
+                            if let Some(r) = relay {
+                                if tx.send(Input::Cmd(Cmd::SetRelay(r))).is_err() {
+                                    return;
+                                }
+                            }
                             if !announced {
                                 announced = true;
                                 let ip = ip.map(|i| i.to_string()).unwrap_or("?".into());
@@ -1465,10 +1735,13 @@ impl Core {
                                     return;
                                 }
                             }
-                            if !clients.is_empty() && tx.send(Input::Cmd(Cmd::RdvClients(clients))).is_err() {
+                            let got = !clients.is_empty();
+                            if got && tx.send(Input::Cmd(Cmd::RdvClients(clients))).is_err() {
                                 return;
                             }
-                            secs
+                            // Long-poll answered (client arrived or the wait elapsed): ask again
+                            // at once. An older website answers immediately: keep its interval.
+                            if got || t0.elapsed() >= Duration::from_secs(crate::rdv::POLL_WAIT - 2) { 0 } else { secs }
                         }
                         Err(e) => {
                             if e != last_err {
@@ -1484,10 +1757,68 @@ impl Core {
                     if tx.send(Input::Cmd(Cmd::Note(String::new()))).is_err() {
                         return;
                     }
-                    thread::sleep(Duration::from_secs(wait));
+                    if wait > 0 {
+                        thread::sleep(Duration::from_secs(wait));
+                    }
                 }
             })
             .expect("spawn rdv thread");
+    }
+
+    /// Server: keep a standby room on `base` (once per relay).
+    fn start_standby(&mut self, base: String) {
+        let Some(s) = self.srv.as_mut() else { return };
+        if s.standby.contains(&base) {
+            return;
+        }
+        s.standby.push(base.clone());
+        let lease = self.lease_slot.clone();
+        let out = self.out.clone();
+        let room = crate::relay::room(&self.key.public, 0);
+        self.node.relay_standby(
+            &base,
+            &room,
+            Arc::new(move || lease.lock().unwrap().clone().map(|l| format!("Lease {l}"))),
+            move |m| {
+                let _ = out.send(EngineEvent::Log(m));
+            },
+        );
+    }
+
+    /// Client: open the fallback route on up to `relay::RACE` relays not tried yet.
+    /// They race: the first handshake to complete picks the fastest relay.
+    fn dial_relays(&mut self) {
+        let Some(c) = self.cli.as_mut() else { return };
+        let all = crate::relay::list(c.relay.as_deref().unwrap_or(""));
+        let fresh: Vec<String> = all
+            .into_iter()
+            .filter(|u| !c.relay_paths.iter().any(|(_, x)| x == u))
+            .collect();
+        let budget = crate::relay::RACE.saturating_sub(c.relay_paths.len());
+        let (room, cid) = (c.relay_room.clone(), c.relay_cid.clone());
+        for base in fresh.into_iter().take(budget) {
+            let addr = self.open_relay(&base, &room, &cid);
+            let c = self.cli.as_mut().unwrap();
+            c.targets.push(addr);
+            c.relay_paths.push((addr, base));
+        }
+    }
+
+    fn open_relay(&self, base: &str, room: &str, cid: &str) -> SocketAddr {
+        let (out, me) = (self.out.clone(), self.self_tx.clone());
+        self.node.connect_relay(
+            base,
+            room,
+            "c",
+            None,
+            cid,
+            move |m| {
+                let _ = out.send(EngineEvent::Log(m));
+            },
+            move || {
+                let _ = me.send(Input::Cmd(Cmd::RelayUp));
+            },
+        )
     }
 
     fn start_punch(&mut self, targets: Vec<SocketAddr>, now: Instant) {
@@ -1561,6 +1892,11 @@ impl Core {
                 };
                 let cands = s.candidates.clone();
                 self.stats.lock().unwrap().max_ccu = s.max_ccu;
+                // Standby in our own fallback room: clients that can't come direct reach us
+                // without waiting for the website or a fresh handshake on our side.
+                for base in crate::relay::list(s.relay.as_deref().unwrap_or("")) {
+                    self.start_standby(base);
+                }
                 self.emit(EngineEvent::Ready {
                     ticket: Some(ticket.encode()),
                     candidates: cands,
@@ -1719,7 +2055,12 @@ impl Core {
                         if let Some(init) = &c.initiator {
                             if !c.force_tcp {
                                 let low = c.rdv_low_ttl_until.is_some_and(|u| now < u);
-                                for t in c.targets.iter().chain(predicted.iter()) {
+                                for t in c
+                                    .targets
+                                    .iter()
+                                    .chain(predicted.iter())
+                                    .filter(|t| !crate::relay::is_relay(t))
+                                {
                                     if low && (c.rdv_targets.contains(t) || predicted.contains(t)) {
                                         let _ = self.node.send_low_ttl(*t, &init.packet, PUNCH_TTL);
                                     } else {
@@ -1788,7 +2129,25 @@ impl Core {
                                 }
                             }
                         }
-                        // UDP silent for a while: open direct TCP fallbacks (no relay).
+                        // Last resort: P2P still silent → relay through the website (E2E-encrypted).
+                        let relay_due = c
+                            .started
+                            .is_some_and(|s| now.duration_since(s) >= RELAY_AFTER);
+                        let rdv_ticket = c.ticket.as_ref().is_some_and(|t| t.rdv);
+                        if relay_due
+                            && rdv_ticket
+                            && !c.relay_started
+                            && !c.force_tcp
+                            && c.relay.is_some()
+                        {
+                            c.relay_started = true;
+                            c.relay_room =
+                                crate::relay::room(&c.ticket.as_ref().unwrap().server_pub, 0);
+                            c.relay_cid = format!("&cid={:016x}", crate::rdv::random_cid());
+                            self.dial_relays();
+                        }
+                        let Some(c) = self.cli.as_mut() else { return };
+                        // UDP silent for a while: open direct TCP fallbacks ().
                         let tcp_ok = c.ticket.as_ref().is_some_and(|t| t.tcp);
                         let waited = c
                             .started
@@ -1807,14 +2166,91 @@ impl Core {
             }
         }
 
-        // Connections.
-        let ids: Vec<u32> = self.peers.keys().copied().collect();
-        for id in ids {
-            if let Some(p) = self.peers.get_mut(&id) {
-                if p.conn.poll_timeout().is_some_and(|t| now >= t) {
-                    p.conn.on_timeout(now);
+        // Relay failover: the relay carrying a connection died (outage, quota) → move the
+        // same encrypted connection to another relay; the server roams on the first packet.
+        if let Some(c) = self.cli.as_ref() {
+            let failing: Vec<u32> = self
+                .peers
+                .iter()
+                .filter(|(_, p)| {
+                    p.tcp && crate::relay::is_relay(&p.addr) && !self.node.has_tcp(&p.addr)
+                })
+                .filter(|(_, p)| {
+                    p.relay_since
+                        .is_some_and(|t| now.duration_since(t) >= RELAY_FAILOVER_GRACE)
+                })
+                .map(|(&id, _)| id)
+                .collect();
+            let all = crate::relay::list(c.relay.as_deref().unwrap_or(""));
+            let (room, cid) = (c.relay_room.clone(), c.relay_cid.clone());
+            for id in failing {
+                let cur = self
+                    .cli
+                    .as_ref()
+                    .unwrap()
+                    .relay_paths
+                    .iter()
+                    .find(|(a, _)| Some(*a) == self.peers.get(&id).map(|p| p.addr))
+                    .map(|(_, u)| u.clone());
+                // Next relay after the current one (wraps; with a single relay, retry it).
+                let i = cur
+                    .as_ref()
+                    .and_then(|u| all.iter().position(|x| x == u))
+                    .map_or(0, |i| i + 1);
+                let Some(base) = all.get(i % all.len().max(1)).cloned() else {
+                    continue;
+                };
+                let addr = self.open_relay(&base, &room, &cid);
+                self.cli
+                    .as_mut()
+                    .unwrap()
+                    .relay_paths
+                    .push((addr, base.clone()));
+                if let Some(p) = self.peers.get_mut(&id) {
+                    p.addr = addr;
+                    p.tcp_paths = vec![addr];
+                    p.relay_since = Some(now);
+                }
+                self.log(format!(
+                    "đường dự phòng bị ngắt → chuyển sang máy chủ dự phòng khác ({})",
+                    i % all.len().max(1) + 1
+                ));
+            }
+        }
+
+        // Relay → direct upgrade probes (sealed pings over UDP; the peer roams on arrival).
+        for (&id, p) in self.peers.iter_mut() {
+            if !p.tcp || !crate::relay::is_relay(&p.addr) {
+                p.upgrade = None;
+                continue;
+            }
+            if let Some((targets, next, sent)) = p.upgrade.as_mut() {
+                if now >= *next {
+                    *sent += 1;
+                    *next = now
+                        + if *sent < UPGRADE_FAST_PROBES {
+                            UPGRADE_EVERY_FAST
+                        } else {
+                            UPGRADE_EVERY_SLOW
+                        };
+                    p.probe_udp = targets.clone();
+                    p.conn.ping();
+                    self.dirty.insert(id);
                 }
             }
+        }
+
+        // Connections: only those with a due timer or pending work.
+        let mut work: Vec<u32> = self.dirty.drain().collect();
+        for (&id, p) in self.peers.iter_mut() {
+            if p.conn.poll_timeout().is_some_and(|t| now >= t) {
+                p.conn.on_timeout(now);
+                work.push(id);
+            }
+        }
+        work.sort_unstable();
+        work.dedup();
+        for id in work {
             self.flush(id, now);
         }
     }
@@ -1840,8 +2276,13 @@ impl Core {
         for sid in finished {
             p.overflow.remove(&sid);
         }
+        p.conn.set_reliable_path(p.tcp);
+        let probes = std::mem::take(&mut p.probe_udp);
         while let Some((pn, pt)) = p.conn.poll_transmit(now) {
             let pkt = p.session.seal(pn, &pt);
+            for a in &probes {
+                let _ = self.node.send(*a, &pkt); // duplicate over UDP: the first copy to arrive wins
+            }
             if p.tcp {
                 let _ = self.node.send_tcp(&p.tcp_paths, &pkt);
             } else {
@@ -1917,6 +2358,258 @@ mod tests {
             _ => unreachable!(),
         };
         (s, ticket)
+    }
+
+    #[test]
+    fn falls_back_to_website_relay_when_punching_fails() {
+        // PEEROVA_TEST_RELAY=https://… runs this against a real deployed relay.
+        let base = std::env::var("PEEROVA_TEST_RELAY")
+            .unwrap_or_else(|_| crate::relay::testserver::start());
+        let b2 = base.clone();
+        let (s, ticket) = server(move |c| c.relay = Some(b2));
+        // Ticket whose only candidate is unreachable: direct P2P can never succeed.
+        let mut t = Ticket::decode(&ticket).unwrap();
+        t.candidates = vec![Candidate {
+            kind: CandKind::Host,
+            addr: "192.0.2.1:9".parse().unwrap(),
+        }];
+        t.rdv = true;
+        t.tcp = false;
+        let cfg = ClientConfig {
+            rendezvous: Some("http://127.0.0.1:1".into()),
+            relay: Some(base),
+            ..Default::default()
+        };
+        let c = Engine::connect(&t.encode(), cfg).unwrap();
+        let session = match wait(&c, 5, |e| matches!(e, EngineEvent::Ready { .. })) {
+            EngineEvent::Ready { session, .. } => session,
+            _ => unreachable!(),
+        };
+        // What the website rendezvous would hand the server.
+        let ep = crate::rdv::Endpoint {
+            ip: "127.0.0.2".parse().unwrap(),
+            port: 9,
+            lan: vec![],
+            v6: vec![],
+            relay: None,
+        };
+        s.handle
+            .send(Cmd::RdvClients(vec![crate::rdv::ClientReq { session, ep }]));
+        let conn = match wait(&c, 15, |e| matches!(e, EngineEvent::Connected { .. })) {
+            EngineEvent::Connected { conn, path, .. } => {
+                assert_eq!(path, "relay");
+                conn
+            }
+            _ => unreachable!(),
+        };
+        // Realtime datagrams flow both ways through the relay.
+        let t0 = Instant::now();
+        c.handle.send(Cmd::Datagram {
+            conn,
+            data: b"via-relay".to_vec(),
+        });
+        let sconn = match wait(
+            &s,
+            5,
+            |e| matches!(e, EngineEvent::Datagram { data, .. } if data == b"via-relay"),
+        ) {
+            EngineEvent::Datagram { conn, .. } => conn,
+            _ => unreachable!(),
+        };
+        s.handle.send(Cmd::Datagram {
+            conn: sconn,
+            data: b"back".to_vec(),
+        });
+        wait(
+            &c,
+            5,
+            |e| matches!(e, EngineEvent::Datagram { data, .. } if data == b"back"),
+        );
+        assert!(
+            t0.elapsed() < Duration::from_millis(200),
+            "relay round trip too slow: {:?}",
+            t0.elapsed()
+        );
+    }
+
+    /// Client + server whose direct path can never work, with the given relay list.
+    fn relay_only_pair(relays: String) -> (Engine, Engine, u32) {
+        let r2 = relays.clone();
+        let (s, ticket) = server(move |c| c.relay = Some(r2));
+        let mut t = Ticket::decode(&ticket).unwrap();
+        t.candidates = vec![Candidate {
+            kind: CandKind::Host,
+            addr: "192.0.2.1:9".parse().unwrap(),
+        }];
+        t.rdv = true;
+        t.tcp = false;
+        let cfg = ClientConfig {
+            rendezvous: Some("http://127.0.0.1:1".into()),
+            relay: Some(relays),
+            ..Default::default()
+        };
+        let c = Engine::connect(&t.encode(), cfg).unwrap();
+        let conn = match wait(&c, 15, |e| matches!(e, EngineEvent::Connected { .. })) {
+            EngineEvent::Connected { conn, path, .. } => {
+                assert_eq!(path, "relay");
+                conn
+            }
+            _ => unreachable!(),
+        };
+        (s, c, conn)
+    }
+
+    #[test]
+    fn picks_a_working_relay_among_several() {
+        let good = crate::relay::testserver::start();
+        // First relay in the list is down: the race must still connect through the second.
+        let (s, c, conn) = relay_only_pair(format!("http://127.0.0.1:1,{good}"));
+        c.handle.send(Cmd::Datagram {
+            conn,
+            data: b"hi".to_vec(),
+        });
+        wait(
+            &s,
+            5,
+            |e| matches!(e, EngineEvent::Datagram { data, .. } if data == b"hi"),
+        );
+    }
+
+    #[test]
+    fn survives_relay_outages_by_failing_over() {
+        // Both relays cut every connection after 4 s: the same connection must keep
+        // working by moving between relays.
+        let a = crate::relay::testserver::start_with(Some(Duration::from_secs(4)));
+        let b = crate::relay::testserver::start_with(Some(Duration::from_secs(4)));
+        let (s, c, conn) = relay_only_pair(format!("{a},{b}"));
+        let t0 = Instant::now();
+        let mut late = 0;
+        let mut n = 0u32;
+        while t0.elapsed() < Duration::from_secs(12) {
+            n += 1;
+            c.handle.send(Cmd::Datagram {
+                conn,
+                data: n.to_be_bytes().to_vec(),
+            });
+            let deadline = Instant::now() + Duration::from_millis(100);
+            while Instant::now() < deadline {
+                if let Some(EngineEvent::Datagram { data, .. }) =
+                    s.recv_timeout(Duration::from_millis(20))
+                {
+                    if t0.elapsed() > Duration::from_secs(8) && data.len() == 4 {
+                        late += 1;
+                    }
+                }
+            }
+            while c.recv_timeout(Duration::from_millis(1)).is_some() {}
+        }
+        assert!(
+            late > 10,
+            "traffic must keep flowing after relay outages (got {late} late datagrams)"
+        );
+    }
+
+    /// UDP proxy that drops everything until `open_after`, then forwards both ways.
+    fn flaky_udp_proxy(server: SocketAddr, open_after: Duration) -> SocketAddr {
+        let sock = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+        let addr = sock.local_addr().unwrap();
+        let up = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+        let (s2, u2) = (sock.try_clone().unwrap(), up.try_clone().unwrap());
+        let start = Instant::now();
+        let client: Arc<Mutex<Option<SocketAddr>>> = Arc::new(Mutex::new(None));
+        let c2 = client.clone();
+        thread::spawn(move || {
+            let mut b = [0u8; 2048];
+            while let Ok((n, from)) = sock.recv_from(&mut b) {
+                *client.lock().unwrap() = Some(from);
+                if start.elapsed() >= open_after {
+                    let _ = up.send_to(&b[..n], server);
+                }
+            }
+        });
+        thread::spawn(move || {
+            let mut b = [0u8; 2048];
+            while let Ok((n, _)) = u2.recv_from(&mut b) {
+                if let (true, Some(c)) = (start.elapsed() >= open_after, *c2.lock().unwrap()) {
+                    let _ = s2.send_to(&b[..n], c);
+                }
+            }
+        });
+        addr
+    }
+
+    #[test]
+    fn relay_first_then_upgrades_to_direct_p2p() {
+        let base = crate::relay::testserver::start();
+        let b2 = base.clone();
+        let (s, ticket) = server(move |c| c.relay = Some(b2));
+        let mut t = Ticket::decode(&ticket).unwrap();
+        let real = t.candidates.iter().find(|c| c.addr.is_ipv4()).unwrap().addr;
+        let real = SocketAddr::new("127.0.0.1".parse().unwrap(), real.port());
+        // Direct path blocked for 6 s (punching fails → relay), then the network opens up.
+        let proxy = flaky_udp_proxy(real, Duration::from_secs(6));
+        t.candidates = vec![Candidate {
+            kind: CandKind::Host,
+            addr: proxy,
+        }];
+        t.rdv = true;
+        t.tcp = false;
+        let cfg = ClientConfig {
+            rendezvous: Some("http://127.0.0.1:1".into()),
+            relay: Some(base),
+            timeout: Duration::from_secs(30),
+            ..Default::default()
+        };
+        let c = Engine::connect(&t.encode(), cfg).unwrap();
+        let session = match wait(&c, 5, |e| matches!(e, EngineEvent::Ready { .. })) {
+            EngineEvent::Ready { session, .. } => session,
+            _ => unreachable!(),
+        };
+        let ep = crate::rdv::Endpoint {
+            ip: "127.0.0.3".parse().unwrap(),
+            port: 9,
+            lan: vec![],
+            v6: vec![],
+            relay: None,
+        };
+        s.handle
+            .send(Cmd::RdvClients(vec![crate::rdv::ClientReq { session, ep }]));
+        let conn = match wait(&c, 15, |e| matches!(e, EngineEvent::Connected { .. })) {
+            EngineEvent::Connected { conn, path, .. } => {
+                assert_eq!(path, "relay");
+                conn
+            }
+            _ => unreachable!(),
+        };
+        // Keep traffic flowing; the engine must move to the direct path by itself.
+        let deadline = Instant::now() + Duration::from_secs(20);
+        let mut upgraded = false;
+        while Instant::now() < deadline && !upgraded {
+            c.handle.send(Cmd::Datagram {
+                conn,
+                data: b"tick".to_vec(),
+            });
+            if let Some(EngineEvent::Log(m)) = c.recv_timeout(Duration::from_millis(200)) {
+                upgraded = m.contains("sang P2P trực tiếp");
+            }
+            while let Some(EngineEvent::Log(m)) = s.recv_timeout(Duration::from_millis(1)) {
+                let _ = m;
+            }
+        }
+        assert!(
+            upgraded,
+            "connection should leave the relay once a direct path works"
+        );
+        // Same connection keeps working over the direct path.
+        c.handle.send(Cmd::Datagram {
+            conn,
+            data: b"direct".to_vec(),
+        });
+        wait(
+            &s,
+            5,
+            |e| matches!(e, EngineEvent::Datagram { data, .. } if data == b"direct"),
+        );
     }
 
     #[test]
@@ -2113,6 +2806,43 @@ mod tests {
             EngineEvent::Connected { addr, .. } => assert_ne!(addr, dead.local_addr().unwrap()),
             _ => unreachable!(),
         }
+    }
+
+    #[test]
+    fn garbage_flood_gets_ip_blocked_but_peers_keep_working() {
+        let (s, ticket) = server(|_| {});
+        let addr = Ticket::decode(&ticket).unwrap().candidates[0].addr;
+        let c = Engine::connect(&ticket, ClientConfig::default()).unwrap();
+        let conn = match wait(&c, 5, |e| matches!(e, EngineEvent::Connected { .. })) {
+            EngineEvent::Connected { conn, .. } => conn,
+            _ => unreachable!(),
+        };
+        // Attacker on another socket floods forged data packets with a guessed session index.
+        let atk = std::net::UdpSocket::bind("127.0.0.2:0").unwrap();
+        let mut pkt = vec![crypto::T_DATA];
+        pkt.extend_from_slice(&conn.to_le_bytes());
+        pkt.extend_from_slice(&[0u8; 60]);
+        for _ in 0..3000 {
+            let _ = atk.send_to(&pkt, addr);
+        }
+        let deadline = Instant::now() + Duration::from_secs(3);
+        let mut blocked = false;
+        while Instant::now() < deadline && !blocked {
+            if let Some(EngineEvent::Log(m)) = s.recv_timeout(Duration::from_millis(50)) {
+                blocked = m.contains("chặn 127.0.0.2");
+            }
+        }
+        assert!(blocked, "flooding IP should be blocked");
+        // The legitimate client still works.
+        c.handle.send(Cmd::Datagram {
+            conn,
+            data: b"still-here".to_vec(),
+        });
+        wait(
+            &s,
+            5,
+            |e| matches!(e, EngineEvent::Datagram { data, .. } if data == b"still-here"),
+        );
     }
 
     #[test]

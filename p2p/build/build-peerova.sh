@@ -24,8 +24,19 @@ P2P=$(pwd)
 SRC=$P2P/peerova
 DIST=$P2P/out/dist
 TGT=$P2P/out/target
+# = p2p/peerova/scripts/release.env (cấu hình build phát hành của chủ dự án); biến môi trường đã đặt thì thắng.
 export PEEROVA_AUTHORITY_PUBKEY=${PEEROVA_AUTHORITY_PUBKEY:-IIS5xs9LJBdu7yLGh4qS0qVPygEOJfx7BCE7oydEm3A}
 export PEEROVA_LICENSE_SERVER=${PEEROVA_LICENSE_SERVER:-https://peerova.pages.dev}
+export PEEROVA_RELAY_URL=${PEEROVA_RELAY_URL:-https://peerova.pages.dev}
+# Khoá CÔNG KHAI ký bản phát hành (release.env: PEEROVA_RELEASE_PUBKEY_FILE) - chỉ đọc .pub, KHÔNG BAO GIỜ *.seed.
+if [ -z "$PEEROVA_RELEASE_PUBKEY" ] && [ -f "$HOME/.config/peerova/release.pub" ]; then
+    export PEEROVA_RELEASE_PUBKEY=$(cat "$HOME/.config/peerova/release.pub")
+fi
+# Như build-release.sh: bỏ đường dẫn máy build khỏi chuỗi panic / location trong binary.
+export RUSTFLAGS="--remap-path-prefix=$SRC/crates=src --remap-path-prefix=$SRC=. --remap-path-prefix=$HOME/.cargo=cargo --remap-path-prefix=$HOME/.rustup=rust"
+# ring (TLS cho đường dự phòng) có ít C: trình biên dịch C theo target.
+export CC_x86_64_win7_windows_gnu=${CC_x86_64_win7_windows_gnu:-x86_64-w64-mingw32-gcc}
+export CARGO_TARGET_X86_64_WIN7_WINDOWS_GNU_LINKER=${CARGO_TARGET_X86_64_WIN7_WINDOWS_GNU_LINKER:-x86_64-w64-mingw32-gcc}
 JNI_C=$SRC/bindings/java/peerova_jni.c
 INC=$SRC/crates/peerova-ffi/include
 if [ -z "$JAVA_HOME" ]; then JAVA_HOME=$(dirname "$(dirname "$(readlink -f "$(command -v javac)")")"); fi
@@ -39,6 +50,8 @@ has() { case " $WHAT " in *" $1 "*|*" all "*) return 0 ;; esac; return 1; }
 kiem_license() {
     grep -aq "$PEEROVA_AUTHORITY_PUBKEY" "$1" || { echo "LOI: $1 khong nhung PEEROVA_AUTHORITY_PUBKEY"; exit 1; }
     grep -aq "$PEEROVA_LICENSE_SERVER" "$1" || { echo "LOI: $1 khong nhung PEEROVA_LICENSE_SERVER"; exit 1; }
+    n=$(strings "$1" | grep -cE "$HOME|$(whoami)|tunnel_p2p" || true)
+    [ "$n" -eq 0 ] || { echo "LOI: $1 con $n duong dan may build"; exit 1; }
 }
 
 # Kiểm DLL/EXE Windows không import API chỉ có từ Windows 10 (Server 2012 = NT 6.2).
@@ -72,7 +85,7 @@ build_win() { # $1 = win7|win10
     cp "$R/peerova.dll" "$R/peerova.exe" "$O/"
     # JNI tự chứa: peerova_jni.c + libpeerova.a -> một DLL (không phụ thuộc peerova.dll; chỉ DLL hệ thống).
     x86_64-w64-mingw32-gcc -O2 -Wall -shared "$JNI_C" -I"$P2P/build/jni-win32" -I"$JNI_INC" -I"$INC" \
-        "$R/libpeerova.a" -lws2_32 -lbcrypt -ladvapi32 -luserenv -lntdll -lkernel32 -static-libgcc \
+        "$R/libpeerova.a" -lws2_32 -liphlpapi -lbcrypt -ladvapi32 -luserenv -lntdll -lole32 -loleaut32 -lshell32 -lkernel32 -static-libgcc \
         -Wl,--gc-sections -Wl,--exclude-libs,ALL -Wl,--major-subsystem-version,6 -Wl,--minor-subsystem-version,0 -s \
         -o "$O/peerova_jni.dll"
     x86_64-w64-mingw32-strip "$O/peerova.dll" "$O/peerova.exe" 2>/dev/null || true
@@ -112,4 +125,4 @@ if has android; then
         done
     fi
 fi
-echo "XONG: $DIST (authority $PEEROVA_AUTHORITY_PUBKEY, license server $PEEROVA_LICENSE_SERVER)"
+echo "XONG: $DIST (authority $PEEROVA_AUTHORITY_PUBKEY, license $PEEROVA_LICENSE_SERVER, relay $PEEROVA_RELAY_URL, release pubkey ${PEEROVA_RELEASE_PUBKEY:+co})"

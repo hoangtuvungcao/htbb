@@ -17,6 +17,7 @@
 # Một nguồn duy nhất: port-j2me.py chép client_jar/src + client_jar/shared/mod vào out/build/gen mỗi lần build (vá tối thiểu,
 # mẫu vá lệch là DỪNG). Lớp MIDP + cửa sổ / HD: client_pc/src. Cần: JDK 9+ (javac --release 8), python3.
 set -e
+NOI_GOI=$(pwd)
 cd "$(dirname "$0")"
 GOC=$(pwd)
 J2ME=../client_jar
@@ -101,7 +102,10 @@ SO_PB=$(printf '%s' "$PHIEN_BAN" | sed -n 's/^\([0-9]*\.[0-9]*\(\.[0-9]*\)\{0,1\
 # P2P_TICKET=pvt_... hoặc P2P_TICKET_FILE=<tệp ticket.txt của máy chủ> -> bản build nối game QUA P2P (thay TCP thẳng;
 # lỗi P2P không lùi về TCP). Native: p2p/out/dist/{windows-x86_64-win7,linux-x86_64}/ (sh p2p/build/build-peerova.sh)
 # -> /peerova-native/<os>-<arch>/ trong jar (dev.peerova.NativeLoader giải nén khi chạy).
-[ -z "$P2P_TICKET" ] && [ -n "$P2P_TICKET_FILE" ] && P2P_TICKET=$(tr -d '\r\n ' < "$P2P_TICKET_FILE")
+if [ -z "$P2P_TICKET" ] && [ -n "$P2P_TICKET_FILE" ]; then
+    case "$P2P_TICKET_FILE" in /*) ;; *) P2P_TICKET_FILE="$NOI_GOI/$P2P_TICKET_FILE" ;; esac
+    P2P_TICKET=$(tr -d '\r\n ' < "$P2P_TICKET_FILE")
+fi
 if [ -n "$P2P_TICKET" ]; then
     case "$P2P_TICKET" in pvt_*) ;; *) echo "LOI: P2P_TICKET phai bat dau bang pvt_"; exit 1 ;; esac
     echo "HTBB-P2P-Ticket=$P2P_TICKET" >> "$B/res/htbb-app.properties"

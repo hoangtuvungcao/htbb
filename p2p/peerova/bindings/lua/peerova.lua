@@ -1,17 +1,24 @@
---- peerova — direct P2P networking (no relay, E2E encrypted). LuaJIT FFI binding (LuaJIT 2.0/2.1,
---- also OpenResty, LÖVE, Defold-with-LuaJIT...). For plain Lua 5.1–5.4 see peerova_stdio.lua.
+--- Peerova — direct peer-to-peer networking with end-to-end encryption.
+--- LuaJIT FFI binding (LuaJIT 2.0/2.1: OpenResty, LÖVE, Defold, ...). For plain Lua 5.1–5.4 use
+--- peerova_stdio.lua (same API, through the `peerova stdio` sidecar).
 ---
 ---   local peerova = require "peerova"
 ---   local srv = peerova.server{ port = 0, upnp = false }
 ---   print(srv.ticket)
----   local cli = peerova.client(srv.ticket)
+---   local cli = peerova.client(srv.ticket)   -- or a 6-character connect code
 ---   local ev = cli:poll(10)                  -- ev.type == "connected"
 ---   cli:send(ev.peer, "hello", { channel = 0, reliable = true })
 ---   for e in srv:events(2) do print(e.type, e.peer, e.data) end
 ---   cli:close(); srv:close()
 ---
---- Library lookup: os.getenv("PEEROVA_LIB"), next to this file, ../../target/release (repo checkout),
---- then the system loader (ffi.load("peerova")). event.data is copied with ffi.string immediately.
+--- Library lookup: os.getenv("PEEROVA_LIB"), next to this file, the SDK development tree, then the
+--- system loader (ffi.load("peerova")). Event data is copied into a Lua string immediately.
+---
+--- Errors: failing calls raise a Lua error "peerova: <message>" with the native error text
+--- (peerova_last_error); catch with pcall. Threading: a node may be used from several OS threads
+--- (e.g. LÖVE threads with their own Lua state) but never close it while another one polls.
+---
+--- @module peerova
 local ffi = require "ffi"
 
 ffi.cdef [[
@@ -23,6 +30,7 @@ typedef struct {
 peerova_node* peerova_server_start(const char* config_json);
 peerova_node* peerova_client_connect(const char* ticket, const char* config_json);
 int32_t peerova_ticket(peerova_node* node, char* buf, int32_t buf_len);
+int32_t peerova_room_code(peerova_node* node, char* buf, int32_t buf_len);
 int32_t peerova_send(peerova_node* node, uint32_t peer, uint8_t channel, const uint8_t* data, uint32_t len, int32_t reliable);
 int32_t peerova_poll(peerova_node* node, peerova_event* out);
 int32_t peerova_poll_wait(peerova_node* node, peerova_event* out, uint32_t timeout_ms);
@@ -33,6 +41,9 @@ const char* peerova_last_error(void);
 const char* peerova_version(void);
 ]]
 
+--- Module table. Event type numbers (CONNECTED .. CONNECT_FAILED) match the C ABI; poll() returns
+--- them as strings ("connected", "disconnected", "message", "connect_failed").
+--- MAX_UNRELIABLE_PAYLOAD: maximum bytes of one unreliable message.
 local M = {
   CONNECTED = 1, DISCONNECTED = 2, MESSAGE = 3, CONNECT_FAILED = 4,
   MAX_UNRELIABLE_PAYLOAD = 1180,
@@ -56,41 +67,53 @@ local function load_lib()
 end
 
 local C = load_lib()
-M.C = C -- raw C functions, if you need them
+--- Raw C functions (the full C ABI), for advanced use.
+M.C = C
 
 local function last_error()
   local p = C.peerova_last_error()
   return p ~= nil and ffi.string(p) or "unknown error"
 end
 
+--- Version string of the native library, e.g. "0.1.0".
+--- @treturn string
 function M.version() return ffi.string(C.peerova_version()) end
 
---- Encodes a flat Lua table as JSON (strings, numbers, booleans, arrays of strings).
+--- Encodes a config table as JSON: string keys with string / number / boolean values, arrays, and
+--- nested tables such as `share = { name = "...", public = true }`. A string is passed through as-is.
+--- @param t table|string|nil
+--- @treturn string
 local function to_json(t)
   if t == nil then return "{}" end
   if type(t) == "string" then return t end
+  local function str(x)
+    return '"' .. x:gsub('[%c"\\]', function(c) return string.format("\\u%04x", c:byte()) end) .. '"'
+  end
   local function v(x)
     local tx = type(x)
-    if tx == "string" then
-      return '"' .. x:gsub('[%c"\\]', function(c) return string.format("\\u%04x", c:byte()) end) .. '"'
-    elseif tx == "number" or tx == "boolean" then
-      return tostring(x)
-    elseif tx == "table" then
-      local a = {}
-      for i = 1, #x do a[i] = v(x[i]) end
-      return "[" .. table.concat(a, ",") .. "]"
+    if tx == "string" then return str(x) end
+    if tx == "number" or tx == "boolean" then return tostring(x) end
+    if tx == "table" then
+      local parts = {}
+      if #x > 0 then -- array
+        for i = 1, #x do parts[i] = v(x[i]) end
+        return "[" .. table.concat(parts, ",") .. "]"
+      end
+      for k, y in pairs(x) do parts[#parts + 1] = str(tostring(k)) .. ":" .. v(y) end -- object
+      return "{" .. table.concat(parts, ",") .. "}"
     end
     error("unsupported config value type " .. tx)
   end
-  local parts = {}
-  for k, x in pairs(t) do parts[#parts + 1] = v(tostring(k)) .. ":" .. v(x) end
-  return "{" .. table.concat(parts, ",") .. "}"
+  return v(t)
 end
 M.to_json = to_json
 
 local Node = {}
 Node.__index = Node
 
+--- A node (server or client). Fields: `ticket` (servers only). Methods: send, poll, events,
+--- disconnect, peer_count, room_code (servers), close.
+--- @type node
 local function wrap(h, is_server)
   if h == nil then error("peerova: " .. last_error(), 3) end
   h = ffi.gc(h, C.peerova_free)
@@ -104,10 +127,20 @@ local function wrap(h, is_server)
   return self
 end
 
---- Starts a server (blocks up to ~3 s until the ticket is ready). config: table or JSON string.
+--- Starts a server; blocks up to ~3 s until the ticket (node.ticket, "pvt_...") is ready.
+--- @param config table|string|nil keys (all optional): port (default 47000, 0 = random), key_file
+---   (default "server.key"; same key => same ticket), license ("PVA-..."; without it dev mode, max
+---   3 clients), max_ccu, token (shared secret), upnp (default true), private, and for a connect
+---   code app (project id) + share = { name, public, max, mode, region }
+--- @return node; raises "peerova: <native error>" on failure
 function M.server(config) return wrap(C.peerova_server_start(to_json(config)), true) end
 
---- Connects to a ticket; returns immediately — wait for a "connected" / "connect_failed" event.
+--- Starts connecting; wait for a "connected" / "connect_failed" event with poll().
+--- With a ticket it returns immediately; with a 6-character connect code it first looks the code up
+--- on the Peerova website (blocks briefly).
+--- @param ticket string server ticket ("pvt_...") or connect code
+--- @param config table|string|nil `{ token = "...", timeout_ms = 20000 }`
+--- @return node; raises "peerova: <native error>" for a bad ticket or unknown code
 function M.client(ticket, config) return wrap(C.peerova_client_connect(ticket, to_json(config)), false) end
 
 local function handle(self)
@@ -116,7 +149,9 @@ local function handle(self)
 end
 
 --- Sends a Lua string (binary-safe). opts = { channel = 0..255, reliable = true }.
---- reliable=false: datagram, max 1180 bytes, may be lost / reordered.
+--- reliable=true: ordered, retransmitted per channel, any size (chat, RPC, file chunks).
+--- reliable=false: datagram, max 1180 bytes, may be lost / reordered (positions, inputs).
+--- Raises "peerova: <native error>" if rejected (unknown peer, payload too large, closed node).
 function Node:send(peer, data, opts)
   local ch, rel = 0, true
   if opts then
@@ -128,8 +163,10 @@ function Node:send(peer, data, opts)
   end
 end
 
---- Returns the next event table { type = "message"|..., peer, channel, reliable, data } or nil.
---- timeout in seconds (nil/0 = non-blocking).
+--- Returns the next event table { type, peer, channel, reliable, data } or nil.
+--- type is "connected" | "message" | "disconnected" | "connect_failed"; data is the payload for
+--- "message" and the reason text for "disconnected" / "connect_failed".
+--- @tparam[opt] number timeout seconds to wait (nil/0 = non-blocking; > 0 blocks the thread)
 function Node:poll(timeout)
   local h, ev = handle(self), self._ev
   local got
@@ -154,9 +191,29 @@ function Node:events(timeout)
   return function() return self:poll(timeout) end
 end
 
+--- Closes the connection to peer; a "disconnected" event follows. Unknown peers are ignored.
 function Node:disconnect(peer) C.peerova_disconnect(handle(self), peer) end
+
+--- Number of connected peers (server: clients; client: 0 or 1).
 function Node:peer_count() return tonumber(C.peerova_peer_count(handle(self))) end
 
+--- Server only: the 6-character connect code (e.g. "K7Q2XD") assigned by the Peerova website, or
+--- nil while not (yet) available. Only servers started with `app` + `share` get one; it usually
+--- appears a few seconds after start, so call again later. Clients may pass it to peerova.client.
+--- @treturn string|nil
+function Node:room_code()
+  local h = handle(self)
+  local n = C.peerova_room_code(h, nil, 0)
+  if n <= 0 then return nil end
+  local buf = ffi.new("char[?]", n)
+  local m = C.peerova_room_code(h, buf, n)
+  if m <= 0 or m > n then return nil end
+  local code = ffi.string(buf)
+  return code ~= "" and code or nil
+end
+
+--- Disconnects all peers and frees the node (also done by the GC). Idempotent. Never call it
+--- while another thread polls this node.
 function Node:close()
   if self._h ~= nil then
     C.peerova_free(ffi.gc(self._h, nil))

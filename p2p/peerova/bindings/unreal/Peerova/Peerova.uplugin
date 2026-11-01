@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "0.1.0",
 	"FriendlyName": "Peerova",
-	"Description": "Direct P2P networking (no relay, end-to-end encrypted) — Blueprint/C++ subsystem over the peerova C ABI.",
+	"Description": "Direct P2P networking (end-to-end encrypted) — Blueprint/C++ subsystem over the peerova C ABI.",
 	"Category": "Networking",
 	"CreatedBy": "Peerova",
 	"CanContainContent": false,

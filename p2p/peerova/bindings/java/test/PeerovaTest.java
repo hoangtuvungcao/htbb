@@ -15,6 +15,8 @@ public class PeerovaTest {
         key.delete();
         String cfg = "{\"port\":0,\"upnp\":false,\"key_file\":\"" + key.getAbsolutePath().replace("\\", "\\\\") + "\"}";
         try (Peerova.Server srv = Peerova.Server.start(cfg); Peerova.Client cli = Peerova.Client.connect(srv.ticket())) {
+            check(srv.ticket().startsWith("pvt_"), "ticket");
+            check(srv.roomCode() == null, "connect code without app/share config");
             long peer = -1;
             long end = System.currentTimeMillis() + 10000;
             while (peer < 0 && System.currentTimeMillis() < end) {

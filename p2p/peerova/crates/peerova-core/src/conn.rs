@@ -24,9 +24,17 @@ pub const MAX_PAYLOAD: usize = MAX_UDP - crate::crypto::DATA_HDR - crate::crypto
 pub const MAX_DATAGRAM: usize = MAX_PAYLOAD - 3 - 40;
 
 const RECV_WINDOW: u64 = 1 << 20;
+/// Concurrent streams a peer may open (each costs buffers); extra opens are reset.
+pub const MAX_STREAMS: usize = 4096;
+/// Out-of-order bytes buffered per stream (overlapping fragments included).
+const MAX_PENDING_BYTES: usize = 2 * RECV_WINDOW as usize;
+/// Finished-stream ids remembered to ignore late retransmits.
+const FINISHED_MEMORY: usize = 65_536;
 const SEND_BUF: usize = 1 << 20;
 const INIT_CWND: usize = 10 * MAX_PAYLOAD;
 const MIN_CWND: usize = 2 * MAX_PAYLOAD;
+/// Window cap on reliable underlays (fallback route / TCP): 2 MB ≈ 100 Mbit/s at 150 ms.
+const RELIABLE_PATH_CWND_MAX: usize = 2 << 20;
 const ACK_DELAY: Duration = Duration::from_millis(10);
 const INIT_RTT: Duration = Duration::from_millis(250);
 pub const IDLE_TIMEOUT: Duration = Duration::from_secs(30);
@@ -371,6 +379,7 @@ impl SendStream {
 struct RecvStream {
     read: u64,
     pending: BTreeMap<u64, Vec<u8>>,
+    pending_bytes: usize,
     fin: Option<u64>,
     fin_delivered: bool,
     consumed: u64,
@@ -382,6 +391,7 @@ impl Default for RecvStream {
         RecvStream {
             read: 0,
             pending: BTreeMap::new(),
+            pending_bytes: 0,
             fin: None,
             fin_delivered: false,
             consumed: 0,
@@ -401,8 +411,9 @@ impl RecvStream {
             data.truncate(self.advertised.saturating_sub(off) as usize);
         }
         if off + data.len() as u64 > self.read && !data.is_empty() {
-            let keep = self.pending.get(&off).is_none_or(|d| d.len() < data.len());
-            if keep {
+            let old = self.pending.get(&off).map_or(0, |d| d.len());
+            if data.len() > old && self.pending_bytes - old + data.len() <= MAX_PENDING_BYTES {
+                self.pending_bytes = self.pending_bytes - old + data.len();
                 self.pending.insert(off, data);
             }
         }
@@ -412,6 +423,7 @@ impl RecvStream {
                 break;
             }
             let d = self.pending.remove(&k).unwrap();
+            self.pending_bytes -= d.len();
             let dend = k + d.len() as u64;
             if dend > self.read {
                 out.extend_from_slice(&d[(self.read - k) as usize..]);
@@ -474,6 +486,10 @@ pub struct Stats {
 }
 
 pub struct Conn {
+    /// Path runs over a reliable, ordered underlay (TCP fallback / fallback route):
+    /// no delay-based backoff (its jitter isn't our queue) and no reorder-based loss
+    /// detection (multi-lane striping reorders but never loses).
+    reliable_path: bool,
     is_client: bool,
     next_pn: u64,
     sent: BTreeMap<u64, Sent>,
@@ -499,6 +515,7 @@ pub struct Conn {
     recv: HashMap<u32, RecvStream>,
     order: VecDeque<u32>,
     finished: std::collections::HashSet<u32>,
+    finished_order: VecDeque<u32>,
     ctrl: VecDeque<Frame>,
     datagrams: VecDeque<(u32, Vec<u8>)>,
     dgram_seq: u32,
@@ -528,6 +545,7 @@ impl Conn {
             min_rtt: None,
             latest_rtt: INIT_RTT,
             last_delay_cut: None,
+            reliable_path: false,
             pto_count: 0,
             probes: 0,
             loss_time: None,
@@ -544,6 +562,7 @@ impl Conn {
             recv: HashMap::new(),
             order: VecDeque::new(),
             finished: Default::default(),
+            finished_order: Default::default(),
             ctrl: VecDeque::new(),
             datagrams: VecDeque::new(),
             dgram_seq: 0,
@@ -621,8 +640,19 @@ impl Conn {
         }
     }
 
+    fn mark_finished(&mut self, id: u32) {
+        if self.finished.insert(id) {
+            self.finished_order.push_back(id);
+            if self.finished_order.len() > FINISHED_MEMORY {
+                if let Some(old) = self.finished_order.pop_front() {
+                    self.finished.remove(&old);
+                }
+            }
+        }
+    }
+
     pub fn stream_reset(&mut self, id: u32) {
-        self.finished.insert(id);
+        self.mark_finished(id);
         self.send.remove(&id);
         self.recv.remove(&id);
         self.order.retain(|&x| x != id);
@@ -663,6 +693,14 @@ impl Conn {
     }
 
     /// Queue an ack-eliciting keepalive (also confirms a new path).
+    /// Tell the transport whether the current path is a reliable underlay (see field doc).
+    pub fn set_reliable_path(&mut self, on: bool) {
+        if self.reliable_path != on {
+            self.reliable_path = on;
+            self.last_delay_cut = None;
+        }
+    }
+
     pub fn ping(&mut self) {
         self.ctrl.push_back(Frame::Ping);
     }
@@ -714,6 +752,11 @@ impl Conn {
                         {
                             continue; // stale frame for a stream we already finished
                         }
+                        if !self.is_local(id) && self.recv.len() >= MAX_STREAMS {
+                            self.mark_finished(id);
+                            self.ctrl.push_back(Frame::Reset { id });
+                            continue; // too many concurrent streams: refuse this one
+                        }
                         self.recv.insert(id, RecvStream::default());
                         self.send.entry(id).or_default();
                         if !self.is_local(id) {
@@ -739,7 +782,7 @@ impl Conn {
                     }
                 }
                 Frame::Reset { id } => {
-                    self.finished.insert(id);
+                    self.mark_finished(id);
                     let existed = self.send.remove(&id).is_some() | self.recv.remove(&id).is_some();
                     self.order.retain(|&x| x != id);
                     if existed {
@@ -773,7 +816,7 @@ impl Conn {
         let recv_done = self.recv.get(&id).is_none_or(|r| r.fin_delivered);
         let send_done = self.send.get(&id).is_none_or(|s| s.done());
         if recv_done && send_done {
-            self.finished.insert(id);
+            self.mark_finished(id);
             self.recv.remove(&id);
             self.send.remove(&id);
             self.order.retain(|&x| x != id);
@@ -823,7 +866,11 @@ impl Conn {
                 // NewReno: no growth for packets sent before recovery started,
                 // and no growth while the bottleneck queue is building.
                 if !queueing && self.recovery_start.is_none_or(|r| sent.time > r) {
-                    if self.cwnd < self.ssthresh {
+                    if self.cwnd < self.ssthresh
+                        || (self.reliable_path && self.cwnd < RELIABLE_PATH_CWND_MAX)
+                    {
+                        // Reliable underlay: keep exponential growth up to a cap — linear
+                        // growth would take ~200 RTTs to fill a 100+ ms path.
                         self.cwnd += sent.size;
                     } else {
                         // Path not queueing: probe faster than Reno (≈4 MSS/RTT).
@@ -863,6 +910,12 @@ impl Conn {
         let Some(min) = self.min_rtt else {
             return false;
         };
+        if self.reliable_path {
+            // Reliable underlay: its own jitter is large (30–40 ms) but harmless; only
+            // react once our queue has roughly doubled the base RTT (self-inflicted bloat).
+            let srtt = self.srtt.unwrap_or(self.latest_rtt);
+            return srtt > min + min.max(Duration::from_millis(60));
+        }
         let target = (min / 4)
             .max(Duration::from_millis(5))
             .min(Duration::from_millis(20));
@@ -890,6 +943,9 @@ impl Conn {
     }
 
     fn loss_delay(&self) -> Duration {
+        if self.reliable_path {
+            return (self.rtt() * 2).max(Duration::from_millis(50));
+        }
         (self.rtt() * 9 / 8).max(Duration::from_millis(2))
     }
 
@@ -901,7 +957,7 @@ impl Conn {
         let delay = self.loss_delay();
         let mut lost = vec![];
         for (&pn, sent) in self.sent.range(..largest) {
-            if largest - pn >= 3 || sent.time + delay <= now {
+            if (!self.reliable_path && largest - pn >= 3) || sent.time + delay <= now {
                 lost.push(pn);
             } else {
                 let t = sent.time + delay;
@@ -922,7 +978,14 @@ impl Conn {
         }
         if congestion {
             self.recovery_start = Some(now);
-            self.cwnd = (self.cwnd / 2).max(MIN_CWND);
+            // Reliable underlay: a "loss" is a stale drop or late arrival, not a full
+            // bottleneck queue (TCP below already adapts) → back off gently.
+            self.cwnd = if self.reliable_path {
+                self.cwnd - self.cwnd / 4
+            } else {
+                self.cwnd / 2
+            }
+            .max(MIN_CWND);
             self.ssthresh = self.cwnd;
         }
     }
@@ -1181,6 +1244,39 @@ impl Conn {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn peer_cannot_exhaust_memory() {
+        let now = Instant::now();
+        let mut c = Conn::new(false, now);
+        // Many streams opened by the peer: capped.
+        for i in 0..(MAX_STREAMS as u32 + 500) {
+            let mut b = vec![];
+            Frame::Stream {
+                id: i * 2 + 1,
+                off: 5,
+                fin: false,
+                data: vec![1; 10],
+            }
+            .encode(&mut b);
+            c.on_packet(i as u64, &b, now);
+        }
+        assert!(c.recv.len() <= MAX_STREAMS);
+        // Overlapping out-of-order fragments in one stream: bounded buffer.
+        let mut c = Conn::new(false, now);
+        for i in 0..20_000u64 {
+            let mut b = vec![];
+            Frame::Stream {
+                id: 1,
+                off: 1 + i * 37,
+                fin: false,
+                data: vec![0; 1100],
+            }
+            .encode(&mut b);
+            c.on_packet(i, &b, now);
+        }
+        assert!(c.recv[&1].pending_bytes <= MAX_PENDING_BYTES);
+    }
 
     #[test]
     fn rangeset_ops() {

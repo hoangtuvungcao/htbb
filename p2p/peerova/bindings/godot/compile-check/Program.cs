@@ -34,8 +34,43 @@ static class Program
         }
         long peers = host.GetPeerCount();
         host._ExitTree(); join._ExitTree();
+        System.IO.File.Delete(Godot.ProjectSettings.GlobalizePath(host.KeyFile));
         bool ok = reply == "ack:hello godot" && msgs == 1 && peers == 1;
         Console.WriteLine(ok ? "PASS (PeerovaNode host/join via stub _Process loop)" : $"FAIL ticket={ticket != null} msgs={msgs} reply={reply} peers={peers}");
+        if (!ok) return 1;
+        return RunNetDemo();
+    }
+
+    // examples/net_demo/NetDemo.cs: host + auto-moving client for ~2 s, both must see positions; host gets chat.
+    static int RunNetDemo()
+    {
+        var host = new NetDemo { Upnp = false, AutoMove = true };
+        host._Ready();
+        NetDemo client = null;
+        var sw = Stopwatch.StartNew();
+        long connectedAt = -1;
+        while (sw.ElapsedMilliseconds < 15000)
+        {
+            host._Process(0.016); host.Net._Process(0.016);
+            if (client == null && host.Net.GetTicket() != "")
+            {
+                client = new NetDemo { JoinTicket = host.Net.GetTicket(), AutoMove = true };
+                client._Ready();
+            }
+            if (client != null)
+            {
+                client._Process(0.016); client.Net._Process(0.016);
+                if (connectedAt < 0 && client.Net.GetPeerCount() > 0) connectedAt = sw.ElapsedMilliseconds;
+                if (connectedAt >= 0 && sw.ElapsedMilliseconds - connectedAt > 2000) break;
+            }
+            Thread.Sleep(16);
+        }
+        int hostPos = host.PositionsReceived, clientPos = client?.PositionsReceived ?? 0, chat = host.ChatReceived;
+        client?.Net._ExitTree(); host.Net._ExitTree();
+        System.IO.File.Delete(Godot.ProjectSettings.GlobalizePath(host.Net.KeyFile));
+        bool ok = hostPos > 5 && clientPos > 5 && chat == 1;
+        Console.WriteLine(ok ? $"PASS (NetDemo example: host got {hostPos} positions + chat, client got {clientPos} positions)"
+                             : $"FAIL NetDemo hostPos={hostPos} clientPos={clientPos} chat={chat}");
         return ok ? 0 : 1;
     }
 }

@@ -1,2 +1,2 @@
--I../../crates/peerova-ffi/include
+-I.
 -std=c11

@@ -18,7 +18,10 @@ static class Program
         {
             using var server = Server.Start(new ServerConfig { Port = 0, Upnp = false, KeyFile = key });
             Console.WriteLine($"ticket {server.Ticket.Substring(0, Math.Min(24, server.Ticket.Length))}...");
-            using var client = Client.Connect(server.Ticket);
+            if (server.RoomCode != null) return Fail("connect code without app/share config");
+            string shareJson = new ServerConfig { App = "prj_x", Share = new ShareConfig { Name = "n", Public = true, Max = 4 } }.ToJson();
+            if (shareJson != "{\"app\":\"prj_x\",\"share\":{\"name\":\"n\",\"public\":true,\"max\":4}}") return Fail("share json: " + shareJson);
+            using var client = Client.Connect(server.Ticket, new ClientConfig { TimeoutMs = 20000 });
 
             uint peer = 0;
             var sw = Stopwatch.StartNew();

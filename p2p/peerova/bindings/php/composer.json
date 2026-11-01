@@ -1,6 +1,6 @@
 {
     "name": "peerova/peerova",
-    "description": "Direct P2P networking (no relay, end-to-end encrypted) for PHP: ext/ffi binding over libpeerova + a pure-PHP sidecar fallback (peerova stdio).",
+    "description": "Direct P2P networking (end-to-end encrypted) for PHP: ext/ffi binding over libpeerova + a pure-PHP sidecar fallback (peerova stdio).",
     "type": "library",
     "license": "proprietary",
     "require": { "php": ">=7.4", "ext-json": "*" },

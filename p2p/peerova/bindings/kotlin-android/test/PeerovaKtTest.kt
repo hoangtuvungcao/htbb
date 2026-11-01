@@ -16,6 +16,7 @@ fun main() {
     val cfg = mapOf("port" to 0, "upnp" to false, "key_file" to key.absolutePath)
     PeerovaServer.start(cfg).use { srv ->
         check(srv.ticket.startsWith("pvt_"), "ticket")
+        check(srv.roomCode == null, "connect code without app/share config")
         PeerovaClient.connect(srv.ticket).use { cli ->
             // 1) blocking poll API
             val peer = cli.events(10_000).first { it !is PeerovaEvent.Message }.let {

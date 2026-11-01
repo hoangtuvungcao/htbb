@@ -1,10 +1,10 @@
-// Peerova Unreal module. Native lib layout (see Source/ThirdParty/PeerovaLibrary/README.md):
+// Peerova Unreal module. Native library layout (see Source/ThirdParty/PeerovaLibrary/README.md):
 //   ThirdParty/PeerovaLibrary/include/peerova.h
-//   ThirdParty/PeerovaLibrary/lib/Win64/peerova.dll + peerova.dll.lib   (x86_64-pc-windows-msvc)
+//   ThirdParty/PeerovaLibrary/lib/Win64/peerova.dll + peerova.dll.lib   (MSVC import library)
 //   ThirdParty/PeerovaLibrary/lib/Linux/libpeerova.so
 //   ThirdParty/PeerovaLibrary/lib/Mac/libpeerova.dylib                    (universal, id @rpath/libpeerova.dylib)
 //   ThirdParty/PeerovaLibrary/lib/Android/<arm64-v8a|armeabi-v7a|x86_64>/libpeerova.so  (packaged by Peerova_APL.xml)
-//   ThirdParty/PeerovaLibrary/lib/IOS/libpeerova.a                        (static, aarch64-apple-ios)
+//   ThirdParty/PeerovaLibrary/lib/IOS/libpeerova.a                        (static, arm64)
 using System.IO;
 using UnrealBuildTool;
 
@@ -25,8 +25,8 @@ public class Peerova : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			string Dir = Path.Combine(LibRoot, "Win64");
-			// Import library produced by `cargo build --release -p peerova-ffi --target x86_64-pc-windows-msvc`
-			// (target/x86_64-pc-windows-msvc/release/peerova.dll.lib). The GNU target's libpeerova.dll.a is not MSVC-compatible.
+			// MSVC import library for peerova.dll (generate it from lib/Win64/peerova.def if you only have the DLL:
+			// `lib /def:peerova.def /machine:x64 /out:peerova.dll.lib`). A MinGW libpeerova.dll.a does not work here.
 			PublicAdditionalLibraries.Add(Path.Combine(Dir, "peerova.dll.lib"));
 			PublicDelayLoadDLLs.Add("peerova.dll");
 			// Copied next to the executable (packaged game) / plugin binaries (editor).
@@ -35,8 +35,8 @@ public class Peerova : ModuleRules
 		else if (Target.Platform == UnrealTargetPlatform.Linux)
 		{
 			string Dir = Path.Combine(LibRoot, "Linux");
-			// The Rust cdylib has no SONAME: link via -L/-l (not by full path) so DT_NEEDED is
-			// just "libpeerova.so" and the copy next to the binary is found through $ORIGIN.
+			// Link via -L/-l (not by full path) so DT_NEEDED is just "libpeerova.so" and the
+			// copy next to the binary is found through $ORIGIN.
 			PublicSystemLibraryPaths.Add(Dir);
 			PublicSystemLibraries.Add("peerova");
 			RuntimeDependencies.Add("$(BinaryOutputDir)/libpeerova.so", Path.Combine(Dir, "libpeerova.so"));
@@ -49,8 +49,8 @@ public class Peerova : ModuleRules
 		}
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
-			// UBT links per architecture; each .so must carry SONAME libpeerova.so
-			// (build with RUSTFLAGS="-C link-arg=-Wl,-soname,libpeerova.so").
+			// UBT links per architecture by full path; each .so must carry SONAME libpeerova.so
+			// (the Android builds from Peerova do), otherwise the absolute path ends up in libUnreal.so.
 			foreach (string Abi in new string[] { "arm64-v8a", "armeabi-v7a", "x86_64" })
 			{
 				string So = Path.Combine(LibRoot, "Android", Abi, "libpeerova.so");

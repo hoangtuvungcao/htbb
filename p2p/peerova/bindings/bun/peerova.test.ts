@@ -1,4 +1,4 @@
-// bun test   (from bindings/bun; needs target/release/libpeerova.so or PEEROVA_LIB)
+// bun test   (from bindings/bun; needs the native library — see README — or PEEROVA_LIB)
 import { expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";

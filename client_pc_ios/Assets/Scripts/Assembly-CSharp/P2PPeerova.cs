@@ -1,46 +1,19 @@
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
 
 /// <summary>
-/// Nhanh p2p: client Unity PC noi cong game qua Peerova P2P (peerova.dll, C ABI peerova_tunnel_*, trong tien trinh -
+/// Nhanh p2p: client Unity PC noi cong game qua Peerova P2P bang C# binding Peerova (Peerova.Tunnel trong
+/// Assets/Plugins/Peerova/Peerova.cs = p2p/peerova/bindings/csharp/Peerova.cs; native peerova.dll trong tien trinh,
 /// khong tien trinh phu). Bat khi co ticket: tham so dong lenh -htbbP2PTicket pvt_... > bien HTBB_P2P_TICKET >
 /// P2P_TICKET= trong Resources/htbb_phat_hanh.txt (BuildCli dong vao tu -htbbP2PTicket / bien P2P_TICKET).
-/// Native: Assets/Plugins/x86_64/peerova.dll = p2p/out/dist/windows-x86_64-win7/peerova.dll (chay tu Windows 7 / Server
-/// 2012 toi 11). Chi Windows / Linux / macOS standalone; iOS / Android Unity khong bat (khong co ticket thi khong goi native).
-/// Loi P2P: nem Exception (Session_ME bao onConnectionFail), KHONG lui ve TCP thang. CHUA chay thu trong Unity.
+/// Native: Assets/Plugins/x86_64/peerova.dll = p2p/out/dist/windows-x86_64-win7/peerova.dll (Windows 7 / Server 2012
+/// toi 11). Chi standalone (Windows / Linux / macOS) va Editor; iOS / Android Unity khong bat.
+/// Loi P2P: nem Exception (Session_ME -> onConnectionFail), KHONG lui ve TCP thang. CHUA chay trong Unity (chi kiem
+/// tren .NET 8 voi cung tep).
 /// </summary>
 public static class P2PPeerova
 {
-	private const string LIB = "peerova";
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern IntPtr peerova_tunnel_client(byte[] ticket, byte[] configJson);
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern int peerova_tunnel_wait(IntPtr t, uint timeoutMs);
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern int peerova_tunnel_state(IntPtr t);
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern int peerova_tunnel_local_port(IntPtr t, int index);
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern int peerova_tunnel_error(IntPtr t, byte[] buf, int len);
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern int peerova_tunnel_next_log(IntPtr t, byte[] buf, int len);
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern void peerova_tunnel_free(IntPtr t);
-
-	[DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-	private static extern IntPtr peerova_last_error();
-
-	private const int UP = 1, DOWN = 2;
 	private static readonly object khoa = new object();
-	private static IntPtr tunnel = IntPtr.Zero;
+	private static Peerova.Tunnel tunnel;
 	private static int congXa = -1;
 	private static string ticketDaDoc;
 
@@ -81,76 +54,53 @@ public static class P2PPeerova
 #endif
 	}
 
-	private static byte[] z(string s)
-	{
-		return Encoding.UTF8.GetBytes(s + "\0");
-	}
-
-	private static string chuoi(Func<byte[], int, int> f)
-	{
-		int can = f(null, 0);
-		if (can <= 0)
-		{
-			return null;
-		}
-		byte[] b = new byte[can];
-		f(b, can);
-		return Encoding.UTF8.GetString(b, 0, can - 1);
-	}
-
 	private static void xaLog()
 	{
 		string l;
-		IntPtr t = tunnel;
-		while ((l = chuoi((b, n) => peerova_tunnel_next_log(t, b, n))) != null)
+		while (tunnel != null && (l = tunnel.NextLog()) != null)
 		{
 			UnityEngine.Debug.Log("[P2P] " + l);
 		}
 	}
 
-	/// <summary>Cong 127.0.0.1 da noi P2P toi cong game <paramref name="cong"/> (chan toi 30 s).</summary>
+	/// <summary>Cong 127.0.0.1 da noi P2P toi cong game <paramref name="cong"/> (goi tu luong mang, chan toi 30 s).</summary>
 	public static int congCucBo(int cong)
 	{
 		lock (khoa)
 		{
-			if (tunnel != IntPtr.Zero && (congXa != cong || peerova_tunnel_state(tunnel) == DOWN))
+			if (tunnel != null && (congXa != cong || tunnel.State == Peerova.TunnelState.Down))
 			{
 				xaLog();
-				peerova_tunnel_free(tunnel);
-				tunnel = IntPtr.Zero;
+				tunnel.Dispose();
+				tunnel = null;
 			}
-			if (tunnel == IntPtr.Zero)
+			if (tunnel == null)
 			{
 				try
 				{
-					tunnel = peerova_tunnel_client(z(ticket()), z("{\"forward\":[\"tcp:0=" + cong + "\"],\"timeout_ms\":20000}"));
+					tunnel = Peerova.Tunnel.Client(ticket(), "{\"forward\":[\"tcp:0=" + cong + "\"],\"timeout_ms\":20000}");
 				}
 				catch (Exception e)
 				{
-					loiCuoi = "Không khởi động được kết nối P2P (thiếu peerova.dll?): " + e.Message;
-					throw new Exception(loiCuoi);
-				}
-				if (tunnel == IntPtr.Zero)
-				{
-					loiCuoi = "Không khởi động được kết nối P2P: " + Marshal.PtrToStringAnsi(peerova_last_error());
+					loiCuoi = "Không khởi động được kết nối P2P" + (e is DllNotFoundException ? " (thiếu peerova.dll)" : "") + ": " + e.Message;
+					UnityEngine.Debug.LogError("[P2P] " + loiCuoi);
 					throw new Exception(loiCuoi);
 				}
 				congXa = cong;
 			}
-			int st = peerova_tunnel_wait(tunnel, 30000);
+			Peerova.TunnelState st = tunnel.Wait(30000);
 			xaLog();
-			if (st != UP)
+			if (st != Peerova.TunnelState.Up)
 			{
-				IntPtr t = tunnel;
-				string e = chuoi((b, n) => peerova_tunnel_error(t, b, n));
+				string e = tunnel.Error;
 				loiCuoi = "Không kết nối P2P được tới máy chủ" + (string.IsNullOrEmpty(e) ? "" : ": " + e);
-				peerova_tunnel_free(tunnel);
-				tunnel = IntPtr.Zero;
+				tunnel.Dispose();
+				tunnel = null;
 				UnityEngine.Debug.LogError("[P2P] " + loiCuoi);
 				throw new Exception(loiCuoi);
 			}
 			loiCuoi = "";
-			return peerova_tunnel_local_port(tunnel, 0);
+			return tunnel.LocalPort(0);
 		}
 	}
 }

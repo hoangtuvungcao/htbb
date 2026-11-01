@@ -1,4 +1,4 @@
-/* peerova — direct P2P networking SDK (no relay, end-to-end encrypted).
+/* peerova — direct P2P networking SDK (end-to-end encrypted).
  * C ABI, stable across languages. Thread-safe per node (internal mutex).
  * Link: libpeerova.so / peerova.dll / libpeerova.dylib (or the static lib).
  */
@@ -28,15 +28,19 @@ typedef struct {
 } peerova_event;
 
 /* Server. config_json (may be NULL):
- * {"port":47000,"key_file":"server.key","license":"PVA-...","license_server":"https://...",
- *  "authority_pubkey":"<b64>","supernodes":["host:port"],"supernode_mode":false,
- *  "private":false,"token":"secret","max_ccu":100,"upnp":true,
- *  "tcp_fallback":true,"auto_supernode":true,"rendezvous":true | "https://your.site"}
+ * {"port":47000,"key_file":"server.key","license":"PVA-...","token":"secret",
+ *  "max_ccu":100,"upnp":true}
  * Blocks until the ticket is ready (≤ ~3 s). NULL on error (see peerova_last_error). */
 peerova_node* peerova_server_start(const char* config_json);
 
-/* Client. config_json (may be NULL): {"token":"secret","timeout_ms":20000,"supernodes":[...],"force_tcp":false}
- * Returns immediately; wait for PEEROVA_EVENT_CONNECTED / CONNECT_FAILED via peerova_poll. */
+/* Client. ticket = a ticket (pvt_...) or a 6-character connect code ("K7Q2XD").
+ * config_json (may be NULL): {"token":"secret","timeout_ms":20000}
+ * Connects directly when possible; otherwise an automatic encrypted fallback route is used
+ * and the connection upgrades to direct in the background as soon as it can.
+ * With a ticket it returns immediately; with a connect code it first looks the code up
+ * (a short blocking call, ≤ a few seconds) and returns NULL if the code is unknown or
+ * expired (see peerova_last_error). Then wait for PEEROVA_EVENT_CONNECTED /
+ * CONNECT_FAILED via peerova_poll. */
 peerova_node* peerova_client_connect(const char* ticket, const char* config_json);
 
 /* Copies the NUL-terminated ticket into buf. Returns required size incl. NUL (0 if none). */
