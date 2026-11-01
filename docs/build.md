@@ -248,6 +248,32 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
+### Bản 0.9.30 (`BAN=930`: bảng Trang bị thú, ô Cuốc, mặc cuốc mới = thay cuốc cũ)
+
+Client `PHIEN_BAN=0.9.30-opentest` (`BAN = 0*10000 + 9*100 + 30`; `MIDlet-Version` 0.9.30; gồm vá 0.9.29 Arcanine gác cổng
+mở menu máy chủ). Chủ dự án: "APK và JAR không
+có mấy cái đó": APK / J2ME không có chỗ XEM thú đang mặc gì, không THÁO / THAY được đồ thú, cuốc đang mặc không thấy.
+Trước bản này: màn Nhân vật (APK / PC) không đọc `wearingAnimal` ở đâu cả (ô Thú cưỡi chỉ mở danh sách thú); J2ME Bản
+thân › Trang bị thú = lưới 10 ô không nhãn của cửa sổ cũ, chọn ô chỉ hiện chữ (không Tháo / Thay); ô Cuốc (type 13) không
+có trong 12 ô của màn Nhân vật.
+
+1. `game.pokemon.TrangBiThu` (chung APK / PC / J2ME): hàng Thú cưỡi + Đi theo (đổi thú / xuống thú) và 6 ô đồ thú (Yên
+   cương 18, Giáp cưỡi 14, Mũ cưỡi 16, Vòng chân 15, Bàn đạp 17, Skin 30) với món đang mặc. Chọn ô có đồ = Xem / Tháo /
+   Thay; ô trống = Trang bị; Thay = hành trang lọc đúng loại (món thiếu cấp ghi "Cần cấp N"). Tháo khi hành trang đầy =
+   báo ngay, không gửi. Máy chạm: thẻ lệnh `MenuNguCanh`; J2ME phím: lên / xuống, phím giữa Chọn, phím mềm Đóng / Lùi,
+   menu chữ. Gói cũ: lệnh 29 (mặc / thay / tháo) - không gói mới.
+2. Lối vào: Menu › Pokémon › tab Thú (nút "Trang bị thú" dưới sân khấu) + Trang bị › ô Thú cưỡi (nút trên hàng ô thú);
+   thẻ đồ thú trong hành trang ("Mặc cho thú" + "Đồ thú"), thẻ đồ thú đang mặc ("Tháo" + "Thay"); J2ME Bản thân › Trang bị
+   thú, ô dưới giữa của tab Trang bị cũ (menu thêm "Trang bị thú", "Cuốc: xem", "Cuốc: tháo ra"), tab Trang bị thú cũ
+   (chọn ô = mở bảng ở ô đó).
+3. Ô Cuốc (`ManNhanVat.O_CUOC`, LOAI_O {13}): ô nhỏ trên sân khấu tab Trang bị khi đang mặc / có cuốc trong túi; chạm =
+   hành trang lọc cuốc (món đang mặc đầu -> thẻ Tháo). Thẻ cuốc trong túi: "Mặc" (thiếu cấp: "Cần cấp N để dùng.").
+4. Máy chủ (tương thích client >= 0.9.27, cùng gói 29): mặc cuốc khi đã có cuốc = THAY (`DungVatPham.truocDoiCuoc` +
+   `exchangeItem`, cuốc cũ về túi, cả khi túi đầy; `itemAx` lệch ở bộ mặc khác cũng gỡ), bỏ "Không thể sử dụng cùng lúc
+   2 loại cuốc"; món cấp cao bảo "Cần cấp N để dùng X." (trước: chỉ `System.out`); tháo đồ thú báo "Đã tháo X.".
+   Kiểm: `server/test/KiemDoiCuocTrangBiThu` (+ `KiemDungVatPham`), `client_pc/test/KiemTrangBiThu` (chạm + `-Dhtbb.khongCham`:
+   APK 1080x2400 / 1080x1920 / 720x1600, PC, J2ME 240x320 / 320x240).
+
 ### Bản 0.9.27 (`BAN=927`: ô xu trong giao dịch 1-1 kiểu NRO)
 
 Client `PHIEN_BAN=0.9.27-opentest` (`BAN = 0*10000 + 9*100 + 27`; `MIDlet-Version` 0.9.27). **Cần máy chủ có
@@ -463,7 +489,8 @@ Bảng lối vào sau khi gọn (cảm ứng = PC / APK; phím = J2ME, phím m�
 | Sự kiện (mùa, Quà hoạt động, Lịch đăng nhập, Nhiệm vụ tuần, Cúp PvP tuần, Hầm ngục) | Menu › Sự kiện | Quầy đổi thưởng › Sổ tay; J2ME Nhiệm vụ › Sự kiện |
 | Tự động đánh (cài đặt) | Menu › Tự động đánh | nhấn giữ AUTO / nút Tự động; J2ME hàng đầu › Tự động đánh, Menu nhanh (#) |
 | Cài đặt | Menu › Cài đặt | HUD bánh răng (chủ dự án 0.9.9); J2ME Cài đặt, Menu nhanh |
-| Thú | Menu › Pokémon › tab Thú (+ ô Thú cưỡi / Đi theo của Trang bị) | J2ME Bản thân › Trang bị thú |
+| Thú | Menu › Pokémon › tab Thú (+ ô Thú cưỡi / Đi theo của Trang bị) | J2ME Bản thân › Trang bị thú (0.9.30: bảng `TrangBiThu`) |
+| Trang bị thú (xem / tháo / thay đồ thú) | Menu › Pokémon › tab Thú › nút Trang bị thú (0.9.30) | Trang bị › ô Thú cưỡi; thẻ đồ thú trong hành trang; J2ME Bản thân › Trang bị thú |
 | Huấn luyện | Menu › Pokémon › Trang bị › nút Huấn luyện | J2ME Bản thân › Huấn luyện |
 | Bản đồ lớn | HUD Bản đồ (PC) / chạm bản đồ nhỏ (APK) | J2ME Cài đặt › Bản đồ lớn |
 | Pokédex, Cửa hàng, Đội/Bạn bè, Hệ sinh thái, Thư/Quà, Xếp hạng | ô Menu cùng tên | J2ME hàng Khác / Cửa hàng |
