@@ -73,6 +73,20 @@ if has linux; then
         "$R/libpeerova.a" -lpthread -ldl -lm -Wl,--gc-sections -Wl,--exclude-libs,ALL -s -o "$O/libpeerova_jni.so"
     kiem_license "$O/libpeerova_jni.so"; kiem_license "$O/peerova"
     ls -la "$O"
+    # Ban tuong thich glibc 2.17 (CentOS 7 / Ubuntu 18.04+) cho goi may chu: can zig + cargo-zigbuild
+    # (zig: python3 -m venv ~/.local/share/zigvenv && ~/.local/share/zigvenv/bin/pip install ziglang)
+    if command -v zig >/dev/null 2>&1 && command -v cargo-zigbuild >/dev/null 2>&1; then
+        echo "== linux-x86_64-compat (glibc 2.17)"
+        LT=x86_64-unknown-linux-gnu
+        (cd "$SRC" && CARGO_TARGET_DIR=$TGT-compat cargo zigbuild --release --target $LT.2.17 -p peerova-ffi -p peerova-cli)
+        RC=$TGT-compat/$LT/release; OC=$DIST/linux-x86_64-compat; mkdir -p "$OC"; cp "$RC/peerova" "$OC/"
+        zig cc -target x86_64-linux-gnu.2.17 -O2 -shared -fPIC "$JNI_C" -I"$JNI_INC" -I"$JNI_INC/linux" -I"$INC" \
+            "$RC/libpeerova.a" -lpthread -ldl -lm -lunwind -Wl,--gc-sections -s -o "$OC/libpeerova_jni.so"
+        kiem_license "$OC/libpeerova_jni.so"
+        echo "  glibc toi da: $(objdump -T "$OC/libpeerova_jni.so" | grep -oE 'GLIBC_[0-9.]+' | sort -V | tail -1)"
+    else
+        echo "  (bo qua ban glibc 2.17: thieu zig / cargo-zigbuild)"
+    fi
 fi
 
 build_win() { # $1 = win7|win10
