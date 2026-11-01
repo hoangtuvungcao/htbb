@@ -55,13 +55,19 @@ public final class ManNhanVat extends Screen {
 
     // ---- ô trang bị: tên, các loại (ItemTemplate.type) nhận, huy hiệu: 1 = ô trên (viTriVe 1), 2 = ô dưới
     static final String[] TEN_O = {"Đồ cầm tay", "Khăn quàng", "Băng đô", "Đai", "Vòng cổ", "Huy hiệu", "Huy hiệu 2", "Găng đấm",
-        "Lông vũ", "Phiến đá hệ", "Ruy băng", "Thú cưỡi"};
-    static final int[][] LOAI_O = {{3, 4, 5, 6, 7}, {0}, {2}, {1}, {9}, {8}, {8}, {11}, {10}, {12}, {19}, {}};
+        "Lông vũ", "Phiến đá hệ", "Ruy băng", "Thú cưỡi", "Cuốc đào mỏ"};
+    static final int[][] LOAI_O = {{3, 4, 5, 6, 7}, {0}, {2}, {1}, {9}, {8}, {8}, {11}, {10}, {12}, {19}, {}, {13}};
     static final int O_THU = 11;
+    /**
+     * 0.9.29 (chủ dự án: "APK và JAR không có mấy cái đó"): ô CUỐC (type 13, máy chủ Char.itemAx, ô mặc 9) - trước đây màn
+     * Nhân vật không có ô này: cuốc đang mặc không thấy ở đâu, không tháo được. Ô nhỏ góc phải dưới sân khấu (chỉ khi đang
+     * mặc hoặc có cuốc trong hành trang): chạm = hành trang lọc cuốc (món đang mặc đứng đầu -> thẻ Tháo).
+     */
+    public static final int O_CUOC = 12;
     static final String NUT_KHAC = "Bỏ · Khoá · Tách";
     /** bóng mờ ô trống theo loại ô (BieuTuong) */
     static final int[] HINH_O = {BieuTuong.DA, BieuTuong.KHAN, BieuTuong.MU, BieuTuong.DAI, BieuTuong.VONG_CO, BieuTuong.HUY_HIEU,
-        BieuTuong.HUY_HIEU, BieuTuong.GANG, BieuTuong.LONG_VU, BieuTuong.DA, BieuTuong.QUA, BieuTuong.POKEBALL};
+        BieuTuong.HUY_HIEU, BieuTuong.GANG, BieuTuong.LONG_VU, BieuTuong.DA, BieuTuong.QUA, BieuTuong.POKEBALL, BieuTuong.NGUYEN_LIEU};
     /** ô đang nhấn giữ (nhãn) */
     static int nhanO = -1, nhanX, nhanY;
     static final String[] GOI_Y = {
@@ -76,7 +82,8 @@ public final class ManNhanVat extends Screen {
         "Lông vũ tốc độ: rơi từ Pokémon bay, phần thưởng nhiệm vụ.",
         "Phiến đá hệ: khảo cổ, rơi từ trùm.",
         "Ruy băng: sự kiện, cửa hàng đặc biệt.",
-        "Thú cưỡi: nhận từ nhiệm vụ, trứng Pokémon, cửa hàng đặc biệt."
+        "Thú cưỡi: nhận từ nhiệm vụ, trứng Pokémon, cửa hàng đặc biệt.",
+        "Cuốc đào mỏ: dùng ở khu mỏ; nhận từ cửa hàng, sự kiện. Mặc cuốc mới sẽ tự thay cuốc cũ."
     };
 
     public static ManNhanVat gI() {
@@ -662,10 +669,15 @@ public final class ManNhanVat extends Screen {
         }
         float z = Math.max(1f, Math.min(3.6f, Math.min((st - 8) / 30f, (hCot - 8) / 38f)));
         int yChan = yS + hCot - Math.max(6, (int) (4 * z));
-        veTheLoai(g, m, xSan, yS, st, yChan - (int) (36 * z) - yS);
+        // 0.9.29: ô Cuốc ở đỉnh sân khấu (điện thoại) -> tên loài / cấp xuống dưới ô
+        int dCuoc = tinhOCuoc(xSan, yS, st, hCot, s, ye + hDau + k, yP - k) && O_CUOC_VE[1] == yS + 3 ? O_CUOC_VE[2] + 4 : 0;
+        veTheLoai(g, m, xSan, yS + dCuoc, st, yChan - (int) (36 * z) - yS - dCuoc);
         banRongBe = st / 2 - 4;
         veNguoiChoi(g, m, xSan + st / 2, yChan, z);
         banRongBe = 1000;
+        if (O_CUOC_VE[2] > 0) {
+            veOVuong(g, O_CUOC, O_CUOC_VE[0], O_CUOC_VE[1], O_CUOC_VE[2]);
+        }
         veDanhHieuNv(g, m, xe, yP, lw, hP);
         if (nhanO >= 0 && nhanO < TEN_O.length) {
             String ten = TEN_O[nhanO];
@@ -685,6 +697,60 @@ public final class ManNhanVat extends Screen {
             veTui(g, x + lw + k, y, w - lw - k, h, s);
         }
         moXem();
+    }
+
+    /** Có cuốc đang mặc hoặc trong hành trang (ô Cuốc mới hiện). */
+    static boolean coCuoc() {
+        if (dangMac(O_CUOC) != null) {
+            return true;
+        }
+        for (int k = 0; k < Char.inventory.size(); k++) {
+            Object x = Char.inventory.elementAt(k);
+            ItemTemplate t = x instanceof ItemInInventory ? mau((ItemInInventory) x) : null;
+            if (t != null && t.type == 13) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Ô Cuốc vừa tính {x, y, cạnh} (cạnh 0 = không vẽ) - tinhOCuoc, vẽ sau Pokémon; kiểm thử đọc. */
+    public static final int[] O_CUOC_VE = new int[3];
+
+    /**
+     * 0.9.29: ô Cuốc nhỏ: góc phải dưới sân khấu (xSan, yS, st, hCot) khi sân khấu đủ rộng (PC / máy tính bảng); điện thoại
+     * (sân khấu hẹp) -> giữa khoảng trống trên sân khấu (tren..yS) hoặc dưới (yS + hCot..duoi). s = cạnh ô trang bị.
+     */
+    private boolean tinhOCuoc(int xSan, int yS, int st, int hCot, int s, int tren, int duoi) {
+        O_CUOC_VE[2] = 0;
+        if (!coCuoc()) {
+            return false;
+        }
+        int sc = Math.max(VungCham.MIN, s * 3 / 4);
+        if (sc > s) {
+            sc = s;
+        }
+        int xo, yo;
+        if (sc + 4 <= st / 2 && sc + 4 <= hCot / 2) {
+            xo = xSan + st - sc - 3;
+            yo = yS + hCot - sc - 3;
+        } else if (sc + 4 <= st && sc + 4 <= hCot / 2) {
+            // sân khấu hẹp (điện thoại): đỉnh giữa sân khấu - Pokémon đứng ở đáy, nửa trên trống
+            xo = xSan + (st - sc) / 2;
+            yo = yS + 3;
+        } else if (sc <= st && yS - tren >= sc + 2) {
+            xo = xSan + (st - sc) / 2;
+            yo = yS - sc - 2;
+        } else if (sc <= st && duoi - (yS + hCot) >= sc + 2) {
+            xo = xSan + (st - sc) / 2;
+            yo = yS + hCot + 2;
+        } else {
+            return false;   // không chỗ (J2ME rất nhỏ): cuốc vẫn xem / tháo ở hành trang (lọc Đồ, thẻ Tháo)
+        }
+        O_CUOC_VE[0] = xo;
+        O_CUOC_VE[1] = yo;
+        O_CUOC_VE[2] = sc;
+        return true;
     }
 
     // ------------------------------------------------------------------ 0.9.18: bố cục gọn tab Trang bị
@@ -981,6 +1047,13 @@ public final class ManNhanVat extends Screen {
         }
         // sân khấu xem thú
         int cao = yHang - k - yTren;
+        // 0.9.29: nút "Trang bị thú" ngay trên hàng ô thú (sân khấu còn đủ cao)
+        int hNut = Bang.co(26);
+        int khe = 2 * k + 4;   // vùng chạm ô tròn rộng hơn hình: chừa thêm để hai vùng cách >= CACH
+        if (cao - hNut - khe >= 50) {
+            nutTrangBiThu(g, x, yHang - khe - hNut, lw, hNut);
+            cao -= hNut + khe;
+        }
         nenSanKhau(g, x, yTren, lw, cao);
         int rD = Math.min(lw, cao) * 9 / 20, cyD = yTren + cao / 2 + cao / 20;
         float z = Math.max(1.5f, Math.min(4.2f, Math.min(lw / 46f, rD * 2 / 38f)));
@@ -994,6 +1067,19 @@ public final class ManNhanVat extends Screen {
         banRongBe = lw / 2 - 6;
         veXemThu(g, m, x, yTren, lw, x + lw / 2, yChan, z);
         banRongBe = 1000;
+    }
+
+    /** 0.9.29: nút mở bảng Trang bị thú (TrangBiThu): đồ thú đang mặc, Tháo / Thay. */
+    static void nutTrangBiThu(Graphics g, int x, int y, int w, int h) {
+        String chu = "Trang bị thú";
+        if (ChuDe.rong(chu, ChuDe.SO) + 12 > w) {
+            chu = "Đồ thú";
+        }
+        Bang.nut(g, x, y, w, h, chu, Bang.CHINH, new IAction() {
+            public void perform() {
+                TrangBiThu.mo();
+            }
+        }, "trang-bi-thu");
     }
 
     /** Một ô Thú cưỡi / Đi theo (tròn, hình con đang dùng): chạm = tab con đó + chọn con đang dùng. */
@@ -2866,12 +2952,19 @@ public final class ManNhanVat extends Screen {
     }
 
     private void veThu(Graphics g, int x, int y, int w, int h) {
+        final int hGoc = h;
         MainChar m = mc();
         int k = Bang.cach();
         // 0.9.16 điện thoại: sân khấu hẹp 36 %, danh sách gọn nhiều cột (thấy >= 5 thú)
         boolean gon = gonThu(h);
         gonVuaVe = gon;
         int lw = gon ? w * 36 / 100 : Math.min(w * 45 / 100, 260);
+        // 0.9.29: nút "Trang bị thú" dưới sân khấu (xem / tháo / thay đồ thú cưỡi - TrangBiThu)
+        int hNut = Bang.co(26);
+        if (h - hNut - k >= 60) {
+            nutTrangBiThu(g, x, y + h - hNut, lw, hNut);
+            h -= hNut + k;
+        }
         nenSanKhau(g, x, y, lw, h);
         // người chơi (cưỡi thú nếu đang cưỡi - veNguoiChoi) + Pokémon đi theo (-94 pokePetDex) bên cạnh
         boolean coPet = m.pokePetDex > 0 && PokeBody.coSprite(m.pokePetDex, m.pokePetShiny);
@@ -2897,6 +2990,9 @@ public final class ManNhanVat extends Screen {
             boolean coDiTheo = coPet || petDiTheo() != null;
             String nhan = dangCuoi(m) ? (coDiTheo ? "Đang cưỡi · có pet đi theo" : "Đang cưỡi") : (coDiTheo ? "Pet đang đi theo" : "Chưa cưỡi thú");
             ChuDe.chu(g, nhan, x + lw / 2, y + 6, ChuDe.NHAN_NHO, ChuDe.CHU_PHU, 2);
+        }
+        if (h != hGoc) {
+            h = hGoc;   // danh sách bên phải: cao đủ
         }
         int xr = x + lw + k, wr = w - lw - k;
         Bang.the(g, xr, y, wr, h);

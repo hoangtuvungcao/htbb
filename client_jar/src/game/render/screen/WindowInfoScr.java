@@ -1894,6 +1894,12 @@ public class WindowInfoScr extends Screen {
                     @Override
                     public void perform() {
                         if (WindowInfoScr.charWearing != null) {
+                            if (WindowInfoScr.charWearing == Canvas.gameScr.mainChar && !WindowInfoScr.this.isSell) {
+                                // 0.9.29: đồ thú của mình - bảng Trang bị thú (Xem / Tháo / Thay theo ô đang chọn)
+                                int sel = WindowInfoScr.this.selected;
+                                game.pokemon.TrangBiThu.moTaiLoai(sel >= 0 && sel < idWearAnimal.length ? idWearAnimal[sel] : -1);
+                                return;
+                            }
                             if (WindowInfoScr.charWearing.useHorse == -1 && WindowInfoScr.charWearing.idhorse <= -1) {
                                 return;
                             }
@@ -4705,8 +4711,11 @@ public class WindowInfoScr extends Screen {
                 int size0 = charWearing.wearingItems.size();
                 for (int i = 0; i < size0; i++) {
                     ItemInInventory item = (ItemInInventory) charWearing.wearingItems.elementAt(i);
-                    if (Res.getItem(item.charClazz, item.idTemplate).type == 13) {
-                        showItemInventoryInfo(item, false, posWearChar[bb][0] + 5, posWearChar[bb][1] - 2);
+                    ItemTemplate tc = Res.getItem(item.charClazz, item.idTemplate);
+                    if (tc != null && tc.type == 13) {
+                        // 0.9.29: bấm lại = menu Tháo ra (như ô trang bị khác)
+                        xemMonDangMac(item, tc, posWearChar[bb][0] + 5, posWearChar[bb][1] - 2);
+                        return;
                     }
                 }
                 return;
@@ -4748,6 +4757,30 @@ public class WindowInfoScr extends Screen {
             }
             if (this.selected != 4) {
                 Vector menu1 = new Vector();
+                // 0.9.29 (chủ dự án: "APK và JAR không có mấy cái đó"): ô dưới giữa = thú cưỡi + CUỐC (cùng chỗ vẽ, type 13) -
+                // thêm lối Trang bị thú (xem / tháo / thay đồ thú) và cuốc đang mặc (xem / tháo)
+                menu1.addElement(new Command("Trang bị thú", new IAction() {
+                    @Override
+                    public void perform() {
+                        game.pokemon.TrangBiThu.mo();
+                    }
+                }));
+                final ItemInInventory cuoc = cuocDangMac();
+                if (cuoc != null) {
+                    menu1.addElement(new Command("Cuốc: xem", new IAction() {
+                        @Override
+                        public void perform() {
+                            WindowInfoScr.this.showItemInventoryInfo(cuoc, false, posWearChar[7][0] + 5, posWearChar[7][1] - 2);
+                        }
+                    }));
+                    menu1.addElement(new Command("Cuốc: tháo ra", new IAction() {
+                        @Override
+                        public void perform() {
+                            game.pokemon.TrangBiThu.thao(cuoc);
+                            WindowInfoScr.this.closeText();
+                        }
+                    }));
+                }
                 menu1.addElement(new Command("Thú cưỡi", new IAction() {
                     @Override
                     public void perform() {
@@ -4793,6 +4826,21 @@ public class WindowInfoScr extends Screen {
                 }
             }
         }
+    }
+
+    /** 0.9.29: cuốc (type 13) nhân vật chính đang mặc, null = không. */
+    static ItemInInventory cuocDangMac() {
+        if (charWearing == null || charWearing.wearingItems == null) {
+            return null;
+        }
+        for (int i = 0; i < charWearing.wearingItems.size(); i++) {
+            ItemInInventory it = (ItemInInventory) charWearing.wearingItems.elementAt(i);
+            ItemTemplate t = Res.getItem(it.charClazz, it.idTemplate);
+            if (t != null && t.type == 13) {
+                return it;
+            }
+        }
+        return null;
     }
 
     /** pokemon: món đang chọn ở tab Trang bị (bấm lần hai cùng món = menu Tháo ra). */

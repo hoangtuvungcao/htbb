@@ -780,7 +780,9 @@ extends Screen {
                         break;
                     }
                     if (this.index == 2) {
-                        this.showMe(7);
+                        // 0.9.29: Bản thân › Trang bị thú = bảng danh sách ô (Xem / Tháo / Thay), không còn lưới 10 ô không nhãn
+                        Canvas.gameScr.switchToMe();
+                        game.pokemon.TrangBiThu.mo();
                         break;
                     }
                     if (this.index == 6) {

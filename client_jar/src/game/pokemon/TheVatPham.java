@@ -371,7 +371,7 @@ public final class TheVatPham extends Dialog {
             return "Không hợp giới tính.";
         }
         if (ManNhanVat.capCan(it, t) > m.level) {
-            return "Cần cấp " + ManNhanVat.capCan(it, t) + ".";
+            return "Cần cấp " + ManNhanVat.capCan(it, t) + " để dùng.";
         }
         return null;
     }
@@ -415,7 +415,23 @@ public final class TheVatPham extends Dialog {
     void thao() {
         ItemInInventory it = (ItemInInventory) this.mon;
         dong();
-        DungDo.thao(it);
+        TrangBiThu.thao(it);   // 0.9.29: hành trang đầy -> báo ngay (máy chủ cũng từ chối)
+    }
+
+    /** Đồ thú mặc được: đang cưỡi thú, đủ cấp. Lý do (null = được). */
+    static String khongMacThu(ItemInInventory it) {
+        ItemTemplate t = ManNhanVat.mau(it);
+        MainChar m = mc();
+        if (t == null || m == null) {
+            return "Đang tải thông tin...";
+        }
+        if (ManNhanVat.capCan(it, t) > m.level) {
+            return "Cần cấp " + ManNhanVat.capCan(it, t) + " để dùng.";
+        }
+        if (!TrangBiThu.dangCuoi()) {
+            return "Cưỡi thú trước rồi mới mặc đồ thú.";
+        }
+        return null;
     }
 
     /** Vứt so chiếc (đã xác nhận). */
@@ -851,6 +867,46 @@ public final class TheVatPham extends Dialog {
                     }
                 };
                 ten[n++] = "tvp-thao";
+                if (this.mon instanceof ItemInInventory && TrangBiThu.laDoThu((ItemInInventory) this.mon)) {
+                    // 0.9.29: đồ thú đang mặc - Thay = hành trang lọc đúng ô (bảng Trang bị thú)
+                    final ItemInInventory dm = (ItemInInventory) this.mon;
+                    chu[n] = "Thay";
+                    kieu[n] = Bang.XAC_NHAN;
+                    viec[n] = new IAction() {
+                        public void perform() {
+                            t.dong();
+                            TrangBiThu.mo();
+                            TrangBiThu.gI().moThay(TrangBiThu.oCuaLoai(ManNhanVat.mau(dm).type));
+                        }
+                    };
+                    ten[n++] = "tvp-thay-thu";
+                }
+            } else if (this.mon instanceof ItemInInventory && TrangBiThu.laDoThu((ItemInInventory) this.mon)) {
+                // 0.9.29 (chủ dự án: "APK và JAR không có mấy cái đó"): đồ thú cưỡi trong hành trang - Mặc cho thú (cần đang
+                // cưỡi, đủ cấp) + mở bảng Trang bị thú (xem thú đang mặc gì, tháo / thay)
+                final ItemInInventory dt = (ItemInInventory) this.mon;
+                String l = khongMacThu(dt);
+                chu[n] = l == null ? "Mặc cho thú" : "Chưa mặc được";
+                kieu[n] = l == null ? Bang.XAC_NHAN : Bang.TAT;
+                viec[n] = l == null ? new IAction() {
+                    public void perform() {
+                        t.dong();
+                        DungDo.dungItem(dt);
+                    }
+                } : null;
+                ten[n++] = "tvp-mac-thu";
+                if (l != null) {
+                    lyDo = l;
+                }
+                chu[n] = "Đồ thú";
+                kieu[n] = Bang.TRUNG;
+                viec[n] = new IAction() {
+                    public void perform() {
+                        t.dong();
+                        TrangBiThu.mo();
+                    }
+                };
+                ten[n++] = "tvp-do-thu";
             } else if (this.mon instanceof ItemInInventory && laDoMac((ItemInInventory) this.mon)) {
                 String l = khongMac((ItemInInventory) this.mon);
                 chu[n] = l == null ? "Mặc" : "Chưa mặc được";
