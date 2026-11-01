@@ -16313,18 +16313,15 @@ public class Map implements Runnable {
                         }
 
                         if (item.level > player.lvDetail.lv) {
-                            System.out.println("khong du cap do su dung");
+                            // 0.9.29: bao ro (truoc: chi in System.out, client khong nhan gi tu duong nay)
+                            DungVatPham.loi(player, DungVatPham.canCap(item));
                             return;
                         }
 
-                        if (item.getTemplate().type == 13 && !isModelClothes(item.getTemplate().atb[9]) && !player.isAdmin) {
-                            if (player.itemAx != null) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng cùng lúc 2 loại cuốc", ""));
-                                return;
-                            }
-
-                            player.itemAx = item;
-                        }
+                        // 0.9.29 (chu du an): mac cuoc thu hai = THAY cuoc dang mac (cuoc cu ve hanh trang), khong con bao loi
+                        // "khong the dung 2 cuoc cung luc". Gan itemAx SAU khi mac xong (truoc: gan truoc kiem gioi
+                        // tinh -> mac hong van giu itemAx tro vao mon con trong tui).
+                        final boolean laCuoc = item.getTemplate().type == 13 && !isModelClothes(item.getTemplate().atb[9]);
 
                         if (item.getTemplate().gender != 0 && player.gender != 0 && !player.isAdmin && item.getTemplate().gender != player.gender) {
                             String[] gender = new String[]{"", "nam", "nữ"};
@@ -16340,7 +16337,13 @@ public class Map implements Runnable {
                                 return;
                             }
 
+                            if (laCuoc) {
+                                DungVatPham.truocDoiCuoc(player);
+                            }
                             MapMuaBan.exchangeItem(this, player, item, i);
+                            if (laCuoc) {
+                                player.itemAx = item;
+                            }
                             if (!isItemAnimal) {
                                 DiemMocNhiemVu.khiMacDo(player, item.getTemplate().id); // diem moc nang_cap + bo_trang_bi
                             }
@@ -16450,6 +16453,9 @@ public class Map implements Runnable {
         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
         SkinThuCuoi.dongBoVaGui(player);
+        // 0.9.29: bao da thao (bang Trang bi thu client: Thao) - truoc khong co phan hoi chu nao
+        HanhDongVatPham.datKieu(HanhDongVatPham.THAO);
+        DungVatPham.bao(player, "Đã tháo " + DungVatPham.ten(mon) + ".");
         return true;
     }
 

@@ -501,6 +501,48 @@ public final class DungVatPham {
         return true;
     }
 
+    /** "Cần cấp N để dùng X." (0.9.29: mon cap cao - Map.doUseItemGoc / lyDo). */
+    public static String canCap(final Item it) {
+        return "Cần cấp " + it.level + " để dùng " + ten(it) + ".";
+    }
+
+    /**
+     * 0.9.29: truoc khi mac cuoc moi (Map.doUseItemGoc, type 13). Cuoc cu dang o o mac 9 cua bo dang dung ->
+     * MapMuaBan.exchangeItem tu tra no ve hanh trang (THAY, khong con bao "Không thể sử dụng cùng lúc 2 loại cuốc").
+     * Char.itemAx lech (o bo mac khac / mat dau o mac - du lieu cu): go khoi moi bo mac, tra ve hanh trang, de khong
+     * con hai cuoc cung "dang mac". Doi cho trong tui: cuoc moi ra khoi tui, cuoc cu vao -> khong can o trong.
+     */
+    public static void truocDoiCuoc(final Char p) {
+        final Item cu = p.itemAx;
+        if (cu == null) {
+            return;
+        }
+        final int o = Char.getIndexItemWearing(13, 0);
+        try {
+            final Item[] mac = p.getArrayCharWearing();
+            if (mac != null && o >= 0 && o < mac.length && mac[o] == cu) {
+                return;
+            }
+        } catch (final Exception ignored) {
+            // khong co bo mac: go tay ben duoi
+        }
+        if (p.wItems != null) {
+            for (final Item[] bo : p.wItems) {
+                for (int i = 0; bo != null && i < bo.length; i++) {
+                    if (bo[i] == cu) {
+                        bo[i] = null;
+                    }
+                }
+            }
+        }
+        cu.place = 0;
+        cu.beKick = 0;
+        if (p.iItems != null && !p.iItems.contains(cu)) {
+            p.iItems.add(cu);
+        }
+        p.itemAx = null;
+    }
+
     /** Cac goi doi do nhu duong mac (Map.doUseItem cuoi ham). */
     static void guiSauDoiDo(final Char p) {
         try {
@@ -593,7 +635,7 @@ public final class DungVatPham {
         }
         final int cap = p.lvDetail == null ? 0 : p.lvDetail.lv;
         if (it.level > cap) {
-            return "Cần đạt cấp " + it.level + " để dùng " + ten + ".";
+            return canCap(it);
         }
         if ((it.isHuyetLinhThao() || it.isHuyetBoDe()) && p.petUsing == null) {
             return "Cần có thú nuôi đang đi theo để dùng " + ten + ".";
