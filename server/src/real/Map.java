@@ -16321,12 +16321,12 @@ public class Map implements Runnable {
                         }
 
                         if (item.level > player.lvDetail.lv) {
-                            // 0.9.29: bao ro (truoc: chi in System.out, client khong nhan gi tu duong nay)
+                            // 0.9.30: bao ro (truoc: chi in System.out, client khong nhan gi tu duong nay)
                             DungVatPham.loi(player, DungVatPham.canCap(item));
                             return;
                         }
 
-                        // 0.9.29 (chu du an): mac cuoc thu hai = THAY cuoc dang mac (cuoc cu ve hanh trang), khong con bao loi
+                        // 0.9.30 (chu du an): mac cuoc thu hai = THAY cuoc dang mac (cuoc cu ve hanh trang), khong con bao loi
                         // "khong the dung 2 cuoc cung luc". Gan itemAx SAU khi mac xong (truoc: gan truoc kiem gioi
                         // tinh -> mac hong van giu itemAx tro vao mon con trong tui).
                         final boolean laCuoc = item.getTemplate().type == 13 && !isModelClothes(item.getTemplate().atb[9]);
@@ -16461,7 +16461,7 @@ public class Map implements Runnable {
         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
         SkinThuCuoi.dongBoVaGui(player);
-        // 0.9.29: bao da thao (bang Trang bi thu client: Thao) - truoc khong co phan hoi chu nao
+        // 0.9.30: bao da thao (bang Trang bi thu client: Thao) - truoc khong co phan hoi chu nao
         HanhDongVatPham.datKieu(HanhDongVatPham.THAO);
         DungVatPham.bao(player, "Đã tháo " + DungVatPham.ten(mon) + ".");
         return true;

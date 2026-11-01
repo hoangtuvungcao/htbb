@@ -59,7 +59,7 @@ public final class ManNhanVat extends Screen {
     static final int[][] LOAI_O = {{3, 4, 5, 6, 7}, {0}, {2}, {1}, {9}, {8}, {8}, {11}, {10}, {12}, {19}, {}, {13}};
     static final int O_THU = 11;
     /**
-     * 0.9.29 (chủ dự án: "APK và JAR không có mấy cái đó"): ô CUỐC (type 13, máy chủ Char.itemAx, ô mặc 9) - trước đây màn
+     * 0.9.30 (chủ dự án: "APK và JAR không có mấy cái đó"): ô CUỐC (type 13, máy chủ Char.itemAx, ô mặc 9) - trước đây màn
      * Nhân vật không có ô này: cuốc đang mặc không thấy ở đâu, không tháo được. Ô nhỏ góc phải dưới sân khấu (chỉ khi đang
      * mặc hoặc có cuốc trong hành trang): chạm = hành trang lọc cuốc (món đang mặc đứng đầu -> thẻ Tháo).
      */
@@ -669,7 +669,7 @@ public final class ManNhanVat extends Screen {
         }
         float z = Math.max(1f, Math.min(3.6f, Math.min((st - 8) / 30f, (hCot - 8) / 38f)));
         int yChan = yS + hCot - Math.max(6, (int) (4 * z));
-        // 0.9.29: ô Cuốc ở đỉnh sân khấu (điện thoại) -> tên loài / cấp xuống dưới ô
+        // 0.9.30: ô Cuốc ở đỉnh sân khấu (điện thoại) -> tên loài / cấp xuống dưới ô
         int dCuoc = tinhOCuoc(xSan, yS, st, hCot, s, ye + hDau + k, yP - k) && O_CUOC_VE[1] == yS + 3 ? O_CUOC_VE[2] + 4 : 0;
         veTheLoai(g, m, xSan, yS + dCuoc, st, yChan - (int) (36 * z) - yS - dCuoc);
         banRongBe = st / 2 - 4;
@@ -718,7 +718,7 @@ public final class ManNhanVat extends Screen {
     public static final int[] O_CUOC_VE = new int[3];
 
     /**
-     * 0.9.29: ô Cuốc nhỏ: góc phải dưới sân khấu (xSan, yS, st, hCot) khi sân khấu đủ rộng (PC / máy tính bảng); điện thoại
+     * 0.9.30: ô Cuốc nhỏ: góc phải dưới sân khấu (xSan, yS, st, hCot) khi sân khấu đủ rộng (PC / máy tính bảng); điện thoại
      * (sân khấu hẹp) -> giữa khoảng trống trên sân khấu (tren..yS) hoặc dưới (yS + hCot..duoi). s = cạnh ô trang bị.
      */
     private boolean tinhOCuoc(int xSan, int yS, int st, int hCot, int s, int tren, int duoi) {
@@ -1047,7 +1047,7 @@ public final class ManNhanVat extends Screen {
         }
         // sân khấu xem thú
         int cao = yHang - k - yTren;
-        // 0.9.29: nút "Trang bị thú" ngay trên hàng ô thú (sân khấu còn đủ cao)
+        // 0.9.30: nút "Trang bị thú" ngay trên hàng ô thú (sân khấu còn đủ cao)
         int hNut = Bang.co(26);
         int khe = 2 * k + 4;   // vùng chạm ô tròn rộng hơn hình: chừa thêm để hai vùng cách >= CACH
         if (cao - hNut - khe >= 50) {
@@ -1069,7 +1069,7 @@ public final class ManNhanVat extends Screen {
         banRongBe = 1000;
     }
 
-    /** 0.9.29: nút mở bảng Trang bị thú (TrangBiThu): đồ thú đang mặc, Tháo / Thay. */
+    /** 0.9.30: nút mở bảng Trang bị thú (TrangBiThu): đồ thú đang mặc, Tháo / Thay. */
     static void nutTrangBiThu(Graphics g, int x, int y, int w, int h) {
         String chu = "Trang bị thú";
         if (ChuDe.rong(chu, ChuDe.SO) + 12 > w) {
@@ -2959,7 +2959,7 @@ public final class ManNhanVat extends Screen {
         boolean gon = gonThu(h);
         gonVuaVe = gon;
         int lw = gon ? w * 36 / 100 : Math.min(w * 45 / 100, 260);
-        // 0.9.29: nút "Trang bị thú" dưới sân khấu (xem / tháo / thay đồ thú cưỡi - TrangBiThu)
+        // 0.9.30: nút "Trang bị thú" dưới sân khấu (xem / tháo / thay đồ thú cưỡi - TrangBiThu)
         int hNut = Bang.co(26);
         if (h - hNut - k >= 60) {
             nutTrangBiThu(g, x, y + h - hNut, lw, hNut);

@@ -205,7 +205,7 @@ public final class Kiem {
         KiemQuaiDiChuyen.chay(); // quai di chuyen theo va cham nguoi choi (DiChuyenQuai, moi map cMap, Monster client)
         KiemHoiSinh.chay(); // guc / hoi sinh (com.htbb.pokemon.HoiSinh)
         KiemDungVatPham.chay(); // lenh 29 / 22: moi loai vat pham co tac dung + phan hoi (real.DungVatPham, -104)
-        KiemDoiCuocTrangBiThu.chay(); // 0.9.29: thay cuoc (khong con "2 loai cuoc"), thao / thay do thu, "Cần cấp N để dùng"
+        KiemDoiCuocTrangBiThu.chay(); // 0.9.30: thay cuoc (khong con "2 loai cuoc"), thao / thay do thu, "Cần cấp N để dùng"
         KiemChongVatPham.chay(); // 30/10/2026: vat pham type 28 giong het chong mot o (ChongVatPham: gop / nhan / dung / ban / kho / luu)
         KiemPhuQuaNgay.chay(); // 30/10/2026: nhiem vu phu lau dai (P-*) giu tien do qua ngay (truoc day xoa im lang luc 0h)
         KiemPhuMoRong.chay(); // 30/10/2026: phu moi khi cap nv <= cap + 10 (khong chan duoi), xep gan cap, trang So tay

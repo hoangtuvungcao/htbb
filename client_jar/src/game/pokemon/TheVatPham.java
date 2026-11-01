@@ -415,7 +415,7 @@ public final class TheVatPham extends Dialog {
     void thao() {
         ItemInInventory it = (ItemInInventory) this.mon;
         dong();
-        TrangBiThu.thao(it);   // 0.9.29: hành trang đầy -> báo ngay (máy chủ cũng từ chối)
+        TrangBiThu.thao(it);   // 0.9.30: hành trang đầy -> báo ngay (máy chủ cũng từ chối)
     }
 
     /** Đồ thú mặc được: đang cưỡi thú, đủ cấp. Lý do (null = được). */
@@ -868,7 +868,7 @@ public final class TheVatPham extends Dialog {
                 };
                 ten[n++] = "tvp-thao";
                 if (this.mon instanceof ItemInInventory && TrangBiThu.laDoThu((ItemInInventory) this.mon)) {
-                    // 0.9.29: đồ thú đang mặc - Thay = hành trang lọc đúng ô (bảng Trang bị thú)
+                    // 0.9.30: đồ thú đang mặc - Thay = hành trang lọc đúng ô (bảng Trang bị thú)
                     final ItemInInventory dm = (ItemInInventory) this.mon;
                     chu[n] = "Thay";
                     kieu[n] = Bang.XAC_NHAN;
@@ -882,7 +882,7 @@ public final class TheVatPham extends Dialog {
                     ten[n++] = "tvp-thay-thu";
                 }
             } else if (this.mon instanceof ItemInInventory && TrangBiThu.laDoThu((ItemInInventory) this.mon)) {
-                // 0.9.29 (chủ dự án: "APK và JAR không có mấy cái đó"): đồ thú cưỡi trong hành trang - Mặc cho thú (cần đang
+                // 0.9.30 (chủ dự án: "APK và JAR không có mấy cái đó"): đồ thú cưỡi trong hành trang - Mặc cho thú (cần đang
                 // cưỡi, đủ cấp) + mở bảng Trang bị thú (xem thú đang mặc gì, tháo / thay)
                 final ItemInInventory dt = (ItemInInventory) this.mon;
                 String l = khongMacThu(dt);

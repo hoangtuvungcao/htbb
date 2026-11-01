@@ -248,9 +248,10 @@ Kiểm: `server/test/KiemCapNhatClient` (hai mức, gói -115, hộp client cũ)
 cục bộ: tải + SHA-256 + tiến độ, SHA lệch / 404 / tải thiếu / huỷ bị từ chối, AppImage thay nguyên tử, bộ cài Windows,
 mở link khi không tự cài được; vẽ hộp ở mọi cỡ chuẩn) - lệnh chạy như `KiemThongBao` (mục 4 / client_pc/README.md).
 
-### Bản 0.9.29 (`BAN=929`: bảng Trang bị thú, ô Cuốc, mặc cuốc mới = thay cuốc cũ)
+### Bản 0.9.30 (`BAN=930`: bảng Trang bị thú, ô Cuốc, mặc cuốc mới = thay cuốc cũ)
 
-Client `PHIEN_BAN=0.9.29-opentest` (`BAN = 0*10000 + 9*100 + 29`; `MIDlet-Version` 0.9.29). Chủ dự án: "APK và JAR không
+Client `PHIEN_BAN=0.9.30-opentest` (`BAN = 0*10000 + 9*100 + 30`; `MIDlet-Version` 0.9.30; gồm vá 0.9.29 Arcanine gác cổng
+mở menu máy chủ). Chủ dự án: "APK và JAR không
 có mấy cái đó": APK / J2ME không có chỗ XEM thú đang mặc gì, không THÁO / THAY được đồ thú, cuốc đang mặc không thấy.
 Trước bản này: màn Nhân vật (APK / PC) không đọc `wearingAnimal` ở đâu cả (ô Thú cưỡi chỉ mở danh sách thú); J2ME Bản
 thân › Trang bị thú = lưới 10 ô không nhãn của cửa sổ cũ, chọn ô chỉ hiện chữ (không Tháo / Thay); ô Cuốc (type 13) không
@@ -488,8 +489,8 @@ Bảng lối vào sau khi gọn (cảm ứng = PC / APK; phím = J2ME, phím m�
 | Sự kiện (mùa, Quà hoạt động, Lịch đăng nhập, Nhiệm vụ tuần, Cúp PvP tuần, Hầm ngục) | Menu › Sự kiện | Quầy đổi thưởng › Sổ tay; J2ME Nhiệm vụ › Sự kiện |
 | Tự động đánh (cài đặt) | Menu › Tự động đánh | nhấn giữ AUTO / nút Tự động; J2ME hàng đầu › Tự động đánh, Menu nhanh (#) |
 | Cài đặt | Menu › Cài đặt | HUD bánh răng (chủ dự án 0.9.9); J2ME Cài đặt, Menu nhanh |
-| Thú | Menu › Pokémon › tab Thú (+ ô Thú cưỡi / Đi theo của Trang bị) | J2ME Bản thân › Trang bị thú (0.9.29: bảng `TrangBiThu`) |
-| Trang bị thú (xem / tháo / thay đồ thú) | Menu › Pokémon › tab Thú › nút Trang bị thú (0.9.29) | Trang bị › ô Thú cưỡi; thẻ đồ thú trong hành trang; J2ME Bản thân › Trang bị thú |
+| Thú | Menu › Pokémon › tab Thú (+ ô Thú cưỡi / Đi theo của Trang bị) | J2ME Bản thân › Trang bị thú (0.9.30: bảng `TrangBiThu`) |
+| Trang bị thú (xem / tháo / thay đồ thú) | Menu › Pokémon › tab Thú › nút Trang bị thú (0.9.30) | Trang bị › ô Thú cưỡi; thẻ đồ thú trong hành trang; J2ME Bản thân › Trang bị thú |
 | Huấn luyện | Menu › Pokémon › Trang bị › nút Huấn luyện | J2ME Bản thân › Huấn luyện |
 | Bản đồ lớn | HUD Bản đồ (PC) / chạm bản đồ nhỏ (APK) | J2ME Cài đặt › Bản đồ lớn |
 | Pokédex, Cửa hàng, Đội/Bạn bè, Hệ sinh thái, Thư/Quà, Xếp hạng | ô Menu cùng tên | J2ME hàng Khác / Cửa hàng |

@@ -1895,7 +1895,7 @@ public class WindowInfoScr extends Screen {
                     public void perform() {
                         if (WindowInfoScr.charWearing != null) {
                             if (WindowInfoScr.charWearing == Canvas.gameScr.mainChar && !WindowInfoScr.this.isSell) {
-                                // 0.9.29: đồ thú của mình - bảng Trang bị thú (Xem / Tháo / Thay theo ô đang chọn)
+                                // 0.9.30: đồ thú của mình - bảng Trang bị thú (Xem / Tháo / Thay theo ô đang chọn)
                                 int sel = WindowInfoScr.this.selected;
                                 game.pokemon.TrangBiThu.moTaiLoai(sel >= 0 && sel < idWearAnimal.length ? idWearAnimal[sel] : -1);
                                 return;
@@ -4713,7 +4713,7 @@ public class WindowInfoScr extends Screen {
                     ItemInInventory item = (ItemInInventory) charWearing.wearingItems.elementAt(i);
                     ItemTemplate tc = Res.getItem(item.charClazz, item.idTemplate);
                     if (tc != null && tc.type == 13) {
-                        // 0.9.29: bấm lại = menu Tháo ra (như ô trang bị khác)
+                        // 0.9.30: bấm lại = menu Tháo ra (như ô trang bị khác)
                         xemMonDangMac(item, tc, posWearChar[bb][0] + 5, posWearChar[bb][1] - 2);
                         return;
                     }
@@ -4757,7 +4757,7 @@ public class WindowInfoScr extends Screen {
             }
             if (this.selected != 4) {
                 Vector menu1 = new Vector();
-                // 0.9.29 (chủ dự án: "APK và JAR không có mấy cái đó"): ô dưới giữa = thú cưỡi + CUỐC (cùng chỗ vẽ, type 13) -
+                // 0.9.30 (chủ dự án: "APK và JAR không có mấy cái đó"): ô dưới giữa = thú cưỡi + CUỐC (cùng chỗ vẽ, type 13) -
                 // thêm lối Trang bị thú (xem / tháo / thay đồ thú) và cuốc đang mặc (xem / tháo)
                 menu1.addElement(new Command("Trang bị thú", new IAction() {
                     @Override
@@ -4828,7 +4828,7 @@ public class WindowInfoScr extends Screen {
         }
     }
 
-    /** 0.9.29: cuốc (type 13) nhân vật chính đang mặc, null = không. */
+    /** 0.9.30: cuốc (type 13) nhân vật chính đang mặc, null = không. */
     static ItemInInventory cuocDangMac() {
         if (charWearing == null || charWearing.wearingItems == null) {
             return null;

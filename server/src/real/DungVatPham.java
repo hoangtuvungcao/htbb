@@ -501,13 +501,13 @@ public final class DungVatPham {
         return true;
     }
 
-    /** "Cần cấp N để dùng X." (0.9.29: mon cap cao - Map.doUseItemGoc / lyDo). */
+    /** "Cần cấp N để dùng X." (0.9.30: mon cap cao - Map.doUseItemGoc / lyDo). */
     public static String canCap(final Item it) {
         return "Cần cấp " + it.level + " để dùng " + ten(it) + ".";
     }
 
     /**
-     * 0.9.29: truoc khi mac cuoc moi (Map.doUseItemGoc, type 13). Cuoc cu dang o o mac 9 cua bo dang dung ->
+     * 0.9.30: truoc khi mac cuoc moi (Map.doUseItemGoc, type 13). Cuoc cu dang o o mac 9 cua bo dang dung ->
      * MapMuaBan.exchangeItem tu tra no ve hanh trang (THAY, khong con bao "Không thể sử dụng cùng lúc 2 loại cuốc").
      * Char.itemAx lech (o bo mac khac / mat dau o mac - du lieu cu): go khoi moi bo mac, tra ve hanh trang, de khong
      * con hai cuoc cung "dang mac". Doi cho trong tui: cuoc moi ra khoi tui, cuoc cu vao -> khong can o trong.

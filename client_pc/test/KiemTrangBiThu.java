@@ -2,7 +2,7 @@ import java.io.File;
 import javax.microedition.lcdui.NenPc;
 
 /**
- * KIỂM BẢNG TRANG BỊ THÚ + Ô CUỐC (0.9.29, chủ dự án: "APK và JAR không có mấy cái đó" - không thấy thú đang mặc gì, không
+ * KIỂM BẢNG TRANG BỊ THÚ + Ô CUỐC (0.9.30, chủ dự án: "APK và JAR không có mấy cái đó" - không thấy thú đang mặc gì, không
  * tháo / thay được đồ thú, cuốc đang mặc không thấy ở đâu). Đường vẽ bản PC (cùng mã client_jar với APK / J2ME):
  * <ul>
  *   <li>TrangBiThu: đủ 8 hàng (Thú cưỡi, Đi theo, 6 ô đồ thú), món đang mặc hiện đúng ô, ở cỡ APK thật + PC + J2ME 240x320 /

@@ -13,7 +13,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * BẢNG "TRANG BỊ THÚ" (0.9.29, chủ dự án: "APK và JAR không có mấy cái đó" - không tìm được chỗ XEM thú đang mặc gì,
+ * BẢNG "TRANG BỊ THÚ" (0.9.30, chủ dự án: "APK và JAR không có mấy cái đó" - không tìm được chỗ XEM thú đang mặc gì,
  * cách THÁO / THAY đồ thú). Một danh sách dùng chung cho APK / PC (chạm) và J2ME (phím, 240x320):
  * <ul>
  *   <li>hàng "Thú cưỡi" + "Đi theo" (con đang dùng) - chọn = đổi thú (màn Pokémon › tab Thú) / xuống thú;</li>

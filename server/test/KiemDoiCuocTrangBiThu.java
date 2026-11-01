@@ -2,7 +2,7 @@ import real.Char;
 import real.Item;
 
 /**
- * 0.9.29 (chu du an: "APK va JAR khong co may cai do" - khong thay / thao / thay duoc do thu va cuoc): duong lenh 29 THAT
+ * 0.9.30 (chu du an: "APK va JAR khong co may cai do" - khong thay / thao / thay duoc do thu va cuoc): duong lenh 29 THAT
  * (real.DungVatPham.dung -> Map.doUseItemGoc / thaoTrangBi / Map.thaoTrangBiThu) cho
  * <ul>
  *   <li>cuoc (type 13, Char.itemAx, o mac 9): mac cuoc thu hai = THAY (cuoc cu ve tui, ca khi tui day), khong con
@@ -21,7 +21,7 @@ public final class KiemDoiCuocTrangBiThu {
     static final int CUOC_A = 2201, CUOC_B = 2202, CUOC_CAO = 2203, GIAP_A = 2211, GIAP_B = 2212, DO_LOT = 2220;
 
     public static void chay() {
-        Kiem.nhom("Doi cuoc + trang bi thu (0.9.29: thay cuoc, thao / thay do thu qua lenh 29)");
+        Kiem.nhom("Doi cuoc + trang bi thu (0.9.30: thay cuoc, thao / thay do thu qua lenh 29)");
         try {
             chuanBi();
             cuoc();

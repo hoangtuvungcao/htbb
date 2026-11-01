@@ -1911,7 +1911,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                             WindowInfoScr.gI().countFrame = 0;
                             Canvas.gameScr.onAnimalWearingInfo(idChar2, infoAnimal3, imgAnimal2, numFrame2, wimg2, himg2, timeChangeFrame2);
                         } else if (Canvas.gameScr.mainChar != null && idChar2 == Canvas.gameScr.mainChar.ID) {
-                            // 0.9.29: máy chủ báo KHÔNG cưỡi (len -1) -> bỏ danh sách đồ thú cũ (bảng Trang bị thú không hiện đồ cũ)
+                            // 0.9.30: máy chủ báo KHÔNG cưỡi (len -1) -> bỏ danh sách đồ thú cũ (bảng Trang bị thú không hiện đồ cũ)
                             Canvas.gameScr.mainChar.setAnimalWearingInfo(new Vector());
                         }
                     }
