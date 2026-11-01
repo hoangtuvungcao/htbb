@@ -681,7 +681,7 @@ public final class KiemDangNhapServer {
             }
             Kiem.sai("htbb-login.jar khong co chu NQSH", nqsh);
         }
-        Kiem.dung("CheckLoginSocket.jar (ban cu) van con de quay lui", new File("loginServer/CheckLoginSocket.jar").isFile());
+        // 01/11/2026 chu game xoa CheckLoginSocket.jar khoi repo (VPS van giu ban de quay lui: /etc/htbb/login.env HTBB_LOGIN_JAR=CheckLoginSocket.jar)
         for (final String u : new String[]{"../vps/htbb-login.service", "../vps/staging/htbb-staging-login.service"}) {
             final String s = doc(u);
             Kiem.dung(u + ": mac dinh htbb-login.jar", s.contains("Environment=HTBB_LOGIN_JAR=htbb-login.jar"));
