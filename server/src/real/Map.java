@@ -16300,6 +16300,14 @@ public class Map implements Runnable {
                             return;
                         }
 
+                        // 01/11/2026: giap NPC (mau moi he, clazz mau = -1) da mua nham he khac (client gui he sai luc mua):
+                        // chu mua, chua nang cap -> doi sang he cua nguoi mac thay vi bao "Không thể mặc đồ của ...".
+                        if (item.clazz >= 0 && item.clazz != player.charClass && !vk && !isItemAnimal
+                                && item.getTemplate().clazz == -1 && isArmor(t) && item.plus == 0
+                                && (item.owner == player.charDBID || item.identify == player.charDBID)) {
+                            item.clazz = (byte) player.charClass;
+                        }
+
                         if (item.clazz != player.charClass
                                 && item.clazz >= 0 // -1 = mon moi he (truoc: NAME_CLASS[-1] nem loi, bam khong co gi)
                                 && !vk

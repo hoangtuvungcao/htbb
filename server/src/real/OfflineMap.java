@@ -1767,6 +1767,11 @@ public class OfflineMap extends Map {
 
                      if (catagory == 3) {
                         byte kindItem = message.dis.readByte();
+                        // 01/11/2026: he do do CLIENT gui (tab he dang mo trong cua hang / mac dinh 0) -> mua nham he khac
+                        // thi ve khong mac duoc ("dành cho hệ khác"). Do mua o NPC luon mang he cua chinh nhan vat.
+                        if (kindItem != -1 && kindItem != player.charClass) {
+                           kindItem = (byte) player.charClass;
+                        }
                         boolean isOk = false;
 
                         for (int k = 0; k < MessageCreator.ALL_ID_ITEM_NPC_SELL.length; k += 2) {
