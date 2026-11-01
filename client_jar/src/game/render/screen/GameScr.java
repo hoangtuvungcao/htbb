@@ -3108,7 +3108,12 @@ public class GameScr extends Screen {
                 }
             }));
             Canvas.menu.startAt(menu, 3);
-        } else if (type == 4 || type == 5 || type == 8 || type == 23) {
+        } else if (type == 4) {
+            // 0.9.29: Arcanine gac cong - cau chao + XIN menu may chu (Về làng / Đến New Bark / ...). Truoc day chi chao,
+            // menu "Đến New Bark" khong bao gio mo duoc (nguoi choi ket o Pewter).
+            addChat(this.focusedActor, Res.getDefaultChat(type), 500);
+            GameService.gI().requestNPCInfo(type);
+        } else if (type == 5 || type == 8 || type == 23) {
             addChat(this.focusedActor, Res.getDefaultChat(type), 500);
         } else if (type == 2 || type == 3 || type == 7 || type == 10 || type == 27 || type == 28 || (type > 10 && type != 24 && type != 26 && type != 29 && type != 30)) {
             showNpcMenu(type, new Vector());
