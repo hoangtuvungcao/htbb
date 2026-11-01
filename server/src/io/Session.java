@@ -383,13 +383,13 @@ public class Session extends Thread {
             byte a2 = dis.readByte();
             a2 = this.readKey(a2);
             size = (short)((a1 & 255) << 8 | a2 & 255);
-            if (size > 10000) {
-                throw new IOException("Data too big");
+            if (size < 0 || size > 10000) { // short: do dai >= 32768 thanh so am -> NegativeArraySizeException
+                throw new IOException("Do dai goi tin sai: " + size);
             }
         } else {
             size = (short)dis.readUnsignedShort();
-            if (size > 10000) {
-                throw new IOException("Data too big");
+            if (size < 0 || size > 10000) { // short: do dai >= 32768 thanh so am -> NegativeArraySizeException
+                throw new IOException("Do dai goi tin sai: " + size);
             }
         }
 

@@ -589,7 +589,7 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         if (mon == null) return sinhThai();
         int lang = b.mapId;
         if (!KichBanDS.laLang(lang) && !toi(0)) return false;
-        if (!KichBanDS2.vaoNha(b, 103)) return false;
+        if (!vaoNhaMachamp()) return false;
         long gia = Math.max(100L, (long) (KichBanCap140.NguoiChoi.gia(mon[1]) * (1.0 + rd.nextInt(30) / 100.0)));
         for (int lan = 0; lan < 2; lan++) {
             for (int npc = 11; npc <= 20; npc++) {
@@ -785,7 +785,9 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         if (b.xu < 3000) return -1;
         int lang = b.mapId;
         if (!KichBanDS.laLang(lang) && !toi(0)) return -1;
-        if (!KichBanDS2.vaoNha(b, 103)) return -1;
+        // khan PK = thuoc (goi 24 loai 4): tu 01/11/2026 may chu chi ban canh Chansey / Kecleon -> nha Kecleon cua lang
+        int nhaK = KichBanDS2.nhaKecleon(b.mapId);
+        if (!KichBanDS2.vaoNha(b, nhaK) || b.mapId != nhaK && !sangNha(nhaK, "Kecleon")) return -1;
         int t = 14 + rd.nextInt(5);
         b.gui(24, (byte) 1, (byte) 4, (short) t, (short) 1);
         b.bom(1200);

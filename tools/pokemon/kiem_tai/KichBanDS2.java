@@ -22,6 +22,11 @@ class KichBanDS2 {
         return lang == 70 ? 72 : lang == 80 ? 82 : 102;
     }
 
+    /** Nha tiem Machamp (do cam tay, sua, nang) cua lang: Pewter 0 -> 103, Blackthorn 70 -> 73, 80 -> 83. */
+    static int nhaMachamp(int lang) {
+        return lang == 70 ? 73 : lang == 80 ? 83 : 103;
+    }
+
     static boolean laOffline(int m) {
         for (short s : MAP_OFFLINE) if (s == m) return true;
         return false;

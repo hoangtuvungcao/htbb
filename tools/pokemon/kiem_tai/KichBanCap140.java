@@ -1192,7 +1192,7 @@ final class KichBanCap140 {
                     if (moi == null) moi = b.timDo(x -> !truocThao.contains(x[0]));
                     if (moi != null) { idNang = moi[0]; daThao = true; }
                 } else if (!b.doDung.isEmpty()) idNang = b.doDung.get(0)[0];
-                if (idNang == KichBanDS3.KHONG && KichBanDS2.vaoNha(b, 103)) {
+                if (idNang == KichBanDS3.KHONG && vaoNhaMachamp()) {
                     // khong biet mon dang mac (vao lai game khong gui lai goi 15) va tui trong: mua mon re nhat o tiem (500 xu)
                     int idm = KichBanDS3.muaVuKhi(b, BotXuyenSuot.vuKhiShop(lop, 1));
                     KichBanDS2.raNgoai(b);
@@ -1203,7 +1203,7 @@ final class KichBanCap140 {
                 if (idNang == KichBanDS3.KHONG) return "khong co mon nao de nang";
                 // nang trong xuong (nha 103 co Machamp; may chu cho phep nang trong nha - NpcTinhBanDo.oNoiDichVu): dung
                 // canh Machamp ngoai lang hay lech vi tri -> doFinishImbue im lang ("khong tra loi")
-                boolean trongNha = KichBanDS2.vaoNha(b, 103);
+                boolean trongNha = vaoNhaMachamp();
                 String t = KichBanDS3.moNangCap(b, idNang, false);
                 b.gui(77, (byte) -1); b.bom(200);
                 if (trongNha) KichBanDS2.raNgoai(b);
@@ -1616,7 +1616,7 @@ final class KichBanCap140 {
             lanNangVk = System.currentTimeMillis();
             final int idVk = b.dangMac.get(k), tplVk = b.dangMacTpl.get(k);
             KichBanCap140TinhNang.veLangDiBo(this);
-            if (!KichBanDS2.vaoNha(b, 103)) return;
+            if (!vaoNhaMachamp()) return;
             Set<Integer> truoc = new HashSet<>();
             b.lamMoi();
             for (int[] x : b.doDung) truoc.add(x[0]);
@@ -1848,7 +1848,7 @@ final class KichBanCap140 {
                 for (int c : new int[]{0, 70, 80, 301, 1701, 1901}) { List<int[]> d = BotXuyenSuot.duong(b.mapId, c); if (d != null && d.size() < ds) { ds = d.size(); tot = c; } }
                 if ((tot < 0 || !toi(tot)) && !KichBanCap140TinhNang.veLangSoTay(this)) { ghi("khong ve duoc lang de mua thuoc"); return; }
             }
-            if (!KichBanDS2.vaoNha(b, 103)) { ketLai("khong vao duoc nha tiem 103 o lang " + b.mapId); return; }
+            if (!vaoNhaMachamp()) { ketLai("khong vao duoc nha tiem 103 o lang " + b.mapId); return; }
             suaDo();
             if (canVk) {
                 long x1 = b.xu;
@@ -1924,6 +1924,20 @@ final class KichBanCap140 {
          * 73 -> 72, 83 -> 82). Tu 31/10 (giap) / 01/11/2026 (thuoc) may chu chi ban mon cua NPC dang dung canh (goi 24): bot
          * cu mua ca hai trong nha 103 (chi co Machamp).
          */
+        /**
+         * Vao DUNG nha tiem Machamp cua lang dang dung (01/11/2026): vaoNha(b, 103) chi "uu tien" 103 - o Blackthorn (70) /
+         * lang 80 bot vao nha dau tien gap (nha Kecleon 72 / 82) roi mua vu khi o do -> may chu tu choi + log hackbitem.
+         */
+        boolean vaoNhaMachamp() throws Exception {
+            if (KichBanDS2.laOffline(b.mapId)) {
+                if (b.mapId == 103 || b.mapId == 73 || b.mapId == 83) return true;
+                KichBanDS2.raNgoai(b);
+            }
+            int nha = KichBanDS2.nhaMachamp(b.mapId);
+            if (KichBanDS2.vaoNha(b, nha) && b.mapId == nha) return true;
+            return KichBanDS2.laOffline(b.mapId) && sangNha(nha, "Machamp");
+        }
+
         boolean sangNha(int nha, String ai) throws Exception {
             if (b.mapId == nha) return true;
             KichBanDS2.raNgoai(b);
@@ -1946,7 +1960,7 @@ final class KichBanCap140 {
          */
         void donTui() throws Exception {
             if (!KichBanDS.laLang(b.mapId)) KichBanCap140TinhNang.veLangDiBo(this);
-            if (!KichBanDS2.vaoNha(b, 103)) return;
+            if (!vaoNhaMachamp()) return;
             b.lamMoi();
             final int tplVk = BotXuyenSuot.vuKhiShop(lop, b.lv);
             int ban = 0;
