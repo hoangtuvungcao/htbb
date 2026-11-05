@@ -2953,6 +2953,12 @@ public class MessageCreator {
             allQuest = new Vector<NewCharQuest>(allQuest);
             allQuest.addAll(NhiemVuEngine.phuSoTayChoNpc(p, type));
         }
+        // bao loi 05/11/2026 (menu Xatu 7 ten tron + "Thêm"): client < 932 tu dung menu NPC tu ten tron -> chinh truoc, moi NPC
+        // toi da 3 phu, ten "! Nhận: ..." (MenuNhiemVuNpcCu). Client moi tu gan nhan / gom "Nhiệm vụ phụ (N)".
+        final boolean nhanCu = type == 0 && !com.htbb.pokemon.MenuNhiemVuNpcCu.clientTuGan(p.session == null ? -1 : p.session.banClient);
+        if (nhanCu) {
+            allQuest = locNhanChoClientCu(allQuest);
+        }
         // sua-tien-do-nv: muc tieu / tra / khoa tung dong (MucTieuNhiemVuGame); cua ai dang lam o khe doi (main_sub 2)
         final boolean moi = MucTieuNhiemVuGame.clientMoi(p);
         final MucTieuNhiemVuGame.DongCuaAi cuaAi = type == 0 ? null : MucTieuNhiemVuGame.cuaAiTrongSo(p, type);
@@ -2974,8 +2980,9 @@ public class MessageCreator {
                 m.dos.writeShort(q.id_quest);
                 m.dos.writeByte(info.main_sub);
                 // client cu chi hien ten + loai + x/N o hang: noi muc tieu ngan vao ten ("Chứng tỏ sức mạnh · Weedle ở Lavender")
-                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(moi ? info.name
-                        : com.htbb.pokemon.MucTieuNhiemVu.tenCu(info.name, type == 1 ? (mt.tra.isEmpty() ? "" : "Trả " + mt.tra) : mt.ngan)));
+                final String ten = com.htbb.pokemon.ChuPokemon.doi(moi ? info.name
+                        : com.htbb.pokemon.MucTieuNhiemVu.tenCu(info.name, type == 1 ? (mt.tra.isEmpty() ? "" : "Trả " + mt.tra) : mt.ngan));
+                m.dos.writeUTF(nhanCu ? com.htbb.pokemon.MenuNhiemVuNpcCu.tenNhan(ten) : ten);
                 switch (type) {
                     case 0: {
                         m.dos.writeByte(info.idNpcRcv);
@@ -3068,6 +3075,22 @@ public class MessageCreator {
             e.printStackTrace();
         }
         p.sendMessage(m);
+    }
+
+    /** Danh sach nhan duoc (-64 loai 0) gui client cu: chinh truoc, moi NPC toi da MenuNhiemVuNpcCu.PHU_MOI_NPC phu. */
+    static Vector<NewCharQuest> locNhanChoClientCu(final Vector<NewCharQuest> ds) {
+        final int[] npc = new int[ds.size()];
+        final int[] ms = new int[ds.size()];
+        for (int i = 0; i < npc.length; i++) {
+            final InfoQuestTemplate info = ds.get(i).getTemplate();
+            npc[i] = info == null ? -1 : info.idNpcRcv;
+            ms[i] = info == null ? ds.get(i).main_sub : info.main_sub;
+        }
+        final Vector<NewCharQuest> kq = new Vector<NewCharQuest>();
+        for (final Integer i : com.htbb.pokemon.MenuNhiemVuNpcCu.loc(npc, ms)) {
+            kq.add(ds.get(i.intValue()));
+        }
+        return kq;
     }
 
     /**

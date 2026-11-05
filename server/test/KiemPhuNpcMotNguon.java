@@ -106,7 +106,25 @@ public final class KiemPhuNpcMotNguon {
                 t.totalitemget = new java.util.Vector<Short>();
                 real.Map.allSubQuest.put(Short.valueOf(t.id), t);
             }
+            // bao loi 05/11/2026: client < 932 chi nhan toi da 3 phu / NPC (MenuNhiemVuNpcCu) - goi tran tren la goi client moi
+            final NguoiChoi cuP = new NguoiChoi();
+            real.MessageCreator.createMsgCharQuest(cuP, 0);
+            if (!cuP.goi.isEmpty()) {
+                final byte[] bc = cuP.goi.get(0).toByteArray();
+                final java.io.DataInputStream rc = new java.io.DataInputStream(new java.io.ByteArrayInputStream(bc));
+                int lc = rc.readByte();
+                final int nc = lc == -128 ? (rc.readByte() * 0 + rc.readInt()) : rc.readUnsignedShort();
+                final java.io.DataInputStream q = new java.io.DataInputStream(new java.io.ByteArrayInputStream(bc, bc.length - nc, nc));
+                q.readByte();
+                final int soCu = q.readByte();
+                Kiem.bang("client cu: 30 NPC x toi da 3 phu = 90 dong", 90, soCu);
+                q.readShort();
+                q.readByte();
+                Kiem.dung("client cu: ten co tien to \"! Nhận: \"", q.readUTF().startsWith(com.htbb.pokemon.MenuNhiemVuNpcCu.NHAN));
+            }
             final NguoiChoi p = new NguoiChoi();
+            p.setSession(new io.Session(null, null, true));
+            p.getSession().banClient = com.htbb.pokemon.MenuNhiemVuNpcCu.BAN_CLIENT;
             final long t0 = System.nanoTime();
             real.MessageCreator.createMsgCharQuest(p, 0);
             final long ms = (System.nanoTime() - t0) / 1_000_000L;
