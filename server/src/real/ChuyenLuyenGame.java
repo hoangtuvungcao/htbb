@@ -31,9 +31,17 @@ public final class ChuyenLuyenGame {
     static final int MENU_NGUON = 0;
     static final int MENU_NHAN = 1;
     static final int MENU_XAC_NHAN = 2;
+    /** Menu "Mua Bùa chuyển luyện" (Mua 1 / 3 / 5 / Huỷ) mo tu Kecleon tap hoa / tu Machamp. */
+    static final int MENU_MUA_BUA_KECLEON = 3;
+    static final int MENU_MUA_BUA_MACHAMP = 4;
+    /** Goi mua o menu Mua Bùa chuyển luyện. */
+    public static final int[] SO_MUA_BUA = {1, 3, 5};
     /** Vi tri muc "Chuyển luyện" trong menu Machamp (RequestNPCInfoHandler case 2, sau "Phá khoá trang bị"). */
     public static final int VI_TRI_MUC_THO_REN = 3;
     public static final String TEN_MUC = "Chuyển luyện";
+    /** Vi tri muc "Mua Bùa chuyển luyện" trong menu Machamp (ngay sau Chuyển luyện). */
+    public static final int VI_TRI_MUA_BUA_THO_REN = 4;
+    public static final String TEN_BUA = "Bùa chuyển luyện";
     static final int TOI_DA_DONG = 20;
     /** Da luyen kim dung duoc (moi vien = 1 "da" nhu nang cap dai han), thu tu tieu. */
     static final int[] DA_LUYEN_KIM = {8, 9, 10, 11, 66, 245};
@@ -42,6 +50,8 @@ public final class ChuyenLuyenGame {
     static final int CHON_MAT_CAP = 0;
     static final int CHON_BUA = 1;
     static final int CHON_HUY = 2;
+    /** Mua them so bua con thieu cho lua chon Dung Bua roi quay lai menu xac nhan. */
+    static final int CHON_MUA_BUA = 3;
 
     /**
      * Trang thai dang chon theo charDBID. 05/11/2026 (bao loi rongngoo "bam chuyen xong tat tab, hanh trang y cu"): id vat
@@ -267,9 +277,101 @@ public final class ChuyenLuyenGame {
         if (menu == null || menu.length != VI_TRI_MUC_THO_REN) {
             return menu;
         }
-        final String[] m = java.util.Arrays.copyOf(menu, menu.length + 1);
+        final String[] m = java.util.Arrays.copyOf(menu, menu.length + 2);
         m[VI_TRI_MUC_THO_REN] = TEN_MUC;
+        m[VI_TRI_MUA_BUA_THO_REN] = "Mua " + TEN_BUA;
         return m;
+    }
+
+    // ------------------------------------------------------------------ mua bua (Kecleon / Machamp)
+
+    /** Dong cua hang ban Bua chuyen luyen (data_cua_hang_lau_dai "ITEM:1262:1", luong_khoa:20) dang mo cho p; null neu khong. */
+    static Object[] dongBua(final Char p) {
+        return bat() ? CuaHangLauDai.dongBan(p, ChuyenLuyen.ID_BUA) : null;
+    }
+
+    /** "20 lượng khoá / lượng" (theo dong cua hang). */
+    static String moTaGiaBua(final Object[] r) {
+        final long g = CuaHangLauDai.giaLuongKhoa(r);
+        return g > 0 ? PhaKhoaLogic.dinhDang(g) + " lượng khoá / lượng" : CuaHangLauDai.moTaChiPhi((String) r[3]);
+    }
+
+    /** Muc menu Kecleon (null = cua hang chua ban bua: khong hien muc). */
+    public static String mucKecleon(final Char p) {
+        final Object[] r = dongBua(p);
+        return r == null ? null : "Mua " + TEN_BUA + " (" + moTaGiaBua(r) + ")";
+    }
+
+    /** Menu Mua 1 / 3 / 5 / Huỷ. {@code tuKecleon}: mo tu Kecleon tap hoa (false = Machamp). */
+    public static void moMuaBua(final Char p, final boolean tuKecleon) {
+        if (p == null) {
+            return;
+        }
+        final Object[] r = dongBua(p);
+        if (r == null) {
+            DungVatPham.loi(p, TEN_BUA + " chưa mở bán.");
+            return;
+        }
+        final long g = CuaHangLauDai.giaLuongKhoa(r);
+        final String[] m = new String[SO_MUA_BUA.length + 1];
+        for (int i = 0; i < SO_MUA_BUA.length; i++) {
+            m[i] = "Mua " + SO_MUA_BUA[i] + " " + TEN_BUA + (g > 0 ? ": " + PhaKhoaLogic.dinhDang(g * SO_MUA_BUA[i]) + " lượng khoá / lượng" : "");
+        }
+        m[SO_MUA_BUA.length] = "Huỷ";
+        final int[] co = demBua(p);
+        DungVatPham.baoNhe(p, TEN_BUA + ": " + moTaGiaBua(r) + " mỗi bùa. Trừ lượng khoá trước, thiếu thì trừ lượng cùng giá (bùa mua bằng"
+                + " lượng không khoá). Đang có " + (co[0] + co[1]) + ". Dùng ở Machamp › Chuyển luyện để giữ nguyên +N.");
+        p.sendMessage(MessageCreator.createMsgMenu(m, NPC_ID, tuKecleon ? MENU_MUA_BUA_KECLEON : MENU_MUA_BUA_MACHAMP));
+    }
+
+    /**
+     * Mua {@code n} Bua chuyen luyen bang CuaHangLauDai.mua (cung luat dong cua hang: luong khoa truoc, thieu thi luong,
+     * do mua bang luong khong khoa; cho trong hanh trang; mot lan tru). Gui thong bao ket qua. @return true neu da mua.
+     */
+    public static boolean muaBua(final Char p, final int n) {
+        final Object[] r = dongBua(p);
+        if (r == null) {
+            DungVatPham.loi(p, TEN_BUA + " chưa mở bán.");
+            return false;
+        }
+        if (dangGiaoDich(p)) {
+            DungVatPham.loi(p, "Đang giao dịch, hãy hoàn tất giao dịch trước.");
+            return false;
+        }
+        final String kq = CuaHangLauDai.mua(p, r, n);
+        if (CuaHangLauDai.thanhCong(kq)) {
+            final int[] co = demBua(p);
+            DungVatPham.bao(p, kq + " Đang có " + (co[0] + co[1]) + " " + TEN_BUA + ".");
+            try {
+                p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+            } catch (final Throwable ignored) {
+            }
+            return true;
+        }
+        if (kq.startsWith("Không đủ")) {
+            DungVatPham.loi(p, "Không đủ lượng khoá / lượng để mua " + n + " " + TEN_BUA + " (cần " + moTaGiaBuaTong(r, n) + ").");
+        } else if (kq.startsWith("Hành trang")) {
+            DungVatPham.loi(p, kq.replace(".", "") + " để nhận " + TEN_BUA + ".");
+        } else {
+            DungVatPham.loi(p, kq);
+        }
+        return false;
+    }
+
+    static String moTaGiaBuaTong(final Object[] r, final int n) {
+        final long g = CuaHangLauDai.giaLuongKhoa(r);
+        return g > 0 ? PhaKhoaLogic.dinhDang(g * n) + " lượng khoá hoặc lượng" : n + " x " + CuaHangLauDai.moTaChiPhi((String) r[3]);
+    }
+
+    static void chonMuaBua(final Char p, final boolean tuKecleon, final int chon) {
+        if (chon < 0 || chon >= SO_MUA_BUA.length) {
+            return; // Huy
+        }
+        if (tuKecleon ? !NpcTinhBanDo.oNoiDichVu(p, NpcDichVu.NPC_KECLEON_LOAI) : !NpcTinhBanDo.oNoiDichVu(p, NpcTinhBanDo.NPC_THO_REN)) {
+            DungVatPham.loi(p, tuKecleon ? "Hãy đến gần Kecleon tạp hoá." : "Hãy đến gần Machamp thợ rèn.");
+            return;
+        }
+        muaBua(p, SO_MUA_BUA[chon]);
     }
 
     static boolean kiemNoi(final Char p) {
@@ -341,8 +443,12 @@ public final class ChuyenLuyenGame {
                 } else {
                     bao(p, HET_PHIEN);
                 }
+            } else if (idMenu == MENU_MUA_BUA_KECLEON || idMenu == MENU_MUA_BUA_MACHAMP) {
+                chonMuaBua(p, idMenu == MENU_MUA_BUA_KECLEON, idOption);
             } else if (idMenu == MENU_XAC_NHAN) {
-                if (idOption >= 0 && idOption < c.luaChon.length && c.luaChon[idOption] != CHON_HUY) {
+                if (idOption >= 0 && idOption < c.luaChon.length && c.luaChon[idOption] == CHON_MUA_BUA) {
+                    muaBuaThieu(p, c);
+                } else if (idOption >= 0 && idOption < c.luaChon.length && c.luaChon[idOption] != CHON_HUY) {
                     thucHien(p, c, c.luaChon[idOption] == CHON_BUA);
                 } else if (idOption >= 0 && idOption < c.luaChon.length) {
                     c.coNguon = false;
@@ -359,6 +465,26 @@ public final class ChuyenLuyenGame {
             System.out.println("ChuyenLuyenGame.doMenu " + p.charname + " menu " + idMenu + "/" + idOption + ": " + e);
             bao(p, "Lỗi chuyển luyện, hãy thử lại hoặc báo quản trị.");
         }
+    }
+
+    /** Menu xac nhan > "Mua thêm K Bùa": mua dung so con thieu (mot lan tru) roi hien lai menu xac nhan. */
+    static void muaBuaThieu(final Char p, final Chon c) {
+        if (!c.coNguon || !c.coNhan) {
+            bao(p, HET_PHIEN);
+            return;
+        }
+        if (!kiemNoi(p)) {
+            return;
+        }
+        final Item a = timMon(p, c.idNguon);
+        final int[] co = demBua(p);
+        final int thieu = a == null ? 0 : ChuyenLuyen.soBua(a.plus) - co[0] - co[1];
+        if (thieu > 0) {
+            muaBua(p, thieu);
+        } else {
+            DungVatPham.bao(p, "Đã đủ " + TEN_BUA + ", chọn \"Dùng bùa\" để chuyển.");
+        }
+        hoiXacNhan(p, c, c.idNguon, c.idNhan);
     }
 
     static final String HET_PHIEN = "Lựa chọn chuyển luyện đã hết hạn, hãy mở lại Machamp › Chuyển luyện.";
@@ -431,6 +557,12 @@ public final class ChuyenLuyenGame {
             dong.add("Dùng " + ChuyenLuyen.soBua(n) + " Bùa chuyển luyện (có " + (bua[0] + bua[1]) + "): " + ten(b) + " thành +" + n
                     + ", không mất cấp. Giá " + moTaGia(c.xuHoi[1], c.daHoi[1]));
             lc.add(Integer.valueOf(CHON_BUA));
+            final int thieu = ChuyenLuyen.soBua(n) - bua[0] - bua[1];
+            final Object[] r = thieu > 0 ? dongBua(p) : null;
+            if (r != null) {
+                dong.add("Mua thêm " + thieu + " " + TEN_BUA + " (" + moTaGiaBua(r) + " mỗi bùa) rồi chọn lại");
+                lc.add(Integer.valueOf(CHON_MUA_BUA));
+            }
         }
         dong.add("Huỷ");
         lc.add(Integer.valueOf(CHON_HUY));

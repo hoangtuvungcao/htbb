@@ -146,8 +146,17 @@ public final class CuaHangLauDai {
     }
 
     static String moTaChiPhi(final String s) {
+        return moTaChiPhi(docChiPhi(s));
+    }
+
+    static String moTaChiPhi(final List<long[]> chi) {
+        return moTaChiPhi(chi, null);
+    }
+
+    /** @param bangLuong null = "lượng khoá (hoặc lượng)"; true / false = đã trừ bằng lượng / lượng khoá. */
+    static String moTaChiPhi(final List<long[]> chi, final Boolean bangLuong) {
         final StringBuilder b = new StringBuilder();
-        for (final long[] c : docChiPhi(s)) {
+        for (final long[] c : chi) {
             if (b.length() > 0) {
                 b.append(", ");
             }
@@ -157,7 +166,12 @@ public final class CuaHangLauDai {
                     b.append("xu");
                     break;
                 case 1:
-                    b.append("lượng khoá (hoặc lượng)"); // thieu luong khoa thi tru luong cung so (chu game 31/10/2026)
+                    // thieu luong khoa thi tru luong cung so (chu game 31/10/2026)
+                    if (bangLuong == null) {
+                        b.append("lượng khoá (hoặc lượng)");
+                    } else {
+                        b.append(bangLuong.booleanValue() ? "lượng" : "lượng khoá");
+                    }
                     break;
                 case 2:
                     final ItemTemplates t = Map.itemTemplates.get(5).get(Integer.valueOf((int) c[1]));
@@ -196,6 +210,23 @@ public final class CuaHangLauDai {
 
     /** Mua / đổi 1 lần. @return câu trả lời cho người chơi. */
     static String mua(final Char p, final Object[] r) {
+        return mua(p, r, 1);
+    }
+
+    /** Câu trả lời của {@link #mua} khi đã trừ và phát đồ. */
+    public static boolean thanhCong(final String kq) {
+        return kq != null && kq.startsWith("Đã nhận");
+    }
+
+    /**
+     * Mua / đổi {@code soLan} lần trong MỘT lần trừ (chi phí và thưởng nhân {@code soLan}): đủ hết hoặc không trừ gì.
+     * Dùng chung cho Kecleon / Machamp "Mua Bùa chuyển luyện" (cùng luật lượng khoá trước, thiếu thì lượng, đồ mua
+     * bằng lượng không khoá). Dòng có giới hạn tuần chỉ đổi từng lần.
+     */
+    public static String mua(final Char p, final Object[] r, final int soLan) {
+        if (p == null || r == null || soLan < 1 || soLan > 999) {
+            return "Số lượng không hợp lệ.";
+        }
         if (!hien(p, r)) {
             return "Chưa mở.";
         }
@@ -207,33 +238,58 @@ public final class CuaHangLauDai {
         if (chi.isEmpty() || thuong.isEmpty()) {
             return "Dòng này đang lỗi dữ liệu.";
         }
-        int can = 0;
+        if (soLan > 1) {
+            for (final long[] c : chi) {
+                c[2] *= soLan;
+            }
+            for (final int[] t : thuong) {
+                t[2] *= soLan;
+            }
+        }
+        final boolean coLuong = coLuongKhoa(chi);
+        // o can khi do ra KHOA (tra luong khoa / vat pham) va khi do ra MO (tra bang luong): type 28 chi don vao chong
+        // cung khoa, nen bua mo khong vao chong bua khoa -> co the can them o.
+        int canKhoa = 0;
+        int canMo = 0;
         for (final int[] t : thuong) {
             if (t[0] == 0) {
                 // [chong-vat-pham] type 28 (createItemSoLuong) don vao chong san co: chi can o cho phan vuot chong
                 final ItemTemplates tp = Map.itemTemplates.get(5).get(Integer.valueOf(t[1]));
-                can += tp != null && tp.type == 28 ? com.htbb.pokemon.ChongVatPham.soOCan(p, t[1], t[2]) : t[2];
-            } else if (t[0] == 1 && demNgoc(p, t[1]) == 0) {
-                can++;
+                final boolean chong = tp != null && tp.type == 28;
+                canKhoa += chong ? com.htbb.pokemon.ChongVatPham.soOCan(p, t[1], t[2]) : t[2];
+                canMo += chong ? soOChongMo(p, t[1], t[2]) : t[2];
+                continue;
+            }
+            int them = 0;
+            if (t[0] == 1 && demNgoc(p, t[1]) == 0) {
+                them = 1;
             } else if (t[0] == 2 && (t[1] < 0 || t[1] >= p.potions.length)) {
                 return "Dòng này đang lỗi dữ liệu.";
             } else if (t[0] == 2 && p.potions[t[1]] == 0) {
-                can++;
+                them = 1;
             }
+            canKhoa += them;
+            canMo += them;
         }
-        if (p.countSlotInventory() < can) {
-            return "Hành trang cần " + can + " ô trống.";
+        final int trong = p.countSlotInventory();
+        final boolean choKhoa = trong >= canKhoa;
+        final boolean choMo = coLuong && trong >= canMo;
+        if (!choKhoa && !choMo) {
+            return "Hành trang cần " + canKhoa + " ô trống.";
         }
         final int gh = ((Integer) r[8]).intValue();
         final int idDong = ((Integer) r[0]).intValue();
+        if (gh > 0 && soLan > 1) {
+            return "Dòng này chỉ đổi từng lần.";
+        }
         if (gh > 0 && !DatabaseLauDai.tangMuaTuan(p.charDBID, ID_TUAN + idDong, LauDaiNhanVat.tuanNay(), gh)) {
             return "Đã đổi đủ " + gh + " lần trong tuần này.";
         }
         // Gia luong khoa: tru luong khoa truoc; thieu thi tru LUONG cung so (luong nap mua duoc moi thu luong khoa mua
         // duoc), do mua bang luong KHONG khoa. Moi lan thu la MOT khoi Char.truNeuDu.
-        boolean ok = p.truNeuDu(() -> du(p, chi, false), () -> tru(p, chi, false));
+        boolean ok = choKhoa && p.truNeuDu(() -> du(p, chi, false), () -> tru(p, chi, false));
         boolean traLuong = false;
-        if (!ok && coLuongKhoa(chi)) {
+        if (!ok && choMo) {
             ok = p.truNeuDu(() -> du(p, chi, true), () -> tru(p, chi, true));
             traLuong = ok;
         }
@@ -242,15 +298,53 @@ public final class CuaHangLauDai {
                 // luot tuan da dem o tren: khong tru duoc thi tra lai (truoc 31/10/2026 thieu tien van mat luot)
                 DatabaseLauDai.hoanMuaTuan(p.charDBID, ID_TUAN + idDong, LauDaiNhanVat.tuanNay());
             }
-            return "Không đủ: " + moTaChiPhi((String) r[3]) + ".";
+            if (coLuong && !choMo && du(p, chi, true)) {
+                // du luong nhung do mua bang luong (khong khoa) khong xep chung chong khoa: thieu o
+                return "Hành trang cần " + canMo + " ô trống (đồ mua bằng lượng không khoá, không xếp chung chồng đồ khoá).";
+            }
+            return "Không đủ: " + moTaChiPhi(chi) + ".";
         }
         phat(p, thuong, !traLuong);
         try {
             Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "cua hang lau dai " + idDong + ": " + r[3] + " -> " + r[4]
-                    + (traLuong ? " (tra bang luong)" : ""), "cuahanglaudai");
+                    + (soLan > 1 ? " x" + soLan : "") + (traLuong ? " (tra bang luong)" : ""), "cuahanglaudai");
         } catch (final Exception ignored) {
         }
-        return "Đã nhận: " + r[2] + (traLuong ? " (trừ lượng vì thiếu lượng khoá, đồ không khoá)." : ".");
+        return "Đã nhận: " + (soLan > 1 ? soLan + " " : "") + r[2] + (soLan > 1 ? ", trả " + moTaChiPhi(chi, traLuong) : "")
+                + (traLuong ? " (trừ lượng vì thiếu lượng khoá, đồ không khoá)." : ".");
+    }
+
+    /** O moi can cho {@code n} mon type 28 KHONG khoa (mua bang luong). */
+    static int soOChongMo(final Char p, final int id, final int n) {
+        final Item mau = Char.mauSoLuong(id, p);
+        if (mau == null) {
+            return n;
+        }
+        mau.lock = 0;
+        return com.htbb.pokemon.ChongVatPham.soOMoi(p.iItems, mau, n);
+    }
+
+    /** Dong cua hang ban dung 1 vat pham {@code idItem} (thuong "ITEM:idItem:1") va dang hien cho {@code p}; null neu khong. */
+    public static Object[] dongBan(final Char p, final int idItem) {
+        if (!LauDai.bat()) {
+            return null;
+        }
+        for (final Object[] r : BANG) {
+            final List<int[]> t = docThuong((String) r[4]);
+            if (t.size() == 1 && t.get(0)[0] == 0 && t.get(0)[1] == idItem && t.get(0)[2] == 1 && (p == null || hien(p, r))) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    /** Gia luong khoa / 1 lan cua dong (chi phi CHI co luong khoa); -1 neu dong co chi phi khac. */
+    public static long giaLuongKhoa(final Object[] r) {
+        final List<long[]> chi = docChiPhi((String) r[3]);
+        if (chi.size() != 1 || chi.get(0)[0] != 1) {
+            return -1L;
+        }
+        return chi.get(0)[2];
     }
 
     /** Chi phi co phan luong khoa (dong Kecleon). */

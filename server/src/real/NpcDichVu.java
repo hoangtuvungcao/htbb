@@ -375,6 +375,8 @@ public final class NpcDichVu {
                 VeDichChuyenGame.moMua(p);
             } else if (chon == 2) {
                 ThuocCapCaoGame.moDanhSach(p);
+            } else if (chon == VeDichChuyenGame.MUC_KECLEON_BUA) {
+                ChuyenLuyenGame.moMuaBua(p, true); // Mua Bua chuyen luyen: Mua 1 / 3 / 5 / Huy
             }
             return true;
         }

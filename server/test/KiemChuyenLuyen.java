@@ -153,10 +153,17 @@ public final class KiemChuyenLuyen {
         final String dm = doc("src/real/MapDoMenu.java");
         Kiem.dung("MapDoMenu: case 2 muc 3 -> ChuyenLuyenGame.moMenu, NPC ao -> doMenu",
                 dm.contains("idOptionMenu == ChuyenLuyenGame.VI_TRI_MUC_THO_REN") && dm.contains("idNpc == ChuyenLuyenGame.NPC_ID"));
+        final String g = doc("src/real/ChuyenLuyenGame.java");
         final String[] m = real.ChuyenLuyenGame.themMucThoRen(new String[]{"Mua đồ cầm tay", "Mua trang bị thú", real.PhaKhoaGame.TEN_MUC});
         Kiem.bang("menu Machamp: muc 4 = Chuyển luyện", "Chuyển luyện", m.length > 3 ? m[3] : "");
         Kiem.bang("vi tri muc = 3", Integer.valueOf(3), Integer.valueOf(real.ChuyenLuyenGame.VI_TRI_MUC_THO_REN));
-        final String g = doc("src/real/ChuyenLuyenGame.java");
+        Kiem.bang("menu Machamp: muc 5 = Mua Bùa chuyển luyện", "Mua Bùa chuyển luyện", m.length > 4 ? m[4] : "");
+        Kiem.dung("MapDoMenu: case 2 muc 4 -> ChuyenLuyenGame.moMuaBua(player, false)",
+                dm.contains("idOptionMenu == ChuyenLuyenGame.VI_TRI_MUA_BUA_THO_REN") && dm.contains("ChuyenLuyenGame.moMuaBua(player, false)"));
+        Kiem.dung("NpcDichVu: Kecleon muc 3 -> ChuyenLuyenGame.moMuaBua(p, true)", doc("src/real/NpcDichVu.java")
+                .contains("chon == VeDichChuyenGame.MUC_KECLEON_BUA") && doc("src/real/NpcDichVu.java").contains("ChuyenLuyenGame.moMuaBua(p, true)"));
+        Kiem.dung("mua bua dung chung CuaHangLauDai.mua (khong lap logic tien)", g.contains("CuaHangLauDai.mua(p, r, n)")
+                && !g.contains("subLuongLock") && !g.contains("subLuong("));
         Kiem.dung("game: tru va doi mon trong MOT p.truNeuDu", g.contains("final boolean xong = p.truNeuDu(") && g.indexOf("NangCapLauDaiGame.doiChiSo(b")
                 > g.indexOf("final boolean xong = p.truNeuDu("));
         final String tk = doc("../docs/thiet-ke-game.md");

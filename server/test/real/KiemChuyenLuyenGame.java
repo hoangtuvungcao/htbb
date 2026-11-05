@@ -227,6 +227,159 @@ public final class KiemChuyenLuyenGame {
         bang("pha khoa: lua chon ngoai khoang / menu la co thong bao", Integer.valueOf(2), Integer.valueOf(p.goi.size()));
     }
 
+    /** Menu (goi -30) cuoi cung da gui: {idNpc, idMenu, dong...}; null neu khong co. */
+    static String[] menuCuoi(final NV p) {
+        for (int i = p.goi.size() - 1; i >= 0; i--) {
+            final Message m = p.goi.get(i);
+            if (m.command != -30) {
+                continue;
+            }
+            try {
+                final byte[] b = m.toByteArray();
+                final java.io.DataInputStream d = new java.io.DataInputStream(new java.io.ByteArrayInputStream(b, 3, b.length - 3));
+                final int npc = d.readShort();
+                final int menu = d.readByte();
+                final int n = d.readByte() & 0xff;
+                final String[] r = new String[n + 2];
+                r[0] = String.valueOf(npc);
+                r[1] = String.valueOf(menu);
+                for (int k = 0; k < n; k++) {
+                    r[k + 2] = d.readUTF();
+                }
+                return r;
+            } catch (final Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /** {mo, khoa} Bua trong tui. */
+    static String bua(final Char p) {
+        final int[] b = ChuyenLuyenGame.demBua(p);
+        return b[0] + "/" + b[1];
+    }
+
+    /**
+     * MUA BUA CHUYEN LUYEN (chu game 05/11/2026): Kecleon tap hoa muc 4 + Machamp muc 5 -> Mua 1 / 3 / 5 / Huy, cung
+     * CuaHangLauDai.mua dong 131 (luong khoa truoc, thieu thi luong cung gia, bua mua bang luong KHONG khoa), cho trong
+     * hanh trang; menu xac nhan chuyen luyen thieu bua -> "Mua thêm K" mua dung K roi hien lai menu xac nhan.
+     */
+    static void muaBua() {
+        CuaHangLauDai.BANG = new ArrayList<Object[]>();
+        CuaHangLauDai.BANG.add(new Object[]{Integer.valueOf(131), "Lượng khoá (Kecleon)", "Bùa chuyển luyện", "luong_khoa:20",
+            "ITEM:1262:1", Integer.valueOf(1), Integer.valueOf(0), Integer.valueOf(-1), Integer.valueOf(0)});
+        final String ten = "Mua Bùa chuyển luyện (20 lượng khoá / lượng)";
+        // Kecleon: muc 4
+        final NV p = nvTrongNha(0L);
+        String[] k = VeDichChuyenGame.menuKecleon(p);
+        bang("Kecleon: 4 muc, muc 4 = Mua Bua", "4/" + ten, k.length + "/" + (k.length > 3 ? k[3] : ""));
+        bang("Kecleon: 3 muc cu giu nguyen vi tri", VeDichChuyenGame.MUC_KECLEON_THUOC + "/" + ThuocCapCaoGame.TEN_MUC, k[0] + "/" + k[2]);
+        p.goi.clear();
+        NpcDichVu.xuLyMenu(p, VeDichChuyenGame.NPC_KECLEON, 0, VeDichChuyenGame.MUC_KECLEON_BUA);
+        String[] m = menuCuoi(p);
+        bang("Kecleon > Mua Bua: menu -535/3 Mua 1 / 3 / 5 / Huy", "-535/3/6/Mua 1 Bùa chuyển luyện: 20 lượng khoá / lượng/Mua 5 Bùa chuyển luyện: 100 lượng khoá / lượng/Huỷ",
+                m == null ? "" : m[0] + "/" + m[1] + "/" + m.length + "/" + m[2] + "/" + m[4] + "/" + m[5]);
+        // luong khoa: mua 1 / 3 / 5
+        p.lockLuong = 200;
+        p.luong = 50;
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 0);
+        bang("mua 1 bang luong khoa: -20 lk, 1 bua khoa", "180/50/0/1", p.lockLuong + "/" + p.luong + "/" + bua(p));
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 1);
+        bang("mua 3 bang luong khoa: -60 lk, 4 bua khoa", "120/50/0/4", p.lockLuong + "/" + p.luong + "/" + bua(p));
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 2);
+        bang("mua 5 bang luong khoa: -100 lk, 9 bua khoa (mot chong)", "20/50/0/9/1", p.lockLuong + "/" + p.luong + "/" + bua(p) + "/" + demChong(p));
+        // thieu luong khoa (20 < 60): tru luong cung gia, bua KHONG khoa, luong khoa giu
+        p.luong = 100;
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 1);
+        bang("mua 3 thieu luong khoa: -60 luong, 3 bua mo, lk giu 20", "20/40/3/9", p.lockLuong + "/" + p.luong + "/" + bua(p));
+        // khong du ca hai: khong tru gi, co thong bao loi
+        p.goi.clear();
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 2);
+        bang("mua 5 khong du (lk 20, luong 40): khong tru, bua giu, 1 thong bao", "20/" + p.luong + "/3/9/true",
+                p.lockLuong + "/" + p.luong + "/" + bua(p) + "/" + (p.goi.size() >= 1));
+        // Huy: khong lam gi
+        final int lk = p.lockLuong;
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 3);
+        bang("Huy: khong tru", lk + "/3/9", p.lockLuong + "/" + bua(p));
+        // xa Kecleon: khong mua
+        final NV xa = new NV(0L);
+        xa.map = new Map();
+        xa.lockLuong = 100;
+        ChuyenLuyenGame.doMenu(xa, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 0);
+        bang("xa Kecleon: khong mua", "100/0/0", xa.lockLuong + "/" + bua(xa));
+
+        // tui day: khong tru
+        final NV d = nvTrongNha(0L);
+        d.lockLuong = 100;
+        d.luong = 100;
+        while (d.countSlotInventory() > 0) {
+            mon(d, ID_KHAN, 0, 10);
+        }
+        d.goi.clear();
+        ChuyenLuyenGame.doMenu(d, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 0);
+        bang("tui day: khong tru, khong bua, co thong bao", "100/100/0/0/true", d.lockLuong + "/" + d.luong + "/" + bua(d) + "/" + (d.goi.size() >= 1));
+        // tui day nhung co chong bua KHOA: mua bang luong khoa don vao chong
+        d.iItems.remove(d.iItems.size() - 1);
+        ChuyenLuyenGame.doMenu(d, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 0); // o cuoi: chong bua khoa
+        bang("con 1 o: mua 1 bang luong khoa", "80/100/0/1/0", d.lockLuong + "/" + d.luong + "/" + bua(d) + "/" + d.countSlotInventory());
+        ChuyenLuyenGame.doMenu(d, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 1);
+        bang("tui day + chong khoa: luong khoa don vao chong", "20/100/0/4", d.lockLuong + "/" + d.luong + "/" + bua(d));
+        // ... thieu luong khoa -> phai tra bang luong -> bua MO can o moi: tu choi truoc khi tru (truoc day mat tien)
+        ChuyenLuyenGame.doMenu(d, ChuyenLuyenGame.MENU_MUA_BUA_KECLEON, 2);
+        bang("tui day + chong khoa + chi du luong: tu choi, khong tru", "20/100/0/4", d.lockLuong + "/" + d.luong + "/" + bua(d));
+
+        // Machamp: muc 5 "Mua Bùa chuyển luyện"
+        final String[] mc = ChuyenLuyenGame.themMucThoRen(new String[]{"Mua đồ cầm tay", "Mua trang bị thú", PhaKhoaGame.TEN_MUC});
+        bang("Machamp: muc 4 Chuyen luyen, muc 5 Mua Bua", "Chuyển luyện/Mua Bùa chuyển luyện", mc[3] + "/" + mc[4]);
+        final NV q = nvTrongNha(0L);
+        q.lockLuong = 20;
+        ChuyenLuyenGame.moMuaBua(q, false);
+        m = menuCuoi(q);
+        bang("Machamp > Mua Bua: menu -535/4", "-535/4", m == null ? "" : m[0] + "/" + m[1]);
+        ChuyenLuyenGame.doMenu(q, ChuyenLuyenGame.MENU_MUA_BUA_MACHAMP, 0);
+        bang("Machamp mua 1: -20 lk", "0/0/1", q.lockLuong + "/" + bua(q));
+
+        // menu xac nhan chuyen luyen: +12 can 2 bua, co 0 -> dong "Mua thêm 2" truoc Huy
+        final NV w = nvTrongNha(10_000_000L);
+        w.lockLuong = 30;
+        w.luong = 30;
+        w.listGemitem[8] = 10;
+        final Item a = mon(w, ID_VK30, 12, 100);
+        final Item b = mon(w, ID_VK40, 0, 200);
+        final ChuyenLuyenGame.Chon c = ChuyenLuyenGame.chon(w);
+        c.coNguon = true;
+        ChuyenLuyenGame.hoiXacNhan(w, c, a.id, b.id);
+        bang("thieu bua: mat cap / bua / mua them / huy", "0,1,3,2", java.util.Arrays.toString(c.luaChon).replaceAll("[\\[\\] ]", ""));
+        m = menuCuoi(w);
+        bang("dong mua them", "Mua thêm 2 Bùa chuyển luyện (20 lượng khoá / lượng mỗi bùa) rồi chọn lại", m == null ? "" : m[4]);
+        // lk 30 < 40, luong 30 < 40: khong du -> khong tru, menu xac nhan hien lai
+        w.goi.clear();
+        ChuyenLuyenGame.doMenu(w, ChuyenLuyenGame.MENU_XAC_NHAN, 2);
+        m = menuCuoi(w);
+        bang("mua them khong du: khong tru, menu xac nhan hien lai", "30/30/0/0/-535/2", w.lockLuong + "/" + w.luong + "/" + bua(w) + "/"
+                + (m == null ? "" : m[0] + "/" + m[1]));
+        w.lockLuong = 50;
+        w.goi.clear();
+        ChuyenLuyenGame.doMenu(w, ChuyenLuyenGame.MENU_XAC_NHAN, 2);
+        bang("mua them 2: -40 lk, 2 bua khoa, mon chua doi", "10/30/0/2/12/0", w.lockLuong + "/" + w.luong + "/" + bua(w) + "/" + a.plus + "/" + b.plus);
+        bang("sau khi mua: menu xac nhan hien lai, het dong mua them", "0,1,2", java.util.Arrays.toString(c.luaChon).replaceAll("[\\[\\] ]", ""));
+        ChuyenLuyenGame.doMenu(w, ChuyenLuyenGame.MENU_XAC_NHAN, 1);
+        bang("dung bua vua mua: nhan +12, nguon +0, het bua", "12/0/0/0", b.plus + "/" + a.plus + "/" + bua(w));
+        CuaHangLauDai.BANG = new ArrayList<Object[]>();
+        bang("cua hang khong ban bua: Kecleon 3 muc", Integer.valueOf(3), Integer.valueOf(VeDichChuyenGame.menuKecleon(p).length));
+    }
+
+    static int demChong(final Char p) {
+        int n = 0;
+        for (final Item it : p.iItems) {
+            if (it.tempateID == ChuyenLuyen.ID_BUA) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     public static void chay() {
         final boolean lauDaiCu = LauDai.bat();
         final ItemTemplates[][] cu = new ItemTemplates[IDS.length][6];
@@ -234,8 +387,10 @@ public final class KiemChuyenLuyenGame {
         final int[] daCu = ThongSoLauDai.DA_NC;
         final int[] bacCu = ThongSoLauDai.BAC_TB_CAP;
         final int[] chiSoCu = ThongSoLauDai.CHI_SO_NC_PHAN_TRAM;
+        final List<Object[]> bangCu = CuaHangLauDai.BANG;
         try {
             LauDai.dat(true);
+            CuaHangLauDai.BANG = new ArrayList<Object[]>(); // menu xac nhan co dinh (khong dong "Mua thêm bùa")
             while (Map.itemTemplates.size() < 6) {
                 Map.itemTemplates.add(new Hashtable<Integer, ItemTemplates>());
             }
@@ -401,11 +556,13 @@ public final class KiemChuyenLuyenGame {
 
             menuIdAm();
             phaKhoaIdAm();
+            muaBua();
         } catch (final Exception ex) {
             bang("KiemChuyenLuyenGame khong nem loi", "", String.valueOf(ex));
             ex.printStackTrace();
         } finally {
             LauDai.dat(lauDaiCu);
+            CuaHangLauDai.BANG = bangCu;
             ThongSoLauDai.CHI_PHI_NC = chiPhiCu;
             ThongSoLauDai.DA_NC = daCu;
             ThongSoLauDai.BAC_TB_CAP = bacCu;

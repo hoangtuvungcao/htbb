@@ -71,9 +71,20 @@ public final class VeDichChuyenGame {
 
     /** Menu Kecleon (goi 23 loai 1 / 26): cua so thuoc cu, ve dich chuyen, thuoc cap cao (real.ThuocCapCaoGame). */
     public static String[] menuKecleon(final Char p) {
-        return new String[]{MUC_KECLEON_THUOC, VeDichChuyen.TEN + " (" + so(VeDichChuyen.gia(cap(p))) + " xu/vé)",
+        final String[] m = {MUC_KECLEON_THUOC, VeDichChuyen.TEN + " (" + so(VeDichChuyen.gia(cap(p))) + " xu/vé)",
             ThuocCapCaoGame.TEN_MUC};
+        // muc 3 (05/11/2026): Mua Bua chuyen luyen (real.ChuyenLuyenGame.moMuaBua) - chi khi cua hang dang ban
+        final String bua = ChuyenLuyenGame.mucKecleon(p);
+        if (bua == null) {
+            return m;
+        }
+        final String[] k = java.util.Arrays.copyOf(m, m.length + 1);
+        k[MUC_KECLEON_BUA] = bua;
+        return k;
     }
+
+    /** Vi tri muc "Mua Bùa chuyển luyện" trong menu Kecleon. */
+    public static final int MUC_KECLEON_BUA = 3;
 
     public static void moMua(final Char p) {
         final int cap = cap(p);

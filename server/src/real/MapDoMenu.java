@@ -4917,6 +4917,8 @@ class MapDoMenu {
                             PhaKhoaGame.moMenu(player); // [khoa-khi-mac]
                         } else if (idOptionMenu == ChuyenLuyenGame.VI_TRI_MUC_THO_REN) {
                             ChuyenLuyenGame.moMenu(player); // chuyen luyen +N
+                        } else if (idOptionMenu == ChuyenLuyenGame.VI_TRI_MUA_BUA_THO_REN) {
+                            ChuyenLuyenGame.moMuaBua(player, false); // Mua Bua chuyen luyen (Mua 1 / 3 / 5 / Huy)
                         } else if (idOptionMenu != 0) {
                             if (idOptionMenu == 1) {
                                 String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};
