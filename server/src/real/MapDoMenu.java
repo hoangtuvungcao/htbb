@@ -154,6 +154,11 @@ class MapDoMenu {
                 BoNgocGame.doMenu(player, idMenu, idOptionMenu);
                 return;
             }
+            // Chuyen luyen (mo tu muc 4 cua Machamp tho ren, case 2 ben duoi): NPC ao chon nguon / nhan / xac nhan.
+            if (idNpc == ChuyenLuyenGame.NPC_ID) {
+                ChuyenLuyenGame.doMenu(player, idMenu, idOptionMenu);
+                return;
+            }
             // [bat-pokemon] menu bong / Hop PC (npc ao -581..-584)
             if (BatPokemonGame.doMenu(player, idNpc, idMenu, idOptionMenu)) {
                 return;
@@ -4910,6 +4915,8 @@ class MapDoMenu {
                         player.buyAnimalArmor = -1;
                         if (idOptionMenu == PhaKhoaGame.VI_TRI_MUC_THO_REN) {
                             PhaKhoaGame.moMenu(player); // [khoa-khi-mac]
+                        } else if (idOptionMenu == ChuyenLuyenGame.VI_TRI_MUC_THO_REN) {
+                            ChuyenLuyenGame.moMenu(player); // chuyen luyen +N
                         } else if (idOptionMenu != 0) {
                             if (idOptionMenu == 1) {
                                 String[] menu = new String[]{"Trang bị đặc biệt", "Trang bị vật lý"};

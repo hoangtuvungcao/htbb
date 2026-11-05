@@ -390,8 +390,14 @@ public final class NapTienLogic {
     /** 0.9.8: mo trang chieu thu 3 (o nhanh) - tien ich, khong chi so; mot lan / nhan vat (gioi_han 1). */
     public static final String TRAO_TRANG_CHIEU = "trang_chieu";
     public static final String MA_THE_TRANG_CHIEU = "the_trang_chieu";
+    /**
+     * Bua chuyen luyen (chu game 05/11/2026, real.ChuyenLuyenGame): CHI ma {@link ChuyenLuyen#MA_CUA_HANG}, nhom tien_ich,
+     * vao tui la vat pham {@link ChuyenLuyen#ID_BUA} KHONG khoa (luong nap mua duoc moi thu luong khoa mua duoc, do mua
+     * bang luong khong khoa). Cung bua ban o Kecleon bang luong khoa (data_cua_hang_lau_dai, do khoa).
+     */
+    public static final String TRAO_BUA_CHUYEN_LUYEN = "bua_chuyen_luyen";
     public static final String[] TRAO_HOP_LE = {TRAO_TRANG_TRI, TRAO_MO_RONG_TUI, TRAO_DOI_TEN, TRAO_TANG_TOC, TRAO_DAT_TEN_PET,
-        TRAO_TRANG_CHIEU};
+        TRAO_TRANG_CHIEU, TRAO_BUA_CHUYEN_LUYEN};
 
     /**
      * Nhom hien thi = 4 o TU DO TRANG TRI (TrangPhucLogic.O, mot he trang tri - dong bo 0.9.8) + tien ich + tang toc. Mon
@@ -511,6 +517,8 @@ public final class NapTienLogic {
         // Ve +1 o thu (real.QuanLyThuGame): trao mo_rong_tui + ma nay = 1 ve KHOA vao tui. Tran that = cau hinh
         // thu.o_toi_da (kiemMuaVe tinh ca ve dang giu); gioi_han 40 = 60 - 20 mac dinh. Tien loi, khong chi so.
         new Mon(MA_VE_MO_O_THU, "Vé mở ô thú (+1 ô)", "tien_ich", TRAO_MO_RONG_TUI, GIA_VE_MO_O_THU, 0, 40, 0, false),
+        // Bua chuyen luyen (real.ChuyenLuyenGame): vao tui KHONG khoa; Kecleon ban cung gia bang luong khoa (do khoa).
+        new Mon(ChuyenLuyen.MA_CUA_HANG, "Bùa chuyển luyện", "tien_ich", TRAO_BUA_CHUYEN_LUYEN, ChuyenLuyen.GIA_LUONG, 0, 0, 0, false),
         // Tu do trang tri 0.9.8 (khoi them_do_trang_phuc.sql, sinh boi tools/do_trang_phuc/sinh.py): chi HINH, chi so theo O
         new Mon("tp_hai_tac", "Trang phục Hải tặc", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
         new Mon("tp_ninja", "Trang phục Ninja", "trang_phuc", TRAO_TRANG_TRI, 200, 0, 1, 0, false),
@@ -548,7 +556,11 @@ public final class NapTienLogic {
             traoDung |= t.equals(m.trao);
         }
         if (!traoDung) {
-            return "cach trao '" + m.trao + "' khong nam trong danh sach trang (trang_tri / mo_rong_tui / doi_ten / tang_toc / dat_ten_pet)";
+            return "cach trao '" + m.trao + "' khong nam trong danh sach trang (trang_tri / mo_rong_tui / doi_ten / tang_toc / dat_ten_pet"
+                    + " / trang_chieu / bua_chuyen_luyen)";
+        }
+        if (TRAO_BUA_CHUYEN_LUYEN.equals(m.trao)) {
+            return kiemBuaChuyenLuyen(m);
         }
         if (TRAO_TANG_TOC.equals(m.trao)) {
             return kiemTangToc(m);
@@ -608,6 +620,23 @@ public final class NapTienLogic {
     }
 
     /** Mon the dat ten: dung ma, nhom tien_ich, khong giao dich, khong han, luon ban, gioi_han 0 (cau hinh quyet). */
+    /** Bua chuyen luyen: chi ma bua_chuyen_luyen, nhom tien_ich, khong han, luon ban, khong gioi han lan mua. */
+    static String kiemBuaChuyenLuyen(final Mon m) {
+        if (!ChuyenLuyen.MA_CUA_HANG.equals(m.ma)) {
+            return "mon bua_chuyen_luyen chi co ma " + ChuyenLuyen.MA_CUA_HANG;
+        }
+        if (!"tien_ich".equals(m.nhom)) {
+            return "bua chuyen luyen thuoc nhom tien_ich";
+        }
+        if (m.giaLuong < GIA_MON_TOI_THIEU || m.giaLuong > GIA_MON_TOI_DA) {
+            return "gia phai trong " + GIA_MON_TOI_THIEU + "-" + GIA_MON_TOI_DA + " luong";
+        }
+        if (m.giaoDichDuoc || m.hanNgay != 0 || m.nhomXoay != 0 || m.gioiHan != 0) {
+            return "bua chuyen luyen: giao_dich_duoc = 0 (vat pham trong tui tu giao dich duoc), khong han, luon ban, gioi_han = 0";
+        }
+        return null;
+    }
+
     static String kiemDatTen(final Mon m) {
         if (!MA_THE_DAT_TEN.equals(m.ma)) {
             return "mon dat_ten_pet chi co ma " + MA_THE_DAT_TEN;

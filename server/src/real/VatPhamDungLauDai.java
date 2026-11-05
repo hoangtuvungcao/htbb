@@ -105,6 +105,10 @@ public final class VatPhamDungLauDai {
             DungVatPham.loi(p, "Cần đạt cấp " + d[4] + " để dùng " + DungVatPham.ten(item) + ".");
             return true;
         }
+        if ("bua".equals(nhom) && hu.containsKey("chuyen_luyen")) {
+            DungVatPham.loi(p, "Bùa chuyển luyện dùng ở Machamp thợ rèn > Mua bán > Chuyển luyện: giữ nguyên +N khi chuyển sang món khác.");
+            return true;
+        }
         if ("bua".equals(nhom)) {
             DungVatPham.loi(p, "Bùa bảo hộ tự dùng khi nâng cấp thất bại (đặt ngọc bảo hiểm hoặc chọn bảo hộ).");
             return true;

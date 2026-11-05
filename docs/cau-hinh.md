@@ -346,17 +346,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **410 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **413 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 114 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Chỉnh trên web** (`chinh`) | 117 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
 | **Cố định** (`co_dinh`) | 257 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (114)
+### Khoá chỉnh trên web (117)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -392,6 +392,9 @@ Tỉ lệ rơi xu / lượng / đồ và EXP quái. Áp dụng ngay. Thuế, ph�
 | `doi_luong_xu.tran_ngay` | Đổi lượng → xu: trần lượng / tài khoản / ngày | số | `5000` | 0..1000000 | ngay | cả hai | Số lượng thường tối đa mỗi tài khoản đổi ra xu với hệ thống mỗi ngày (gộp mọi Pokémon của tài khoản, NPC + web). 0 = tắt. |
 | `san_luong.phi_phan_tram` | Sàn lượng ↔ xu: phí bên mua (%) | số | `5` | 0..50 | ngay | cả hai | Phí xu bên mua trả thêm trên mỗi lượng khớp (làm tròn lên theo từng lượng), bị đốt (hố hút). Sàn chỉ giao dịch lượng thường; lượng khoá không bao giờ lên sàn. |
 | `san_luong.tran_ngay` | Sàn lượng ↔ xu: trần lượng đặt lệnh / tài khoản / ngày | số | `50000` | 0..10000000 | ngay | cả hai | Tổng lượng đặt lệnh bán + mua mỗi tài khoản mỗi ngày (huỷ lệnh trong ngày trả lại phần chưa khớp). Cổng chống clone như chợ ký gửi; bot không dùng sàn. 0 = đóng sàn. |
+| `chuyen_luyen.bat` | Chuyển luyện: bật | cờ 0/1 | `1` |  | ngay | game | 0 = tạm đóng mục Chuyển luyện ở Machamp thợ rèn (chuyển +N của một trang bị sang món khác cùng ô trang bị, cấp bằng hoặc cao hơn: món nhận +(N−1), món nguồn về +0; dùng Bùa chuyển luyện thì giữ +N). Chỉ chạy khi bật nâng cấp dài hạn. |
+| `chuyen_luyen.xu_phan_tram` | Chuyển luyện: xu (% giá nâng cấp) | số | `35` | 0..100 | ngay | game | Xu = phần trăm này × tổng xu MỘT lần thử lên +1..+R của món nhận (R = cấp món nhận đạt được; bảng nâng cấp theo bậc cấp món nhận, bước +11..+15 có hệ số bậc cao). Mặc định 35: rẻ hơn nhiều so với nâng lại (nâng lại còn tốn các lần trượt). Xu bị đốt. |
+| `chuyen_luyen.da_phan_tram` | Chuyển luyện: đá luyện kim từ +10 (%) | số | `50` | 0..200 | ngay | game | Khi món nhận đạt +10 trở lên: số đá luyện kim = phần trăm này × tổng đá một lần thử lên +10..+R, làm tròn lên (mặc định 50: +10 = 1, +11 = 3, +12 = 5, +13 = 7, +14 = 9, +15 = 11 viên). 0 = không cần đá. |
 
 #### Sự kiện & giftcode (`su_kien`)
 

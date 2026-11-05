@@ -856,6 +856,13 @@ public final class NapTienGame implements Runnable {
         if ((tangToc || datTen) && (!LauDai.bat() || p.countSlotInventory() < 1)) {
             return "Hành trang cần 1 ô trống.";
         }
+        final boolean buaChuyenLuyen = NapTienLogic.TRAO_BUA_CHUYEN_LUYEN.equals(m.trao);
+        if (buaChuyenLuyen && (!LauDai.bat() || real.Map.itemTemplates.get(5).get(Integer.valueOf(ChuyenLuyen.ID_BUA)) == null)) {
+            return "Bùa chuyển luyện đang tạm ngừng bán. Vui lòng quay lại sau.";
+        }
+        if (buaChuyenLuyen && ChongVatPham.soOCan(p, ChuyenLuyen.ID_BUA, 1) > Math.max(0, p.countSlotInventory())) {
+            return "Hành trang cần 1 ô trống.";
+        }
         final boolean veMoRong = NapTienLogic.laVeMoRong(m);
         final boolean veOThu = NapTienLogic.laVeMoOThu(m);
         if (veOThu) {
@@ -906,6 +913,10 @@ public final class NapTienGame implements Runnable {
                     p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                 } catch (final Exception ignored) {
                 }
+            } else if (buaChuyenLuyen) {
+                // Mua bang LUONG: bua KHONG khoa (chu game 31/10/2026: luong nap mua duoc moi thu luong khoa mua duoc).
+                Char.createItemSoLuong(ChuyenLuyen.ID_BUA, 1, p, false);
+                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             } else if (datTen) {
                 // The dat ten vao tui (KHOA, khong giao dich): id theo hieu ung "dat_ten" cua data_vat_pham_lau_dai.
                 final int id = real.VatPhamDungLauDai.idTheoHieuUng(real.DatTenPetGame.HIEU_UNG);
@@ -947,7 +958,8 @@ public final class NapTienGame implements Runnable {
                                 + "% EXP, " + TangToc.buaHeSoXu() + "% xu hôm nay, dùng bao nhiêu tuỳ ý, không tính vào giới hạn tăng tốc." : "")
                 + (tangToc && TangToc.loaiCuaMa(m.ma) != TangToc.BUA ? " Vật phẩm đã vào hành trang; dùng chung giới hạn "
                         + TangToc.DIEM_NGAY_TOI_DA + " điểm/ngày, " + TangToc.DIEM_TUAN_TOI_DA + " điểm/tuần với bản kiếm được khi chơi." : "")
-                + (datTen ? " Thẻ đã vào hành trang: bấm Sử dụng để đặt tên cho Pokémon đi theo." : "");
+                + (datTen ? " Thẻ đã vào hành trang: bấm Sử dụng để đặt tên cho Pokémon đi theo." : "")
+                + (buaChuyenLuyen ? " Bùa (không khoá) đã vào hành trang: dùng ở Machamp thợ rèn > Mua bán > Chuyển luyện để giữ nguyên +N." : "");
     }
 
     /** Gia luong that cua mon dang ban theo ma (danh muc nho 60 giay); -1 = khong ban / cua hang tat / loi CSDL. */

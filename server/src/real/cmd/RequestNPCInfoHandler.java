@@ -1133,6 +1133,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     if (TeamServer.isServerIndo()) {
                         menu = new String[]{"Membeli senjata"};
                     } else {
+                        menu = real.ChuyenLuyenGame.themMucThoRen(menu); // muc 4 (vi tri 3): Chuyen luyen +N
                         menu = real.BoNgocGame.themMucThoRen(menu); // [bo-ngoc] muc cuoi: che tao & kham ngoc
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);

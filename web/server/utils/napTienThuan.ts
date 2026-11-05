@@ -25,7 +25,7 @@ export const GIO_HET_HAN_DON = 24
 export const LOAI_GOI = ['luong', 'the_thang', 've_mua', 'thanh_vien'] as const
 export type LoaiGoi = typeof LOAI_GOI[number]
 
-export const TRAO_HOP_LE = ['trang_tri', 'mo_rong_tui', 'doi_ten', 'tang_toc', 'dat_ten_pet', 'trang_chieu'] as const
+export const TRAO_HOP_LE = ['trang_tri', 'mo_rong_tui', 'doi_ten', 'tang_toc', 'dat_ten_pet', 'trang_chieu', 'bua_chuyen_luyen'] as const
 // = NapTienLogic.NHOM_CUA_HANG: 4 o tu do trang tri + tien ich + tang toc (dong bo 0.9.8, mot he trang tri)
 // 'skin' / 'thu_cuoi' = nhom cu (mon truoc 0.9.8), game hien trong o Trang phuc / Skin thu cuoi
 export const NHOM_CUA_HANG = ['trang_phuc', 'hao_quang', 'skin_thu', 'the_dong_hanh', 'tien_ich', 'tang_toc', 'skin', 'thu_cuoi'] as const
@@ -62,6 +62,22 @@ function kiemTangToc(m: MonCuaHang): string | null {
  * Thẻ đặt tên Pokémon (khớp NapTienLogic.kiemDatTen): chỉ mã the_dat_ten_pet, nhóm tien_ich, không giao dịch, không hạn,
  * luôn bán, gioi_han = 0. Giá + số lần mua / tuần thật lấy từ cấu hình dat_ten_pet.gia_luong / dat_ten_pet.mua_tuan_toi_da.
  */
+/**
+ * Bùa chuyển luyện (khớp NapTienLogic.kiemBuaChuyenLuyen): chỉ mã bua_chuyen_luyen, nhóm tien_ich, không hạn, luôn bán,
+ * gioi_han = 0, giao_dich_duoc = 0 (bùa mua bằng lượng vào túi KHÔNG khoá; Kecleon bán cùng bùa bằng lượng khoá, đồ khoá).
+ */
+function kiemBuaChuyenLuyen(m: MonCuaHang): string | null {
+  if (m.ma !== 'bua_chuyen_luyen') return 'Món bua_chuyen_luyen chỉ có mã bua_chuyen_luyen.'
+  if (m.nhom !== 'tien_ich') return 'Bùa chuyển luyện thuộc nhóm tien_ich.'
+  if (!Number.isInteger(m.gia_luong) || m.gia_luong < GIA_MON_TOI_THIEU || m.gia_luong > GIA_MON_TOI_DA) {
+    return `Giá phải trong ${GIA_MON_TOI_THIEU}–${GIA_MON_TOI_DA} lượng.`
+  }
+  const gd = Number(m.giao_dich_duoc) === 1 || m.giao_dich_duoc === true
+  if (gd || m.han_ngay !== 0 || m.nhom_xoay !== 0 || m.gioi_han !== 0) {
+    return 'Bùa chuyển luyện: giao_dich_duoc = 0, không hạn, luôn bán, giới hạn = 0.'
+  }
+  return null
+}
 function kiemDatTen(m: MonCuaHang): string | null {
   if (m.ma !== 'the_dat_ten_pet') return 'Món dat_ten_pet chỉ có mã the_dat_ten_pet.'
   if (m.nhom !== 'tien_ich') return 'Thẻ đặt tên thuộc nhóm tien_ich.'
@@ -136,8 +152,9 @@ function chuaTu(s: string, tu: string): boolean {
 export function kiemMon(m: MonCuaHang): string | null {
   if (!/^[a-z0-9_]{2,40}$/.test(m.ma ?? '')) return 'Mã món chỉ gồm a-z 0-9 _ (2–40 ký tự).'
   if (Number(m.co_chi_so) !== 0 && m.co_chi_so !== false) return 'Cấm bán món có chỉ số.'
-  if (!(TRAO_HOP_LE as readonly string[]).includes(m.trao)) return 'Cách trao phải là trang_tri / mo_rong_tui / doi_ten / tang_toc / dat_ten_pet / trang_chieu.'
+  if (!(TRAO_HOP_LE as readonly string[]).includes(m.trao)) return 'Cách trao phải là trang_tri / mo_rong_tui / doi_ten / tang_toc / dat_ten_pet / trang_chieu / bua_chuyen_luyen.'
   if (m.trao === 'tang_toc') return kiemTangToc(m)
+  if (m.trao === 'bua_chuyen_luyen') return kiemBuaChuyenLuyen(m)
   if (m.trao === 'dat_ten_pet') return kiemDatTen(m)
   if (!(NHOM_CUA_HANG as readonly string[]).includes(m.nhom)) return 'Nhóm không hợp lệ.'
   if (!Number.isInteger(m.gia_luong) || m.gia_luong < GIA_MON_TOI_THIEU || m.gia_luong > GIA_MON_TOI_DA) {
