@@ -608,6 +608,19 @@ public final class HocChieuGame {
         } catch (final Throwable ignored) {
         }
         guiThongTin(p);
+        baoBiDong(p, o);
+    }
+
+    /**
+     * Chieu bi dong vua len cap (Rut vao mai...): noi ro "bi dong, luon co hieu luc" - client khong cho bam / gan Tu dong
+     * chieu nay ma truoc day khong ghi o dau (bao loi 05/11/2026).
+     */
+    public static void baoBiDong(final Char p, final int o) {
+        if (p == null || !ChieuBiDong.la(p.charClass, o)) {
+            return;
+        }
+        ThongBao.gui(p, ThongBao.TIN, ChieuBiDong.cauChinh(p.charClass) + " (cấp " + ChieuHoTro.capChieu(p, o) + ")",
+                ChieuBiDong.cauPhu(p.charClass, ChieuHoTro.capChieu(p, o)), ThongBao.HINH_KHONG, 0);
     }
 
     /**

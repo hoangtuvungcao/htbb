@@ -644,6 +644,11 @@ public class BangAuto extends Screen {
         if (isBuff) {
             buff2User = SkillManager.SKILL_CAN_BUFF_TO_USER[Canvas.gameScr.mainChar.clazz][this.focus - 4] == -1;
         }
+        if (buff2User) {
+            // chiêu bị động (vd Rút vào mai): trước bấm vào im lặng - người chơi không biết vì sao không cài được
+            Canvas.startOKDlg(game.pokemon.PokeChieu.cauBiDong(Canvas.gameScr.mainChar.clazz, this.focus));
+            return;
+        }
         if (!buff2User) {
             if (Char.skillLevelLearnt[this.focus] > 0) {
                 if (Canvas.gameScr.mainChar.clazz != 2) {

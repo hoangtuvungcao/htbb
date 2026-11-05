@@ -755,7 +755,13 @@ class CharCapNhat {
                 return;
             }
             if (!CharManager.isBuffActive(self.charClass, buffEff)) {
-                self.sendMessage(MessageCreator.createServerAlertMessage(Text.CAN_NOT_USE, ""));
+                if (ChieuBiDong.laHieuUng(self.charClass, buffEff)) {
+                    // chieu bi dong (vd Rut vao mai): noi ro thay vi "Khong the su dung" chung chung
+                    com.htbb.thongbao.ThongBao.gui(self, com.htbb.thongbao.ThongBao.TIN, ChieuBiDong.cauChinh(self.charClass),
+                            ChieuBiDong.cauPhu(self.charClass, ChieuBiDong.cap(self)), com.htbb.thongbao.ThongBao.HINH_KHONG, 0);
+                } else {
+                    self.sendMessage(MessageCreator.createServerAlertMessage(Text.CAN_NOT_USE, ""));
+                }
                 return;
             }
             final int bid = CharManager.getSkillBuffByID(self.charClass, buffEff);

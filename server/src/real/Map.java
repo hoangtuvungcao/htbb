@@ -15537,6 +15537,7 @@ public class Map implements Runnable {
                         player.skill[skillType]++;
                         player.setTimeOutBuff();
                         DiemMocNhiemVu.khiHocChieu(player, skillType); // huong dan tan thu: buoc hoc chieu
+                        HocChieuGame.baoBiDong(player, skillType); // chieu bi dong: noi ro "luon co hieu luc"
                     }
 
                     player.setTimeOutBuff();
