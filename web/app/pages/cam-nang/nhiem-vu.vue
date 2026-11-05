@@ -62,7 +62,7 @@ const TEN_KIEU_TT: Record<string, string> = { cap: 'Đạt cấp', pokedex: 'Pok
 
     <WikiSection id="chinh-tuyen" title="Chính tuyến" :lead="`Năm đầu có ${cungNam1.length} cung × ${chuongMoiCung} chương = ${soChuongNam1} chương, đi từ Pallet (Kanto) tới đỉnh Núi Silver (Johto). Mỗi chương ${buocTu === buocDen ? buocTu : `${buocTu}–${buocDen}`} bước và kết thúc bằng một thử thách.`">
       <WikiCallout kieu="vi-sao" title="Vé chương">
-        Mở một chương cần <strong>1 vé chương</strong>. Mỗi tuần nhận {{ N.veChuongTuan }} vé, tích tối đa {{ N.veChuongToiDa }} (khởi đầu có sẵn {{ N.veChuongBanDau }}).
+        Mở một chương cần <strong>1 vé chương</strong>. Mỗi ngày 05:00 vé được làm đầy {{ N.veChuongToiDa }} vé; huỷ rồi nhận lại cùng bước không tốn thêm vé.
         Nhờ vậy cốt truyện trải đều cả năm: người chơi bận rộn không bị bỏ lại, người chơi chăm vẫn còn phụ tuyến, Pokédex, PvP để làm.
       </WikiCallout>
       <div v-for="n in nam" :key="n.so" class="mt-6 first:mt-0">

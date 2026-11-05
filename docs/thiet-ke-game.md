@@ -630,7 +630,7 @@ quả mọng, hộp, quà…) **gộp thành một ô có số lượng**, tối
 ### 3.5 Trần cấp theo mùa và ngày khai trương
 
 Mặc định **tắt** (`sv.tran_cap_theo_mua=0`): trần = cấp 100, tinh thông mở đủ, mọi `ngay_mo` của nội dung bị bỏ qua
-(`LauDai.ngayMoNoiDung()`). Nội dung vẫn khoá theo **cấp**, chuỗi **`truoc`** (cốt truyện) và **vé chương** 2/tuần.
+(`LauDai.ngayMoNoiDung()`). Nội dung vẫn khoá theo **cấp**, chuỗi **`truoc`** (cốt truyện) và **vé chương** (làm đầy 4 vé mỗi ngày 05:00).
 
 Bật `=1` để dùng lại thiết kế cũ — trần theo số ngày kể từ `sv.ngay_khai_truong` (`ThongSoLauDai.TRAN_CAP_NGAY/GIA_TRI`):
 
@@ -1178,8 +1178,12 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
 | Pokédex, sư phạm, Hầm ngục, đội, quay lại | theo hệ thống tương ứng |
 | Huyền thoại (HT-*), ẩn, thành tựu | khoá theo cấp / điều kiện ẩn; thành tựu không cộng chỉ số |
 
-- **Vé chương**: mỗi Pokémon nhận 2 vé / tuần (tích tối đa 4, bắt đầu với 4). Mỗi chương cần cấp tối thiểu + nhiệm vụ trước.
-  52 chương cần ít nhất ~24 tuần: người cày không xong năm 1 quá sớm.
+- **Vé chương**: mỗi chương chính (bước 1) tốn 1 vé; vé **làm đầy 4 mỗi ngày 05:00** (`NhiemVuLauDai.capNhatVeNgay`, khoá hồ sơ
+  `vn`). Mỗi chương cần cấp tối thiểu + nhiệm vụ trước. Huỷ / nhận lại đúng bước đã trả vé không tốn thêm vé (khoá `vq`).
+  Trước 05/11/2026 là 2 vé / tuần (tích 4): người chơi lên cấp nhanh kẹt cốt truyện cả tuần (báo lỗi Snorlax C07.1 "hết vé
+  chương, sang tuần mới làm tiếp"); cấp tối thiểu từng chương đã đủ giữ nhịp, vé chỉ còn giới hạn 4 chương / ngày.
+- **Bước cốt truyện không huỷ được** (bật `sv.lau_dai`, như cửa ải): nút "Huỷ nhiệm vụ" của client chỉ nhận câu báo, tiến độ giữ
+  nguyên (`Char.duocHuyChinh`; báo lỗi 02/11/2026 "bấm nhầm xoá, không thấy / nhận lại được").
 - **Ngân sách thưởng mỗi dòng** tính bằng giờ EXP / giờ xu ở cấp tối thiểu của nhiệm vụ (ví dụ chương 0,30 giờ EXP, bước
   Gym 0,45; ngày 0,10; tuần 1,0 + 20 lượng khoá). Dưới cấp 16 thưởng hướng dẫn / chính / phụ ×3 để tiến hoá đầu trong
   ~1 giờ. Nhiệm vụ không bao giờ thưởng lượng (trừ thành tựu lớn).
@@ -1193,8 +1197,11 @@ thoại lúc nhận / đang làm / xong, gợi ý, dòng thưởng). Nguồn ch�
   **Kecleon tạp hoá** cùng làng (nói chuyện khi xe đi cạnh) hoặc **Dịch trạm** ở Đường Victory (118, ô 51..59 × 16..24,
   khoá cấp 69 + CA-11.3). Ai đang làm bước `ho_tong` luôn thấy mục "Nhận hàng giao" (bỏ điều kiện vùng `myCountry ==
   inCountry`, khung 9h–21h và cấp ≥ 40); hết lượt vận tiêu thì được **một** lượt miễn phí / ngày. Người không có nhiệm vụ giữ
-  luật vận tiêu cũ (chỉ Dịch trạm). Chuỗi chữ "từ Fuchsia / Olivine…" chỉ là cốt truyện; Sổ tay ghi nơi nhận, nơi giao, ô và
-  hướng. Bị cướp không tính. Mã: `com.htbb.pokemon.HoTongNhiemVu`, `real.HoTongNhiemVuGame`; kiểm `KiemHoTong`.
+  luật vận tiêu cũ (Dịch trạm), **trừ khi Dịch trạm còn khoá với người đó** — khi ấy Kecleon tạp hoá nhận cả xe thường, thưởng
+  vận tiêu như Dịch trạm (05/11/2026, báo lỗi rongngoo cấp 50: nhận xe thường mà không nơi nào giao được;
+  `HoTongNhiemVu.giaoDuocTaiKecleon`). Xe đi theo vết người chơi nhưng cắt vòng / đoạn quay lại: mỗi nhịp bỏ các điểm trước
+  điểm vết mới nhất xe tới thẳng được trong 160 px (`XeHangDiTheo.tat`, báo lỗi "Ponyta quần"). Chuỗi chữ "từ Fuchsia / Olivine…" chỉ là cốt truyện; Sổ tay ghi nơi nhận, nơi giao, ô và
+  hướng. Bị cướp không tính. Mã: `com.htbb.pokemon.HoTongNhiemVu`, `real.HoTongNhiemVuGame`; kiểm `KiemHoTong`, `KiemBaoLoi0411`.
 
 ### 6.2 Sự kiện: lịch năm theo ngày thật + tuần Pokémon
 
@@ -1278,7 +1285,7 @@ vẫn chịu trần +100%); shiny ×5 chỉ trong giờ vàng; hạ 30 con trong
 | Tầng | Mục tiêu luôn có sẵn |
 |---|---|
 | Phiên (15–30 phút) | 3 nhiệm vụ hằng ngày, 1 bước chương, 1 lượt Hầm ngục, 1 lần nâng cấp, 1 loài Pokédex mới |
-| Tuần | 2 nhiệm vụ tuần, 2 vé chương, Gym đánh lại, boss thế giới / đột kích, Chiếm Gym, xếp hạng tuần |
+| Tuần | 2 nhiệm vụ tuần, Gym đánh lại, boss thế giới / đột kích, Chiếm Gym, xếp hạng tuần |
 | Mùa (2–6 tháng) | mốc cấp / bậc đồ mới, mùa PvP 13 tuần, 8 huy hiệu Gym của vùng, săn huyền thoại, danh hiệu mùa, vé mùa |
 
 Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + đá → nâng cấp → mở chương / Gym → tuyến mới.**
@@ -1291,7 +1298,7 @@ Vòng lõi: **đánh quái theo tuyến → nhiệm vụ / Pokédex → đồ + 
 | Tổ đội, bạn bè | +10% / người (tối đa +40%); bạn bè cùng nhóm +5% (thiết kế) |
 | Đội | nhiệm vụ đội tuần, quỹ đội, Chiếm Gym |
 | Xếp hạng | cấp, Pokédex, Hầm ngục, PvP; ẩn xu / lượng trên bảng top; lượng chỉ phát theo top tuần |
-| Chống kiệt sức | không có việc bắt buộc nhiều giờ; năng lượng tích 2 ngày, vé chương tích 2 tuần, lịch đăng nhập có ân hạn |
+| Chống kiệt sức | không có việc bắt buộc nhiều giờ; năng lượng tích 2 ngày, vé chương làm đầy mỗi ngày, lịch đăng nhập có ân hạn |
 
 ---
 

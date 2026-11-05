@@ -6,7 +6,8 @@ import java.util.List;
 /**
  * Nhiem vu theo thiet ke dai han (docs/thiet-ke-game.md, GD2 buoc 4). Lop THUAN.
  *
- *   - ve chuong: 2 ve / tuan (reset thu Hai 05:00), tich toi da 4, bat dau 4 ve;
+ *   - ve chuong: LAM DAY moi ngay 05:00 (toi da 4, bat dau 4 ve) - truoc 05/11/2026 la 2 ve / tuan (reset thu Hai), nguoi
+ *     choi len cap nhanh ket chuoi chinh ca tuan (bao loi Snorlax C07.1 "het ve chuong, sang tuan moi lam tiep");
  *   - loc nhiem vu phu theo cap truoc khi gui (danh sach ghi so luong bang 1 byte <= 127): nhiem vu co
  *     cap - 15 <= lv <= cap + 3 (chu game 31/10/2026, ca nhiem vu da vuot cap ma chua lam), xep gan cap nguoi choi nhat
  *     truoc, cung do lech thi thap truoc, roi theo thu tu nhiem vu (thi tran); gui het (toi da PHU_TOI_DA). Nhan theo hopCap (truoc
@@ -44,8 +45,32 @@ public final class NhiemVuLauDai {
         return (int) Math.floorDiv(ngay - 4L, 7L);
     }
 
+    /** Chi so ngay cho ve chuong - doi luc 05:00 gio may (cung moc gio voi tuan). */
+    public static int ngayVe(final long ms) {
+        final long t = ms - GIO_DOI_TUAN * 3600000L;
+        return (int) Math.floorDiv(t + java.util.TimeZone.getDefault().getOffset(t), 86400000L);
+    }
+
     /**
-     * Cap nhat ve chuong khi sang tuan moi: +2 moi tuan da qua, tran 4.
+     * Ve chuong lam DAY moi ngay (chu game 03/11/2026 "đợi 1 ngày là được"; quyet dinh 05/11/2026): sang ngay moi (hoac chua tung
+     * lam day theo ngay - ho so truoc ban nay, {@code ngayCuoi <= 0}) -> ve = max(ve, VE_CHUONG_TOI_DA). Cung ngay: giu nguyen.
+     * Chuoi chinh khong con bi chan ca tuan; van chan theo cap + nhiem vu truoc (cot truyen).
+     * @return {ve moi, ngay moi}
+     */
+    public static int[] capNhatVeNgay(final int ve, final int ngayCuoi, final int ngayNay) {
+        if (ngayCuoi > 0 && ngayNay <= ngayCuoi) {
+            return new int[]{ve, ngayCuoi};
+        }
+        return new int[]{Math.max(Math.max(0, ve), ThongSoLauDai.VE_CHUONG_TOI_DA), ngayNay};
+    }
+
+    /** Cau bao het ve (kiemChinh). */
+    public static String chuHetVe() {
+        return "Bạn đã dùng hết " + ThongSoLauDai.VE_CHUONG_TOI_DA + " vé chương hôm nay. Vé làm mới lúc 05:00 sáng mai.";
+    }
+
+    /**
+     * (CU, giu cho ban quay lui / kiem) Cap nhat ve chuong khi sang tuan moi: +2 moi tuan da qua, tran 4.
      * @return {ve moi, tuan moi}
      */
     public static int[] capNhatVe(final int ve, final int tuanCuoi, final int tuanNay) {
@@ -121,7 +146,7 @@ public final class NhiemVuLauDai {
             return "Chương này mở sau " + (ngayMo - ngayHienTai) + " ngày nữa.";
         }
         if (canVe && ve <= 0) {
-            return "Bạn đã hết vé chương tuần này (2 vé/tuần, làm mới thứ Hai 05:00).";
+            return chuHetVe();
         }
         return null;
     }

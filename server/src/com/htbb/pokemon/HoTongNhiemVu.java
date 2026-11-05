@@ -108,6 +108,26 @@ public final class HoTongNhiemVu {
         return !xeMienPhi;
     }
 
+    /**
+     * Bao loi 04/11/2026 (rongngoo cap 50, Đào Ngọc Thịnh: "hôm trước đến nhà Kecleon tạp hoá là hoàn thành, nay đến đứng đấy đi 1
+     * vòng, vô trong nhà rồi đi ra mà không hoàn thành"): 03/11 co nhiem vu N-2.36 / N-3.36 -&gt; Kecleon nhan xe; 04/11 khong co
+     * nhiem vu ho tong, nhan xe van tieu THUONG (luot ngay, cap &gt;= 40) -&gt; Kecleon chi nhan xe nhiem vu (mo cua hang im
+     * lang), noi giao con lai la Dịch trạm o Đường Victory - khoa toi cap 69 + CA-11.3: nguoi cap 40..68 nhan xe ma KHONG giao
+     * duoc o dau. Nay Kecleon tạp hoá nhan ca xe thuong khi Dịch trạm con khoa voi nguoi do (thuong van tieu nhu Dịch trạm);
+     * Dịch trạm da mo thi xe thuong van giao o Dịch trạm (bao ro, khong im lang).
+     */
+    public static boolean giaoDuocTaiKecleon(final boolean dangLamNhiemVu, final boolean dichTramMo) {
+        return dangLamNhiemVu || !dichTramMo;
+    }
+
+    /** Cau bao: xe thuong mang toi Kecleon khi Dịch trạm da mo. */
+    public static final String BAO_XE_THUONG_DICH_TRAM = "Xe hàng thường giao ở " + TEN_DICH_TRAM + " (Đường Victory, ô 55,20). "
+            + TEN_NPC_GIAO + " chỉ nhận hàng nhiệm vụ hộ tống, hoặc hàng của người chưa mở Đường Victory.";
+
+    /** Cau bao: nguoi choi trong nha, xe hang (khong vao nha duoc) o ngoai. */
+    public static final String BAO_XE_NGOAI_NHA = "Xe hàng không vào nhà được. Hãy ra ngoài, đứng cạnh xe hàng rồi nói chuyện với "
+            + TEN_NPC_GIAO + " ngoài đường làng.";
+
     /** Cau bao khi giao xe mien phi cua nhiem vu. */
     public static final String BAO_GIAO_MIEN_PHI = "Giao hàng nhiệm vụ thành công. Xe hàng từ lượt miễn phí của nhiệm vụ chỉ nhận thưởng nhiệm vụ (không kèm thưởng giao hàng thường).";
 

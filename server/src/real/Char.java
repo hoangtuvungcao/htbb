@@ -12964,6 +12964,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return idItemgift != null && idItemgift.length > 0 && idItemgift[0] < 32000;
     }
 
+    /** Cau bao khi bam Huy buoc cot truyen (bat sv.lau_dai). */
+    public static final String KHONG_HUY_CHINH = "Nhiệm vụ cốt truyện không huỷ được, tiến độ vẫn được giữ. Xem lại ở Nhiệm vụ → Đang làm.";
+
+    /**
+     * Bao loi 02/11/2026: bat sv.lau_dai -> buoc chinh (cot truyen) khong huy duoc - huy dua buoc ve "chua nhan" o NPC xa, mat
+     * tien do, nhan lai con tru them ve chuong (buoc 1). Tat lau dai: giu luat cu (huy duoc).
+     */
+    public static boolean duocHuyChinh() {
+        return !com.htbb.pokemon.LauDai.bat();
+    }
+
     public static final String TUI_DAY_NHIEM_VU = "Hành trang đã đầy. Hãy dọn bớt một ô để nhận thưởng nhiệm vụ.";
 
     /** 0.9.7.1: bao ly do + gui lai ca 3 danh sach (client da tu danh dau xong / an nhiem vu truoc khi server tra loi). */
@@ -13171,6 +13182,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     return;
                 }
                 if (this.mainQuest.state_quest == NewCharQuest.DONE) {
+                    return;
+                }
+                if (!duocHuyChinh()) {
+                    // bao loi 02/11/2026 ("bam nham xoa nhiem vu, khong thay / nhan lai duoc"): buoc cot truyen KHONG huy (nhu cua
+                    // ai) - client 0.9.30 da an the khi bam Huy, gui lai danh sach de the hien lai, tien do giu nguyen.
+                    this.tuChoiNhiemVu(KHONG_HUY_CHINH);
                     return;
                 }
                 this.mainQuest.reset();

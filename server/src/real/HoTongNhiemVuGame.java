@@ -17,7 +17,8 @@ import server.TeamServer;
  *                                                buoc ho_tong ca khi het luot / khac nuoc.
  *  RealController / MapMenuNpc doMenuNpcNhanTieu -> {@link #nhanHang}: bo qua gio / cap / nuoc cho nguoi dang lam, het luot thi
  *                                                MOT luot mien phi / ngay; moi tu choi deu bao ly do (truoc day im lang).
- *  NpcDichVu (Kecleon tạp hoá)                  -> {@link #traTaiKecleon}: giao xe hang nhiem vu (TraHang.giao, nhu Dịch trạm).
+ *  NpcDichVu (Kecleon tạp hoá)                  -> {@link #traTaiKecleon}: giao xe hang nhiem vu (TraHang.giao, nhu Dịch trạm);
+ *                                                tu 05/11/2026 ca xe thuong khi Dịch trạm con khoa (HoTongNhiemVu.giaoDuocTaiKecleon).
  *  NhiemVuEngine.nhan / chonDangLam             -> {@link #duoi}: noi nhan + noi giao + chi duong.
  * </pre>
  */
@@ -127,8 +128,16 @@ public final class HoTongNhiemVuGame {
      * true = da xu ly (khong mo menu cua hang).
      */
     public static boolean traTaiKecleon(final Char p) {
-        if (p == null || p.monster == null || !dangLam(p)) {
+        if (p == null || p.monster == null) {
             return false;
+        }
+        final boolean nhiemVu = dangLam(p);
+        // bao loi 04/11/2026 (rongngoo): xe van tieu THUONG cua nguoi chua mo Dịch trạm (Đường Victory) cung giao o Kecleon.
+        if (!HoTongNhiemVu.giaoDuocTaiKecleon(nhiemVu, dichTramMo(p))) {
+            if (!p.monster.isFinish()) {
+                p.sendMessage(MessageCreator.createServerAlertMessage(HoTongNhiemVu.BAO_XE_THUONG_DICH_TRAM, ""));
+            }
+            return false; // van mo cua hang Kecleon
         }
         try {
             if (p.monster.isFinish()) {
@@ -139,7 +148,8 @@ public final class HoTongNhiemVuGame {
                 return true;
             }
             if (p.monster.map == null || !p.monster.map.equals(p.map) || !Map.inRangeActor((LiveActor) p, (LiveActor) p.monster, 120)) {
-                p.sendMessage(MessageCreator.createServerAlertMessage("Xe hàng còn ở xa. Hãy đi cạnh xe hàng tới Kecleon rồi nói chuyện.", ""));
+                p.sendMessage(MessageCreator.createServerAlertMessage(p.map != null && p.map.isMapOffline ? HoTongNhiemVu.BAO_XE_NGOAI_NHA
+                        : "Xe hàng còn ở xa. Hãy đi cạnh xe hàng tới Kecleon rồi nói chuyện.", ""));
                 return true;
             }
             TraHang.giao(p);
@@ -147,6 +157,15 @@ public final class HoTongNhiemVuGame {
             e.printStackTrace();
         }
         return true;
+    }
+
+    /** Dịch trạm (Đường Victory) da mo voi nguoi choi (khoa ban do: cap 69 + CA-11.3; tat khoa ban do = mo). */
+    static boolean dichTramMo(final Char p) {
+        try {
+            return KhoaBanDoGame.lyDoKhoa(p, HoTongNhiemVu.BAN_DO_DICH_TRAM) == null;
+        } catch (final Exception e) {
+            return true;
+        }
     }
 
     // ------------------------------------------------------------------ chu

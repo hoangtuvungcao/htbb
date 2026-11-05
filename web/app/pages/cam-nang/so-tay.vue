@@ -85,7 +85,7 @@ const tongLichDangNhap = K.lichDangNhap.reduce((s, x) => s + x, 0)
       <ul class="cham mt-4">
         <li>Lỡ 1 ngày vẫn giữ chuỗi; nghỉ từ 2 ngày liền thì quay về ngày 1.</li>
         <li>Đăng nhập đủ {{ Q.ngayThang }} ngày trong tháng có thêm thưởng tháng.</li>
-        <li><strong>Vé chương</strong> mở chương chính tuyến: nhận +{{ N.veChuongTuan }} vé mỗi thứ Hai 05:00, giữ tối đa {{ N.veChuongToiDa }} vé.</li>
+        <li><strong>Vé chương</strong> mở chương chính tuyến: mỗi ngày 05:00 được làm đầy {{ N.veChuongToiDa }} vé.</li>
       </ul>
     </WikiSection>
 

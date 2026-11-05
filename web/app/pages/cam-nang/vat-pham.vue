@@ -15,7 +15,7 @@ const NHOM = [
   { icon: 'i-lucide-egg', anh: iconVatPham(ICON_VAT_PHAM.trung), ten: 'Trứng Pokémon', mo: 'Ấp ra pet — Pokémon nhỏ đi theo bạn.', to: '/cam-nang/thu-cuoi-pet#pet' },
   { icon: 'i-lucide-rabbit', anh: iconVatPham(ICON_VAT_PHAM.thuCuoi), ten: 'Thú cưỡi & đồ thú cưỡi', mo: 'Thú cưỡi (Ponyta, Rapidash, Lapras…), yên và giáp cộng chỉ số cho thú.', to: '/cam-nang/thu-cuoi-pet' },
   { icon: 'i-lucide-puzzle', anh: iconVatPham(ICON_VAT_PHAM.manh), ten: 'Mảnh & nguyên liệu', mo: 'Gom đủ để ghép, chế tạo ở Machamp; nguyên liệu đột kích là đồ khoá.' },
-  { icon: 'i-lucide-ticket', anh: iconVatPham(ICON_VAT_PHAM.ve), ten: 'Vé chương', mo: 'Mở một chương chính tuyến. Nhận tự động mỗi tuần.', to: '/cam-nang/nhiem-vu#chinh-tuyen' },
+  { icon: 'i-lucide-ticket', anh: iconVatPham(ICON_VAT_PHAM.ve), ten: 'Vé chương', mo: 'Mở một chương chính tuyến. Làm đầy mỗi ngày 05:00.', to: '/cam-nang/nhiem-vu#chinh-tuyen' },
   { icon: 'i-lucide-sparkles', anh: iconVatPham(ICON_VAT_PHAM.trangTri), ten: 'Đồ trang trí', mo: 'Trang phục, khung avatar, danh hiệu, hiệu ứng — chỉ để đẹp, không chỉ số.' },
   { icon: 'i-lucide-package', anh: iconVatPham(ICON_VAT_PHAM.nhiemVu), ten: 'Vật phẩm nhiệm vụ', mo: 'Thư, nguyên liệu thu thập cho nhiệm vụ; tự mất khi trả nhiệm vụ.' },
 ]

@@ -13,6 +13,13 @@ import java.util.ArrayDeque;
  * Nay: may chu ghi cac diem nguoi choi da di qua (moi nhip 300 ms, cach nhau >= 8 px - nguoi choi da dung o do nen o do
  * di duoc), xe di lan luot tung diem; chi khi chua co vet (vua nhan xe) moi duoi thang nhu cu. Giua hai diem vet di theo
  * truc x truoc, chan thi y truoc. Xe dung khi da cach nguoi choi <= {@link #CACH} px moi truc.
+ * <p>
+ * Bao loi 04/11/2026 (rongngoo, Ponyta van tieu "không đi theo mình, chạy lung tung - 2 chuyến đầu bình thường, chuyến sau
+ * nó quần"): vet giu MOI diem ke ca doan nguoi choi di vong / chay truoc roi quay lai canh xe - xe di lai ca vong cu, ra xa
+ * nguoi choi (&gt; 80 px thi dung han, MonsterVantieu.update) -&gt; "quần", "không theo". Them nua vet (ArrayDeque) bi hai luong
+ * cung sua (luong van tieu Map 300 ms + vong cap nhat ban do MapVongLap goi chung MonsterVantieu.update). Nay: moi buoc
+ * {@link #tat} bo het cac diem truoc diem vet MOI NHAT ma xe toi thang duoc (trong {@link #TAM_TAT} px) - vong / doan quay
+ * lai bi cat; moi thao tac tren vet dong bo tren chinh vet.
  */
 public final class XeHangDiTheo {
 
@@ -22,6 +29,8 @@ public final class XeHangDiTheo {
     public static final int CACH = 16;
     /** So diem vet toi da (nguoi choi bo xe qua xa thi xe dung theo luat cu - khong can giu vet dai). */
     public static final int TOI_DA = 256;
+    /** Tam (px, Manhattan) tim diem vet moi nhat xe toi thang duoc de cat vong (bao loi 04/11/2026). */
+    public static final int TAM_TAT = 160;
 
     /** O di duoc (toa do px). */
     public interface DiDuoc {
@@ -32,11 +41,11 @@ public final class XeHangDiTheo {
     public static final class Vet {
         final ArrayDeque<int[]> diem = new ArrayDeque<int[]>();
 
-        public int soDiem() {
+        public synchronized int soDiem() {
             return diem.size();
         }
 
-        public void xoa() {
+        public synchronized void xoa() {
             diem.clear();
         }
     }
@@ -46,13 +55,41 @@ public final class XeHangDiTheo {
 
     /** Ghi vi tri nguoi choi vao vet (bo qua neu chua di xa diem cuoi >= GIAN px). */
     public static void ghi(final Vet v, final int px, final int py) {
-        final int[] cuoi = v.diem.peekLast();
-        if (cuoi != null && Math.abs(cuoi[0] - px) + Math.abs(cuoi[1] - py) < GIAN) {
+        synchronized (v) {
+            final int[] cuoi = v.diem.peekLast();
+            if (cuoi != null && Math.abs(cuoi[0] - px) + Math.abs(cuoi[1] - py) < GIAN) {
+                return;
+            }
+            v.diem.addLast(new int[]{px, py});
+            while (v.diem.size() > TOI_DA) {
+                v.diem.pollFirst();
+            }
+        }
+    }
+
+    /**
+     * Cat vet: tim tu diem MOI NHAT ve truoc diem dau tien trong {@link #TAM_TAT} px ma xe tai (x,y) toi thang duoc (truc x
+     * hoac y truoc, khong qua o chan) -&gt; bo moi diem truoc no. Nguoi choi di vong / chay truoc roi quay lai canh xe: xe
+     * khong di lai doan cu. Khong diem nao toi thang duoc: giu nguyen (di theo vet nhu cu, vd re qua goc nha).
+     * Goi trong khoa cua vet.
+     */
+    static void tat(final Vet v, final int x, final int y, final DiDuoc dd) {
+        if (v.diem.size() < 2) {
             return;
         }
-        v.diem.addLast(new int[]{px, py});
-        while (v.diem.size() > TOI_DA) {
-            v.diem.pollFirst();
+        final Object[] a = v.diem.toArray();
+        for (int i = a.length - 1; i >= 1; i--) {
+            final int[] d = (int[]) a[i];
+            if (Math.abs(d[0] - x) + Math.abs(d[1] - y) > TAM_TAT) {
+                continue;
+            }
+            final int[] r = toi(x, y, d[0], d[1], TAM_TAT, dd);
+            if (r[0] == d[0] && r[1] == d[1]) {
+                for (int k = 0; k < i; k++) {
+                    v.diem.pollFirst();
+                }
+                return;
+            }
         }
     }
 
@@ -61,10 +98,17 @@ public final class XeHangDiTheo {
      * @return {x, y} moi
      */
     public static int[] buoc(final Vet v, final int cx, final int cy, final int tx, final int ty, final int buoc, final DiDuoc dd) {
+        synchronized (v) {
+            return buocKhoa(v, cx, cy, tx, ty, buoc, dd);
+        }
+    }
+
+    private static int[] buocKhoa(final Vet v, final int cx, final int cy, final int tx, final int ty, final int buoc, final DiDuoc dd) {
         int x = cx, y = cy, con = buoc;
         if (Math.abs(tx - x) <= CACH && Math.abs(ty - y) <= CACH) {
             return new int[]{x, y};
         }
+        tat(v, x, y, dd);
         while (con > 0) {
             if (Math.abs(tx - x) <= CACH && Math.abs(ty - y) <= CACH) {
                 break;

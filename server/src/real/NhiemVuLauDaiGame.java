@@ -103,11 +103,12 @@ public final class NhiemVuLauDaiGame {
         }
     }
 
+    /** Ve chuong lam day moi ngay 05:00 (NhiemVuLauDai.capNhatVeNgay; truoc 05/11/2026: +2 / tuan). */
     static void capNhatVe(final HoSoLauDai h) {
-        final int[] v = NhiemVuLauDai.capNhatVe(h.veChuong, h.veTuanCuoi, LauDaiNhanVat.tuanNay());
-        if (v[0] != h.veChuong || v[1] != h.veTuanCuoi) {
+        final int[] v = NhiemVuLauDai.capNhatVeNgay(h.veChuong, h.veNgayCuoi, NhiemVuLauDai.ngayVe(com.htbb.pokemon.DongHo.bay()));
+        if (v[0] != h.veChuong || v[1] != h.veNgayCuoi) {
             h.veChuong = v[0];
-            h.veTuanCuoi = v[1];
+            h.veNgayCuoi = v[1];
             h.ban = true;
         }
     }
@@ -172,6 +173,11 @@ public final class NhiemVuLauDaiGame {
         return ds;
     }
 
+    /** Buoc chinh {@code idMainQuest} da tru ve chuong roi (HoSoLauDai.veDaTra = mainQuest.id_quest + 1). */
+    public static boolean daTraVe(final int veDaTra, final int idMainQuest) {
+        return veDaTra > 0 && veDaTra == idMainQuest + 1;
+    }
+
     /**
      * Kiem truoc khi nhan nhiem vu chinh; neu duoc va can ve thi TRU ve ngay (danh dau truoc).
      * @return null neu nhan duoc, nguoc lai ly do
@@ -189,13 +195,17 @@ public final class NhiemVuLauDaiGame {
         }
         synchronized (h) {
             capNhatVe(h);
+            // bao loi 02/11/2026 ("bam nham xoa nhiem vu, nhan lai khong duoc"): nhan LAI dung buoc da tru ve (sau huy / goi cu)
+            // khong can va khong tru them ve.
+            final boolean daTra = daTraVe(h.veDaTra, p.mainQuest.id_quest);
             final String lyDo = NhiemVuLauDai.kiemChinh(info.lv, p.lvDetail.lv, info.ngayMo, LauDai.ngayMoNoiDung(),
-                    info.canVe, h.veChuong);
+                    info.canVe && !daTra, h.veChuong);
             if (lyDo != null) {
                 return lyDo;
             }
-            if (info.canVe) {
+            if (info.canVe && !daTra) {
                 h.veChuong--;
+                h.veDaTra = p.mainQuest.id_quest + 1;
                 h.ban = true;
             }
         }
