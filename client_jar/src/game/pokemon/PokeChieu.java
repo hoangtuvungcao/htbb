@@ -38,12 +38,65 @@ public final class PokeChieu {
 
     /** Câu mô tả ngắn từng chiêu (hiện trong bảng kỹ năng). */
     public static final String[][] MO_TA = {
-        {"Cào bằng móng vuốt sắc.", "Phun tàn lửa nhỏ vào đối thủ.", "Cắn bằng nanh rực lửa.", "Cuốn đối thủ trong xoáy lửa.", "Tung màn khói che mắt, đánh xuyên giáp.", "Xoay lưỡi kiếm quanh mình, phản một phần sát thương.", "Phun luồng lửa dữ dội.", "Cào bằng vuốt rồng sắc bén.", "Ngọn lửa hình chữ đại thiêu rụi mọi thứ."},
-        {"Lao vào húc đối thủ.", "Quất đối thủ bằng dây leo.", "Phóng lá sắc như dao.", "Ném bùn độc vào đối thủ.", "Thủ thế tăng phòng thủ.", "Hấp thụ ánh nắng, tăng sức tấn công.", "Bắn mưa hạt giống nổ tung.", "Cuốn đối thủ trong bão lá.", "Gom ánh nắng rồi bắn tia mặt trời."},
-        {"Lao vào húc đối thủ.", "Lao tới cực nhanh, ra đòn trước.", "Cắn bằng răng sắc.", "Bắn sao không bao giờ trượt.", "Ước nguyện hồi HP và PP.", "Ngủ một giấc hồi tinh thần.", "Hồi sinh đồng đội đã gục.", "Chia sẻ thiệt hại sang PP.", "Quất đuôi cứng như thép.", "Tung đòn quyết định cuối cùng.", "Bắn tia năng lượng hủy diệt."},
-        {"Lao vào húc đối thủ.", "Phun tia nước mạnh.", "Thổi bong bóng vào đối thủ.", "Nhốt đối thủ trong xoáy nước.", "Phá mai, choáng đối thủ.", "Rút vào mai tăng phòng thủ.", "Quất đuôi tạo sóng nước.", "Bơm nước áp lực cực mạnh.", "Pháo nước công suất tối đa."},
-        {"Phóng tia lửa điện nhỏ.", "Bắn sóng điện không trượt.", "Ném cầu điện vào đối thủ.", "Phóng tia chớp cực mạnh.", "Đòn đánh kèm hiệu ứng độc.", "Nạp điện, tăng độc tính đòn đánh.", "Giăng lưới điện bắt đối thủ.", "Gọi sấm sét đánh xuống.", "Phủ điện toàn thân lao vào đối thủ."}
+        {"Cào bằng móng vuốt sắc.", "Phun tàn lửa nhỏ vào đối thủ.", "Cắn bằng nanh rực lửa.", "Cuốn đối thủ trong xoáy lửa.", "Bị động: màn khói che mắt, có cơ hội đánh xuyên giáp.", "Xoay lưỡi kiếm quanh mình, phản một phần sát thương.", "Phun luồng lửa dữ dội.", "Cào bằng vuốt rồng sắc bén.", "Ngọn lửa hình chữ đại thiêu rụi mọi thứ."},
+        {"Lao vào húc đối thủ.", "Quất đối thủ bằng dây leo.", "Phóng lá sắc như dao.", "Ném bùn độc vào đối thủ.", "Thủ thế tăng phòng thủ.", "Bị động: hấp thụ ánh nắng, luôn tăng tấn công.", "Bắn mưa hạt giống nổ tung.", "Cuốn đối thủ trong bão lá.", "Gom ánh nắng rồi bắn tia mặt trời."},
+        {"Lao vào húc đối thủ.", "Lao tới cực nhanh, ra đòn trước.", "Cắn bằng răng sắc.", "Bắn sao không bao giờ trượt.", "Ước nguyện hồi HP và PP.", "Bị động: nghỉ ngơi, luôn tăng PP tối đa.", "Hồi sinh đồng đội đã gục.", "Chia sẻ thiệt hại sang PP.", "Quất đuôi cứng như thép.", "Tung đòn quyết định cuối cùng.", "Bắn tia năng lượng hủy diệt."},
+        {"Lao vào húc đối thủ.", "Phun tia nước mạnh.", "Thổi bong bóng vào đối thủ.", "Nhốt đối thủ trong xoáy nước.", "Bổ trợ: phá mai, đòn đánh có cơ hội làm choáng.", "Bị động: rút vào mai, luôn tăng phòng thủ.", "Quất đuôi tạo sóng nước.", "Bơm nước áp lực cực mạnh.", "Pháo nước công suất tối đa."},
+        {"Phóng tia lửa điện nhỏ.", "Bắn sóng điện không trượt.", "Ném cầu điện vào đối thủ.", "Phóng tia chớp cực mạnh.", "Đòn đánh kèm hiệu ứng độc.", "Bị động: nạp điện, độc của Nhanh nhẹn mạnh hơn.", "Giăng lưới điện bắt đối thủ.", "Gọi sấm sét đánh xuống.", "Phủ điện toàn thân lao vào đối thủ."}
     };
+
+    /** Kiểu chiêu (bảng kỹ năng, Tự động đánh). */
+    public static final int CHU_DONG = 0, BO_TRO = 1, BI_DONG = 2;
+
+    /**
+     * Ô chiêu bị động theo dòng (SKILL_CAN_BUFF_TO_USER == -1, máy chủ ChieuBiDong.O): đã học là luôn có hiệu lực,
+     * không bấm / không gán ô nhanh / không cài Tự động đánh được. Báo lỗi 05/11/2026: "skill con rùa chủ động hay bị
+     * động mà dùng không được" (Rút vào mai) - bảng kỹ năng trước không ghi.
+     */
+    public static final int[] O_BI_DONG = {4, 5, 5, 5, 5};
+
+    /** Hiệu ứng chiêu bị động, "#" = phần trăm theo cấp chiêu (khớp máy chủ ChieuBiDong.HIEU_UNG). */
+    public static final String[] HIEU_UNG_BI_DONG = {"#% cơ hội đánh xuyên giáp", "+#% tấn công", "+#% PP tối đa", "+#% phòng thủ", "độc Nhanh nhẹn +#%"};
+
+    /** Kiểu của chiêu: BI_DONG / BO_TRO (laBuff) / CHU_DONG. */
+    public static int kieu(int lop, int chieu, boolean laBuff) {
+        if (lop >= 0 && lop < O_BI_DONG.length && O_BI_DONG[lop] == chieu) {
+            return BI_DONG;
+        }
+        return laBuff ? BO_TRO : CHU_DONG;
+    }
+
+    /** Nhãn kiểu chiêu. */
+    public static String nhanKieu(int k) {
+        return k == BI_DONG ? "Bị động" : (k == BO_TRO ? "Bổ trợ" : "Chủ động");
+    }
+
+    /** Dòng giải thích kiểu chiêu (dưới cấp). */
+    public static String giaiThichKieu(int k) {
+        if (k == BI_DONG) {
+            return "Luôn có hiệu lực, không cần bấm";
+        }
+        if (k == BO_TRO) {
+            return "Bấm để dùng; Tự động đánh tự dùng nếu ở trang chiêu";
+        }
+        return "Bấm để đánh; cài được vào Tự động đánh";
+    }
+
+    /** "+65% phòng thủ"; "" nếu không phải dòng có chiêu bị động. */
+    public static String hieuUngBiDong(int lop, int phanTram) {
+        if (lop < 0 || lop >= HIEU_UNG_BI_DONG.length) {
+            return "";
+        }
+        String s = HIEU_UNG_BI_DONG[lop];
+        int i = s.indexOf('#');
+        return i < 0 ? s : new StringBuffer(s.substring(0, i)).append(phanTram).append(s.substring(i + 1)).toString();
+    }
+
+    /** Câu báo khi chạm chiêu bị động ở Tự động đánh / ô nhanh. */
+    public static String cauBiDong(int lop, int chieu) {
+        String t = ten(lop, chieu);
+        return new StringBuffer(t == null ? "Chiêu này" : t).append(" là chiêu bị động: đã học là luôn có hiệu lực, không cần bấm và không cài vào Tự động đánh.").toString();
+    }
 
     private PokeChieu() {
     }

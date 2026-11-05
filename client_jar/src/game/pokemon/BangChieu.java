@@ -158,6 +158,10 @@ public final class BangChieu {
         g.setColor(0x3D6AA8);
         g.fillRect(x0 + 4, y - 1, wThe - 8, 1);
         Font f = Font.arialFontW;
+        int kieu = PokeChieu.kieu(lop, chon, laBuff(lop, chon));
+        // kiểu chiêu: Chủ động / Bổ trợ / Bị động (báo lỗi 05/11/2026: người chơi không biết Rút vào mai là bị động)
+        dong(g, x0 + 4, y, "Kiểu", PokeChieu.nhanKieu(kieu));
+        y += 12;
         if (c <= 0) {
             f.drawString(g, "Chưa học", x0 + 4, y, Font.LEFT);
             int can = capCan(chon, c);
@@ -192,6 +196,25 @@ public final class BangChieu {
                 Font.normalFont[1].drawString(g, new StringBuffer("Cấp ").append(capCan(chon, c)).toString(), xl + 6, y - 1, Font.LEFT);
             }
             y += 13;
+            if (kieu == PokeChieu.BI_DONG) {
+                int pt = 0;
+                try {
+                    pt = SkillManager.getSkillDamPercent(chon, c, lop);
+                } catch (Throwable e) {
+                }
+                String[] hu = Font.normalFont[0].splitFontBStrInLine(PokeChieu.hieuUngBiDong(lop, pt), wThe - 10);
+                for (int i = 0; hu != null && i < hu.length; i++) {
+                    Font.normalFont[0].drawString(g, hu[i], x0 + 4, y - 1, Font.LEFT);
+                    y += 12;
+                }
+                String[] mt = f.splitFontBStrInLine(new StringBuffer(PokeChieu.giaiThichKieu(kieu)).append(". ").append(PokeChieu.moTa(lop, chon)).toString(), wThe - 10);
+                for (int i = 0; mt != null && i < mt.length; i++) {
+                    f.drawString(g, mt[i], x0 + 4, y, Font.LEFT);
+                    y += 12;
+                }
+                GiaoDien.moClip(g);
+                return;
+            }
             int cot2 = x0 + 4 + (wThe - 8) / 2 + 4;
             int mp = 0;
             int dam = 0;

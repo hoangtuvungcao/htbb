@@ -158,6 +158,74 @@ public final class NhiemVuEngine {
         }
     }
 
+    /**
+     * Bao loi 05/11/2026 (Truong lang Xatu moi cung luc buoc 1..4 cua chuoi "Ca sĩ mất giọng": "Giọng hát khàn" ... "Buổi
+     * diễn"): danh sach NPC (-64, NhiemVuLauDaiGame.locDanhSach) chi loc cap + "da dung", khong kiem cot {@code truoc} cua
+     * chuoi P-xx (So tay da kiem qua NhiemVuMau.kiemNhan). Nay: chi moi buoc ke tiep - moi ma trong {@code truoc} da xong
+     * (tien do engine v[1] &gt;= 2: tra o So tay hoac qua NPC ghiXongPhuCu; hoac chuoi chinh cu da tra).
+     * Nhiem vu khong co mau engine / {@code truoc} rong / tat sv.lau_dai / nhan vat khong co tien do (charDBID &lt;= 0): khong
+     * rang buoc (nhu cu).
+     */
+    public static boolean phuDuBuocTruoc(final Char p, final String ma, final Set<String> daXong) {
+        final String truoc = truocPhu(ma);
+        if (truoc == null || p == null || p.charDBID <= 0) {
+            return true;
+        }
+        for (final String x : truoc.split("[,;]")) {
+            final String t = x.trim();
+            if (!t.isEmpty() && !(daXong != null && daXong.contains(t)) && !xongChuoiCu(p, t)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean phuDuBuocTruoc(final Char p, final String ma) {
+        return phuDuBuocTruoc(p, ma, maDaXong(p));
+    }
+
+    /** Ma da xong (tien do engine v[1] &gt;= 2) cua nhan vat - tinh MOT lan cho ca danh sach; rong neu khong co. */
+    public static Set<String> maDaXong(final Char p) {
+        if (!LauDai.bat() || p == null || p.charDBID <= 0) {
+            return new HashSet<String>();
+        }
+        try {
+            final ConcurrentHashMap<String, long[]> t = td(p);
+            return t == null ? new HashSet<String>() : daXong(t);
+        } catch (final Exception e) {
+            return new HashSet<String>();
+        }
+    }
+
+    /** Cot {@code truoc} cua mau engine {@code ma}; null neu khong co / rong / tat sv.lau_dai. */
+    static String truocPhu(final String ma) {
+        if (!LauDai.bat() || ma == null || ma.isEmpty()) {
+            return null;
+        }
+        final NhiemVuMau m = MAU.get(ma);
+        if (m == null || m.truoc == null || m.truoc.trim().isEmpty()) {
+            return null;
+        }
+        return m.truoc;
+    }
+
+    /** Ten buoc truoc chua xong dau tien cua {@code ma} (cho cau tu choi); null neu du. */
+    public static String tenBuocTruocThieu(final Char p, final String ma) {
+        final String truoc = truocPhu(ma);
+        if (truoc == null || p == null || p.charDBID <= 0) {
+            return null;
+        }
+        final Set<String> xong = maDaXong(p);
+        for (final String x : truoc.split("[,;]")) {
+            final String t = x.trim();
+            if (!t.isEmpty() && !xong.contains(t) && !xongChuoiCu(p, t)) {
+                final NhiemVuMau m = MAU.get(t);
+                return m == null || m.ten == null || m.ten.isEmpty() ? t : m.ten;
+            }
+        }
+        return null;
+    }
+
     // ------------------------------------------------------------------ phu nhan o So tay hien o NPC (-64)
 
     /**

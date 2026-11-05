@@ -139,9 +139,12 @@ public final class NhiemVuLauDaiGame {
         }
         if (p.subQuest.id_quest == -1) {
             final List<InfoQuestTemplate> phu = new ArrayList<InfoQuestTemplate>();
+            final java.util.Set<String> xong = NhiemVuEngine.maDaXong(p); // mot lan cho ca danh sach
             for (final InfoQuestTemplate t : Map.allSubQuest.values()) {
-                if (!NhiemVuEngine.phuCuDaDung(p, t.ma)) {
-                    phu.add(t); // 0.9.7.1: da nhan / xong o So tay hoac da tra qua NPC -> khong moi lai
+                // 0.9.7.1: da nhan / xong o So tay hoac da tra qua NPC -> khong moi lai
+                // bao loi 05/11/2026: chuoi P-xx chi moi buoc KE TIEP (buoc truoc da xong) - truoc moi ca buoc 1..4 cung luc
+                if (!NhiemVuEngine.phuCuDaDung(p, t.ma) && NhiemVuEngine.phuDuBuocTruoc(p, t.ma, xong)) {
+                    phu.add(t);
                 }
             }
             // Hashtable khong co thu tu: theo id (nhiem vu cung thi tran / tuyen lien nhau) truoc khi xep gan cap
