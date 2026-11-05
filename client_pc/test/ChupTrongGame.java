@@ -75,7 +75,7 @@ public class ChupTrongGame {
     static final String MAN_J2ME_GIA_LAP = ",the_gioi,menu,nv_ky_nang,nv_hanh_trang,tu_dong,tu_dong_dang,xac_nhan,hop_thong_bao,"
         + "hop_len_cap,menu_ngu_canh,nhiem_vu,cua_hang_thuoc,pokedex,hop_dang_xuat,hst_vuon_gieo,menu_chu_vuon_gieo,"
         + "ban_do_vung,ban_do_vung_johto,ban_do_vung_hoenn,so_nhiem_vu_cua_ai,so_nhiem_vu_cua_ai_the,"
-        + "menu_npc_dai,menu_npc_dai_con,menu_npc_dai_20,menu_machamp_che_tao,menu_machamp_cu,";
+        + "menu_npc_dai,menu_npc_dai_con,menu_npc_dai_20,menu_machamp_che_tao,menu_machamp_cu,menu_npc_xatu,menu_npc_xatu_phu,";
 
     /** Máy J2ME thật: màn logic đúng W x H, x1 (không phóng). */
     static void datCoJ2me(int W, int H) {
@@ -345,6 +345,9 @@ public class ChupTrongGame {
             "so_nhiem_vu_cua_ai", "so_nhiem_vu_cua_ai_the",
             // 31/10/2026 (báo lỗi 0.9.24 "chỗ chế tạo trang bị nay tìm không thấy"): menu NPC dài - lật "Thêm" phải tới MỌI lệnh
             "menu_npc_dai", "menu_npc_dai_con", "menu_npc_dai_20",
+            // báo lỗi 05/11/2026 (Trưởng làng Xatu: 7 tên nhiệm vụ trơn + "Thêm"): menu nhiệm vụ NPC ghi rõ Trả / Nhận / Đang
+            // làm, nhiệm vụ phụ gom "Nhiệm vụ phụ (N)" (màn _phu: danh sách con)
+            "menu_npc_xatu", "menu_npc_xatu_phu",
             // 0.9.26: menu Machamp có lối thẳng Chế tạo trang bị / Khảm ngọc hệ khi máy chủ có (học từ menu Mua bán hỏi ngầm);
             // máy chủ cũ (Mua bán không có Chế tạo) giữ menu như cũ
             "menu_machamp_che_tao", "menu_machamp_cu", "giao_dich", "pokedex",
@@ -527,6 +530,9 @@ public class ChupTrongGame {
                 }
                 if (ten.startsWith("menu_npc_dai")) {
                     kiemLatMenu(ten + " " + TEN_COV[c], W, H);
+                }
+                if (ten.startsWith("menu_npc_xatu")) {
+                    kiemXatu(ten.endsWith("_phu"), ten + " " + TEN_COV[c]);
                 }
                 if (ten.startsWith("menu_machamp_")) {
                     kiemMachamp(ten.endsWith("_che_tao"), ten + " " + TEN_COV[c]);
@@ -1622,7 +1628,13 @@ public class ChupTrongGame {
             }
             QUEST_GOC = null;
         }
-        if (ten.startsWith("so_nhiem_vu_cua_ai")) {
+        if (XATU_GOC != null) {
+            game.render.screen.GameScr.allQuestCanReceive = XATU_GOC;
+            XATU_GOC = null;
+        }
+        if (ten.startsWith("menu_npc_xatu")) {
+            moXatu(ten.endsWith("_phu"));
+        } else if (ten.startsWith("so_nhiem_vu_cua_ai")) {
             moSoCuaAi(ten.endsWith("_the"));
         } else if (ten.startsWith("menu_npc_dai")) {
             moMenuDai(ten);
@@ -2333,6 +2345,138 @@ public class ChupTrongGame {
         } catch (Throwable e) {
             e.printStackTrace();
             kiem(false, "PauseMenu.moSoNhiemVu: " + e);
+        }
+    }
+
+    static java.util.Vector XATU_GOC;
+
+    static game.model.Quest nvXatu(int id, String ten, int mainSub, int trangThai, int npc) {
+        game.model.Quest q = new game.model.Quest(id);
+        q.name = ten;
+        q.main_sub = (byte) mainSub;
+        q.stateQuest = (byte) trangThai;
+        q.type = game.model.Quest.TYPE_TALK;
+        q.idNpcReceive = (short) npc;
+        q.idNpcResponse = (short) npc;
+        q.content.addElement("1Xatu: Cháu giúp ta việc này nhé.");
+        q.rescontent.addElement("1Xatu: Cảm ơn cháu.");
+        q.decript = "Mục tiêu: " + ten;
+        return q;
+    }
+
+    /**
+     * Trưởng làng Xatu như báo lỗi 05/11/2026: bước chính nhận được + 6 nhiệm vụ phụ nhận được, một nhiệm vụ phụ xong chờ
+     * trả, một cửa ải đang làm báo lại ở Xatu (12/60). Đi đúng đường thật: GameScr.getAllQuestNpc + "Nhiệm vụ của tôi" +
+     * "Nói chuyện" -> Canvas.menu.startAt -> MenuNguCanh.tiepQuan (máy chạm). _phu: chạm "Nhiệm vụ phụ (N)".
+     */
+    static void moXatu(boolean phu) {
+        game.render.screen.GameScr gs = game.render.Canvas.gameScr;
+        gs.switchToMe();
+        game.model.Actor npc = null;
+        for (int i = 0; i < gs.actors.size(); i++) {
+            game.model.Actor a = (game.model.Actor) gs.actors.elementAt(i);
+            if (a.isNPC()) {
+                npc = a;
+                break;
+            }
+        }
+        int loai = npc == null ? 5 : npc.getTypeNpc();
+        if (npc != null) {
+            gs.focusedActor = npc;
+            gs.mainChar.x = (short) (npc.x - 40);
+            gs.mainChar.y = (short) (npc.y + 8);
+        }
+        QUEST_GOC = new Object[]{game.render.screen.GameScr.mainQuest, game.render.screen.GameScr.subQuest,
+            game.render.screen.GameScr.clanQuest, null};
+        XATU_GOC = game.render.screen.GameScr.allQuestCanReceive;
+        game.render.screen.GameScr.mainQuest = null;
+        game.render.screen.GameScr.subQuest = nvXatu(2054, "Trà chữa họng", 1, 1, loai);
+        game.model.Quest cuaAi = nvXatu(30091, "Đánh bại Pidgey hoang", 2, 2, loai);
+        cuaAi.type = game.model.Quest.TYPE_KILL_MONS;
+        cuaAi.idMonsKill = new short[]{0};
+        cuaAi.allMonsKilled = new short[]{12};
+        cuaAi.totalMonskill = new short[]{60};
+        game.render.screen.GameScr.clanQuest = cuaAi;
+        java.util.Vector nhan = new java.util.Vector();
+        // thứ tự máy chủ: phụ gần cấp nhất trước, bước chính ở giữa (client phải tự đưa lên đầu)
+        String[] tenPhu = {"Buổi diễn", "Giọng hát khàn", "Quả mọng tươi", "Mật ong ngọt", "Trang công thức", "Lá thư cho Pikachu"};
+        for (int i = 0; i < tenPhu.length; i++) {
+            nhan.addElement(nvXatu(2050 + i, tenPhu[i], 1, 0, loai));
+            if (i == 1) {
+                nhan.addElement(nvXatu(1001, "Đêm mưa sao băng", 0, 0, loai));
+            }
+        }
+        game.render.screen.GameScr.allQuestCanReceive = nhan;
+        game.render.screen.GameScr.coMucTieuNv = true;
+        java.util.Vector v = game.render.screen.GameScr.getAllQuestNpc(loai);
+        try {
+            java.lang.reflect.Method m = game.render.screen.GameScr.class.getDeclaredMethod("themNhiemVuCuaToi", java.util.Vector.class);
+            m.setAccessible(true);
+            m.invoke(null, v);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        game.model.Command noi = new game.model.Command("Nói chuyện", new game.model.IAction() {
+            public void perform() {
+                DA_CHON.add("Nói chuyện");
+            }
+        });
+        try {
+            game.render.screen.GameScr.class.getMethod("chenNoiChuyen", java.util.Vector.class, game.model.Command.class).invoke(null, v, noi);
+        } catch (Throwable e) {
+            v.addElement(noi);   // client trước bản sửa: "Nói chuyện" cuối
+        }
+        game.pokemon.MenuNguCanh.boCho();   // tiêu đề chờ của màn kiểm trước (kiemMenuNhiemVu) không dính sang
+        game.render.Canvas.menu.startAt(v, 3);
+        game.pokemon.MenuNguCanh.tiepQuan();
+        if (phu) {
+            for (int i = 0; i < v.size(); i++) {
+                game.model.Command c = (game.model.Command) v.elementAt(i);
+                if (c.caption.startsWith("Nhiệm vụ phụ")) {
+                    c.action.perform();
+                    break;
+                }
+            }
+        }
+    }
+
+    /** Menu Xatu: thứ tự Trả -> Nhận chính -> nhóm phụ -> Đang làm -> Nhiệm vụ của tôi / Nói chuyện; danh sách con đủ 6. */
+    static void kiemXatu(boolean phu, String nhan) {
+        String[] l;
+        if (game.pokemon.MenuNguCanh.bat()) {
+            l = game.pokemon.MenuNguCanh.cacLenh();
+        } else {
+            java.util.Vector v = game.render.Canvas.menu.menuItems;
+            l = new String[v == null ? 0 : v.size()];
+            for (int i = 0; i < l.length; i++) l[i] = ((game.model.Command) v.elementAt(i)).caption;
+        }
+        String ds = java.util.Arrays.toString(l);
+        if (phu) {
+            kiem(l.length == 6 && "! Nhận: Buổi diễn".equals(l[0]) && "! Nhận: Lá thư cho Pikachu".equals(l[5]), nhan + ": danh sach nhiem vu phu " + ds);
+            return;
+        }
+        kiem(java.util.Arrays.asList("* Trả: Trà chữa họng", "! Nhận: Đêm mưa sao băng", "Nhiệm vụ phụ (6)", "Nói chuyện",
+                "\u2026 Đang làm: Đánh bại Pidgey hoang (12/60)", "Nhiệm vụ của tôi").equals(java.util.Arrays.asList(l)),
+                nhan + ": menu Xatu " + ds);
+        if (game.pokemon.MenuNguCanh.bat()) {
+            try {
+                java.lang.reflect.Method m = game.pokemon.MenuNguCanh.class.getDeclaredMethod("dsTrang");
+                m.setAccessible(true);
+                int[] tr = (int[]) m.invoke(game.pokemon.MenuNguCanh.gI());
+                String t = java.util.Arrays.toString(tr);
+                // trang dau = dau danh sach theo dung thu tu (Tra truoc het); vua >= 4 nut thi "Nói chuyện" o trang dau
+                int k = 0;
+                boolean tienTo = true;
+                for (int i = 0; i < tr.length; i++) {
+                    if (tr[i] < 0) continue;
+                    tienTo &= tr[i] == k;
+                    k++;
+                }
+                kiem(tienTo && k >= 1, nhan + ": trang dau khong theo thu tu Tra -> Nhan -> Phu -> Noi chuyen " + t);
+                kiem(k < 4 || t.contains("3"), nhan + ": trang dau 4+ nut ma thieu Noi chuyen " + t);
+            } catch (Throwable e) {
+                kiem(false, nhan + ": dsTrang " + e);
+            }
         }
     }
 

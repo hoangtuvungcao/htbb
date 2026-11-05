@@ -255,7 +255,7 @@ public final class ManNhiemVu extends Screen {
     }
 
     /** {đã, cần} tổng của các mục tiêu (đánh quái / thu thập); null nếu không đếm được. */
-    static int[] tienDo(Quest q) {
+    public static int[] tienDo(Quest q) {
         try {
             if (q.stateQuest == 2 && q.type == Quest.TYPE_KILL_MONS && q.totalMonskill != null) {
                 int a = 0, b = 0;

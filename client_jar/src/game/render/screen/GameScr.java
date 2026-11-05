@@ -25,6 +25,7 @@ import game.model.ChatInfo;
 import game.model.ChatPopup;
 import game.model.ClanInfo;
 import game.model.Command;
+import game.model.MenuNhiemVuNpc;
 import game.model.CongGym;
 import game.model.Cout;
 import game.model.DropGemItem;
@@ -2243,7 +2244,7 @@ public class GameScr extends Screen {
             Vector allquest = getAllQuestNpc(this.focusedActor.getTypeNpc());
             if (allquest.size() > 0 && this.focusedActor.isNpcChar()) {
                 themNhiemVuCuaToi(allquest);
-                allquest.addElement(new Command("Nói chuyện", new IAction() {
+                chenNoiChuyen(allquest, new Command("Nói chuyện", new IAction() {
                     @Override
                     public void perform() {
                         GameService.gI().requestNPCInfo(((Char) GameScr.this.focusedActor).idBoss);
@@ -2632,7 +2633,7 @@ public class GameScr extends Screen {
                     }));
                 }
                 themNhiemVuCuaToi(allquest);
-                allquest.addElement(new Command("Nói chuyện", new IAction() {
+                chenNoiChuyen(allquest, new Command("Nói chuyện", new IAction() {
                     @Override
                     public void perform() {
                         GameScr.this.mainChar.chat = null;
@@ -8387,48 +8388,88 @@ public class GameScr extends Screen {
         }
     }
 
+    /**
+     * Menu nhiệm vụ của NPC (game.model.MenuNhiemVuNpc - báo lỗi 05/11/2026, Trưởng làng Xatu "không biết cái nào là nhận,
+     * trả, nhét nhiều quá"): "* Trả: tên" -> "! Nhận: tên" (bước chính) -> nhiệm vụ phụ (quá 3 thì gom "Nhiệm vụ phụ (N)")
+     * -> "… Đang làm: tên (x/y)" (từ 2 dòng gom "… Đang làm (N)"). Trước: "Trả tên" cho cả nhiệm vụ đang làm, tên trơn
+     * cho nhiệm vụ nhận được, mọi nhiệm vụ phụ trải hết ra lưới.
+     */
     public static Vector getAllQuestNpc(int idNpc) {
-        Vector allquest = new Vector();
-        if (mainQuest != null && ((mainQuest.stateQuest == 1 || mainQuest.stateQuest == 2) && mainQuest.idNpcResponse == idNpc)) {
-            allquest.addElement(new Command(new StringBuffer("Trả ").append(mainQuest.name).toString(), new IAction() {
-                @Override
-                public void perform() {
-                    GameScr.currQuest = GameScr.mainQuest;
-                    GameScr.currQuest.startTalk(Canvas.gameScr.mainChar, Canvas.gameScr.focusedActor, GameScr.mainQuest.stateQuest);
-                }
-            }));
-        }
-        if (subQuest != null && ((subQuest.stateQuest == 1 || subQuest.stateQuest == 2) && subQuest.idNpcResponse == idNpc)) {
-            allquest.addElement(new Command(new StringBuffer("Trả ").append(subQuest.name).toString(), new IAction() {
-                @Override
-                public void perform() {
-                    GameScr.currQuest = GameScr.subQuest;
-                    GameScr.currQuest.startTalk(Canvas.gameScr.mainChar, Canvas.gameScr.focusedActor, GameScr.subQuest.stateQuest);
-                }
-            }));
-        }
-        if (clanQuest != null && ((clanQuest.stateQuest == 1 || clanQuest.stateQuest == 2) && clanQuest.idNpcResponse == idNpc)) {
-            allquest.addElement(new Command(new StringBuffer("Trả ").append(clanQuest.name).toString(), new IAction() {
-                @Override
-                public void perform() {
-                    GameScr.currQuest = GameScr.clanQuest;
-                    GameScr.currQuest.startTalk(Canvas.gameScr.mainChar, Canvas.gameScr.focusedActor, GameScr.clanQuest.stateQuest);
-                }
-            }));
+        final Vector q = new Vector();
+        Quest[] co = {mainQuest, subQuest, clanQuest};
+        for (int i = 0; i < co.length; i++) {
+            if (co[i] != null && (co[i].stateQuest == 1 || co[i].stateQuest == 2) && co[i].idNpcResponse == idNpc) {
+                q.addElement(co[i]);
+            }
         }
         for (int i = 0; i < allQuestCanReceive.size(); i++) {
-            final Quest q = (Quest) allQuestCanReceive.elementAt(i);
-            if (q.stateQuest == 0 && q.idNpcReceive == idNpc) {
-                allquest.addElement(new Command(q.name, new IAction() {
+            Quest x = (Quest) allQuestCanReceive.elementAt(i);
+            if (x.stateQuest == 0 && x.idNpcReceive == idNpc) {
+                q.addElement(x);
+            }
+        }
+        final int[] loai = new int[q.size()];
+        final String[] chu = new String[q.size()];
+        for (int i = 0; i < loai.length; i++) {
+            Quest x = (Quest) q.elementAt(i);
+            int[] td = x.stateQuest == 2 ? game.pokemon.ManNhiemVu.tienDo(x) : null;
+            loai[i] = x.stateQuest == 1 ? MenuNhiemVuNpc.TRA : x.stateQuest == 2 ? MenuNhiemVuNpc.DANG
+                    : x.main_sub == 0 ? MenuNhiemVuNpc.CHINH : MenuNhiemVuNpc.PHU;
+            chu[i] = MenuNhiemVuNpc.nhan(loai[i], x.name, td == null ? 0 : td[0], td == null ? 0 : td[1]);
+        }
+        Vector allquest = new Vector();
+        int[] xep = MenuNhiemVuNpc.xep(loai);
+        for (int k = 0; k < xep.length; k++) {
+            if (xep[k] < 0) {
+                final int nhom = xep[k];
+                final int[] con = MenuNhiemVuNpc.trongNhom(loai, nhom);
+                final String ten = MenuNhiemVuNpc.tenNhom(nhom, con.length);
+                allquest.addElement(new Command(ten, new IAction() {
                     @Override
                     public void perform() {
-                        GameScr.currQuest = q;
-                        GameScr.currQuest.startTalk(Canvas.gameScr.mainChar, Canvas.gameScr.focusedActor, q.stateQuest);
+                        Vector v = new Vector();
+                        for (int j = 0; j < con.length; j++) {
+                            v.addElement(lenhNhiemVuNpc((Quest) q.elementAt(con[j]), chu[con[j]]));
+                        }
+                        if (game.pokemon.MenuNguCanh.bat()) {
+                            game.pokemon.MenuNguCanh.mo(v, nhom == MenuNhiemVuNpc.NHOM_PHU ? MenuNhiemVuNpc.TEN_NHOM_PHU : "Đang làm");
+                        } else {
+                            Canvas.menu.startAt(v, 3);
+                        }
                     }
                 }));
+            } else {
+                allquest.addElement(lenhNhiemVuNpc((Quest) q.elementAt(xep[k]), chu[xep[k]]));
             }
         }
         return allquest;
+    }
+
+    /**
+     * "Nói chuyện" (chức năng riêng của NPC) chen ngay trước dòng "… Đang làm" đầu tiên (không có thì cuối): máy chạm màn
+     * thấp chỉ vừa 4 nút + "Thêm" - Trả / Nhận / Nhiệm vụ phụ / Nói chuyện luôn ở trang đầu, dòng đang làm (chỉ nhắc mục
+     * tiêu) và "Nhiệm vụ của tôi" xuống sau.
+     */
+    public static void chenNoiChuyen(Vector menu, Command noi) {
+        for (int i = 0; i < menu.size(); i++) {
+            String c = ((Command) menu.elementAt(i)).caption;
+            if (c != null && (c.startsWith(MenuNhiemVuNpc.DANG_TIEN_TO) || c.startsWith(MenuNhiemVuNpc.TEN_NHOM_DANG + " ("))) {
+                menu.insertElementAt(noi, i);
+                return;
+            }
+        }
+        menu.addElement(noi);
+    }
+
+    /** Một dòng nhiệm vụ của menu NPC: nghe thoại nhận / trả (đang làm: NPC nhắc mục tiêu) như trước. */
+    static Command lenhNhiemVuNpc(final Quest q, String chu) {
+        return new Command(chu, new IAction() {
+            @Override
+            public void perform() {
+                GameScr.currQuest = q;
+                GameScr.currQuest.startTalk(Canvas.gameScr.mainChar, Canvas.gameScr.focusedActor, q.stateQuest);
+            }
+        });
     }
 
     public static Image getImgQuest(int idNpc) {
