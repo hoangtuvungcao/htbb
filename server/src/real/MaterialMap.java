@@ -166,11 +166,46 @@ public class MaterialMap extends Map {
         return this.players;
     }
 
+    /**
+     * 05/11/2026 (bao loi ruby Lv56 "vao map nay khong lam duoc gi a"): khong cam cuoc thi danh quang IM LANG khong
+     * co gi xay ra (doAttackMonster tra ve som), khong ai noi phai lam gi. Gio: vao mo + danh ma chua mac cuoc deu
+     * duoc huong dan.
+     */
+    static final String HUONG_DAN = "Khu mỏ: mặc Cuốc (mua ở Machamp thợ rèn, mục Đồ cầm tay) rồi đánh vào các khối quặng"
+            + " (Sắt, Ngọc, Gỗ, Da, Vải) để đào nguyên liệu Bảo vật huyền thoại. Muốn về: gặp Pidgeot (Bay).";
+    static final String CAN_CUOC = "Chưa mặc Cuốc - không đào được. Mua Cuốc thường / Cuốc xịn ở Machamp thợ rèn"
+            + " (mục Đồ cầm tay), mặc vào rồi đánh quặng.";
+    static final long NHAC_MS = 6000L;
+    private static final java.util.Map<Integer, Long> NHAC_LUC = new java.util.concurrent.ConcurrentHashMap<Integer, Long>();
+
+    /** Thuan (test): co nen nhac nguoi {@code k} luc {@code bay} khong (toi da 1 lan / NHAC_MS); co thi ghi lai moc. */
+    static boolean nenNhac(final java.util.Map<Integer, Long> luc, final int k, final long bay) {
+        final Long cu = luc.get(Integer.valueOf(k));
+        if (cu != null && bay - cu.longValue() >= 0L && bay - cu.longValue() < NHAC_MS) {
+            return false;
+        }
+        luc.put(Integer.valueOf(k), Long.valueOf(bay));
+        return true;
+    }
+
+    /** Nhac "can cuoc" toi da 1 lan / 6 giay / nguoi (moi don danh deu vao day). @return true neu da gui. */
+    static boolean nhacCanCuoc(final Char p) {
+        if (p == null || !nenNhac(NHAC_LUC, p.charDBID != 0 ? p.charDBID : p.id, System.currentTimeMillis())) {
+            return false;
+        }
+        com.htbb.thongbao.ThongBao.loi(p, CAN_CUOC, "");
+        return true;
+    }
+
     @Override
     public void playerJoin(Char player) {
         this.players.add(player);
         player.map = this;
         player.mapID = this.mapId;
+        if (player.charDBID > 0) {
+            com.htbb.thongbao.ThongBao.gui(player, com.htbb.thongbao.ThongBao.TIN, HUONG_DAN,
+                    player.itemAx == null ? "Bạn chưa mặc Cuốc." : "", com.htbb.thongbao.ThongBao.HINH_KHONG, 0);
+        }
     }
 
     /** SUA 14/09/2026: dung dung `country` (giong Map.removeGem), khong con hardcode 0. */
@@ -414,6 +449,7 @@ public class MaterialMap extends Map {
             return;
         }
         if (p.itemAx == null) {
+            nhacCanCuoc(p);
             return;
         }
         if (p.hp <= 0) {

@@ -147,7 +147,7 @@ public final class MoTaVatPham {
         {"88", GIU, "Nhẫn kết đôi đồng: có trong túi khi đã kết đôi thì tăng 2% phòng thủ (chỉ tính 1 nhẫn, không cộng dồn).", "0", "Không cần bấm dùng: chỉ cần có trong túi khi đã kết đôi."},
         {"89", GIU, "Nhẫn kết đôi bạc: có trong túi khi đã kết đôi thì tăng 4% phòng thủ (chỉ tính 1 nhẫn, không cộng dồn).", "0", "Không cần bấm dùng: chỉ cần có trong túi khi đã kết đôi."},
         {"90", GIU, "Nhẫn kết đôi vàng: có trong túi khi đã kết đôi thì tăng 7% phòng thủ (chỉ tính 1 nhẫn, không cộng dồn).", "0", "Không cần bấm dùng: chỉ cần có trong túi khi đã kết đôi."},
-        {"91", VE, "Vào khu mỏ đào nguyên liệu. Cần cấp 20, dùng ở làng hoặc bản đồ luyện quái của vùng mình.", "1", ""},
+        {"91", VE, "Vào khu mỏ đào nguyên liệu. Cần cấp 20, dùng ở làng hoặc bản đồ luyện quái của vùng mình. Trong mỏ phải mặc Cuốc (mua ở Machamp thợ rèn) rồi đánh khối quặng.", "1", ""},
         {"92", VE, "Thiệp mời bạn bè dự Lễ kết đôi.", "0", buoc("dùng khi tổ chức Lễ kết đôi.")},
         {"93", BINH, "Hồi 7.000 HP cho Pokémon. Gán vào nút thuốc HP ở HUD để dùng nhanh.", "1", ""},
         {"94", BINH, "Hồi 15.000 HP cho Pokémon. Gán vào nút thuốc HP ở HUD để dùng nhanh.", "1", ""},

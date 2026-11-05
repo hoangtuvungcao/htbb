@@ -229,6 +229,28 @@ public final class CheTaoGame {
         final boolean[] khoa = {false};
         final String[] thieu = {null};
         synchronized (p) {
+            // 05/11/2026 (bao loi "che tao xong vao kho khong thay ma xu cung tru roi"): NGUYEN TU - kiem tui + TAO MON
+            // TRUOC, chi tru xu / da / nguyen lieu khi da cam mon trong tay; ban cu tru truoc roi moi taoMon, taoMon tra
+            // null (mau loi / mau id 2 / ngoai le) -> "Lỗi tạo món" ma xu + da + nguyen lieu da mat. Kiem tui lai TRONG
+            // khoa (hai goi che tao cung luc / nhat do giua chung khong lot qua o cuoi).
+            if (p.isFullInventory()) {
+                BoNgocGame.ketQua(p, false, "Hành trang đã đầy, hãy dọn 1 ô rồi chế lại (chưa trừ xu).");
+                return;
+            }
+            final int truoc = tui.cheTaoPity;
+            final CheTaoLogic.BacHiem bac = CheTaoLogic.quay(BoNgocGame.DL.bacHiem, Map.r.nextInt(1000), truoc, pity());
+            final Item it;
+            try {
+                it = taoMon(p, t, bac, he, kieuDa);
+            } catch (final RuntimeException e) {
+                System.out.println("CheTaoGame.taoMon " + c.idTemplate + ": " + e);
+                BoNgocGame.ketQua(p, false, "Lỗi tạo món (chưa trừ xu), hãy báo quản trị.");
+                return;
+            }
+            if (it == null) {
+                BoNgocGame.ketQua(p, false, "Lỗi tạo món (chưa trừ xu), hãy báo quản trị.");
+                return;
+            }
             final boolean du = p.truNeuDu(() -> {
                 final int nl = c.idNlPhu > 0 ? VatPhamDungLauDai.demItem(p, c.idNlPhu) : 0;
                 final int loi = idLoi > 0 ? VatPhamDungLauDai.demItem(p, idLoi) : 0;
@@ -249,16 +271,9 @@ public final class CheTaoGame {
                 guiDanhSach(p);
                 return;
             }
-            final int truoc = tui.cheTaoPity;
-            final CheTaoLogic.BacHiem bac = CheTaoLogic.quay(BoNgocGame.DL.bacHiem, Map.r.nextInt(1000), truoc, pity());
             tui.cheTaoPity = CheTaoLogic.pitySau(truoc, bac);
             tui.cheTaoTong++;
             tui.ban = true;
-            final Item it = taoMon(p, t, bac, he, kieuDa);
-            if (it == null) {
-                BoNgocGame.ketQua(p, false, "Lỗi tạo món, hãy báo quản trị.");
-                return;
-            }
             if (khoa[0]) {
                 it.lock = 1; // dung da khoa thi mon khoa (giong nang cap)
             }
@@ -270,7 +285,10 @@ public final class CheTaoGame {
             final boolean hiem = bac != null && bac.ma >= CheTaoLogic.MA_SU_THI;
             com.htbb.thongbao.ThongBao.gui(p, hiem ? com.htbb.thongbao.ThongBao.HIEM : com.htbb.thongbao.ThongBao.KET_QUA,
                     "Chế tạo: " + ten + " (" + (bac != null ? bac.ten : "") + ")",
-                    hiem ? "" : "Chưa ra Sử thi: " + tui.cheTaoPity + "/" + pity() + " lần",
+                    // bao loi 03/11/2026: noi ro mon nam o dau + ten that (do moi doi "Phien da he bach kim" -> "Phien da
+                    // Violet" nen nguoi choi tim theo ten cong thuc khong thay trong hanh trang).
+                    "Đã vào hành trang" + (tm.id != t.id ? " (công thức " + t.name + ")" : "")
+                            + (hiem ? "" : " · Chưa ra Sử thi: " + tui.cheTaoPity + "/" + pity() + " lần"),
                     com.htbb.thongbao.ThongBao.HINH_ICON, tm.idIcon);
             try {
                 final Message m = BoNgocGame.moi(BoNgocGame.S_CHE_TAO_KQ);

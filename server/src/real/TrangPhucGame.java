@@ -681,6 +681,10 @@ public final class TrangPhucGame {
         final String[] thieu = {null};
         synchronized (p) {
             final boolean du = p.truNeuDu(() -> {
+                if (t.soHuu.containsKey(ma)) { // 05/11/2026: kiem lai TRONG khoa - hai goi che cung luc tru hai lan
+                    thieu[0] = "Bạn đã có " + m.ten + ".";
+                    return false;
+                }
                 for (final int[] x : m.dk.nguyenLieu) {
                     if (VatPhamDungLauDai.demItem(p, x[0]) < x[1]) {
                         thieu[0] = "Thiếu " + TrangPhucLogic.tenNguyenLieu(x[0]) + " (cần " + x[1] + ").";
@@ -703,9 +707,13 @@ public final class TrangPhucGame {
             if (!du) {
                 return thieu[0] == null ? "Không đủ nguyên liệu." : thieu[0];
             }
-        }
-        if (!trao(p, ma, TrangPhucLogic.CHE_TAO)) {
-            return "Lỗi ghi tủ đồ, hãy báo quản trị (đã trừ nguyên liệu).";
+            // trao trong cung khoa p (goi che thu hai cho toi khi mon da vao tu do -> thay "Bạn đã có").
+            if (!trao(p, ma, TrangPhucLogic.CHE_TAO)) {
+                if (xu > 0) {
+                    p.addXu(xu, "hoan che trang phuc " + ma, Char.XU_HOAN); // loi ghi tu do: tra xu ngay
+                }
+                return "Lỗi ghi tủ đồ, đã hoàn " + xu + " xu; hãy báo quản trị để hoàn nguyên liệu.";
+            }
         }
         try {
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
