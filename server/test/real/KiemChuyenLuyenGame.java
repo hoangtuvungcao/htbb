@@ -125,6 +125,108 @@ public final class KiemChuyenLuyenGame {
         return (t * ChuyenLuyen.XU_PHAN_TRAM_MAC_DINH + 99L) / 100L;
     }
 
+    /** Co goi 16 kieu {@code kieu} (hanh trang) trong cac goi da gui. */
+    static boolean coHanhTrang(final NV p, final int kieu) {
+        for (final Message m : p.goi) {
+            if (m.command == 16) {
+                final byte[] b = m.toByteArray();
+                final int dau = b.length > 0 && b[0] == (byte) -128 ? 6 : 3;
+                if (b.length > dau && b[dau] == kieu) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** NV dung trong nha Machamp (map offline = noi dich vu). */
+    static NV nvTrongNha(final long xu) {
+        final NV p = new NV(xu);
+        final Map m = new Map();
+        m.isMapOffline = true;
+        p.map = m;
+        return p;
+    }
+
+    /**
+     * Bao loi rongngoo 05/11/2026: luong menu THAT (doMenu 0 -> 1 -> 2) voi id vat pham AM (Char.getIDItem quay vong; nhan
+     * vat choi lau / bot: -31993...). Ban cu: thucHien coi id &lt; 0 la "chua chon" -&gt; return im lang (khong tru, khong
+     * doi, khong thong bao). Nay: chuyen xong, goi hanh trang 16/1, thong bao; moi duong hong deu co thong bao.
+     */
+    static void menuIdAm() {
+        final NV p = nvTrongNha(10_000_000L);
+        final short luuId = idMon;
+        idMon = -31993;
+        final Item a = mon(p, ID_VK30, 7, 100);
+        final Item b = mon(p, ID_VK40, 0, 200);
+        idMon = luuId;
+        bang("id am: hai mon id am", "true", String.valueOf(a.id < 0 && b.id < 0));
+        ChuyenLuyenGame.moMenu(p);
+        final ChuyenLuyenGame.Chon c = ChuyenLuyenGame.chon(p);
+        bang("id am: menu nguon co mon id am", "true", String.valueOf(c.nguon.length == 1 && c.nguon[0] == a.id));
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_NGUON, 0);
+        bang("id am: menu nhan co mon id am", "true", String.valueOf(c.nhan.length == 1 && c.nhan[0] == b.id));
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_NHAN, 0);
+        bang("id am: menu xac nhan 3 dong", Integer.valueOf(3), Integer.valueOf(c.luaChon.length));
+        p.goi.clear();
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_XAC_NHAN, 0);
+        bang("id am: xac nhan -> nhan +6 / nguon +0 (ban cu: im lang, y nguyen)", "6/0", b.plus + "/" + a.plus);
+        bang("id am: tru xu", Boolean.TRUE, Boolean.valueOf(p.xu < 10_000_000L));
+        bang("id am: gui hanh trang 16 kieu 1 (danh sach mon)", Boolean.TRUE, Boolean.valueOf(coHanhTrang(p, 1)));
+        bang("id am: thong bao thanh cong gui SAU hanh trang", Boolean.TRUE, Boolean.valueOf(p.goi.size() > 0 && !coHanhTrangCuoi(p)));
+        // bam lai xac nhan cu (menu con tren may): co thong bao, khong doi gi
+        p.goi.clear();
+        final long xu = p.xu;
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_XAC_NHAN, 0);
+        bang("bam lai xac nhan: co thong bao, khong tru", "1/" + xu, p.goi.size() + "/" + p.xu);
+        // lua chon ngoai khoang / menu la: co thong bao
+        p.goi.clear();
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_NGUON, 9);
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_NHAN, 0);
+        ChuyenLuyenGame.doMenu(p, 7, 0);
+        bang("ngoai khoang / het phien / menu la: 3 thong bao", Integer.valueOf(3), Integer.valueOf(p.goi.size()));
+        // Huy: co thong bao, khong doi
+        final Item a2 = mon(p, ID_VK30, 5, 100);
+        ChuyenLuyenGame.moMenu(p);
+        int vt = -1;
+        for (int i = 0; i < c.nguon.length; i++) {
+            if (c.nguon[i] == a2.id) {
+                vt = i;
+            }
+        }
+        ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_NGUON, vt);
+        p.goi.clear();
+        if (c.nhan.length > 0) {
+            ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_NHAN, 0);
+            p.goi.clear();
+            ChuyenLuyenGame.doMenu(p, ChuyenLuyenGame.MENU_XAC_NHAN, c.luaChon.length - 1);
+        }
+        bang("huy: co thong bao, nguon giu +5", "1/5", p.goi.size() + "/" + a2.plus);
+        // xa Machamp (map ngoai troi, khong canh NPC): thong bao
+        final NV q = new NV(10_000_000L);
+        q.map = new Map();
+        ChuyenLuyenGame.moMenu(q);
+        bang("xa Machamp: co thong bao", Integer.valueOf(1), Integer.valueOf(q.goi.size()));
+        // ten khong lap "+7 +7"
+        bang("ten mon khong lap +N", Boolean.FALSE, Boolean.valueOf(ChuyenLuyenGame.ten(a).matches(".*\\+\\d+ \\+\\d+.*")));
+    }
+
+    /** Goi cuoi la hanh trang (thong bao bi nuot)? */
+    static boolean coHanhTrangCuoi(final NV p) {
+        return p.goi.get(p.goi.size() - 1).command == 16 || p.goi.get(p.goi.size() - 1).command == -84;
+    }
+
+    /** Pha khoa cung loi id am (PhaKhoaGame.thucHien kiem idMon &lt; 0). */
+    static void phaKhoaIdAm() {
+        final NV p = nvTrongNha(10_000_000L);
+        final PhaKhoaGame.Chon c = PhaKhoaGame.chon(p);
+        c.idMon = -30000;
+        c.coMon = false;
+        PhaKhoaGame.doMenu(p, 9, 0);
+        PhaKhoaGame.doMenu(p, 0, 99);
+        bang("pha khoa: lua chon ngoai khoang / menu la co thong bao", Integer.valueOf(2), Integer.valueOf(p.goi.size()));
+    }
+
     public static void chay() {
         final boolean lauDaiCu = LauDai.bat();
         final ItemTemplates[][] cu = new ItemTemplates[IDS.length][6];
@@ -296,6 +398,9 @@ public final class KiemChuyenLuyenGame {
             final Item bw2 = mon(w, ID_VK40, 8, 200);
             ChuyenLuyenGame.hoiXacNhan(w, c, aw.id, bw2.id);
             bang("nhan +8, nguon +9: chi con lua chon bua + huy", "1,2", c.luaChon[0] + "," + c.luaChon[1]);
+
+            menuIdAm();
+            phaKhoaIdAm();
         } catch (final Exception ex) {
             bang("KiemChuyenLuyenGame khong nem loi", "", String.valueOf(ex));
             ex.printStackTrace();

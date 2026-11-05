@@ -20,6 +20,7 @@ class KichBanDS3 {
         BotChucNang.dk("cho", true, KichBanDS3::cho);
         BotChucNang.dk("thu_cuoi", true, KichBanDS3::thuCuoi);
         KichBanDS4.dangKy();
+        KichBanChuyenLuyen.dangKy(); // bao loi 05/11/2026: che tao / chuyen luyen o Machamp - hanh trang cap nhat ngay
     }
 
     /** Khong co mon (id vat pham la short, co the am). */

@@ -31,7 +31,9 @@ public final class PhaKhoaGame {
     /** Trang thai dang chon theo charDBID: danh sach id mon da hien, mon dang hoi, gia / so da da hoi. */
     static final class Chon {
         short[] ds = new short[0];
-        short idMon = -1;
+        /** 05/11/2026: id vat pham co the AM (Char.getIDItem quay vong) - "da chon" la {@link #coMon}, khong phai idMon >= 0. */
+        short idMon;
+        boolean coMon;
         long gia = -1L;
         int soDa = -1;
     }
@@ -154,7 +156,7 @@ public final class PhaKhoaGame {
         for (int i = 0; i < ids.size(); i++) {
             c.ds[i] = ids.get(i).shortValue();
         }
-        c.idMon = -1;
+        c.coMon = false;
         p.sendMessage(MessageCreator.createMsgMenu(dong.toArray(new String[0]), NPC_ID, MENU_CHON));
     }
 
@@ -166,6 +168,7 @@ public final class PhaKhoaGame {
         final Chon c = chon(p);
         if (idMenu == MENU_CHON) {
             if (idOptionMenu < 0 || idOptionMenu >= c.ds.length) {
+                bao(p, HET_PHIEN);
                 return;
             }
             hoiXacNhan(p, c, c.ds[idOptionMenu]);
@@ -175,10 +178,14 @@ public final class PhaKhoaGame {
             if (idOptionMenu == 0) {
                 thucHien(p, c);
             } else {
-                c.idMon = -1;
+                c.coMon = false;
             }
+            return;
         }
+        bao(p, HET_PHIEN);
     }
+
+    static final String HET_PHIEN = "Lựa chọn phá khoá đã hết hạn, hãy mở lại Machamp › Phá khoá trang bị.";
 
     static void hoiXacNhan(final Char p, final Chon c, final short idMon) {
         final Item it = timMon(p, idMon);
@@ -192,6 +199,7 @@ public final class PhaKhoaGame {
             return;
         }
         c.idMon = idMon;
+        c.coMon = true;
         c.gia = PhaKhoaLogic.giaXu(it.level, it.colorName, it.plus, it.soLanPhaKhoa);
         c.soDa = PhaKhoaLogic.soDa(it.soLanPhaKhoa);
         final int lan = it.soLanPhaKhoa + 1;
@@ -203,11 +211,12 @@ public final class PhaKhoaGame {
     }
 
     static void thucHien(final Char p, final Chon c) {
-        if (c.idMon < 0) {
+        if (!c.coMon) {
+            bao(p, HET_PHIEN);
             return;
         }
         final short idMon = c.idMon;
-        c.idMon = -1;
+        c.coMon = false;
         if (!NpcTinhBanDo.oNoiDichVu(p, NpcTinhBanDo.NPC_THO_REN)) {
             bao(p, "Hãy đến gần Machamp thợ rèn để phá khoá trang bị.");
             return;

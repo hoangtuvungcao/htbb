@@ -280,6 +280,10 @@ public final class CheTaoGame {
             it.id = p.getIDItem();
             it.owner = p.charDBID;
             p.iItems.add(it);
+            // 05/11/2026 (bao loi rongngoo "che tao xong phai doi mot luc lau moi co trong hanh trang"): goi 16 kieu 0 chi
+            // mang xu + thuoc - DANH SACH vat pham la kieu 1. Truoc day chi gui kieu 0 nen client chi thay mon moi o lan lam
+            // moi hanh trang ke tiep (doi map, goi 88...). Gui kieu 1 NGAY sau khi them mon, truoc thong bao ket qua.
+            guiHanhTrang(p);
             final ItemTemplates tm = it.getTemplate() != null ? it.getTemplate() : t; // [do-moi] co the da doi sang mon ho
             final String ten = tm.name + ChiSoTrangBiGame.tenHePhienDa(it);
             final boolean hiem = bac != null && bac.ma >= CheTaoLogic.MA_SU_THI;
@@ -300,8 +304,6 @@ public final class CheTaoGame {
                 m.dos.writeUTF(bac != null ? bac.ten : "");
                 m.dos.writeByte(it.colorName);
                 p.sendMessage(m);
-                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                p.sendMessage(MessageCreator.createCharGemItem(p));
             } catch (final Exception ignored) {
             }
             NhiemVuEngine.suKien(p, "che_tao", String.valueOf(t.id), 1);
@@ -311,6 +313,20 @@ public final class CheTaoGame {
             } catch (final Exception ignored) {
             }
             guiDanhSach(p);
+        }
+    }
+
+    /**
+     * Gui lai hanh trang SAU khi doi vat pham: goi 16 kieu 1 (danh sach mon: id, mau, +N, khoa, chi so), kieu 0 (xu +
+     * thuoc) va da (goi gem). Kieu 0 mot minh KHONG doi danh sach mon tren client.
+     */
+    static void guiHanhTrang(final Char p) {
+        try {
+            p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
+            p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+            p.sendMessage(MessageCreator.createCharGemItem(p));
+        } catch (final Exception e) {
+            System.out.println("CheTaoGame.guiHanhTrang " + p.charname + ": " + e);
         }
     }
 

@@ -110,6 +110,12 @@ public final class LocLogVatPham {
             "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenBiAn.CreateThanKhi)
             "nangcapthankhi",           // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenBiAn.UpgradeThanKhi)
             // --- 5. Che tao trang bi thuong (vu khi/giap/nhan/day chuyen/ngoc...) ---
+            "chetao",                   // 05/11/2026: che tao o Machamp (real.CheTaoGame.cheTao) - bac, xu, da, pity, mon ra
+                                        // doi (getDBInfo); truoc ngay nay KHONG nam trong GIU nen chua tung ghi xuong DB
+            "chuyenluyen",              // 05/11/2026: chuyen luyen o Machamp (real.ChuyenLuyenGame.chuyen) - hai mon +cu -> +moi,
+                                        // xu / da / bua da tru, khoa mon nhan. Bao loi rongngoo 05/11 "bam chuyen khong thay
+                                        // gi": khong tra duoc vi dong nay bi bo loc an mat
+            "phakhoa",                  // 05/11/2026: pha khoa trang bi o Machamp (real.PhaKhoaGame): mon, xu + da da tru, lan thu
             "chetaotrangbi",            // xac nhan tao do o Map.doCreateNewItem: nguyen lieu da tieu (gemUse) + vat pham ra doi;
                                         // TRUOC la aclog "tao" chung, bi loai bo 02/09/2026 vi la nguon rac lon nhat -
                                         // doi ten rieng de giu duoc CHI dong nay ma khong an rac "tao" khac

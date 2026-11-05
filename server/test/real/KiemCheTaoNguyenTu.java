@@ -139,6 +139,21 @@ public final class KiemCheTaoNguyenTu {
                 }
             }
             bang("che tao: mon co chu = nhan vat", Integer.valueOf(b.charDBID), Integer.valueOf(mon == null ? -1 : mon.owner));
+            // bao loi rongngoo 05/11/2026 "che tao xong phai doi lau moi co trong hanh trang": ban cu chi gui 16 kieu 0 (xu +
+            // thuoc), danh sach mon (kieu 1) co mon moi phai gui NGAY, truoc goi ket qua -120/3
+            int i16 = -1;
+            int iKq = -1;
+            for (int i = 0; i < b.goi.size(); i++) {
+                final byte[] g = b.goi.get(i).toByteArray();
+                if (b.goi.get(i).command == 16 && g.length > 3 && g[3] == 1 && i16 < 0) {
+                    i16 = i;
+                }
+                if (b.goi.get(i).command == BoNgocGame.LENH && g.length > 3 && g[3] == BoNgocGame.S_CHE_TAO_KQ && iKq < 0) {
+                    iKq = i;
+                }
+            }
+            bang("che tao: gui hanh trang 16 kieu 1 (danh sach mon) ngay", Boolean.TRUE, Boolean.valueOf(i16 >= 0));
+            bang("che tao: hanh trang truoc goi ket qua", Boolean.TRUE, Boolean.valueOf(i16 >= 0 && (iKq < 0 || i16 < iKq)));
 
             // 3) thieu xu -> khong gi doi
             final NV c = new NV(GIA - 1);

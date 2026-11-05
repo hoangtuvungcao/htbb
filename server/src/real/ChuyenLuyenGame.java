@@ -43,12 +43,19 @@ public final class ChuyenLuyenGame {
     static final int CHON_BUA = 1;
     static final int CHON_HUY = 2;
 
-    /** Trang thai dang chon theo charDBID. */
+    /**
+     * Trang thai dang chon theo charDBID. 05/11/2026 (bao loi rongngoo "bam chuyen xong tat tab, hanh trang y cu"): id vat
+     * pham la short CO THE AM (Char.getIDItem quay vong - nhan vat choi lau co mon id -31993...) nen KHONG dung -1 lam "chua
+     * chon": ban cu kiem {@code idNguon < 0} trong thucHien -> mon id am bi coi la chua chon -> return im lang, khong tru,
+     * khong doi, khong thong bao. Dung co {@link #coNguon} / {@link #coNhan}.
+     */
     static final class Chon {
         short[] nguon = new short[0];
         short[] nhan = new short[0];
-        short idNguon = -1;
-        short idNhan = -1;
+        short idNguon;
+        short idNhan;
+        boolean coNguon;
+        boolean coNhan;
         int[] luaChon = new int[0];
         long[] xuHoi = new long[2];
         int[] daHoi = new int[2];
@@ -130,7 +137,8 @@ public final class ChuyenLuyenGame {
         } catch (final Exception e) {
             t = "Vật phẩm";
         }
-        return t + (it.plus > 0 ? " +" + it.plus : "");
+        // Item.getName da noi " +N" (them lan nua thanh "+7 +7")
+        return t + (it.plus > 0 && !t.endsWith(" +" + it.plus) ? " +" + it.plus : "");
     }
 
     static void bao(final Char p, final String s) {
@@ -308,8 +316,9 @@ public final class ChuyenLuyenGame {
             dong[i] = "Chuyển từ " + ten(it) + " (cấp " + capDo(it) + ")";
             c.nguon[i] = it.id;
         }
-        c.idNguon = -1;
-        c.idNhan = -1;
+        c.coNguon = false;
+        c.coNhan = false;
+        c.luaChon = new int[0];
         p.sendMessage(MessageCreator.createMsgMenu(dong, NPC_ID, MENU_NGUON));
     }
 
@@ -319,23 +328,40 @@ public final class ChuyenLuyenGame {
             return;
         }
         final Chon c = chon(p);
-        if (idMenu == MENU_NGUON) {
-            if (idOption >= 0 && idOption < c.nguon.length) {
-                chonNguon(p, c, c.nguon[idOption]);
-            }
-        } else if (idMenu == MENU_NHAN) {
-            if (idOption >= 0 && idOption < c.nhan.length) {
-                hoiXacNhan(p, c, c.idNguon, c.nhan[idOption]);
-            }
-        } else if (idMenu == MENU_XAC_NHAN) {
-            if (idOption >= 0 && idOption < c.luaChon.length && c.luaChon[idOption] != CHON_HUY) {
-                thucHien(p, c, c.luaChon[idOption] == CHON_BUA);
+        try {
+            if (idMenu == MENU_NGUON) {
+                if (idOption >= 0 && idOption < c.nguon.length) {
+                    chonNguon(p, c, c.nguon[idOption]);
+                } else {
+                    bao(p, HET_PHIEN);
+                }
+            } else if (idMenu == MENU_NHAN) {
+                if (c.coNguon && idOption >= 0 && idOption < c.nhan.length) {
+                    hoiXacNhan(p, c, c.idNguon, c.nhan[idOption]);
+                } else {
+                    bao(p, HET_PHIEN);
+                }
+            } else if (idMenu == MENU_XAC_NHAN) {
+                if (idOption >= 0 && idOption < c.luaChon.length && c.luaChon[idOption] != CHON_HUY) {
+                    thucHien(p, c, c.luaChon[idOption] == CHON_BUA);
+                } else if (idOption >= 0 && idOption < c.luaChon.length) {
+                    c.coNguon = false;
+                    c.coNhan = false;
+                    c.luaChon = new int[0];
+                    bao(p, "Đã huỷ chuyển luyện, chưa trừ gì.");
+                } else {
+                    bao(p, HET_PHIEN);
+                }
             } else {
-                c.idNguon = -1;
-                c.idNhan = -1;
+                bao(p, HET_PHIEN);
             }
+        } catch (final RuntimeException e) {
+            System.out.println("ChuyenLuyenGame.doMenu " + p.charname + " menu " + idMenu + "/" + idOption + ": " + e);
+            bao(p, "Lỗi chuyển luyện, hãy thử lại hoặc báo quản trị.");
         }
     }
+
+    static final String HET_PHIEN = "Lựa chọn chuyển luyện đã hết hạn, hãy mở lại Machamp › Chuyển luyện.";
 
     static void chonNguon(final Char p, final Chon c, final short idNguon) {
         final Item a = timMon(p, idNguon);
@@ -370,7 +396,9 @@ public final class ChuyenLuyenGame {
             c.nhan[i] = it.id;
         }
         c.idNguon = idNguon;
-        c.idNhan = -1;
+        c.coNguon = true;
+        c.coNhan = false;
+        c.luaChon = new int[0];
         p.sendMessage(MessageCreator.createMsgMenu(dong, NPC_ID, MENU_NHAN));
     }
 
@@ -408,6 +436,8 @@ public final class ChuyenLuyenGame {
         lc.add(Integer.valueOf(CHON_HUY));
         c.idNguon = idNguon;
         c.idNhan = idNhan;
+        c.coNguon = true;
+        c.coNhan = true;
         c.luaChon = new int[lc.size()];
         for (int i = 0; i < c.luaChon.length; i++) {
             c.luaChon[i] = lc.get(i).intValue();
@@ -416,34 +446,42 @@ public final class ChuyenLuyenGame {
     }
 
     static void thucHien(final Char p, final Chon c, final boolean coBua) {
-        if (c.idNguon < 0 || c.idNhan < 0) {
+        if (!c.coNguon || !c.coNhan) {
+            bao(p, HET_PHIEN);
             return;
         }
         final short idNguon = c.idNguon;
         final short idNhan = c.idNhan;
-        c.idNguon = -1;
-        c.idNhan = -1;
+        c.coNguon = false;
+        c.coNhan = false;
+        c.luaChon = new int[0];
         if (!kiemNoi(p)) {
             return;
         }
         final String kq = chuyen(p, idNguon, idNhan, coBua, c.xuHoi[coBua ? 1 : 0], c.daHoi[coBua ? 1 : 0]);
-        bao(p, kq);
-        if (kq.startsWith("Chuyển luyện thành công")) {
+        if (kq.startsWith(THANH_CONG)) {
+            // goi 16 kieu 1 = danh sach mon (+N, khoa, chi so); kieu 0 chi co xu + thuoc. Gui TRUOC thong bao de luc nguoi
+            // choi doc "thanh cong" thi hanh trang da doi.
+            CheTaoGame.guiHanhTrang(p);
             try {
-                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                p.sendMessage(MessageCreator.createCharGemItem(p));
-                final Item b = timMon(p, idNhan);
-                if (b != null) {
-                    p.sendMessage(MessageCreator.createMsgItemInfo(b));
+                for (final short id : new short[]{idNguon, idNhan}) {
+                    final Item it = timMon(p, id);
+                    if (it != null) {
+                        p.sendMessage(MessageCreator.createMsgItemInfo(it));
+                    }
                 }
             } catch (final Exception ignored) {
             }
             try {
                 Database.instance.saveCharAuto(p);
-            } catch (final Exception ignored) {
+            } catch (final Exception e) {
+                System.out.println("ChuyenLuyenGame luu " + p.charname + ": " + e);
             }
         }
+        bao(p, kq);
     }
+
+    static final String THANH_CONG = "Chuyển luyện thành công";
 
     /**
      * Chuyen +N cua mon {@code idNguon} sang {@code idNhan} voi gia DA HOI. Tat ca hoac khong, trong MOT khoi
@@ -551,9 +589,12 @@ public final class ChuyenLuyenGame {
             Database.instance.saveOrtherLog("tob_log_other_item", p.charname, "chuyen luyen " + a.tempateID + "#" + a.id + " +" + n
                     + "->0 => " + b.tempateID + "#" + b.id + " +" + ra[7] + "->+" + r + " | " + xu + " xu " + da + " da " + soBua
                     + " bua | khoa nhan " + b.lock + "/" + b.daMac, "chuyenluyen");
-        } catch (final Exception ignored) {
+        } catch (final Exception e) {
+            System.out.println("ChuyenLuyenGame log " + p.charname + ": " + e);
         }
-        return "Chuyển luyện thành công: " + ten(b) + " (từ +" + ra[7] + "), " + ten(a) + " về +0. Trừ " + moTaGia(xu, da)
+        System.out.println("[CHUYEN_LUYEN] " + p.charname + " " + a.tempateID + "#" + a.id + " +" + n + "->0 => " + b.tempateID + "#"
+                + b.id + " +" + ra[7] + "->+" + r + " | " + xu + " xu " + da + " da " + soBua + " bua");
+        return THANH_CONG + ": " + ten(b) + " (từ +" + ra[7] + "), " + ten(a) + " về +0. Trừ " + moTaGia(xu, da)
                 + (soBua > 0 ? " + " + soBua + " Bùa chuyển luyện" : "") + "."
                 + (Boolean.TRUE.equals(ra[8]) ? " Món nhận đã khoá theo món nguồn / nguyên liệu khoá." : "");
     }
