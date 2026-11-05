@@ -536,7 +536,7 @@ public class ChupTrongGame {
                     kiem(game.render.Canvas.currentDialog instanceof game.pokemon.MenuNguCanh && "Sự kiện".equals(game.pokemon.MenuNguCanh.tieuDe()),
                             ten + " " + TEN_COV[c] + ": the 'Su kien' (tieu de " + game.pokemon.MenuNguCanh.tieuDe() + ")");
                     String[] l = game.pokemon.MenuNguCanh.cacLenh();
-                    kiem(l.length == 1 + game.render.screen.GameScr.SU_KIEN_MUC.length && "Mùa: Hoàng hôn Halloween".equals(l[0]),
+                    kiem(l.length == 2 + game.render.screen.GameScr.SU_KIEN_MUC.length && game.render.screen.GameScr.SU_KIEN_PK3V3.equals(l[l.length - 1]) && "Mùa: Hoàng hôn Halloween".equals(l[0]),
                             ten + " " + TEN_COV[c] + ": hang the Su kien " + java.util.Arrays.toString(l));
                 }
                 if ("tui_ve_dich_chuyen".equals(ten)) {

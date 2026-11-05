@@ -349,6 +349,7 @@ class CharNapDuLieu {
             NhiemVuLauDaiGame.khiNapTatCo(self); // tat co sau khi da bat: tra nhiem vu chinh ve cho cu
             VongQuay.khiDangNhap(self); // tien thang / hoan vong quay luc dang offline
             CupGame.khiDangNhap(self); // thuong Cup PvP tuan chot luc dang offline (tob_cup_thuong, khong phat 2 lan)
+            Pk3v3Game.khiDangNhap(self); // thuong top ngay / danh hieu tuan PK 3 vs 3 chot luc offline (tob_pk3v3_thuong)
             LoaiQuaiGame.khiDangNhap(self); // loai-bo-sung: banner Vung hoang da (lan dang nhap dau tuan)
             self.itemget = "";
             self.monskilled = "";

@@ -881,9 +881,10 @@ public final class KiemPhoBanCup {
 
     static void diemMoc() {
         final String region = doc("src/real/Region.java");
-        Kiem.dung("diem moc Region: PvP trong phong rieng chi qua CupGame.choDanh", region.contains("if (!CupGame.choDanh(p, c)"));
+        Kiem.dung("diem moc Region: PvP trong phong rieng chi qua CupGame.choDanh / Pk3v3Game.choDanh (PK 3 vs 3 muon san cup)",
+                region.contains("if (!(Pk3v3Game.choDanh(p, c) || CupGame.choDanh(p, c))"));
         Kiem.dung("diem moc Region: tran cup KHONG tinh Elo (ThangPvpGame.ketQua chan boi !cupTran)", region.contains("if (c.hp <= 0 && !cupTran) {\n                ThangPvpGame.ketQua(p, c);"));
-        Kiem.dung("diem moc Region: sat thuong chuan hoa + HP khong ve 0 + khong cong diem do sat", region.contains("damage = CupGame.satThuong(p, c, d);")
+        Kiem.dung("diem moc Region: sat thuong chuan hoa + HP khong ve 0 + khong cong diem do sat", region.contains(": CupGame.satThuong(p, c, d);")
                 && region.contains("CupGame.sauDon(p, c);") && region.contains("if (p.isKiller && !cupTran) {"));
         Kiem.dung("diem moc: Tu dong danh cam o phong rieng (TuDong.mapBiCam)", doc("src/com/htbb/pokemon/TuDong.java").contains("if (PhongRieng.khongTuDong(map)) {"));
         Kiem.dung("diem moc: khong hoi sinh tai cho trong phong rieng", doc("src/real/HoiSinhGame.java").contains("return com.htbb.pokemon.PhongRieng.LY_DO_HOI_SINH;"));
@@ -912,7 +913,7 @@ public final class KiemPhoBanCup {
         try {
             final String pr = doc("src/real/PhongRiengGame.java");
             Kiem.dung("cup: PhongRiengGame.khoiDong dang ky ngu canh PvP ngam tay (BanHuongGame.dangKyNguCanh)",
-                    pr.contains("BanHuongGame.dangKyNguCanh(NGU_CANH_CUP);") && pr.contains("p.mapID == MAP_CUP && CupGame.dangThiDau(p)"));
+                    pr.contains("BanHuongGame.dangKyNguCanh(NGU_CANH_CUP);") && pr.contains("p.mapID == MAP_CUP && (CupGame.dangThiDau(p) || Pk3v3Game.dangThiDau(p))"));
             final real.Char ngoai = new real.Char(null);
             ngoai.mapID = (short) 1;
             Kiem.sai("cup: nguoi ngoai san cup khong bi coi la trong tran", real.PhongRiengGame.NGU_CANH_CUP.test(ngoai));
@@ -922,7 +923,7 @@ public final class KiemPhoBanCup {
             Kiem.sai("cup: o san cup nhung khong co tran dang dau -> khong phai PvP", real.PhongRiengGame.NGU_CANH_CUP.test(tren));
             final String rg = doc("src/real/Region.java");
             Kiem.dung("cup: sat thuong chuan hoa giu trong Region.doAttackPlayer (dan ngam tay goi Map.doAttackPlayer)",
-                    rg.contains("damage = CupGame.satThuong(p, c, d);") && doc("src/real/BanHuongGame.java").contains("ph.map.doAttackPlayer(p, goiDanh(LENH_DANH_NGUOI, c.id, chieu));"));
+                    rg.contains(": CupGame.satThuong(p, c, d);") && doc("src/real/BanHuongGame.java").contains("ph.map.doAttackPlayer(p, goiDanh(LENH_DANH_NGUOI, c.id, chieu));"));
         } catch (final Exception e) {
             Kiem.dung("ngamTayCup: " + e, false);
         }

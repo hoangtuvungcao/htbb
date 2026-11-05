@@ -682,7 +682,8 @@ public class Region {
             // cua cung tran (CupGame.choDanh); bo qua luat PK the gioi (co do sat, phe, bao ho, to doi).
             final boolean cupTran = com.htbb.pokemon.PhongRieng.laMapRieng(this.map.mapId);
             if (cupTran) {
-                if (!CupGame.choDanh(p, c) || p.mapID != c.mapID || p.region != c.region
+                // PK 3 vs 3 buoi toi (real.Pk3v3Game) muon khu cua cung san: khu cua tran 3v3 / tran cup tu xet
+                if (!(Pk3v3Game.choDanh(p, c) || CupGame.choDanh(p, c)) || p.mapID != c.mapID || p.region != c.region
                         || !Map.inRangeActor((LiveActor)p, (LiveActor)c, (int)MAX_RANGE_CHAR[p.charClass])) {
                     return;
                 }
@@ -814,7 +815,8 @@ public class Region {
                 damage = com.htbb.pokemon.SatThuongLauDai.pvp((int) Math.min(Integer.MAX_VALUE, d), c.maxhp);
                 damage = p.subDam(c, damage);
                 if (cupTran) {
-                    damage = CupGame.satThuong(p, c, d); // chuan hoa: phan nghin HP muc tieu theo thang do nguoi danh
+                    damage = Pk3v3Game.laKhu(p) ? Pk3v3Game.satThuong(p, c, d) // 3v3: chuan hoa nhu cup + ghi sat thuong (chong treo)
+                            : CupGame.satThuong(p, c, d); // chuan hoa: phan nghin HP muc tieu theo thang do nguoi danh
                 }
             }
             if (p.mp + p.percentBuff[1] < (mplost = CharManager.SKILL_MP[p.charClass][_type][_level])) {
@@ -860,7 +862,9 @@ public class Region {
                 c.hp = 1;
             }
             if (cupTran) {
-                CupGame.sauDon(p, c); // tran cup: HP khong ve 0 (khong guc, khong mat EXP) - het HP = bi loai
+                if (!Pk3v3Game.sauDon(p, c)) { // tran 3v3: het HP = bi loai, doi danh tiep thieu nguoi
+                    CupGame.sauDon(p, c); // tran cup: HP khong ve 0 (khong guc, khong mat EXP) - het HP = bi loai
+                }
             }
             if (c.hp <= 0) {
                 if (c.hp <= 0) {

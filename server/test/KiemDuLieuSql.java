@@ -59,9 +59,11 @@ public final class KiemDuLieuSql {
      *  nang-luong-thanh-vien (31/10/2026, chu game): +3 khoa exp.nang_luong_{thanh_vien,the_thang,ve_mua}_phut (kinh_te,
      *  chinh, thu_tu 396..398) = 396 / 22; +tang_toc.bua_ngay_toi_da (Bua the luc khong gioi han, 0, thu_tu 399) = 397 / 22;
      *  +tang_toc.bua_exp_phan_tram / bua_xu_phan_tram (bac bua 50 / 50, chinh, thu_tu 400..401) = 399 / 22 (gop sau doi-luong);
-     *  hlv-ai-cap-theo-nguoi: +hlv_ai.cap_theo_nguoi (chinh, cap muc tieu bot theo nguoi choi that; thu_tu 391 -> 402 khi gop) = 400 / 22.
+     *  hlv-ai-cap-theo-nguoi: +hlv_ai.cap_theo_nguoi (chinh, cap muc tieu bot theo nguoi choi that; thu_tu 391 -> 402 khi gop) = 400 / 22;
+     *  pk3v3 (05/11/2026, chu game "PK 3 vs 3 buoi toi"): +10 khoa pk3v3.* (nhom su_kien; bat / gio_mo / gio_dong / tran_ngay /
+     *  luong_thang chinh, 5 khoa con lai co_dinh; thu_tu 403..412) = 410 / 22.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "efa052ff842596c6706962bdb863edd76367e3eb29965e9d04683dd064e1b5e4";
+    static final String VT_DANH_MUC = "78f8dcfda2c91666dabd2f1367b98dbaecc4a27fa22ed195aa513deab734bf28";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

@@ -606,6 +606,15 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.idxDauTruongBaoBoi = menu.length;
                         menu = menuDt;
                     }
+                    // PK 3 vs 3 buoi toi (real.Pk3v3Game): noi cuoi menu nhu Dau xep hang (moi client, menu chu)
+                    p.idxPk3v3DauTruong = -1;
+                    if (real.Pk3v3Game.hienNpc()) {
+                        String[] menuPk = new String[menu.length + 1];
+                        System.arraycopy(menu, 0, menuPk, 0, menu.length);
+                        menuPk[menu.length] = com.htbb.pokemon.Pk3v3.TEN;
+                        p.idxPk3v3DauTruong = menu.length;
+                        menu = menuPk;
+                    }
                     p.idxSuKienVuLanDauTruong = -1;
                     if (real.SuKien.bat(real.SuKien.VU_LAN)) {
                         String[] menuVuLan = new String[menu.length + 1];

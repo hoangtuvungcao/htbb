@@ -984,6 +984,8 @@ public class TeamServer {
         real.KenhChatGame.taoBang();
         // Dau truong Bao Boi 3v3 (D12): doi hinh, diem mua, tran, thuong mua (CREATE TABLE IF NOT EXISTS)
         real.DauTruongGame.taoBang();
+        // PK 3 vs 3 buoi toi (real.Pk3v3Game): luot / diem / gap lai / tran / chot / thuong (CREATE TABLE IF NOT EXISTS)
+        real.Pk3v3Game.taoBang();
         // GD2 thiet ke dai han: bang moi + doi bang EXP + chuyen EXP nhan vat cu (MOT lan, co sao
         // luu tob_char_xp_cu). PHAI truoc khi nhan nguoi choi. Tat co: khong dong vao gi.
         real.LangKhoiDau.taoBang(); // lang khoi dau theo vung cho nhan vat moi (moi che do)

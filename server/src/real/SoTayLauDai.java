@@ -23,7 +23,8 @@ import java.util.List;
  *   4 Su pham (nhan tro trong doi)
  *   5 Lich dang nhap 7 ngay / ve chuong
  *   9 Cua hang & doi vat pham (CuaHangLauDai, menu 20/21)
- *  10 Cup PvP tuan; 11 Ve lang mien phi (con N luot) - real.VeLangMienPhiGame; tu 12: huong dan tan thu
+ *  10 Cup PvP tuan; 11 Ve lang mien phi (con N luot) - real.VeLangMienPhiGame; 12 PK 3 vs 3 buoi toi - real.Pk3v3Game;
+ *  tu 13: huong dan tan thu
  * NPC ao {@link #NPC_ID} (-527, da grep src/: trong). Moi dieu kien kiem lai o day (muc 11).
  *
  * Text hien cho nguoi choi o day la BAN NHAP - can duyet (CODING_CONVENTION muc 10).
@@ -48,8 +49,14 @@ public final class SoTayLauDai {
      * {@link #SO_MUC_DONG}.
      */
     static final int MUC_VE_LANG = SO_MUC_GOC;
+    /**
+     * Dong "PK 3 vs 3 buổi tối" (real.Pk3v3Game, chu game 05/11/2026): ngay SAU Về làng (chi so 12) - KHONG chen vao MUC_GOC
+     * (client 0.9.16+ chep cung 11 muc + Về làng = 11). Client moi: Menu -> Sự kiện gui -527/0/12; client cu: menu may chu
+     * (Quầy đổi thưởng -> Sổ tay huấn luyện), Cúp PvP tuần, NPC Đấu trường.
+     */
+    public static final int MUC_PK3V3 = SO_MUC_GOC + 1;
     /** So muc truoc muc huong dan tan thu (HuongDanTanThuGame.themMucSoTay). */
-    static final int SO_MUC_DONG = SO_MUC_GOC + 1;
+    static final int SO_MUC_DONG = SO_MUC_GOC + 2;
 
     private SoTayLauDai() {
     }
@@ -73,6 +80,7 @@ public final class SoTayLauDai {
         // noi vao CUOI (chi so >= SO_MUC_DONG, chu tu CSDL)
         final String[] goc = java.util.Arrays.copyOf(MUC_GOC, SO_MUC_DONG);
         goc[MUC_VE_LANG] = VeLangMienPhiGame.nhanSoTay(p);
+        goc[MUC_PK3V3] = com.htbb.pokemon.Pk3v3.TEN;
         p.sendMessage(MessageCreator.createMsgMenu(HuongDanTanThuGame.themMucSoTay(p, goc), NPC_ID, MENU_GOC));
     }
 
@@ -128,6 +136,9 @@ public final class SoTayLauDai {
                     case MUC_VE_LANG:
                         VeLangMienPhiGame.chon(p); // ve lang vung minh, tru 1 luot khi da toi
                         break;
+                    case MUC_PK3V3:
+                        Pk3v3Game.moMenu(p); // PK 3 vs 3 buoi toi (19:00-23:00, hang cho 3 dau 3)
+                        break;
                     default:
                         HuongDanTanThuGame.chonMucSoTay(p, idOption - SO_MUC_DONG);
                         break;
@@ -151,8 +162,9 @@ public final class SoTayLauDai {
                 bao(p, QuaHoatDong.nhan(p, idOption));
             } else if (idMenu == MENU_HAM_NGUC) {
                 hamNguc(p, h, idOption);
-            } else if (PhoBanGame.doMenu(p, idMenu, idOption) || CupGame.doMenu(p, idMenu, idOption)) {
-                return; // 0.9.7 Pho ban Ham nguc (60..61), Cup PvP tuan (70..72)
+            } else if (PhoBanGame.doMenu(p, idMenu, idOption) || CupGame.doMenu(p, idMenu, idOption)
+                    || Pk3v3Game.doMenu(p, idMenu, idOption)) {
+                return; // 0.9.7 Pho ban Ham nguc (60..61), Cup PvP tuan (70..72), PK 3 vs 3 buoi toi (80..83)
             } else if (idMenu == com.htbb.pokemon.HuongDanTanThu.MENU_MOI || idMenu == com.htbb.pokemon.HuongDanTanThu.MENU_NPC) {
                 HuongDanTanThuGame.doMenu(p, idMenu, idOption);
             }

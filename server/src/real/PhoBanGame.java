@@ -282,7 +282,8 @@ public final class PhoBanGame {
             cap[i] = c.lvDetail.lv;
             luot[i] = luotDaDung(ngay, c.charDBID);
             cungCho[i] = c.mapID == p.mapID && c.hp > 0;
-            ban[i] = PhongRiengGame.dangBan(c) || phongCua(c.charDBID) != null || CupGame.dangThiDau(c.charDBID);
+            ban[i] = PhongRiengGame.dangBan(c) || phongCua(c.charDBID) != null || CupGame.dangThiDau(c.charDBID)
+                    || Pk3v3Game.dangThiDau(c.charDBID) || Pk3v3Game.dangCho(c);
             ten[i] = i == 0 ? "Bạn" : c.charname;
         }
         final String loi = PhoBanLogic.kiemVao(bat(), cap, luot, cungCho, ban, ten, capToiThieu(), luotNgay());

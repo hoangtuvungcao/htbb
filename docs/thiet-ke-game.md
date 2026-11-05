@@ -1061,6 +1061,49 @@ loại), không mất EXP, không tự động đánh.
   không cần khởi động lại.
 - Thẻ trạng thái trận (gói -112, client ≥ 908): vòng, hai bên, đếm ngược; chạm thẻ → "Bỏ cuộc" (hỏi lại).
 
+#### PK 3 vs 3 buổi tối (05/11/2026)
+
+Chủ game: "hoạt động PK pet buổi tối, PK 3 vs 3, 500 lượt/ngày". Luật thuần `com.htbb.pokemon.Pk3v3`, game
+`real.Pk3v3Game`; **dùng lại** sân và đường đánh người của Cúp PvP tuần (bản đồ phòng riêng 4382, mỗi trận một khu của kho
+khu Cúp; `Region.doAttackPlayer` gọi `Pk3v3Game.choDanh / satThuong / sauDon` cho khu của trận 3v3) — không có hệ chiến
+đấu mới. Như Cúp: không Elo, không cờ PK, HP không về 0 (hết HP = bị loại), không mất EXP, không Tự động đánh (ngắm tay).
+
+- **Giờ mở**: 19:00–23:00 giờ Việt Nam mỗi ngày (`pk3v3.gio_mo` / `pk3v3.gio_dong`, sửa trên web; giờ đóng ≤ giờ mở = mở
+  qua nửa đêm). Mở / đóng có thông báo toàn máy chủ; lúc đóng hàng chờ bị xoá (trận đang đánh vẫn đánh xong), bảng ngày
+  được chốt. Tắt hẳn: `pk3v3.bat = 0`.
+- **Vào**: Sổ tay huấn luyện → «PK 3 vs 3 buổi tối» (mục 12, ngay sau «Về làng miễn phí»; client mới: Menu › Sự kiện ›
+  «PK 3 vs 3 buổi tối»), NPC Đấu trường (-31) → mục cuối, Cúp PvP tuần → mục cuối (đường của client cũ: Menu › Sự kiện ›
+  Cúp PvP tuần → «PK 3 vs 3 buổi tối»). Chọn «Vào hàng chờ một mình» hoặc «Vào hàng chờ cả tổ đội» (đội trưởng, tổ đội
+  2–3 người online). Chọn lại mục để rời hàng.
+- **Ghép**: từ cấp 20 (`pk3v3.cap_toi_thieu`), **bậc cấp** rộng 20 (20–39, 40–59, 60–79, 80–99, 100–119, 120+; tổ đội lấy cấp
+  cao nhất) — cấp thấp không gặp cấp cao. Mỗi 3 giây: nhóm vào trước xếp trước vào đội còn chỗ (tổ đội luôn chung đội),
+  đội đủ 3 người ghép với đội đủ khác cùng bậc. Hai bên của một trận không bao giờ chung thiết bị / IP / tài khoản; trong
+  một đội không chung thiết bị / tài khoản. Ưu tiên đội chưa gặp quá `pk3v3.gap_lai_toi_da` lần hôm nay. Chờ quá 10
+  phút thì tự rời hàng; người thoát game / bận (phó bản, giao dịch, trận cúp / xếp hạng, đang gục) bị rút khỏi hàng.
+- **Trận**: 5 giây chuẩn bị + tối đa 3 phút. Sát thương chuẩn hoá như Cúp (10–80‰ HP tối đa mục tiêu mỗi đòn) nên cấp
+  trong bậc gần như không quyết định. Đội hết người thua; hết giờ đội còn nhiều tổng % HP hơn thắng, bằng nhau hoà. Rớt
+  mạng / rời sân / bỏ cuộc (chạm thẻ trận hoặc Sổ tay) = bị loại, **đội đánh tiếp thiếu người**; đăng nhập lại về làng.
+- **Lượt**: **500 trận / ngày / tài khoản** (`pk3v3.tran_ngay`, gộp mọi Pokémon của tài khoản để chặn nick phụ), tính lúc
+  bắt đầu trận.
+- **Thưởng** (không xu, không lạm phát): thắng hợp lệ +1 lượng khoá (`pk3v3.luong_thang`), chỉ **3 trận thắng đầu mỗi ngày /
+  tài khoản** (`pk3v3.thang_thuong_ngay`); chốt ngày lúc đóng: top 1 / 2 / 3 +3 / 2 / 1 lượng khoá (cần ≥ 5 trận hợp lệ);
+  mọi khoản chung trần **25 lượng khoá / tuần** / tài khoản (`pk3v3.tran_luong_tuan`, tuần thứ Hai 05:00 — ngang Đấu trường
+  Bảo Bối, trong khung lượng khoá kiếm được của 9.1). Điểm xếp hạng: thắng 3, hoà 1, thua 0. Tuần (chốt khi sang tuần
+  mới): hạng 1 danh hiệu **Vua PK 3 vs 3** (9880), hạng 2–10 **Tinh anh PK 3 vs 3** (9881), 7 ngày, cần ≥ 10 trận hợp lệ;
+  chỉ số trong ngân sách ô danh hiệu. Thưởng chốt ghi `tob_pk3v3_thuong` trước khi phát (cờ `da_nhan` nguyên tử), người
+  offline nhận khi đăng nhập; mốc chốt `tob_pk3v3_chot` chặn phát lại khi khởi động lại.
+- **Chống cày / treo**: trận dưới 20 giây đánh (`pk3v3.giay_toi_thieu`) hoặc bên thua gây dưới 100‰ sát thương = trận
+  không hợp lệ (không điểm, không thưởng, vẫn trừ lượt); người gây dưới 50‰ cả trận = treo máy (không điểm / thưởng); đã gặp
+  một đối thủ 3 lần trong ngày thì các trận sau với người đó không điểm / thưởng; rớt mạng lúc hết trận không nhận lượng khoá.
+- **Huấn luyện viên AI** (`la_bot = 1`): được vào hàng / ghép như người (lấp hàng chờ buổi tối), nhưng không nhận lượng khoá,
+  không vào bảng xếp hạng / danh hiệu (như các luật tiền thật của 9.1 — bot không nhận phần thưởng có giá trị).
+- **CSDL** (khối `them_pk3v3.sql`, máy chủ cũng tự tạo): `tob_pk3v3_luot` (lượt / thắng có thưởng / lượng theo ngày + tài
+  khoản), `tob_pk3v3_diem` (bảng ngày; tuần = cộng các ngày), `tob_pk3v3_gap`, `tob_pk3v3_tran` (nhật ký, lý do không hợp
+  lệ), `tob_pk3v3_chot`, `tob_pk3v3_thuong`.
+- **Kiểm**: `server/test/KiemPk3v3` (giờ mở, bậc cấp, ghép + chống clone / gặp lại, xét thưởng, dữ liệu),
+  `server/test/real/KiemPk3v3Game` (hàng chờ / tổ đội, trận trên sân, bỏ cuộc / rớt mạng, hết giờ, lượt theo tài khoản,
+  chống cày, bot, chốt ngày / tuần, menu).
+
 ### 5.4 Hầm ngục bí ẩn
 
 `real.HamNgucGame` (bật / tắt: `ham_nguc.bat`). Bản hiện tại chưa có bản đồ / tầng riêng: mỗi "tầng" là một thử thách hạ quái
@@ -1811,7 +1854,7 @@ hồi phục, vùng đánh 4..20 ô, tự hồi sinh (tắt / thuốc thường 
 | Đồng | Giao dịch | Nguồn | Dùng cho |
 |---|---|---|---|
 | **Xu** | được, qua chợ (thuế 6% + phí đăng 1%, đốt) | quái (rơi 30% số lần, theo lệch cấp × năng lượng), nhiệm vụ, ≤ 25% ngân sách sự kiện, phân rã | thuốc, sửa đồ, dịch chuyển, đồ theo bậc, **nâng cấp**, **ngọc hệ**, học chiêu, hồi sinh |
-| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục; **đổi từ lượng** (1 : 1) | bản **kiếm được trong game**: bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá, đổi hệ đồ, hồi sinh tại chỗ; **đồ mua bằng lượng khoá bị khoá** (không giao dịch) |
+| **Lượng khoá** | không | nhiệm vụ ngày / tuần / chính, lịch đăng nhập, quà hoạt động, giftcode, thành tựu, Gym, boss, Chiếm Gym, Hầm ngục, Cúp PvP tuần, Đấu trường Bảo Bối, PK 3 vs 3 buổi tối (≤ 25 / tuần); **đổi từ lượng** (1 : 1) | bản **kiếm được trong game**: bùa bảo hộ, thuốc hiếm (Kecleon, có giới hạn tuần), bản khoá tăng tốc, trang trí khoá, đổi hệ đồ, hồi sinh tại chỗ; **đồ mua bằng lượng khoá bị khoá** (không giao dịch) |
 | **Lượng** | được: chuyển ở NPC (phí 5%) và **sàn lượng ↔ xu**; không qua cửa sổ giao dịch | xếp hạng tuần (top 1: 50, top 10: 20, top 100: 8, top 1000: 3), thành tựu lớn, top sự kiện, mùa PvP; nạp tiền nếu bật; mua trên sàn bằng xu | **tiền tốt nhất** (chủ game 31/10/2026): mua được **mọi thứ lượng khoá mua được** (cùng giá, đồ **không khoá**) + đồ đẹp / chỉ số cao cấp (trang bị thuê NPC, nguyên liệu Persian, Shop đặc biệt VIP, thú cưỡi, nâng cấp thú cưỡi, áo hoá Hỏa Kỳ Lân, đồ sự kiện), trang trí, tiện ích; không bao giờ kém lượng khoá; **đổi ra lượng khoá / xu** (một chiều, 9.1 Đổi lượng) |
 
 **Luật lượng ↔ lượng khoá (31/10/2026):** "lượng (nạp) mua được mọi thứ lượng khoá mua được + đồ đẹp / chỉ số cao cấp; lượng

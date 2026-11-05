@@ -346,17 +346,17 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **400 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **410 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
-| **Chỉnh trên web** (`chinh`) | 109 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 252 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Chỉnh trên web** (`chinh`) | 114 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
+| **Cố định** (`co_dinh`) | 257 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
 
-### Khoá chỉnh trên web (109)
+### Khoá chỉnh trên web (114)
 
 #### Kinh tế: tỉ lệ rơi & EXP (`kinh_te`)
 
@@ -405,6 +405,11 @@ Giờ chiếm Gym, trần & ngân sách giftcode. Bật/tắt từng sự kiện
 | `sv.gioChiemThanh` | Giờ chiếm Gym | số | `-1` | -1..23 | ngay | game | 0–23, −1 = lịch chuẩn 21h thứ 3 + thứ 7. |
 | `sv.phutChiemThanh` | Phút chiếm Gym | số | `-1` | -1..59 | ngay | game | 0–59. |
 | `sv.ngayChiemThanh` | Ngày chiếm Gym | chuỗi | *(trống)* | ≤ 64 ký tự | ngay | game | Mon,Tue,... hoặc yyyy-MM-dd; trống = mỗi ngày. |
+| `pk3v3.bat` | PK 3 vs 3 buổi tối: bật | cờ 0/1 | `1` |  | ngay | game | 0 = tạm đóng hoạt động PK 3 vs 3 buổi tối (không nhận hàng chờ; trận đang đánh vẫn đánh xong). Giờ mở: pk3v3.gio_mo / pk3v3.gio_dong. |
+| `pk3v3.gio_mo` | PK 3 vs 3: giờ mở | số | `19` | 0..23 | ngay | game | Giờ Việt Nam mở hàng chờ mỗi ngày (0–23). Mở / đóng đều có thông báo toàn máy chủ. |
+| `pk3v3.gio_dong` | PK 3 vs 3: giờ đóng | số | `23` | 1..24 | ngay | game | Giờ Việt Nam đóng (1–24, 24 = nửa đêm; nhỏ hơn hoặc bằng giờ mở = mở qua nửa đêm). Lúc đóng: xoá hàng chờ (trận đang đánh vẫn xong), chốt top 3 hôm nay. |
+| `pk3v3.tran_ngay` | PK 3 vs 3: số trận / ngày / tài khoản | số | `500` | 1..2000 | ngay | game | Tính lúc bắt đầu trận, gộp mọi Pokémon của cùng tài khoản (chặn nick phụ). Thưởng lượng khoá có trần riêng (pk3v3.thang_thuong_ngay, pk3v3.tran_luong_tuan). |
+| `pk3v3.luong_thang` | PK 3 vs 3: lượng khoá mỗi trận thắng | số | `1` | 0..5 | ngay | game | Chỉ trận thắng hợp lệ (đủ giây, bên thua có đánh, bản thân có đánh, chưa gặp đối thủ quá số lần), trong số trận thắng có thưởng mỗi ngày và trần tuần. 0 = không thưởng lượng khoá khi thắng. |
 
 #### Nạp tiền (`nap_tien`)
 
@@ -523,7 +528,7 @@ Bot lấp máy chủ chơi như người (tên có tiền tố, mặc định "a
 | `hlv_ai.tien_to_ten` | Tiền tố tên bot | chuỗi | `ai ` | ≤ 12 ký tự | ngay | game | Hiện trước tên mọi Huấn luyện viên AI ở mọi chỗ người chơi thấy tên (trên đầu, chat, top, đội, chợ...), gõ tự do 1-12 ký tự, có thể dính liền tên (không cần dấu cách / hai chấm), nhưng PHẢI có chữ AI hoặc BOT để người chơi nhận ra bot; không dùng dấu ":". Giá trị sai: máy chủ dùng mặc định "ai ". |
 | `hlv_ai.cap_theo_nguoi` | Cấp mục tiêu theo người chơi thật | cờ 0/1 | `1` |  | ngay | game | 1 = mỗi ngày (và lúc dịch vụ khởi động) tính khoảng cấp từ người chơi thật hoạt động 7 ngày: thấp = phân vị 25%, cao = trung bình top 10 trừ 2 (không quá mức cao của hlv_ai.cap_muc_tieu, không dưới thấp + 5). Bot mới nhận cấp mục tiêu trong khoảng này; bot cũ dưới mức thấp được nâng dần (tối đa +3 / ngày); bot không cày quá mức cao. 0 = dùng hlv_ai.cap_muc_tieu. |
 
-### Khoá ẩn: cố định & luôn bật (293)
+### Khoá ẩn: cố định & luôn bật (298)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -577,6 +582,11 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `sv.isSuKienGioTo2016` | Sự kiện cũ: Giỗ Tổ 2016 | Cố định (ẩn) | `0` | khởi động lại | game |  |
 | `sv.isSuKienNoel2023` | Sự kiện cũ: Noel 2023 | Cố định (ẩn) | `0` | khởi động lại | game |  |
 | `sv.isSuKienTetduonglich2024` | Sự kiện cũ: Tết dương lịch 2024 | Cố định (ẩn) | `0` | khởi động lại | game |  |
+| `pk3v3.thang_thuong_ngay` | PK 3 vs 3: trận thắng có thưởng / ngày | Cố định (ẩn) | `3` | ngay | game | Số trận thắng hợp lệ đầu tiên mỗi ngày / tài khoản được lượng khoá (các trận sau vẫn tính điểm xếp hạng). |
+| `pk3v3.tran_luong_tuan` | PK 3 vs 3: trần lượng khoá / tuần | Cố định (ẩn) | `25` | ngay | game | Tổng lượng khoá PK 3 vs 3 (thắng + top 3 ngày) mỗi tài khoản mỗi tuần (thứ Hai 05:00), ngang Đấu trường Bảo Bối. |
+| `pk3v3.cap_toi_thieu` | PK 3 vs 3: cấp tối thiểu | Cố định (ẩn) | `20` | ngay | game | Bậc cấp ghép trận rộng 20 cấp tính từ mức này (20–39, 40–59 ... 120+); tổ đội xếp theo cấp cao nhất, cấp thấp không gặp cấp cao. |
+| `pk3v3.gap_lai_toi_da` | PK 3 vs 3: gặp lại cùng đối thủ / ngày | Cố định (ẩn) | `3` | ngay | game | Đã gặp một đối thủ ngần này lần trong ngày thì các trận sau với người đó không tính điểm / thưởng (ghép ưu tiên đối thủ khác). |
+| `pk3v3.giay_toi_thieu` | PK 3 vs 3: giây tối thiểu một trận | Cố định (ẩn) | `20` | ngay | game | Trận kết thúc sớm hơn ngần này giây (sau 5 giây chuẩn bị) không tính điểm / thưởng (chống nhường trận). |
 
 #### Nạp tiền (`nap_tien`)
 

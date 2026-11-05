@@ -159,6 +159,8 @@ public class Char extends LiveActor {
     public int idxXepHangDauTruong = -1;
     /** Vi tri muc "Đấu trường Bảo Bối" trong menu NPC Dau truong (-31), -1 = khong co (DauTruongGame, client >= 908). */
     public int idxDauTruongBaoBoi = -1;
+    /** Vi tri muc "PK 3 vs 3 buổi tối" trong menu NPC Dau truong (-31), -1 = khong co (Pk3v3Game). */
+    public int idxPk3v3DauTruong = -1;
     // Vi tri (idOptionMenu) cua muc "Nhan thuong dua top" trong menu NPC Tong Quan, gan
     // lai moi lan RequestNPCInfoHandler mo menu -10. -1 = nhan vat nay khong co thuong
     // dua top nao dang cho nhan (menu khong co dong nay). Xem real/SuKienDuaTop.

@@ -8728,6 +8728,12 @@ public class GameScr extends Screen {
                 }
             }));
         }
+        v.addElement(new Command(SU_KIEN_PK3V3, new IAction() {
+            public void perform() {
+                game.pokemon.MenuNguCanh.choTieuDe(SU_KIEN_PK3V3);
+                GameService.gI().doMenuOption(-527, (byte) 0, MUC_PK3V3);
+            }
+        }));
         if (game.pokemon.MenuNguCanh.bat()) {
             game.pokemon.MenuNguCanh.mo(v, "Sự kiện");
         } else {
@@ -8761,6 +8767,13 @@ public class GameScr extends Screen {
      */
     public static final String SO_TAY_VE_LANG = "Về làng miễn phí";
     public static final int MUC_VE_LANG = 11;
+    /**
+     * 05/11/2026: dòng 13 của Sổ tay máy chủ (real.SoTayLauDai.MUC_PK3V3 = 12, ngay sau Về làng, ngoài MUC_GOC): hoạt động
+     * "PK 3 vs 3 buổi tối" (19:00–23:00, hàng chờ 3 đấu 3). Hàng cuối thẻ Menu › Sự kiện, gửi -527 / 0 / 12; máy chủ trả menu
+     * hàng chờ / bảng xếp hạng (menu chữ, J2ME dùng được). Client cũ vào qua Cúp PvP tuần / NPC Đấu trường.
+     */
+    public static final String SU_KIEN_PK3V3 = "PK 3 vs 3 buổi tối";
+    public static final int MUC_PK3V3 = 12;
 
     /**
      * 0.9.21 (chủ dự án: "nhiều cái menu button nó có nhiều đường đi vào làm spam menu"): Sổ tay mở từ Menu cá nhân / menu

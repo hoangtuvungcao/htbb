@@ -199,7 +199,8 @@ public final class KiemVeLangMienPhi {
             bang("So tay: muc 11 = Về làng miễn phí (còn 1 lượt)", "Về làng miễn phí (còn 1 lượt)", d[SoTayLauDai.MUC_VE_LANG]);
         }
         bang("MUC_VE_LANG = 11 (ngay sau MUC_GOC)", Integer.valueOf(SoTayLauDai.MUC_GOC.length), Integer.valueOf(SoTayLauDai.MUC_VE_LANG));
-        bang("huong dan tan thu bat dau tu 12", Integer.valueOf(12), Integer.valueOf(SoTayLauDai.SO_MUC_DONG));
+        bang("muc 12 = PK 3 vs 3 buoi toi (ngay sau Ve lang)", Integer.valueOf(12), Integer.valueOf(SoTayLauDai.MUC_PK3V3));
+        bang("huong dan tan thu bat dau tu 13", Integer.valueOf(13), Integer.valueOf(SoTayLauDai.SO_MUC_DONG));
         final String c = doc("../client_jar/src/game/render/screen/GameScr.java");
         if (!c.isEmpty()) {
             // client 0.9.17 them dong "Về làng miễn phí" (-527/0/11) SAU mang SO_TAY_MUC (hang SO_TAY_VE_LANG): mang 11 dong co
