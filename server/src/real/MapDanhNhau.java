@@ -846,6 +846,8 @@ class MapDanhNhau {
                                                                                             p.mp = 0;
                                                                                         }
 
+                                                                                        final int hpDauGiu = mt.hp; // [danh-giu] Pokemon hoang da: don ha tu tren nguong bat -> con o nem bong
+                                                                                        damage = Math.max(0, DanhGiuGame.gioiHan(p, mt, damage + hphut, hpDauGiu) - hphut);
                                                                                         int getXp = mt.getXpReceive(damage);
                                                                                         ahp = damage / CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
                                                                                         mt.hp -= damage + hphut;
@@ -862,7 +864,7 @@ class MapDanhNhau {
                                                                                             Vector<LiveActor> target = new Vector();
                                                                                             target.add(mt);
                                                                                             p.charthanthu.doAttack(target);
-                                                                                            int damthanthu = p.getDamtThanThu(mt);
+                                                                                            int damthanthu = DanhGiuGame.gioiHan(p, mt, p.getDamtThanThu(mt), hpDauGiu);
                                                                                             getXp += mt.getXpReceive(damthanthu);
                                                                                             mt.hp -= damthanthu;
                                                                                             BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
@@ -878,6 +880,7 @@ class MapDanhNhau {
                                                                                                 p.sendEffectBuff(mt, EffectBuff.EFF_NGUYET_ANH, 1000);
                                                                                             }
                                                                                         }
+                                                                                        DanhGiuGame.chot(p, mt, hpDauGiu);
 
                                                                                         if (mt.hp > 0) {
                                                                                             if (mt.isMonsterVantieu() && p.killer < 200) {
@@ -1496,7 +1499,9 @@ class MapDanhNhau {
                                     }
                                 }
 
-                                int dxp = mt.getXpReceive(damage);
+                                final int hpDauGiu = mt.hp; // [danh-giu] (damage dung chung cac muc tieu: cat ban rieng)
+                                final int damGiu = DanhGiuGame.gioiHan(p, mt, damage, hpDauGiu);
+                                int dxp = mt.getXpReceive(damGiu);
                                 if (dxp == 0) {
                                     dxp = 1;
                                 }
@@ -1529,7 +1534,7 @@ class MapDanhNhau {
                                 }
 
                                 allXP += ExpLauDai.lechCapMot(dxp, p, mt);
-                                int s2dam = damage;
+                                int s2dam = damGiu;
                                 if (mt.isMonsterVantieu()) {
                                     s2dam = p.attackDam(mt, _type, _level, buffAttack);
                                     if (s2dam >= mt.maxhp / 100) {
@@ -1543,7 +1548,7 @@ class MapDanhNhau {
                                 BossTrungThu.ghiNhanSatThuong(mt, p, s2dam);
                                 if (p.charthanthu != null && mt.hp > 0 && !mt.isBossSonTinhThuyTinh()) {
                                     target.add(mt);
-                                    int damthanthu = p.getDamtThanThu(mt);
+                                    int damthanthu = DanhGiuGame.gioiHan(p, mt, p.getDamtThanThu(mt), hpDauGiu);
                                     allXP += ExpLauDai.lechCapMot(mt.getXpReceive(damthanthu), p, mt);
                                     mt.hp -= damthanthu;
                                     BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
@@ -1554,6 +1559,7 @@ class MapDanhNhau {
                                     damage += mt.maxhp * damNguyetAnh / 100;
                                     p.sendEffectBuff(mt, EffectBuff.EFF_NGUYET_ANH, 1000);
                                 }
+                                DanhGiuGame.chot(p, mt, hpDauGiu);
 
                                 if (mt.hp > 0) {
                                     if (mt.isMonsterVantieu() && p.killer < 200) {

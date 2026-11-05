@@ -114,6 +114,7 @@ class CharTrangBi {
                                 d = 1;
                             }
                             d += d * self.getUpDamBangSetDocLuaLan(1) / 100;
+                            d = DanhGiuGame.gioiHan(self, actor, d, actor.hp); // [danh-giu]
                             dam.add(d);
                             if (cat == 1)
                             {
@@ -193,6 +194,7 @@ class CharTrangBi {
                                 d = 1;
                             }
                             d += d * self.getUpDamBangSetDocLuaLan(2) / 100;
+                            d = DanhGiuGame.gioiHan(self, actor, d, actor.hp); // [danh-giu]
                             dam.add(d);
                             if (cat == 1) 
                             {
@@ -238,6 +240,7 @@ class CharTrangBi {
                             if (d <= 0) {
                                 d = 1;
                             }
+                            d = DanhGiuGame.gioiHan(self, actor, d, actor.hp); // [danh-giu]
                             dam.add(d);
                             if (cat == 1) {
                                 totalxp += ExpLauDai.lechCapMot(actor.getXpReceive(d), self, actor);
@@ -296,6 +299,7 @@ class CharTrangBi {
                                 d = 1;
                             }
                             d += d * self.getUpDamBangSetDocLuaLan(3) / 100;
+                            d = DanhGiuGame.gioiHan(self, actor, d, actor.hp); // [danh-giu]
                             dam.add(d);
                             if (cat == 1) {
                                 totalxp += ExpLauDai.lechCapMot(actor.getXpReceive(d), self, actor);

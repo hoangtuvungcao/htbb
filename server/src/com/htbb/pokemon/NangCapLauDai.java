@@ -130,4 +130,23 @@ public final class NangCapLauDai {
         }
         return Math.max(1, goc * chiSoPhanTram(k) / 100);
     }
+
+    /**
+     * Phan "Còn thiếu: ..." cua thong bao khong du nguyen lieu (bao loi kazuhas4 05/11/2026: cau cu chi liet ke GIA
+     * "cần X xu, 2 đá luyện kim" nen nguoi choi co 2.199 da nhung thieu xu tuong la "thiếu đá"). Moi phan chi hien khi
+     * that su thieu. {@code coDaTrongO} = da dat ngoc luyen kim vao o nang cap. Rong neu khong thieu gi (vd luong).
+     */
+    public static String chuThieu(final long xuCo, final long xuCan, final boolean coDaTrongO, final int daCo,
+            final int daCan, final boolean daKhoa) {
+        final StringBuilder b = new StringBuilder();
+        if (xuCo < xuCan) {
+            b.append(xuCan - Math.max(0L, xuCo)).append(" xu");
+        }
+        if (daCan > 0 && !coDaTrongO) {
+            b.append(b.length() > 0 ? ", " : "").append("chưa đặt đá luyện kim vào ô nâng cấp");
+        } else if (daCo < daCan) {
+            b.append(b.length() > 0 ? ", " : "").append(daCan - Math.max(0, daCo)).append(daKhoa ? " đá luyện kim khoá" : " đá luyện kim");
+        }
+        return b.length() == 0 ? "" : " Còn thiếu: " + b + ".";
+    }
 }

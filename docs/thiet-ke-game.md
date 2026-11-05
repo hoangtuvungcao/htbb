@@ -1609,6 +1609,13 @@ client `game.pokemon.BatPokemon`; dữ liệu `data_bat_loai`, `data_bat_bong` (
 - **Ném bóng**: đánh một Pokémon hoang dã xuống ≤ 35% HP (`bat.nguong_hp_phan_tram`; trước 0.9.8 bản trao đổi: 25%) thì dưới khung mục tiêu hiện nút
   "Ném Poké Ball ×n" (chạm "Đổi" để đổi loại bóng). Bóng bay tới, Pokémon vào bóng, bóng lắc 0..3 lần rồi bắt được (sao
   vàng) / thoát (bóng bật mở) / bỏ chạy (khói). Máy chủ kiểm lại mọi điều kiện và quyết định kết quả.
+- **Đánh giữ** (05/11/2026, báo lỗi người chơi cấp 53 đánh Pokémon cấp 16 một phát chết, không bao giờ xuống 35%): đòn
+  đánh của người chơi sẽ hạ một Pokémon hoang dã **đang còn trên ngưỡng ném bóng** thì nó còn lại **15% HP**
+  (`bat.danh_giu.hp_phan_tram`, kẹp ≤ ngưỡng; tắt bằng `bat.danh_giu.bat = 0`); đòn sau (đã trong ô ném) đánh chết bình
+  thường. Áp mọi phần của cùng một đòn (chiêu, hút HP, thần thú, Nguyệt ánh, hiệu ứng đồ, phản đòn); EXP theo sát thương
+  thật nên tổng EXP / đồ rơi khi hạ không đổi. Mã `BatPokemon.satThuongGiu` / `hpSauDon`, game `real.DanhGiuGame` (gọi ở
+  `MapDanhNhau` + `Region` đơn lẻ / nhiều mục tiêu, `CharTrangBi`, `CharCapNhat.buffAttackSkill`). Không áp độc / bỏng
+  theo thời gian của quái.
 - **Tỉ lệ** (phần nghìn): `gốc loài × (3M − 2H)/3M × lệch cấp × (tinh anh ×25%) × hệ số bóng + thưởng trượt`, kẹp
   [1%, trần bóng]. Thưởng trượt **tương đối**: mỗi lần trượt trước trên cùng con + min(5%, 25% tỉ lệ hiện tại), nên loài
   hiếm không thành dễ. Lệch cấp (quái − người chơi): ≤ 0 ×100%, 1..5 ×80%, 6..10 ×50%, > 10 không ném được.
