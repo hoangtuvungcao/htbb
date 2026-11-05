@@ -213,6 +213,10 @@ public final class XepHangPvpGame {
             ThongBao.gui(p, ThongBao.TIN, "Đã rời hàng chờ đấu xếp hạng.", null, ThongBao.HINH_KHONG, 0);
             return;
         }
+        if (Pk3v3Game.dangThiDau(p.charDBID) || Pk3v3Game.dangCho(p)) {
+            ThongBao.loi(p, "Bạn đang ở hàng chờ / trận PK 3 vs 3: rời hàng trước khi đấu xếp hạng.", null);
+            return;
+        }
         if (p.lvDetail.lv < XepHangPvp.CAP_TOI_THIEU) {
             ThongBao.loi(p, "Cần cấp " + XepHangPvp.CAP_TOI_THIEU + " để đấu xếp hạng.", null);
             return;

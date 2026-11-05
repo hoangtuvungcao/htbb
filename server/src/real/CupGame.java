@@ -32,7 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class CupGame {
 
-    static final int MENU = 70, MENU_HUY = 71, MENU_BO = 72;
+    static final int MENU = 70, MENU_HUY = 71, MENU_BO = 72, MENU_XEM = 73;
+    /** Muc cuoi moi menu cup: mo PK 3 vs 3 buoi toi (real.Pk3v3Game) - duong cho client cu qua Menu -> Sự kiện -> Cúp PvP tuần. */
+    static final String MUC_PK3V3 = com.htbb.pokemon.Pk3v3.TEN;
     public static final String K_BAT = "cup.bat", K_GIO = "cup.gio_vong_dau", K_SO_VONG = "cup.so_vong",
             K_SO_DOI = "cup.so_doi_toi_thieu";
 
@@ -178,14 +180,15 @@ public final class CupGame {
         }
         p.sendMessage(MessageCreator.createServerAlertMessage(b.toString(), ""));
         if (!bat() || t.tat || ph[0] != CupLogic.PHA_DANG_KY) {
-            p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Bảng xếp hạng tuần này"}, SoTayLauDai.NPC_ID, MENU_HUY));
+            p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Bảng xếp hạng tuần này", MUC_PK3V3}, SoTayLauDai.NPC_ID, MENU_XEM));
             return;
         }
         if (k != null) {
-            p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Bảng xếp hạng tuần này", "Huỷ đăng ký"}, SoTayLauDai.NPC_ID, MENU_HUY));
+            p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Bảng xếp hạng tuần này", "Huỷ đăng ký", MUC_PK3V3}, SoTayLauDai.NPC_ID,
+                    MENU_HUY));
         } else {
             p.sendMessage(MessageCreator.createMsgMenu(new String[]{t.loai.soNguoi == 2 ? "Đăng ký cả đội (2 người)" : "Đăng ký",
-                "Bảng xếp hạng tuần này"}, SoTayLauDai.NPC_ID, MENU));
+                "Bảng xếp hạng tuần này", MUC_PK3V3}, SoTayLauDai.NPC_ID, MENU));
         }
     }
 
@@ -198,6 +201,16 @@ public final class CupGame {
                 }
             } else if (idOption == 1) {
                 bangXepHang(p);
+            } else if (idOption == 2) {
+                Pk3v3Game.moMenu(p);
+            }
+            return true;
+        }
+        if (idMenu == MENU_XEM) {
+            if (idOption == 0) {
+                bangXepHang(p);
+            } else if (idOption == 1) {
+                Pk3v3Game.moMenu(p);
             }
             return true;
         }
@@ -215,6 +228,8 @@ public final class CupGame {
                 if (loi != null) {
                     PhongRiengGame.loi(p, loi);
                 }
+            } else if (idOption == 2) {
+                Pk3v3Game.moMenu(p);
             }
             return true;
         }

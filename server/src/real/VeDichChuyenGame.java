@@ -208,7 +208,8 @@ public final class VeDichChuyenGame {
         } catch (final Throwable ignored) {
         }
         try {
-            if (XepHangPvpGame.trongTran(p) || CupGame.dangThiDau(p.charDBID) || DauTruongGame.TRAN.containsKey(Integer.valueOf(p.charDBID))) {
+            if (XepHangPvpGame.trongTran(p) || CupGame.dangThiDau(p.charDBID) || Pk3v3Game.dangThiDau(p.charDBID)
+                    || DauTruongGame.TRAN.containsKey(Integer.valueOf(p.charDBID))) {
                 return true;
             }
         } catch (final Throwable ignored) {

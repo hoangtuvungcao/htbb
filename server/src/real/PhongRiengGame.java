@@ -177,10 +177,10 @@ public final class PhongRiengGame {
     private static volatile boolean dangChay;
 
     /** TeamServer: luong nhip 1 giay cho pho ban + cup (tach khoi vong bao tri). */
-    /** Ngu canh PvP cua tran cup (BanHuongGame): o san cup VA dang la nguoi thi dau cua mot tran chua ket thuc. */
+    /** Ngu canh PvP cua tran cup / tran PK 3 vs 3 (BanHuongGame): o san cup VA dang thi dau mot tran chua ket thuc. */
     public static final java.util.function.Predicate<Char> NGU_CANH_CUP = new java.util.function.Predicate<Char>() {
         public boolean test(final Char p) {
-            return p != null && p.mapID == MAP_CUP && CupGame.dangThiDau(p);
+            return p != null && p.mapID == MAP_CUP && (CupGame.dangThiDau(p) || Pk3v3Game.dangThiDau(p));
         }
     };
 
@@ -206,6 +206,11 @@ public final class PhongRiengGame {
                         CupGame.nhip(bay);
                     } catch (final Throwable e) {
                         System.out.println("[PHONG RIENG] cup: " + e);
+                    }
+                    try {
+                        Pk3v3Game.nhip(bay); // PK 3 vs 3 buoi toi: muon khu cua san cup
+                    } catch (final Throwable e) {
+                        System.out.println("[PHONG RIENG] pk3v3: " + e);
                     }
                     try {
                         Thread.sleep(1000L);
@@ -238,6 +243,8 @@ public final class PhongRiengGame {
         }
         if (p.mapID == MAP_PHO_BAN && PhoBanGame.phongCua(p.charDBID) != null) {
             p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Rời phó bản (lượt hôm nay đã dùng)"}, SoTayLauDai.NPC_ID, PhoBanGame.MENU_TRONG));
+        } else if (p.mapID == MAP_CUP && Pk3v3Game.dangThiDau(p.charDBID)) {
+            p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Bỏ cuộc trận này (bị loại)"}, SoTayLauDai.NPC_ID, Pk3v3Game.MENU_BO));
         } else if (p.mapID == MAP_CUP && CupGame.dangThiDau(p.charDBID)) {
             p.sendMessage(MessageCreator.createMsgMenu(new String[]{"Bỏ cuộc trận này (tính thua)"}, SoTayLauDai.NPC_ID, CupGame.MENU_BO));
         } else if (laMapRiengCua(p)) {

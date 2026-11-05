@@ -141,6 +141,7 @@ public final class MenuDoiThuong {
                 soTay.them(m).mo = true;
             }
         }
+        soTay.them(com.htbb.pokemon.Pk3v3.TEN).mo = true; // SoTayLauDai.MUC_PK3V3 (sau Về làng, truoc huong dan)
         for (final String m : mucHuongDan) {
             soTay.them(m).mo = true;
         }

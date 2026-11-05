@@ -92,8 +92,8 @@ export const DANH_HIEU = {
   tranPhanNghin: 10,
   bac: [
     { ten: 'Thường', mau: '#5F6B7A', so: 254 },
-    { ten: 'Hiếm', mau: '#23803A', so: 128 },
-    { ten: 'Sử thi', mau: '#7B45D6', so: 36 },
+    { ten: 'Hiếm', mau: '#23803A', so: 129 },
+    { ten: 'Sử thi', mau: '#7B45D6', so: 37 },
     { ten: 'Huyền thoại', mau: '#B95A0E', so: 11 },
   ],
 } as const

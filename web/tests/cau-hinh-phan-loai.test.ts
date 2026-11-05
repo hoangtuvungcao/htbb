@@ -35,7 +35,8 @@ test('phân loại: ít khoá chỉnh trên web, phần lớn ẩn', () => {
   // <= 106: thêm tang_toc.bua_ngay_toi_da (Bùa thể lực không giới hạn, admin đặt lại trần).
   // <= 108: thêm tang_toc.bua_exp_phan_tram / bua_xu_phan_tram (bậc bùa 50% / 50%).
   // <= 109: thêm hlv_ai.cap_theo_nguoi.
-  assert.ok(d.chinh >= 40 && d.chinh <= 109, `chỉnh trên web: ${d.chinh}`)
+  // <= 114: PK 3 vs 3 buổi tối (chủ game 05/11/2026): pk3v3.bat / gio_mo / gio_dong / tran_ngay / luong_thang.
+  assert.ok(d.chinh >= 40 && d.chinh <= 114, `chỉnh trên web: ${d.chinh}`)
   assert.ok(d.co_dinh > 100, `cố định: ${d.co_dinh}`)
   assert.ok(d.luon_bat >= 15, `luôn bật: ${d.luon_bat}`)
 })
