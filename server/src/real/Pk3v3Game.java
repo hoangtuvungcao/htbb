@@ -1428,7 +1428,7 @@ public final class Pk3v3Game {
         if (!bat()) {
             b.append("Hoạt động đang tạm đóng.\n");
         } else {
-            b.append(mo ? "ĐANG MỞ" : "Đang đóng").append(" · mở ").append(khung()).append(" mỗi ngày\n");
+            b.append(mo ? "Đang mở" : "Đang đóng").append(" · mở ").append(khung()).append(" mỗi ngày\n");
         }
         b.append("Trận hôm nay (tài khoản): ").append(l[0]).append("/").append(tranNgay()).append('\n')
                 .append("Thắng có thưởng hôm nay: ").append(Math.min(l[1], thangThuongNgay())).append("/").append(thangThuongNgay())
