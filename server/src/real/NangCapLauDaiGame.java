@@ -151,7 +151,8 @@ public final class NangCapLauDaiGame {
                 });
         if (!du) {
             ra[0] = "Lên +" + k + " cần " + xu + " xu, " + da + " đá luyện kim" + (bua > 0 ? ", " + bua + " lượng khoá hoặc lượng (bùa)" : "")
-                    + (nl != null ? ", " + nl[1] + " " + tenItem(nl[0]) : "") + (mth >= 0 ? ", 1 " + tenItem(mth) : "") + ".";
+                    + (nl != null ? ", " + nl[1] + " " + tenItem(nl[0]) : "") + (mth >= 0 ? ", 1 " + tenItem(mth) : "") + "."
+                    + NangCapLauDai.chuThieu(p.xu, xu, idLkd >= 0, soDa(p, idLkd, kieu), da, kieu == 1);
             return THIEU;
         }
         if (daKhoa[0]) {

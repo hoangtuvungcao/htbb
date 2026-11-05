@@ -158,6 +158,48 @@ public final class BatPokemon {
     public static final int QUA_MANH = 4;
     public static final int CHI_SU_KIEN = 5;
 
+    // ------------------------------------------------------------------ danh giu (False Swipe)
+
+    /** HP (%) Pokemon hoang da duoc giu lai khi don danh se ha no tu tren nguong bat (bat.danh_giu.hp_phan_tram). */
+    public static final int DANH_GIU_HP_PHAN_TRAM = 15;
+
+    /** HP con lai khi "danh giu": giuPhanTram % maxhp, kep [1, nguong bat] (luon nam trong o nem bong). */
+    public static long hpGiu(final long maxhp, final int nguongHpPhanTram, final int giuPhanTram) {
+        final int nguong = Math.max(1, Math.min(100, nguongHpPhanTram));
+        final int pc = Math.max(1, Math.min(nguong, giuPhanTram));
+        return Math.max(1L, maxhp * pc / 100L);
+    }
+
+    /** {@code hpDauDon} con o TREN nguong bat (chua vao o nem bong) - dieu kien de danh giu. */
+    public static boolean trenNguong(final long hpDauDon, final long maxhp, final int nguongHpPhanTram) {
+        return maxhp > 0 && hpDauDon * 100L > maxhp * Math.max(1, Math.min(100, nguongHpPhanTram));
+    }
+
+    /**
+     * "Danh giu" (chu game 05/11/2026, bao loi rongngoo: cap 53 danh cap 16 mot phat chet, khong bao gio xuong 35% de
+     * nem bong): don danh vao Pokemon hoang da dang o TREN nguong bat ({@code hpDauDon}) ma se ha no (con <= 0) thi
+     * sat thuong bi cat de no con {@link #hpGiu} HP; don sau (da trong o nem) danh chet binh thuong. Don khong ha
+     * duoc / da duoi nguong tu truoc: giu nguyen. {@code hpHienTai} = HP truoc phan sat thuong nay (cac phan cua cung
+     * mot don - than thu, hut HP - goi lan luot voi cung hpDauDon).
+     * @return sat thuong sau khi cat (>= 0)
+     */
+    public static int satThuongGiu(final long hpDauDon, final long hpHienTai, final long maxhp, final int dam,
+            final int nguongHpPhanTram, final int giuPhanTram) {
+        if (dam <= 0 || hpHienTai <= 0 || hpHienTai - dam > 0 || !trenNguong(hpDauDon, maxhp, nguongHpPhanTram)) {
+            return dam;
+        }
+        return (int) Math.max(0L, Math.min(dam, hpHienTai - hpGiu(maxhp, nguongHpPhanTram, giuPhanTram)));
+    }
+
+    /** Chot cuoi mot don (cac phan khong qua satThuongGiu, vd Nguyet anh): con <= 0 ma dau don tren nguong -> hpGiu. */
+    public static long hpSauDon(final long hpDauDon, final long hpSau, final long maxhp, final int nguongHpPhanTram,
+            final int giuPhanTram) {
+        if (hpSau > 0 || !trenNguong(hpDauDon, maxhp, nguongHpPhanTram)) {
+            return hpSau;
+        }
+        return Math.min(hpDauDon, hpGiu(maxhp, nguongHpPhanTram, giuPhanTram));
+    }
+
     /** Kiem loai + HP + cap. {@code laBoss} gom boss, Gym, boss the gioi, quai su kien dac biet. */
     public static int kiem(final Loai loai, final boolean laBoss, final long hp, final long maxhp, final int capQuai,
             final int capNv, final int nguongHpPhanTram, final boolean suKienBat) {

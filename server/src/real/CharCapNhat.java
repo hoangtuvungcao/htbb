@@ -152,6 +152,7 @@ class CharCapNhat {
                     }
                 }
             }
+            damPhan = DanhGiuGame.gioiHan(self, mt, damPhan, mt.hp); // [danh-giu] Pokemon hoang da
             if (damPhan > 0) {
                 final Message m = new Message(89);
                 m.dos.writeShort(mt.id);

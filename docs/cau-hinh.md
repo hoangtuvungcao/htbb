@@ -346,12 +346,12 @@ Phần dưới đây là bản chụp bảng `cau_hinh_danh_muc` / `cau_hinh_nho
 
 <!-- BAN CHUP cau_hinh_danh_muc: BAT DAU -->
 
-Tổng cộng **413 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
+Tổng cộng **415 khoá** trong **22 nhóm**. Phân loại (cột `lop`):
 
 | Lớp | Số khoá | Trên trang quản trị | Máy thật lấy giá trị từ |
 |---|---|---|---|
 | **Chỉnh trên web** (`chinh`) | 117 | hiện, sửa được | CSDL `cau_hinh` > server.ini > mặc định |
-| **Cố định** (`co_dinh`) | 257 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
+| **Cố định** (`co_dinh`) | 259 | ẩn | server.ini (khẩn cấp) > giá trị cố định — dòng CSDL bị bỏ qua |
 | **Luôn bật** (`luon_bat`) | 39 | ẩn | server.ini (khẩn cấp) > `1` — dòng CSDL bị bỏ qua |
 
 Máy thử (`sv.cho_phep_thu_nghiem=1` trong server.ini; web: chế độ dev hoặc `HTBB_CHO_PHEP_THU_NGHIEM=1`) vẫn đọc dòng CSDL của khoá ẩn và trang có nút "Hiện khoá cố định". Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; **khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.
@@ -531,7 +531,7 @@ Bot lấp máy chủ chơi như người (tên có tiền tố, mặc định "a
 | `hlv_ai.tien_to_ten` | Tiền tố tên bot | chuỗi | `ai ` | ≤ 12 ký tự | ngay | game | Hiện trước tên mọi Huấn luyện viên AI ở mọi chỗ người chơi thấy tên (trên đầu, chat, top, đội, chợ...), gõ tự do 1-12 ký tự, có thể dính liền tên (không cần dấu cách / hai chấm), nhưng PHẢI có chữ AI hoặc BOT để người chơi nhận ra bot; không dùng dấu ":". Giá trị sai: máy chủ dùng mặc định "ai ". |
 | `hlv_ai.cap_theo_nguoi` | Cấp mục tiêu theo người chơi thật | cờ 0/1 | `1` |  | ngay | game | 1 = mỗi ngày (và lúc dịch vụ khởi động) tính khoảng cấp từ người chơi thật hoạt động 7 ngày: thấp = phân vị 25%, cao = trung bình top 10 trừ 2 (không quá mức cao của hlv_ai.cap_muc_tieu, không dưới thấp + 5). Bot mới nhận cấp mục tiêu trong khoảng này; bot cũ dưới mức thấp được nâng dần (tối đa +3 / ngày); bot không cày quá mức cao. 0 = dùng hlv_ai.cap_muc_tieu. |
 
-### Khoá ẩn: cố định & luôn bật (298)
+### Khoá ẩn: cố định & luôn bật (300)
 
 Không hiện trên trang quản trị, máy thật luôn chạy giá trị dưới đây. Đổi khẩn cấp: thêm dòng `khoa=gia_tri` vào server.ini (vps/server.ini.tmpl) rồi khởi động lại máy chủ game.
 
@@ -831,6 +831,8 @@ Không hiện trên trang quản trị, máy thật luôn chạy giá trị dư�
 | `nang_cap.he_so_xu_bac_cao` | Hệ số xu nâng +11..+15 (‰) | Cố định (ẩn) | `1060` | ngay | game | Bù phần kỳ vọng giảm do mốc neo (thiết kế: +6%). Chỉ áp khi bật mốc neo. |
 | `bat.bat` | Bật thu phục Pokémon | Luôn bật (ẩn) | `1` | ngay | game | Làm Pokémon hoang dã yếu đi rồi ném bóng (Hộp PC, Kẹo loài, Pokédex “Đã bắt”). 0 = tạm khoá ném bóng / mua bóng. |
 | `bat.nguong_hp_phan_tram` | Ngưỡng HP để ném bóng (%) | Cố định (ẩn) | `35` | ngay | game | Pokémon phải còn ≤ chừng này % HP. |
+| `bat.danh_giu.bat` | Đánh giữ Pokémon hoang dã | Cố định (ẩn) | `1` | ngay | game | 1 = đòn đánh của người chơi sẽ hạ một Pokémon hoang dã (bắt được) đang còn trên ngưỡng ném bóng thì nó còn lại bat.danh_giu.hp_phan_tram % HP (vào ô ném bóng); đòn sau đánh chết bình thường. EXP / đồ rơi không đổi. 0 = tắt. |
+| `bat.danh_giu.hp_phan_tram` | Đánh giữ: HP còn lại (%) | Cố định (ẩn) | `15` | ngay | game | HP Pokémon hoang dã còn lại sau đòn đánh giữ; luôn kẹp ≤ bat.nguong_hp_phan_tram (trong ô ném bóng). |
 | `bat.tran_ngay` | Trần thu phục / ngày | Cố định (ẩn) | `30` | ngay | game | Số Pokémon bắt được tối đa mỗi người chơi mỗi ngày (chống bot). |
 | `bat.tran_nem_ngay` | Trần ném bóng / ngày | Cố định (ẩn) | `150` | ngay | game | Số lần ném tối đa mỗi ngày. |
 | `bat.cach_ms` | Nhịp ném tối thiểu (ms) | Cố định (ẩn) | `1500` | ngay | game | Hai lần ném cách nhau ít nhất chừng này (gói đến sớm hơn bị bỏ qua). |

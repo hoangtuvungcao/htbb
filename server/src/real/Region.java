@@ -1225,7 +1225,9 @@ public class Region {
                             continue;
                         }
                     }
-                    if ((dxp = mt.getXpReceive(damage)) == 0) {
+                    final int hpDauGiu = mt.hp; // [danh-giu] Pokemon hoang da (damage dung chung: ban rieng moi con)
+                    final int damGiu = DanhGiuGame.gioiHan(p, mt, damage, hpDauGiu);
+                    if ((dxp = mt.getXpReceive(damGiu)) == 0) {
                         dxp = 1;
                     }
                     // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
@@ -1250,15 +1252,16 @@ public class Region {
                         dxp = 1;
                     }
                     allXP += ExpLauDai.lechCapMot(dxp, p, mt);
-                    mt.hp -= damage;
-                    BossTrungThu.ghiNhanSatThuong(mt, p, damage);
+                    mt.hp -= damGiu;
+                    BossTrungThu.ghiNhanSatThuong(mt, p, damGiu);
                     if (p.charthanthu != null && mt.hp > 0) {
                         muctieu.add(mt);
-                        int damthanthu = p.getDamtThanThu((LiveActor)mt);
+                        int damthanthu = DanhGiuGame.gioiHan(p, mt, p.getDamtThanThu((LiveActor)mt), hpDauGiu);
                         allXP += ExpLauDai.lechCapMot(mt.getXpReceive(damthanthu), p, mt);
                         mt.hp -= damthanthu;
                         BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
                     }
+                    DanhGiuGame.chot(p, mt, hpDauGiu);
                     if (mt.hp <= 0) {
                         if (mt.isMonsterVantieu() && p.myCountry == mt.inCountry) {
                             p.killer = (short)(p.killer + 200);
@@ -1585,6 +1588,8 @@ public class Region {
         if (p.mp <= 0) {
             p.mp = 0;
         }
+        final int hpDauGiu = mt.hp; // [danh-giu] Pokemon hoang da: don ha tu tren nguong bat -> con o nem bong
+        damage = Math.max(0, DanhGiuGame.gioiHan(p, mt, damage + hphut, hpDauGiu) - hphut);
         int getXp = mt.getXpReceive(damage);
         ahp = damage / CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
         mt.hp -= damage + hphut;
@@ -1600,11 +1605,12 @@ public class Region {
             Vector<LiveActor> target = new Vector<LiveActor>();
             target.add((LiveActor)mt);
             p.charthanthu.doAttack(target);
-            int damthanthu = p.getDamtThanThu((LiveActor)mt);
+            int damthanthu = DanhGiuGame.gioiHan(p, mt, p.getDamtThanThu((LiveActor)mt), hpDauGiu);
             getXp += mt.getXpReceive(damthanthu);
             mt.hp -= damthanthu;
             BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
         }
+        DanhGiuGame.chot(p, mt, hpDauGiu);
         if (mt.hp > 0) {
             if (mt.isMonsterVantieu() && p.myCountry == mt.inCountry && p.killer < 200) {
                 p.killer = (short)(p.killer + 200);

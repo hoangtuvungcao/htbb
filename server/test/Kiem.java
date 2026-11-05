@@ -274,6 +274,7 @@ public final class Kiem {
         KiemTienDoNhiemVu.chay(); // sua-tien-do-nv: so Nhiem vu ghi ro muc tieu / ban do quai that / tra o dau, cua ai, Nhiem vu cua toi
         KiemDuongMenu.chay(); // sua-duong-gym: moi duong menu trong chu = nhan menu that; duong tat Thach dau Gym
         KiemDauTruong.chay(); // Dau truong Bao Boi 3v3 (D12): sat thuong, tat dinh, AI, diem, ghep, thuong, goi -109, SQL
+        KiemBaoLoi0511.chay(); // bao loi 05/11: cau thieu nguyen lieu nang cap noi ro phan thieu + danh giu Pokemon hoang da
         KiemChuyenLuyen.chay(); // Chuyen luyen (chu game 05/11/2026): dieu kien, bua, gia xu / da, khoa, du lieu SQL / web / docs
         KiemPk3v3.chay(); // PK 3 vs 3 buoi toi (chu game 05/11/2026): gio mo, bac cap, ghep + chong clone, thuong / chong cay, du lieu
         KiemQaToanGame.chay(); // vong QA toan game 23/10/2026: loi tim thay khi choi dau-cuoi bang bot (KichBanQaToanGame)
