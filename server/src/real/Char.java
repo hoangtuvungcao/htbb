@@ -13226,6 +13226,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 // 0.9.6: chi nhan nhiem vu phu NAM TRONG danh sach dang moi (getAllQuestCanReceive: ton tai, loc cap khi
                 // bat sv.lau_dai). Truoc day goi -64 voi questID bat ky la nhan duoc - ca id khong ton tai (info null ->
                 // NPE, subQuest ket o id rac) lan nhiem vu cap cao.
+                final InfoQuestTemplate xin = Map.allSubQuest.get(questID);
+                final String thieu = xin == null ? null : NhiemVuEngine.tenBuocTruocThieu(this, xin.ma);
+                if (thieu != null) {
+                    // bao loi 05/11/2026: buoc sau cua chuoi phu - may chu tu choi (goi cu / client sua) va noi ro buoc truoc
+                    this.tuChoiNhiemVu("Hãy hoàn thành bước trước \"" + thieu + "\" rồi mới nhận nhiệm vụ này.");
+                    return;
+                }
                 if (!coTrongDanhSachNhan(this.getAllQuestCanReceive(), questID, (byte) 1)) {
                     this.tuChoiNhiemVu("Nhiệm vụ này không còn nhận được. Danh sách nhiệm vụ đã được làm mới.");
                     return;
