@@ -274,6 +274,7 @@ public final class Kiem {
         KiemTienDoNhiemVu.chay(); // sua-tien-do-nv: so Nhiem vu ghi ro muc tieu / ban do quai that / tra o dau, cua ai, Nhiem vu cua toi
         KiemDuongMenu.chay(); // sua-duong-gym: moi duong menu trong chu = nhan menu that; duong tat Thach dau Gym
         KiemDauTruong.chay(); // Dau truong Bao Boi 3v3 (D12): sat thuong, tat dinh, AI, diem, ghep, thuong, goi -109, SQL
+        KiemChuyenLuyen.chay(); // Chuyen luyen (chu game 05/11/2026): dieu kien, bua, gia xu / da, khoa, du lieu SQL / web / docs
         KiemPk3v3.chay(); // PK 3 vs 3 buoi toi (chu game 05/11/2026): gio mo, bac cap, ghep + chong clone, thuong / chong cay, du lieu
         KiemQaToanGame.chay(); // vong QA toan game 23/10/2026: loi tim thay khi choi dau-cuoi bang bot (KichBanQaToanGame)
         KiemThuongLenCap.chay(); // 23/10/2026 bao loi: len cap qua nhiem vu / goi qua / nhay nhieu cap khong co diem tiem nang
@@ -300,6 +301,14 @@ public final class Kiem {
             }
         };
         real.KiemCheTaoNguyenTu.chay();
+        Kiem.nhom("Chuyen luyen - luong game: tru nguyen tu, cap co / khong bua, chi so tinh lai, khoa lan, pity, tu choi");
+        real.KiemChuyenLuyenGame.BAO = new real.KiemChuyenLuyenGame.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        real.KiemChuyenLuyenGame.chay();
         Kiem.nhom("Quai thuong khong la boss (bao loi Violet 05/11/2026: Arcanine hoang da hien 'P3 4:58' nhu truong Gym)");
         real.KiemQuaiThuongKhongLaBoss.BAO = new real.KiemQuaiThuongKhongLaBoss.Bao() {
             @Override

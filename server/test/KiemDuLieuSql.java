@@ -65,7 +65,7 @@ public final class KiemDuLieuSql {
      *  chuyen-luyen (05/11/2026, chu game "Chuyen luyen" o Machamp): +3 khoa chuyen_luyen.bat / xu_phan_tram / da_phan_tram
      *  (kinh_te, chinh, thu_tu 413..415) = 413 / 22.
      *  Lech = danh muc da doi (sua trong CSDL / phan B muc 2 cua sql/htbb.sql, xuat lai), cap nhat. */
-    static final String VT_DANH_MUC = "78f8dcfda2c91666dabd2f1367b98dbaecc4a27fa22ed195aa513deab734bf28";
+    static final String VT_DANH_MUC = "f997f7eb58803055eecbb18341377b45ecd0c0208824c9afc175eb62c5dd06a4";
     static final String VT_HO_CAU = "2c36bb149458fd83c8e7d4c63b23ff55937be0d8863236c396102a2a088dc5c1";
 
     /** Bang P1 -> tep sinh goc. */

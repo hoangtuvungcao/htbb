@@ -745,6 +745,49 @@ vụ, Gym, chế tạo, rơi, boss.
   (9–10). Nguyên liệu phụ rơi 0,4%/quái từ cấp 40, có trong phân rã và hộp boss.
 - Trừ tiền **sau** khi kiểm đủ điều kiện (quy tắc chung của server).
 
+### Chuyển luyện (05/11/2026)
+
+Chủ game 05/11/2026: chuyển cấp nâng +N của một trang bị sang trang bị khác (đổi đồ khi lên cấp mà không phải nâng lại từ
+đầu). Luật thuần `com.htbb.pokemon.ChuyenLuyen`, game `real.ChuyenLuyenGame`, kiểm `test/KiemChuyenLuyen` +
+`test/real/KiemChuyenLuyenGame`. Chỉ chạy khi bật nâng cấp dài hạn và `chuyen_luyen.bat = 1`.
+
+- **Đường vào**: Machamp thợ rèn > *Mua bán* > **Chuyển luyện** (mục thứ 4, sau *Phá khoá trang bị*; *Chế tạo & khảm ngọc*
+  dời xuống mục 5). Menu chữ của máy chủ (NPC ảo −535): chọn món nguồn → chọn món nhận → xác nhận (dòng ghi đúng giá).
+  Client cũ dùng được, không cần bản mới.
+- **Điều kiện**: hai món nằm trong **hành trang** (không nhận món đang mặc — tháo ra trước, an toàn cho chỉ số đang tính),
+  không rao bán / ký gửi, không đang giao dịch; **cùng ô trang bị** (đồ cầm tay type 3..7 là một ô — đổi sang đồ cầm tay lớp khác được;
+  khăn → khăn, đai → đai, … ruy băng → ruy băng); **cấp món nhận ≥ cấp món nguồn**; món nhận đang **thấp hơn +N**.
+  Không áp dụng cho thời trang, vũ khí thời trang, thần khí / bảo vật huyền thoại, cánh, đồ sưu tập, đồ trang trí (vàng),
+  đồ có hạn, cuốc và đồ thú cưỡi (có hệ riêng).
+- **Kết quả**: món nhận thành **+(N−1)** (mất 1 cấp), món nguồn về **+0** và vẫn giữ. Dùng **Bùa chuyển luyện** thì món nhận
+  giữ nguyên **+N**: +1..+9 cần 1 bùa, +10..+12 cần 2, +13..+15 cần 3. Lựa chọn không làm món nhận tăng cấp thì không hiện.
+- **Giá** (R = cấp món nhận đạt được): xu = **35%** (`chuyen_luyen.xu_phan_tram`) tổng xu **một lần thử** lên +1..+R của
+  món nhận (bảng `data_nang_cap_lau_dai` theo bậc cấp món nhận, bước +11..+15 nhân hệ số bậc cao 1,06), làm tròn lên; xu bị
+  đốt. Từ R ≥ +10 thêm đá luyện kim = **50%** (`chuyen_luyen.da_phan_tram`) tổng đá một lần thử +10..+R: +10 = 1, +11 = 3,
+  +12 = 5, +13 = 7, +14 = 9, +15 = 11 viên (bất kỳ đá luyện kim 8–11 / 66 / 245, như ô nâng cấp). Ví dụ xu:
+
+  | Món nhận | R = +4 | +7 | +9 | +10 | +12 | +14 | +15 |
+  |---|---|---|---|---|---|---|---|
+  | cấp 30 | 1.794 | 5.097 | 9.280 | 12.354 | 22.096 | 38.560 | 50.657 |
+  | cấp 50 | 4.408 | 12.527 | 22.809 | 30.364 | 54.309 | 94.775 | 124.509 |
+  | cấp 90 | 25.479 | 72.409 | 131.843 | 175.513 | 313.923 | 547.835 | 719.710 |
+
+  So với nâng lại (kỳ vọng chưa tính tụt cấp, cấp 50: +9 ≈ 105 nghìn, +12 ≈ 422 nghìn, +15 ≈ 2,05 triệu xu) chuyển luyện
+  tốn khoảng 6–30% — vẫn là một hố hút xu nhưng rẻ hơn nhiều.
+- **Bùa chuyển luyện** (item 1262, type 28, xếp chồng): cửa hàng lượng (*Cửa hàng & Nạp* > Tiện ích, mã `bua_chuyen_luyen`,
+  20 lượng, bùa **không khoá**) và Kecleon (*Lượng khoá (Kecleon)*, dòng 131, 20 lượng khoá → bùa khoá; thiếu lượng khoá thì
+  trừ lượng cùng giá, bùa không khoá) — luật lượng ⊇ lượng khoá. Bấm *Sử dụng* trong túi chỉ báo nơi dùng.
+- **Khoá**: món nguồn khoá thì món nhận khoá theo (khoá do mặc → khoá do mặc, phá khoá được như món nguồn; khoá lý do khác →
+  khoá vĩnh viễn) — không "rửa" cấp từ đồ khoá sang đồ giao dịch được. Dùng đá / bùa khoá → món nhận khoá vĩnh viễn (như
+  nâng cấp bằng nguyên liệu khoá); máy chủ tiêu đá / bùa mở trước, trừ khi món nhận đằng nào cũng khoá vĩnh viễn. Món nguồn
+  giữ khoá của nó.
+- **Nguyên tử**: kiểm lại món, điều kiện, giá (khác lúc hỏi thì từ chối), đủ xu / đá / bùa và trừ + đổi cả hai món trong
+  MỘT khối `Char.truNeuDu`; thiếu một thứ thì không đổi gì; lưu nhân vật ngay sau. Chỉ số tính lại bằng đúng hàm của nâng cấp
+  (`NangCapLauDaiGame.doiChiSo`: món nhận từ +cũ lên +R, món nguồn từ +N về gốc). Pity (`HoSoLauDai.truot`) của cả hai món về
+  0. Nhật ký `tob_log_other_item` (`chuyenluyen`) + thống kê chi tiêu "Chuyen luyen_xu / _da / _bua".
+- **Lời cho người chơi**: "Đổi đồ mới không còn phải đập lại từ đầu: Machamp thợ rèn > Mua bán > Chuyển luyện chuyển +N
+  sang món cùng ô, cấp bằng hoặc cao hơn. Mất 1 cấp, hoặc dùng Bùa chuyển luyện để giữ nguyên."
+
 ### 4.3 Ngọc hệ, phân rã, chế tạo
 
 - **Ngọc hệ** (khảm): mỗi ô 1 ngọc, cấp 1..10, +1% chỉ số món mỗi cấp (≤ 10%); giá bước n = 1,45^(n−1) giờ thu nhập.

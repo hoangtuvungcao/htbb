@@ -150,6 +150,10 @@ lần cuối** để dựng bản đầy đủ, rồi chuyển vào [`tools/luu_
 22. `them_pk3v3.sql` (05/11/2026, chủ game, `docs/thiet-ke-game.md` 5.3): PK 3 vs 3 buổi tối — bảng `tob_pk3v3_luot` /
     `_diem` / `_gap` / `_tran` / `_chot` / `_thuong` (máy chủ cũng tự tạo, `real.Pk3v3Game.SQL_TAO_BANG`) + danh hiệu tuần
     9880 / 9881 (`data_danh_hieu`, phần A cũng có). Khoá `pk3v3.*` ở mục 2 (nhóm `su_kien`). `server/test/KiemPk3v3`.
+23. `them_chuyen_luyen.sql` (05/11/2026, chủ game, `docs/thiet-ke-game.md` "Chuyển luyện"): Bùa chuyển luyện (`data_item` /
+    `data_vat_pham_lau_dai` 1262), Kecleon dòng 131 (20 lượng khoá), cửa hàng lượng `nap_cua_hang` `bua_chuyen_luyen` (20
+    lượng, bùa không khoá) — `INSERT IGNORE`, phần A cũng có. Khoá `chuyen_luyen.*` ở mục 2 (nhóm `kinh_te`).
+    `server/test/KiemChuyenLuyen`.
 
 Bảng người chơi chỉ được **thêm** bảng / cột / chỉ mục / dòng (`INSERT IGNORE`), không bị xoá hay sửa dòng; giá trị admin
 đã sửa (`cau_hinh`, `web_cai_dat`, `web_tin_tuc`, `giftcode`, `nap_*`, tên NPC / bản đồ…) giữ nguyên. Không nằm trong

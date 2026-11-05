@@ -108,7 +108,7 @@ public final class ChuyenLuyen {
             return "Món nhận đang rao bán / giao dịch, hãy rút về trước.";
         }
         if (o(a.type) != o(b.type)) {
-            return "Hai món phải cùng loại ô trang bị (vũ khí sang vũ khí, khăn sang khăn...).";
+            return "Hai món phải cùng loại ô trang bị (đồ cầm tay sang đồ cầm tay, khăn sang khăn...).";
         }
         if (b.capDo < a.capDo) {
             return "Món nhận phải có cấp từ " + a.capDo + " trở lên.";
