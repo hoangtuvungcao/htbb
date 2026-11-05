@@ -752,7 +752,7 @@ Chủ game 05/11/2026: chuyển cấp nâng +N của một trang bị sang trang
 `test/real/KiemChuyenLuyenGame`. Chỉ chạy khi bật nâng cấp dài hạn và `chuyen_luyen.bat = 1`.
 
 - **Đường vào**: Machamp thợ rèn > *Mua bán* > **Chuyển luyện** (mục thứ 4, sau *Phá khoá trang bị*; *Chế tạo & khảm ngọc*
-  dời xuống mục 5). Menu chữ của máy chủ (NPC ảo −535): chọn món nguồn → chọn món nhận → xác nhận (dòng ghi đúng giá).
+  dời xuống mục 6). Menu chữ của máy chủ (NPC ảo −535): chọn món nguồn → chọn món nhận → xác nhận (dòng ghi đúng giá).
   Client cũ dùng được, không cần bản mới.
 - **Điều kiện**: hai món nằm trong **hành trang** (không nhận món đang mặc — tháo ra trước, an toàn cho chỉ số đang tính),
   không rao bán / ký gửi, không đang giao dịch; **cùng ô trang bị** (đồ cầm tay type 3..7 là một ô — đổi sang đồ cầm tay lớp khác được;
@@ -777,6 +777,11 @@ Chủ game 05/11/2026: chuyển cấp nâng +N của một trang bị sang trang
 - **Bùa chuyển luyện** (item 1262, type 28, xếp chồng): cửa hàng lượng (*Cửa hàng & Nạp* > Tiện ích, mã `bua_chuyen_luyen`,
   20 lượng, bùa **không khoá**) và Kecleon (*Lượng khoá (Kecleon)*, dòng 131, 20 lượng khoá → bùa khoá; thiếu lượng khoá thì
   trừ lượng cùng giá, bùa không khoá) — luật lượng ⊇ lượng khoá. Bấm *Sử dụng* trong túi chỉ báo nơi dùng.
+  Mua nhanh (05/11/2026, cùng hàm `CuaHangLauDai.mua` của dòng 131, một lần trừ cho cả gói, kiểm chỗ trống cho cả chồng khoá
+  lẫn không khoá): Kecleon tạp hoá > **Mua Bùa chuyển luyện (20 lượng khoá / lượng)** (mục 4) và Machamp thợ rèn > *Mua bán* >
+  **Mua Bùa chuyển luyện** (mục 5, sau *Chuyển luyện*) → Mua 1 / 3 / 5 / Huỷ (NPC ảo −535 menu 3 / 4). Ở menu xác nhận chuyển
+  luyện, thiếu bùa cho dòng *Dùng bùa* thì có thêm dòng **Mua thêm K Bùa chuyển luyện (20 lượng khoá / lượng mỗi bùa) rồi chọn
+  lại**: mua đúng K bùa còn thiếu rồi hiện lại menu xác nhận.
 - **Khoá**: món nguồn khoá thì món nhận khoá theo (khoá do mặc → khoá do mặc, phá khoá được như món nguồn; khoá lý do khác →
   khoá vĩnh viễn) — không "rửa" cấp từ đồ khoá sang đồ giao dịch được. Dùng đá / bùa khoá → món nhận khoá vĩnh viễn (như
   nâng cấp bằng nguyên liệu khoá); máy chủ tiêu đá / bùa mở trước, trừ khi món nhận đằng nào cũng khoá vĩnh viễn. Món nguồn
