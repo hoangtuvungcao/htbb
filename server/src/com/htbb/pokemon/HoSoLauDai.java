@@ -51,6 +51,17 @@ public final class HoSoLauDai {
     // ---- ve chuong (5.1) ----
     public int veChuong = ThongSoLauDai.VE_CHUONG_BAN_DAU;
     public int veTuanCuoi;
+    /**
+     * Bao loi 03-04/11/2026 (Snorlax C07.1 "het ve chuong, sang tuan moi lam tiep"): ve chuong lam DAY moi ngay 05:00 (khoa
+     * "vn" = chi so ngay NhiemVuLauDai.ngayVe lan lam day cuoi; 0 = chua tung -> lam day ngay lan dau). "vt" (tuan) giu nguyen
+     * de ban cu quay lui van chay.
+     */
+    public int veNgayCuoi;
+    /**
+     * Chi so nhiem vu chinh (idMainQuest + 1) da tru ve chuong gan nhat: nhan LAI dung buoc do (sau khi huy / nhan lai) khong
+     * tru them ve (bao loi 02/11/2026 "bam nham xoa nhiem vu, nhan lai bi bao het ve"). 0 = chua.
+     */
+    public int veDaTra;
 
     // ---- shiny (7.3) ----
     public int shinyDem;
@@ -160,6 +171,8 @@ public final class HoSoLauDai {
         dat(b, "dn", dnNgayCuoi);
         dat(b, "vc", veChuong);
         dat(b, "vt", veTuanCuoi);
+        dat(b, "vn", veNgayCuoi);
+        dat(b, "vq", veDaTra);
         dat(b, "sd", shinyDem);
         dat(b, "ss", shinySo);
         dat(b, "gt", gcThang);
@@ -288,6 +301,10 @@ public final class HoSoLauDai {
                 coVe = true;
             } else if (k.equals("vt")) {
                 h.veTuanCuoi = iv;
+            } else if (k.equals("vn")) {
+                h.veNgayCuoi = iv;
+            } else if (k.equals("vq")) {
+                h.veDaTra = iv;
             } else if (k.equals("sd")) {
                 h.shinyDem = iv;
             } else if (k.equals("ss")) {

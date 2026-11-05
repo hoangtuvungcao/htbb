@@ -362,6 +362,7 @@ public final class Kiem {
         KiemHoTong.chay(); // bao loi kazuhas4 31/10/2026 N-3.36: nhan hang o Tong tieu dau (bo dieu kien nuoc / luot), giao Kecleon, dem buoc, chi dan
         KiemHoTongThuongMienPhi.chay(); // chu game 31/10/2026: xe tu luot mien phi nhiem vu chi tra thuong nhiem vu
         KiemXeHangDiTheo.chay(); // bot cb2 31/10/2026: xe hang ket o goc nha (Pewter) - di theo vet nguoi choi
+        KiemBaoLoi0411.chay(); // bao loi Zalo 02-04/11/2026: xoa nham nhiem vu, giao hang Kecleon, Ponyta quan, het ve chuong
         KiemDangNhapServer.chay(); // chu game 31/10/2026: login server HTBB thay CheckLoginSocket.jar (giao thuc, han, tat em, quay lui)
         KiemHlvAi.chay(); // chu game 31/10/2026: huan luyen vien AI (bot lap may chu) - tien to ten bot, luat chong lam phat, danh muc hlv_ai
         KiemDoiLuong.chay(); // chu game 31/10/2026: doi luong -> luong khoa / xu (ti gia chung), san luong thuong <-> xu, giao dich khong co luong

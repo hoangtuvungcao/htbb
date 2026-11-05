@@ -299,7 +299,7 @@ public final class SoTayLauDai {
         final int buoc = d == null ? 0 : d[3];
         bao(p, "Lịch đăng nhập (theo tài khoản): ngày " + buoc + "/7 (ngày tới: " + KinhTeLauDai.luongKhoaDangNhap(buoc)
                 + " lượng khoá). Nghỉ 1 ngày vẫn giữ chuỗi.\nLịch tháng: " + (d == null ? 0 : d[6]) + "/20 ngày.\nVé chương: " + h.veChuong + "/" + ThongSoLauDai.VE_CHUONG_TOI_DA
-                + " (+2 mỗi thứ Hai 05:00).");
+                + " (làm đầy mỗi ngày 05:00).");
     }
 
     // ------------------------------------------------------------------ len cap (su pham)

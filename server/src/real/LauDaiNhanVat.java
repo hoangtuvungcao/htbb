@@ -52,6 +52,16 @@ public final class LauDaiNhanVat {
         return cu != null ? cu : h;
     }
 
+    /** Test: dat ho so (khong doc CSDL). */
+    public static void datKiem(final int idChar, final HoSoLauDai h) {
+        CACHE.put(Integer.valueOf(idChar), h);
+    }
+
+    /** Test: bo ho so da dat. */
+    public static void xoaKiem(final int idChar) {
+        CACHE.remove(Integer.valueOf(idChar));
+    }
+
     /** Goi tu Database.saveChar/saveCharAuto: chi ghi khi co doi. */
     public static void luu(final Char p) {
         if (!LauDai.bat() || p == null || p.charDBID <= 0) {
