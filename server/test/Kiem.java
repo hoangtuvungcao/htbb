@@ -291,6 +291,30 @@ public final class Kiem {
         } catch (final Exception e) {
             Kiem.bang("KiemDanhQuaiTrongLang khong nem loi", "", String.valueOf(e));
         }
+        Kiem.nhom("Che tao nguyen tu (bao loi 03/11/2026 'che xong khong thay do ma xu da tru'): tao mon truoc, tru sau");
+        real.KiemCheTaoNguyenTu.BAO = new real.KiemCheTaoNguyenTu.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        real.KiemCheTaoNguyenTu.chay();
+        Kiem.nhom("Quai thuong khong la boss (bao loi Violet 05/11/2026: Arcanine hoang da hien 'P3 4:58' nhu truong Gym)");
+        real.KiemQuaiThuongKhongLaBoss.BAO = new real.KiemQuaiThuongKhongLaBoss.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        real.KiemQuaiThuongKhongLaBoss.chay();
+        Kiem.nhom("Khu mo huong dan (bao loi 05/11/2026 'vao map nay khong lam duoc gi'): nhac mac Cuoc, huong dan khi vao");
+        real.KiemKhuMoHuongDan.BAO = new real.KiemKhuMoHuongDan.Bao() {
+            @Override
+            public void bang(final String moTa, final Object mongDoi, final Object thucTe) {
+                Kiem.bang(moTa, mongDoi, thucTe);
+            }
+        };
+        real.KiemKhuMoHuongDan.chay();
         Kiem.nhom("Ve dich chuyen (Kecleon xu theo cap, Su dung -> lang / thanh pho da mo, dung 1 lan, cam Gym/PvP/pho ban/PK)");
         real.KiemVeDichChuyen.BAO = new real.KiemVeDichChuyen.Bao() {
             @Override

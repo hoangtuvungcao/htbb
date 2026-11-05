@@ -460,6 +460,15 @@ public final class BoNgocGame {
         return cu != null ? cu : t;
     }
 
+    /** Kiem thu: dat tui ngoc / pity che tao cho nhan vat (khong doc CSDL). */
+    static void datTuiKiem(final int charDBID, final NgocHe.Tui t) {
+        if (t == null) {
+            TUI.remove(Integer.valueOf(charDBID));
+        } else {
+            TUI.put(Integer.valueOf(charDBID), t);
+        }
+    }
+
     /** Database.saveChar / saveCharAuto. */
     public static void luu(final Char p) {
         if (p == null || p.charDBID <= 0) {

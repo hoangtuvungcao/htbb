@@ -48,8 +48,13 @@ public final class GoiPokemon {
      * 39/82 ThanLan, 48 TrungThu, 90 NguoiTuyet, 91 LinhXa, 92 BachXa, 93 MatQuy,
      * 94/113/115 Skelonton, 116/117 Dracula, 120 TruRong, 129/130 SonTinhThuyTinh.
      * 43 (tru lien hoa) va 46 (cong thanh) la vat the, KHONG phai boss.
+     *
+     * <p>05/11/2026 (bao loi kazuhas4 o Violet: "quai map ma he thong nhan dien thanh truong Gym", nhan "P3 4:58" tren
+     * Arcanine hoang da): BO 48. Template 48 nay la Arcanine QUAI THUONG (data_monster isuse 1, cap 55) moc o ban do
+     * ngoai troi - nam trong danh sach nen MOI con Arcanine bi coi la boss (BossLauDai: vao pha 70% / 40%, goi de, dem
+     * nguoc no 5 phut nhu boss Gym, tat Tu dong danh). BossTrungThu (ban 48 cu) tu dat isBoss = true nen khong can.
      */
-    public static final int[] TEMPLATE_BOSS = {38, 39, 48, 82, 90, 91, 92, 93, 94, 113, 115, 116, 117, 120, 129, 130};
+    public static final int[] TEMPLATE_BOSS = {38, 39, 82, 90, 91, 92, 93, 94, 113, 115, 116, 117, 120, 129, 130};
 
     /**
      * Pokemon gan cho bot NPC (Char isBot) theo chi so - chon loai "than thien":

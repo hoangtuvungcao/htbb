@@ -70,7 +70,19 @@ public final class BossLauDai {
     }
 
     static boolean laBoss(final Monster m) {
-        return m != null && (m.isBoss || GoiPokemon.laTemplateBoss(m.idTemplate, m.maxhp));
+        if (m == null) {
+            return false;
+        }
+        if (m.isBoss || m.maxhp >= GoiPokemon.HP_BOSS) {
+            return true; // moi lop Boss*.java + boss Gym / the gioi (taoBossGym) deu dat isBoss
+        }
+        if (!GoiPokemon.laTemplateBoss(m.idTemplate, 0)) {
+            return false;
+        }
+        // 05/11/2026: template boss cu nhung la QUAI THUONG moc ngoai ban do (isuse 1) -> khong phai boss (khong pha, khong
+        // dem nguoc no, khong goi de). Bao loi Violet: Arcanine hoang da hien "P3 4:58" nhu truong Gym.
+        final MonsterTemplate t = Map.monsterTemplates == null ? null : Map.monsterTemplates.get(Integer.valueOf(m.idTemplate));
+        return t == null || t.typeMons != 1;
     }
 
     static synchronized TrangThai lay(final Monster m, final boolean taoMoi) {

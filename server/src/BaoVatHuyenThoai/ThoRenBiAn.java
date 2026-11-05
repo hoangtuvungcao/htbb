@@ -387,6 +387,21 @@ public class ThoRenBiAn
         }
 
 
+        // 05/11/2026 (bao loi che tao mat tai san): tim mau TRUOC khi tru nguyen lieu - truoc day mau thieu (lop / id
+        // ngoai bang) nem NullPointerException SAU khi da tru, nguoi choi mat nguyen lieu ma khong co mon.
+        short[] idthankhi = new short[] { 890, 891, 892 };
+        int loaiThanKhi = player.thanKhiCraftState.getItemType();
+        ItemTemplates template = null;
+        if (loaiThanKhi >= 0 && loaiThanKhi < idthankhi.length && player.charClass >= 0 && player.charClass < itemTemplates.size())
+        {
+            template = (ItemTemplates) ((Hashtable) itemTemplates.get(player.charClass)).get(Integer.valueOf(idthankhi[loaiThanKhi]));
+        }
+        if (template == null)
+        {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Lỗi mẫu Bảo Vật Huyền Thoại (chưa trừ nguyên liệu), hãy báo quản trị.", ""));
+            return;
+        }
+
         // 2) Trừ nguyên liệu theo đúng SỐ LƯỢNG
         //
         // Dùng player.delGem() chứ không ghi thẳng vào listGemitem[]: delGem còn
@@ -443,9 +458,6 @@ public class ThoRenBiAn
             }
         }
         
-        short[] idthankhi = new short[] { 890, 891, 892 };
-        short iditem = idthankhi[player.thanKhiCraftState.getItemType()];
-        ItemTemplates template = (ItemTemplates) ((Hashtable) itemTemplates.get(player.charClass)).get(new Integer(iditem));
         Item newItem = new Item(template, false, player.charClass, player.charClass, template.id);
         newItem.id = player.getIDItem();
         newItem.owner = player.charDBID;
