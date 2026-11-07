@@ -403,7 +403,9 @@ class MapXuLyLenh {
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                player.sendMessage(MessageCreator.createMsgChat(player.id, "Đã nghiền được " + item.getName() + " nhận được " + sl + " " + "bột thường"));
+                if (!lauDai) { // lau dai: RoiLauDai.phanRa da gui dong chat dung (da nang cap / bot xanh la / da them dong)
+                    player.sendMessage(MessageCreator.createMsgChat(player.id, "Đã nghiền được " + item.getName() + " nhận được " + sl + " " + "bột thường"));
+                }
                 return;
             }
     

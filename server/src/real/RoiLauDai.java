@@ -103,15 +103,129 @@ final class RoiLauDai {
      * nghien tay (OfflineMap) va nghien tu dong (MapXuLyLenh) khi bat co. @return so da.
      */
     static int phanRa(final Char p, final Item it) {
+        return phanRa(p, it, false);
+    }
+
+    /** Bot thuoc tinh dung cho "Thêm dòng" (GemTemplate.TYPE_BOT, MapCheTao.doAddNewAttributeUseBot). */
+    static final int ID_BOT_THEM_DONG = 249;
+    /** "Đá thêm dòng" (GemTemplate.TYPE_DA_TIEN_GIAI, ten cu "Đá thăng bậc"). */
+    static final int ID_DA_THEM_DONG = 250;
+
+    /**
+     * Ti le (phan nghin) ra {Bot xanh la, Da them dong} khi phan ra do theo do hiem {@code colorName}. Thêm dòng (Tho ren)
+     * chi dung cho do Hoan my nen do Hoan my LUON ra du 1 bo; Do / Xanh co co hoi; Trang khong ra.
+     *
+     * <p>Sua 08/11/2026 (bao loi Đào Ngọc Thịnh / rongngoo, 6 lan phan ra 07/11 22:28): "Phân giải trang bị ra xong không
+     * nhận được cái đồ luyện thêm dòng". Tu khi bat dai han (LauDai.bat) phan ra CHI ra 2 Da nang cap + 10% gia xu - bot
+     * (truoc la 246 "Bột trắng", ma 246 cung khong phai TYPE_BOT nen ca ban cu cung khong dung duoc) va da them dong KHONG
+     * con nguon nao (Monster: co BotXanhLa = false), Thêm dòng o Tho ren thanh chuc nang chet. Ket qua lai hien icon 72
+     * (Bột trắng) voi so = so da -> nguoi choi tuong nhan bot.
+     */
+    static int[] tiLeThemDong(final int colorName) {
+        if (colorName == Item.COLOR_GREEN) { // Hoan my
+            return new int[]{1000, 1000};
+        }
+        if (colorName == Item.COLOR_RED) {
+            return new int[]{300, 150};
+        }
+        if (colorName == Item.COLOR_BLUE) {
+            return new int[]{150, 50};
+        }
+        return new int[]{0, 0};
+    }
+
+    static String phanTram(final int phanNghin) {
+        return phanNghin % 10 == 0 ? (phanNghin / 10) + "%" : (phanNghin / 10.0) + "%";
+    }
+
+    /** Ten ngoc {@code id} theo bang dang nap, {@code macDinh} neu chua co. */
+    static String tenNgoc(final int id, final String macDinh) {
+        try {
+            final String t = Map.gemTemplate[id].name;
+            return t == null || t.trim().isEmpty() ? macDinh : t.trim();
+        } catch (final Exception e) {
+            return macDinh;
+        }
+    }
+
+    /**
+     * Phan ra {@code it}: 2 da + 10% gia xu + nguyen lieu Thêm dòng theo {@link #tiLeThemDong}. Bao cho nguoi choi DUNG
+     * nhung gi da nhan va ti le cua phan khong ra: {@code tay} (nghien tay o Tho ren) = thong bao nhanh; tu dong (nhat do)
+     * = mot dong tin nhan (khong bat hop thoai moi lan nhat). @return so da.
+     */
+    static int phanRa(final Char p, final Item it, final boolean tay) {
         final int gia = Map.itemTemplates.get(5).get(it.getTemplate().id) != null
                 ? Map.itemTemplates.get(5).get(it.getTemplate().id).price : it.getTemplate().price;
         final long[] kq = KinhTeLauDai.phanRa(gia);
-        p.doAddGemItem(ID_DA, (int) kq[0], it.lock == 1);
+        final boolean khoa = it.lock == 1;
+        p.doAddGemItem(ID_DA, (int) kq[0], khoa);
         NhiemVuEngine.suKien(p, "phan_ra", "", 1);
         if (kq[1] > 0L) {
             p.addXu(kq[1], "phan ra do lau dai");
         }
+        final int[] tl = tiLeThemDong(it.colorName);
+        final boolean raBot = tl[0] > 0 && (tl[0] >= 1000 || Map.r.nextInt(1000) < tl[0]);
+        final boolean raDa = tl[1] > 0 && (tl[1] >= 1000 || Map.r.nextInt(1000) < tl[1]);
+        if (raBot) {
+            p.doAddGemItem(ID_BOT_THEM_DONG, 1, khoa);
+        }
+        if (raDa) {
+            p.doAddGemItem(ID_DA_THEM_DONG, 1, khoa);
+        }
+        final String s = moTaPhanRa(DungVatPham.ten(it), (int) kq[0], kq[1], tl, raBot, raDa, khoa);
+        try {
+            // game.out (tob_log_all_item chi giu loai trong LocLogVatPham.GIU): tra cuu khi nguoi choi hoi "phan ra ra gi"
+            com.htbb.log.Nhat.thongTin("PHAN_RA", p.charname + " tpl " + it.getTemplate().id + " mau " + it.colorName
+                    + (tay ? " tay" : " tu dong") + ": da " + kq[0] + " xu " + kq[1] + " bot " + (raBot ? 1 : 0)
+                    + " da_them_dong " + (raDa ? 1 : 0));
+        } catch (final Exception ignored) {
+        }
+        try {
+            if (tay) {
+                DungVatPham.bao(p, s);
+            } else {
+                p.sendMessage(MessageCreator.createMsgChat(p.id, s));
+            }
+        } catch (final Exception ignored) {
+        }
         return (int) kq[0];
+    }
+
+    /** Chuoi ket qua phan ra: liet ke dung phan da nhan + ti le phan khong ra (thuan, de kiem). */
+    static String moTaPhanRa(final String ten, final int da, final long xu, final int[] tl, final boolean raBot,
+            final boolean raDa, final boolean khoa) {
+        final String bot = tenNgoc(ID_BOT_THEM_DONG, "Bột xanh lá");
+        final String daTd = tenNgoc(ID_DA_THEM_DONG, "Đá thêm dòng");
+        final StringBuilder sb = new StringBuilder("Phân rã ").append(ten).append(": +").append(da).append(" Đá nâng cấp");
+        if (xu > 0L) {
+            sb.append(", +").append(xu).append(" xu");
+        }
+        if (raBot) {
+            sb.append(", +1 ").append(bot);
+        }
+        if (raDa) {
+            sb.append(", +1 ").append(daTd);
+        }
+        if (khoa && (da > 0 || raBot || raDa)) {
+            sb.append(" (khoá)");
+        }
+        sb.append('.');
+        if (tl[0] <= 0 && tl[1] <= 0) {
+            sb.append(" Đồ Trắng không ra nguyên liệu Thêm dòng (đồ Xanh / Đỏ có tỉ lệ, đồ Hoàn mỹ chắc chắn có).");
+        } else if (!raBot || !raDa) {
+            sb.append(" Lần này không ra");
+            if (!raBot) {
+                sb.append(' ').append(bot).append(" (tỉ lệ ").append(phanTram(tl[0])).append(')');
+            }
+            if (!raDa) {
+                sb.append(raBot ? " " : ", ").append(daTd).append(" (tỉ lệ ").append(phanTram(tl[1])).append(')');
+            }
+            sb.append("; đồ Hoàn mỹ chắc chắn có cả hai.");
+        }
+        if (raBot || raDa) {
+            sb.append(" Bột + Đá thêm dòng dùng ở Thợ rèn › Thêm dòng (đồ Hoàn mỹ).");
+        }
+        return sb.toString();
     }
 
     static int xuMoiQuai(final int cap) {

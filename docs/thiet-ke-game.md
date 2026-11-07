@@ -810,7 +810,14 @@ Chủ game 05/11/2026: chuyển cấp nâng +N của một trang bị sang trang
     phân rã một viên trong túi = số Đá nâng cấp theo `phan_ra_da`. Ngọc lưu trên món (trường `nh…` cuối chuỗi lưu) nên đi
     theo món khi giao dịch / ký gửi.
 - **Phân rã**: đồ thường → 2 đá + 10% giá; đồ Hoàn mỹ thêm 1 Mảnh tinh hoa + 1 nguyên liệu phụ (3 Mảnh tinh hoa để chuyển
-  đồ Hoàn mỹ sang bậc mới); ngọc thừa → đá theo cấp ngọc.
+  đồ Hoàn mỹ sang bậc mới); ngọc thừa → đá theo cấp ngọc. (Mảnh tinh hoa + nguyên liệu phụ khi phân rã đồ Hoàn mỹ
+  **chưa nối** vào `RoiLauDai.phanRa` - 08/11/2026.)
+  - **Nguyên liệu Thêm dòng** (08/11/2026, báo lỗi người chơi "phân giải không ra đồ luyện thêm dòng"; `RoiLauDai.tiLeThemDong`):
+    Thợ rèn › Thêm dòng cần 1 Bột xanh lá (ngọc 249) + 1 Đá thêm dòng (ngọc 250, tên cũ "Đá thăng bậc") và chỉ dùng cho đồ
+    Hoàn mỹ cấp 50+ đã khoá. Phân rã: Hoàn mỹ chắc chắn 1 + 1; Đỏ 30% bột / 15% đá; Xanh 15% / 5%; Trắng không. Nguyên liệu
+    khoá theo món. Thông báo kết quả liệt kê đúng phần nhận được và tỉ lệ phần không ra (nghiền tay: thông báo nhanh; nghiền tự
+    động: một dòng tin); icon kết quả nghiền tay là Đá nâng cấp (trước là Bột trắng 72 với số = số đá). Kiểm
+    `test/real/KiemPhanRaThemDong`.
 - **Chế tạo** ở Machamp (Xưởng Pewter): Vòng cổ và Phiến đá hệ mỗi bậc cần (2 + bậc) đá, (1 + bậc/3) nguyên liệu phụ và
   50% giá xu. 0.9.8 (`real.CheTaoGame`, lớp thuần `CheTaoLogic`, màn `ManCheTao`): công thức đọc `data_noi_dung_che_tao`
   (+ cột `loi_che_tao` = số Lõi chế tạo cần, mặc định 0 cho tới khi phân rã ra Lõi; `bat`), cấp người chơi ≥ cấp công thức.
