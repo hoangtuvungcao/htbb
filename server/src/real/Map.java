@@ -16149,7 +16149,13 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    if (item.istrungPet()) 
+                    // 08/11/2026: item pet DA NO (type 27, "Cleffa cấp 1"...) = cho pet di theo. Truoc day roi xuong
+                    // goi y "gửi Nhà trẻ" -> nguoi choi ap xong van khong dat pet di theo duoc (real.PetDiTheoGame).
+                    if (item.isPet() && PetDiTheoGame.dung(player, item)) {
+                        return;
+                    }
+
+                    if (item.istrungPet())
                     {
                         try {
                             player.doCreatePet(item);

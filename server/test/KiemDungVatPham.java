@@ -47,6 +47,7 @@ public final class KiemDungVatPham {
             khongDungDuoc();
             buffChiSo();
             chongVatPham();
+            petDiTheo();
             ketQuaClientCu();
             noiVaoGame();
         } catch (final Throwable e) {
@@ -509,6 +510,64 @@ public final class KiemDungVatPham {
         Kiem.dung("cam vu khi: co phan hoi (" + chu(b) + ")", b != null);
         b = dung(p, vk.id);
         Kiem.dung("thao vu khi: bao khong thao duoc, giu nguyen (" + chu(b) + ")", b != null && "LOI".equals(b[0]) && b[1].contains("Không tháo") && dem(p, 79) == 0);
+    }
+
+    /**
+     * 08/11/2026 (rongngoo, 3 item Cleffa cấp 1 trong tui): bam "Su dung" item pet da no (type 27) = pet DI THEO, khong
+     * con bi day ve "gửi Nhà trẻ" mai; trung (type 26) van di duong no trung cu (khong bi nhanh moi bat).
+     */
+    static void petDiTheo() throws Exception {
+        if (real.Map.petTemplate == null) {
+            real.Map.loadPetTemplate();
+        }
+        final ItemTemplates trung = mau(686, 26, "Trứng Cleffa", 1);
+        trung.atb[0] = 1;
+        trung.atb[1] = 25;
+        trung.idItemUpLevel = 699;
+        final ItemTemplates c1 = mau(699, 27, "Cleffa cấp 1", 0);
+        c1.atb[0] = 1;
+        c1.atb[1] = 26;
+        c1.idItemUpLevel = 700;
+        final ItemTemplates c2 = mau(700, 27, "Clefairy cấp 2", 0);
+        c2.atb[0] = 2;
+        c2.atb[1] = 26;
+        c2.idItemUpLevel = -1;
+        final ItemTemplates bd = mau(873, 27, "Bidoof", 0);
+        bd.atb[0] = 5;
+        bd.atb[1] = 245;
+        Kiem.bang("mau pet: Cleffa cap 1 = mau cua Trung Cleffa (25)", 25, real.PetDiTheoGame.mauPet(c1));
+        Kiem.bang("mau pet: Clefairy cap 2 (lan nguoc chuoi trung) = 25", 25, real.PetDiTheoGame.mauPet(c2));
+        Kiem.bang("mau pet: Bidoof (khong co trung) = mau di bo 29, KHONG 30 (Capybara giao dich duoc)", 29, real.PetDiTheoGame.mauPet(bd));
+        Kiem.bang("mau pet: trung (type 26) khong phai item pet", -1, real.PetDiTheoGame.mauPet(trung));
+
+        final Char p = nhanVat();
+        final Item a = cho(p, 699);
+        a.lock = 1;
+        final Item b2 = cho(p, 699);
+        b2.lock = 1;
+        String[] b = dung(p, a.id);
+        Kiem.dung("dung Cleffa cap 1: bao da di theo, khong con goi y 'gửi Nhà trẻ' (" + chu(b) + ")",
+                b != null && "OK".equals(b[0]) && b[1].contains("đi theo") && !b[1].startsWith("Cleffa cấp 1: gửi"));
+        Kiem.bang("dung Cleffa: roi tui (con 1 con kia)", 1, dem(p, 699));
+        Kiem.bang("dung Cleffa: vao bang thu nuoi", 1, p.pet.size());
+        Kiem.dung("dung Cleffa: la pet dang di theo", p.petUsing != null && p.petUsing == p.pet.get(0) && p.petUsing.place == 1);
+        Kiem.bang("pet di theo: mau 25 (Cleffa)", 25, (int) p.petUsing.idTemplate);
+        Kiem.dung("pet di theo: giu dung item Cleffa cap 1", p.petUsing.itemPet == a);
+        Kiem.bang("pet di theo: chi so pet cap 1 (doAddOptionPet)", 10, (int) a.newAtb[2]);
+        Kiem.dung("pet di theo: khong giao dich duoc (item pet khoa)", !p.petUsing.canTrade());
+        Kiem.dung("pet di theo: gui lai tui / bang thu nuoi (16)", coGoi(16));
+        Kiem.dung("pet di theo van tinh so huu cho Nha tre (dex 173)",
+                com.htbb.pokemon.HeSinhThaiMenu.petSoHuu(p).contains(Integer.valueOf(173)));
+        final data.Pet dau = p.petUsing;
+        b = dung(p, b2.id);
+        Kiem.dung("dung con thu 2: con moi di theo, con cu ve bang (place 0) (" + chu(b) + ")",
+                p.pet.size() == 2 && p.petUsing != dau && p.petUsing.itemPet == b2 && dau.place == 0);
+        final Item bi = cho(p, 873);
+        b = dung(p, bi.id);
+        Kiem.dung("dung Bidoof: di theo mau 29 (" + chu(b) + ")", b != null && "OK".equals(b[0]) && p.petUsing.idTemplate == 29);
+        final Item tr = cho(p, 686);
+        Kiem.dung("trung (type 26) khong qua nhanh pet di theo (van no trung o duong cu)", !real.PetDiTheoGame.dung(p, tr));
+        Kiem.bang("trung: van trong tui", 1, dem(p, 686));
     }
 
     static void ngoaiHinh() throws Exception {
