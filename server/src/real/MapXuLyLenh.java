@@ -1952,7 +1952,13 @@ class MapXuLyLenh {
     static void doChangeMap(Map map, Char player, Message message) {
         try {
             int toMapID = message.dis.readShort();
-            if (toMapID == player.mapID || player.mapID == 118 && player.monster != null && player.mapID == player.monster.map.mapId) {
+            // sua-xe-giat-118 (bao loi kazuhas4 07/11/2026 16:20-16:37): ma goc con "|| player.mapID == 118 && player.monster != null
+            // && player.mapID == player.monster.map.mapId" - o Đường Victory co xe cung ban do thi MOI goi doi ban do (ke ca -500
+            // 'nap ban do xong' client gui sau lenh 12) bi coi la 'nap lai ban do nay': may chu gui lai lenh 12 -> client nap lai ->
+            // gui -500 -> ... vong lap nap ban do lien tuc ("giat"), doJoinMapOk khong bao gio chay (khong NPC / dau dia diem, khong
+            // giao duoc) toi khi xe het gio. Truoc ban sua-xe-lac-map xe hau nhu khong toi duoc 118 nen loi an. Nay chi nap lai khi
+            // client xin dung ban do hien tai; xe di cung theo luat chung XeHangChuyenMap.
+            if (toMapID == player.mapID) {
                 Map toMap = (Map) RealController.mapList.get(player.mapID);
                 Message m = MessageCreator.createMapMessage(player);
                 player.sendMessage(m);

@@ -41,6 +41,8 @@ public final class KiemXeHangLacMap {
 
     static final class NguoiChoi extends Char {
         final List<String> bao = new ArrayList<String>();
+        /** Moi lenh may chu gui (12 = nap ban do) - kiem vong lap nap lai ban do (sua-xe-giat-118). */
+        final List<Integer> lenh = new ArrayList<Integer>();
 
         NguoiChoi(final int id) {
             super(null);
@@ -54,6 +56,9 @@ public final class KiemXeHangLacMap {
 
         @Override
         public void sendMessage(final Message m) {
+            if (m != null) {
+                lenh.add(Integer.valueOf(m.command));
+            }
             if (m == null || m.command != 37 && m.command != -26) {
                 return;
             }
@@ -103,6 +108,7 @@ public final class KiemXeHangLacMap {
             khongChoXe();
             chanDichChuyen();
             xeLac();
+            giatVictory();
             docMa();
         } catch (final Throwable e) {
             e.printStackTrace();
@@ -380,6 +386,74 @@ public final class KiemXeHangLacMap {
         final NguoiChoi k2 = coXe(pewter, 55, 40);
         k2.monster.x += 200;
         Kiem.bang("xeTaiCho: cung ban do nhung xa -> cau 'xa'", "xa", tc.invoke(null, k2, "xa"));
+    }
+
+    // ------------------------------------------------------------------ Đường Victory co xe: nap ban do lien tuc (kazuhas4)
+
+    static int dem12(final NguoiChoi p) {
+        int n = 0;
+        for (final Integer c : p.lenh) {
+            if (c.intValue() == 12) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Bao loi kazuhas4 07/11 16:20-16:37 (sau ban sua-xe-lac-map): tau Bến tàu -> Thuyền 107 -> New Bark 10 (xe theo) -> di bo
+     * toi Đường Victory 118 - "giật liên tục, không giao hàng được, địa điểm không đánh dấu", xe het gio thi binh thuong.
+     * MapXuLyLenh.doChangeMap goc: o 118 co xe cung ban do thi moi goi 12 (ke ca -500 'nap xong') -> gui lai lenh 12 nap ban do.
+     */
+    static void giatVictory() throws Exception {
+        final java.lang.reflect.Method dm = Class.forName("real.MapXuLyLenh").getDeclaredMethod("doChangeMap", real.Map.class, Char.class, Message.class);
+        dm.setAccessible(true);
+        final real.Map ben = banDo(106, 106);
+        final real.Map thuyen = banDo(107, 107);
+        final real.Map newBark = banDo(10, 10);
+        final real.Map victory = banDo(118, 118);
+        final NguoiChoi p = coXe(ben, 30, 20);
+        XeHangChuyenMap.move2MapCungXe(ben, p, 20, 11, 107, 0);
+        KhoaBanDoGame.xuongThuyen(thuyen, p, 10);
+        Kiem.dung("kazuhas4: xe xuong New Bark 10 cung nguoi choi", p.mapID == 10 && xeCanh(p) && p.monster.map == newBark);
+        // di bo toi Đường Victory: luat chung (MapXuLyLenh -> doChangeMapMonster) - xe sang 118
+        final boolean di = XeHangChuyenMap.diCung(p);
+        final real.Map cu = p.map;
+        vao(p, victory, 44, 24);
+        p.doChangeMapMonster(di, cu);
+        XeHangChuyenMap.sauDoiMap(p, cu, di);
+        Kiem.dung("kazuhas4: xe toi Đường Victory 118 cung nguoi choi", p.mapID == 118 && xeCanh(p) && p.monster.map == victory);
+
+        // client nap xong ban do (sau lenh 12) gui 12 voi -500: phai vao nhanh 'vao ban do xong', KHONG gui lai lenh 12
+        for (int lan = 0; lan < 3; lan++) {
+            p.lenh.clear();
+            p.isDoChangeMap = true;
+            dm.invoke(null, victory, p, goiDoiMap(-500, 0, 0));
+            Kiem.bang("118 co xe, -500 lan " + (lan + 1) + ": khong gui lai lenh nap ban do 12 (vong lap 'giật')", 0, dem12(p));
+            Kiem.dung("118 co xe, -500 lan " + (lan + 1) + ": vao nhanh nap xong (isDoChangeMap=false)", !p.isDoChangeMap);
+        }
+        Kiem.dung("118: van o Đường Victory, xe canh", p.mapID == 118 && xeCanh(p));
+
+        // client xin lai dung ban do hien tai (toMapID == mapID): van nap lai nhu cu (1 lenh 12)
+        p.lenh.clear();
+        dm.invoke(null, victory, p, goiDoiMap(118, 0, 0));
+        Kiem.bang("118: xin lai chinh ban do -> nap lai 1 lan (nhu cu)", 1, dem12(p));
+
+        // Dịch trạm (o 51..59 x 16..24): giao duoc
+        p.x = 55 * 16 + 8;
+        p.y = 20 * 16 + 8;
+        p.monster.x = p.x + 16;
+        p.monster.y = p.y;
+        try {
+            traHang(p);
+        } catch (final java.lang.reflect.InvocationTargetException e) {
+            // giao: doResponseTieu can CSDL / phien - chi kiem xe
+        }
+        Kiem.dung("kazuhas4: Dịch trạm giao duoc (isFinish)", p.monster.isFinish);
+
+        // ma: bo dieu kien 118 + xe trong nhanh nap lai
+        Kiem.dung("MapXuLyLenh: khong con nhanh 'mapID == 118 && monster' nap lai ban do",
+                !doc("MapXuLyLenh.java").contains("player.mapID == 118 && player.monster != null && player.mapID == player.monster.map.mapId) {"));
     }
 
     // ------------------------------------------------------------------ doc ma: moi duong noi dung luat
