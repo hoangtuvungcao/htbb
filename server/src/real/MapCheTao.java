@@ -709,7 +709,13 @@ class MapCheTao {
                 }
 
                 if (item.colorName != Item.COLOR_GREEN || item.lock == 0 || item.colorName == Item.COLOR_GREEN && item.hangItem != 1 || item.level < 50) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể cộng thuộc tính cho vật phẩm này.", ""));
+                    // 08/11/2026: noi ro dieu kien (truoc chi "Không thể cộng thuộc tính" - nguoi choi vua phan ra ra bot / da
+                    // khong biet dung vao dau)
+                    player.sendMessage(MessageCreator.createServerAlertMessage(item.colorName != Item.COLOR_GREEN
+                            ? "Thêm dòng chỉ dùng cho trang bị Hoàn mỹ."
+                            : item.level < 50 ? "Thêm dòng cần trang bị Hoàn mỹ từ cấp 50."
+                            : item.lock == 0 ? "Thêm dòng cần trang bị đã khoá (Thợ rèn › Khoá trang bị)."
+                            : "Trang bị Hoàn mỹ này không thêm dòng được.", ""));
                     return;
                 }
 

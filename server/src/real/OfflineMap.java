@@ -2177,7 +2177,7 @@ public class OfflineMap extends Map {
 
          player.iItems.remove(it);
          if (com.htbb.pokemon.LauDai.bat()) {
-            sl = RoiLauDai.phanRa(player, it); // GD2 2.9: 2 da + 10% gia, khong phi
+            sl = RoiLauDai.phanRa(player, it, true); // GD2 2.9: 2 da + 10% gia, khong phi (+ nguyen lieu Thêm dòng, bao ro)
          } else {
             player.subXu(2000L, true, "offline map 9");
             player.doAddGemItem(246, sl, it.lock == 1);
@@ -2189,7 +2189,16 @@ public class OfflineMap extends Map {
          Database.instance.saveOrtherLog("", player.charname, "soluong" + sl + "_" + it.getName() + "_" + it.getDBInfo() + "|" + it.getAttribute(), "xaybot");
          Message m = new Message(-68);
          m.dos.writeByte(4);
-         m.dos.writeShort(72);
+         // icon ket qua = vat pham THAT nhan duoc: dai han ra Da nang cap (ngoc ID_DA), truoc gui cung 72 (Bột trắng) ->
+         // nguoi choi thay "bot" voi so = so da (bao loi 08/11/2026).
+         int iconKetQua = 72;
+         if (com.htbb.pokemon.LauDai.bat()) {
+            try {
+               iconKetQua = gemTemplate[RoiLauDai.ID_DA].idImage;
+            } catch (Exception ignored) {
+            }
+         }
+         m.dos.writeShort(iconKetQua);
          m.dos.writeByte(1);
          m.dos.writeByte(sl);
          player.sendMessage(m);
