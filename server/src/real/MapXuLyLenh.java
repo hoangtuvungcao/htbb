@@ -1952,7 +1952,7 @@ class MapXuLyLenh {
     static void doChangeMap(Map map, Char player, Message message) {
         try {
             int toMapID = message.dis.readShort();
-            // sua-xe-giat-118 (bao loi kazuhas4 07/11/2026 16:20-16:37): ma goc con "|| player.mapID == 118 && player.monster != null
+            // sua-xe-giat-victory (bao loi kazuhas4 07/11/2026 16:20-16:37): ma goc con "|| player.mapID == 118 && player.monster != null
             // && player.mapID == player.monster.map.mapId" - o Đường Victory co xe cung ban do thi MOI goi doi ban do (ke ca -500
             // 'nap ban do xong' client gui sau lenh 12) bi coi la 'nap lai ban do nay': may chu gui lai lenh 12 -> client nap lai ->
             // gui -500 -> ... vong lap nap ban do lien tuc ("giat"), doJoinMapOk khong bao gio chay (khong NPC / dau dia diem, khong

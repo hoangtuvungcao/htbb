@@ -41,7 +41,7 @@ public final class KiemXeHangLacMap {
 
     static final class NguoiChoi extends Char {
         final List<String> bao = new ArrayList<String>();
-        /** Moi lenh may chu gui (12 = nap ban do) - kiem vong lap nap lai ban do (sua-xe-giat-118). */
+        /** Moi lenh may chu gui (12 = nap ban do) - kiem vong lap nap lai ban do (sua-xe-giat-victory). */
         final List<Integer> lenh = new ArrayList<Integer>();
 
         NguoiChoi(final int id) {
