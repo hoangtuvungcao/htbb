@@ -16308,22 +16308,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void doChangeMapMonster(final boolean onMapMonster, final Map oldMap) {
-        if (this.monster != null && onMapMonster && this.map.mapId == this.map.mapIDLoadMap && this.map.isMapTrain()) {
-            this.monster.x = this.x;
-            this.monster.y = this.y;
-            this.monster.removeOutMap();
-            try {
-                final Message m = new Message(90);
-                m.dos.writeShort(this.monster.id);
-                m.dos.writeByte(this.monster.cat);
-                Map.sendAllCharServerInMap(new int[]{0, 70, 301, 1701, 1, 2, 3, 4, 5, 6, 7, 8, 9, 118}, m);
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-            this.monster.map = this.map;
-            this.monster.region = this.region;
-            this.monster.inCountry = this.inCountry;
-            this.monster.vet.xoa(); // sua-xe-hang-ket: sang ban do moi, vet cu vo nghia
+        // sua-xe-lac-map (bao loi 07/11/2026): truoc day chi keo xe khi ban do dich la ban goc (mapId == mapIDLoadMap) -
+        // di bo trong ban sao khu (501.., 2441..) bo xe lai. Nay: onMapMonster = xe di cung (XeHangChuyenMap.diCung, tinh truoc
+        // khi roi ban do) + ban do dich cho xe vao; keo xe dat canh nguoi choi, xoa vet (sua-xe-hang-ket).
+        if (onMapMonster && XeHangChuyenMap.choXeVao(this.map)) {
+            XeHangChuyenMap.keoXe(this);
         }
         try {
             if (this.charthanthu != null) {

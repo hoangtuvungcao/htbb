@@ -14467,6 +14467,10 @@ public class Map implements Runnable {
 
     void doMove2Map(Char player, int index, int mapID) {
         try {
+            // sua-xe-lac-map (07/11/2026): xa phu / Pidgeot (Bay) truoc day khong xet xe van tieu - bay di, xe o lai
+            if (XeHangChuyenMap.chan(player, "Pidgeot (Bay)")) {
+                return;
+            }
             if (Char.isSuKienMiniChucNu() && player.charCopy != null && player.map.mapId == player.charCopy.map.mapId) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Illumise", ""));
                 return;

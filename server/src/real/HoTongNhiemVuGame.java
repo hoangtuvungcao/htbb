@@ -147,9 +147,14 @@ public final class HoTongNhiemVuGame {
                 p.typeTieu = -1;
                 return true;
             }
-            if (p.monster.map == null || !p.monster.map.equals(p.map) || !Map.inRangeActor((LiveActor) p, (LiveActor) p.monster, 120)) {
-                p.sendMessage(MessageCreator.createServerAlertMessage(p.map != null && p.map.isMapOffline ? HoTongNhiemVu.BAO_XE_NGOAI_NHA
-                        : "Xe hàng còn ở xa. Hãy đi cạnh xe hàng tới Kecleon rồi nói chuyện.", ""));
+            if (p.map != null && p.map.isMapOffline) {
+                p.sendMessage(MessageCreator.createServerAlertMessage(HoTongNhiemVu.BAO_XE_NGOAI_NHA, ""));
+                return true;
+            }
+            // sua-xe-lac-map: chung luat voi Dịch trạm (xe lac do loi doi ban do -> keo ve; bao xe dang o dau)
+            final String ly = TraHang.xeTaiCho(p, "Xe hàng còn ở xa. Hãy đi cạnh xe hàng tới Kecleon rồi nói chuyện.");
+            if (ly != null) {
+                p.sendMessage(MessageCreator.createServerAlertMessage(ly, ""));
                 return true;
             }
             TraHang.giao(p);

@@ -1158,43 +1158,9 @@ class MapDoMenu {
                     }
                     break;
                 case -51:
-                    if (player.monster != null) {
-                        if (player.map.mapIDLoadMap != 118) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng tại vị trí này", ""));
-                            return;
-                        }
-
-                        if (player.x / 16 >= 51 && player.x / 16 <= 59 && player.y / 16 >= 16 && player.y / 16 <= 24) {
-                            if (player.monster != null && player.monster.isFinish()) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng", ""));
-                                player.monster.actorDie();
-                                player.monster = null;
-                                player.typeTieu = -1;
-                                return;
-                            }
-
-                            if (!player.monster.map.equals(player.map)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng do khác map", ""));
-                                return;
-                            }
-
-                            if (!inRangeActor(player, player.monster, 120)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng do quá xa", ""));
-                                return;
-                            }
-
-                            player.monster.isFinish = true;
-                            player.doResponseTieu(player, false, player.typeTieu, player.lvDetail.lv);
-                            player.typeTieu = -1;
-                            Char.isSuKienHe2017();
-                            break;
-                        }
-
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trả hàng tại vị trí này", ""));
-                        return;
-                    }
-
-                    return;
+                    // sua-xe-lac-map: chung TraHang (xe lac do loi doi ban do keo ve, bao xe o dau) - truoc day ban sao rieng
+                    TraHang.excecute(player);
+                    break;
                 case -50:
                     if (idMenu != 0) {
                         if (idMenu != 10) {

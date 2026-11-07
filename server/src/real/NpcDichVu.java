@@ -160,8 +160,7 @@ public final class NpcDichVu {
             bao(p, "Hãy đến gần Lapras ở bến đò.");
             return;
         }
-        if (p.monster != null) {
-            bao(p, "Không thể đi đò khi đang giao hàng.");
+        if (XeHangChuyenMap.chan(p, "đò Lapras")) { // sua-xe-lac-map: chan truoc khi di
             return;
         }
         final java.util.List<Integer> ben = benDo(NpcTinhBanDo.banDoNap(p));
@@ -242,8 +241,7 @@ public final class NpcDichVu {
             bao(p, "Hãy đến gần Pidgeot để bay.");
             return;
         }
-        if (p.monster != null) {
-            bao(p, "Không thể bay khi đang giao hàng.");
+        if (XeHangChuyenMap.chan(p, "Pidgeot bay")) { // sua-xe-lac-map: chan truoc khi di
             return;
         }
         final java.util.List<Integer> ds = diemBay(NpcTinhBanDo.banDoNap(p));
@@ -316,8 +314,7 @@ public final class NpcDichVu {
             bao(p, "Hãy đến gần Arcanine gác cổng.");
             return;
         }
-        if (p.monster != null) {
-            bao(p, "Không thể đi khi đang giao hàng.");
+        if (XeHangChuyenMap.chan(p, "lối đi Arcanine")) { // sua-xe-lac-map: chan truoc khi di
             return;
         }
         final int tu = NpcTinhBanDo.banDoNap(p);

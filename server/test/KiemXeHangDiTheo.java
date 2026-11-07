@@ -263,7 +263,8 @@ public final class KiemXeHangDiTheo {
         final String mv = new String(Files.readAllBytes(Paths.get("src/real/MonsterVantieu.java")), StandardCharsets.UTF_8);
         Kiem.dung("MonsterVantieu.move dung XeHangDiTheo.buoc", mv.contains("XeHangDiTheo.buoc(this.vet"));
         Kiem.dung("MonsterVantieu.update ghi vet nguoi choi", mv.contains("XeHangDiTheo.ghi(this.vet, this.target.x, this.target.y)"));
-        final String ch = new String(Files.readAllBytes(Paths.get("src/real/Char.java")), StandardCharsets.UTF_8);
-        Kiem.dung("Char.doChangeMapMonster xoa vet khi xe sang ban do moi", ch.contains("this.monster.vet.xoa()"));
+        // sua-xe-lac-map 07/11/2026: Char.doChangeMapMonster keo xe qua XeHangChuyenMap.keoXe
+        final String ch = new String(Files.readAllBytes(Paths.get("src/real/XeHangChuyenMap.java")), StandardCharsets.UTF_8);
+        Kiem.dung("XeHangChuyenMap.keoXe xoa vet khi xe sang ban do moi", ch.contains("m.vet.xoa()"));
     }
 }

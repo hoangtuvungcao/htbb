@@ -154,7 +154,7 @@ public final class KhoaBanDoGame {
     public static void xuongThuyen(final Map map, final Char p, final int den) {
         final String ly = lyDoChan(p, den);
         if (ly == null) {
-            map.move2Map(p, 62 + Map.random(5), 122 + Map.random(5), den, p.inCountry);
+            XeHangChuyenMap.move2MapCungXe(map, p, 62 + Map.random(5), 122 + Map.random(5), den, p.inCountry); // xuong tau cung xe (sua-xe-lac-map)
             if (p.potions[20] > 0) {
                 p.potions[20]--;
             }
@@ -187,7 +187,7 @@ public final class KhoaBanDoGame {
             baoChan(p, den, ly, true); // hop cua ai cho toi khi nap xong ben (-500), khong mo roi bi dong
         } catch (final Throwable ignored) {
         }
-        map.move2Map(p, x, y, ben, p.inCountry);
+        XeHangChuyenMap.move2MapCungXe(map, p, x, y, ben, p.inCountry); // tau dua ve ben: xe ve cung (sua-xe-lac-map)
         final String tenBen = tenMap(ben);
         final String tenDen = tenMap(den);
         bao(p, "Chưa mở " + (tenDen.isEmpty() ? "bến bên kia" : tenDen) + ": tàu đã đưa bạn về "

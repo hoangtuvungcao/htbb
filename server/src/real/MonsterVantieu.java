@@ -22,6 +22,12 @@ public class MonsterVantieu extends Monster {
     /** Xe tu luot mien phi cua nhiem vu ho tong (HoTongNhiemVuGame.nhanHang): giao chi tinh thuong nhiem vu. */
     public boolean mienPhiNhiemVu = false;
     public int count = 0;
+    /**
+     * sua-xe-lac-map: nhip cuoi chu xe o CUNG ban do thi xe con trong tam (XeHangChuyenMap.TAM) - chu roi ban do luc dang canh
+     * xe ma xe khong sang cung (duong chua noi xe) thi xe "lac do loi", toi cho giao duoc keo ve (TraHang.xeTaiCho). Chu bo xe
+     * di xa (cung ban do) thi false.
+     */
+    public volatile boolean ganChu = true;
 
     public static MonsterVantieu getMonsterVantieu(int chardbid) {
         return HAS_MONSTER_VANTIEU.get(chardbid);

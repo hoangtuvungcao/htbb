@@ -270,8 +270,7 @@ public class doUsePotion {
                         Database.instance.saveOrtherLog("tob_other_log", player.charname, "tay tiem nang " + player.potions[26], "dkn");
                         break;
                     case 27:
-                        if (player.monster != null && player.monster.map.mapId == player.mapID) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang giao hàng.", ""));
+                        if (XeHangChuyenMap.chan(player, "Vé Bay Pidgeot")) { // sua-xe-lac-map: truoc chi chan khi xe cung ban do
                             var10002 = player.potions[potionType]++;
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
@@ -577,8 +576,9 @@ public class doUsePotion {
                             return;
                         }
 
-                        if (player.monster != null && player.monster.map.mapId == player.mapID) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang giao hàng", ""));
+                        if (XeHangChuyenMap.chan(player, "dịch chuyển tới bạn kết đôi")) { // sua-xe-lac-map: tra lai ve (truoc mat ve)
+                            var10002 = player.potions[potionType]++;
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             return;
                         }
 

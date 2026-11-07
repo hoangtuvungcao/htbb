@@ -364,6 +364,7 @@ class CharVongLap {
             if (self.monster.map.mapId == self.map.mapId) {
                 self.monster.target = self;
             }
+            XeHangChuyenMap.capNhatGanChu(self); // sua-xe-lac-map: xe con canh chu (lac do loi thi keo ve o cho giao)
             try {
                 if (self.monster.isFinish()) {
                     final Message l = new Message(90);
@@ -601,7 +602,8 @@ class CharVongLap {
                     }
                     // ben kia con khoa (vd vua mat dieu kien): khong cho len thuyen (KhoaBanDoGame da bao) - sua-ket-tau
                     if (!KhoaBanDoGame.chan(self, id2)) {
-                        self.map.move2Map(self, 19 + Map.random(3) + 1, 10 + Map.random(3) + 1, id2, self.inCountry);
+                        // sua-xe-lac-map: len tau cung xe hang van tieu (truoc day xe o lai ben)
+                        XeHangChuyenMap.move2MapCungXe(self.map, self, 19 + Map.random(3) + 1, 10 + Map.random(3) + 1, id2, self.inCountry);
                     }
                 }
                 self.gotoIsland = false;

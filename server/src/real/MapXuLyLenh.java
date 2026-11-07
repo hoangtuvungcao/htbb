@@ -2279,22 +2279,16 @@ class MapXuLyLenh {
                         return;
                     }
 
+                    // sua-xe-lac-map (bao loi 07/11/2026): truoc day xe chi theo khi ban do dich la ban goc < 301 va ban do nguon
+                    // khong phai ban sao khu -> di bo trong ban sao (New Bark 501.., Bến tàu 2421..) bo xe lai. Nay luat chung:
+                    // xe di cung (cung ban do / khu / vung, trong XeHangChuyenMap.TAM px); ban do dich cho xe vao xet o
+                    // Char.doChangeMapMonster.
                     try {
-                        if (player.monster != null
-                                && player.map.mapId == player.monster.map.mapId
-                                && player.monster.region == player.region
-                                && Map.inRangeActor(player, player.monster, 120)
-                                && (toMap.mapId == toMap.mapIDLoadMap && toMap.mapId < 301 || Map.isMapLang(toMap))) {
-                            onMapMonster = true;
-                        }
+                        onMapMonster = XeHangChuyenMap.diCung(player);
                     } catch (Exception var39) {
                     }
 
                     if (player.map != null) {
-                        if (!Map.isMapLang(player.map) && player.map.mapId != player.map.mapIDLoadMap) {
-                            onMapMonster = false;
-                        }
-
                         map.playerExit(player);
                     }
 
@@ -2326,6 +2320,7 @@ class MapXuLyLenh {
                 player.x = toTX * 16 + 8;
                 player.y = toTY * 16 + 8;
                 player.doChangeMapMonster(onMapMonster, oldMap);
+                XeHangChuyenMap.sauDoiMap(player, oldMap, onMapMonster); // xe khong sang duoc: bao xe doi o dau
                 if (player.x / 16 <= 1) {
                     player.x += 32;
                 }
