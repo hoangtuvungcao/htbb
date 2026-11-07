@@ -464,7 +464,9 @@ public final class KichBanBatThuong {
                 moKecleon(b);
             }
             ket("bt_dut.mua", ok, sb.toString());
-            // ban vu khi roi rut mang: mon mat <=> xu cong
+            // ban vu khi roi rut mang: mon mat <=> xu cong. Vu khi chi ban o nha Machamp 103 (dang dung nha Kecleon 102 sau
+            // moKecleon -> ra ngoai roi vao 103; may chu chi ban mon cua NPC dang dung canh).
+            if (KichBanDS2.laOffline(b.mapId) && b.mapId != 103) KichBanDS2.raNgoai(b);
             if (!KichBanDS2.laOffline(b.mapId)) KichBanDS2.vaoNha(b, 103);
             int id = muaVuKhi(b, VU_KHI);
             if (id != KichBanDS3.KHONG) {

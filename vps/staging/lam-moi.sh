@@ -175,6 +175,9 @@ buoc "6/8 Tai khoan bot + cau hinh staging"
         echo "INSERT INTO \`$STG_DB_TK\`.team_user (username,password,phone,regdate,ban,provider,fromgame) VALUES ('$T',@mk,'',DATE_SUB(NOW(),INTERVAL 30 DAY),0,0,0) ON DUPLICATE KEY UPDATE password=@mk, ban=0, regdate=LEAST(IFNULL(regdate,NOW()),DATE_SUB(NOW(),INTERVAL 30 DAY));"
     done
     echo "INSERT INTO \`$STG_DB\`.\`5h_active\` (userID,username,time_end) SELECT u.id,u.username,'1894945812' FROM \`$STG_DB_TK\`.team_user u WHERE u.username REGEXP '^${STG_BOT_TIEN_TO}[0-9]{3}\$' AND NOT EXISTS (SELECT 1 FROM \`$STG_DB\`.\`5h_active\` a WHERE a.username=u.username);"
+    # Thanh vien HTBB (chu game bat thanh_vien.bat 31/10: giao dich / chat the gioi chi cho thanh vien): bot kiem la thanh vien
+    # de cong kiem chay duoc kich ban giao dich / chat / kho (truoc do 5 nhom HONG vi "danh cho Thanh vien HTBB").
+    echo "INSERT INTO \`$STG_DB\`.tv_thanh_vien (user_id,username,het_han_ms,nguon,so_lan,cap_luc,cap_nhat_luc,ghi_chu) SELECT u.id,u.username,4102444800000,'admin',1,NOW(),NOW(),'staging bot' FROM \`$STG_DB_TK\`.team_user u WHERE u.username REGEXP '^${STG_BOT_TIEN_TO}[0-9]{3}\$' ON DUPLICATE KEY UPDATE het_han_ms=4102444800000;"
     GM="admin"; for i in $(seq 1 40); do GM="$GM,$(printf '%s%03d' "$STG_BOT_TIEN_TO" "$i")"; done
     # Khoa trong bang cau_hinh THANG server.ini - ghi de cac khoa staging can.
     for KV in "sv.adminAccounts=$GM" "sv.choPhepTaoTenGM=1" "sv.gioBaoTri=tat" "bao_tri.bat=0" "sv.banToiThieu=0" "sv.dangKyCsdlTaiKhoan=$STG_DB_TK"; do
