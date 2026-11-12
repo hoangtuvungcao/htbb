@@ -223,7 +223,7 @@ class CharVongLap {
                             final Char char1 = p;
                             final int hpTruocGuc = char1.hp;
                             char1.hp -= self.getDamtThanThuAuto(p);
-                            GucGame.ghi(char1, "thần thú của " + self.charname, hpTruocGuc);
+                            GucGame.ghi(char1, "Pokémon huyền thoại của " + self.charname, hpTruocGuc);
                             p.sendMessage(MessageCreator.createNew_HMP_Message(p, 0));
                             p.sendToNearPlayer(MessageCreator.createNew_HMP_Message(p, 0));
                             if (p.hp <= 0) {
