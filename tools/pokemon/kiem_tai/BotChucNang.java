@@ -130,7 +130,7 @@ public class BotChucNang {
         int soMac = -1;
         final List<Integer> dangMac = new ArrayList<>(), dangMacTpl = new ArrayList<>(), dangMacPlus = new ArrayList<>();
         final Map<Integer, int[]> quai = new HashMap<>(); // id -> {x,y,hp,lv,maxhp,tpl}
-        final Map<Integer, int[]> hoangDa = new java.util.concurrent.ConcurrentHashMap<>(); // id quai -> {dex, bac} (-125)
+        final Map<Integer, int[]> hoangDa = new java.util.concurrent.ConcurrentHashMap<>(); // id quai -> {dex, bac, shiny} (-125)
         final Map<Integer, int[]> nguoi = new HashMap<>(); // actor -> {x,y}
         short[][][] viTriMap; // [nhom][toM][clone*3]
         short[][] maIdNhom;
@@ -427,9 +427,9 @@ public class BotChucNang {
                         for (int i = 0; i < n; i++) {
                             int id = r.readShort();
                             int dex = r.readShort();
-                            r.readUnsignedByte();
+                            int shiny = r.readUnsignedByte();
                             int bac = r.readUnsignedByte();
-                            if (dex > 0) hoangDa.put(id, new int[]{dex, bac});
+                            if (dex > 0) hoangDa.put(id, new int[]{dex, bac, shiny});
                             else hoangDa.remove(id);
                         }
                         break;

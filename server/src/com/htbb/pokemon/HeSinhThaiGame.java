@@ -681,7 +681,8 @@ public final class HeSinhThaiGame {
         LAN_BAO_HIEM.put(m.idTemplate, now);
         final MonsterTemplate t = real.Map.monsterTemplates.get(Integer.valueOf(m.idTemplate));
         final String ten = t != null ? SuuTamSinhThai.tenLoai(t.dex) : "Pokémon hiếm";
-        baoTheGioi("Một " + ten + " hiếm vừa xuất hiện ở " + real.Map.getNameMap(mapId) + " ("
+        // bao loi 12/11/2026: ghi ro khu + huong (ban do chia 5-10 khu, truoc day chi ten ban do - tim khong thay)
+        baoTheGioi("Một " + ten + " hiếm vừa xuất hiện ở " + real.LoaiQuaiGame.noi(m) + " ("
                 + SinhThaiTheGioi.tenThoiTiet(thoiTietMap(mapId)).toLowerCase()
                 + (SinhThaiTheGioi.laDem(gio()) ? ", ban đêm" : "") + ")!");
     }

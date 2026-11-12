@@ -842,6 +842,11 @@ public final class TuDongGame {
                 } catch (final Exception e) {
                     q.cuaNguoiKhac = false;
                 }
+                // bao loi 12/11/2026: con hoang da T4+ / sac mau da bao - Tu dong khong tu chon; bot HLV AI khong dung han
+                q.deBat = LoaiQuaiGame.danhChoNguoi(mt);
+                if (q.deBat && p.laHlvAi) {
+                    q.cuaNguoiKhac = true;
+                }
                 t.quai.add(q);
             }
         } catch (final Exception e) {
