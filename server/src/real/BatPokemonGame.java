@@ -79,6 +79,8 @@ public final class BatPokemonGame {
     public static final String TEN_MUC_CHANSEY = "Poké Ball & Hộp PC";
     /** Nem vao quai thuong (khong phai Pokemon hoang da). */
     public static final String KHONG_HOANG_DA = "Pokémon này đã thuần hoá, không thể bắt - hãy tìm Pokémon hoang dã (có dấu Poké Ball cạnh tên).";
+    /** Huan luyen vien AI nem bong vao Pokemon hoang da danh cho nguoi choi (T4+ / sac mau, bao loi 12/11/2026). */
+    public static final String DANH_CHO_NGUOI = "Pokémon hiếm này dành cho người chơi - Huấn luyện viên AI không bắt.";
     public static final String TEN_MUC_POKEDEX = "Hộp PC";
     /** So bong moi lan mua. */
     public static final int GOI_BONG = 5;
@@ -268,6 +270,9 @@ public final class BatPokemonGame {
         if (!(a instanceof Monster) || p == null || p.charDBID <= 0) {
             return;
         }
+        if (LoaiQuaiGame.botKhongDung(p, a)) {
+            return; // bao loi 12/11/2026: bot HLV AI khong gianh quyen nem bong con danh cho nguoi choi
+        }
         synchronized (GIAO_CHIEN) {
             final Monster m = (Monster) a;
             final long[] g = GIAO_CHIEN.get(m);
@@ -455,6 +460,11 @@ public final class BatPokemonGame {
         if (!LoaiQuaiGame.laHoangDa(m)) {
             // 0.9.8 (chu game): quai thuong (mau ban do, muc tieu nhiem vu, quai cay) KHONG bat duoc - chi Pokemon hoang da
             tuChoi(p, idQuai, thuTu, KHONG_HOANG_DA);
+            return;
+        }
+        if (LoaiQuaiGame.botKhongDung(p, m)) {
+            // bao loi 12/11/2026: con T4+ / sac mau da bao - de nguoi choi that bat (bot van bat con T1-T3)
+            tuChoi(p, idQuai, thuTu, DANH_CHO_NGUOI);
             return;
         }
         final long[] g;

@@ -24,8 +24,8 @@ final class TrangThaiGame {
 
     /** @return trang thai vua gay (0 = khong). */
     static int thuGay(final Char p, final LiveActor dich, final int he) {
-        if (he < 0 || dich == null || dich.hp <= 0) {
-            return 0;
+        if (he < 0 || dich == null || dich.hp <= 0 || LoaiQuaiGame.botKhongDung(p, dich)) {
+            return 0; // bot HLV AI: khong bong / doc con hoang da danh cho nguoi choi (bao loi 12/11/2026)
         }
         final int tt = TrangThaiPokemon.tuHe(he);
         if (tt == 0 || Map.random(100) >= TrangThaiPokemon.TI_LE_KICH_HOAT) {
@@ -55,7 +55,7 @@ final class TrangThaiGame {
      * tran). Ton trong mien theo he, thoi luong PvP x0,5 / boss 30% (boss khong ngu/bang); gui -97. @return tt / 0.
      */
     static int gayTuTrangBi(final Char p, final LiveActor dich, final int tt) {
-        if (tt <= 0 || dich == null || dich.hp <= 0) {
+        if (tt <= 0 || dich == null || dich.hp <= 0 || LoaiQuaiGame.botKhongDung(p, dich)) {
             return 0;
         }
         if (TrangThaiPokemon.mien(tt, dich.hePokemon1(), dich.hePokemon2())) {

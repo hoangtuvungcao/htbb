@@ -1,6 +1,7 @@
 package real;
 
 import com.htbb.cauhinh.CauHinhTrungTam;
+import com.htbb.pokemon.BaoHoangDa;
 import com.htbb.pokemon.ChonLoaiHoangDa;
 import com.htbb.pokemon.GoiLoai;
 import com.htbb.pokemon.HeSinhThaiGame;
@@ -36,7 +37,8 @@ public final class LoaiQuaiGame {
     static volatile long lanNap;
     /** Nap lai bang moi 5 phut (doi dot mo / chinh tay tren CSDL khong can khoi dong lai). */
     static final long CHU_KY_NAP_MS = 5L * 60 * 1000;
-    static final ConcurrentHashMap<Integer, Long> LAN_BAO_MAP = new ConcurrentHashMap<Integer, Long>();
+    /** khoaKhu (ban do:khu:phe) -> lan bao T3+ cuoi. */
+    static final ConcurrentHashMap<String, Long> LAN_BAO_MAP = new ConcurrentHashMap<String, Long>();
     static final long CACH_BAO_MAP_MS = 60L * 1000;
     static final AtomicLong DEM_DOI = new AtomicLong(), DEM_HIEM = new AtomicLong(), DEM_BIEN_MAT = new AtomicLong(),
             DEM_SHINY = new AtomicLong();
@@ -50,6 +52,34 @@ public final class LoaiQuaiGame {
     /** Quai nay la Pokemon hoang da (bat duoc). */
     public static boolean laHoangDa(final Monster m) {
         return m != null && m.dexRieng > 0;
+    }
+
+    /**
+     * Pokemon hoang da "danh cho nguoi choi" (bao loi 12/11/2026, com.htbb.pokemon.BaoHoangDa): T4+ (Rất hiếm, Cực hiếm)
+     * hoac sac mau - con duoc bao trong ban do / toan may chu. Huan luyen vien AI khong danh / bat / gay trang thai duoc,
+     * Tu dong danh khong tu chon no, song {@link BaoHoangDa#PHUT_BIEN_MAT_HIEM} phut.
+     */
+    public static boolean danhChoNguoi(final Monster m) {
+        return m != null && !m.isDead && BaoHoangDa.danhChoNguoi(m.dexRieng, m.bacRieng, m.shinyRieng, BaoHoangDa.GIU_BAC);
+    }
+
+    /** {@code p} la Huan luyen vien AI (bot) va {@code a} la Pokemon hoang da danh cho nguoi choi: bot khong duoc dung vao. */
+    public static boolean botKhongDung(final Char p, final LiveActor a) {
+        return p != null && p.laHlvAi && a instanceof Monster && danhChoNguoi((Monster) a);
+    }
+
+    /** Noi con quai dang o, nguoi choi doc duoc: "Mahogany khu 3, phía đông bắc" (ban do khong chia khu: khong ghi khu). */
+    public static String noi(final Monster m) {
+        if (m == null || m.map == null) {
+            return BaoHoangDa.noi("", 0, "");
+        }
+        String ten;
+        try {
+            ten = Map.getNameMap(m.map.mapId);
+        } catch (final Throwable e) {
+            ten = "";
+        }
+        return BaoHoangDa.noi(ten, m.map.nRegion > 0 ? m.region + 1 : 0, BaoHoangDa.huong(m.default_x, m.default_y, m.map.w, m.map.h));
     }
 
     static String khoaKhu(final Monster m) {
@@ -88,7 +118,8 @@ public final class LoaiQuaiGame {
             HOANG_DA.put(m, Long.valueOf(System.currentTimeMillis()));
             return;
         }
-        final long phut = Math.max(1, thamSo().phutBienMat);
+        // con danh cho nguoi choi (T4+ / sac mau, da bao) song lau hon: du thoi gian di toi + tim dung khu (bao loi 12/11)
+        final long phut = BaoHoangDa.phutBienMat(danhChoNguoi(m), thamSo().phutBienMat, BaoHoangDa.PHUT_BIEN_MAT_HIEM);
         if (System.currentTimeMillis() - t.longValue() > phut * 60000L && m.hp >= m.maxhp && m.target == null) {
             HOANG_DA.remove(m);
             DEM_BIEN_MAT.incrementAndGet();
@@ -284,21 +315,66 @@ public final class LoaiQuaiGame {
         return ChonLoaiHoangDa.shiny(d, dex, R.nextInt(mau), mau, nhan);
     }
 
-    /** Shiny vua xuat hien: bao nguoi trong ban do thay duoc (client moi), moi ban do toi da 1 tin / phut. */
+    /** Shiny vua xuat hien: bao nguoi trong cung khu thay duoc (client moi), ghi ro khu + huong. */
     static void baoShiny(final Monster m, final LoaiDuLieu d) {
         try {
-            final String tin = "Một " + d.ten(m.dexRieng) + " sắc màu vừa xuất hiện ở " + Map.getNameMap(m.map.mapId) + "!";
-            final java.util.Vector<Char> ds = m.map.getAllPlayer(m.inCountry, m.region);
-            if (ds != null) {
-                for (final Char p : new ArrayList<Char>(ds)) {
-                    if (p != null && p.isBot == -1 && thayLoaiRieng(p)) {
-                        p.sendMessage(MessageCreator.createthongbao(tin));
-                    }
-                }
-            }
+            final String tin = BaoHoangDa.tinShiny(d.ten(m.dexRieng), noi(m));
+            final int n = guiTrongKhu(m, tin);
+            System.out.println("[LOAI] shiny dex " + m.dexRieng + " o " + khoaKhu(m) + " (" + tin + ") -> " + n + " nguoi");
         } catch (final Throwable e) {
             System.out.println("[LOAI] baoShiny: " + e);
         }
+    }
+
+    /** Nguoi choi THAT (khong phai bot HLV AI / bot may chu) thay duoc Pokemon hoang da (client moi). */
+    static boolean nguoiThat(final Char p) {
+        return p != null && p.isBot == -1 && !p.laHlvAi && thayLoaiRieng(p);
+    }
+
+    /** Gui tin cho nguoi choi that dang o CUNG ban do + khu + phe voi {@code m}. Tra so nguoi nhan. */
+    static int guiTrongKhu(final Monster m, final String tin) throws java.io.IOException {
+        final java.util.Vector<Char> ds = m.map.getAllPlayer(m.inCountry, m.region);
+        int n = 0;
+        if (ds != null) {
+            for (final Char p : new ArrayList<Char>(ds)) {
+                if (nguoiThat(p)) {
+                    p.sendMessage(MessageCreator.createthongbao(tin));
+                    n++;
+                }
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Nguoi {@code p} nhan tin T5 toan may chu cua {@code m}: nguoi choi that, cung phe (moi phe mot bo quai rieng - phe
+     * khac toi noi cung khong thay con nay), khong dang o dung khu do (da nhan tin trong khu).
+     */
+    static boolean nhanTinToan(final Char p, final Monster m) {
+        if (!nguoiThat(p) || m == null || p.inCountry != m.inCountry) {
+            return false;
+        }
+        return !(p.map == m.map && (m.map == null || m.map.nRegion <= 0 || p.region == m.region));
+    }
+
+    /** Lan cuoi gui tin T5 toan may chu: toi da 1 tin / {@link #CACH_BAO_TOAN_MS}. */
+    static volatile long lanBaoToan;
+    static final long CACH_BAO_TOAN_MS = 60L * 1000;
+
+    /** Gui tin T5 cho nguoi choi that cung phe o noi khac. Tra so nguoi nhan (-1 = chua toi luot). */
+    static int guiToanMayChu(final Monster m, final String tin, final long now) throws java.io.IOException {
+        if (now - lanBaoToan < CACH_BAO_TOAN_MS) {
+            return -1;
+        }
+        lanBaoToan = now;
+        int n = 0;
+        for (final Char p : new ArrayList<Char>(CharManager.instance.vChars)) {
+            if (nhanTinToan(p, m)) {
+                p.sendMessage(MessageCreator.createthongbao(tin));
+                n++;
+            }
+        }
+        return n;
     }
 
     /** Con quai {@code m} la shiny voi nguoi {@code p}: chi khi p thay dung loai rieng (client cu thay loai mau, khong shiny). */
@@ -405,27 +481,27 @@ public final class LoaiQuaiGame {
         }
     }
 
+    /**
+     * Bao T3+ vua xuat hien (bao loi 12/11/2026 "báo ra Pokémon để bắt mà tìm chả thấy"): tin ghi ro khu + huong
+     * ({@link #noi}); moi KHU (ban do + khu + phe) toi da 1 tin / phut - truoc day gioi han theo ca ban do nen tin o khu
+     * co bot an mat tin o khu co nguoi. T5: them nguoi choi that CUNG PHE o noi khac (toi da 1 tin / phut ca may chu) - truoc
+     * day qua ThongBaoGop toi moi nguoi, ke ca phe khac (khong bao gio thay con do) va client cu.
+     */
     static void baoNgay(final Monster m, final LoaiDuLieu d, final ChonLoaiHoangDa.KetQua kq) {
-        final int mapId = m.map.mapId;
+        final String khoa = khoaKhu(m);
         final long now = System.currentTimeMillis();
-        final Long cu = LAN_BAO_MAP.get(Integer.valueOf(mapId));
+        final Long cu = LAN_BAO_MAP.get(khoa);
         if (cu != null && now - cu.longValue() < CACH_BAO_MAP_MS) {
             return;
         }
-        LAN_BAO_MAP.put(Integer.valueOf(mapId), Long.valueOf(now));
-        final String tin = "Một " + d.ten(kq.dex) + " hoang dã (" + LoaiDuLieu.TEN_BAC[kq.bac] + ") vừa xuất hiện ở "
-                + Map.getNameMap(mapId) + " - bắt được bằng Poké Ball!";
+        LAN_BAO_MAP.put(khoa, Long.valueOf(now));
+        final String tin = BaoHoangDa.tinHoangDa(d.ten(kq.dex), LoaiDuLieu.TEN_BAC[kq.bac], noi(m));
         try {
-            final java.util.Vector<Char> ds = m.map.getAllPlayer(m.inCountry, m.region);
-            if (ds != null) {
-                for (final Char p : new ArrayList<Char>(ds)) {
-                    if (p != null && p.isBot == -1 && thayLoaiRieng(p)) {
-                        p.sendMessage(MessageCreator.createthongbao(tin));
-                    }
-                }
-            }
-            if (kq.bac >= LoaiDuLieu.T5) {
-                com.htbb.chongspam.ThongBaoGop.dua("sinh_thai", tin);
+            final int n = guiTrongKhu(m, tin);
+            final int toan = kq.bac >= LoaiDuLieu.T5 ? guiToanMayChu(m, tin, now) : 0;
+            if (kq.bac >= BaoHoangDa.GIU_BAC || n > 0) { // T3 o khu chi co bot: khong ghi (do ngap log)
+                System.out.println("[LOAI] bao T" + kq.bac + " dex " + kq.dex + " o " + khoa + " (" + tin + ") -> khu " + n
+                        + (kq.bac >= LoaiDuLieu.T5 ? ", toan may chu " + toan : ""));
             }
         } catch (final Throwable e) {
             System.out.println("[LOAI] bao: " + e);

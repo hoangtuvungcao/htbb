@@ -42,9 +42,16 @@ public final class DanhGiuGame {
         return BatPokemonGame.bat() && LauDai.so(K_BAT, 1) != 0;
     }
 
-    /** Sat thuong {@code dam} sap tru vao {@code a} (HP dau don {@code hpDau}), da cat neu can. */
+    /**
+     * Sat thuong {@code dam} sap tru vao {@code a} (HP dau don {@code hpDau}), da cat neu can. Huan luyen vien AI (bot)
+     * danh Pokemon hoang da danh cho nguoi choi (T4+ / sac mau, LoaiQuaiGame.danhChoNguoi): 0 - bao loi 12/11/2026, bot
+     * khong duoc ha / giet con da bao truoc khi nguoi choi toi.
+     */
     public static int gioiHan(final Char p, final LiveActor a, final int dam, final int hpDau) {
         try {
+            if (dam > 0 && LoaiQuaiGame.botKhongDung(p, a)) {
+                return 0;
+            }
             if (dam <= 0 || !apDung(p, a)) {
                 return dam;
             }
@@ -57,6 +64,10 @@ public final class DanhGiuGame {
     /** Chot cuoi don: neu sau moi phan sat thuong {@code a} &lt;= 0 ma dau don tren nguong -> giu lai. */
     public static void chot(final Char p, final LiveActor a, final int hpDau) {
         try {
+            if (a != null && hpDau > 0 && a.hp < hpDau && LoaiQuaiGame.botKhongDung(p, a)) {
+                a.hp = hpDau; // bot: phan sat thuong khong qua gioiHan (% HP toi da...) cung tra lai
+                return;
+            }
             if (a == null || a.hp > 0 || !apDung(p, a)) {
                 return;
             }

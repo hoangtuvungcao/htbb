@@ -112,6 +112,11 @@ public final class TuDongKeHoach {
         public boolean danhMinh;
         /** Quai cua nguoi khac (xe giao hang, quai trieu hoi...) - khong danh. */
         public boolean cuaNguoiKhac;
+        /**
+         * Pokemon hoang da danh cho nguoi choi (T4+ / sac mau, da bao - BaoHoangDa): Tu dong KHONG tu chon (de nguoi choi
+         * tu danh giu roi nem bong), chi danh tra khi no dang danh minh. Bot HLV AI: may chu dat them cuaNguoiKhac.
+         */
+        public boolean deBat;
 
         public Quai() {
         }
@@ -580,7 +585,7 @@ public final class TuDongKeHoach {
         final List<Quai> hopLe = new ArrayList<Quai>();
         Quai cu = null;
         for (final Quai q : t.quai) {
-            if (q == null || q.hp <= 0 || q.cuaNguoiKhac) {
+            if (q == null || q.hp <= 0 || q.cuaNguoiKhac || q.deBat) {
                 continue;
             }
             final int bo = lyDoBo(c, t, q);
