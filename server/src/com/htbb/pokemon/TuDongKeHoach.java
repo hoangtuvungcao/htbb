@@ -585,7 +585,7 @@ public final class TuDongKeHoach {
         final List<Quai> hopLe = new ArrayList<Quai>();
         Quai cu = null;
         for (final Quai q : t.quai) {
-            if (q == null || q.hp <= 0 || q.cuaNguoiKhac || q.deBat) {
+            if (q == null || q.hp <= 0 || q.cuaNguoiKhac || q.deBat && !q.danhMinh) {
                 continue;
             }
             final int bo = lyDoBo(c, t, q);
