@@ -237,8 +237,7 @@ public final class HoiSinhGame {
         }
         if (lam == HoiSinh.LC_TRUNG_TAM) {
             TuDongGame.dungKhiChet(p);
-            final String vi = GucGame.cau(p);
-            bao(p, "Tự động đánh dừng: Pokémon đã gục" + (vi.isEmpty() ? "" : " - " + vi) + " Sẽ về Trung tâm Pokémon sau 3 giây.");
+            bao(p, "Tự động đánh dừng: Pokémon đã gục. Sẽ về Trung tâm Pokémon sau 3 giây."); // "Guc vi ..." da bao (GucGame)
         }
     }
 

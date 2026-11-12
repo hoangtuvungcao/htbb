@@ -66,6 +66,18 @@ public final class TuDongKeHoach {
      * khong bao gio tu tinh vi pham chong bot.
      */
     public static final long KHOANG_THUOC_MS = 1500L;
+    /**
+     * 12/11/2026 (bao loi "dang treo con nua cay mau ma chet"): truoc day MOT moc chung {@link TinhHinh#tuLanThuocMs} - dat
+     * luc bo nao RA LENH thuoc (ca binh PP) - chan moi binh 1,5 giay: vua ra lenh binh PP (hoac client bo qua lenh vi vua tu
+     * uong PP) la binh HP bi hoan 1,5-3 giay dung luc dang mat mau; trong luc hoan ma HP &lt; nguong_hp_thap thi roi xuong
+     * buoc 4 "HP thap va HET THUOC" -> DUNG Tu dong (kazuhas4 4 lan lyDo=12 khi con 900 binh 94, guc 13 / 144 giay sau).
+     * Nay: lenh dang bay (chua toi may chu) chi chan {@link #KHOANG_KE_THUOC_MS}; binh HP cach binh HP THAT truoc
+     * (Char.timeUsePotion) {@link #KHOANG_THUOC_MS} va cach binh bat ky {@link #KHOANG_GIUA_BINH_MS}; binh PP cach binh bat
+     * ky {@link #KHOANG_THUOC_MS} va nhuong binh HP khi HP duoi nguong. Te nhat 5 giay: PP, HP +0,8, +2,3, +3,8, +5,3 = 4
+     * binh / 5 giay (tu_dong.nhip_thuoc 4/5s, du 300 ms tre mang).
+     */
+    public static final long KHOANG_KE_THUOC_MS = 700L;
+    public static final long KHOANG_GIUA_BINH_MS = 800L;
     /** Lech toi da (px) giua nguoi choi va diem bat dau thi coi la "da ve cho". */
     public static final int VE_CHO_PX = 24;
 
@@ -96,6 +108,8 @@ public final class TuDongKeHoach {
     public static final class Quai {
         public int id, x, y, hp, maxhp, cap, he1 = -1, he2 = -1;
         public boolean boss;
+        /** Quai dang nham nguoi choi nay (Monster.target) - "dung an toan" chi danh nhung con nay. */
+        public boolean danhMinh;
         /** Quai cua nguoi khac (xe giao hang, quai trieu hoi...) - khong danh. */
         public boolean cuaNguoiKhac;
 
@@ -185,8 +199,12 @@ public final class TuDongKeHoach {
         public int mucTieuCu = -1;
         /** Dang rut lui hoi phuc tu buoc truoc. */
         public boolean dangHoiPhuc;
-        /** Thuoc vua dung (ms truoc) - tranh uong lien tiep khi goi tin cap nhat HP chua toi. */
+        /** Bo nao vua ra lenh thuoc (ms truoc) - lenh dang bay chua toi may chu, khong ra lenh lap. */
         public long tuLanThuocMs = Long.MAX_VALUE;
+        /** Binh HP / binh bat ky (HP hoac PP) DUNG THAT cuoi cung (ms truoc, Char.timeUsePotion) - MAX = chua. */
+        public long tuLanBinhHpMs = Long.MAX_VALUE, tuLanBinhMs = Long.MAX_VALUE;
+        /** Don sat thuong cuoi nhan vao (ms truoc, Char.soSatThuong) - MAX = chua bi danh. */
+        public long tuLanBiDanhMs = Long.MAX_VALUE;
         public DiDuoc diDuoc;
         /**
          * 0.9.24: so chieu danh nguoi choi da gan, theo thu tu (client gui / trang chieu trong ho so). null hoac rong =
@@ -229,32 +247,37 @@ public final class TuDongKeHoach {
         final KeHoach k = new KeHoach();
         k.x = t.neoX;
         k.y = t.neoY;
-        // 1. tui day
+        // 1. tui day / 1b. vu khi hong (31/10/2026: don van ra, 30% sat thuong): DUNG - nhung 12/11/2026 "dung an toan":
+        // dang bi danh thi CHUA dung (truoc day dung ngay giua tran -> nguoi treo dung im giua bay quai, khong ai uong thuoc
+        // -> guc: rongngoo / ruby guc 40-250 giay sau lyDo=15). Van uong thuoc, chi danh con dang danh minh, het bi danh
+        // (SoSatThuong.GIAO_CHIEN_MS) moi dung.
+        int dungCho = -1;
         if (c.dungKhiDayTui && t.tuiDay) {
-            k.hd = HD_DUNG;
-            k.lyDoTat = TuDong.TAT_DAY_TUI;
-            k.ly = TuDong.lyDo(TuDong.TAT_DAY_TUI);
-            return k;
+            dungCho = TuDong.TAT_DAY_TUI;
+        } else if (t.vuKhiHong) {
+            dungCho = TuDong.TAT_VU_KHI_HONG;
         }
-        // 1b. vu khi hong: moi don bi tu choi ("Khong the danh khi do cam tay bi hong") -> dung, noi ro
-        if (t.vuKhiHong) {
+        if (dungCho >= 0 && !dangGiaoChien(t)) {
             k.hd = HD_DUNG;
-            k.lyDoTat = TuDong.TAT_VU_KHI_HONG;
-            k.ly = TuDong.lyDo(TuDong.TAT_VU_KHI_HONG);
+            k.lyDoTat = dungCho;
+            k.ly = TuDong.lyDo(dungCho);
             return k;
         }
         final int pt = phanTram(t.hp, t.maxhp);
         boolean hetBinhPP = false;
+        final int nguongHp = nguong(t.nguongHpNguoi, c.nguongThuocHp);
+        // con binh HP va duoc uong (nguoi choi / may chu khong tat thuoc HP): HP thap KHONG phai "het thuoc"
+        final boolean coTheUongHp = c.tuDungThuoc && nguongHp > 0 && conBinh(t, BINH_HP);
+        final boolean canHp = coTheUongHp && pt < nguongHp;
         // 3. thuoc (uu tien truoc PK: dang mat mau thi uong truoc da)
-        if (c.tuDungThuoc && t.tuLanThuocMs >= KHOANG_THUOC_MS) {
-            final int nguongHp = nguong(t.nguongHpNguoi, c.nguongThuocHp);
-            if (nguongHp > 0 && pt < nguongHp) {
+        if (c.tuDungThuoc && t.tuLanThuocMs >= KHOANG_KE_THUOC_MS) {
+            if (canHp && t.tuLanBinhHpMs >= KHOANG_THUOC_MS && t.tuLanBinhMs >= KHOANG_GIUA_BINH_MS) {
                 final int loai = chonBinh(t, BINH_HP, t.maxhp - t.hp);
                 if (loai >= 0) {
                     k.hd = HD_THUOC;
                     k.so = loai;
                     k.ly = "uống thuốc HP (" + pt + "%)";
-                    k.hoiPhuc = t.dangHoiPhuc;
+                    k.hoiPhuc = false;
                     return k;
                 }
             }
@@ -264,7 +287,8 @@ public final class TuDongKeHoach {
             // uong ca khi nguoi choi de nguong PP = Tat (0) - truoc do Auto chi danh chieu 0 PP mai, 678 binh PP nam yen.
             // May chu tat thuoc PP (tu_dong.nguong_thuoc_mp=0) thi van khong uong.
             final boolean hetPP = c.nguongThuocMp > 0 && t.maxmp > 0 && t.mp < ppToiThieu(t);
-            if (t.maxmp > 0 && (nguongMp > 0 && ptMp < nguongMp || hetPP)) {
+            // binh PP nhuong binh HP: HP duoi nguong (con binh HP) thi de nhip thuoc cho binh HP sap toi
+            if (t.maxmp > 0 && (nguongMp > 0 && ptMp < nguongMp || hetPP) && !canHp && t.tuLanBinhMs >= KHOANG_THUOC_MS) {
                 final int loai = chonBinh(t, BINH_MP, t.maxmp - t.mp);
                 if (loai >= 0) {
                     k.hd = HD_THUOC;
@@ -276,9 +300,10 @@ public final class TuDongKeHoach {
                 hetBinhPP = !conBinh(t, BINH_MP);
             }
         }
-        // 4. HP thap, het thuoc: rut lui / dung
-        final boolean thap = c.nguongHpThap > 0 && pt < c.nguongHpThap;
-        boolean hoiPhuc = t.dangHoiPhuc && t.veHoiPhucNguoi && pt < Math.max(c.nguongHpThap, c.hoiPhucToi);
+        // 4. HP thap, HET THUOC that (khong con binh HP / nguoi choi tat thuoc HP): rut lui / dung. Con binh nhung dang
+        // trong nhip thuoc -> danh tiep, buoc sau uong (12/11/2026: truoc day dung Tu dong voi ly do "het thuoc" sai).
+        final boolean thap = c.nguongHpThap > 0 && pt < c.nguongHpThap && !coTheUongHp;
+        boolean hoiPhuc = !coTheUongHp && t.dangHoiPhuc && t.veHoiPhucNguoi && pt < Math.max(c.nguongHpThap, c.hoiPhucToi);
         if (thap && !hoiPhuc) {
             if (c.hpThapDung || !t.veHoiPhucNguoi) {
                 k.hd = HD_DUNG;
@@ -291,6 +316,27 @@ public final class TuDongKeHoach {
         if (hoiPhuc) {
             k.hoiPhuc = true;
             veCho(t, k, "về nghỉ hồi phục " + pt + "% (hết thuốc)", "nghỉ hồi phục " + pt + "%");
+            return k;
+        }
+        // 4b. dung an toan (tui day / vu khi hong giua tran): chi danh con dang danh minh, khong nhat do, khong tim con moi
+        if (dungCho >= 0) {
+            final Quai q = conDanhMinh(c, t);
+            final String ly = "sắp dừng (" + (dungCho == TuDong.TAT_DAY_TUI ? "hành trang đầy" : "đồ cầm tay hỏng")
+                    + ") - đánh nốt Pokémon đang tấn công";
+            if (q == null) {
+                k.hd = HD_CHO;
+                k.ly = ly;
+                return k;
+            }
+            danh(c, t, q, k, hetBinhPP);
+            k.ly = ly;
+            return k;
+        }
+        // 4c. ra ngoai vung (ban kinh + le): ve diem bat dau - truoc day may chu DUNG han (lyDo=5) giua tran khi duoi theo
+        // con quai chay ra mep vung; nay chi dung khi ra xa han (TuDong.raVungXa).
+        final long ngoai = (long) t.banKinh + TuDong.BAN_KINH_LE;
+        if (khoang2(t.x, t.y, t.neoX, t.neoY) > ngoai * ngoai) {
+            veCho(t, k, "quay lại vùng luyện tập", "quay lại vùng luyện tập");
             return k;
         }
         // 2. PK gan
@@ -317,6 +363,12 @@ public final class TuDongKeHoach {
             veCho(t, k, "về điểm bắt đầu", lyDoKhongCoQuai(c, t, lyBo));
             return k;
         }
+        danh(c, t, q, k, hetBinhPP);
+        return k;
+    }
+
+    /** Ra lenh danh {@code q} (buoc 6-7: muc tieu + chieu). */
+    static void danh(final CauHinh c, final TinhHinh t, final Quai q, final KeHoach k, final boolean hetBinhPP) {
         k.hd = HD_DANH;
         k.id = q.id;
         k.x = q.x;
@@ -326,7 +378,7 @@ public final class TuDongKeHoach {
         if (ch == null) {
             k.so = -1;
             k.ly = hetBinhPP ? "hết bình PP - chờ hồi PP" : "chờ hồi chiêu / PP";
-            return k;
+            return;
         }
         k.so = ch.so;
         k.heSo = heSoChieu(c, t, ch, q);
@@ -334,7 +386,36 @@ public final class TuDongKeHoach {
         if (hetBinhPP) {
             k.ly = "hết bình PP - " + k.ly;
         }
-        return k;
+    }
+
+    /** Dang giao chien: vua bi danh (SoSatThuong.GIAO_CHIEN_MS) hoac co quai dang nham minh. */
+    static boolean dangGiaoChien(final TinhHinh t) {
+        if (t.tuLanBiDanhMs < SoSatThuong.GIAO_CHIEN_MS) {
+            return true;
+        }
+        for (final Quai q : t.quai) {
+            if (q != null && q.danhMinh && q.hp > 0 && !q.cuaNguoiKhac) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Con quai gan nhat dang danh minh (bo boss khi may chu khong cho danh boss), null = khong. */
+    static Quai conDanhMinh(final CauHinh c, final TinhHinh t) {
+        Quai tot = null;
+        long gan = Long.MAX_VALUE;
+        for (final Quai q : t.quai) {
+            if (q == null || !q.danhMinh || q.hp <= 0 || q.cuaNguoiKhac || q.boss && !c.danhBoss) {
+                continue;
+            }
+            final long d = khoang2(t.x, t.y, q.x, q.y);
+            if (d < gan) {
+                gan = d;
+                tot = q;
+            }
+        }
+        return tot;
     }
 
     static void veCho(final TinhHinh t, final KeHoach k, final String khiDi, final String khiToi) {

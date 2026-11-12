@@ -442,6 +442,10 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
                             b.py + Integer.signum(k[4] - b.py) * Math.min(40, Math.abs(k[4] - b.py)));
                 }
                 if (k[2] >= 0) { b.gui(9, (short) k[1], (byte) k[2]); danh++; }
+            } else if (k[0] == 2 && k[2] > 0 && b.soThuoc(k[2]) > 0) {
+                // 12/11/2026: lenh THUOC cua bo nao (HP / PP duoi nguong) - truoc day bot bo qua: 2.012 / 2.022 lan guc khi
+                // treo 08-12/11 la thuoc=0 (production nhat_ky TU_DONG lyDo=7), lam nhieu thong ke hoiSinh.guc
+                b.gui(22, (byte) k[2]);
             } else if (k[0] == 4 && (Math.abs(b.px - k[3]) > 16 || Math.abs(b.py - k[4]) > 16)) {
                 b.diToi(k[3], k[4]);
             }

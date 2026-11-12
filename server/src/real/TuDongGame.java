@@ -567,7 +567,7 @@ public final class TuDongGame {
             lyDo = ph.lyDoTat == TuDong.TAT_HET_GIO_GIU_KHO ? TuDong.TAT_HET_GIO_GIU_KHO : TuDong.TAT_HET_GIO;
         } else if (p.hp <= 0 && hetChoHoiSinh(ph, bay)) {
             lyDo = TuDong.TAT_CHET;
-        } else if (p.map == null || TuDong.raVung(ph, p.map.mapId, p.x, p.y)) {
+        } else if (p.map == null || TuDong.raVungXa(ph, p.map.mapId, p.x, p.y)) {
             lyDo = p.map != null && p.map.mapId == ph.neoMap ? TuDong.TAT_RA_VUNG : TuDong.TAT_DOI_MAP;
         } else if (c.tatKhiPvp && (p.isKiller || laSanDau(p, p.map))) {
             lyDo = p.isKiller ? TuDong.TAT_PVP : TuDong.TAT_SAN_DAU;
@@ -575,7 +575,8 @@ public final class TuDongGame {
             lyDo = TuDong.TAT_PVP; // 0.9.8 ngam tay: trong tran giua nguoi choi luon dung
         } else if (c.mapBiCam(p.map.mapId)) {
             lyDo = TuDong.TAT_KHU_CAM;
-        } else if (vuKhiHong(p)) {
+        } else if (vuKhiHong(p) && (!c.keHoach || !dangGiaoChien(p, bay))) {
+            // bo nao (ke_hoach=1) tu "dung an toan" khi dang bi danh (TuDongKeHoach buoc 1/4b); che do client tu chon dung ngay
             lyDo = TuDong.TAT_VU_KHI_HONG; // ca che do client tu chon (ke_hoach=0): may chu tu choi moi don
         }
         final String khoaMap = (lyDo < 0 || lyDo == TuDong.TAT_DOI_MAP) && p.map != null ? KhoaBanDoGame.lyDoKhongTuDong(p.map.mapId) : null;
@@ -694,6 +695,22 @@ public final class TuDongGame {
         }
     }
 
+    /** ms tu lan dung that cuoi cua cac binh trong {@code a} (va {@code b}); Long.MAX_VALUE = chua dung. */
+    static long tuLanDung(final long[] luc, final int[][] a, final int[][] b, final long bay) {
+        long moiNhat = 0L;
+        for (final int[][] bang : new int[][][]{a, b}) {
+            if (bang == null) {
+                continue;
+            }
+            for (final int[] x : bang) {
+                if (x[0] < luc.length && luc[x[0]] > moiNhat) {
+                    moiNhat = luc[x[0]];
+                }
+            }
+        }
+        return moiNhat <= 0L ? Long.MAX_VALUE : Math.max(0L, bay - moiNhat);
+    }
+
     /** Loai skill buff (khong dung de danh) theo dong - khop client TuDong.SKILL_BUFF. */
     static final byte[][] SKILL_BUFF = {{4, 5}, {4, 5}, {4, 5, 6, 7}, {4, 5}, {4, 5}};
 
@@ -727,7 +744,11 @@ public final class TuDongGame {
             t.cap = 1;
         }
         t.hp = p.hp;
-        t.maxhp = p.maxhp;
+        // HP toi da THAT (gom buff HP dong Bulbasaur - Char.calculatorHPMP kep o maxhp + percentBuff[2], client ve thanh
+        // mau theo tong nay): truoc day % HP cua bo nao lech voi thanh mau khi co buff
+        t.maxhp = GucGame.maxThat(p);
+        final long biDanh = p.soSatThuong.lucBiDanh();
+        t.tuLanBiDanhMs = biDanh <= 0L ? Long.MAX_VALUE : Math.max(0L, bay - biDanh);
         t.mp = p.mp;
         t.maxmp = p.maxmp;
         try {
@@ -762,6 +783,9 @@ public final class TuDongGame {
             for (int i = 0; i < t.thuocConHoi.length; i++) {
                 t.thuocConHoi[i] = Math.max(0L, 400L - (bay - p.timeUsePotion[i]));
             }
+            // binh dung THAT cuoi (HP / bat ky): nhip thuoc theo binh that, khong theo lenh bo nao (TuDongKeHoach.KHOANG_*)
+            t.tuLanBinhHpMs = tuLanDung(p.timeUsePotion, TuDongKeHoach.BINH_HP, null, bay);
+            t.tuLanBinhMs = tuLanDung(p.timeUsePotion, TuDongKeHoach.BINH_HP, TuDongKeHoach.BINH_MP, bay);
         }
         try {
             t.hoiBinh = new int[]{Map.potionTemplates2.get(1).getRecovered(), Map.potionTemplates2.get(2).getRecovered(),
@@ -811,6 +835,7 @@ public final class TuDongGame {
                     // he khong ro
                 }
                 q.boss = BossLauDai.laBoss(mt);
+                q.danhMinh = mt.target == p;
                 try {
                     q.cuaNguoiKhac = mt.getCharID() > 0 || mt.isMyMonster(p) || mt.isMonsterVantieu() || mt.isRuongMaquai()
                             || mt.isNgocRong();
@@ -1010,6 +1035,30 @@ public final class TuDongGame {
         } catch (final Exception e) {
             // khong lam hong luong guc
         }
+    }
+
+    /** Dang giao chien: vua bi danh (Char.soSatThuong) hoac co quai dang nham nguoi choi. */
+    static boolean dangGiaoChien(final Char p, final long bay) {
+        if (p.soSatThuong.dangGiaoChien(bay)) {
+            return true;
+        }
+        try {
+            final Map m = p.map;
+            if (m == null) {
+                return false;
+            }
+            final Hashtable<Short, Monster> h = m.nRegion > 0
+                    ? ((Region) m.ALL_REGION.get(p.region)).monsters.get(Math.max(0, Math.min(p.inCountry, 1)))
+                    : m.monsters.get(p.inCountry);
+            for (final Monster mt : new java.util.ArrayList<Monster>(h.values())) {
+                if (mt != null && !mt.isDead && mt.hp > 0 && mt.target == p) {
+                    return true;
+                }
+            }
+        } catch (final Exception e) {
+            // danh sach quai doi giua chung
+        }
+        return false;
     }
 
     /** Nguong HP / PP nguoi choi chon trong phien tu dong ({-1, -1} = khong co phien) - dong [GUC]. */

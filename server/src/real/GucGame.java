@@ -56,7 +56,15 @@ public final class GucGame {
         if (ten == null || ten.isEmpty()) {
             ten = "Pokémon #" + m.idTemplate;
         }
-        final StringBuilder b = new StringBuilder(ten).append(" (cấp ").append(m.level);
+        int cap = m.level;
+        try {
+            if (cap <= 0 && m.getMonsterTemplate() != null) {
+                cap = m.getMonsterTemplate().level; // quai moc truoc khi bo nap ban do gan cap
+            }
+        } catch (final RuntimeException ignored) {
+            // mau chua nap
+        }
+        final StringBuilder b = new StringBuilder(ten).append(" (cấp ").append(cap);
         try {
             if (NoiDungLauDai.laAlpha(m)) {
                 b.append(", Alpha");

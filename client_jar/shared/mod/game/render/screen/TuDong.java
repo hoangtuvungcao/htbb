@@ -58,6 +58,13 @@ public final class TuDong {
     static final int[] HOI_MP = new int[]{160, 600, 2000, 2500, 3500, 7000, 15000};
     /** Khoảng tối thiểu giữa hai lần tự uống (ms) - dưới nhịp thuốc chống bot của máy chủ 4 lần / 5 giây. */
     static final long KHOANG_BINH = 1500L;
+    /**
+     * 12/11/2026 (báo lỗi "treo còn nửa cây máu mà chết"): trước đây MỘT mốc lucBinh chung - client vừa tự uống bình PP là
+     * lệnh bình HP của máy chủ bị bỏ qua 1,5 giây (máy chủ lại chờ thêm 1,5 giây) đúng lúc đang mất máu. Nay khớp máy chủ
+     * (TuDongKeHoach.KHOANG_*): bình HP cách bình HP trước 1,5 giây và cách bình bất kỳ 0,8 giây; bình PP cách bình bất kỳ
+     * 1,5 giây và nhường bình HP khi HP dưới ngưỡng.
+     */
+    static final long KHOANG_GIUA_BINH = 800L;
     /** Loại skill buff theo dòng (không dùng để đánh). */
     private static final byte[][] SKILL_BUFF = new byte[][]{{4, 5}, {4, 5}, {4, 5, 6, 7}, {4, 5}, {4, 5}};
 
@@ -85,7 +92,9 @@ public final class TuDong {
     static long lucChoBat;
     private static int neoX, neoY, neoMap = -1;
     private static Actor mucTieu, monNhat;
-    private static long lucDanh, lucBinh, lucNhip, lucNhuong, lucKet, lucDoi, lucBoTro;
+    private static long lucDanh, lucNhip, lucNhuong, lucKet, lucDoi, lucBoTro;
+    /** Lúc uống bình bất kỳ / bình HP gần nhất (Tự động). */
+    private static long lucBinhCuoi = -100000L, lucBinhHpCuoi = -100000L;
     private static int ketX, ketY, lanKet;
     private static boolean giuPhim, hoiPhuc;
     static String trangThai = "";
@@ -539,9 +548,10 @@ public final class TuDong {
             }
             case HD_THUOC: {
                 nha();
-                if (l >= lucBinh && keSo >= 0 && keSo < mc.potions.length && mc.potions[keSo] > 0 && !dangHoi(mc, keSo, l)) {
-                    gs.doUsePotion(keSo);
-                    lucBinh = l + KHOANG_BINH;
+                if (duocUong(keSo, l) && keSo >= 0 && keSo < mc.potions.length && mc.potions[keSo] > 0 && !dangHoi(mc, keSo, l)) {
+                    // lệnh của máy chủ (biết HP thật): không chặn "HP đã đầy" theo HP trên client (có thể cũ)
+                    gs.doUsePotion(keSo, true);
+                    daUong(keSo, l);
                 }
                 keHd = -1;
                 lucXinKe = 0L;
@@ -627,15 +637,17 @@ public final class TuDong {
             daBaoHetPP = true;
             game.pokemon.DungDo.bao("Hết bình PP - Tự động đánh tiếp bằng chiêu đủ PP.", game.pokemon.DungDo.TIN);
         }
-        if (l < lucBinh) {
-            return false;
-        }
-        if (coHp && nguongHp > 0 && mc.maxhp > 0 && (long) mc.hp * 100L < (long) mc.maxhp * nguongHp) {
+        boolean hpDuoi = nguongHp > 0 && mc.maxhp > 0 && (long) mc.hp * 100L < (long) mc.maxhp * nguongHp;
+        if (coHp && hpDuoi && duocUong(BINH_HP[0], l)) {
             int n = chonBinh(mc, BINH_HP, HOI_HP, mc.maxhp - mc.hp, l);
             if (n >= 0) {
                 uong(gs, mc, n, l);
                 return true;
             }
+        }
+        // bình PP nhường bình HP: HP dưới ngưỡng mà còn bình HP thì để nhịp thuốc cho bình HP (máy chủ ra lệnh)
+        if (hpDuoi && coBinh(mc, BINH_HP) >= 0 || l - lucBinhCuoi < KHOANG_BINH) {
+            return false;
         }
         if (canPP) {
             int n = chonBinh(mc, BINH_MP, HOI_MP, mc.maxmp - mc.mp, l);
@@ -715,7 +727,31 @@ public final class TuDong {
 
     private static void uong(GameScr gs, MainChar mc, int n, long l) {
         gs.doUsePotion(n);
-        lucBinh = l + KHOANG_BINH;
+        daUong(n, l);
+    }
+
+    static boolean laBinhHp(int n) {
+        for (int i = 0; i < BINH_HP.length; ++i) {
+            if (BINH_HP[i] == n) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Được uống bình n lúc l: HP cách HP trước KHOANG_BINH + cách bình bất kỳ KHOANG_GIUA_BINH; PP cách bình bất kỳ KHOANG_BINH. */
+    static boolean duocUong(int n, long l) {
+        if (laBinhHp(n)) {
+            return l - lucBinhHpCuoi >= KHOANG_BINH && l - lucBinhCuoi >= KHOANG_GIUA_BINH;
+        }
+        return l - lucBinhCuoi >= KHOANG_BINH;
+    }
+
+    static void daUong(int n, long l) {
+        lucBinhCuoi = l;
+        if (laBinhHp(n)) {
+            lucBinhHpCuoi = l;
+        }
     }
 
     /** Trạng thái hiển thị: hết bình PP thì luôn nói rõ (máy chủ gửi trạng thái mới mỗi bước, đè chữ của client). */

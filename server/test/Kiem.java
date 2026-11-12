@@ -412,6 +412,7 @@ public final class Kiem {
         KiemMuaDungNpc.chay(); // bot phu kin 31/10/2026: goi 24 chi mua mon cua NPC dang dung canh (giap Indigo khong mua o Pewter)
         KiemChanKhiGuc.chay(); // chu game 31/10/2026: dang guc khong dung NPC / di chuyen bang NPC / mua ban / giao dich / qua cong
         KiemGucLapLai.chay(); // cong kiem bot 31/10/2026: client guc van gui di chuyen / danh -> khong tinh them lan guc
+        KiemTreoGuc.chay(); // bao loi Zalo 12/11/2026 "treo con nua cay mau ma chet": nhip binh HP, het thuoc sai, dung an toan, [GUC]
         KiemBossLangThang.chay(); // chu game 31/10/2026: boss lang thang cu bi dong - chi danh nguoi da danh no
         KiemHoTong.chay(); // bao loi kazuhas4 31/10/2026 N-3.36: nhan hang o Tong tieu dau (bo dieu kien nuoc / luot), giao Kecleon, dem buoc, chi dan
         KiemHoTongThuongMienPhi.chay(); // chu game 31/10/2026: xe tu luot mien phi nhiem vu chi tra thuong nhiem vu

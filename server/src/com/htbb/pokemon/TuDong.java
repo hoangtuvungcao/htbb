@@ -722,6 +722,25 @@ public final class TuDong {
         }
     }
 
+    /**
+     * Ra XA han khoi vung (ban kinh x2 + le) hoac sang map khac - Tu dong DUNG (TAT_RA_VUNG / TAT_DOI_MAP). 12/11/2026: giua
+     * {@link #raVung} va day, bo nao dua nguoi choi ve diem bat dau thay vi dung giua tran (truoc day duoi theo con quai chay
+     * ra mep vung 64 px la dung - nguoi treo dung im giua bay quai, guc 24-146 giay sau lyDo=5).
+     */
+    public static boolean raVungXa(final Phien p, final int map, final int x, final int y) {
+        synchronized (p) {
+            if (!p.bat) {
+                return false;
+            }
+            if (map != p.neoMap) {
+                return true;
+            }
+            final long dx = x - p.neoX, dy = y - p.neoY;
+            final long r = p.banKinh * 2L + BAN_KINH_LE;
+            return dx * dx + dy * dy > r * r;
+        }
+    }
+
     // ================================================================== ho so (HoSoLauDai a1/a2)
 
     /** Nap bo dem ngay tu ho so (luc tao phien). */

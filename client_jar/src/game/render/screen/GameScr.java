@@ -2341,6 +2341,14 @@ public class GameScr extends Screen {
     }
 
     public void doUsePotion(int potionType) {
+        doUsePotion(potionType, false);
+    }
+
+    /**
+     * @param lenhMayChu lệnh bình của Tự động (máy chủ biết HP thật): bỏ chặn "HP đã đầy" theo HP trên client - HP client
+     *                   có thể cũ (12/11/2026: báo lỗi "treo còn nửa cây máu mà chết"); máy chủ vẫn tự chặn khi đầy thật.
+     */
+    public void doUsePotion(int potionType, boolean lenhMayChu) {
         if (Canvas.gameScr.mainChar.potions[potionType] <= 0) {
             int leght = MainChar.quickSlot[indexTabSlot].length;
             int[] arrHp = {94, 93, 22, 21, 3, 2, 1};
@@ -2392,11 +2400,11 @@ public class GameScr extends Screen {
         if (now - this.mainChar.potionLastTimeUse[potionType] < MainChar.listPotion[potionType].delay) {
             return;
         }
-        if (this.mainChar.hp >= this.mainChar.maxhp && (potionType == 1 || potionType == 2 || potionType == 3 || potionType == 21 || potionType == 22 || potionType == 93 || potionType == 94)) {
+        if (!lenhMayChu && this.mainChar.hp >= this.mainChar.maxhp && (potionType == 1 || potionType == 2 || potionType == 3 || potionType == 21 || potionType == 22 || potionType == 93 || potionType == 94)) {
             game.pokemon.DungDo.loi("HP đã đầy.");   // pokemon: trước im lặng
             return;
         }
-        if (this.mainChar.mp >= this.mainChar.maxmp && (potionType == 4 || potionType == 5 || potionType == 6 || potionType == 23 || potionType == 24 || potionType == 95 || potionType == 96)) {
+        if (!lenhMayChu && this.mainChar.mp >= this.mainChar.maxmp && (potionType == 4 || potionType == 5 || potionType == 6 || potionType == 23 || potionType == 24 || potionType == 95 || potionType == 96)) {
             game.pokemon.DungDo.loi("PP đã đầy.");   // pokemon: trước im lặng
             return;
         }
@@ -5147,6 +5155,20 @@ public class GameScr extends Screen {
 
     public void onMonsterAttackPlayer(short attacker, short attacked, int hpLost, int hpLeft) {
         Monster m;
+        if (attacked != 32001 && this.mainChar != null && attacked == this.mainChar.ID
+                && (!this.readyGetGameLogic || findMonsterByID(attacker) == null)) {
+            // 12/11/2026 (báo lỗi "treo còn nửa cây máu mà chết"): quái chưa có trên màn (ngoài tầm thêm quái, vừa đổi loài,
+            // đang nạp map) - trước đây BỎ cả gói: HP trên thanh máu đứng yên trong khi máy chủ đã trừ. Vẫn đặt HP thật.
+            game.pokemon.MauPP.datHp(this.mainChar, hpLeft);
+            if (hpLost != 0) {
+                startFlyText(new StringBuffer("-").append(hpLost).toString(), 4, this.mainChar.x, this.mainChar.y - 40, 0, -1);
+            }
+            if (hpLeft <= 0) {
+                this.mainChar.state = (byte) 3;
+            }
+            game.pokemon.TrangThaiNguoiChoi.doi(game.pokemon.TrangThaiNguoiChoi.HP);
+            return;
+        }
         if (this.readyGetGameLogic && (m = findMonsterByID(attacker)) != null) {
             if (attacked == 32001) {
                 m.setRemoveTarget();
