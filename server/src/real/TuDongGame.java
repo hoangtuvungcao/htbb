@@ -1012,6 +1012,17 @@ public final class TuDongGame {
         }
     }
 
+    /** Nguong HP / PP nguoi choi chon trong phien tu dong ({-1, -1} = khong co phien) - dong [GUC]. */
+    static int[] nguongNguoi(final Char p) {
+        final TuDong.Phien ph = p == null ? null : phien(p, false);
+        if (ph == null) {
+            return new int[]{-1, -1};
+        }
+        synchronized (ph) {
+            return new int[]{ph.nguongHp, ph.nguongMp};
+        }
+    }
+
     /** Dang tu dong (cho he thong khac tra cuu, vd khong hien hop thoai hoi sinh). */
     public static boolean dangTuDong(final Char p) {
         final TuDong.Phien ph = p == null ? null : phien(p, false);

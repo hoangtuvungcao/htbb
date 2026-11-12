@@ -555,6 +555,7 @@ public class Monster extends LiveActor {
                 this.target.checkNewEffectItem(1, ahp / 10, this);
                 m.dos.writeInt(ahp);
                 final Char target = this.target;
+                final int hpTruocDon = target.hp;
                 target.hp -= Map.abs(ahp);
                 if (this.target.map.isMapTrain() && this.target.isHieuUngCoLongDuongQua() && this.target.hp <= 0) {
                     this.target.hp = 1;
@@ -562,6 +563,7 @@ public class Monster extends LiveActor {
                 if (this.target.hp < 0) {
                     this.target.hp = 0;
                 }
+                GucGame.quaiDanh(target, this, hpTruocDon); // [GUC] 5 don cuoi
                 m.dos.writeInt(this.target.hp);
                 for (int i = 0; i < this.target.nearChars.size(); ++i) {
                     final Char p2 = this.target.map.getPlayerByID(this.target.nearChars.get(i));

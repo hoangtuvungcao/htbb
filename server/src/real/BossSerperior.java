@@ -355,7 +355,9 @@ public class BossSerperior extends Boss {
                         }
 
                         m.dos.writeInt(hp);
+                        final int hpTruocGuc = c.hp;
                         c.hp = hp;
+                        GucGame.quaiDanh(c, this, hpTruocGuc); // [GUC] 5 don cuoi
                         if (c.hp <= 0) {
                             Database.instance.saveOrtherLog("", c.getName(), c.hp + "_" + damAttack.get(i) + "_" + this.getMonsterTemplate().name + "_" + Map.getNameMap(this.map.mapId) + "_" + this.region + "_" + c.region, "die");
                         }

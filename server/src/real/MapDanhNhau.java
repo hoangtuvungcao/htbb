@@ -354,7 +354,9 @@ class MapDanhNhau {
                 ahp = 1;
             }
 
+            final int hpTruocGuc = c.hp;
             c.hp = (int) ((long) c.hp - ((long) damage - c.checkMagicShield(damage)));
+            GucGame.nguoiDanh(c, p, hpTruocGuc); // [GUC] 5 don cuoi
             XepHangPvpGame.khiSatThuong(p, c, damage); // tran xep hang: sat thuong ben thua gay (chong cay Elo)
             c.downDuarable();
             c.checkNewEffectItem(0, (long) (damage / 10), p);

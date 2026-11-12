@@ -501,6 +501,8 @@ public class Char extends LiveActor {
     public boolean beAttack;
     /** Quai hoang da vua ra don vao nhan vat nay: id quai -> luc (ms). Dem "toi da vay" (com.htbb.pokemon.ChuDongQuai). */
     public final java.util.concurrent.ConcurrentHashMap<Integer, Long> quaiVay = new java.util.concurrent.ConcurrentHashMap<Integer, Long>();
+    /** 5 don sat thuong cuoi nhan vao (GucGame: dong [GUC] + cau "Guc vi ..." khi guc, Tu dong danh: dang giao chien). */
+    public final com.htbb.pokemon.SoSatThuong soSatThuong = new com.htbb.pokemon.SoSatThuong();
     public short nNearchar;
     public short idRegionNuiChauBau;
     public short idRegionLoidai;
@@ -6466,7 +6468,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (System.currentTimeMillis() - ef.timeCount >= 1000L) {
                 ef.timeCount = System.currentTimeMillis();
                 int damage = (ef.idEff == EffectBuff.EFF_RI_MAU) ? 2000 : ef.dam;
+                final int hpTruocGuc = this.hp;
                 this.hp -= damage;
+                if (!this.isMonster && this.cat == 0) {
+                    GucGame.ghi(this, ef.idEff == EffectBuff.EFF_RI_MAU ? "rỉ máu" : "trúng độc", hpTruocGuc);
+                }
 
                     if (this.hp <= 0) {
                         this.hp = 0;

@@ -36,6 +36,7 @@ class CharVongLap {
             self.hp = 1;
             return;
         }
+        GucGame.nhip(self); // anh chup HP cho [GUC] (nguon khong ghi nhan) + hoi sinh thi xoa so cu
         BanHuongGame.nhip(self); // 0.9.8 ngam tay: che do PvP (tat tu dong / tu nham) + bang chieu cho client
         // "Luyen do tu dong" (dap do tu dong): MapEpNgoc.doAutoImbue chi BAT co
         // startAutoImbue, con moi lan dap that su phai do vong lap map goi
@@ -220,7 +221,9 @@ class CharVongLap {
                         if (Map.inRangeActor(p, self, 120) && p.id != self.id && !p.isAdmin && p.isBot == -1 && p.hp > 0 && (p.isKiller || (p.myCountry != self.myCountry && p.inCountry == self.myCountry)) && !Map.isMapThanh(self.map)) {
                             target.add(p);
                             final Char char1 = p;
+                            final int hpTruocGuc = char1.hp;
                             char1.hp -= self.getDamtThanThuAuto(p);
+                            GucGame.ghi(char1, "thần thú của " + self.charname, hpTruocGuc);
                             p.sendMessage(MessageCreator.createNew_HMP_Message(p, 0));
                             p.sendToNearPlayer(MessageCreator.createNew_HMP_Message(p, 0));
                             if (p.hp <= 0) {
@@ -625,7 +628,11 @@ class CharVongLap {
                     } catch (final IOException ex15) {
                     }
                 }
+                final int hpTruocGuc = self.hp;
                 self.hp -= self.poinson;
+                if (self.poinson > 0 && !self.isMonster && self.cat == 0) {
+                    GucGame.ghi(self, "độc (chiêu)", hpTruocGuc);
+                }
                 self.totalTime -= (byte) self.tDelay;
                 self.timeOutPoinson = System.currentTimeMillis();
                 if (self.totalTime <= 0) 

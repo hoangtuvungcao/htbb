@@ -354,7 +354,9 @@ public class BossMatQuy extends Boss {
                         }
 
                         m.dos.writeInt(hp);
+                        final int hpTruocGuc = c.hp;
                         c.hp = hp;
+                        real.GucGame.quaiDanh(c, this, hpTruocGuc); // [GUC] 5 don cuoi
                         if (c.map.isMapTrain() && c.isHieuUngCoLongDuongQua() && c.hp <= 0) {
                             c.hp = 1;
                         }

@@ -336,7 +336,9 @@ public class BossDotKich extends Boss {
                     }
 
                     m.dos.writeInt(hp);
+                    final int hpTruocGuc = c.hp;
                     c.hp = hp;
+                    GucGame.quaiDanh(c, this, hpTruocGuc); // [GUC] 5 don cuoi
                 }
 
                 m.dos.writeByte(-1);

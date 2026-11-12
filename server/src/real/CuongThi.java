@@ -361,7 +361,9 @@ public class CuongThi extends Monster {
                     }
 
                     m.dos.writeInt(hp);
+                    final int hpTruocGuc = c.hp;
                     c.hp = hp;
+                    GucGame.quaiDanh(c, this, hpTruocGuc); // [GUC] 5 don cuoi
                     Database.instance
                         .saveOrtherLog(
                             "",

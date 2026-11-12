@@ -844,7 +844,9 @@ public class Region {
             if (ahp < 0) {
                 ahp = 1;
             }
+            final int hpTruocGuc = c.hp;
             c.hp = (int)((long)c.hp - ((long)damage - c.checkMagicShield(damage)));
+            GucGame.nguoiDanh(c, p, hpTruocGuc); // [GUC] 5 don cuoi
             XepHangPvpGame.khiSatThuong(p, c, damage); // tran xep hang: sat thuong ben thua gay (chong cay Elo)
             ChiemGymLauDai.dongGop(p, damage); // dong gop chien thanh (tat co: khong lam gi)
             if (c.hp <= 0 && !cupTran) {

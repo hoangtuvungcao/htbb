@@ -186,6 +186,7 @@ public final class HoiSinhGame {
 
     /** HOOK Char.actorDie (nguoi choi). Goi lap lai trong cung lan guc thi bo qua. */
     public static void khiGuc(final Char p) {
+        GucGame.khiGuc(p); // [GUC] 5 don cuoi + "Guc vi ..." (moi ban do; goi lai khi van guc tu bo qua)
         try {
             if (!apDung(p)) {
                 return;
@@ -236,7 +237,8 @@ public final class HoiSinhGame {
         }
         if (lam == HoiSinh.LC_TRUNG_TAM) {
             TuDongGame.dungKhiChet(p);
-            bao(p, "Tự động đánh dừng: Pokémon đã gục. Sẽ về Trung tâm Pokémon sau 3 giây.");
+            final String vi = GucGame.cau(p);
+            bao(p, "Tự động đánh dừng: Pokémon đã gục" + (vi.isEmpty() ? "" : " - " + vi) + " Sẽ về Trung tâm Pokémon sau 3 giây.");
         }
     }
 
@@ -505,7 +507,8 @@ public final class HoiSinhGame {
         final HoiSinh.TinhHuong th = tinhHuong(p, c, t, bay);
         final List<HoiSinh.LuaChon> ds = HoiSinh.dsLuaChon(c, th, bay);
         final String tieuDe = "Pokémon của bạn đã gục!";
-        final String moTa = HoiSinh.moTa(c, th);
+        final String vi = GucGame.cau(p);
+        final String moTa = vi.isEmpty() ? HoiSinh.moTa(c, th) : vi + "\n" + HoiSinh.moTa(c, th);
         if (t.clientMoi) {
             try {
                 final Message m = new Message(LENH);

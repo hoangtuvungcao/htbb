@@ -179,8 +179,10 @@ final class TrangThaiGame {
                 }
                 final int d = t.nhip(bay, Math.max(1, a.maxhp));
                 if (d > 0 && a.hp > 1) {
+                    final int hpTruoc = a.hp;
                     a.hp = Math.max(1, a.hp - d);
                     if (a instanceof Char) {
+                        GucGame.ghi((Char) a, "trạng thái " + (t.loai == TrangThaiPokemon.BONG ? "Bỏng" : "Độc"), hpTruoc);
                         VatPhamDungLauDai.guiHp((Char) a);
                     }
                 }
