@@ -506,8 +506,8 @@ public final class HoiSinhGame {
         final HoiSinh.TinhHuong th = tinhHuong(p, c, t, bay);
         final List<HoiSinh.LuaChon> ds = HoiSinh.dsLuaChon(c, th, bay);
         final String tieuDe = "Pokémon của bạn đã gục!";
-        final String vi = GucGame.cau(p);
-        final String moTa = vi.isEmpty() ? HoiSinh.moTa(c, th) : vi + "\n" + HoiSinh.moTa(c, th);
+        final String vi = GucGame.cauNgan(p); // "Gục vì Croconaw (cấp 24): -1234 HP khi còn 45%." (12/11/2026)
+        final String moTa = vi.isEmpty() ? HoiSinh.moTa(c, th) : HoiSinh.moTa(c, th) + "\n" + vi;
         if (t.clientMoi) {
             try {
                 final Message m = new Message(LENH);

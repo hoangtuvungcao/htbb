@@ -307,6 +307,7 @@ public final class KiemTreoGuc {
             final String cau = GucGame.cau(p);
             Kiem.dung("guc: cau 'Guc vi Galvantula (cap 80) danh 10000 HP khi con 10000/20000 HP (50%)': " + cau,
                     cau.contains("Galvantula (cấp 80) đánh 10000 HP") && cau.contains("10000/20000 HP (50%)"));
+            Kiem.bang("cau ngan cho hop thoai guc", "Gục vì Galvantula (cấp 80): -10000 HP khi còn 50%.", GucGame.cauNgan(p));
             HoiSinhGame.khiGuc(p);
             Kiem.bang("actorDie goi lai: van mot cau", cau, GucGame.cau(p));
             p.hp = 20000;
@@ -384,7 +385,7 @@ public final class KiemTreoGuc {
         Kiem.dung("Monster.attack ghi so sat thuong", mo.contains("GucGame.quaiDanh(target, this, hpTruocDon);"));
         final String hs = KiemTuDong.doc("src/real/HoiSinhGame.java");
         Kiem.dung("HoiSinhGame.khiGuc -> GucGame.khiGuc (moi ban do)", hs.contains("GucGame.khiGuc(p);"));
-        Kiem.dung("hop thoai guc kem 'Guc vi' (tin rieng da gui o GucGame.khiGuc)", hs.contains("GucGame.cau(p)"));
+        Kiem.dung("hop thoai guc kem 'Guc vi' (tin rieng da gui o GucGame.khiGuc)", hs.contains("GucGame.cauNgan(p)"));
         for (final String f : new String[]{"src/real/BossDusknoir.java", "src/real/BossDotKich.java", "src/real/BossSerperior.java",
             "src/real/BossServine.java", "src/data/BossMatQuy.java", "src/real/TrangThaiGame.java", "src/real/MapDanhNhau.java",
             "src/real/Region.java", "src/real/CharVongLap.java"}) {

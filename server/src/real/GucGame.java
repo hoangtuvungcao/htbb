@@ -18,8 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class GucGame {
 
-    /** Cau "Guc vi ..." cua lan guc dang mo (hop thoai guc doc lai) - charDBID -> cau. */
-    static final ConcurrentHashMap<Integer, String> CAU = new ConcurrentHashMap<Integer, String>();
+    /** Cau "Guc vi ..." cua lan guc dang mo - charDBID -> {cau day du (tin rieng), cau ngan (hop thoai guc)}. */
+    static final ConcurrentHashMap<Integer, String[]> CAU = new ConcurrentHashMap<Integer, String[]>();
 
     private GucGame() {
     }
@@ -156,7 +156,7 @@ public final class GucGame {
             com.htbb.log.Nhat.kiemToan("GUC", b.toString());
             final String cau = SoSatThuong.cauNguoiChoi(ds, bay);
             if (!cau.isEmpty()) {
-                CAU.put(Integer.valueOf(p.charDBID), cau);
+                CAU.put(Integer.valueOf(p.charDBID), new String[]{cau, SoSatThuong.cauNgan(ds)});
                 try {
                     com.htbb.thongbao.ThongBao.rieng(p, cau);
                 } catch (final Exception ignored) {
@@ -170,11 +170,20 @@ public final class GucGame {
 
     /** Cau "Guc vi ..." cua lan guc gan nhat ("" neu khong co) - hop thoai guc. */
     public static String cau(final Char p) {
+        return lay(p, 0);
+    }
+
+    /** Cau ngan (hop thoai guc, toi da 3 dong) - "" neu khong co. */
+    public static String cauNgan(final Char p) {
+        return lay(p, 1);
+    }
+
+    static String lay(final Char p, final int i) {
         if (p == null) {
             return "";
         }
-        final String s = CAU.get(Integer.valueOf(p.charDBID));
-        return s == null ? "" : s;
+        final String[] s = CAU.get(Integer.valueOf(p.charDBID));
+        return s == null ? "" : s[i];
     }
 
     /** HOOK moi nhip nhan vat (CharVongLap.update): anh chup HP; hoi sinh thi bo cau guc cu. */

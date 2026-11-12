@@ -212,6 +212,16 @@ public final class SoSatThuong {
         return b.toString();
     }
 
+    /** Cau NGAN cho hop thoai guc (toi da 3 dong): "Gục vì Croconaw (cấp 24): -1234 HP khi còn 45%." */
+    public static String cauNgan(final Don[] ds) {
+        if (ds == null || ds.length == 0) {
+            return "";
+        }
+        final Don k = ds[ds.length - 1];
+        return "Gục vì " + (NGUON_KHAC.equals(k.nguon) ? "nguồn chưa rõ" : k.nguon) + ": -" + k.sat + " HP khi còn "
+                + pt(k.hpTruoc, k.maxhp) + "%.";
+    }
+
     /** Nguon gay nhieu sat thuong nhat trong cua so 3 giay truoc {@code bay}. */
     static String nguonNhieuNhat(final Don[] ds, final long bay) {
         final java.util.LinkedHashMap<String, Long> m = new java.util.LinkedHashMap<String, Long>();
