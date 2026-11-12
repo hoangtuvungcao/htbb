@@ -307,10 +307,30 @@ final class KichBanCap140TinhNang {
 
     /** Pokemon hoang da gan day (-125): ha yeu (<35% HP) roi nem bong. true = bat duoc. */
     static boolean batPokemon(KichBanCap140.NguoiChoi p) throws Exception {
+        return batPokemon(p, false);
+    }
+
+    /**
+     * Con hoang da {dex, bac, shiny} (-125) danh cho nguoi choi that: bac T4+ hoac sac mau (may chu
+     * com.htbb.pokemon.BaoHoangDa - bot HLV AI danh 0 sat thuong, nem bong bi tu choi; bao loi 12/11/2026).
+     */
+    static boolean danhChoNguoi(int[] v) {
+        return v != null && v.length >= 2 && (v[1] >= com.htbb.pokemon.BaoHoangDa.GIU_BAC || v.length >= 3 && v[2] != 0);
+    }
+
+    /** Con hoang da gan day bot (HLV AI) duoc bat: bo con danh cho nguoi choi. */
+    static boolean coConChoBot(BotChucNang.Bot b) {
+        for (int[] v : b.hoangDa.values()) if (!danhChoNguoi(v)) return true;
+        return false;
+    }
+
+    /** {@code boQuaHiem}: Huan luyen vien AI - khong dung vao con T4+ / sac mau (de nguoi choi that bat). */
+    static boolean batPokemon(KichBanCap140.NguoiChoi p, boolean boQuaHiem) throws Exception {
         BotChucNang.Bot b = p.b;
         if (b.hoangDa.isEmpty()) return false;
         BotChucNang.BanDo bd = BotChucNang.BanDo.nap(b.mapLoad);
         for (int id : new ArrayList<>(b.hoangDa.keySet())) {
+            if (boQuaHiem && danhChoNguoi(b.hoangDa.get(id))) continue;
             b.gui(7, (short) id);
             b.bom(300);
             int[] q = b.quai.get(id);

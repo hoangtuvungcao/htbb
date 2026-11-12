@@ -766,9 +766,11 @@ final class HlvAiNguoiChoi extends KichBanCap140.NguoiChoi {
         if (ml >= 0 && ml != b.mapId) toi(ml);
         int soBat0 = soBat;
         while (System.currentTimeMillis() < het && !dungLai && !b.dut) {
-            if (!b.hoangDa.isEmpty()) {
+            // con T4+ / sac mau danh cho nguoi choi that (may chu chan bot danh / bat - bao loi 12/11/2026): bo qua
+            if (!b.hoangDa.isEmpty() && !KichBanCap140TinhNang.coConChoBot(b)) DichVuHlvAi.dem("nhuong_hoang_da", 1);
+            if (KichBanCap140TinhNang.coConChoBot(b)) {
                 DichVuHlvAi.dem("gap_hoang_da", 1);
-                if (KichBanCap140TinhNang.batPokemon(this)) { DichVuHlvAi.dem("bat_duoc", 1); hopPc(); return true; }
+                if (KichBanCap140TinhNang.batPokemon(this, true)) { DichVuHlvAi.dem("bat_duoc", 1); hopPc(); return true; }
                 b.hoangDa.clear();
                 if (b.xu > 2500) KichBanCap140TinhNang.muaBong(this); // het bong / thoat: mua them roi san tiep
             }
