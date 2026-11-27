@@ -1,44 +1,72 @@
 # Huyền Thoại Bảo Bối (HTBB)
 
-Game nhập vai trực tuyến 2D, người chơi **là một Pokémon**: đi khắp thế giới, đánh quái, tiến hoá, thách đấu Gym,
-chiếm Gym, làm nhiệm vụ cốt truyện, tham gia sự kiện và hệ sinh thái (câu cá, vườn, nấu ăn, trứng…). Game được chuyển
-đổi từ một game nhập vai kiếm hiệp cũ (máy chủ Java + client J2ME / Unity) sang thế giới Pokémon hoàn toàn. Đây là
-**game fan phi thương mại** — xem [docs/giay-phep.md](docs/giay-phep.md).
+![Huyền Thoại Bảo Bối — MMORPG Pokémon 2D](docs/anh/thumbnail_htbb.png)
 
-Monorepo gồm máy chủ, bốn client, website và công cụ. Website: `https://huyenthoaibaoboi.fun/`.
+Game nhập vai trực tuyến 2D (**MMORPG Pokémon**), nơi người chơi **là một Pokémon**: khám phá bản đồ Kanto/Johto, đánh quái, bắt Pokémon hoang dã bằng Poké Ball, xem sao IV trong Hộp PC, tiến hoá, thách đấu Gym, đi phó bản, tham gia sự kiện, PvP 3v3 và hệ sinh thái (câu cá, vườn, nấu ăn, ấp trứng…).
 
-## Thư mục
+Dự án chuyển thể hoàn toàn từ nền tảng MMORPG 2D kiếm hiệp cũ (Java Server + J2ME / Android / PC Java / Unity) sang thế giới Pokémon. Đây là **game fan phi thương mại** — xem [docs/giay-phep.md](docs/giay-phep.md).
+
+- **Website**: `https://huyenthoaibaoboi.fun/`
+- **Tải bản cài đặt (`v0.9.33-opentest`)**: Xem [GitHub Releases](https://github.com/hoangtuvungcao/htbb/releases) (Android APK, PC Windows/Linux, J2ME `.jar` thường & nhẹ kèm `SHA256SUMS.txt`)
+- **Nhánh mã nguồn**:
+  - `main`: nhánh Open Test mới nhất (`v0.9.29-opentest` → `v0.9.33-opentest`)
+  - `p2p`: nhánh tích hợp Peerova P2P native/JNI cho Android, PC, Unity và Server (`v0.9.30-p2p`)
+
+---
+
+## Hình ảnh trong Game & Hệ thống Quản trị
+
+| Khởi đầu & Tạo Pokémon | Chiến đấu & Kỹ năng | Pokédex & Tiến hoá |
+| :---: | :---: | :---: |
+| ![Khởi đầu](docs/anh/apk-p2p-dang-nhap.png) | ![Chiến đấu](web/public/anh-game/chien-dau-1280.webp) | ![Pokédex](web/public/anh-game/pokedex-1280.webp) |
+| ![Chọn Pokémon](web/public/anh-game/khoi-dau-1280.webp) | ![Kỹ năng](web/public/anh-game/ky-nang-1280.webp) | ![Tiến hoá](web/public/anh-game/tien-hoa-1280.webp) |
+
+| Hộp PC & Thú cưỡi | Phó bản & Cửa hàng | Khu Quản trị Admin & VietQR |
+| :---: | :---: | :---: |
+| ![Hộp PC](web/public/anh-game/hop-pc-1280.webp) | ![Phó bản](web/public/anh-game/pho-ban-1280.webp) | ![Admin Portal](docs/anh/kh-admin.png) |
+| ![Thú cưỡi](web/public/anh-game/thu-cuoi-1280.webp) | ![Cửa hàng](web/public/anh-game/cua-hang-do-1280.webp) | ![VietQR Mobile](docs/anh/qr-mobile.png) |
+
+---
+
+## Cấu trúc Monorepo
 
 | Thư mục | Nội dung | Tài liệu |
 |---|---|---|
-| `server/` | game server + login server (Java, cổng 19129 / 8023): `src/`, `test/`, `lib/`, `map/`, `cMap/`, `htbb-server.jar` | [server/README.md](server/README.md) |
-| `client_jar/` | client J2ME (MIDP 2.0) — **nguồn code game duy nhất** cho jar, Android và PC Java | [client_jar/README.md](client_jar/README.md) |
-| `client_apk/` | Android: module `pokemon/` sinh từ code jar qua `port-j2me.py` | [client_apk/README.md](client_apk/README.md) |
-| `client_pc/` | bản PC Java SE chạy code jar (Windows / macOS / Linux) | [client_pc/README.md](client_pc/README.md) |
-| `client_pc_ios/` | client Unity 6000.5.9f1 (PC Windows, iOS) | [client_pc_ios/README.md](client_pc_ios/README.md) |
-| `web/` | website + khu quản trị Nuxt 4 (Node 22) | [web/README.md](web/README.md) |
-| `sql/` | MỘT tệp CSDL `htbb.sql` (bản chụp CSDL — dữ liệu game sửa trong CSDL — cho CSDL mới, kèm phần nâng cấp CSDL đang chạy; chạy lại được) | [sql/README.md](sql/README.md) |
-| `du_lieu/` | bảng tài nguyên client / bản đồ (sprite, tile, NPC) mà mã đọc trực tiếp | [du_lieu/README.md](du_lieu/README.md) |
-| `tools/` | công cụ tài nguyên, bot kiểm thử, phát hành client; `luu_tru_sinh_du_lieu/`: bộ sinh dữ liệu cũ (lưu trữ) | [tools/README.md](tools/README.md) |
-| `vps/` | tệp triển khai VPS: systemd, nginx, MariaDB, deploy, sao lưu | [vps/README.md](vps/README.md) |
-| `docs/` | tài liệu dự án (bên dưới) | |
+| `server/` | Game server + Login server (Java, cổng `19129` / `8023`): `src/`, `test/`, `lib/`, `map/`, `cMap/` | [server/README.md](server/README.md) |
+| `client_jar/` | Client J2ME (MIDP 2.0) — **nguồn code game duy nhất** cho JAR, Android và PC Java | [client_jar/README.md](client_jar/README.md) |
+| `client_apk/` | Android module `pokemon/` sinh từ code JAR qua `port-j2me.py` | [client_apk/README.md](client_apk/README.md) |
+| `client_pc/` | Bản PC Java SE chạy code JAR (Windows / macOS / Linux) | [client_pc/README.md](client_pc/README.md) |
+| `client_pc_ios/` | Client Unity `6000.5.9f1` (PC Windows, Linux, iOS) | [client_pc_ios/README.md](client_pc_ios/README.md) |
+| `web/` | Website + khu quản trị Nuxt 4 (Node 22), bộ ảnh gallery ở `web/public/anh-game/` | [web/README.md](web/README.md) |
+| `sql/` | Tệp CSDL chuẩn hoá + script nâng cấp | [sql/README.md](sql/README.md) |
+| `du_lieu/` | Bảng tài nguyên client / bản đồ (sprite, tile, NPC) | [du_lieu/README.md](du_lieu/README.md) |
+| `tools/` | Công cụ tài nguyên, bot kiểm thử, bộ phát hành client (`tools/phat-hanh/`) | [tools/README.md](tools/README.md) |
+| `vps/` | Tệp triển khai VPS: systemd, nginx, MariaDB, deploy, sao lưu | [vps/README.md](vps/README.md) |
+| `docs/` | Tài liệu kỹ thuật đầy đủ & kho ảnh minh hoạ (`docs/anh/`) | — |
 
-## Tài liệu
+---
 
-| Tệp | Nội dung |
+## Tài liệu Dự án Đầy đủ
+
+| Tệp tài liệu | Nội dung chính |
 |---|---|
-| [docs/kien-truc.md](docs/kien-truc.md) | kiến trúc: thành phần, giao thức, CSDL, web ↔ game, cấu hình trung tâm, luồng dữ liệu, bản đồ, quy ước mã |
-| [docs/build.md](docs/build.md) | build và kiểm thử từng thành phần, phát hành client |
-| [docs/trien-khai.md](docs/trien-khai.md) | dựng VPS và deploy (MariaDB, systemd, nginx, WAF, sao lưu) |
-| [docs/van-hanh.md](docs/van-hanh.md) | vận hành: dịch vụ, log, sao lưu, bảo trì, sổ tay GM, sự kiện, giftcode, nạp tiền, email |
-| [docs/dang-nhap.md](docs/dang-nhap.md) | login server: giao thức game ↔ login, mã kết quả, cấu hình, số đo cũ/mới, lên bản và quay lui |
-| [docs/cau-hinh.md](docs/cau-hinh.md) | mọi khoá cấu hình (`server.ini` + bảng `cau_hinh`), một phần sinh tự động |
-| [docs/thiet-ke-game.md](docs/thiet-ke-game.md) | thiết kế game: Pokémon, hệ, chiêu, Gym, kinh tế, hệ sinh thái, thuật ngữ |
-| [docs/giay-phep.md](docs/giay-phep.md) | giấy phép và ghi công tài nguyên |
+| [docs/kien-truc.md](docs/kien-truc.md) | Kiến trúc thành phần, giao thức, CSDL, web ↔ game, luồng dữ liệu, bản đồ, quy ước mã |
+| [docs/build.md](docs/build.md) | Build và kiểm thử từng thành phần (`server`, `client_jar`, `client_apk`, `client_pc`, Unity) |
+| [docs/trien-khai.md](docs/trien-khai.md) | Dựng VPS và deploy (MariaDB, systemd, nginx, WAF, sao lưu) |
+| [docs/van-hanh.md](docs/van-hanh.md) | Vận hành, log, sao lưu, bảo trì, sổ tay GM, sự kiện, giftcode, nạp tiền |
+| [docs/dang-nhap.md](docs/dang-nhap.md) | Login server: giao thức game ↔ login, cấu hình, số đo cũ/mới, lên bản và quay lui |
+| [docs/cau-hinh.md](docs/cau-hinh.md) | Khoá cấu hình (`server.ini` + bảng `cau_hinh`) |
+| [docs/thiet-ke-game.md](docs/thiet-ke-game.md) | Thiết kế game: Pokémon, hệ & khắc hệ, chiêu, Gym, kinh tế, hệ sinh thái |
+| [docs/huong-dan-gia-lap-android.md](docs/huong-dan-gia-lap-android.md) | Hướng dẫn chạy & kiểm thử trên giả lập Android |
+| [docs/kiem-thu/ma-tran-bot.md](docs/kiem-thu/ma-tran-bot.md) | Ma trận kiểm thử tự động & soak bot |
+| [docs/phat-hanh-va-truyen-thong.md](docs/phat-hanh-va-truyen-thong.md) | Checksum SHA-256 bản `v0.9.33-opentest`, mô tả Open Test & ghi công CC0 |
+| [docs/giay-phep.md](docs/giay-phep.md) | Giấy phép và ghi công tài nguyên |
+
+---
 
 ## Bắt đầu nhanh (máy dev)
 
-Cần: JDK 17+ (biên dịch `--release 8`), MariaDB 10.4+ (không dùng MySQL 8), Node 22, python3.
+Cần: **JDK 17+** (biên dịch `--release 8`), **MariaDB 10.4+** (không dùng MySQL 8), **Node 22**, **Python 3**.
 
 ```sh
 # 1. CSDL (đặt lower_case_table_names=1 và utf8 trước, xem vps/htbb-mariadb.cnf)
@@ -49,25 +77,21 @@ cp vps/server.ini.linux.example server/server.ini
 cp vps/loginServer.server.ini.example server/loginServer/server.ini
 
 # 3. Login server rồi game server (chạy ở server/)
-(cd server/loginServer && java -Djava.awt.headless=true -jar htbb-login.jar) &   # jar cũ: CheckLoginSocket.jar
+(cd server/loginServer && java -Djava.awt.headless=true -jar htbb-login.jar) &
 (cd server && java -Djava.awt.headless=true -jar htbb-server.jar)
 
-# 4. Website
+# 4. Website Nuxt 4
 cd web && cp .env.example .env && npm ci && npm run dev        # http://localhost:3000
 
-# 5. Một client nối vào máy dev
-MAY_CHU=127.0.0.1:19129 sh client_jar/build.sh                  # jar (chạy bằng MicroEmulator)
-sh client_pc/build.sh && java -jar client_pc/out/HTBB-PC.jar    # PC Java, mặc định 127.0.0.1:19129
+# 5. Chạy một client nối vào máy dev
+MAY_CHU=127.0.0.1:19129 sh client_jar/build.sh                  # J2ME JAR (MicroEmulator)
+sh client_pc/build.sh && java -jar client_pc/out/HTBB-PC.jar    # PC Java (mặc định 127.0.0.1:19129)
 ```
 
-Không có MariaDB: `sh tools/pokemon/chay_tren_novadb.sh` chạy toàn bộ server trên NovaDB. Kiểm thử server:
-[docs/build.md](docs/build.md).
+Không cần cài MariaDB khi dev nhanh: `sh tools/pokemon/chay_tren_novadb.sh` chạy toàn bộ server trên NovaDB. Chi tiết kiểm thử xem [docs/build.md](docs/build.md).
 
-## Quy ước
+## Quy ước & Bảo mật
 
-- Đường dẫn trong tài liệu và công cụ viết **từ gốc repo** (`server/src/...`, `du_lieu/...`); công cụ chạy ở gốc repo,
-  test server chạy ở `server/` (đọc `../docs`, `../sql`, `../vps`…).
-- Tài liệu và chữ người chơi thấy: tiếng Việt có dấu; tên định danh trong mã: tiếng Việt không dấu.
-- Không đưa mật khẩu, khoá, `server.ini`, `.env` hay địa chỉ IP máy chủ vào git.
-- Workflow GitHub Actions ở `.github/workflows/` có tiền tố thành phần (`server-`, `web-`, `client-`) và lọc theo đường
-  dẫn; `server-deploy.yml` chỉ chạy khi biến repo `HTBB_VPS_MONOREPO=1`.
+- Đường dẫn trong tài liệu viết **từ gốc repo** (`server/src/...`, `du_lieu/...`); test server chạy từ `server/`.
+- **Không đưa mật khẩu, keystore APK, `server.ini`, `.env`, `sv.p2p_license`, hay địa chỉ IP vận hành thật vào Git.**
+- GitHub Actions trong `.github/workflows/` hỗ trợ kiểm thử server, deploy web và đóng gói phát hành client (`client-phat-hanh-htbb.yml`).
